@@ -1,0 +1,99 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>   				
+						
+  <meta content="text/html; charset=UTF-8"
+  <meta content="text/html; charset=UTF-8"
+ http-equiv="content-type" />
+   <meta content="Smith609" name="author">
+  <meta content="A bot to automatically tidy and complete citations on Wikipedia, the free encyclopaedia" name="description" />
+
+  <title>
+   The Wikipedia citation bot
+  </title>
+  <style type="text/css" media="screen,projection">
+    /*
+    <![CDATA[*/ @import "/~luxo/skins/toolserver/main.css?67"; /*]]>
+    */
+  </style> 
+   
+
+</head>
+<body style="direction: ltr;" class="mediawiki ns--1 ltr page-Spezial_Beiträge"> 
+  <div id="globalWrapper">
+    <div id="column-content"> 
+
+     	<div id="content">
+        <a name="top" id="top"></a>  
+        <h1 class="firstHeading">
+          The Wikipedia citation bot
+				</h1> 
+        <div id="bodyContent"> 
+          <h3 id="siteSub">
+            by Smith609, design adapted from Luxo's</h3> 
+          <div id="contentSub">
+            Tidies Wikipedia citations, and adds missing data and DOIs
+          </div>
+					<div style="text-align: right;"><img
+ style="border: 0px solid ;" alt="Powered by the WikiMedia toolserver" src="http://tools.wikimedia.de/images/wikimedia-toolserver-button.png"/></div>
+
+          <!-- start content --> 
+          <div id="laden">
+						<form action="doibot.php" method=post>
+						<h3>Welcome to the Citation bot.</h3>
+						Enter the name of a page to fill in missing DOIs, and to complete other empty fields in {{cite journal}} templates.
+						<br><input name=page value=""><br>
+						<!--<br><input type=checkbox name=google>Use Google Search (Experimental)-->
+						<!--br><input type=checkbox name=yahoo checked>Use Yahoo! (Powered by Yahoo!): Search -->
+						<!--br><input type=checkbox name=scholar>Use Google Scholar (use sparingly)-->
+						<!--select name=depth>
+							<option value=1>1</option>
+							<option value=2>2</option>
+							<option value=3 selected>3</option>
+							<option value=4>4</option>
+							<option value=5>5</option>
+							<option value=6>6</option>
+						</select> results for DOIs.-->
+						<br><input type=checkbox name=slow checked>Thorough mode - a slower, but more exhaustive, search. Finds PMID parameters and flags "broken" DOIs.
+						<br><input type=checkbox name=fast >Fast mode - cuts a few corners, so may miss a few DOIs.
+						<br><input type=checkbox name=crossrefonly >Turbo mode.  Only checks the CrossRef database.
+						<br><input type=checkbox name=edit checked>Commit edits.  Leave blank to check Wikicode.
+						<br><br>Please enter your Wikipedia username below before submitting your query.<br><input name=user value=""> 
+						<br><br><input type=submit>
+						<br>
+						<br>Maintained by <a href="http://en.wikipedia.org/wiki/User:Smith609">Martin Smith</a>.
+						<br>Supported by <a href="http://www.geological-supplies.com">GeoLogic</a>.
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="column-one">
+			<div class="portlet" id="p-logo">
+				<a style="background-image: url(http://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Wikimedia_Community_Logo-Toolserver.svg/133px-Wikimedia_Community_Logo-Toolserver.svg.png);" >&nbsp;</a>
+			</div>
+			<div class='generated-sidebar portlet' id='p-navigation'>
+			<h5>Reference tools</h5>
+			<div class='pBody'>
+				<ul>
+					<li id="n-DOI"><a href="/~verisimilus/Bot/DOI_bot" title="Citation bot">Citation bot</a></li>
+
+					<li id="n-Scholar"><a href="/~verisimilus/Scholar/" title="Find references through a Google Scholar interface">Scholar search</a></li>
+					<li id="n-Cite"><a href="/~verisimilus/Scholar/Cite.php" title="Manually enter known citation information">From citation information</a></li>
+					<li id="n-Cite"><a href="/~verisimilus/Scholar/rtf.php" title="Copy and paste citation information">Drag 'n' drop</a> (experimental)</li>
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+	var pageTracker = _gat._getTracker("UA-4640652-1");
+	pageTracker._initData();
+	pageTracker._trackPageview();
+	</script>
+</body>
