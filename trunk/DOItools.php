@@ -95,8 +95,8 @@ function nothingMissing($journal){
         && (is("pages") || is("page"))
         && is("title")
         && (is("date") || is("year"))
-        && (is("author") ||is("last") || is("last1")
-  ));
+        && (is("author2") || is("last2"))
+  );
 }
 
 function getDataFromArxiv($a) {
@@ -264,8 +264,7 @@ function pmSearchResults($p){
 function pmArticleDetails($pmid, $id = "pmid"){
 	$result = Array();
 	$xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=" . (($id == "pmid")?"pubmed":"pmc") . "&tool=DOIbot&email=martins@gmail.com&id=$pmid");
-
-	foreach($xml->DocSum->Item as $item){
+  foreach($xml->DocSum->Item as $item){
 		if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $result["doi"] = $match[0];
 		switch ($item["Name"]){
 							case "Title": $result["title"] = str_replace(array("[", "]"), "",(string) $item);
@@ -282,8 +281,8 @@ function pmArticleDetails($pmid, $id = "pmid"){
         $i = 0;
 				foreach ($item->Item as $subItem) {
           $i++;
-          if (preg_match("~(.*) (/w)+$~", $subItem, $names)) {
-            $result["last$i"] = mb_convert_case($names[1]);
+          if (preg_match("~(.*) (\w)+$~", $subItem, $names)) {
+            $result["last$i"] = mb_convert_case($names[1], MB_CASE_TITLE, "UTF-8");
             $result["first$i"] = $names[2];
           }
         }
