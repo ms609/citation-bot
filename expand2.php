@@ -92,7 +92,7 @@ function findMoreAuthors($doi, $a1, $pages) {
 print "\nWelcome to expand2";
 while ($page) {
 	$startPage = time();
-	echo $htmlOutput?("\n<hr>[" . date("H:i:s", $startPage) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n*** Processing page '$page' : " . date("H:i:s", $startPage));
+	echo $htmlOutput?("\n<hr>[" . date("H:i:s", $startPage) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $startPage));
 	
 	$bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
 	$startcode = $bot->results;
@@ -101,7 +101,7 @@ while ($page) {
 	// Which template family is dominant?
 	
 	preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $startcode, $cite_x);
-	preg_match_all("~\{\{\s*[Cc]itation~", $startcode, $citation);
+	preg_match_all("~\{\{\s*[Cc]itation\b(?! \w)~", $startcode, $citation);
 	if (count($cite_x[0]) * count($citation[0]) >0) {
 		// Two types are present
 		$changeCitationFormat = true;
@@ -185,7 +185,9 @@ while ($page) {
 					preg_replace("~(isbn\s*=\s*)isbn\s?=?\s?(\d\d)~i","$1$2",
 					preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$i+1]))); // Replaces isbn: with isbn =
 				#$noComC = preg_replace("~<!--[\s\S]*-->~U", "", $c);
-				while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
+				while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
+          $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
+        }
 				preg_match(siciRegExp, urldecode($c), $sici);
 				 
 				// Split citation into parameters
@@ -337,8 +339,8 @@ while ($page) {
 			}
 			$pagecode .= $citation[$i]; // Adds any text that comes after the last citation
 		}
-		
 ###################################  START ASSESSING JOURNAL/OTHER CITATIONS ######################################
+
 		if ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $pagecode, -1, PREG_SPLIT_DELIM_CAPTURE)) {
 			$pagecode = null;
 			$iLimit = (count($citation)-1);
@@ -360,6 +362,7 @@ while ($page) {
 					preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~","doi$1=$1$2", $citation[$i+1])); // Replaces doi: with doi = 
 				while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
 				preg_match(siciRegExp, urldecode($c), $sici);
+
 				// Split citation into parameters
 				$parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
 				$partsLimit = count($parts);
@@ -387,10 +390,16 @@ while ($page) {
 					// See if we can use any of the parameters lacking equals signs:
 					$freeDat = explode("|", trim($p["unused_data"][0]));
 					useUnusedData();
+
 					if (is("isbn")) getInfoFromISBN();
-					if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]); 
-					else {
-						if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+
+
+
+          if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
+            unset($p["unused_data"]);
+          } else {
+						if (substr(trim($p["unused_data"][0]), 0, 1) == "|") {
+              $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
 					}
 					echo "\n* {$p["title"][0]}";
 					// Load missing parameters from SICI, if we found one...
