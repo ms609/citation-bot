@@ -46,7 +46,7 @@ function nextPage(){
 $page = "Template:"
 . trim ("
 
-Cite doi/10.1017.2FS0016756801006252
+Cite_doi/10.1002.2Fbies.20507
 
 ");
 include("expand.php");
