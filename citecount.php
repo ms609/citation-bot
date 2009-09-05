@@ -9,7 +9,7 @@ $accountSuffix = '_4';
 $ON = true;
 #$ON=false;
 $linkto2 = '';
-include("/home/verisimilus/public_html/Bot/DOI_bot/expandFns$linkto2.php");
+include("expandFns.php");
 
 function nextPage(){
 	#return 'User:DOI bot/Zandbox';
@@ -23,6 +23,6 @@ function nextPage(){
 
 $page = nextPage();
 
-include("/home/verisimilus/public_html/Bot/DOI_bot/expand_task4.php");
+include("expand_task4.php");
 
 print "\n\n=== End ===\n\n";

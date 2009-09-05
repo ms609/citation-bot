@@ -1,4 +1,6 @@
 <?php
+// $Id: $
+
 function categoryMembers($cat){
 	$url="http://en.wikipedia.org/w/api.php?cmtitle=Category:$cat&action=query&cmlimit=500&format=xml&list=categorymembers";
 	$qc = "query-continue";

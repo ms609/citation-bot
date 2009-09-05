@@ -1,4 +1,5 @@
 <?
+// $Id: $
 
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
@@ -8,8 +9,8 @@ $accountSuffix='_1';
 
 $ON = true;
 //$ON=false;
-$linkto2 = '';
-include("/home/verisimilus/public_html/Bot/DOI_bot/expandFns$linkto2.php");
+
+include("expandFns.php");
 
 function nextPage(){
 	//return 'User:DOI bot/Zandbox';
@@ -48,4 +49,4 @@ $id = getArticleID($page);
 print getRawWikiText($id);
 
 exit;
-include("/home/verisimilus/public_html/Bot/DOI_bot/expand$linkto2.php");
+include("expand.php");

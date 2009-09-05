@@ -1,10 +1,11 @@
-#!/usr/bin/php
 <?php
+// $Id: $
+
 $accountSuffix = '_2';
 $editInitiator = '[cw]';
-require_once("/home/verisimilus/public_html/Bot/wikiFunctions.php");
-require_once("/home/verisimilus/public_html/Bot/DOI_bot/expandFns.php"); // includes login
-require_once("/home/verisimilus/public_html/DOItools.php"); // Must come after bot initialised
+require_once("wikiFunctions.php");
+require_once("expandFns.php"); // includes login
+require_once("DOItools.php"); // Must come after bot initialised
 
 $toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"));
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
@@ -80,5 +81,5 @@ $page = 'User_Smith609/Sandbox';#nextPage();
 $ON = true;
 $citedoi = true;
 #print "\n\n";exit;
-require_once("/home/verisimilus/public_html/Bot/DOI_bot/expand.php");
+require_once("expand.php");
 print "\n===End===\n\n";

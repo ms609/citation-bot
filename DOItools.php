@@ -1,4 +1,5 @@
 <?
+// $Id: $
 
 $bot = new Snoopy();
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
@@ -10,7 +11,7 @@ define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[
 
 
 
-require_once("crossref.login");
+require_once("/home/verisimilus/public_html/crossref.login");
 $crossRefId=CROSSREFUSERNAME.":".CROSSREFPASSWORD;
 
 

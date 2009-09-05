@@ -1,20 +1,21 @@
-<?php
-if ($linkto2) print "\n// included expandFns2";
-function includeIfNew($path, $file){
+<?
+// $Id: $
+
+function includeIfNew($file){
 	// include missing files
 	$alreadyIn = get_included_files();
 	foreach ($alreadyIn as $include){
 		if (strstr($include, $file)) return false;
 	}
 	if ($GLOBALS["linkto2"]) echo "\n// including $file";
-	require_once($path . $file . $GLOBALS["linkto2"] . ".php");
+	require_once($file . $GLOBALS["linkto2"] . ".php");
 	return true;
 }
 require_once("/home/verisimilus/public_html/Bot/DOI_bot/doiBot$linkto2.login");
 # Snoopy should be set so the host name is en.wikipedia.org.
-includeIfNew('/home/verisimilus/public_html/Bot/','Snoopy.class');
-includeIfNew("/home/verisimilus/public_html/Bot/", "wikiFunctions");
-includeIfNew("/home/verisimilus/public_html/", "DOItools");
+includeIfNew('Snoopy.class');
+includeIfNew("wikiFunctions");
+includeIfNew("DOItools");
 require_once("/home/verisimilus/public_html/res/mysql_connect.php");
 $db = udbconnect("yarrow");
 if(!true && !myIP()) {

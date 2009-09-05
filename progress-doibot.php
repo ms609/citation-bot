@@ -1,6 +1,7 @@
 <?
-$linkto2 = '';
-include("/home/verisimilus/public_html/Bot/DOI_bot/expandFns$linkto2.php");
+// $Id: $
+
+include("expandFns.php");
 if (preg_match("~\d{8}~", $_GET['date'], $date)) $date = $date[0]; else $date = 0;
 
 // Return count of how many left to do
