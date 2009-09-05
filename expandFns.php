@@ -71,19 +71,21 @@ if ($_REQUEST["edit"] || $_GET["doi"] || $_GET["pmid"]) $ON = true;
 
 $editSummaryStart = ($bugFix?"Double-checking that a [[User:DOI_bot/bugs|bug]] has been fixed. ":"Citation maintenance. ");
 $editSummaryEnd = (isset($user)?" Initiated by [[User:$user|$user]].":"")
-						.	" You can [[WP:DOI|use this bot]] yourself! Please [[User:DOI_bot/bugs|report any bugs]].";
+						.	" You can [[WP:UCB|use this bot]] yourself! Please [[User:Citation_bot/bugs|report any bugs]].";
 
 ob_flush();
 
 
 ################ Functions ##############
 
-function updateBacklog($page){
-	$sPage = addslashes($page);
+function updateBacklog($page) {
+  $sPage = addslashes($page);
 	$id = articleId($page);
-	global $db;
+  $db = udbconnect("yarrow");
+  echo 4;
 	$result = mysql_query("SELECT page FROM citation WHERE id = '$id'") or die (mysql_error());
 	$result = mysql_fetch_row($result);
+  echo 5;
 	$sql = $result?"UPDATE citation SET fast = '" . date ("c") . "' WHERE page = '$sPage'":"INSERT INTO citation VALUES ('".
 		$id . "', '$sPage', '" . date ("c") . "', '0000-00-00')";
 	#print "<p>$sql</p>";

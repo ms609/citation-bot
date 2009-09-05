@@ -43,25 +43,25 @@ while ($page) {
 	if (false && preg_match_all("~<[\n ]*ref[^>]*name=(\"[^\"><]+\"|'[^']+|[^ ><]+)[^/>]*>(([\s\S](?!<)|[\s\S]<(?!ref))*?)</ref[\s\n]*>~", $pagecode, $refs)) {
 		dbg($refs);#############
 		$countRefs = count($refs[0]);
-		for ($i = 0; $i < $countRefs; $i++) {
-			$refs[2][$i] = trim($refs[2][$i]);
-			for ($j=0; $j<$i; $j++){
+		for ($cit_i = 0; $cit_i < $countRefs; $cit_i++) {
+			$refs[2][$cit_i] = trim($refs[2][$cit_i]);
+			for ($j=0; $j<$cit_i; $j++){
 				$refs[2][$j] = trim($refs[2][$j]);
 				if (
-					strlen($refs[2][$j]) / strlen($refs[2][$i]) > 0.9
-					&& strlen($refs[2][$j]) / strlen($refs[2][$i]) <1.1
-					&& similar_text($refs[2][$i], $refs[2][$j]) / strlen($refs[2][$i]) >= 1  # We can lower this if we can avoid hitting "Volume II/III" and "page 30/45"
-					&& ( similar_text($refs[2][$i], $refs[2][$j]) / strlen($refs[2][$i]) == 1
-						|| similar_text($refs[2][$i], $refs[2][$j]) > 52) //Avoid comparing strings that are too short; e.g. "ibid p20"
+					strlen($refs[2][$j]) / strlen($refs[2][$cit_i]) > 0.9
+					&& strlen($refs[2][$j]) / strlen($refs[2][$cit_i]) <1.1
+					&& similar_text($refs[2][$cit_i], $refs[2][$j]) / strlen($refs[2][$cit_i]) >= 1  # We can lower this if we can avoid hitting "Volume II/III" and "page 30/45"
+					&& ( similar_text($refs[2][$cit_i], $refs[2][$j]) / strlen($refs[2][$cit_i]) == 1
+						|| similar_text($refs[2][$cit_i], $refs[2][$j]) > 52) //Avoid comparing strings that are too short; e.g. "ibid p20"
 					) {if ($_GET["DEBUG"]) dbg(array(
-					" i & j " => "$i & $j",
+					" i & j " => "$cit_i & $j",
 					"J" => $refs[2][$j],
 					"Jlen" => strlen($refs[2][$j]),
-					"I" => $refs[2][$i],
-					"Ilen" => strlen($refs[2][$i]),
-					"SimTxt" => similar_text($refs[2][$j],$refs[2][$i]) . " = " . similar_text($refs[2][$i], $refs[2][$j]) / strlen($refs[2][$i])
+					"I" => $refs[2][$cit_i],
+					"Ilen" => strlen($refs[2][$cit_i]),
+					"SimTxt" => similar_text($refs[2][$j],$refs[2][$cit_i]) . " = " . similar_text($refs[2][$cit_i], $refs[2][$j]) / strlen($refs[2][$cit_i])
 					));
-						$duplicateRefs[$refs[0][$i]] = $refs[1][$j]; // Full text to be replaced, and name to replace it by
+						$duplicateRefs[$refs[0][$cit_i]] = $refs[1][$j]; // Full text to be replaced, and name to replace it by
 					}
 			}
 		}
@@ -77,16 +77,16 @@ while ($page) {
 			$pagecode = null;
 			$iLimit = (count($citation)-1);
 
-			for ($i=0; $i<$iLimit; $i+=5){//Number of brackets in cite book regexp +1
+			for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5){//Number of brackets in cite book regexp +1
 				$starttime = time();
 
 				// Remove any comments so they don't confuse any regexps.
-				if (preg_match_all("~<!--[\s\S]+-->~U", $citation[$i+1], $comments)) {
+				if (preg_match_all("~<!--[\s\S]+-->~U", $citation[$cit_i+1], $comments)) {
 					$countComments = count($comments[0]);
 					for ($j = 0; $j < $countComments; $j++) {
-						$citation[$i+1] = str_replace($comments[0][$j]
+						$citation[$cit_i+1] = str_replace($comments[0][$j]
 																			, "<!-- Citation bot : comment placeholder b$j -->"
-																			, $citation[$i+1]);
+																			, $citation[$cit_i+1]);
 					}
 				} else $countComments = null;
 				// Comments have been replaced by placeholders; we'll restore them later.
@@ -94,7 +94,7 @@ while ($page) {
 				// Replace ids with appropriately formatted parameters
 				$c = preg_replace("~\bid(\s*=\s*)(isbn\s*)?(\d[\-\d ]{9,})~i","isbn$1$3",
 					preg_replace("~(isbn\s*=\s*)isbn\s?=?\s?(\d\d)~i","$1$2",
-					preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$i+1]))); // Replaces isbn: with isbn =
+					preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$cit_i+1]))); // Replaces isbn: with isbn =
 				#$noComC = preg_replace("~<!--[\s\S]*-->~U", "", $c);
 				while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
           $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
@@ -236,7 +236,7 @@ while ($page) {
 
 				// Convert into citation or cite journal, as appropriate
 				if ($useCitationFormat) {
-					$citation[$i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$i+2]);
+					$citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
 				}
 				// Restore comments we hid earlier
 				for ($j = 0; $j < $countComments; $j++) {
@@ -244,33 +244,33 @@ while ($page) {
 																				, $comments[0][$j]
 																				, $cText);
 				}
-				$pagecode .=  $citation[$i] . ($cText?"{{{$citation[$i+2]}$cText{$citation[$i+4]}}}":"");
+				$pagecode .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
 				$cText = null;
 				$crossRef = null;
 			}
-			$pagecode .= $citation[$i]; // Adds any text that comes after the last citation
+			$pagecode .= $citation[$cit_i]; // Adds any text that comes after the last citation
 		}
 ###################################  START ASSESSING JOURNAL/OTHER CITATIONS ######################################
 
 		if ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $pagecode, -1, PREG_SPLIT_DELIM_CAPTURE)) {
 			$pagecode = null;
 			$iLimit = (count($citation)-1);
-			for ($i=0; $i<$iLimit; $i+=5){//Number of brackets in cite journal regexp + 1
+			for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5){//Number of brackets in cite journal regexp + 1
 				$starttime = time();
 
 				// Strip comments, which may contain misleading pipes etc
-				if (preg_match_all("~<!--[\s\S]+-->~U", $citation[$i+1], $comments)) {
+				if (preg_match_all("~<!--[\s\S]+-->~U", $citation[$cit_i+1], $comments)) {
 					$countComments = count($comments[0]);
 					for ($j = 0; $j < $countComments; $j++) {
-						$citation[$i+1] = str_replace($comments[0][$j]
+						$citation[$cit_i+1] = str_replace($comments[0][$j]
 																			, "<!-- Citation bot : comment placeholder c$j -->"
-																			, $citation[$i+1]);
+																			, $citation[$cit_i+1]);
 					}
 				} else $countComments = null;
 				// Comments will be replaced in the cText varibale later
 
 				$c = preg_replace("~(doi\s*=\s*)doi\s?=\s?(\d\d)~","$1$2",
-					preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~","doi$1=$1$2", $citation[$i+1])); // Replaces doi: with doi =
+					preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~","doi$1=$1$2", $citation[$cit_i+1])); // Replaces doi: with doi =
 				while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
 				preg_match(siciRegExp, urldecode($c), $sici);
         
@@ -351,11 +351,20 @@ while ($page) {
 					if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
 
 					//Authors
-					if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
+					if (isset($p["authors"]) && !isset($p["author"][0])) {
+						$p["author"] = $p["authors"];
+						unset($p["authors"]);
+					}
 					preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
-					if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
-					if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
-
+					if (!$firstauthor[0]) {
+						preg_match("~[^.,;\s]{2,}~", $p["author1"][0], $firstauthor);
+					}
+					if (!$firstauthor[0]) {
+						preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
+					}
+					if (!$firstauthor[0]) {
+						preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
+					}
 					// Is there already a date parameter?
 					$dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
 
@@ -501,6 +510,51 @@ while ($page) {
 							if (!$p["pmid"][0]) unset($p["pmid"]);
 						}
 					}
+
+          // We have now recovered all possible information from CrossRef.
+					//If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
+					if ((true || $citedoi) && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
+						if (preg_match("~^10.\d{4}.2F~", $p['doi'][0])) {
+							$p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doi'][0]);
+						}
+
+
+            // Refresh firstauthor, in case we have now found one via CrossRef
+            preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
+            if (!$firstauthor[0]) {
+              preg_match("~[^.,;\s]{2,}~", $p["author1"][0], $firstauthor);
+            }
+            if (!$firstauthor[0]) {
+              preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
+            }
+            if (!$firstauthor[0]) {
+              preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
+            }
+
+						$moreAuthors = findMoreAuthors($p['doi'][0], $firstauthor[0], $p['pages'][0]);
+						if (!is('coauthors')
+							 && !is('author2')
+							 && !is('last2')
+							 && is('doi')
+							){
+							$count = count($moreAuthors['authors']);
+							if ($count) {
+								for ($j = 0; $j < $count; $j++) {
+									$au = explode(', ', $moreAuthors['authors'][$j]);
+									if ($au[1]) {
+										$p['last' . ($j+1)][0] = $au[0];
+										$p['first' . ($j+1)][0] = preg_replace("~(\w)\w*\.? ?~", "$1.", $au[1]);
+										unset($p['author' . ($j+1)]);
+									} else {
+										$p['author' . ($j+1)][0] = $au[0];
+									}
+								}
+								unset($p['author']);
+							}
+							if ($moreAuthors['pages']) $p['pages'][0] = $moreAuthors['pages'];
+						}
+					}
+
 					if ($checkNewData && $slowMode) {
 						echo "\n<p> Verifying new data... ";
 						if (is("url")) {
@@ -526,6 +580,26 @@ while ($page) {
 				if (isset($p[$journal][0])) $p[$journal][0] = niceTitle($p[$journal][0], false);
 				if (isset($p["pages"][0])) $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
 				if ($dateToStartWith) unset($p["year"]); // If there was a date parameter to start with, don't add a year too!
+        if (strpos($p['author'][0], ';') && !is('author2')) {
+          $auths = explode(';', $p['author'][0]);
+          unset($p['author']);
+          foreach ($auths as $au_i => $auth) {
+            $p['author' . ($au_i+1)][0] = formatAuthor($auth);
+          }
+        }
+
+        // If we're on a Cite Doi page, format authors accordingly
+        if (strpos($page, 'ite doi') || strpos($page, 'ite_doi')) {
+          citeDoiOutputFormat();
+        }
+        // Unset authors above 'author9'
+        for ($au_i = 10; is("authors$au_i") || is ("last$au_i"); $au_i++){
+          unset($p["authors$au_i"]);
+          unset($p["first$au_i"]);
+          unset($p["last$au_i"]);
+        }
+        
+
 				// Check that the DOI functions.
 				if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slowMode) {
 					echo "\nChecking that the DOI is operational...";
@@ -546,7 +620,6 @@ while ($page) {
 				unset($p["doilabel"]);
 
 				//because of cite journal doc...
-				//if (is("doi")) unset($p["issn"]);
 				if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
 
 				// If we have any unused data, check to see if any is redundant!
@@ -592,7 +665,7 @@ while ($page) {
 				}
 				if ($changeCitationFormat) {
 					if ($useCitationFormat) {
-						$citation[$i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$i+2]);
+						$citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
 					} else {
 						if (is('isbn') || is("oclc")) {$citeTemplate = "Cite book";}
 						elseif (is('chapter')) {$citeTemplate = "Cite book";}
@@ -605,7 +678,7 @@ while ($page) {
 						elseif (is('publisher')) {$citeTemplate = "Cite book";} // This should be after we've checked for a journal parameter
 						elseif (is('url')) {$citeTemplate = "Cite web";} // fall back to this if URL
 						else {$citeTemplate = "Cite journal";} // If no URL, cite journal ought to handle it okay
-						$citation[$i+2] = preg_replace("~[cC]itation~", $citeTemplate, $citation[$i+2]);
+						$citation[$cit_i+2] = preg_replace("~[cC]itation~", $citeTemplate, $citation[$cit_i+2]);
 					}
 				}
 				// Restore comments we hid earlier
@@ -614,22 +687,22 @@ while ($page) {
 																				, $comments[0][$j]
 																				, $cText);
 				}
-				$pagecode .=  $citation[$i] . ($cText?"{{{$citation[$i+2]}$cText{$citation[$i+4]}}}":"");
+				$pagecode .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
 				$cText = null;
 				$crossRef = null;
 				$p = null;
 			}
 
-			$pagecode .= $citation[$i]; // Adds any text that comes after the last citation
+			$pagecode .= $citation[$cit_i]; // Adds any text that comes after the last citation
 		}
 
 ###################################  Cite arXiv ######################################
 		if ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $pagecode, -1, PREG_SPLIT_DELIM_CAPTURE)) {
 			$pagecode = null;
 			$iLimit = (count($citation)-1);
-			for ($i=0; $i<$iLimit; $i+=5){//Number of brackets in cite arXiv regexp + 1
+			for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5){//Number of brackets in cite arXiv regexp + 1
 				$starttime = time();
-				$c = $citation[$i+1];
+				$c = $citation[$cit_i+1];
 				while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
 				// Split citation into parameters
 				$parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -662,6 +735,11 @@ while ($page) {
 				preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
 				if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
 				if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
+        for ($au_i = 10; isset($p["last$au_i"]) || isset($p["author$au_i"]); $au_i++) {
+          unset($p["last$au_i"]);
+          unset($p["first$au_i"]);
+          unset($p["author$au_i"]);
+        }
 
 				// Is there already a date parameter?
 				$dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
@@ -712,8 +790,12 @@ while ($page) {
 					$equals=$oP[2]?$oP[2]:null;
 					if ($pipe) break;
 				}
-				if (!$pipe) $pipe="\n | ";
-				if (!$equals) $equals=" = ";
+				if (!$pipe) {
+           $pipe = "\n | ";
+        }
+				if (!$equals) {
+          $equals = " = ";
+        }
 				foreach($p as $param => $v) {
 					if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
 					if (is($param)) $pEnd[$param] = $v[0];
@@ -721,15 +803,18 @@ while ($page) {
 				$p=null;
 				if ($pEnd)
 					foreach ($pEnd as $param => $value)
-						if (!$pStart[$param]) $additions[$param] = true;
-						elseif ($pStart[$param] != $value) $changes[$param] = true;
-				$pagecode .=  $citation[$i] . ($cText?"{{" . ($changeToJournal?"cite journal":$citation[$i+2]) . "$cText{$citation[$i+4]}}}":"");
-#				$pagecode .=  $citation[$i] . ($cText?"{{{$citation[$i+2]}$cText{$citation[$i+4]}}}":"");
+						if (!$pStart[$param]) {
+              $additions[$param] = true;
+            } elseif ($pStart[$param] != $value) {
+              $changes[$param] = true;
+            }
+				$pagecode .=  $citation[$cit_i] . ($cText?"{{" . ($changeToJournal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
+#				$pagecode .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
 				$cText = null;
 				$crossRef = null;
 			}
 
-			$pagecode .= $citation[$i]; // Adds any text that comes after the last citation
+			$pagecode .= $citation[$cit_i]; // Adds any text that comes after the last citation
 		}
 		if ($changeCitationFormat && $useCitationFormat) {
 			$pagecode = preg_replace("~[cC]ite[ _](web|conference|encyclopedia|news)~", "Citation", $pagecode);
@@ -761,7 +846,7 @@ while ($page) {
 							echo $htmlOutput?"<i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
 							write($page . $_GET["subpage"], $pagecode, "Citation maintenance: Fixing/testing bugs. "
 								.	"Problems? [[User_talk:Smith609|Contact the bot's operator]]. ");
-						}else{
+						} else {
 							echo "<i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> ... ";
 							if (write($page . $_GET["subpage"], $pagecode, $editSummary)) {
 								updateBacklog($page);
@@ -793,7 +878,7 @@ while ($page) {
 				$pStart = null; $pEnd = null; $additions=null;$changes=null; $smartSum = null;
 			} else {
 				echo "\n<b>No changes required</b> &rArr; no edit made.";
-				if ($citedoi) {
+        if ($citedoi) {
           if (!articleID($page) && !$doiCrossRef) {
             print "\n\n* $page found on \n  $now\n\n \n\n\n\n";
             $talkPage = "Talk:$now";
@@ -833,8 +918,7 @@ while ($page) {
 				echo "<b>Blank page.</b> Perhaps it's been deleted?";
 				if (!$citedoi) updateBacklog($page);
 				$page = nextPage();
-			}
-			else {
+			} else {
 				echo "<b>Error:</b> Blank page produced. This bug has been reported. Page content: $startcode";
 				mail ("MartinS+doibot@gmail.com", "DOI BOT ERROR", "Blank page produced.\n[Page = $page]\n[SmartSum = $smartSum ]\n[\$citation = ". print_r($citation, 1) . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n\nError message generated by doibot.php.");
 				$page = null;
