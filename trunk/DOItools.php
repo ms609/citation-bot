@@ -228,20 +228,37 @@ function textToSearchKey($key){
 	return false;
 }
 
+/* pmSearchResults
+ *
+ * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
+ * Returns an array:
+ *   [0] => PMID of first matching result
+ *   [1] => total number of results
+ *
+ */
 function pmSearchResults($p){
 	if ($p){
-		foreach ($p as $key => $value){
-			$searchKey = textToSearchKey($key);
-			if ($searchKey) {
-				$valueParts = explode(" ", $value[0]);
-				foreach ($valueParts as $valuePart) $term .= "+AND+" . urlencode($valuePart) . "[$searchKey]";
-			}
-		}
-		$term = substr($term, 5);
-		$url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$term";
-		$xml = simplexml_load_file($url);
-		return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(null, 0);// first results; number of results
-	}
+    if ($p['doi'][0]) {
+      $term = urlencode($p['doi'][0]);
+      $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$term";
+      $xml = simplexml_load_file($url);
+      if ($xml->Count > 0) {
+         return array((string)$xml->IdList->Id[0], (string)$xml->Count);
+      }
+    }
+    // If we've got this far, the DOI was unproductive.
+    foreach ($p as $key => $value){
+      $searchKey = textToSearchKey($key);
+      if ($searchKey) {
+        $valueParts = explode(" ", $value[0]);
+        foreach ($valueParts as $valuePart) $term .= "+AND+" . urlencode($valuePart) . "[$searchKey]";
+      }
+    }
+    $term = substr($term, 5);
+    $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$term";
+    $xml = simplexml_load_file($url);
+  }
+  return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(null, 0);// first results; number of results
 }
 
 function pmArticleDetails($pmid, $id = "pmid"){
@@ -262,17 +279,30 @@ function pmArticleDetails($pmid, $id = "pmid"){
 			break; 	case "PmId": $result["pmid"] = (string) $item;
 			break; 	case "ISSN": $result["issn"] = (string) $item;
 			break; 	case "AuthorList":
-			$result["author"] = (string) $item;
-				unset($result["author"]);
-				foreach ($item->Item as $subItem) $result["author"] .= mb_convert_case(str_replace(" ", ", ", $subItem), MB_CASE_TITLE, "UTF-8") . "; ";
-				$result["author"] = substr($result["author"], 0, strlen($result["author"])-2);
+        $i = 0;
+				foreach ($item->Item as $subItem) {
+          $i++;
+          if (preg_match("~(.*) (/w)+$~", $subItem, $names)) {
+            $result["last$i"] = mb_convert_case($names[1]);
+            $result["first$i"] = $names[2];
+          }
+        }
 			break; 	case "ArticleIds":
 				foreach ($item->Item as $subItem){
-
 					switch ($subItem["Name"]){
-						case "pubmed": preg_match("~\d+~", $subItem, $match); $result["pmid"] = $match[0]; break;
-						case "pmcid": preg_match("~\d+~", $subItem, $match); $result["pmc"] = $match[0];
+						case "pubmed":
+                preg_match("~\d+~", $subItem, $match);
+                $result["pmid"] = $match[0];
+                break;
+						case "pmcid":
+              preg_match("~\d+~", $subItem, $match);
+              $result["pmc"] = $match[0];
+              break;
+						case "doi": 
+              $result["doi"] = (string) $subItem;
+              break;
 					}
+          break;
 				}
 		}
 	}
@@ -1126,9 +1156,9 @@ function parameterOrder($first, $last){
      "isbn",
      "issn",
      "oclc",
+     "pmid", "pmc",
      "doi",
      "doi_brokendate",
-     "pmid", "pmc",
      "bibcode",
      "id",
      "quote",

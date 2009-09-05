@@ -273,8 +273,11 @@ while ($page) {
 					preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~","doi$1=$1$2", $citation[$cit_i+1])); // Replaces doi: with doi =
 				while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
 				preg_match(siciRegExp, urldecode($c), $sici);
-        
-				// Split citation into parameters
+
+##############################
+#             Split citation into parameters                     #
+##############################
+
 				$parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
 				$partsLimit = count($parts);
 				if (strpos($parts[0], "|") >0 && strpos($parts[0],"[[") === FALSE && strpos($parts[0], "{{") === FALSE) set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
@@ -295,16 +298,39 @@ while ($page) {
 				}
 				//Make a note of how things started so we can give an intelligent edit summary
 				foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
+
+        if ($citedoi_sweep) unset($p['author']); // TODO: Remove this brutal line!
+
+
 				if (is("inventor") || is("inventor-last") || is("patent-number")) print "<p>Unrecognised citation type. Ignoring.</p>";// Don't deal with patents!
 				else {
+          
+###########################
+//
+echo "
+-----------------------------
+1: Tidy citation and try ISBN";
+//  See if we can get any 'free' metadata from:
+//  * mis-labelled parameters
+//  * ISBN
+// * SICI
+//  * Tidying up existing parameters (and we'll do more tidying here too)
+//
+###########################
+          
 					$journal = is("periodical")?"periodical":"journal";
 					// See if we can use any of the parameters lacking equals signs:
 					$freeDat = explode("|", trim($p["unused_data"][0]));
 					useUnusedData();
 
-					if (is("isbn")) getInfoFromISBN();
+          // If the page has been created manually from a cite doi link, it will have an encoded 'doix' parameter - decode this.
+          if (preg_match("~^10.\d{4}.2F~", $p['doix'][0])) {
+            $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doix'][0]);
+            unset($p['doix']);
+          }
 
-          
+					if (is("isbn")) getInfoFromISBN();
+         
 
           if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
             unset($p["unused_data"]);
@@ -347,9 +373,6 @@ while ($page) {
 					//pages
 					preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
 
-					//Edition - don't want 'Edition ed.'
-					if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
-
 					//Authors
 					if (isset($p["authors"]) && !isset($p["author"][0])) {
 						$p["author"] = $p["authors"];
@@ -368,158 +391,193 @@ while ($page) {
 					// Is there already a date parameter?
 					$dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
 
-					if (!trim($p["doi"][0])) {
+#####################################
+//
+if (is('doi')) {
+echo "
+-----------
+2: DOI already present :-)";
+} else {
+echo "
+-----------
+2: Find DOI";
+//  Now we have got the citation ship-shape, let's try to find a DOI.
+//
+#####################################
 
+          
+          
+				
 						//Try CrossRef
-						echo "\nChecking CrossRef database... ";
-						$crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]), trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]), $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+						echo "\n - Checking CrossRef database... ";
+						$crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
+                                    trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
+                                    $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
 						if ($crossRef) {
-							echo "Match found!<br>";
-							$p["doi"][0] = $crossRef->doi;
-							noteDoi($p["doi"][0], "CrossRef");
-						} else echo "Failed.<br>";
-						//Try URL param
-						if (!isset($p["doi"][0]) && !$crossRefOnly) {
-							if (strpos($p["url"][0],"http://")!==false) {
+              $p["doi"][0] = $crossRef->doi;
+							echo "Match found: " . $p["doi"][0];
+						} else {
+              echo "no match.";
+            }
+
+            //Try URL param
+						if (!isset($p["doi"][0])) {
+							if (strpos($p["url"][0], "http://") !== false) {
 								//Try using URL parameter
-								echo $htmlOutput?("Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>"):"Trying URL";
+								echo $htmlOutput
+                      ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
+                      : "\n - Trying URL {$p["url"][0]}";
 								$doi = findDoi($p["url"][0]);
 								if ($doi) {
-									noteDoi($p["doi"][0], "URL");
+									echo " found doi $doi";
 									$p["doi"][0] = $doi;
-								}
-							} else echo "No valid URL specified.  ";
-
-							if (!trim($p["doi"][0]) && $searchYahoo) {
-								$ident = "\"" . trim($p["title"][0]) . "\" " . trim($p[$journal][0]) . " " . trim($p["author"][0]) . " " . trim($p["coauthors"][0]);
-								//Try Yahoo
-								$yURL = "http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=$yAppId&results=15&query=doi+".urlencode($ident);
-								$searchLimit = $searchDepth;
-								$yI=null;
-								echo "Querying <a href='$yURL'>Yahoo API</a> to a depth of $searchLimit with <i>$ident</i><br>";
-								$yPage = simplexml_load_file($yURL);
-								foreach($yPage->Result as $yResult) {
-									$yI++;
-									if ($yI > $searchLimit || $p["doi"][0]) break;
-									if ($yResult->MimeType == "text/html") {
-										$u = $yResult->Url;
-										$fsize = file_size($u);
-										if ($fsize > 1280000) {
-											print "URL abandoned: file size too large ($fsize).<br>";
-										} else {
-											echo "<small>Trying result</a> #$yI: <a href=$u>$u</a></small>";
-											$p["doi"][0] = scrapeDoi($u);
-											if ($p["doi"][0]) noteDoi($p["doi"][0], "Yahoo");
-										}
-									}
-								}
-								echo " Yahoo results exhausted.<br>";
-								$yPage = null;
-							}
-							if (!isset($p["doi"][0])) {
-								$isbnToStartWith = isset($p["isbn"]);
-								if (!isset($p["isbn"][0]) && is("title")) set("isbn", findISBN( $p["title"][0], $p["author"][0] . " " . $p["last"][0] . $p["last1"][0]));
-								else echo "\n  Already has an ISBN. ";
-								if (!$isbnToStartWith && !$p["isbn"][0]) unset($p["isbn"]); else getInfoFromISBN();
-							}
+								} else {
+                  echo " no doi found.";
+                }
+              } else {
+                echo "No valid URL specified.  ";
+              }
 						}
-					} else echo "\n  Already has a DOI. ";
+					}
 
 					if (!$doiToStartWith && !is("doi")) unset($p["doi"]);
-					if (nothingMissing($journal)) {
-             echo "\nAll details present - no need to query databases. ";
-          } else {
-            if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)
-              ||preg_match("~10.2307/(\d+)~", $p['doi'][0], $jid)
-                ) {
-              print "\nChecking JSTOR record {$jid[0]} for data.";
-              $newData = jstorData($jid[1]);
-              foreach ($newData as $key => $value) {
-                ifNullSet($key, $value);
+
+#####################################
+//
+if (is ('pmid')) {
+echo "
+-----------
+3: PMID already present :-)";
+} else {
+echo "
+-----------
+3: Find PMID & expand";
+//  We've tried searching CrossRef and the URL for a DOI.
+//  Now let's move on to find a PMID
+//  If we don't find one, we'll check for an ISBN in case it's a book.
+//
+#####################################
+          
+          
+          
+          
+          print "\n - Searching PubMed... ";
+          $results = (pmSearchResults($p));
+          if ($results[1] == 1) {
+            $details = pmArticleDetails($results[0]);
+            foreach ($details as $key=>$value) if (!is($key)) $p[$key][0] = $value;
+            if (!is("url")) {
+              $url = pmFullTextUrl($p["pmid"][0]);
+              if ($url) {
+                set ("url", $url);
+                set ("format", "Free full text");
               }
-            } else print 'no matches!';
-          }
-          if (nothingMissing($journal)) {
-              echo "... Citation details completed.";
+            }
+            echo " 1 result found; citation updated";
+            if (!is('doi')) { 
+              // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
+              echo "\n - Looking for DOI in CrossRef database with new information ... ";
+              $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
+                                      trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
+                                      $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+              if ($crossRef) {
+                $p["doi"][0] = $crossRef->doi;
+                echo "Match found: " . $p["doi"][0];
+              } else {
+                echo "no match.";
+              }
+            }
           } else {
-            // Get a crossRef record now, if possible; if not wipe the slate and we'll try to get one via PMID
-						if (is("doi")) {
+            echo " nothing found.\n - Checking for ISBN";
+							$isbnToStartWith = isset($p["isbn"]);
+								if (!isset($p["isbn"][0]) && is("title")) set("isbn", findISBN( $p["title"][0], $p["author"][0] . " " . $p["last"][0] . $p["last1"][0]));
+								else echo "\n  Already has an ISBN. ";
+								if (!$isbnToStartWith && !$p["isbn"][0]) {
+                    unset($p["isbn"]);
+                } else {
+                  getInfoFromISBN();
+                }
+          }
+         }
+          
+#####################################
+//
+if (nothingMissing($journal)) {
+echo "
+------------------------
+4: Citation complete :-)";
+} else {
+echo "
+------------------
+4: Expand citation";
+//  Try JSTOR (quick & easy); CrossRef...
+//
+#####################################
+          
+
+          if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)
+            ||preg_match("~10.2307/(\d+)~", $p['doi'][0], $jid)
+              ) {
+            print "\n - Checking JSTOR record {$jid[0]} for data.";
+            $newData = jstorData($jid[1]);
+            foreach ($newData as $key => $value) {
+              ifNullSet($key, $value);
+            }
+          }
+          if (!nothingMissing($journal)) {
+            if (is("doi")) {
               $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
-              if ($citedoi && $crossRef) $doiCrossRef = $crossRef;
+              if ($crossRef) {
+                if ($citedoi) {
+                  $doiCrossRef = $crossRef;
+                }
+                ifNullSet("title", $crossRef->article_title);
+                ifNullSet("year", $crossRef->year);
+                if (!is("author") && !is("last1") && !is("last") && $crossRef->contributors->contributor) {
+                  $authors=null;
+                  $au_i = 0;
+                  foreach ($crossRef->contributors->contributor as $author) {
+                    $au_i++;
+                    if ($au_i < 10) {
+                      ifNullSet("last$au_i", mb_convert_case($author->surname, MB_CASE_TITLE, "UTF-8"));
+                      ifNullSet("first$au_i", $author->given_name);
+                    }
+                  }
+                }
+                ifNullSet($journal, $crossRef->journal_title);
+                ifNullSet("volume", $crossRef->volume);
+                if (!is("page")) ifNullSet("pages", $crossRef->first_page);
+              } else {
+                echo "\n - No CrossRef record found :-(";
+              }
             } else {
+              echo "\n - No DOI; can't check CrossRef";
               $crossRef = null;
             }
-						print "\nQuerying PubMed for article details...";
-						//Now let's try PMID.
-						$results = (pmSearchResults($p));
-						if ($results[1] == 1) {
-							$details = pmArticleDetails($results[0]);
-							foreach ($details as $key=>$value) if (!is($key)) $p[$key][0] = $value;
-							if (!is("url")) {
-								$url = pmFullTextUrl($p["pmid"][0]);
-								if ($url) {
-									set ("url", $url);
-									set ("format", "Free full text");
-								}
-							}
 
-							echo " Found something useful! Looking it up in CrossRef... ";
+          }
+        }
 
-							$crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
-                                      trim($firstauthor[0]), trim($p["year"][0]),
-                                      trim($p["volume"][0]), $pagenos[1], $pagenos[3],
-                                      trim($p["issn"][0]), trim($p["url"][0]));
-							if ($crossRef) {
-								echo "Match found!";
-								$p["doi"][0] = $crossRef->doi;
-							} else echo "No DOI record found.";
-						}
-						print "... done.</p>";
-					}
-					#############################
-					# Finished with citation and retrieved CrossRef #
-					############################
+#####################################
+//
+if ($citedoi && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
+echo "
+-----------------------
+5: Cite Doi Enhancement";
+// We have now recovered all possible information from CrossRef.
+//If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
+//
+#####################################
 
-					//Now use the CrossRef record we've generated
-					if ($crossRef){
-						ifNullSet("title", $crossRef->article_title);
-						ifNullSet("year", $crossRef->year);
-						if (!is("author") && !is("last1") && !is("last") && $crossRef->contributors->contributor) {
-							$authors=null;
-							foreach ($crossRef->contributors->contributor as $author) $authors .= ($authors?"; ":"") . mb_convert_case($author->surname, MB_CASE_TITLE, "UTF-8") . ", " . $author->given_name;
-							$p["author"][0] = $authors;
-							$checkNewData = true;
-						} else $checkNewData = false;
-						ifNullSet($journal, $crossRef->journal_title);
-						ifNullSet("volume", $crossRef->volume);
-						if (!is("page")) ifNullSet("pages", $crossRef->first_page);
-					} else {$checkNewData = false; echo "\nNo CrossRef record found.\n";}
 
-					if (!is("pmid") && $slowMode) {
-						if (is("url")) {
-							print "<p>Seaching URL for PMID</p>";
-							$meta = @get_meta_tags($p["url"][0]);
-							$p["pmid"][0] = $meta["citation_pmid"];
-							if (!$p["pmid"][0]) unset($p["pmid"]);
-						}
-						if (!is("pmid")
-								&& is("doi")) {
-							print "<p>Seaching DOI for PMID</p>";
-							$meta = @get_meta_tags("http://dx.doi.org/" . $p["doi"][0]);
-							$p["pmid"][0] = $meta["citation_pmid"];
-							if (!$p["pmid"][0]) unset($p["pmid"]);
-						}
-					}
 
-          // We have now recovered all possible information from CrossRef.
-					//If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
-					if ((true || $citedoi) && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
-						if (preg_match("~^10.\d{4}.2F~", $p['doi'][0])) {
+						// Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
+            if (preg_match("~^10.\d{4}.2F~", $p['doi'][0])) {
 							$p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doi'][0]);
 						}
 
 
-            // Refresh firstauthor, in case we have now found one via CrossRef
+            // Get the surname of the first author. (We [apparently] found this earlier, but it might have changed since then)
             preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
             if (!$firstauthor[0]) {
               preg_match("~[^.,;\s]{2,}~", $p["author1"][0], $firstauthor);
@@ -531,14 +589,17 @@ while ($page) {
               preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
             }
 
-						$moreAuthors = findMoreAuthors($p['doi'][0], $firstauthor[0], $p['pages'][0]);
+            // If we only have the first author, look for more!
 						if (!is('coauthors')
 							 && !is('author2')
 							 && !is('last2')
 							 && is('doi')
 							){
+              echo "\n - Looking for co-authors & page numbers...";
+  						$moreAuthors = findMoreAuthors($p['doi'][0], $firstauthor[0], $p['pages'][0]);
 							$count = count($moreAuthors['authors']);
 							if ($count) {
+                echo " Found more authors! ";
 								for ($j = 0; $j < $count; $j++) {
 									$au = explode(', ', $moreAuthors['authors'][$j]);
 									if ($au[1]) {
@@ -551,24 +612,25 @@ while ($page) {
 								}
 								unset($p['author']);
 							}
-							if ($moreAuthors['pages']) $p['pages'][0] = $moreAuthors['pages'];
+							if ($moreAuthors['pages']) {
+                $p['pages'][0] = $moreAuthors['pages'];
+                echo " Completed page range! (" . $p['pages'][0]  . ')';
+              }
 						}
 					}
 
-					if ($checkNewData && $slowMode) {
-						echo "\n<p> Verifying new data... ";
-						if (is("url")) {
-							print "Trying to expand citation details from url parameter.<br>";
-							$metas = get_all_meta_tags($p["url"][0]);
-						} else if (isset($p["doi"][0])) {
-							print "Trying to expand citation details from doi parameter<br>";
-							$metas = get_all_meta_tags("http://dx.doi.org/" . $p["doi"][0]);
-						}
-						if (isset($metas["author"])) $p["author"][0] = $metas["author"];
-						echo "done.\n";
-					}
+
+#####################################
+//
+echo "
+----
+Done.  Just a couple of things to tweak now...";
+//
+//
+#####################################
+
 					if (!is("format") && is("url")){
-						print "\nDetermining format of URL...";
+						print "\n - Determining format of URL...";
 						$formatSet = isset($p["format"]);
 						$p["format"][0] = assessUrl($p["url"][0]);
 						if (!$formatSet && trim($p["format"][0]) == "") unset($p["format"]);
@@ -592,9 +654,9 @@ while ($page) {
         if (strpos($page, 'ite doi') || strpos($page, 'ite_doi')) {
           citeDoiOutputFormat();
         }
-        // Unset authors above 'author9'
+        // Unset authors above 'author9' - the template won't render them.
         for ($au_i = 10; is("authors$au_i") || is ("last$au_i"); $au_i++){
-          unset($p["authors$au_i"]);
+          unset($p["author$au_i"]);
           unset($p["first$au_i"]);
           unset($p["last$au_i"]);
         }
@@ -619,6 +681,9 @@ while ($page) {
 				//DOIlabel is now redundant
 				unset($p["doilabel"]);
 
+        //Edition - don't want 'Edition ed.'
+        if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
+          
 				//because of cite journal doc...
 				if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
 
@@ -645,7 +710,7 @@ while ($page) {
 				//And we're done!
 				$endtime = time();
 				$timetaken = $endtime - $starttime;
-				print "<small>Citation assessed in $timetaken secs.</small><br>";
+				print "\n* Citation assessed in $timetaken secs.";
 				foreach ($p as $oP){
 					$pipe=$oP[1]?$oP[1]:null;
 					$equals=$oP[2]?$oP[2]:null;
