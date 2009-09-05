@@ -13,12 +13,7 @@ $ON = true;
 include("expandFns.php");
 
 $citeDois= array(
-"Cite doi/10.1002.2Fajmg.1320390318", "Cite doi/10.1002.2Fbit.20546", "Cite doi/10.1002.2Fccd.20931	", "Cite doi/10.1002.2Fccd.21394	", "Cite doi/10.1002.2Fcncr.10277
-", "Cite doi/10.1002.2Fcne.10971	", "Cite doi/10.1002.2Fcne.901680105	", "Cite doi/10.1002.2Fcne.902320307
-", "Cite doi/10.1002.2Fcne.902360102	", "Cite doi/10.1002.2Fcne.903190204	", "Cite doi/10.1002.2Felps.200390149
-", "Cite doi/10.1002.2Fhlca.200390096	", "Cite doi/10.1002.2Fhlca.200690108	", "Cite doi/10.1002.2Fhrm.20157
-", "Cite doi/10.1002.2Fjmor.10564	", "Cite doi/10.1002.2Fjps.2600660713	", "Cite doi/10.1002.2Fmpo.2950040207
-", "Cite doi/10.1002.2Fps.1488	", "Cite doi/10.1002.2Fzaac.19875480505	", "Cite doi/10.1006.2Fabbi.2000.2131
+ "Cite doi/10.1006.2Fabbi.2000.2131
 ", "Cite doi/10.1006.2Fjhev.1996.0058	", "Cite doi/10.1006.2Fjhev.1999.0379	", "Cite doi/10.1006.2Fjhev.2000.0421
 ", "Cite doi/10.1006.2Fjhev.2001.0457	", "Cite doi/10.1006.2Fjhev.2001.0525	", "Cite doi/10.1006.2Fplas.1994.1024
 ", "Cite doi/10.1006.2Fviro.1998.9367	", "Cite doi/10.1007.2F1-4020-2522-X 31	", "Cite doi/10.1007.2F978-0-387-09565-3 14

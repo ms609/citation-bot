@@ -308,7 +308,6 @@ while ($page) {
 ###########################
 //
 echo "
------------------------------
 1: Tidy citation and try ISBN";
 //  See if we can get any 'free' metadata from:
 //  * mis-labelled parameters
@@ -395,11 +394,9 @@ echo "
 //
 if (is('doi')) {
 echo "
---------------------------
 2: DOI already present :-)";
 } else {
 echo "
------------
 2: Find DOI";
 //  Now we have got the citation ship-shape, let's try to find a DOI.
 //
@@ -446,11 +443,9 @@ echo "
 //
 if (is ('pmid')) {
 echo "
----------------------------
 3: PMID already present :-)";
 } else {
 echo "
----------------------
 3: Find PMID & expand";
 //  We've tried searching CrossRef and the URL for a DOI.
 //  Now let's move on to find a PMID
@@ -505,11 +500,9 @@ echo "
 //
 if (nothingMissing($journal)) {
 echo "
-------------------------
 4: Citation complete :-)";
 } else {
 echo "
-------------------
 4: Expand citation";
 //  Try JSTOR (quick & easy); CrossRef...
 //
@@ -523,6 +516,22 @@ echo "
             $newData = jstorData($jid[1]);
             foreach ($newData as $key => $value) {
               ifNullSet($key, $value);
+            }
+          }
+          if (!nothingMissing($journal) && is('pmid')) {
+            echo "\n - Checking PMID {$p['pmid'][0]} for more details";
+            $details = pmArticleDetails($p['pmid'][0]);
+            foreach ($details as $key=>$value) { 
+              if (!is($key)) {
+                $p[$key][0] = $value;
+              }
+            }
+            if (!is("url")) {
+              $url = pmFullTextUrl($p["pmid"][0]);
+              if ($url) {
+                set ("url", $url);
+                set ("format", "Free full text");
+              }
             }
           }
           if (!nothingMissing($journal)) {
@@ -563,7 +572,6 @@ echo "
 //
 if ($citedoi && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
 echo "
------------------------
 5: Cite Doi Enhancement";
 // We have now recovered all possible information from CrossRef.
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
@@ -624,7 +632,6 @@ echo "
 #####################################
 //
 echo "
-----------------------------------------------
 Done.  Just a couple of things to tweak now...";
 //
 //
@@ -665,7 +672,7 @@ Done.  Just a couple of things to tweak now...";
 
 				// Check that the DOI functions.
 				if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slowMode) {
-					echo "\nChecking that the DOI is operational...";
+					echo "\nChecking that DOI {$p["doi"][0]} is operational...";
 					$brokenDoi = isDoiBroken($p["doi"][0], $p);
 					if ($brokenDoi && !is("doi_brokendate")) {
 						set("doi_brokendate", date("Y-m-d"));
@@ -711,7 +718,7 @@ Done.  Just a couple of things to tweak now...";
 				//And we're done!
 				$endtime = time();
 				$timetaken = $endtime - $starttime;
-				print "\n* Citation assessed in $timetaken secs.";
+				print "Complete. Citation assessed in $timetaken secs.\n\n\n";
 				foreach ($p as $oP){
 					$pipe=$oP[1]?$oP[1]:null;
 					$equals=$oP[2]?$oP[2]:null;
