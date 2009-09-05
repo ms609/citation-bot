@@ -395,7 +395,7 @@ echo "
 //
 if (is('doi')) {
 echo "
------------
+--------------------------
 2: DOI already present :-)";
 } else {
 echo "
@@ -446,11 +446,11 @@ echo "
 //
 if (is ('pmid')) {
 echo "
------------
+---------------------------
 3: PMID already present :-)";
 } else {
 echo "
------------
+---------------------
 3: Find PMID & expand";
 //  We've tried searching CrossRef and the URL for a DOI.
 //  Now let's move on to find a PMID
@@ -464,6 +464,7 @@ echo "
           print "\n - Searching PubMed... ";
           $results = (pmSearchResults($p));
           if ($results[1] == 1) {
+            set('pmid', $results[0]);
             $details = pmArticleDetails($results[0]);
             foreach ($details as $key=>$value) if (!is($key)) $p[$key][0] = $value;
             if (!is("url")) {
@@ -623,7 +624,7 @@ echo "
 #####################################
 //
 echo "
-----
+----------------------------------------------
 Done.  Just a couple of things to tweak now...";
 //
 //
