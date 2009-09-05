@@ -33,10 +33,7 @@ function articleID($page, $namespace = 0){
     return getArticleId($page);
   }
   $page = str_replace(' ', '_', strtoupper($page[0]) . substr($page,1));
-  $toolserver_mycnf = parse_ini_file("/home/verisimilus/.my.cnf");
-  $db = mysql_connect('enwiki-p.db.toolserver.org', $toolserver_mycnf['user'], $toolserver_mycnf['password']) or die(mysql_error());
-  unset($toolserver_mycnf);
-  mysql_select_db('enwiki_p', $db);
+  $enwiki_db = udbconnect('enwiki_p', 'sql-s1');
   $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='$namespace' && page_title='$page'") or die (mysql_error());
   $results = mysql_fetch_array($result, MYSQL_ASSOC);
   return $results['page_id'];

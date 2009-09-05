@@ -48,6 +48,7 @@ else echo "<p>Debug mode active</p>";
 function myIP(){
 	switch ($_SERVER["REMOTE_ADDR"]){
 		case "1":
+    case "":
 		case "86.6.164.132":
 		case "99.232.120.132":
 		case "192.75.204.31":
@@ -104,15 +105,15 @@ function getDataFromArxiv($a) {
 		unset($p["author"]);
 		foreach ($xml->entry->author as $auth) {
 			$i++;
-			$name = $auth->name;
-echo $i;
-			if (preg_match("~(.+\.)(.+?)$~", $name, $names)){
-				//print_r($names);
-				ifNullSet("last$i", $names[2]);
-				ifNullSet("first$i", $names[1]);
-				$p["first$i"][1] = " | ";
-			}
-			else ifNullSet("author$i", $name);
+      if ($i<10) {
+        $name = $auth->name;
+        if (preg_match("~(.+\.)(.+?)$~", $name, $names)){
+          ifNullSet("last$i", $names[2]);
+          ifNullSet("first$i", $names[1]);
+          $p["first$i"][1] = " | ";
+        }
+        else ifNullSet("author$i", $name);
+      }
 		}
 		ifNullSet("title", (string)$xml->entry->title);
 		ifNullSet("class", (string)$xml->entry->category["term"]);
@@ -703,6 +704,90 @@ function niceTitle($in, $sents = true){
 	return strtoupper($newcase[0]) . substr($newcase, 1);
 }
 
+/** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
+ *   Send the URL and the first author's SURNAME ONLY as $a1
+ *  The function will return an array of authors in the form $return['authors'][3] = Author, The Third
+ */
+function findMoreAuthors($doi, $a1, $pages) {
+
+  // If $pages is already interrupted by a non-digit, then it probably represents a range, so we can return it as is.
+  if (preg_match("~\d\D+\d", $pages)) {
+    $return['pages'] = $pages;
+  }
+
+  $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
+	$url = "http://dx.doi.org/$doi";
+	echo "\n\n\n *Looking for more authors @ $url:";
+
+  echo "\n  - Using meta tags...";
+
+  $meta_tags = get_meta_tags($url);
+  if ($meta_tags["citation_authors"]) {
+    $return['authors'] = formatAuthors($meta_tags["citation_authors"], true);
+  }
+  if (!$return['pages'] && !$return['authors']) {
+    echo "\n  - Now scraping web-page.";
+    //Initiate cURL resource
+    $ch = curl_init();
+    curlSetup($ch, $url);
+    curl_setopt($ch, CURLOPT_MAXREDIRS, 7);  //This means we can't get stuck.
+    if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {echo "404 returned from URL.<br>"; return false;}
+    if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {echo "501 returned from URL.<br>"; return false;}
+    $source = str_ireplace(
+                array('&nbsp;', '<p ',          '<DIV '),
+                array(' ',     "\r\n    <p ", "\r\n    <DIV "),
+                curl_exec($ch)
+               ); // Spaces before '<p ' fix cases like 'Title' <p>authors</p> - otherwise 'Title' gets picked up as an author's initial.
+    $source = preg_replace(
+                "~<sup>.*</sup>~U",
+                "",
+                str_replace("\n", "\n  ", $source)
+              );
+    curl_close($ch);
+    if (strlen($source)<1280000) {
+
+      // Pages - only check if we don't already have a range
+      if (!$return['pages'] && preg_match("~^[\d\w]+$~", trim($pages), $page)) {
+        // find an end page number first
+        $firstPageForm = preg_replace('~d\?([^?]*)$~U', "d$1", preg_replace('~\d~', '\d?', preg_replace('~[a-z]~i', '[a-zA-Z]?', $page[0])));
+        echo "\n Searching for page number with form $firstPageForm:";
+        if (preg_match("~{$page[0]}\D{0,13}?($firstPageForm)~", trim($source), $pages)) { // 13 leaves enough to catch &nbsp;
+          $return['pages'] = $page[0] . '-' . $pages[1];
+          echo "found range $page[0] to $pages[1]";
+        } else echo "not found.";
+      }
+
+      // Authors
+      if (true || !$return['authors']) {
+        // Check dc.contributor, which isn't correctly handled by get_meta_tags
+        if (preg_match_all("~\<meta name=\"dc.Contributor\" +content=\"([^\"]+)\"\>~U", $source, $authors)){
+          $return['authors']=$authors[1];
+        } else if (true) {
+          print "\n  - Text search for surname not yet robustly coded: Skipped.";
+          // Delete this clause when we get a robust scraping algorithm.
+        } elseif ($a1) {
+          print "\n Searching $url for $a1 \n\n";
+          $spaceAuth = "[^ ]* ?[^ ]* ?" . preg_quote($a1) . "[^\(:\n]*";
+
+          if (preg_match("~<td[^>]*>($spaceAuth)</td~Ui", $source, $authorLine)) {
+            print 'table cell:'; print_r($authorLine);
+            $return['authors'] = formatAuthors(strip_tags($authorLine[1]), true);
+          } elseif (preg_match("~$spaceAuth~i", strip_tags($source), $authorLine)) {
+            print 'wholeline:' ; print_r($authorLine);
+            $return['authors'] = formatAuthors($authorLine[0], true);
+          } else {
+            echo "\nAuthor $a1 could not be identified.<hr>\n";
+            print $source; exit;
+          }
+        } else {
+          echo "\nNo author specified";
+        }
+      }
+    } else echo "\nFile size was too large. Abandoned.";
+  }
+	return $return;
+}
+
 function formatSurname($surname){
 	$surname = strtolower(trim($surname));
 	if (substr($surname, 0, 2) == "o'") return "O'" . ucwords(substr($surname, 2));
@@ -814,10 +899,12 @@ function formatAuthors($authors, $returnAsArray = false){
 	if (preg_match("~[,;]$~", trim($authors))) $authors = substr(trim($authors), 0, strlen(trim($authors))-1); // remove trailing punctuation
 
 	$authors = trim($authors);
-	if ($authors=="") return false;
+	if ($authors == "") {
+    return false;
+  }
 
 	$authors = explode(";", $authors);
-	#dbg(array("IN"=>$authors));
+	dbg(array("IN"=>$authors));
 	if (isset($authors[1])) {
 		foreach ($authors as $A){
 			if (trim($A) != "")	$return[] = formatAuthor($A);
@@ -850,7 +937,6 @@ function formatAuthors($authors, $returnAsArray = false){
 	if ($returnAsArray){
 		$authors = explode ( "; ", $returnString);
 		return $authors;
-		exit;
 	} else {
 		return $returnString;
 	}
@@ -869,6 +955,44 @@ function formatTitle($title){
 	$in = array("&lt;", "&gt;"	);
 	$out = array("<",		">"			);
 	return	str_ireplace($iIn, $iOut, str_replace($in, $out, niceTitle($title))); // order IS important!
+}
+
+/** Format authors according to last = Surname; first= N.E.
+ * Requires the global $p
+**/
+function citeDoiOutputFormat() {
+  global $p;
+  unset ($p['']);
+  for ($i = null; $i < 10; $i++) {
+    if (strpos($p["author$i"][0], ', ')) {
+      $au = explode(', ', $p["author$i"][0]);
+      #print "\ncdofAU:"; print_r($au);
+      $p["last$i"][0] = $au[0];
+      unset($p['author' . ($i)]);
+    } else if (is("first$i")) {
+      $au[1] = $p["first$i"][0];
+    } else {
+       unset($au);
+    }
+    if ($au[1]) {
+      $p["first$i"][0] = strtoupper(preg_replace("~(\w)\w*.? ?~", "$1. ", trim($au[1]))); // Replace names with initials; beware hyphenated names!
+      $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
+      $p["last$i"][1] = "\n| "; // hard-coding first$i will change the default for last$i.
+    }
+  }
+  if ($p['pages'][0]) {
+    // Format pages to R100-R102 format
+    if (preg_match("~([A-Za-z0-9]+)[^A-Za-z0-9]+([A-Za-z0-9]+)~", $p['pages'][0], $pp)) {
+       if (strlen($pp[1]) > strlen($pp[2])) {
+          // The end page range must be truncated
+          $p['pages'][0] = str_replace("!!!DELETE!!!", "", preg_replace("~([A-Za-z0-9]+[^A-Za-z0-9]+)[A-Za-z0-9]+~",
+                                        ("$1!!!DELETE!!!"
+                                        . substr($pp[1], 0, strlen($pp[1]) - strlen($pp[2]))
+                                        . $pp[2]), $p['pages'][0]));
+       }
+    }
+  }
+  uksort($p, parameterOrder);
 }
 
 function curlSetUp($ch, $url){
@@ -951,5 +1075,75 @@ function testDoi($doi){
 	}
 	echo "No URL specified]</div>";
 	return false;
+}
+
+function parameterOrder($first, $last){
+  $order = Array(
+     "null",
+     "author", "author1",
+     "last", "last1",
+     "first", "first1",
+     "authorlink", "authorlink1", "author1-link",
+     "coauthors", "author2", "last2", "first2", "authorlink2", "author2-link",
+     "author3", "last3", "first3", "authorlink3", "author3-link",
+     "author4", "last4", "first4", "authorlink4", "author4-link",
+     "author5", "last5", "first5", "authorlink5", "author5-link",
+     "author6", "last6", "first6", "authorlink6", "author6-link",
+     "author7", "last7", "first7", "authorlink7", "author7-link",
+     "author8", "last8", "first8", "authorlink8", "author8-link",
+     "author9", "last9", "first9", "authorlink9", "author9-link",
+     "editor", "editor1",
+     "editor-last", "editor1-last",
+     "editor-first", "editor1-first",
+     "editor-link", "editor1-link", "editor1-link",
+     "editor2", "editor2-last", "editor2-first", "editor2-link", "editor2-link",
+     "editor3", "editor3-last", "editor3-first", "editor3-link", "editor3-link",
+     "editor4", "editor4-last", "editor4-first", "editor4-link", "editor4-link",
+     "others",
+     "chapter", "trans_chapter",  "chapterurl",
+     "title", "trans_title", "language",
+     "url",
+     "archiveurl",
+     "archivedate",
+     "format",
+     "accessdate",
+     "edition",
+     "series",
+     "journal",
+     "volume",
+     "issue",
+     "page",
+     "pages",
+     "nopp",
+     "publisher",
+     "location", 
+     "date",
+     "origyear",
+     "year",
+     "month",
+     "location",
+     "language",
+     "isbn",
+     "issn",
+     "oclc",
+     "doi",
+     "doi_brokendate",
+     "pmid", "pmc",
+     "bibcode",
+     "id",
+     "quote",
+     "ref",
+     "laysummary",
+     "laydate",
+     "separator",
+     "postscript",
+     "lastauthoramp",
+   );
+  $first_pos = array_search($first, $order);
+  $last_pos = array_search($last, $order);
+  if ($first_pos && $last_pos) {
+     return array_search($first, $order) - array_search($last, $order);
+  }
+  else return true;
 }
 ?>

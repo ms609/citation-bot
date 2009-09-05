@@ -1,19 +1,19 @@
 <?
 // $Id: $
-
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
 $fastMode=false;
-$editInitiator = '[Pu]';
+$editInitiator = '[Pu1557]';
 $accountSuffix='_1';
 
 $ON = true;
-//$ON=false;
+#$ON = false;
 include("expandFns.php");
 
 function nextPage(){
 	//return 'User:DOI bot/Zandbox';
-	//return 'Template:Cite_doi/10.1016.2Fj.coldregions.2004.12.002';
+	die ("\n**EXIT: nextPage is disabled!\n");
+  //return 'Template:Cite doi/10.1001.2Farchinternmed.2009.6';
 	global $db;
 	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
 	if(rand(1, 5000) == 100000)	{
@@ -41,6 +41,12 @@ function nextPage(){
 	return $result[0];
 }
 
-$page = nextPage();
+//$page = nextPage();
 
+$page = "Template:"
+. trim ("
+
+Cite doi/10.1017.2FS0016756801006252
+
+");
 include("expand.php");
