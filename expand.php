@@ -293,6 +293,7 @@ while ($page) {
 					// Load each line into $p[param][0123]
 					$p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
 				}
+
 				if ($p["doix"]){
 					$p["doi"][0] = str_replace($dotEncode, $dotDecode, $p["doix"][0]);
 					unset($p["doix"]);
@@ -309,7 +310,8 @@ while ($page) {
 ###########################
 //
 echo "
-1: Tidy citation and try ISBN";
+*-> {$p["title"][0]}
+ 1: Tidy citation and try ISBN";
 //  See if we can get any 'free' metadata from:
 //  * mis-labelled parameters
 //  * ISBN
@@ -340,7 +342,6 @@ echo "
             }
 					}
 
-					echo "\n* {$p["title"][0]}";
 					// Load missing parameters from SICI, if we found one...
 					if ($sici[0]){
 						if (!is($journal) && !is("issn")) set("issn", $sici[1]);
@@ -395,10 +396,10 @@ echo "
 //
 if (is('doi')) {
 echo "
-2: DOI already present :-)";
+ 2: DOI already present :-)";
 } else {
 echo "
-2: Find DOI";
+ 2: Find DOI";
 //  Now we have got the citation ship-shape, let's try to find a DOI.
 //
 #####################################
@@ -444,10 +445,10 @@ echo "
 //
 if (is ('pmid')) {
 echo "
-3: PMID already present :-)";
+ 3: PMID already present :-)";
 } else {
 echo "
-3: Find PMID & expand";
+ 3: Find PMID & expand";
 //  We've tried searching CrossRef and the URL for a DOI.
 //  Now let's move on to find a PMID
 //  If we don't find one, we'll check for an ISBN in case it's a book.
@@ -462,7 +463,11 @@ echo "
           if ($results[1] == 1) {
             set('pmid', $results[0]);
             $details = pmArticleDetails($results[0]);
-            foreach ($details as $key=>$value) if (!is($key)) $p[$key][0] = $value;
+            foreach ($details as $key=>$value) {
+              if (!is($key)){
+                set ($key, $value);
+              }
+            }
             if (!is("url")) {
               $url = pmFullTextUrl($p["pmid"][0]);
               if ($url) {
@@ -501,14 +506,14 @@ echo "
 //
 if (nothingMissing($journal)) {
 echo "
-4: Citation complete :-)";
+ 4: Citation complete :-)";
 } else {
 echo "
-4: Expand citation";
+ 4: Expand citation";
 //  Try JSTOR (quick & easy); CrossRef...
 //
 #####################################
-          
+
 
           if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)
             ||preg_match("~10.2307/(\d+)~", $p['doi'][0], $jid)
@@ -519,13 +524,12 @@ echo "
               ifNullSet($key, $value);
             }
           }
+
           if (!nothingMissing($journal) && is('pmid')) {
             echo "\n - Checking PMID {$p['pmid'][0]} for more details";
             $details = pmArticleDetails($p['pmid'][0]);
             foreach ($details as $key=>$value) { 
-              if (!is($key)) {
-                $p[$key][0] = $value;
-              }
+              ifNullSet($key, $value);
             }
             if (!is("url")) {
               $url = pmFullTextUrl($p["pmid"][0]);
@@ -535,6 +539,7 @@ echo "
               }
             }
           }
+
           if (!nothingMissing($journal)) {
             if (is("doi")) {
               $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
@@ -573,7 +578,7 @@ echo "
 //
 if ($citedoi && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
 echo "
-5: Cite Doi Enhancement";
+ 5: Cite Doi Enhancement";
 // We have now recovered all possible information from CrossRef.
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
 //
@@ -613,22 +618,21 @@ echo "
 								for ($j = 0; $j < $count; $j++) {
 									$au = explode(', ', $moreAuthors['authors'][$j]);
 									if ($au[1]) {
-										$p['last' . ($j+1)][0] = $au[0];
-										$p['first' . ($j+1)][0] = preg_replace("~(\w)\w*\.? ?~", "$1.", $au[1]);
+										set ('last' . ($j+1), $au[0]);
+										set ('first' . ($j+1), preg_replace("~(\w)\w*\.? ?~", "$1.", $au[1]));
 										unset($p['author' . ($j+1)]);
 									} else {
-										$p['author' . ($j+1)][0] = $au[0];
+										set ('author' . ($j+1), $au[0]);
 									}
 								}
 								unset($p['author']);
 							}
 							if ($moreAuthors['pages']) {
-                $p['pages'][0] = $moreAuthors['pages'];
+                set('pages', $moreAuthors['pages']);
                 echo " Completed page range! (" . $p['pages'][0]  . ')';
               }
 						}
 					}
-
 
 #####################################
 //
@@ -646,6 +650,7 @@ Done.  Just a couple of things to tweak now...";
 						echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
 					}
 				}
+
 				// Now wikify some common formatting errors - i.e. tidy up!
 				if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);
 				if (isset($p[$journal][0])) $p[$journal][0] = niceTitle($p[$journal][0], false);
@@ -655,14 +660,15 @@ Done.  Just a couple of things to tweak now...";
           $auths = explode(';', $p['author'][0]);
           unset($p['author']);
           foreach ($auths as $au_i => $auth) {
-            $p['author' . ($au_i+1)][0] = formatAuthor($auth);
+             set('author' . ($au_i+1), formatAuthor($auth));
           }
         }
-
         // If we're on a Cite Doi page, format authors accordingly
         if (strpos($page, 'ite doi') || strpos($page, 'ite_doi')) {
           citeDoiOutputFormat();
         }
+        
+
         // Unset authors above 'author9' - the template won't render them.
         for ($au_i = 10; is("authors$au_i") || is ("last$au_i"); $au_i++){
           unset($p["author$au_i"]);
@@ -670,7 +676,6 @@ Done.  Just a couple of things to tweak now...";
           unset($p["last$au_i"]);
         }
         
-
 				// Check that the DOI functions.
 				if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slowMode) {
 					echo "\nChecking that DOI {$p["doi"][0]} is operational...";
@@ -686,7 +691,6 @@ Done.  Just a couple of things to tweak now...";
 				}elseif (!$p["url"][0]){
 					unset($p["format"][0]/*, $p["accessdate"][0], $p["accessyear"][0], $p["accessmonthday"], $p["accessmonth"][0], $p["accessday"][0]);
 				}*/
-
 				//DOIlabel is now redundant
 				unset($p["doilabel"]);
 
@@ -716,10 +720,11 @@ Done.  Just a couple of things to tweak now...";
 					}
 				}
 
+
 				//And we're done!
 				$endtime = time();
 				$timetaken = $endtime - $starttime;
-				print "Complete. Citation assessed in $timetaken secs.\n\n\n";
+				print "\n*** Complete. Citation assessed in $timetaken secs.\n\n\n";
 				foreach ($p as $oP){
 					$pipe=$oP[1]?$oP[1]:null;
 					$equals=$oP[2]?$oP[2]:null;

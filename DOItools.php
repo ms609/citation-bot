@@ -31,11 +31,12 @@ if (preg_match_all('~\n\*\s*(.+)~', $bot->results, $dontCaps)) {
 
 function is($key){
 	global $p;
-	return ("" != trim($p[$key][0]))?true:false;
+  return ("" != trim($p[$key][0]))?true:false;
 }
 function set($key, $value){
 	global $p;
 	$p[$key][0] = $value;
+  echo "\n  +$key: $value";
 }
 
 function dbg($array, $key = false){
@@ -62,29 +63,48 @@ function ifNullSet($param, $value){
 	switch ($param) {
 		case "editor": case "editor-last": case "editor-first":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["editor"][0])=="" && trim($p["editor-last"][0])=="" && trim($p["editor-first"][0])=="" && trim($value)!="") $p[$param][0] = $value;
+			if (trim($p["editor"][0])=="" && trim($p["editor-last"][0])=="" && trim($p["editor-first"][0])=="" && trim($value)!="") {
+        set ($param, $value);
+      }
 			break;
 		case "author": case "last1": case "last":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
 			if (trim($p["last1"][0])=="" && trim($p["last"][0])=="" && trim($p["author"][0])=="" &&
 			    trim($p["editor"][0])=="" && trim($p["editor-last"][0])=="" && trim($p["editor-first"][0])==""
-					&& trim($value)!="") $p[$param][0] = $value;
+					&& trim($value)!="") {
+       set ($param, $value);
+      }
 			break;
 		case "coauthor": case "coauthors":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["last2"][0])=="" && trim($p["coauthor"][0])=="" &&trim($p["coauthors"][0])=="" && trim($p["author"][0])=="" && trim($value)!="") $p[$param][0] = $value;
+			if (trim($p["last2"][0])=="" && trim($p["coauthor"][0])=="" &&trim($p["coauthors"][0])=="" && trim($p["author"][0])=="" && trim($value)!="") {
+        set ($param, $value);
+      }
 			break;
-		case "last2":case "last3":case "last4":case "last5":case "last6":case "last7":case "last8":case "last9":case "last10":case "last11":
+		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": case "last10": case "last11":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p[$param][0])=="" && trim($p["coauthor"][0])=="" &&trim($p["coauthors"][0])=="" && trim($p["author"][0])=="" && trim($value)!="") $p[$param][0] = $value;
+			if (trim($p[$param][0])=="" && trim($p["coauthor"][0])=="" &&trim($p["coauthors"][0])=="" && trim($p["author"][0])=="" && trim($value)!="")  {
+        set ($param, $value);
+      }
+			break;
+		case "first": case "first1":
+			if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == "" && trim($value) != "")  {
+        set ($param, $value);
+      }
 			break;
 		case "year":
-			if (trim($p["date"][0])=="" && trim($p["year"][0])=="" && trim($value)!="") $p[$param][0] = $value;
+			if (trim($p["date"][0])=="" && trim($p["year"][0])=="" && trim($value)!="")  {
+        set ($param, $value);
+      }
 			break;
 		case "periodical": case "journal":
-			if (trim($p["journal"][0])=="" && trim($p["periodical"][0])=="" && trim($value)!="") $p[$param][0] = $value;
+			if (trim($p["journal"][0])=="" && trim($p["periodical"][0])=="" && trim($value)!="") {
+        set ($param, $value);
+      }
 			break;
-		default: if (trim($p[$param][0])=="" && trim($value)!="") $p[$param][0] = $value;
+		default: if (trim($p[$param][0])=="" && trim($value)!="") {
+        set ($param, $value);
+      }
 	}
 }
 
@@ -281,7 +301,7 @@ function pmArticleDetails($pmid, $id = "pmid"){
         $i = 0;
 				foreach ($item->Item as $subItem) {
           $i++;
-          if (preg_match("~(.*) (\w)+$~", $subItem, $names)) {
+          if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
             $result["last$i"] = mb_convert_case($names[1], MB_CASE_TITLE, "UTF-8");
             $result["first$i"] = $names[2];
           }
@@ -995,8 +1015,7 @@ function citeDoiOutputFormat() {
   for ($i = null; $i < 10; $i++) {
     if (strpos($p["author$i"][0], ', ')) {
       $au = explode(', ', $p["author$i"][0]);
-      #print "\ncdofAU:"; print_r($au);
-      $p["last$i"][0] = $au[0];
+      set("last$i", $au[0]);
       unset($p['author' . ($i)]);
     } else if (is("first$i")) {
       $au[1] = $p["first$i"][0];
@@ -1004,7 +1023,7 @@ function citeDoiOutputFormat() {
        unset($au);
     }
     if ($au[1]) {
-      $p["first$i"][0] = strtoupper(preg_replace("~(\w)\w*.? ?~", "$1. ", trim($au[1]))); // Replace names with initials; beware hyphenated names!
+      set("first$i", strtoupper(preg_replace("~(\w)\w*.? ?~", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
       $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
       $p["last$i"][1] = "\n| "; // hard-coding first$i will change the default for last$i.
     }
