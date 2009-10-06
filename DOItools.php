@@ -35,15 +35,16 @@ function is($key){
 }
 function set($key, $value){
 	global $p;
-	$p[$key][0] = $value;
-  echo "\n  +$key: $value";
+  if (trim($value) != "") {
+    $p[$key][0] = $value;
+    echo "\n  +$key: $value";
+  }
 }
 
 function dbg($array, $key = false){
 if(myIP())
 	echo "<pre>" . str_replace("<", "&lt;", $key?print_r(array($key=>$array),1):print_r($array,1)), "</pre>";
 else echo "<p>Debug mode active</p>";
-#echo preg_replace("~\t~", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",preg_replace("~\n~", "<br>", print_r($array,1))), "<hr>";
 }
 
 function myIP(){
@@ -91,8 +92,8 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
 			break;
-		case "first": case "first1": case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10": case "first11":
-			if (trim($p[$param][0]) == "" && trim($p["first"][0]) == "" && trim($p["author"][0]) == "" && trim($p["first1"][0]) == "" && trim($value) != "")  {
+		case "first": case "first1": case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9":
+			if (trim($p[$param][0]) == "" && trim($p["author"][0]) == "" && trim($p["author" . substr($param, strlen($param)-1)]) == "" && trim($value) != "")  {
         set ($param, $value);
       }
 			break;
@@ -111,7 +112,7 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
       break;
-		default: if (trim($p[$param][0])=="" && trim($value)!="") {
+		default: if (trim($p[$param][0]) == "" && trim($value) != "") {
         set ($param, $value);
       }
 	}
@@ -155,7 +156,8 @@ function getDataFromArxiv($a) {
 
 function crossRefData($doi){
 	global $crossRefId;
-  $xml = @simplexml_load_file("http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true");
+  $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
+  $xml = @simplexml_load_file($url);
 	if ($xml) {
     $result = $xml->query_result->body->query;
   }
@@ -213,14 +215,13 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 		if ($year) $url .= "&date=" . urlencode($year);
 		if ($volume) $url .= "&volume=" . urlencode($volume);
 		if ($startpage) $url .= "&spage=" . urlencode($startpage);
-		if ($endpage>$startpage) $url .= "&epage=" . urlencode($endpage);
-		#dbg(simplexml_load_file($url), $url);
-		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo " xxx Error loading simpleXML file from CrossRef.";
+		if ($endpage > $startpage) $url .= "&epage=" . urlencode($endpage);
+		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef.";
 		if ($result["status"]=="resolved") return $result;
 	}
 	if ($url1) {
 		$url = "http://www.crossref.org/openurl/?url_ver=Z39.88-2004&req_dat=$crossRefId&rft_id=info:http://" . urlencode(str_replace(Array("http://", "&noredirect=true"), Array("", ""), urldecode($url1)));
-		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo " Error loading simpleXML file from CrossRef via URL.";
+		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef via URL.";
 		if ($debug) print $url . "<BR>";
 		if ($result["status"]=="resolved") return $result;
 		print "URL search failed.  Trying other parameters... ";
@@ -235,13 +236,13 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 	if ($year) $url .= "&date=" . urlencode($year);
 	if ($volume) $url .= "&volume=" . urlencode($volume);
 	if ($startpage) $url .= "&spage=" . urlencode($startpage);
-	if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo " xxx Error loading simpleXML file from CrossRef.";
+	if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef.";
 	if ($result["status"]=="resolved") {print " Successful! - $url; -"; return $result;}
 }
 
 function textToSearchKey($key){
 	switch (strtolower($key)){
-		case "doi": return "AID";
+		#case "doi": return "AID"; // removed as DOI has been established as unproductive when this function is called by pmSearchResults
 		case "author": return "AU";
 		case "last": case "last1": return "1AU";
 		case "issue": return "IP";
@@ -268,7 +269,7 @@ function textToSearchKey($key){
 function pmSearchResults($p){
 	if ($p){
     if ($p['doi'][0]) {
-      $term = urlencode($p['doi'][0]);
+      $term = urlencode($p['doi'][0]) . '[AID]';
       $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$term";
       $xml = simplexml_load_file($url);
       if ($xml->Count > 0 && !$xml->ErrorList) {
@@ -728,7 +729,6 @@ function checkTextForMetas($text){
       $newp["last" . ($no + 1)] = $names[0];
       $newp["first" . ($no + 1)] = $names[1];
     }
-    print_r($newp);
   }
 	if (isset($newp["date"])) {
 		$newp["year"][0] = date("Y", strtotime($newp["date"][0]));
@@ -1028,8 +1028,7 @@ function formatAuthors($authors, $returnAsArray = false){
 	foreach ($frags as $frag){
 		$return[] = isInitials($frag)?formatInitials($frag):$frag;
 	}
-	#dbg( implode(" ", $return), "OUT"); //exit;
-	$returnString = preg_replace("~;$~", "", trim(implode(" ", $return)));
+		$returnString = preg_replace("~;$~", "", trim(implode(" ", $return)));
 	if ($returnAsArray){
 		$authors = explode ( "; ", $returnString);
 		return $authors;
