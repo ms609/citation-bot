@@ -60,6 +60,10 @@ function myIP(){
 
 function ifNullSet($param, $value){
 	global $p;
+  if (substr($param, strlen($param)-2) > 10) {
+    // The parameter is of 'last10' format and adds nothing but clutter
+    return false;
+  }
 	switch ($param) {
 		case "editor": case "editor-last": case "editor-first":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
@@ -81,7 +85,7 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
 			break;
-		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": case "last10": case "last11":
+		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": 
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
 			if (trim($p[$param][0])=="" && trim($p["coauthor"][0])=="" &&trim($p["coauthors"][0])=="" && trim($p["author"][0])=="" && trim($value)!="")  {
         set ($param, $value);
@@ -302,9 +306,14 @@ function pmArticleDetails($pmid, $id = "pmid"){
         $i = 0;
 				foreach ($item->Item as $subItem) {
           $i++;
-          if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-            $result["last$i"] = mb_convert_case($names[1], MB_CASE_TITLE, "UTF-8");
-            $result["first$i"] = $names[2];
+          if (authorIsHuman((string) $subItem)) {
+            if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
+              $result["last$i"] = mb_convert_case($names[1], MB_CASE_TITLE, "UTF-8");
+              $result["first$i"] = $names[2];
+            }
+          } else {
+            // We probably have a committee or similar.  Just use 'author$i'.
+            $result["author$i"] = (string) $subItem;
           }
         }
       break; case "LangList":
@@ -317,9 +326,8 @@ function pmArticleDetails($pmid, $id = "pmid"){
               }
             }
           }
-			break; 	case "ArticleIds":
+			break; case "ArticleIds":
 				foreach ($item->Item as $subItem) {
-          print_r($subItem);
 					switch ($subItem["Name"]) {
 						case "pubmed":
                 preg_match("~\d+~", (string) $subItem, $match);
@@ -328,7 +336,6 @@ function pmArticleDetails($pmid, $id = "pmid"){
 						case "pmc":
               print "\n\n\nPMC... $subItem";
               preg_match("~\d+~", (string) $subItem, $match);
-              print_r($match);
               $result["pmc"] = $match[0];
               break;
 						case "doi": 
@@ -893,6 +900,15 @@ function isInitials($str){
 	return true;
 }
 
+// Runs some tests to see if the full  name of a single author is unlikely to be the name of a person.
+function authorIsHuman($author) {
+  $author = trim($author);
+  $chars = count_chars($author);
+  if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33) {
+    return false;
+  }
+  return true;
+}
 
 // Returns the author's name formated as Surname, F.I.
 function formatAuthor($author){
