@@ -284,6 +284,7 @@ function pmSearchResults($p){
 function pmArticleDetails($pmid, $id = "pmid"){
 	$result = Array();
 	$xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=" . (($id == "pmid")?"pubmed":"pmc") . "&tool=DOIbot&email=martins@gmail.com&id=$pmid");
+  // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
   foreach($xml->DocSum->Item as $item){
 		if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $result["doi"] = $match[0];
 		switch ($item["Name"]){
@@ -317,22 +318,25 @@ function pmArticleDetails($pmid, $id = "pmid"){
             }
           }
 			break; 	case "ArticleIds":
-				foreach ($item->Item as $subItem){
-					switch ($subItem["Name"]){
+				foreach ($item->Item as $subItem) {
+          print_r($subItem);
+					switch ($subItem["Name"]) {
 						case "pubmed":
-                preg_match("~\d+~", $subItem, $match);
+                preg_match("~\d+~", (string) $subItem, $match);
                 $result["pmid"] = $match[0];
                 break;
-						case "pmcid":
-              preg_match("~\d+~", $subItem, $match);
+						case "pmc":
+              print "\n\n\nPMC... $subItem";
+              preg_match("~\d+~", (string) $subItem, $match);
+              print_r($match);
               $result["pmc"] = $match[0];
               break;
 						case "doi": 
               $result["doi"] = (string) $subItem;
               break;
 					}
-          break;
 				}
+      break;
 		}
 	}
 	return $result;
