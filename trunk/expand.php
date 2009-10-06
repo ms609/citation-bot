@@ -255,8 +255,8 @@ while ($page) {
 					if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
 					if (is($param)) $pEnd[$param] = $v[0];
 				}
-				$p=null;
-				if ($pEnd){
+				$p = null;
+				if ($pEnd) {
 					foreach ($pEnd as $param => $value) {
 						if (!$pStart[$param]) {
               $additions[$param] = true;
@@ -580,6 +580,7 @@ echo "
 
           if (!nothingMissing($journal)) {
             if (is("doi")) {
+              echo "\n - Checking CrossRef for more details";
               $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
               if ($crossRef) {
                 if ($citedoi) {
@@ -593,8 +594,8 @@ echo "
                   foreach ($crossRef->contributors->contributor as $author) {
                     $au_i++;
                     if ($au_i < 10) {
-                      ifNullSet("last$au_i", mb_convert_case($author->surname, MB_CASE_TITLE, "UTF-8"));
-                      ifNullSet("first$au_i", $author->given_name);
+                      ifNullSet("last$au_i", formatSurname($author->surname));
+                      ifNullSet("first$au_i", formatInitials($author->given_name));
                     }
                   }
                 }
@@ -866,8 +867,8 @@ Done.  Just a couple of things to tweak now...";
 				else if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
 
 				echo "\n* {$p["title"][0]}";
-				// Fix typos in parameter names
 
+				// Fix typos in parameter names
 				//Authors
 				if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
 				preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
@@ -991,7 +992,7 @@ Done.  Just a couple of things to tweak now...";
 				if ($ON) {
 					if ( strpos($page, "andbox")>1) {
 							echo $htmlOutput?"<i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
-							write($page . $_GET["subpage"], $pagecode, "Citation maintenance: Fixing/testing bugs. "
+							write($page . $_GET["subpage"], $pagecode, $editInitiator . "Citation maintenance: Fixing/testing bugs. "
 								.	"Problems? [[User_talk:Smith609|Contact the bot's operator]]. ");
 						} else {
 							echo "<i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> ... ";
@@ -1055,7 +1056,7 @@ Done.  Just a couple of things to tweak now...";
             } else {
               print "\n * Writing message on talk page..." . $talkPage . "\n\n";
               if ($talkPage == "Talk:User_Smith609/Sandbox") write($talkPage, $text . "\n" . $talkMessage . "~~~~", "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!");
-              else exit;
+              else exit; ########## Need to check that this is debugged!!!
               print " Message left.\n";
             }
           }
