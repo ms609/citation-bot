@@ -365,7 +365,8 @@ echo "
 
 					// DOI - urldecode
 					if (isset($p["doi"][0])) {
-						$p["doi"][0] = str_replace($pcEncode,$pcDecode,str_replace(' ', '+', urldecode($p["doi"][0])));
+            $p['doi'][0] = trim(preg_replace("~\<!--.*--\>~", "", $p["doi"][0]));
+						$p["doi"][0] = str_replace($pcEncode,$pcDecode,str_replace(' ', '+', trim(urldecode($p["doi"][0]))));
 						$noComDoi= preg_replace("~<!--[\s\S]*-->~U", "", $p["doi"][0]);
 						if (preg_match("~10\.\d{4}/\S+~", $noComDoi,$match)) set("doi", $match[0]);
 					} else {
