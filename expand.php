@@ -358,6 +358,10 @@ echo "
             $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doix'][0]);
             unset($p['doix']);
           }
+          if (preg_match("~http://www.ncbi.nlm.nih.gov/entrez/.*(\d\d\d+)~", $p['url'][0], $match)) {
+            ifNullSet ('pmid', $match[1]);
+            unset($p['url']);
+          }
 
 					if (is("isbn")) getInfoFromISBN();
 
