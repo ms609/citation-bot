@@ -4,7 +4,7 @@
 $bot = new Snoopy();
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 if ($linkto2) print "\n// included DOItools2 & initialised \$bot\n";
-define("doiRegexp", "(10\.\d{4}(/|%2F)([^\s\"\?&>]|&l?g?t;|<[^\s\"\?&]*>)*)(?=[\s\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
+define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\"\?&>]|&l?g?t;|<[^\s\"\?&]*>))(?=[\s\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 define("timelimit", $fastMode?4:($slowMode?15:10));
 define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
 define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
@@ -61,9 +61,9 @@ function myIP(){
 
 function ifNullSet($param, $value){
 	global $p;
-  if (substr($param, strlen($param)-2) > 10) {
-    // The parameter is of 'last10' format and adds nothing but clutter
-    return false;
+  if (substr($param, strlen($param)-3, 1) > 0 || substr($param, strlen($param)-2) > 10) {
+      // The parameter is of 'fisrt101' or 'last10' format and adds nothing but clutter
+      return false;
   }
 	switch ($param) {
 		case "editor": case "editor-last": case "editor-first":
@@ -86,9 +86,11 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
 			break;
-		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": 
+		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": case "last10":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p[$param][0])=="" && trim($p["coauthor"][0])=="" &&trim($p["coauthors"][0])=="" && trim($p["author"][0])=="" && trim($value)!="")  {
+			if (trim($p[$param][0]) == ""
+          && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
+          && trim($p["author"][0]) == "")  {
         set ($param, $value);
       }
 			break;
@@ -98,9 +100,11 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
       break;
-    case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9":
-			break;
-			if (trim($p[$param][0]) == "" && trim($p["author"][0]) == "" && trim($p["author" . substr($param, strlen($param)-1)][0]) == "" && trim($value) != "")  {
+    case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10":
+			if (trim($p[$param][0]) == ""
+        && trim($p["author"][0]) == "" && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
+        && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
+        && trim($value) != "")  {
         set ($param, $value);
       }
 			break;
@@ -349,8 +353,8 @@ function pmArticleDetails($pmid, $id = "pmid"){
           $i++;
           if (authorIsHuman((string) $subItem)) {
             if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-              $result["last$i"] = mb_convert_case($names[1], MB_CASE_TITLE, "UTF-8");
-              $result["first$i"] = $names[2];
+              $result["last$i"] = formatSurname($names[1]);
+              $result["first$i"] = formatInitials($names[2]);
             }
           } else {
             // We probably have a committee or similar.  Just use 'author$i'.
@@ -591,7 +595,7 @@ function findDoi($url){
 					$doi = getDoiFromText($source, true);
 					if (!$doi) checkTextForMetas($source);
 				} else echo "\nFile size was too large. Abandoned.";
-			} else echo $htmlOutput?("<span style='color:red; font-weight:bold; font-size:larger;'>ERROR:</span> PDF may have been too large to open.  File size: ". $size[1]. "b</span><br>"):"\nPDF too large ({$size[1]}b)";
+			} else echo $htmlOutput?("\n\n **ERROR: PDF may have been too large to open.  File size: ". $size[1]. "b<br>"):"\nPDF too large ({$size[1]}b)";
 		} else print "DOI found from meta tags.<br>";
 		if ($doi){
 			if (!preg_match("/>\d\.\d\.\w\w;\d/", $doi))
@@ -600,7 +604,7 @@ function findDoi($url){
 				$content = strip_tags(str_replace("<", " <", $source)); // if doi is superceded by a <tag>, any ensuing text would run into it when we removed tags unless we added a space before it!
 				preg_match("~" . doiRegexp . "~Ui", $content, $dois); // What comes after doi, then any nonword, but before whitespace
 				if ($dois[1]) {$doi = trim($dois[1]); print " Removing them.<br>";} else {
-					print "More probably, the DOI was itself in a tag. <span style='color:green'>CHECK it's right!</span><br>";
+					print "More probably, the DOI was itself in a tag. CHECK it's right!<br>";
 					//If we can't find it when tags have been removed, it might be in a <a> tag, for example.  Use it "neat"...
 				}
 			}
@@ -954,8 +958,11 @@ function formatAuthor($author){
 
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
 
-	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", $author); //Housekeeping
-	if ($author=="") return false;
+	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
+  $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
+	if ($author == "") {
+      return false;
+  }
 
 	#dbg($author, "formatAuthor");
 

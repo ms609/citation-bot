@@ -576,7 +576,7 @@ echo "
               if ($url) {
                 set ("url", $url);
                 if ($citedoi) {
-                  # et ("format", "Free full text"); // DOn't do this any more.
+                  # set ("format", "Free full text"); // DOn't do this any more.
                 }
               }
             }
