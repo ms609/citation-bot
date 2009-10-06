@@ -249,20 +249,45 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 
 function textToSearchKey($key){
 	switch (strtolower($key)){
-		#case "doi": return "AID"; // removed as DOI has been established as unproductive when this function is called by pmSearchResults
-		case "author": return "AU";
-		case "last": case "last1": return "1AU";
-		case "issue": return "IP";
-		case "journal": return "TA";
-		case "pages": case "page": return "PG";
-		case "date": case "year": return "DP";
+		case "doi": return "AID";
+		case "author": case "author1": return "Author";
+		case "last": case "last1": return "Author";
+		case "issue": return "Issue";
+		case "journal": return "Journal";
+		case "pages": case "page": return "Pagination";
+		case "date": case "year": return "Publication Date";
 ## Formatting: YYY/MM/DD Publication Date [DP]
-		case "title": return "TI";
+		case "title": return "Title";
 		case "pmid": return "PMID";
-		case "volume": return "VI";
+		case "volume": return "Volume";
 		##Text Words [TW] ; Title/Abstract [TIAB]
 	}
 	return false;
+}
+
+/* pmSearch
+ * 
+ * Searches pubmed based on terms provided in an array.  
+ * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
+ * return the results as array (first result, # of results)
+ * If $check_for_errors is true, it will return 'fasle' on errors returned by pubmed
+ */
+function pmSearch($p, $terms, $check_for_errors = false) {  
+  foreach ($terms as $term) {
+    $key = textToSearchKey($term);
+    if ($key && trim($p[$term][0]) != "") {
+      $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($p[$term][0])) . "[$key])";
+    }
+  }
+  $query = substr($query, 5);
+  $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
+  $xml = simplexml_load_file($url);
+  if ($check_for_errors && $xml->ErrorList) {
+    print "\n - Errors detected in PMID search; abandoned.";
+    return array(null, 0);
+  }
+  
+  return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(null, 0);// first results; number of results
 }
 
 /* pmSearchResults
@@ -274,28 +299,31 @@ function textToSearchKey($key){
  *
  */
 function pmSearchResults($p){
-	if ($p){
+	if ($p) {
     if ($p['doi'][0]) {
-      $term = urlencode($p['doi'][0]) . '[AID]';
-      $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$term";
-      $xml = simplexml_load_file($url);
-      if ($xml->Count > 0 && !$xml->ErrorList) {
-         return array((string)$xml->IdList->Id[0], (string)$xml->Count);
+      $results = pmSearch($p, array("doi"), true);
+      if ($results[1] == 1) return $results;
+    }
+    // If we've got this far, the DOI was unproductive or there was no DOI.
+    
+    if (is("journal") && is("volume") && is("pages")) {
+      $results = pmSearch($p, array("journal", "volume", "issue", "pages"));
+      if ($results[1] == 1) return $results;
+    }
+
+    if (is("title") && (is("author") || is("last") || is("author1") || is("last1"))) {
+      $results = pmSearch($p, array("title", "author", "last", "author1", "last1"));
+      if ($results[1] == 1) return $results;
+      if ($results[1] > 1) {
+        $results = pmSearch($p, array("title", "author", "last", "author1", "last1", "year", "date"));
+        if ($results[1] == 1) return $results;
+        if ($results[1] > 1) {
+          $results = pmSearch($p, array("title", "author", "last", "author1", "last1", "year", "date", "volume", "issue"));
+          if ($results[1] == 1) return $results;
+        }
       }
     }
-    // If we've got this far, the DOI was unproductive.
-    foreach ($p as $key => $value){
-      $searchKey = textToSearchKey($key);
-      if ($searchKey) {
-        $valueParts = explode(" ", $value[0]);
-        foreach ($valueParts as $valuePart) $term .= "+AND+" . urlencode($valuePart) . "[$searchKey]";
-      }
-    }
-    $term = substr($term, 5);
-    $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$term";
-    $xml = simplexml_load_file($url);
   }
-  return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(null, 0);// first results; number of results
 }
 
 function pmArticleDetails($pmid, $id = "pmid"){
