@@ -31,14 +31,19 @@ while ($page) {
 	} else {
 		$pagecode = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
 				preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
-				mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4",
+				
         preg_replace
 										("~(?<!\?&)\bid(\s*=\s*)(DOI\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","doi$1$4$3$5",
 				preg_replace("~(id\s*=\s*)\[{2}?(PMID[:\]\s]*(\d*)|\{\{PMID[:\]\s]*\|\s*(\d*)\s*\}\})~","pm$1$4$3",
 				preg_replace("~[^\?&]\bid(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","doi$1$2",
 
-				preg_replace("~url(\s*)=(\s*)http://dx.doi.org/~", "doi$1=$2", $startcode)))))));
+				preg_replace("~url(\s*)=(\s*)http://dx.doi.org/~", "doi$1=$2", $startcode))))));
 
+     if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $pagecode)) {
+       $pagecode = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $pagecode);
+       $changedDashes = true;
+       print "Converted dashes in all page parameters to en-dashes.\n";
+     }
 
 	//Search for any duplicate refs with names
 	if (false && preg_match_all("~<[\n ]*ref[^>]*name=(\"[^\"><]+\"|'[^']+|[^ ><]+)[^/>]*>(([\s\S](?!<)|[\s\S]<(?!ref))*?)</ref[\s\n]*>~", $pagecode, $refs)) {
@@ -184,7 +189,10 @@ while ($page) {
 				if (isset($p["title"][0]) && !trim($pStart["title"])) $p["title"][0] = niceTitle($p["title"][0]);
 				if (isset($p[$journal][0])) $p[$journal][0] = niceTitle($p[$journal][0], false);
 				if (isset($p["periodical"][0])) $p["periodical"][0] = niceTitle($p["periodical"][0], false);
-				if (isset($p["pages"][0])) $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
+				if (isset($p["pages"][0]) && mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
+          $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
+          $changedDashes = true;
+        }
 				#if (isset($p["year"][0]) && trim($p["year"][0]) == trim($p["origyear"][0])) unset($p['origyear']);
 				#if (isset($p["publisher"][0])) $p["publisher"][0] = truncatePublisher($p["publisher"][0]);
 
@@ -230,8 +238,11 @@ while ($page) {
 				$p=null;
 				if ($pEnd){
 					foreach ($pEnd as $param => $value) {
-						if (!$pStart[$param]) $additions[$param] = true;
-						elseif ($pStart[$param] != $value) $changes[$param] = true;
+						if (!$pStart[$param]) {
+              $additions[$param] = true;
+            } elseif ($pStart[$param] != $value) {
+              $changes[$param] = true;
+            }
 					}
 				}
 
@@ -649,20 +660,34 @@ Done.  Just a couple of things to tweak now...";
 //
 #####################################
 
-					if (!is("format") && is("url")){
-						print "\n - Determining format of URL...";
-						$formatSet = isset($p["format"]);
-						$p["format"][0] = assessUrl($p["url"][0]);
-						if (!$formatSet && trim($p["format"][0]) == "") unset($p["format"]);
-						echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
-					}
+          if (!is("format") && is("url")){
+            print "\n - Determining format of URL...";
+            $formatSet = isset($p["format"]);
+            $p["format"][0] = assessUrl($p["url"][0]);
+            if (!$formatSet && trim($p["format"][0]) == "") {
+              unset($p["format"]);
+            }
+            echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
+          }
 				}
 
 				// Now wikify some common formatting errors - i.e. tidy up!
-				if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);
-				if (isset($p[$journal][0])) $p[$journal][0] = niceTitle($p[$journal][0], false);
-				if (isset($p["pages"][0])) $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
-				if ($dateToStartWith) unset($p["year"]); // If there was a date parameter to start with, don't add a year too!
+				if (!trim($pStart["title"]) && isset($p["title"][0])) {
+          $p["title"][0] = formatTitle($p["title"][0]);
+        }
+				if (isset($p[$journal][0])) {
+          $p[$journal][0] = niceTitle($p[$journal][0], false);
+        }
+				if (isset($p["pages"][0])) {
+          if (mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
+            $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
+            $changedDashes = true;
+          }
+        }
+        // If there was a date parameter to start with, don't add a year too.  This will be created by the template.
+				if ($dateToStartWith) {
+          unset($p["year"]);
+        }
         if (strpos($p['author'][0], ';') && !is('author2')) {
           $auths = explode(';', $p['author'][0]);
           unset($p['author']);
@@ -905,6 +930,7 @@ Done.  Just a couple of things to tweak now...";
 		if ($changeCitationFormat && $useCitationFormat) {
 			$pagecode = preg_replace("~[cC]ite[ _](web|conference|encyclopedia|news)~", "Citation", $pagecode);
 		}
+
 		if (trim($pagecode)){
 			if (strtolower($pagecode) != strtolower($startcode)) {
 				if ($additions){
@@ -923,8 +949,15 @@ Done.  Just a couple of things to tweak now...";
 					$smartSum = substr($smartSum,0, strlen($smartSum)-2);
 					$smartSum.=". ";
 				}
-				if ($changeCiteType || $changeCitationFormat) $smartSum .= "Unified citation types. ";
-				if (!$smartSum) $smartSum = "Removed redundant parameters. ";
+				if ($changeCiteType || $changeCitationFormat) {
+          $smartSum .= "Unified citation types. ";
+        }
+        if ($changedDashes) {
+          $smartSum .= "[[WP:ENDASH|En-dashed]]. ";
+        }
+				if (!$smartSum) {
+          $smartSum = "Removed redundant parameters. ";
+        }
 				echo "\n$smartSum\n";
 				$editSummary = $editSummaryStart . $editInitiator . $smartSum . $editSummaryEnd;
 				if ($ON) {
@@ -961,9 +994,14 @@ Done.  Just a couple of things to tweak now...";
 				}
 
 				//Unset smart edit summary parameters
-				$pStart = null; $pEnd = null; $additions=null;$changes=null; $smartSum = null;
+				$pStart = null;
+        $pEnd = null;
+        $additions = null;
+        $changes = null;
+        $smartSum = null;
+        $changedDashes = null;
 			} else {
-				echo "\n<b>No changes required</b> &rArr; no edit made.";
+				echo "\n ** No changes required --> no edit made.";
         if ($citedoi) {
           if (!articleID($page) && !$doiCrossRef) {
             print "\n\n* $page found on \n  $now\n\n \n\n\n\n";
