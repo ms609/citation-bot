@@ -301,9 +301,6 @@ while ($page) {
 				//Make a note of how things started so we can give an intelligent edit summary
 				foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
 
-        if ($citedoi_sweep) unset($p['author']); // TODO: Remove this brutal line!
-
-
 				if (is("inventor") || is("inventor-last") || is("patent-number")) print "<p>Unrecognised citation type. Ignoring.</p>";// Don't deal with patents!
 				else {
           
@@ -404,8 +401,7 @@ echo "
 //
 #####################################
 
-          
-          
+                   
 				
 						//Try CrossRef
 						echo "\n - Checking CrossRef database... ";
@@ -468,11 +464,17 @@ echo "
                 set ($key, $value);
               }
             }
-            if (!is("url")) {
+            if (false && !is("url")) { // BUGGY - CHECK PMID DATABASES
+              if (!is('pmc')) {
               $url = pmFullTextUrl($p["pmid"][0]);
+							} else {
+								unset ($p['url']);
+							}
               if ($url) {
                 set ("url", $url);
-                set ("format", "Free full text");
+                if ($citedoi) {
+                  set ("format", "Free full text");
+                }
               }
             }
             echo " 1 result found; citation updated";
@@ -531,11 +533,17 @@ echo "
             foreach ($details as $key=>$value) { 
               ifNullSet($key, $value);
             }
-            if (!is("url")) {
+            if (false && !is("url")) { // BUGGY - CHECK PMID DATABASES, and see other occurrence above
+              if (!is('pmc')) {
               $url = pmFullTextUrl($p["pmid"][0]);
+							} else {
+								unset ($p['url']);
+							}
               if ($url) {
                 set ("url", $url);
-                set ("format", "Free full text");
+                if ($citedoi) {
+                  set ("format", "Free full text");
+                }
               }
             }
           }
@@ -590,7 +598,6 @@ echo "
             if (preg_match("~^10.\d{4}.2F~", $p['doi'][0])) {
 							$p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doi'][0]);
 						}
-
 
             // Get the surname of the first author. (We [apparently] found this earlier, but it might have changed since then)
             preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
