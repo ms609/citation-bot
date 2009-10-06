@@ -92,8 +92,15 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
 			break;
-		case "first": case "first1": case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9":
-			if (trim($p[$param][0]) == "" && trim($p["author"][0]) == "" && trim($p["author" . substr($param, strlen($param)-1)]) == "" && trim($value) != "")  {
+		case "first": case "first1":
+      if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == ""
+        && trim($p["author"][0]) == "" && trim ($p['author1'][0]) == "") {
+        set ($param, $value);
+      }
+      break;
+    case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9":
+			break;
+			if (trim($p[$param][0]) == "" && trim($p["author"][0]) == "" && trim($p["author" . substr($param, strlen($param)-1)][0]) == "" && trim($value) != "")  {
         set ($param, $value);
       }
 			break;
@@ -180,7 +187,7 @@ function jstorData($jid){
           . $xml->{'issue-meta'}->numerations->{'pub-date'}->day;
     $result['year'] = (string) $xml->{'issue-meta'}->numerations->{'pub-date'}->year;
     //$result['month'] = date('M', strtotime($date)); DISABLED BY EUBLIDES
-    $result['day'] = date('d', strtotime($date));
+    //$result['day'] = date('d', strtotime($date)); DISABLED BY EUBLIDES
     $result['volume'] = (string) $xml->{'issue-meta'}->numerations->{'string-volume'};
     $result['issue'] = (string) $xml->{'issue-meta'}->numerations->{'string-issue'};
     $result['pages'] = (string) $xml->{'article-meta'}->{'page-range'};
