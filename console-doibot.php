@@ -3,7 +3,7 @@
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
 $fastMode=false;
-$editInitiator = '[Pu32]';
+$editInitiator = '[Pu33]';
 $accountSuffix='_1';
 
 $ON = true;
@@ -42,6 +42,6 @@ function nextPage(){
 }
 
 $page = nextPage();
-#$page = "ARHGEF9";
+#$page = "";
 #$page = "User:DOI bot/Zandbox";
 include("expand.php");
