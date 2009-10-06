@@ -306,6 +306,16 @@ function pmArticleDetails($pmid, $id = "pmid"){
             $result["first$i"] = $names[2];
           }
         }
+      break; case "LangList":
+        foreach ($item->Item as $subItem) {
+            if ($subItem["Name"] == "Lang" && $subItem != "English") {
+              $result ["language"] = (string) $subItem;
+              if ($result['title']) {
+                $result['trans_title'] = $result['title'];
+                unset ($result['title']);
+              }
+            }
+          }
 			break; 	case "ArticleIds":
 				foreach ($item->Item as $subItem){
 					switch ($subItem["Name"]){
