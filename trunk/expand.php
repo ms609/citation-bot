@@ -1060,7 +1060,7 @@ Done.  Just a couple of things to tweak now...";
             } else {
               print "\n * Writing message on talk page..." . $talkPage . "\n\n";
               if ($talkPage == "Talk:User_Smith609/Sandbox") write($talkPage, $text . "\n" . $talkMessage . "~~~~", "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!");
-              else exit; ########## Need to check that this is debugged!!!
+              else {}//exit; ########## Need to check that this is debugged!!!
               print " Message left.\n";
             }
           }

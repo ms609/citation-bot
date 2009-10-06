@@ -363,7 +363,7 @@ function pmArticleDetails($pmid, $id = "pmid"){
         }
       break; case "LangList":
         foreach ($item->Item as $subItem) {
-            if ($subItem["Name"] == "Lang" && $subItem != "English") {
+            if ($subItem["Name"] == "Lang" && $subItem != "English" && $subItem != "Undetermined") {
               $result ["language"] = (string) $subItem;
               if ($result['title']) {
                 $result['trans_title'] = $result['title'];
