@@ -42,5 +42,5 @@ function nextPage(){
 }
 
 #$page = nextPage();
-$page = "User:DOI_bot/Zandbox";
+$page = "User:DOI_bot/Sandbox";
 include("expand.php");
