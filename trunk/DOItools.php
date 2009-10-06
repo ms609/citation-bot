@@ -69,7 +69,7 @@ function ifNullSet($param, $value){
 			break;
 		case "author": case "last1": case "last":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["last1"][0])=="" && trim($p["last"][0])=="" && trim($p["author"][0])=="" &&
+			if (trim($p["last1"][0])=="" && trim($p["last"][0])=="" && trim($p["author"][0])=="" && trim($p["author1"][0])=="" &&
 			    trim($p["editor"][0])=="" && trim($p["editor-last"][0])=="" && trim($p["editor-first"][0])==""
 					&& trim($value)!="") {
        set ($param, $value);
@@ -87,8 +87,8 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
 			break;
-		case "first": case "first1":
-			if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == "" && trim($value) != "")  {
+		case "first": case "first1": case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10": case "first11":
+			if (trim($p[$param][0]) == "" && trim($p["first"][0]) == "" && trim($p["author"][0]) == "" && trim($p["first1"][0]) == "" && trim($value) != "")  {
         set ($param, $value);
       }
 			break;
@@ -162,13 +162,13 @@ function jstorData($jid){
   $xml = @simplexml_load_file($jurl);
 	if ($xml) {
     $result['journal'] = (string) $xml->{'journal-meta'}->{'journal-title'};
-    $result['issn'] = (string) $xml->{'journal-meta'}->{'issn'};
+    //  $result['issn'] = (string) $xml->{'journal-meta'}->{'issn'};  DISABLED BY EUBLIDES
     $result['publisher'] = (string) $xml->{'journal-meta'}->{'publisher-name'};
     $date = $xml->{'issue-meta'}->numerations->{'pub-date'}->year . '-'
           . $xml->{'issue-meta'}->numerations->{'pub-date'}->month . '-'
           . $xml->{'issue-meta'}->numerations->{'pub-date'}->day;
     $result['year'] = (string) $xml->{'issue-meta'}->numerations->{'pub-date'}->year;
-    $result['month'] = date('M', strtotime($date));
+    //$result['month'] = date('M', strtotime($date)); DISABLED BY EUBLIDES
     $result['day'] = date('d', strtotime($date));
     $result['volume'] = (string) $xml->{'issue-meta'}->numerations->{'string-volume'};
     $result['issue'] = (string) $xml->{'issue-meta'}->numerations->{'string-issue'};
@@ -290,13 +290,13 @@ function pmArticleDetails($pmid, $id = "pmid"){
 							case "Title": $result["title"] = str_replace(array("[", "]"), "",(string) $item);
 			break; 	case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
 																$result["year"] = (string) $match[1];
-																$result["month"] = (string) $match[2];
+															//	$result["month"] = (string) $match[2]; DISABLED BY EUBLIDES
 			break; 	case "FullJournalName": $result["journal"] = (string) $item;
 			break; 	case "Volume": $result["volume"] = (string) $item;
 			break; 	case "Issue": $result["issue"] = (string) $item;
 			break; 	case "Pages": $result["pages"] = (string) $item;
 			break; 	case "PmId": $result["pmid"] = (string) $item;
-			break; 	case "ISSN": $result["issn"] = (string) $item;
+			break; 	case "ISSN": // $result["issn"] = (string) $item; DISABLED BY EUBLIDES
 			break; 	case "AuthorList":
         $i = 0;
 				foreach ($item->Item as $subItem) {
@@ -653,17 +653,19 @@ function getDoiFromText($source, $testDoi = false){
 						echo "Still too late ($position).  Rejecting."; return false;
 					}
 				}
-			} else {echo "<br>2 different DOIs were found. Abandoned.<br>"; return false;}
-		} else {echo "No DOIs found in page.<br>"; $urlsTried[] = $url; RETURN false;}
+			} else {echo "\n2 different DOIs were found. Abandoned.<br>"; return false;}
+		} else {echo "\nNo DOIs found in page."; $urlsTried[] = $url; RETURN false;}
 	}
 	echo "Searched body text.<br>";
 }
 
 function checkTextForMetas($text){
+  // Find all meta tags using preg_match
 	preg_match_all("~<meta\s+name=['\"]([^'\"]+)['\"] content=[\"']([^>]+)[\"']>~", $text, $match);
+
+  // Define translation from meta tag names to wiki parameters
 	$m2p = array(
 						"citation_journal_title" => "journal",
-            #"citation_authors"  => "author",
             "citation_title"  => "title",
             "citation_date"  => "date",
             "citation_volume"  => "volume",
@@ -673,32 +675,41 @@ function checkTextForMetas($text){
             "dc.Title" => "title",
             "dc.Date" => "date"
 	);
+
+  // Transform matches into an array:  pairs (meta name => value)
 	$stopI = count($match[1]);
-	for ($i = 0; $i<$stopI; $i++) $pairs[]=array($match[1][$i], $match[2][$i]);
-	foreach ($pairs as $pair)
-		foreach ($m2p as $mk=>$mv)
-			if ($pair[0] == $mk) $newp[$mv][] = $pair[1];
-	$auths = count($newp["author"]);
-	$alreadyGot[] = $newp['author'][0];
-	for ($i=1; $i<$auths; $i++){
-		$gotThis = false;
-		foreach ($alreadyGot as $ag){
-			if (similar_text($ag, $newp['author'][$i]) > strlen($newp['author'][$i])-3) $gotThis = true;
-		}
-		if (!$gotThis) {
-			$authCount++;
-			$newp["author"][0] .= "; " . formatAuthor($newp["author"][$i]);
-			$alreadyGot[] = $newp['author'][$i];
-			unset($newp['author'][$i]);
-		}
-	}
+	for ($i = 0; $i < $stopI; $i++) {
+     $pairs[] = array($match[1][$i], $match[2][$i]);
+  }
+
+  // Rename each pair to $newp  (wiki name => value)
+	foreach ($pairs as $pair) {
+		foreach ($m2p as $mk=>$mv) {
+			if ($pair[0] == $mk) {
+        $newp[$mv][] = $pair[1];
+      }
+    }
+  }
+
+  // Now $newp contains the wiki name and the meta tag's value.  We may have multiple values, especially for the author field.
+  // We only want to fiddle with authors if there are none specified.
+	if (!is('author') && !is('author1') && !is('last') && !is('last1')) {
+    foreach ($newp['author'] as $auth) {
+      $author_list .= "$auth;";
+    }
+    $authors = formatAuthors($author_list, true);
+    foreach ($authors as $no => $auth) {
+      $names = explode (', ', $auth);
+      $newp["last" . ($no + 1)] = $names[0];
+      $newp["first" . ($no + 1)] = $names[1];
+    }
+    print_r($newp);
+  }
 	if (isset($newp["date"])) {
 		$newp["year"][0] = date("Y", strtotime($newp["date"][0]));
-		$newp["month"][0] = date("M", strtotime($newp["date"][0]));
-		$newp["day"][0] = date("d", strtotime($newp["date"][0]));
+		//$newp["month"][0] = date("M", strtotime($newp["date"][0])); DISABLED BY EUBLIDES
 		unset($newp["date"]);
-	}
-	dbg($newp);##################
+	}	
 	foreach ($newp as $p=>$p0) ifNullSet($p, $p0[0]);
 }
 
@@ -868,6 +879,8 @@ function isInitials($str){
 	return true;
 }
 
+
+// Returns the author's name formated as Surname, F.I.
 function formatAuthor($author){
 
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
