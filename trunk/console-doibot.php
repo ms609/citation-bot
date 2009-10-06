@@ -3,7 +3,7 @@
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
 $fastMode=false;
-$editInitiator = '[Pu31]';
+$editInitiator = '[Pu32]';
 $accountSuffix='_1';
 
 $ON = true;
@@ -11,7 +11,7 @@ $ON = true;
 include("expandFns.php");
 
 function nextPage(){
-	//return 'User:DOI bot/Zandbox';
+	#return 'User:DOI bot/Zandbox';
 	#die ("\n**EXIT: nextPage is disabled!\n");
   //return 'Template:Cite doi/10.1001.2Farchinternmed.2009.6';
 	global $db;
@@ -42,5 +42,6 @@ function nextPage(){
 }
 
 $page = nextPage();
-#$page = "Sodium_ferulate";
+#$page = "ARHGEF9";
+#$page = "User:DOI bot/Zandbox";
 include("expand.php");
