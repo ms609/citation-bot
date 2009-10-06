@@ -3,7 +3,7 @@
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
 $fastMode=false;
-$editInitiator = '[Pu22]';
+$editInitiator = '[Pu23]';
 $accountSuffix='_1';
 
 $ON = true;

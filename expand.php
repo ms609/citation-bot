@@ -784,7 +784,15 @@ Done.  Just a couple of things to tweak now...";
 							$citeTemplate = "Cite news";
 						}
 						elseif (is('journal')) {$citeTemplate = "Cite journal";}
-						elseif (is('publisher')) {$citeTemplate = "Cite book";} // This should be after we've checked for a journal parameter
+						elseif (is('publisher')) {
+              // This should be after we've checked for a journal parameter
+              if (preg_match("~\w\.\w\w~", $p['publisher'][0])) {
+               // it's a fair bet the piblisher is a web address
+                $citeTemplate = "Cite web";
+              } else {
+                $citeTemplate = "Cite book";
+              }
+            }
 						elseif (is('url')) {$citeTemplate = "Cite web";} // fall back to this if URL
 						else {$citeTemplate = "Cite journal";} // If no URL, cite journal ought to handle it okay
 						$citation[$cit_i+2] = preg_replace("~[cC]itation~", $citeTemplate, $citation[$cit_i+2]);
