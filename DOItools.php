@@ -266,7 +266,7 @@ function pmSearchResults($p){
       $term = urlencode($p['doi'][0]);
       $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$term";
       $xml = simplexml_load_file($url);
-      if ($xml->Count > 0) {
+      if ($xml->Count > 0 && !$xml->ErrorList) {
          return array((string)$xml->IdList->Id[0], (string)$xml->Count);
       }
     }
@@ -334,7 +334,6 @@ function pmArticleDetails($pmid, $id = "pmid"){
                 $result["pmid"] = $match[0];
                 break;
 						case "pmc":
-              print "\n\n\nPMC... $subItem";
               preg_match("~\d+~", (string) $subItem, $match);
               $result["pmc"] = $match[0];
               break;
