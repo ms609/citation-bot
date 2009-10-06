@@ -32,7 +32,7 @@ function articleID($page, $namespace = 0){
     // I'm too lazy to deduce the correct namespace prefix.
     return getArticleId($page);
   }
-  $page = str_replace(' ', '_', strtoupper($page[0]) . substr($page,1));
+  $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
   $enwiki_db = udbconnect('enwiki_p', 'sql-s1');
   $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='$namespace' && page_title='$page'") or die (mysql_error());
   $results = mysql_fetch_array($result, MYSQL_ASSOC);
