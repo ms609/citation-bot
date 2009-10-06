@@ -106,6 +106,11 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
 			break;
+    case "page": case "pages":
+			if (trim($p["pages"][0]) == "" && trim($p["page"][0]) == "" && trim($value) != "") {
+        set ($param, $value);
+      }
+      break;
 		default: if (trim($p[$param][0])=="" && trim($value)!="") {
         set ($param, $value);
       }
