@@ -471,9 +471,7 @@ echo "
             set('pmid', $results[0]);
             $details = pmArticleDetails($results[0]);
             foreach ($details as $key=>$value) {
-              if (!is($key)){
-                set ($key, $value);
-              }
+              ifNullSet ($key, $value);
             }
             if (false && !is("url")) { // BUGGY - CHECK PMID DATABASES
               if (!is('pmc')) {
@@ -952,11 +950,12 @@ Done.  Just a couple of things to tweak now...";
 				if ($changeCiteType || $changeCitationFormat) {
           $smartSum .= "Unified citation types. ";
         }
-        if ($changedDashes) {
-          $smartSum .= "[[WP:ENDASH|En-dashed]]. ";
-        }
 				if (!$smartSum) {
-          $smartSum = "Removed redundant parameters. ";
+          if ($changedDashes) {
+            $smartSum .= "Formatted [[WP:ENDASH|dashes]]. ";
+          } else {
+            $smartSum = "Removed redundant parameters. ";
+          }
         }
 				echo "\n$smartSum\n";
 				$editSummary = $editSummaryStart . $editInitiator . $smartSum . $editSummaryEnd;
