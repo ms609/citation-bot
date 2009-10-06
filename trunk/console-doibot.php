@@ -3,11 +3,11 @@
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
 $fastMode=false;
-$editInitiator = '[Pu24test]';
+$editInitiator = '[Pu25]';
 $accountSuffix='_1';
 
 $ON = true;
-$ON = false;
+#$ON = false;
 include("expandFns.php");
 
 function nextPage(){
@@ -42,5 +42,5 @@ function nextPage(){
 }
 
 #$page = nextPage();
-$page = "User:DOI_bot/Zandbox";
+$page = "User:DOI_bot/Sandbox";
 include("expand.php");

@@ -1,6 +1,24 @@
 <?php
 // $Id: $
 
+
+function loadParam($param, $value, $equals, $pipe) {
+  global $p;
+  $param = strtolower($param);
+  if (is($param)) {
+    if (substr($param, strlen($param)-1) > 0 && trim($value) != trim($p[$param][0])) {
+      // Add one to last1 to create last2
+      $param = substr($param, 0, strlen($param)-1) . (substr($param, strlen($param)-1) + 1);
+    } else {
+      // Parameter already exists
+      $param = null;
+    }
+  }
+  if ($param) {
+    $p[$param] = Array($value, $equals, $pipe);
+  }
+}
+
 while ($page) {
 	$startPage = time();
 	echo $htmlOutput?("\n<hr>[" . date("H:i:s", $startPage) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $startPage));
@@ -31,7 +49,7 @@ while ($page) {
 	} else {
 		$pagecode = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
 				preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
-				
+
         preg_replace
 										("~(?<!\?&)\bid(\s*=\s*)(DOI\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","doi$1$4$3$5",
 				preg_replace("~(id\s*=\s*)\[{2}?(PMID[:\]\s]*(\d*)|\{\{PMID[:\]\s]*\|\s*(\d*)\s*\}\})~","pm$1$4$3",
@@ -302,9 +320,9 @@ while ($page) {
 						$value = substr($value, 0, $pipePos);
 					}
 					// Load each line into $p[param][0123]
-					$p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
+          loadParam($parts[$partsI+1], $value, $parts[$partsI], $parts[$partsI+2]);
 				}
-
+        
 				if ($p["doix"]){
 					$p["doi"][0] = str_replace($dotEncode, $dotDecode, $p["doix"][0]);
 					unset($p["doix"]);
@@ -314,7 +332,7 @@ while ($page) {
 
 				if (is("inventor") || is("inventor-last") || is("patent-number")) print "<p>Unrecognised citation type. Ignoring.</p>";// Don't deal with patents!
 				else {
-          
+
 ###########################
 //
 echo "
@@ -327,7 +345,7 @@ echo "
 //  * Tidying up existing parameters (and we'll do more tidying here too)
 //
 ###########################
-          
+
 					$journal = is("periodical")?"periodical":"journal";
 					// See if we can use any of the parameters lacking equals signs:
 					$freeDat = explode("|", trim($p["unused_data"][0]));
@@ -340,7 +358,7 @@ echo "
           }
 
 					if (is("isbn")) getInfoFromISBN();
-         
+
 
           if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
             unset($p["unused_data"]);
@@ -413,8 +431,8 @@ echo "
 //
 #####################################
 
-                   
-				
+
+
 						//Try CrossRef
 						echo "\n - Checking CrossRef database... ";
 						$crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
@@ -462,10 +480,10 @@ echo "
 //  If we don't find one, we'll check for an ISBN in case it's a book.
 //
 #####################################
-          
-          
-          
-          
+
+
+
+
           print "\n - Searching PubMed... ";
           $results = (pmSearchResults($p));
           if ($results[1] == 1) {
@@ -483,12 +501,12 @@ echo "
               if ($url) {
                 set ("url", $url);
                 if ($citedoi) {
-                  set ("format", "Free full text");
+                  # set ("format", "Free full text"); // Don't do this any more.
                 }
               }
             }
             echo " 1 result found; citation updated";
-            if (!is('doi')) { 
+            if (!is('doi')) {
               // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
               echo "\n - Looking for DOI in CrossRef database with new information ... ";
               $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
@@ -513,7 +531,7 @@ echo "
                 }
           }
          }
-          
+
 #####################################
 //
 if (nothingMissing($journal)) {
@@ -540,7 +558,7 @@ echo "
           if (!nothingMissing($journal) && is('pmid')) {
             echo "\n - Checking PMID {$p['pmid'][0]} for more details";
             $details = pmArticleDetails($p['pmid'][0]);
-            foreach ($details as $key=>$value) { 
+            foreach ($details as $key=>$value) {
               ifNullSet($key, $value);
             }
             if (false && !is("url")) { // BUGGY - CHECK PMID DATABASES, and see other occurrence above
@@ -552,7 +570,7 @@ echo "
               if ($url) {
                 set ("url", $url);
                 if ($citedoi) {
-                  set ("format", "Free full text");
+                  # et ("format", "Free full text"); // DOn't do this any more.
                 }
               }
             }
@@ -698,7 +716,7 @@ Done.  Just a couple of things to tweak now...";
         if (strpos($page, 'ite doi') || strpos($page, 'ite_doi')) {
           citeDoiOutputFormat();
         }
-        
+
 
         // Unset authors above 'author9' - the template won't render them.
         for ($au_i = 10; is("authors$au_i") || is ("last$au_i"); $au_i++){
@@ -706,7 +724,7 @@ Done.  Just a couple of things to tweak now...";
           unset($p["first$au_i"]);
           unset($p["last$au_i"]);
         }
-        
+
 				// Check that the DOI functions.
 				if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slowMode) {
 					echo "\nChecking that DOI {$p["doi"][0]} is operational...";
@@ -727,7 +745,7 @@ Done.  Just a couple of things to tweak now...";
 
         //Edition - don't want 'Edition ed.'
         if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
-          
+
 				//because of cite journal doc...
 				if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
 
