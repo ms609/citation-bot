@@ -10,7 +10,7 @@ $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
 
 $ON = true;
-#$ON = false;
+
 
 function updateQueue() {
   print "** Updating backlog...\nSeeing what links to 'Cite Journal'...";
@@ -32,17 +32,17 @@ function updateQueue() {
 }
 
 function nextPage(){
-	#return 'User:DOI bot/Zandbox';
-	#die ("\n**EXIT: nextPage is disabled!\n");
-  //return 'Template:Cite doi/10.1001.2Farchinternmed.2009.6';
+  global $ON, $STOP;
+	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
 	global $db;
 	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
 	$result = mysql_query("SELECT page FROM citation ORDER BY fast ASC") or die (mysql_error());
 	$result = mysql_fetch_row($result);
 	return $result[0];
 }
-
-$page = nextPage();
+#$STOP = true;
+#$page = nextPage();
 #$page = "Banksia aculeata";
-#$page = "User:DOI bot/Zandbox";
+$page = "User:DOI bot/Zandbox";
+$ON = false;
 include("expand.php");
