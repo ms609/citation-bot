@@ -3,16 +3,16 @@
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
 $fastMode=false;
-$editInitiator = '[Pu37a]';
+$editInitiator = '[Pu37]';
 $accountSuffix='_1';
 
 $ON = true;
-$ON = false;
+#$ON = false;
 include("expandFns.php");
 
 function nextPage(){
 	#return 'User:DOI bot/Zandbox';
-	die ("\n**EXIT: nextPage is disabled!\n");
+	#die ("\n**EXIT: nextPage is disabled!\n");
   //return 'Template:Cite doi/10.1001.2Farchinternmed.2009.6';
 	global $db;
 	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
