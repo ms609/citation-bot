@@ -3,13 +3,15 @@
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
 $fastMode=false;
+include("expandFns.php");
+
+
 $editInitiator = '[Pu'. revisionID() . ']';
 $accountSuffix='_1';
 
 $ON = true;
 //$ON=false;
 
-include("expandFns.php");
 
 function nextPage(){
 	//return 'User:DOI bot/Zandbox';

@@ -1,5 +1,5 @@
 <?
-// $Id: $
+// $Id$
 
 function includeIfNew($file){
 	// include missing files
