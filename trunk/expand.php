@@ -49,15 +49,12 @@ while ($page) {
 	} else {
 		$pagecode = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
 				preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
-        //preg_replace("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~", "$2 | doi = $1",
-        preg_replace("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~", "$2 | doi = $1",
-
         preg_replace
 										("~(?<!\?&)\bid(\s*=\s*)(DOI\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","doi$1$4$3$5",
 				preg_replace("~(id\s*=\s*)\[{2}?(PMID[:\]\s]*(\d*)|\{\{PMID[:\]\s]*\|\s*(\d*)\s*\}\})~","pm$1$4$3",
 				preg_replace("~[^\?&]\bid(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","doi$1$2",
 
-				preg_replace("~url(\s*)=(\s*)http://dx.doi.org/~", "doi$1=$2", $startcode)))))));
+				preg_replace("~url(\s*)=(\s*)http://dx.doi.org/~", "doi$1=$2", $startcode))))));
 
      if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $pagecode)) {
        $pagecode = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $pagecode);
@@ -146,6 +143,14 @@ while ($page) {
 				//Make a note of how things started so we can give an intelligent edit summary
 				foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
 
+
+        //Check for the doi-inline template in the title
+        if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~",
+                        str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0]), $match)) {
+          set('title', $match[2]);
+          set('doi', $match[1]);
+        }
+        
 				useUnusedData();
 
 				if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
@@ -298,8 +303,10 @@ while ($page) {
 																			, "<!-- Citation bot : comment placeholder c$j -->"
 																			, $citation[$cit_i+1]);
 					}
-				} else $countComments = null;
-				// Comments will be replaced in the cText varibale later
+				} else {
+          // Comments will be replaced in the cText variable later
+          $countComments = null;
+        }
 
 				$c = preg_replace("~(doi\s*=\s*)doi\s?=\s?(\d\d)~","$1$2",
 					preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~","doi$1=$1$2", $citation[$cit_i+1])); // Replaces doi: with doi =
@@ -334,6 +341,13 @@ while ($page) {
 
 				if (is("inventor") || is("inventor-last") || is("patent-number")) print "<p>Unrecognised citation type. Ignoring.</p>";// Don't deal with patents!
 				else {
+        print_r($p);
+        //Check for the doi-inline template in the title
+        if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~",
+                        str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0]), $match)) {
+          set('title', $match[2]);
+          set('doi', $match[1]);
+        }
 
 ###########################
 //
@@ -872,7 +886,7 @@ Done.  Just a couple of things to tweak now...";
 
 				echo "\n* {$p["title"][0]}";
 
-				// Fix typos in parameter names
+        // Fix typos in parameter names
 				//Authors
 				if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
 				preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
@@ -890,7 +904,6 @@ Done.  Just a couple of things to tweak now...";
 				if (is("eprint")
 						&& !(is("title") && is("author") && is("year") && is("version")))
 						getDataFromArxiv($p["eprint"][0]);
-				echo 7;
 
 				// Now wikify some common formatting errors - i.e. tidy up!
 				if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);

@@ -143,7 +143,6 @@ function nothingMissing($journal){
 function getDataFromArxiv($a) {
 	if ($xml = simplexml_load_file( "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a")){
 		global $p;
-		unset($p["author"]);
 		foreach ($xml->entry->author as $auth) {
 			$i++;
       if ($i<10) {
@@ -153,7 +152,9 @@ function getDataFromArxiv($a) {
           ifNullSet("first$i", $names[1]);
           $p["first$i"][1] = " | ";
         }
-        else ifNullSet("author$i", $name);
+        else {
+          if (trim($p['author'][0]) == "") ifNullSet("author$i", $name);
+        }
       }
 		}
 		ifNullSet("title", (string)$xml->entry->title);
