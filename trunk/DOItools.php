@@ -87,8 +87,8 @@ function ifNullSet($param, $value){
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
 			if (trim($p["last1"][0])=="" && trim($p["last"][0])=="" && trim($p["author"][0])=="" && trim($p["author1"][0])=="" &&
 			    trim($p["editor"][0])=="" && trim($p["editor-last"][0])=="" && trim($p["editor-first"][0])==""
-					&& trim($value)!="") {
-       set ($param, $value);
+					&& trim($value) != "") {
+        set ($param, $value);
       }
 			break;
 		case "first": case "first1":
@@ -142,6 +142,7 @@ function ifNullSet($param, $value){
 }
 
 function nothingMissing($journal){
+  global $authors_missing;
   return ( is($journal)
         && is("volume")
         && is("issue")
@@ -149,6 +150,7 @@ function nothingMissing($journal){
         && is("title")
         && (is("date") || is("year"))
         && (is("author2") || is("last2"))
+        && !$authors_missing
   );
 }
 
