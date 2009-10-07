@@ -1,12 +1,10 @@
-#!/usr/bin/php
 <?php
-// $Id: $
+// $Id$
+
+require_once("expandFns.php"); // includes login
 
 $accountSuffix = '_2';
-$editInitiator = '[cw'. revisionID() . ']';
-require_once("wikiFunctions.php");
-require_once("expandFns.php"); // includes login
-require_once("DOItools.php"); // Must come after bot initialised
+$editInitiator = '[cw' . revisionID() . ']';
 
 $toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"));
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
