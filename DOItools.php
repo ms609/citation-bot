@@ -106,7 +106,7 @@ function ifNullSet($param, $value){
 			break;
 		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": case "last10":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p[$param][0]) == ""
+			if (trim($p[$param][0]) == "" && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
           && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
           && underTwoAuthors($p['author'][0]))  {
         set ($param, $value);
@@ -369,7 +369,7 @@ function pmArticleDetails($pmid, $id = "pmid"){
           if (authorIsHuman((string) $subItem)) {
             if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
               $result["last$i"] = formatSurname($names[1]);
-              $result["first$i"] = formatInitials($names[2]);
+              $result["first$i"] = formatForename($names[2]);
             }
           } else {
             // We probably have a committee or similar.  Just use 'author$i'.
@@ -943,6 +943,13 @@ function formatForename($forename){
         ), $forename)));
 }
 
+/* formatInitials
+ *
+ * Returns a string of initals, formatted for Cite Doi output
+ *
+ * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
+ * 
+ */
 function formatInitials($str){
 	$str = trim($str);
 	if ($str == "") return false;
