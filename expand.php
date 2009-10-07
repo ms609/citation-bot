@@ -745,8 +745,8 @@ Done.  Just a couple of things to tweak now...";
 //
 #####################################
 
-          if (!is("format") && is("url")){
-            print "\n - Determining format of URL...";
+          if (!is("format") && is("url") && !is("accessdate")){
+            print "\n - Checking that URL is live...";
             $formatSet = isset($p["format"]);
             $p["format"][0] = assessUrl($p["url"][0]);
             if (!$formatSet && trim($p["format"][0]) == "") {
