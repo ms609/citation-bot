@@ -788,7 +788,7 @@ Done.  Just a couple of things to tweak now...";
           for ($au_i = 1; $au_i < 10; $au_i++) {
             if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p["author$au_i"][0], $match)) {
               ifNullSet("authorlink$au_i", $match[2]?$match[2]:$match[3]);
-              set("author$au_i", formatAuthor($match[3]));
+              set("author$au_i", $match[3]);
               print "Dissecting authorlink";
             }
           }
