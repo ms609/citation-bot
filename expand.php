@@ -341,7 +341,6 @@ while ($page) {
 
 				if (is("inventor") || is("inventor-last") || is("patent-number")) print "<p>Unrecognised citation type. Ignoring.</p>";// Don't deal with patents!
 				else {
-        print_r($p);
         //Check for the doi-inline template in the title
         if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~",
                         str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0]), $match)) {
@@ -362,10 +361,15 @@ echo "
 //
 ###########################
 
+          // The phrase 'et al' should not be included in the authors parameter.
+          // It is discouraged and may be mistaken for an author by the bot.
+          $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)~", "", $p['author'][0]);
+          
 					$journal = is("periodical")?"periodical":"journal";
 					// See if we can use any of the parameters lacking equals signs:
 					$freeDat = explode("|", trim($p["unused_data"][0]));
 					useUnusedData();
+
 
           // If the page has been created manually from a cite doi link, it will have an encoded 'doix' parameter - decode this.
           if (preg_match("~^10.\d{4}.2F~", $p['doix'][0])) {
