@@ -353,7 +353,7 @@ function pmSearchResults($p){
 
 function pmArticleDetails($pmid, $id = "pmid"){
 	$result = Array();
-	$xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=" . (($id == "pmid")?"pubmed":"pmc") . "&tool=DOIbot&email=martins@gmail.com&id=$pmid");
+	$xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($id == "pmid")?"pubmed":"pmc") . "&id=$pmid");
   // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
   foreach($xml->DocSum->Item as $item){
 		if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $result["doi"] = $match[0];
@@ -373,8 +373,12 @@ function pmArticleDetails($pmid, $id = "pmid"){
 				foreach ($item->Item as $subItem) {
           $i++;
           if (authorIsHuman((string) $subItem)) {
+            $junior = (substr($subItem, -3) == " Jr")?" Jr":false;
+            if ($junior) {
+              $subItem = substr($subItem, 0, -3);
+            }
             if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-              $result["last$i"] = formatSurname($names[1]);
+              $result["last$i"] = formatSurname($names[1]) . $junior;
               $result["first$i"] = formatForename($names[2]);
             }
           } else {

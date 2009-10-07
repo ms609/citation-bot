@@ -458,6 +458,7 @@ echo "
           // Try using commas to split authors
           $author_param = trim($p['author'][0]);
           if (preg_match_all("~([\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+),~u", $author_param, $matches)) {
+            // \p{L} matches any letter, including special characters.  \p{M} matches diacritical marks, etc.  Remember the u flag at the end of the expression!
             $last_author = preg_replace("~[\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+,~u", "", $author_param);
             $matches[1][] = $last_author;
             unset($p['author']);
