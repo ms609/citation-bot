@@ -84,8 +84,10 @@ function updateBacklog($page) {
   $db = udbconnect("yarrow");
   $result = mysql_query("SELECT page FROM citation WHERE id = '$id'") or die (mysql_error());
 	$result = mysql_fetch_row($result);
-	$sql = $result?"UPDATE citation SET fast = '" . date ("c") . "' WHERE page = '$sPage'":"INSERT INTO citation VALUES ('".
-		$id . "', '$sPage', '" . date ("c") . "', '0000-00-00')";
+	$sql = $result?"UPDATE citation SET fast = '" . date ("c") . "', revision = '" . revisionID()
+                . "' WHERE page = '$sPage'"
+                : "INSERT INTO citation VALUES ('"
+                . $id . "', '$sPage', '" . date ("c") . "', '0000-00-00')";
 	#print "\n$sql";
 	$result = mysql_query ($sql) or die(mysql_error());
 }

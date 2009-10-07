@@ -2,7 +2,7 @@
 // $Revision$
 // $Id$
 
-print 'Using expand.php $Revision$';
+print 'Revision: r' . revisionID();
 
 function loadParam($param, $value, $equals, $pipe) {
   global $p;
@@ -241,7 +241,7 @@ while ($page) {
 					if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
 					else {
 						if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-						echo "\n* <div style=color:limegreen>XXX Unused data in following citation: {$p["unused_data"][0]}</div>";
+						echo "\n* XXX Unused data in following citation: {$p["unused_data"][0]}";
 					}
 				}
 
@@ -454,9 +454,11 @@ echo "
               ifNullSet('display-authors', $truncate_after);
             }
           }
+
+          // Try using commas to split authors
           $author_param = trim($p['author'][0]);
-          if (preg_match_all("~([\w+\-. ]+\s+[\w+. ]+),~", $author_param, $matches)) {
-            $last_author = preg_replace("~[\w+\-. ]+\s+[\w+. ]+,~", "", $author_param);
+          if (preg_match_all("~([\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+),~u", $author_param, $matches)) {
+            $last_author = preg_replace("~[\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+,~u", "", $author_param);
             $matches[1][] = $last_author;
             unset($p['author']);
             $au_i = 0;
