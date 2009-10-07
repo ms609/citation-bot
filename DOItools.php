@@ -189,7 +189,6 @@ function getDataFromArxiv($a) {
 function crossRefData($doi){
 	global $crossRefId;
   $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
-  print $url; exit;
   $xml = @simplexml_load_file($url);
 	if ($xml) {
     $result = $xml->query_result->body->query;
