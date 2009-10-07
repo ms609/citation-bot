@@ -468,7 +468,7 @@ echo "
               set ("author" . $au_i, $author);
             }
             set('author-separator', ',');
-            set('author-name-separator', '');
+            $p['author-name-separator'][0] = "";
           }
 
           // Use semi-colons to split authors
