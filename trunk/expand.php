@@ -468,7 +468,7 @@ echo "
           $author_param = trim($p['author'][0]);
           print "\n" . $author_param;
           // Replace 'and' with punctuation
-          if (preg_match("~ ([Aa]nd|\&) ([\w\W]+)$~", $author_param, $match)){
+          if (preg_match("~ ([Aa]nd|\&) ([\w\W]+)$~U", $author_param, $match)){
             if (strpos($author_param, ';')  // Already includes a ;
               || !strpos($author_param, ',') // No commas - can't hurt to divide with ;
               || strpos($match[2], ',') // Commas after the and - commas can't be used to divide authors
@@ -477,7 +477,8 @@ echo "
             } else {
               $author_param = str_replace(" " . $match[1], ",", $author_param);
             }
-          } 
+          }
+
           // Check to see if there is a translator in the authors list
           if (is('coauthors') || is('coauthor')) {
             $coauthor_param = $p['coauthors'][0]?'coauthors':'coauthor';

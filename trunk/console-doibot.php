@@ -8,9 +8,7 @@ $accountSuffix='_1';
 include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
-
-$ON = true;
-
+$ON = true; // Override later if necessary
 
 function updateQueue() {
   print "** Updating backlog...\nSeeing what links to 'Cite Journal'...";
@@ -41,8 +39,9 @@ function nextPage(){
 	return $result[0];
 }
 #$STOP = true;
-#$page = nextPage();
-#$page = "Banksia aculeata";
-$page = "User:DOI bot/Zandbox";
 $ON = false;
-include("expand.php");
+$page = "User:DOI bot/Zandbox";
+if ($ON) $page = nextPage();
+#$page = "";
+include("expand.php"); // i.e. GO!
+

@@ -376,6 +376,11 @@ function pmArticleDetails($pmid, $id = "pmid"){
             $junior = (substr($subItem, -3) == " Jr")?" Jr":false;
             if ($junior) {
               $subItem = substr($subItem, 0, -3);
+            } else {
+              $junior = (substr($subItem, -4) == " Jr.")?" Jr.":false;
+              if ($junior) {
+                $subItem = substr($subItem, 0, -4);
+              }
             }
             if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
               $result["last$i"] = formatSurname($names[1]) . $junior;
