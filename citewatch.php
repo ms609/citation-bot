@@ -3,7 +3,7 @@
 // $Id: $
 
 $accountSuffix = '_2';
-$editInitiator = '[cw]';
+$editInitiator = '[cw'. revisionID() . ']';
 require_once("wikiFunctions.php");
 require_once("expandFns.php"); // includes login
 require_once("DOItools.php"); // Must come after bot initialised

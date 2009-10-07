@@ -43,7 +43,7 @@
 ## Set up - including dotDecode array
 include("expandFns.php");
 $htmlOutput=true;
-$editInitiator = '[U]';
+$editInitiator = '[U' . revisionID() . ']';
 
 ###
 

@@ -1,13 +1,14 @@
 <?
-// $Id: $
+// $Id$
+
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
 $fastMode=false;
-$editInitiator = '[Pu41]';
+$editInitiator = '[Pu' . revisionID() . ']';
 $accountSuffix='_1';
 
 $ON = true;
-$ON = false;
+#$ON = false;
 include("expandFns.php");
 
 function nextPage(){
@@ -42,6 +43,6 @@ function nextPage(){
 }
 
 #$page = nextPage();
-#$page = "Banksia prionotes";
-$page = "User:DOI bot/Zandbox";
+$page = "Banksia aculeata";
+#$page = "User:DOI bot/Zandbox";
 include("expand.php");

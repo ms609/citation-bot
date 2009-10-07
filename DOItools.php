@@ -1,5 +1,4 @@
 <?
-// $Id: $
 
 $bot = new Snoopy();
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
@@ -27,6 +26,13 @@ if (preg_match_all('~\n\*\s*(.+)~', $bot->results, $dontCaps)) {
 		$unCapped[] = ' ' . trim($o) . ' ';
 		$dontCap[] = ' ' . trim((strlen(str_replace(array("[", "]"), "", trim($o)))>6)?mb_convert_case($o, MB_CASE_TITLE, "UTF-8"):$o) . ' ';
 	}
+}
+
+/** Returns revision number */
+function revisionID() {
+    $svnid = '$Rev$';
+    $scid = substr($svnid, 6);
+    return intval(substr($scid, 0, strlen($scid) - 2));
 }
 
 function is($key){

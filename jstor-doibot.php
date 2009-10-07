@@ -1,10 +1,9 @@
 <?
-// $Id: $
 
 error_reporting(E_ALL^E_NOTICE);
 $slowMode=false;
 $fastMode=false;
-$editInitiator = '[Pu]';
+$editInitiator = '[Pu'. revisionID() . ']';
 $accountSuffix='_1';
 
 $ON = true;
