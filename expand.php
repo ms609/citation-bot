@@ -360,10 +360,6 @@ echo "
 //  * Tidying up existing parameters (and we'll do more tidying here too)
 //
 ###########################
-
-          // The phrase 'et al' should not be included in the authors parameter.
-          // It is discouraged and may be mistaken for an author by the bot.
-          $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)~", "", $p['author'][0]);
           
 					$journal = is("periodical")?"periodical":"journal";
 					// See if we can use any of the parameters lacking equals signs:
@@ -426,10 +422,52 @@ echo "
 					preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
 
 					//Authors
+          // Move authors -> author
 					if (isset($p["authors"]) && !isset($p["author"][0])) {
 						$p["author"] = $p["authors"];
 						unset($p["authors"]);
 					}
+
+          $authors_missing = false; // reset
+          // The phrase 'et al' should not be included in the authors parameter.
+          // It is discouraged and may be mistaken for an author by the bot.
+          // If it is present, we will search for more authors when we get the chance - set $authors_missing = true
+          if (is('author')) {
+            if (preg_match("~([,.; ]+)'*et al['.]*(?!\w)~", $p['author'][0], $match)) {
+              $chars = count_chars($p['author'][0]);
+              if ($chars[ord(";")] > 0) {
+                $truncate_after = $chars[ord(";")];
+                if (strpos($match[0], ';') === false) {
+                  $truncate_after++;
+                }
+              } elseif ($chars[ord(",")] > 0) {
+                $truncate_after = $chars[ord(",")];
+                if (strpos($match[0], ',') === false) {
+                  $truncate_after++;
+                }
+              }
+              $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)~", "", $p['author'][0]);
+              print " - $truncate_after authors then <i>et al</i>. Will grow list later.";
+              $authors_missing = true;
+              ifNullSet('display-authors', $truncate_after);
+            }
+          }
+          exit;
+          $author_param = trim($p['author'][0]);
+          if (preg_match_all("~([\w+\-. ]+\s+[\w+. ]+),~", $author_param, $matches)) {
+            $last_author = preg_replace("~[\w+\-. ]+\s+[\w+. ]+,~", "", $author_param);
+            $matches[1][] = $last_author;
+            unset($p['author']);
+            $au_i = 0;
+            foreach ($matches[1] as $author) {
+              $au_i++;
+              set ("author" . $au_i, $author);
+            }
+            set('author-separator', ',');
+            set('author-name-separator', '');
+          }
+
+          // Use semi-colons to split authors
 					preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
 					if (!$firstauthor[0]) {
 						preg_match("~[^.,;\s]{2,}~", $p["author1"][0], $firstauthor);
@@ -570,7 +608,7 @@ echo "
 
 
           if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)
-            ||preg_match("~10.2307/(\d+)~", $p['doi'][0], $jid)
+            || preg_match("~10.2307/(\d+)~", $p['doi'][0], $jid)
               ) {
             print "\n - Checking JSTOR record {$jid[0]} for data.";
             $newData = jstorData($jid[1]);
@@ -960,7 +998,7 @@ Done.  Just a couple of things to tweak now...";
 					if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
 					if (is($param)) $pEnd[$param] = $v[0];
 				}
-				$p=null;
+				$p = null;
 				if ($pEnd)
 					foreach ($pEnd as $param => $value)
 						if (!$pStart[$param]) {
@@ -1008,7 +1046,7 @@ Done.  Just a couple of things to tweak now...";
             $smartSum = "Removed redundant parameters. ";
           }
         }
-				echo "\n$smartSum\n";
+				echo "$smartSum";
 				$editSummary = $editSummaryStart . $editInitiator . $smartSum . $editSummaryEnd;
 				if ($ON) {
 					if ( strpos($page, "andbox")>1) {
