@@ -383,6 +383,8 @@ function pmArticleDetails($pmid, $id = "pmid"){
           }
         }
       break; case "LangList":
+        break; // Disabled at the request of EUBULIDES
+      /*
         foreach ($item->Item as $subItem) {
             if ($subItem["Name"] == "Lang" && $subItem != "English" && $subItem != "Undetermined") {
               $result ["language"] = (string) $subItem;
@@ -392,7 +394,7 @@ function pmArticleDetails($pmid, $id = "pmid"){
               }
             }
           }
-			break; case "ArticleIds":
+			break; */case "ArticleIds":
 				foreach ($item->Item as $subItem) {
 					switch ($subItem["Name"]) {
 						case "pubmed":
