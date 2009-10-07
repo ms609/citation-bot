@@ -59,6 +59,17 @@ function myIP(){
 	}
 }
 
+/*underTwoAuthors
+  * Return true if 0 or 1 author in $author; false otherwise
+ */
+function underTwoAuthors($author) {
+  $chars = count_chars(trim($author));
+  if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 2 || $chars[ord(",")] > 1) {
+    return false;
+  }
+  return true;
+}
+
 function ifNullSet($param, $value){
 	global $p;
   if (substr($param, strlen($param)-3, 1) > 0 || substr($param, strlen($param)-2) > 10) {
@@ -80,9 +91,16 @@ function ifNullSet($param, $value){
        set ($param, $value);
       }
 			break;
+		case "first": case "first1":
+      if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == ""
+        && trim($p["author"][0]) == "" && trim ($p['author1'][0]) == "") {
+        set ($param, $value);
+      }
+      break;
 		case "coauthor": case "coauthors":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
 			if (trim($p["last2"][0])=="" && trim($p["coauthor"][0])=="" &&trim($p["coauthors"][0])=="" && trim($p["author"][0])=="" && trim($value)!="") {
+        // Note; we shouldn't be using this parameter ever....
         set ($param, $value);
       }
 			break;
@@ -90,19 +108,13 @@ function ifNullSet($param, $value){
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
 			if (trim($p[$param][0]) == ""
           && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
-          && trim($p["author"][0]) == "")  {
+          && underTwoAuthors($p['author'][0]))  {
         set ($param, $value);
       }
-			break;
-		case "first": case "first1":
-      if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == ""
-        && trim($p["author"][0]) == "" && trim ($p['author1'][0]) == "") {
-        set ($param, $value);
-      }
-      break;
+			break;;
     case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10":
 			if (trim($p[$param][0]) == ""
-        && trim($p["author"][0]) == "" && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
+        && underTwoAuthors($p['author'][0]) && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
         && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
         && trim($value) != "")  {
         set ($param, $value);

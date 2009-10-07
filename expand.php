@@ -610,7 +610,7 @@ echo "
                 }
                 ifNullSet("title", $crossRef->article_title);
                 ifNullSet("year", $crossRef->year);
-                if (!is("author") && !is("last1") && !is("last") && $crossRef->contributors->contributor) {
+                if ($crossRef->contributors->contributor) {
                   $authors=null;
                   $au_i = 0;
                   foreach ($crossRef->contributors->contributor as $author) {
