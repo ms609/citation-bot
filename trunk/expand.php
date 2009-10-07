@@ -1,6 +1,8 @@
 <?php
-// $Id: $
+// $Revision$
+// $Id$
 
+print 'Using expand.php $Revision$';
 
 function loadParam($param, $value, $equals, $pipe) {
   global $p;
