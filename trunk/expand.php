@@ -508,8 +508,28 @@ echo "
             $p['author'][0] = $author_param;
           }
 
+          // Split author list into individual authors using semi-colon.
+          if (strpos($author_param, ';') && !is('author2') && !is('last2')) {
+            $auths = explode(';', $author_param);
+            unset($p['author']);
+            foreach ($auths as $au_i => $auth) {
+              if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $auth, $match)) {
+                ifNullSet("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
+                $auth = $match[3];
+              }
+              $jr_test = jrTest($auth);
+              $auth = $jr_test[0];
+              if (strpos($auth, ',')) {
+                $au_bits = explode(',', $auth);
+                set('last' . ($au_i+1), $au_bits[0] . $jr_test[1]);
+                set('first' . ($au_i+1), $au_bits[1]);
+              } else {
+                set('author' . ($au_i+1), $auth . $jr_test[1]);
+              }
+            }
+          }
           // Try using commas to split authors
-          if (preg_match_all("~([\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+),~u", $author_param, $matches)) {
+          elseif (preg_match_all("~([\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+),~u", $author_param, $matches)) {
             // \p{L} matches any letter, including special characters.  \p{M} matches diacritical marks, etc.  Remember the u flag at the end of the expression!
             $last_author = preg_replace("~[\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+,~u", "", $author_param);
             $matches[1][] = $last_author;
@@ -524,22 +544,6 @@ echo "
               $p['author-name-separator'][0] = "";
             }
           }
-
-
-        // Split author list into individual authors using semi-colon.
-        if (strpos($author_param, ';') && !is('author2') && !is('last2')) {
-          $auths = explode(';', $author_param);
-          unset($p['author']);
-          foreach ($auths as $au_i => $auth) {
-             if (strpos($auth, ',')) {
-                $au_bits = explode(',', $auth);
-                set('last' . ($au_i+1), $au_bits[0]);
-                set('first' . ($au_i+1), $au_bits[1]);
-             } else {
-               set('author' . ($au_i+1), $auth);
-             }
-          }
-        }
 
           // Detect first author.
 					preg_match("~[^.,;\s]{2,}~", $author_param, $firstauthor);
