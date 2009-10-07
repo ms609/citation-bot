@@ -465,8 +465,36 @@ echo "
             }
           }
           
-          // Check to see if there is a translator in the authors list
           $author_param = trim($p['author'][0]);
+          print "\n" . $author_param;
+          // Replace 'and' with punctuation
+          if (preg_match("~ ([Aa]nd|\&) ([\w\W]+)$~", $author_param, $match)){
+            if (strpos($author_param, ';')  // Already includes a ;
+              || !strpos($author_param, ',') // No commas - can't hurt to divide with ;
+              || strpos($match[2], ',') // Commas after the and - commas can't be used to divide authors
+            ) {
+              $author_param = str_replace(" " . $match[1], ";", $author_param);
+            } else {
+              $author_param = str_replace(" " . $match[1], ",", $author_param);
+            }
+          } 
+          // Check to see if there is a translator in the authors list
+          if (is('coauthors') || is('coauthor')) {
+            $coauthor_param = $p['coauthors'][0]?'coauthors':'coauthor';
+            $coauthor_value = $p[$coauthor_param];
+            $coauth = $coauthor_value[0];
+            if (strpos($coauth, ';') || strpos($author_param, ',')) {
+              $author_param .= "; " . $coauth;
+            } else {
+              $author_param .= ", " . $coauth;
+            }
+            unset($p['coauthors']);
+            unset($p['coauthor']);
+          } else {
+            $coauth = null;
+          }
+
+          // Check for translator in author_param and remove if necessary.
           $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
           if (preg_match($translator_regexp, $author_param, $match)) {
             if (is('others')) {
@@ -474,6 +502,7 @@ echo "
             } else {
               set ("others", "{$match[1]} {$match[5]}");
             }
+            // Remove translator from both author_parm and $p
             $author_param = preg_replace($translator_regexp, "", $author_param);
             $p['author'][0] = $author_param;
           }
@@ -490,11 +519,29 @@ echo "
               set ("author" . $au_i, $author);
             }
             set('author-separator', ',');
-            $p['author-name-separator'][0] = "";
+            if (is('last2')) {
+              $p['author-name-separator'][0] = "";
+            }
           }
 
-          // Use semi-colons to split authors
-					preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
+
+        // Split author list into individual authors using semi-colon.
+        if (strpos($author_param, ';') && !is('author2') && !is('last2')) {
+          $auths = explode(';', $author_param);
+          unset($p['author']);
+          foreach ($auths as $au_i => $auth) {
+             if (strpos($auth, ',')) {
+                $au_bits = explode(',', $auth);
+                set('last' . ($au_i+1), $au_bits[0]);
+                set('first' . ($au_i+1), $au_bits[1]);
+             } else {
+               set('author' . ($au_i+1), $auth);
+             }
+          }
+        }
+
+          // Detect first author.
+					preg_match("~[^.,;\s]{2,}~", $author_param, $firstauthor);
 					if (!$firstauthor[0]) {
 						preg_match("~[^.,;\s]{2,}~", $p["author1"][0], $firstauthor);
 					}
@@ -504,6 +551,11 @@ echo "
 					if (!$firstauthor[0]) {
 						preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
 					}
+
+          // If we had no luck extractinc authors from the coauthors parameter, we'd better restore it.
+          if ($coauth && !is('author2') && !is('last2')) {
+            $p[$coauthor_param] = $coauthor_value;
+          }
 
 					// Is there already a date parameter?
 					$dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
@@ -698,7 +750,6 @@ echo "
 
           }
         }
-
 #####################################
 //
 if ($citedoi && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
@@ -766,6 +817,8 @@ Done.  Just a couple of things to tweak now...";
 //
 #####################################
 
+          
+          // Check that the URL functions, and mark as dead if not.
           if (!is("format") && is("url") && !is("accessdate")){
             print "\n - Checking that URL is live...";
             $formatSet = isset($p["format"]);
@@ -778,12 +831,15 @@ Done.  Just a couple of things to tweak now...";
 				}
 
 				// Now wikify some common formatting errors - i.e. tidy up!
+        //Format title
 				if (!trim($pStart["title"]) && isset($p["title"][0])) {
           $p["title"][0] = formatTitle($p["title"][0]);
         }
+        // Neaten capitalisation for journal
 				if (isset($p[$journal][0])) {
           $p[$journal][0] = niceTitle($p[$journal][0], false);
         }
+        // Use en-dashes in page ranges
 				if (isset($p["pages"][0])) {
           if (mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
             $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
@@ -794,16 +850,6 @@ Done.  Just a couple of things to tweak now...";
 				if ($dateToStartWith) {
           unset($p["year"]);
         }
-
-        // Split author list into individual authors
-        if (strpos($p['author'][0], ';') && !is('author2')) {
-          $auths = explode(';', $p['author'][0]);
-          unset($p['author']);
-          foreach ($auths as $au_i => $auth) {
-             set('author' . ($au_i+1), $auth);
-          }
-        }
-        
         
         // Check each author for embedded author links
           for ($au_i = 1; $au_i < 10; $au_i++) {
@@ -818,7 +864,6 @@ Done.  Just a couple of things to tweak now...";
         if (strpos($page, 'ite doi') || strpos($page, 'ite_doi')) {
           citeDoiOutputFormat();
         }
-
 
         // Unset authors above 'author9' - the template won't render them.
         for ($au_i = 10; is("authors$au_i") || is ("last$au_i"); $au_i++){
@@ -837,18 +882,15 @@ Done.  Just a couple of things to tweak now...";
 					ELSE if (!$brokenDoi) unset($p["doi_brokendate"]);
 					echo $brokenDoi?" It isn't.":"OK!", "</p>";
 				}
-				/*if (!$p["url"]){
-					unset($p["format"]/*, $p["accessdate"], $p["accessyear"], $p["accessmonthday"], $p["accessmonth"], $p["accessday"]);
-				}elseif (!$p["url"][0]){
-					unset($p["format"][0]/*, $p["accessdate"][0], $p["accessyear"][0], $p["accessmonthday"], $p["accessmonth"][0], $p["accessday"][0]);
-				}*/
+
 				//DOIlabel is now redundant
 				unset($p["doilabel"]);
+        // See http://en.wikipedia.org/wiki/Category:Citation_templates_using_redundant_parameters for pages still using it.
 
         //Edition - don't want 'Edition ed.'
         if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
 
-				//because of cite journal doc...
+				// Remove publisher if [cite journal/doc] warrants it
 				if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
 
 				// If we have any unused data, check to see if any is redundant!
