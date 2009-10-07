@@ -76,6 +76,25 @@ function underTwoAuthors($author) {
   return true;
 }
 
+/* jrTest - tests a name for a Junior appelation
+ *  Input: $name - the name to be tested
+ * Output: array ($name without Jr, if $name ends in Jr, Jr)
+ */
+function jrTest($name) {
+  $junior = (substr($name, -3) == " Jr")?" Jr":false;
+  if ($junior) {
+    $name = substr($name, 0, -3);
+  } else {
+    $junior = (substr($name, -4) == " Jr.")?" Jr.":false;
+    if ($junior) {
+      $name = substr($name, 0, -4);
+    }
+  }
+  if (substr($name, -1) == ",") {
+    $name = substr($name, 0, -1);
+  }
+  return array($name, $junior);
+}
 function ifNullSet($param, $value){
 	global $p;
   if (substr($param, strlen($param)-3, 1) > 0 || substr($param, strlen($param)-2) > 10) {
@@ -373,15 +392,9 @@ function pmArticleDetails($pmid, $id = "pmid"){
 				foreach ($item->Item as $subItem) {
           $i++;
           if (authorIsHuman((string) $subItem)) {
-            $junior = (substr($subItem, -3) == " Jr")?" Jr":false;
-            if ($junior) {
-              $subItem = substr($subItem, 0, -3);
-            } else {
-              $junior = (substr($subItem, -4) == " Jr.")?" Jr.":false;
-              if ($junior) {
-                $subItem = substr($subItem, 0, -4);
-              }
-            }
+            $jr_test = jrTest($subItem);
+            $subItem = $jr_test[0];
+            $junior = $jr_test[1];
             if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
               $result["last$i"] = formatSurname($names[1]) . $junior;
               $result["first$i"] = formatForename($names[2]);
