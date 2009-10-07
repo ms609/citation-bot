@@ -454,9 +454,21 @@ echo "
               ifNullSet('display-authors', $truncate_after);
             }
           }
+          
+          // Check to see if there is a translator in the authors list
+          $author_param = trim($p['author'][0]);
+          $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+          if (preg_match($translator_regexp, $author_param, $match)) {
+            if (is('others')) {
+              $p['others'][0] .= "; {$match[1]} {$match[5]}";
+            } else {
+              set ("others", "{$match[1]} {$match[5]}");
+            }
+            $author_param = preg_replace($translator_regexp, "", $author_param);
+            $p['author'][0] = $author_param;
+          }
 
           // Try using commas to split authors
-          $author_param = trim($p['author'][0]);
           if (preg_match_all("~([\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+),~u", $author_param, $matches)) {
             // \p{L} matches any letter, including special characters.  \p{M} matches diacritical marks, etc.  Remember the u flag at the end of the expression!
             $last_author = preg_replace("~[\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+,~u", "", $author_param);
@@ -779,7 +791,7 @@ Done.  Just a couple of things to tweak now...";
           $auths = explode(';', $p['author'][0]);
           unset($p['author']);
           foreach ($auths as $au_i => $auth) {
-             set('author' . ($au_i+1), formatAuthor($auth));
+             set('author' . ($au_i+1), $auth);
           }
         }
         

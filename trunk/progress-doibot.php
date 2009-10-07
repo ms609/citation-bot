@@ -10,4 +10,4 @@ print "\nStatus: done " . mysql_num_rows($result).  " pages " . (($date>0)?" sin
 $result = mysql_query ("SELECT * FROM citation ORDER BY fast ASC") or die(mysql_error());
 print mysql_num_rows($result)." in database.\nOldest page: ";
 $row =  mysql_fetch_array($result, MYSQL_ASSOC);
-print $row['page'] . " - edited on " . $row['fast'] . " by revision " . $row['revision'] . "\n";
+print $row['page'] . " - checked on " . $row['fast'] . " by revision " . $row['revision'] . "\n";

@@ -7,10 +7,10 @@ $fastMode=false;
 $accountSuffix='_1';
 include("expandFns.php");
 $htmlOutput = false;
-$editInitiator = '[Pu' . revisionID() . 'a]';
+$editInitiator = '[Pu' . revisionID() . ']';
 
 $ON = true;
-$ON = false;
+#$ON = false;
 
 function updateQueue() {
   print "** Updating backlog...\nSeeing what links to 'Cite Journal'...";
@@ -33,7 +33,7 @@ function updateQueue() {
 
 function nextPage(){
 	#return 'User:DOI bot/Zandbox';
-	die ("\n**EXIT: nextPage is disabled!\n");
+	#die ("\n**EXIT: nextPage is disabled!\n");
   //return 'Template:Cite doi/10.1001.2Farchinternmed.2009.6';
 	global $db;
 	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
@@ -42,7 +42,7 @@ function nextPage(){
 	return $result[0];
 }
 
-#$page = nextPage();
+$page = nextPage();
 #$page = "Banksia aculeata";
-$page = "User:DOI bot/Zandbox";
+#$page = "User:DOI bot/Zandbox";
 include("expand.php");
