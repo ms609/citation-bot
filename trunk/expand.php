@@ -452,7 +452,6 @@ echo "
               ifNullSet('display-authors', $truncate_after);
             }
           }
-          exit;
           $author_param = trim($p['author'][0]);
           if (preg_match_all("~([\w+\-. ]+\s+[\w+. ]+),~", $author_param, $matches)) {
             $last_author = preg_replace("~[\w+\-. ]+\s+[\w+. ]+,~", "", $author_param);
@@ -478,6 +477,7 @@ echo "
 					if (!$firstauthor[0]) {
 						preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
 					}
+
 					// Is there already a date parameter?
 					$dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
 
@@ -655,7 +655,7 @@ echo "
                     $au_i++;
                     if ($au_i < 10) {
                       ifNullSet("last$au_i", formatSurname($author->surname));
-                      ifNullSet("first$au_i", formatInitials($author->given_name));
+                      ifNullSet("first$au_i", formatForename($author->given_name));
                     }
                   }
                 }
@@ -768,6 +768,8 @@ Done.  Just a couple of things to tweak now...";
 				if ($dateToStartWith) {
           unset($p["year"]);
         }
+
+        // Split author list into individual authors
         if (strpos($p['author'][0], ';') && !is('author2')) {
           $auths = explode(';', $p['author'][0]);
           unset($p['author']);
@@ -775,6 +777,17 @@ Done.  Just a couple of things to tweak now...";
              set('author' . ($au_i+1), formatAuthor($auth));
           }
         }
+        
+        
+        // Check each author for embedded author links
+          for ($au_i = 1; $au_i < 10; $au_i++) {
+            if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p["author$au_i"][0], $match)) {
+              ifNullSet("authorlink$au_i", $match[2]?$match[2]:$match[3]);
+              set("author$au_i", formatAuthor($match[3]));
+              print "Dissecting authorlink";
+            }
+          }
+
         // If we're on a Cite Doi page, format authors accordingly
         if (strpos($page, 'ite doi') || strpos($page, 'ite_doi')) {
           citeDoiOutputFormat();
