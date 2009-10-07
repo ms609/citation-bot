@@ -414,6 +414,16 @@ echo "
 					}
 					$doiToStartWith = isset($p["doi"]);
 
+          // co-authors
+          if (is('co-author') && !is('coauthors') && !is('coauthor')) {
+            $p['coauthor'] = $p['co-author'];
+            unset($p['co-author']);
+          }
+          if (is('co-authors') && !is('coauthors') && !is('coauthor')) {
+            $p['coauthors'] = $p['co-authors'];
+            unset($p['co-authors']);
+          }
+
 					//volume
 					if (isset($p["vol"]) && !isset($p["volume"][0])) {$p["volume"] = $p["vol"]; unset($p["vol"]);}
 
@@ -509,7 +519,6 @@ echo "
 //  Now we have got the citation ship-shape, let's try to find a DOI.
 //
 #####################################
-
 
 
 						//Try CrossRef
