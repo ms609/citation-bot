@@ -439,11 +439,12 @@ echo "
 						$p["author"] = $p["authors"];
 						unset($p["authors"]);
 					}
-
+/*
           $authors_missing = false; // reset
           // The phrase 'et al' should not be included in the authors parameter.
           // It is discouraged and may be mistaken for an author by the bot.
           // If it is present, we will search for more authors when we get the chance - set $authors_missing = true
+
           if (is('author')) {
             if (preg_match("~([,.; ]+)'*et al['.]*(?!\w)~", $p['author'][0], $match)) {
               $chars = count_chars($p['author'][0]);
@@ -544,7 +545,8 @@ echo "
               $p['author-name-separator'][0] = "";
             }
           }
-
+/* END OF AUTHOR SEPARATION
+*/
           // Detect first author.
 					preg_match("~[^.,;\s]{2,}~", $author_param, $firstauthor);
 					if (!$firstauthor[0]) {
