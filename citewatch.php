@@ -2,9 +2,9 @@
 <?php
 // $Id$
 
+$accountSuffix = '_2'; // Before expandfunctions
 require_once("expandFns.php"); // includes login
 
-$accountSuffix = '_2';
 $editInitiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
 

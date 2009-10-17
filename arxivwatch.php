@@ -2,11 +2,11 @@
 <?php
 // $Id: $
 
+$accountSuffix = '_2'; // Comes before expandFns, which contains login call
 require_once("expandFns.php"); //Must include first
 require_once("DOItools.php");
 require_once("wikiFunctions.php");
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
-$accountSuffix = '_2';
 $editInitiator = '[ax'. revisionID() . ']';
 $htmlOutput = false;
 
