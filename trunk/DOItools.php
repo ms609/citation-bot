@@ -116,7 +116,7 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
 			break;
-		case "first": case "first1":
+		case "first": case "first1": case "author1":
       if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == ""
         && trim($p["author"][0]) == "" && trim ($p['author1'][0]) == "") {
         set ($param, $value);
@@ -132,7 +132,7 @@ function ifNullSet($param, $value){
 		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": case "last10":
 		case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9": case "author10":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p[$param][0]) == "" && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
+			if (trim($p["last" . substr($param, -1)][0]) && trim($p["author" . substr($param, -1)][0]) == ""
           && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
           && underTwoAuthors($p['author'][0]))  {
         set ($param, $value);
