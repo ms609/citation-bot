@@ -559,7 +559,7 @@ echo "
 						preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
 					}
 
-          // If we had no luck extractinc authors from the coauthors parameter, we'd better restore it.
+          // If we had no luck extracting authors from the coauthors parameter, we'd better restore it.
           if ($coauth && !is('author2') && !is('last2')) {
             $p[$coauthor_param] = $coauthor_value;
           }
@@ -638,19 +638,6 @@ echo "
             $details = pmArticleDetails($results[0]);
             foreach ($details as $key=>$value) {
               ifNullSet ($key, $value);
-            }
-            if (false && !is("url")) { // BUGGY - CHECK PMID DATABASES
-              if (!is('pmc')) {
-              $url = pmFullTextUrl($p["pmid"][0]);
-							} else {
-								unset ($p['url']);
-							}
-              if ($url) {
-                set ("url", $url);
-                if ($citedoi) {
-                  # set ("format", "Free full text"); // Don't do this any more.
-                }
-              }
             }
             echo " 1 result found; citation updated";
             if (!is('doi')) {
@@ -1138,11 +1125,11 @@ Done.  Just a couple of things to tweak now...";
 				$editSummary = $editSummaryStart . $editInitiator . $smartSum . $editSummaryEnd;
 				if ($ON) {
 					if ( strpos($page, "andbox")>1) {
-							echo $htmlOutput?"<i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
+							echo $htmlOutput?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
 							write($page . $_GET["subpage"], $pagecode, $editInitiator . "Citation maintenance: Fixing/testing bugs. "
 								.	"Problems? [[User_talk:Smith609|Contact the bot's operator]]. ");
 						} else {
-							echo "<i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> ... ";
+							echo "<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> ... ";
 							if (write($page . $_GET["subpage"], $pagecode, $editSummary)) {
 								updateBacklog($page);
 								echo "Success.";
