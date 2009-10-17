@@ -130,13 +130,14 @@ function ifNullSet($param, $value){
       }
 			break;
 		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": case "last10":
+		case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9": case "author10":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
 			if (trim($p[$param][0]) == "" && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
           && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
           && underTwoAuthors($p['author'][0]))  {
         set ($param, $value);
       }
-			break;;
+			break;
     case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10":
 			if (trim($p[$param][0]) == ""
         && underTwoAuthors($p['author'][0]) && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
@@ -174,7 +175,7 @@ function nothingMissing($journal){
         && (is("pages") || is("page"))
         && is("title")
         && (is("date") || is("year"))
-        && (is("author2") || is("last2"))
+        && (is("author2") || is("author2"))
         && !$authors_missing
   );
 }
@@ -187,7 +188,7 @@ function getDataFromArxiv($a) {
       if ($i<10) {
         $name = $auth->name;
         if (preg_match("~(.+\.)(.+?)$~", $name, $names)){
-          ifNullSet("last$i", $names[2]);
+          ifNullSet("author$i", $names[2]);
           ifNullSet("first$i", $names[1]);
           $p["first$i"][1] = " | ";
         }
@@ -239,10 +240,10 @@ function jstorData($jid){
     foreach ($xml->front->{'article-meta'}->{'contrib-group'}->contrib as $author) {
       $i++;
       if ($author->name->xref) {
-        $result['last' . ($i>1?$i:"")] = (string) $author->name->xref->surname;
+        $result['author' . ($i>1?$i:"")] = (string) $author->name->xref->surname;
         $forenames = (string) $author->name->xref->{'given-names'};
       } else {
-        $result['last' . ($i>1?$i:"")] = (string) $author->name->surname;
+        $result['author' . ($i>1?$i:"")] = (string) $author->name->surname;
         $forenames = (string) $author->name->{'given-names'};
       }
       $forenames = explode(' ', $forenames);
@@ -262,7 +263,7 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 		$url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
 		if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
 		if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
-		if ($author) $url .= "&aulast=" . urlencode($author);
+		if ($author) $url .= "&auauthor=" . urlencode($author);
 		if ($year) $url .= "&date=" . urlencode($year);
 		if ($volume) $url .= "&volume=" . urlencode($volume);
 		if ($startpage) $url .= "&spage=" . urlencode($startpage);
@@ -295,7 +296,7 @@ function textToSearchKey($key){
 	switch (strtolower($key)){
 		case "doi": return "AID";
 		case "author": case "author1": return "Author";
-		case "last": case "last1": return "Author";
+		case "author": case "author1": return "Author";
 		case "issue": return "Issue";
 		case "journal": return "Journal";
 		case "pages": case "page": return "Pagination";
@@ -355,14 +356,14 @@ function pmSearchResults($p){
       if ($results[1] == 1) return $results;
     }
 
-    if (is("title") && (is("author") || is("last") || is("author1") || is("last1"))) {
-      $results = pmSearch($p, array("title", "author", "last", "author1", "last1"));
+    if (is("title") && (is("author") || is("author") || is("author1") || is("author1"))) {
+      $results = pmSearch($p, array("title", "author", "author", "author1", "author1"));
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
-        $results = pmSearch($p, array("title", "author", "last", "author1", "last1", "year", "date"));
+        $results = pmSearch($p, array("title", "author", "author", "author1", "author1", "year", "date"));
         if ($results[1] == 1) return $results;
         if ($results[1] > 1) {
-          $results = pmSearch($p, array("title", "author", "last", "author1", "last1", "year", "date", "volume", "issue"));
+          $results = pmSearch($p, array("title", "author", "author", "author1", "author1", "year", "date", "volume", "issue"));
           if ($results[1] == 1) return $results;
         }
       }
@@ -396,7 +397,7 @@ function pmArticleDetails($pmid, $id = "pmid"){
             $subItem = $jr_test[0];
             $junior = $jr_test[1];
             if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-              $result["last$i"] = formatSurname($names[1]) . $junior;
+              $result["author$i"] = formatSurname($names[1]) . $junior;
               $result["first$i"] = formatForename($names[2]);
             }
           } else {
@@ -472,8 +473,8 @@ function findISBN($title, $auth=false){
 function getInfoFromISBN(){
 	global $p, $isbnKey;
 	$params = array("author"=>"author", "year"=>"year", "publisher"=>"publisher", "location"=>"city", "title"=>"title"/*, "oclc"=>"oclcnum"*/);
-	if (is("last") || is("first") || is("last1") ||
-			is("editor") || is("editor-last") || is("editor-last1") || is("editor1-last")
+	if (is("author") || is("first") || is("author1") ||
+			is("editor") || is("editor-author") || is("editor-author1") || is("editor1-author")
 			|| is("author") || is("author1")) unset($params["author"]);
 	if (is("publisher")) {unset($params["location"]); unset($params["publisher"]);}
 	if (is("title")) unset ($params["title"]);
@@ -492,7 +493,7 @@ function getInfoFromISBN(){
 		$xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=isbn&value1=". urlencode($p["isbn"][0]));
 		if ($xml->BookList["total_results"] >0){
 			$params = array("title"=>"Title", "author"=>"AuthorsText", "publisher"=>"PublisherText");
-			if (is("last") || is("first") || is("last1") || is("author1")) unset($params["author"]);
+			if (is("author") || is("first") || is("author1") || is("author1")) unset($params["author"]);
 			foreach ($params as $key => $value)	if (!is($key)) $p[$key][0] = niceTitle((string) $xml->BookList->BookData->$value);
 		} else if ($xml->ErrorMessage) print "<p class=warning>Error: Daily limit of ISBN queries has been exceeded!</p>";
 		else $p["ISBN-status"][0] = "May be invalid - please double check";
@@ -803,14 +804,14 @@ function checkTextForMetas($text){
 
   // Now $newp contains the wiki name and the meta tag's value.  We may have multiple values, especially for the author field.
   // We only want to fiddle with authors if there are none specified.
-	if (!is('author') && !is('author1') && !is('last') && !is('last1')) {
+	if (!is('author') && !is('author1') && !is('author') && !is('author1')) {
     foreach ($newp['author'] as $auth) {
       $author_list .= "$auth;";
     }
     $authors = formatAuthors($author_list, true);
     foreach ($authors as $no => $auth) {
       $names = explode (', ', $auth);
-      $newp["last" . ($no + 1)] = $names[0];
+      $newp["author" . ($no + 1)] = $names[0];
       $newp["first" . ($no + 1)] = $names[1];
     }
   }
@@ -1146,7 +1147,7 @@ function formatTitle($title){
 	return	str_ireplace($iIn, $iOut, str_replace($in, $out, niceTitle($title))); // order IS important!
 }
 
-/** Format authors according to last = Surname; first= N.E.
+/** Format authors according to author = Surname; first= N.E.
  * Requires the global $p
 **/
 function citeDoiOutputFormat() {
@@ -1155,7 +1156,7 @@ function citeDoiOutputFormat() {
   for ($i = null; $i < 10; $i++) {
     if (strpos($p["author$i"][0], ', ')) {
       $au = explode(', ', $p["author$i"][0]);
-      set("last$i", $au[0]);
+      set("author$i", $au[0]);
       unset($p['author' . ($i)]);
     } else if (is("first$i")) {
       $au[1] = $p["first$i"][0];
@@ -1165,7 +1166,7 @@ function citeDoiOutputFormat() {
     if ($au[1]) {
       set("first$i", strtoupper(preg_replace("~(\w)\w*.? ?~", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
       $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
-      $p["last$i"][1] = "\n| "; // hard-coding first$i will change the default for last$i.
+      $p["author$i"][1] = "\n| "; // hard-coding first$i will change the default for author$i.
     }
   }
   if ($p['pages'][0]) {
@@ -1265,28 +1266,28 @@ function testDoi($doi){
 	return false;
 }
 
-function parameterOrder($first, $last){
+function parameterOrder($first, $author){
   $order = Array(
      "null",
      "author", "author1",
-     "last", "last1",
+     "author", "author1",
      "first", "first1",
      "authorlink", "authorlink1", "author1-link",
-     "coauthors", "author2", "last2", "first2", "authorlink2", "author2-link",
-     "author3", "last3", "first3", "authorlink3", "author3-link",
-     "author4", "last4", "first4", "authorlink4", "author4-link",
-     "author5", "last5", "first5", "authorlink5", "author5-link",
-     "author6", "last6", "first6", "authorlink6", "author6-link",
-     "author7", "last7", "first7", "authorlink7", "author7-link",
-     "author8", "last8", "first8", "authorlink8", "author8-link",
-     "author9", "last9", "first9", "authorlink9", "author9-link",
+     "coauthors", "author2", "author2", "first2", "authorlink2", "author2-link",
+     "author3", "author3", "first3", "authorlink3", "author3-link",
+     "author4", "author4", "first4", "authorlink4", "author4-link",
+     "author5", "author5", "first5", "authorlink5", "author5-link",
+     "author6", "author6", "first6", "authorlink6", "author6-link",
+     "author7", "author7", "first7", "authorlink7", "author7-link",
+     "author8", "author8", "first8", "authorlink8", "author8-link",
+     "author9", "author9", "first9", "authorlink9", "author9-link",
      "editor", "editor1",
-     "editor-last", "editor1-last",
+     "editor-author", "editor1-author",
      "editor-first", "editor1-first",
      "editor-link", "editor1-link", "editor1-link",
-     "editor2", "editor2-last", "editor2-first", "editor2-link", "editor2-link",
-     "editor3", "editor3-last", "editor3-first", "editor3-link", "editor3-link",
-     "editor4", "editor4-last", "editor4-first", "editor4-link", "editor4-link",
+     "editor2", "editor2-author", "editor2-first", "editor2-link", "editor2-link",
+     "editor3", "editor3-author", "editor3-first", "editor3-link", "editor3-link",
+     "editor4", "editor4-author", "editor4-first", "editor4-link", "editor4-link",
      "others",
      "chapter", "trans_chapter",  "chapterurl",
      "title", "trans_title", "language",
@@ -1325,12 +1326,12 @@ function parameterOrder($first, $last){
      "laydate",
      "separator",
      "postscript",
-     "lastauthoramp",
+     "authorauthoramp",
    );
   $first_pos = array_search($first, $order);
-  $last_pos = array_search($last, $order);
-  if ($first_pos && $last_pos) {
-     return array_search($first, $order) - array_search($last, $order);
+  $author_pos = array_search($author, $order);
+  if ($first_pos && $author_pos) {
+     return array_search($first, $order) - array_search($author, $order);
   }
   else return true;
 }
