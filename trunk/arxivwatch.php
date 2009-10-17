@@ -8,6 +8,7 @@ require_once("wikiFunctions.php");
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 $accountSuffix = '_2';
 $editInitiator = '[ax'. revisionID() . ']';
+$htmlOutput = false;
 
 $toDo = categoryMembers("Articles with missing Cite arXiv inputs");
 
