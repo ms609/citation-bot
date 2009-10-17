@@ -1,6 +1,9 @@
 <?
 // $Id: # //
 
+
+die("there are bugs with this implementation.");
+
 $slowMode=false;
 $fastMode=false;
 $editInitiator = '[cDs]';
