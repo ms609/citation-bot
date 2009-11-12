@@ -392,7 +392,7 @@ function pmArticleDetails($pmid, $id = "pmid"){
         $i = 0;
 				foreach ($item->Item as $subItem) {
           $i++;
-          print "$i - $subItem \n";
+          print "\n $i - $subItem";
           if (authorIsHuman((string) $subItem)) {
             $jr_test = jrTest($subItem);
             $subItem = $jr_test[0];
