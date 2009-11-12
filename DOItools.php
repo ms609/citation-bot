@@ -190,7 +190,10 @@ function getDataFromArxiv($a) {
         if (preg_match("~(.+\.)(.+?)$~", $name, $names)){
           ifNullSet("author$i", $names[2]);
           ifNullSet("first$i", $names[1]);
-          $p["first$i"][1] = " | ";
+          // If there's a newline before the forename,, remove it.
+          if (strpos($p["first$i"], "\n" !== false)) {
+            $p["first$i"][1] = " | ";
+          }
         }
         else {
           if (trim($p['author'][0]) == "") ifNullSet("author$i", $name);
