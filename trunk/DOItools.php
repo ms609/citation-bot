@@ -392,7 +392,6 @@ function pmArticleDetails($pmid, $id = "pmid"){
         $i = 0;
 				foreach ($item->Item as $subItem) {
           $i++;
-          print "\n $i - $subItem";
           if (authorIsHuman((string) $subItem)) {
             $jr_test = jrTest($subItem);
             $subItem = $jr_test[0];
@@ -960,13 +959,16 @@ function findMoreAuthors($doi, $a1, $pages) {
 }
 
 function formatSurname($surname){
-	$surname = strtolower(trim($surname));
-	if (substr($surname, 0, 2) == "o'") return "O'" . ucwords(substr($surname, 2));
-	else if (substr($surname, 0, 2) == "mc") return "Mc" . ucwords(substr($surname, 2));
-	else if (substr($surname, 0, 3) == "mac" && strlen($surname) > 5) return "Mac" . ucwords(substr($surname, 3));
-	else if (substr($surname, 0, 1) == "&") return "&" . ucwords(substr($surname, 1));
-	 else return ucwords($surname); // Case of surname
-	 return $surname;
+	$surname = strtolower(trim(str_replace("-", " - ", $surname)));
+	if (substr($surname, 0, 2) == "o'") return "O'" . fmtSurname2(substr($surname, 2));
+	else if (substr($surname, 0, 2) == "mc") return "Mc" . fmtSurname2(substr($surname, 2));
+	else if (substr($surname, 0, 3) == "mac" && strlen($surname) > 5 && !strpos($surname, "-")) return "Mac" . fmtSurname2(substr($surname, 3));
+	else if (substr($surname, 0, 1) == "&") return "&" . fmtSurname2(substr($surname, 1));
+	else return fmtSurname2($surname); // Case of surname
+}
+
+function fmtSurname2($surname){
+  return str_replace(" - ", "-", ucwords($surname));
 }
 function formatForename($forename){
 	return str_replace(array(" ."), "", trim(preg_replace_callback("~\w{4,}~",  create_function(
