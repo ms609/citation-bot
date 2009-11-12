@@ -190,13 +190,13 @@ function getDataFromArxiv($a) {
         if (preg_match("~(.+\.)(.+?)$~", $name, $names)){
           ifNullSet("author$i", $names[2]);
           ifNullSet("first$i", $names[1]);
-          // If there's a newline before the forename,, remove it.
+          // If there's a newline before the forename,, remove it so it displays alongside the surname.
           if (strpos($p["first$i"], "\n" !== false)) {
             $p["first$i"][1] = " | ";
           }
         }
-        else {
-          if (trim($p['author'][0]) == "") ifNullSet("author$i", $name);
+        elseif (trim($p['author'][0]) == "") {
+            ifNullSet("author$i", $name);
         }
       }
 		}
@@ -211,8 +211,9 @@ function getDataFromArxiv($a) {
 
 function crossRefData($doi){
 	global $crossRefId;
-  $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
+  $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:" . str_replace(array("%3C", "%3E"), array("%253C", "%253E"), $doi) . "&noredirect=true";
   $xml = @simplexml_load_file($url);
+  print "\n\n$url\n\n";
 	if ($xml) {
     $result = $xml->query_result->body->query;
   }
