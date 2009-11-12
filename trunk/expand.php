@@ -1226,5 +1226,5 @@ Done.  Just a couple of things to tweak now...";
 	// These variables should change after the first edit
 	$isbnKey = "3TUCZUGQ"; //This way we shouldn't exhaust theISBN key for on-demand users.
 	$isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
-	$editSummaryEnd = " You can [[WP:UCB|use this bot]] yourself! Please [[User:DOI_bot/bugs|report any bugs]].";
+	$editSummaryEnd .= " You can [[WP:UCB|use this bot]] yourself! Please [[User:DOI_bot/bugs|report any bugs]].";
 }

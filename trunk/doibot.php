@@ -44,6 +44,13 @@
 include("expandFns.php");
 $htmlOutput=true;
 $editInitiator = '[U' . revisionID() . ']';
+$user = str_replace(array("[[", "]]", "User:"), "", $_REQUEST['user']);
+
+if (getArticleId("User:$user")) {
+  print "Activated by $user\n";
+  $editInitiator = "r" . revisionID() . "-[[User:$user|$user]]-";
+}
+
 
 ###
 
