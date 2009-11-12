@@ -1171,8 +1171,14 @@ function citeDoiOutputFormat() {
        unset($au);
     }
     if ($au[1]) {
-      set("first$i", strtoupper(preg_replace("~(\w)\w*.? ?~", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
-      $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
+      if (trim(strtoupper(preg_replace("~(\w)\w*.? ?~", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
+        // Don't try to modify if we don't need to change
+        print "Setting:";
+        set("first$i", strtoupper(preg_replace("~(\w)\w*.? ?~", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
+      }
+      if (strpos($p["first$i"][1], "\n") !== false) {
+        $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
+      }
       $p["author$i"][1] = "\n| "; // hard-coding first$i will change the default for author$i.
     }
   }
@@ -1188,7 +1194,7 @@ function citeDoiOutputFormat() {
        }
     }
   }
-  uksort($p, parameterOrder);
+  //uksort($p, parameterOrder);
 }
 
 function curlSetUp($ch, $url){

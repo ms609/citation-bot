@@ -256,8 +256,8 @@ while ($page) {
 					$equals=$oP[2]?$oP[2]:null;
 					if ($pipe) break;
 				}
-				if (!$pipe) $pipe="\n | ";
-				if (!$equals) $equals=" = ";
+				if (!$pipe) $pipe = "\n | ";
+				if (!$equals) $equals = " = ";
 				foreach($p as $param => $v) {
 					if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
 					if (is($param)) $pEnd[$param] = $v[0];
@@ -841,6 +841,7 @@ Done.  Just a couple of things to tweak now...";
 				if (isset($p[$journal][0])) {
           $p[$journal][0] = niceTitle($p[$journal][0], false);
         }
+
         // Use en-dashes in page ranges
 				if (isset($p["pages"][0])) {
           if (mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
@@ -857,7 +858,7 @@ Done.  Just a couple of things to tweak now...";
           for ($au_i = 1; $au_i < 10; $au_i++) {
             if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p["author$au_i"][0], $match)) {
               ifNullSet("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
-              set("author$au_i", $match[3]);
+              set("author$au_i", $match[3]); // Replace author with unlinked version
               print "Dissecting authorlink";
             }
           }
@@ -866,9 +867,9 @@ Done.  Just a couple of things to tweak now...";
         if (strpos($page, 'ite doi') || strpos($page, 'ite_doi')) {
           citeDoiOutputFormat();
         }
-
+        
         // Unset authors above 'author9' - the template won't render them.
-        for ($au_i = 10; is("authors$au_i") || is ("last$au_i"); $au_i++){
+        for ($au_i = 10; is("authors$au_i") || is("last$au_i"); $au_i++){
           unset($p["author$au_i"]);
           unset($p["first$au_i"]);
           unset($p["last$au_i"]);
@@ -925,8 +926,8 @@ Done.  Just a couple of things to tweak now...";
 					$equals=$oP[2]?$oP[2]:null;
 					if ($pipe) break;
 				}
-				if (!$pipe) $pipe="\n | ";
-				if (!$equals) $equals=" = ";
+				if (!$pipe) $pipe = "\n | ";
+				if (!$equals) $equals = " = ";
 				foreach($p as $param => $v) {
 					if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
 					if (is($param)) $pEnd[$param] = $v[0];
@@ -1132,7 +1133,7 @@ Done.  Just a couple of things to tweak now...";
           }
         }
 				echo "$smartSum";
-				$editSummary = $editSummaryStart . $editInitiator . $smartSum . $editSummaryEnd;
+				$editSummary = $editSummaryStart . $editInitiator . $smartSum . $initiatedBy . $editSummaryEnd;
 				if ($ON) {
 					if ( strpos($page, "andbox")>1) {
 							echo $htmlOutput?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
@@ -1228,5 +1229,5 @@ Done.  Just a couple of things to tweak now...";
 	// These variables should change after the first edit
 	$isbnKey = "3TUCZUGQ"; //This way we shouldn't exhaust theISBN key for on-demand users.
 	$isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
-	$editSummaryEnd .= " You can [[WP:UCB|use this bot]] yourself! [[WP:DBUG|Report bugs here]].";
+	$editSummaryEnd = " You can [[WP:UCB|use this bot]] yourself! [[WP:DBUG|Report bugs here]].";
 }
