@@ -439,36 +439,42 @@ echo "
 						$p["author"] = $p["authors"];
 						unset($p["authors"]);
 					}
-/*
+
           $authors_missing = false; // reset
           // The phrase 'et al' should not be included in the authors parameter.
           // It is discouraged and may be mistaken for an author by the bot.
           // If it is present, we will search for more authors when we get the chance - set $authors_missing = true
 
           if (is('author')) {
+            // Analyse the author parameter.  If there's an 'et al', can we remove it?
             if (preg_match("~([,.; ]+)'*et al['.]*(?!\w)~", $p['author'][0], $match)) {
               $chars = count_chars($p['author'][0]);
+              // Try splitting at semi-colons
               if ($chars[ord(";")] > 0) {
                 $truncate_after = $chars[ord(";")];
                 if (strpos($match[0], ';') === false) {
                   $truncate_after++;
                 }
+                // No luck? Try splitting on commas?
               } elseif ($chars[ord(",")] > 0) {
                 $truncate_after = $chars[ord(",")];
                 if (strpos($match[0], ',') === false) {
                   $truncate_after++;
                 }
               }
+              // Observe an 'et al', and remove it.
               $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)~", "", $p['author'][0]);
               print " - $truncate_after authors then <i>et al</i>. Will grow list later.";
               $authors_missing = true;
               ifNullSet('display-authors', $truncate_after);
             }
           }
-          
+
+
           $author_param = trim($p['author'][0]);
           print "\n" . $author_param;
-          // Replace 'and' with punctuation
+          /*  REMOVED THIS SECTION IN R61
+          // Replace 'and' with an appropriate punctuation 'signpost'
           if (preg_match("~ ([Aa]nd|\&) ([\w\W]+)$~U", $author_param, $match)){
             if (strpos($author_param, ';')  // Already includes a ;
               || !strpos($author_param, ',') // No commas - can't hurt to divide with ;
@@ -479,6 +485,7 @@ echo "
               $author_param = str_replace(" " . $match[1], ",", $author_param);
             }
           }
+          */
 
           // Check to see if there is a translator in the authors list
           if (is('coauthors') || is('coauthor')) {
@@ -509,6 +516,7 @@ echo "
             $p['author'][0] = $author_param;
           }
 
+          /* REMOVED IN REVISION 61
           // Split author list into individual authors using semi-colon.
           if (strpos($author_param, ';') && !is('author2') && !is('last2')) {
             $auths = explode(';', $author_param);
@@ -545,8 +553,6 @@ echo "
               $p['author-name-separator'][0] = "";
             }
           }
-/* END OF AUTHOR SEPARATION
-*/
           // Detect first author.
 					preg_match("~[^.,;\s]{2,}~", $author_param, $firstauthor);
 					if (!$firstauthor[0]) {
@@ -564,6 +570,8 @@ echo "
             $p[$coauthor_param] = $coauthor_value;
           }
 
+/* END OF AUTHOR SEPARATION
+*/
 					// Is there already a date parameter?
 					$dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
 
