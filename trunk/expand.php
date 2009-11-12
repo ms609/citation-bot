@@ -703,7 +703,7 @@ echo "
             foreach ($details as $key=>$value) {
               ifNullSet($key, $value);
             }
-            if (false && !is("url")) { // BUGGY - CHECK PMID DATABASES, and see other occurrence above
+            if (false && !is("url")) { // TODO:  BUGGY - CHECK PMID DATABASES, and see other occurrence above
               if (!is('pmc')) {
               $url = pmFullTextUrl($p["pmid"][0]);
 							} else {

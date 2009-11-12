@@ -129,10 +129,10 @@ function ifNullSet($param, $value){
         set ($param, $value);
       }
 			break;
-		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": case "last10":
-		case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9": case "author10":
+		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
+		case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["last" . substr($param, -1)][0]) && trim($p["author" . substr($param, -1)][0]) == ""
+      if (trim($p["last" . substr($param, -1)][0]) == "" && trim($p["author" . substr($param, -1)][0]) == ""
           && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
           && underTwoAuthors($p['author'][0]))  {
         set ($param, $value);
@@ -392,12 +392,13 @@ function pmArticleDetails($pmid, $id = "pmid"){
         $i = 0;
 				foreach ($item->Item as $subItem) {
           $i++;
+          print "$i - $subItem \n";
           if (authorIsHuman((string) $subItem)) {
             $jr_test = jrTest($subItem);
             $subItem = $jr_test[0];
             $junior = $jr_test[1];
             if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-              $result["author$i"] = formatSurname($names[1]) . $junior;
+              $result["last$i"] = formatSurname($names[1]) . $junior;
               $result["first$i"] = formatForename($names[2]);
             }
           } else {
