@@ -40,7 +40,8 @@ function nextPage(){
 }
 #$STOP = true;
 $ON = false;
-$page = "User:DOI bot/Zandbox";
+$page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
 if ($ON) $page = nextPage();
+//$ON = true; // Uncomment this line to test edits in teh Zandbox
 #$page = "";
 include("expand.php"); // i.e. GO!
