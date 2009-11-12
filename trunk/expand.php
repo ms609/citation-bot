@@ -447,7 +447,7 @@ echo "
 
           if (is('author')) {
             // Analyse the author parameter.  If there's an 'et al', can we remove it?
-            if (preg_match("~([,.; ]+)'*et al['.]*(?!\w)~", $p['author'][0], $match)) {
+            if (preg_match("~([,.; ]+)'*et al['.]*(?!\w)$~", $p['author'][0], $match)) {
               $chars = count_chars($p['author'][0]);
               // Try splitting at semi-colons
               if ($chars[ord(";")] > 0) {
@@ -463,10 +463,10 @@ echo "
                 }
               }
               // Observe an 'et al', and remove it.
-              $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)~", "", $p['author'][0]);
+              $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)$~", "", $p['author'][0]);
               print " - $truncate_after authors then <i>et al</i>. Will grow list later.";
               $authors_missing = true;
-              ifNullSet('display-authors', $truncate_after);
+              //ifNullSet('display-authors', $truncate_after);
             }
           }
 
@@ -1017,6 +1017,8 @@ Done.  Just a couple of things to tweak now...";
 				preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
 				if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
 				if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
+        
+        // Delete any parameters >10, which won't be displayed anyway
         for ($au_i = 10; isset($p["last$au_i"]) || isset($p["author$au_i"]); $au_i++) {
           unset($p["last$au_i"]);
           unset($p["first$au_i"]);
@@ -1226,5 +1228,5 @@ Done.  Just a couple of things to tweak now...";
 	// These variables should change after the first edit
 	$isbnKey = "3TUCZUGQ"; //This way we shouldn't exhaust theISBN key for on-demand users.
 	$isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
-	$editSummaryEnd .= " You can [[WP:UCB|use this bot]] yourself! Please [[User:DOI_bot/bugs|report any bugs]].";
+	$editSummaryEnd .= " You can [[WP:UCB|use this bot]] yourself! [[WP:DBUG|Report bugs here]].";
 }
