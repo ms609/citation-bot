@@ -9,8 +9,8 @@ $editInitiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
 
 $toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"));
-$dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
-$dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
+$dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");
+$dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
 
 function getCiteList($page){
 	global $bot;
@@ -35,7 +35,7 @@ function nextPage(){
       if (isRedirect($page)) {
         if (preg_match("~/(10.\d{4}/.*)]]~", str_replace($dotEncode, $dotDecode, getRawWikiText(urlencode($page))), $reDoi)) {
           print "Redirects to ";
-          if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $reDoi[1]))) {
+          if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, trim($reDoi[1])))) {
             print $reDoi[1] . ".";
           } else {
              print "nonexistant page. Creating > ";
