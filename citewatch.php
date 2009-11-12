@@ -25,29 +25,47 @@ function getCiteList($page){
 function nextPage(){
 	global $toDo, $toDoi, $toPmid, $dotDecode, $dotEncode, $freshcode, $now, $oDoi;
 	$freshcode = '';
+  // Get next PMID from our to-do list
   $oPmid = @array_shift($toPmid);
 	if ($oPmid) {
 		print "\n   > PMID $oPmid: ";
 		$page = "Template:Cite pmid/$oPmid";
+    // Is there already a page for this PMID?
 		if (getArticleId($page)) {
-			print "Page already exists.";
-			return (nextPage());
+      if (isRedirect($page)) {
+        if (preg_match("~/(10.\d{4}/.*)]]~", str_replace($dotEncode, $dotDecode, getRawWikiText(urlencode($page))), $reDoi)) {
+          print "Redirects to ";
+          if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $reDoi[1]))) {
+            print $reDoi[1] . ".";
+          } else {
+             print "nonexistant page. Creating > ";
+             $toDoi[] = $reDoi[1];
+          }
+        }
+      } else {
+        print "Page exists.";
+  			return (nextPage());
+      }
 		} else {
+      // Get DOI from PubMed
 			$pma = (pmArticleDetails($oPmid));
 			$getDoi=$pma["doi"];
 			if ($getDoi) {
+        // redirect to a Cite Doi page, to avoid duplication
 				$encDoi = str_replace($dotDecode, $dotEncode, $getDoi);
 				print "Redirecting PMID $oPmid to $encDoi";
 				print write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI citation")?" : Done.":" : ERROR\n\n > Write failed!\n";
 				$toDoi[]=$getDoi;	
 			} else {
+        // Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
 				$freshcode = "{{Cite journal\n| pmid = $oPmid\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
 				print "No DOI found!";
 				return $page;
 			}
 		}
 	}
-  $oDoi = @array_shift($toDoi);
+  // Pop from the end so we immediately handle the new doi added by the PMID process, if there was one.
+  $oDoi = @array_pop($toDoi);
 	if ($oDoi){
 			$page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
 			if (articleID($page)) {

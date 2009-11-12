@@ -20,7 +20,12 @@ function whatTranscludes($template, $namespace=99){
 
 function getArticleId($page){
 	$xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
-	return $xml->query->pages->page["pageid"]; 
+	return $xml->query->pages->page["pageid"];
+}
+
+function isRedirect($page){
+	$xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
+	return $xml->query->pages->page["redirect"];
 }
 
 function articleID($page, $namespace = 0){
