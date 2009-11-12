@@ -42,7 +42,7 @@ function nextPage(){
 $ON = false;
 $page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
 if ($ON) $page = nextPage();
-$page = "de Sitter invariant special relativity";
+//$page = "de Sitter invariant special relativity";
 //$ON = true; // Uncomment this line to test edits in teh Zandbox
 #$page = "";
 include("expand.php"); // i.e. GO!
