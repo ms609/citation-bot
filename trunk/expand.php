@@ -486,7 +486,7 @@ echo "
             }
           }
           */
-
+/* REMOVED THIS IN R70 - Coauthors not restored because author_param is not used.
           // Check to see if there is a translator in the authors list
           if (is('coauthors') || is('coauthor')) {
             $coauthor_param = $p['coauthors'][0]?'coauthors':'coauthor';
@@ -502,7 +502,7 @@ echo "
           } else {
             $coauth = null;
           }
-
+*/
           // Check for translator in author_param and remove if necessary.
           $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
           if (preg_match($translator_regexp, $author_param, $match)) {
