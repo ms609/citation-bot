@@ -444,7 +444,7 @@ echo "
           // The phrase 'et al' should not be included in the authors parameter.
           // It is discouraged and may be mistaken for an author by the bot.
           // If it is present, we will search for more authors when we get the chance - set $authors_missing = true
-
+/*
           if (is('author')) {
             // Analyse the author parameter.  If there's an 'et al', can we remove it?
             if (preg_match("~([,.; ]+)'*et al['.]*(?!\w)$~", $p['author'][0], $match)) {
@@ -469,7 +469,7 @@ echo "
               //ifNullSet('display-authors', $truncate_after);
             }
           }
-
+*/
 
           $author_param = trim($p['author'][0]);
           print "\n" . $author_param;
