@@ -487,9 +487,10 @@ function getInfoFromISBN(){
 	foreach ($params as $null) $missingInfo = true;
 	if ($missingInfo) $xml = simplexml_load_file("http://xisbn.worldcat.org/webservices/xid/isbn/" . str_replace(array("-", " "), "", $p["isbn"][0]) . "?method=getMetadata&fl=*&format=xml");#&ai=Wikipedia_doibot");
 	if ($xml["stat"]=="ok") {
-		foreach ($params as $key => $value)	if (!is($key)) {
-			if (preg_match("~[^\[\]<>]+~", $xml->isbn[$value], $match))
-				$p[$key][0] = $match[0];
+		foreach ($params as $key => $value)	{
+			if (preg_match("~[^\[\]<>]+~", $xml->isbn[$value], $match)) {
+        ifNullSet($key, $match[0]);
+      }
 		}
 		if (substr($p["author"][0], 0, 3) == "by ") $p["author"][0] =substr( $p["author"][0], 3);
 		if (preg_match("~\d+~", $p["oclc"][0], $match)) $p["oclc"][0] = $match[0];
