@@ -2,7 +2,18 @@
 // $Revision$
 // $Id$
 
-print 'Revision: r' . revisionID();
+$svnid = '$Rev: 72 $';
+$scid = substr($svnid, 6);
+$revId = intval(substr($scid, 0, strlen($scid) - 2));
+$dtRevId = revisionID();
+if ($revId > $dtRevId) {
+  $editInitator = str_replace($dtRevId, $revId, $editInitiator);
+} else {
+  $revId = $dtRevId;
+}
+
+
+print 'Revision: r' . $revId;
 
 function loadParam($param, $value, $equals, $pipe) {
   global $p;
@@ -1132,7 +1143,7 @@ Done.  Just a couple of things to tweak now...";
             $smartSum = "Removed redundant parameters. ";
           }
         }
-				echo "$smartSum";
+				echo $smartSum;
 				$editSummary = $editSummaryStart . $editInitiator . $smartSum . $initiatedBy . $editSummaryEnd;
 				if ($ON) {
 					if ( strpos($page, "andbox")>1) {
