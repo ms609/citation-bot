@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?php include("expandFns.php");
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -31,7 +32,7 @@
 	<div id="globalWrapper">
 		<div id="column-content">
 	<div id="content">
-<h1 class="firstHeading">Welcome to the Citation Bot</h1>
+<h1 class="firstHeading">Welcome to Citation Bot revision <? revisionId(); ?></h1>
 <div id="bodyContent">			
 	<h3 id="siteSub"><? echo restrictedDuties?"Thanks for using this bot. Please be aware that there are one or two tiny bugs that are yet to be fixed, 
 		so the bot will run in 'manual mode' only.  Do carefully check that any edits it makes do not cause unintended consequences! 
@@ -41,7 +42,6 @@
 <pre><?
 
 ## Set up - including dotDecode array
-include("expandFns.php");
 $htmlOutput=true;
 $editInitiator = '[U' . revisionID() . ']';
 $user = str_replace(array("[[", "]]", "User:"), "", $_REQUEST['user']);
