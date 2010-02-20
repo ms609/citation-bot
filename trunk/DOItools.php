@@ -9,7 +9,6 @@ define("early", 8000);//Characters into the literated text of an article in whic
 define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
 
 
-
 require_once("/home/verisimilus/public_html/crossref.login");
 $crossRefId=CROSSREFUSERNAME.":".CROSSREFPASSWORD;
 
@@ -32,7 +31,11 @@ if (preg_match_all('~\n\*\s*(.+)~', $bot->results, $dontCaps)) {
 function revisionID() {
     $svnid = '$Rev$';
     $scid = substr($svnid, 6);
-    return intval(substr($scid, 0, strlen($scid) - 2));
+    $thisRevId = intval(substr($scid, 0, strlen($scid) - 2));
+    return $thisRevId;
+    $repos_handle = svn_repos_open('~/citation-bot');
+    print "\n";
+    return svn_fs_youngest_rev($repos_handle);
 }
 
 function is($key){
