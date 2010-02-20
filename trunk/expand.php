@@ -202,7 +202,8 @@ while ($page) {
 				else echo "\n  Already has an ISBN. ";
 				if (!$isbnToStartWith && !$p["isbn"][0]) unset($p["isbn"]);
 
-				if (	(is("pages") || is("page"))
+				/*  ISBN lookup disabled -- too buggy.
+        if (	(is("pages") || is("page"))
 							&& is("title")
 							&& is("publisher")
 							&& (is("date") || is("year"))
@@ -219,6 +220,7 @@ while ($page) {
 				else {
 					if (is("isbn")) getInfoFromISBN();
 				}
+        */
 
 				##############################
 				# Finished with citation and retrieved ISBN data #
@@ -391,8 +393,9 @@ echo "
             unset($p['url']);
           }
 
+          /*  ISBN lookup removed - too buggy.  TODO (also commented out above)
 					if (is("isbn")) getInfoFromISBN();
-
+*/
 
           if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
             unset($p["unused_data"]);
@@ -681,7 +684,7 @@ echo "
 								if (!$isbnToStartWith && !$p["isbn"][0]) {
                     unset($p["isbn"]);
                 } else {
-                  getInfoFromISBN();
+                  // getInfoFromISBN(); // TODO.  Too buggy. Disabled.
                 }
           }
          }
@@ -965,7 +968,7 @@ Done.  Just a couple of things to tweak now...";
 						elseif (is('publisher')) {
               // This should be after we've checked for a journal parameter
               if (preg_match("~\w\.\w\w~", $p['publisher'][0])) {
-               // it's a fair bet the piblisher is a web address
+               // it's a fair bet the publisher is a web address
                 $citeTemplate = "Cite web";
               } else {
                 $citeTemplate = "Cite book";
@@ -1173,7 +1176,7 @@ Done.  Just a couple of things to tweak now...";
 						}
 						$page = nextPage();
 						$pageDoneIn = time() - $startPage;
-						if ($pageDoneIn<3) {echo "That was quick! ($pageDoneIn secs.) I think I'd better catch my breath."; sleep(3);} else echo "<i>Page took $pageDoneIn secs to process.</i>";
+						if ($pageDoneIn<3) {echo "Quick work ($pageDoneIn secs). Waiting, to avoid server overload."; sleep(3);} else echo "<i>Page took $pageDoneIn secs to process.</i>";
 				} else {
 					echo "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea>" . htmlentities($pagecode) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made.<br><b>Changes:</b> <i>$smartSum</i></p>";
 					$page = false;
