@@ -216,7 +216,7 @@ function crossRefData($doi){
 	global $crossRefId;
   $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:" . str_replace(array("%3C", "%3E"), array("%253C", "%253E"), $doi) . "&noredirect=true";
   $xml = @simplexml_load_file($url);
-  print "\n\n$url\n\n";
+  
 	if ($xml) {
     $result = $xml->query_result->body->query;
   }
