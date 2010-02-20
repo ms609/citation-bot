@@ -2,13 +2,22 @@
 // $Id: $
 
 function categoryMembers($cat){
-	$url="http://en.wikipedia.org/w/api.php?cmtitle=Category:$cat&action=query&cmlimit=500&format=xml&list=categorymembers";
+  //print "Category: $cat\n";
+  // rm restore 5 to 500.
+
+  $url="http://en.wikipedia.org/w/api.php?cmtitle=Category:$cat&action=query&cmlimit=5&format=xml&list=categorymembers";
 	$qc = "query-continue";
-	do{
+   
+	do {
 		set_time_limit(40);
-		if ($_GET["debug"]) print "$continue<br>\n";
-		if (!$res=simplexml_load_file($url.($continue?("&cmcontinue=" . urlencode($continue)):""))) echo 'Error reading API from '.$url.$continue?"&cmcontinue=$continue":"";
-		else foreach($res->query->categorymembers->cm as $page) $list[]= (string) $page["title"];
+    $res = simplexml_load_file($url . ($continue?("&cmcontinue=" . urlencode($continue)):""));
+  	if ($res) {
+      foreach ($res->query->categorymembers->cm as $page) {
+          $list[] = (string) $page["title"];
+        }
+    } else {
+      echo 'Error reading API from ' . $url . ($continue?"&cmcontinue=$continue":"") . "\n\n";
+    }
 	} while ($continue = $res->$qc->categorymembers["cmcontinue"]);
 	return $list?$list:Array(" ");
 }
