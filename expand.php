@@ -42,20 +42,21 @@ while ($page) {
 
 	// Which template family is dominant?
 
-	preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $startcode, $cite_x);
-	preg_match_all("~\{\{\s*[Cc]itation\b(?! \w)~", $startcode, $citation);
-	if (count($cite_x[0]) * count($citation[0]) >0) {
-		// Two types are present
-		$changeCitationFormat = true;
-		$useCitationFormat = (count($cite_x[0]) < count($citation[0]));
-		print ($useCitationFormat)?"\n\n\n\nUSING CITATION FORMAT\n\n\n\n":"\n\n\n\nUSING CITE XXX FORMAT\n\n\n\n";
-		print count($cite_x[0]) . " cite / citation " . count($citation[0]);
-		sleep(2);
-	} else {
-		$changeCitationFormat = false;
-		$useCitationFormat = false;
-	}
-
+  if (stripos($startcode, "{{harv") === false) {
+    preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $startcode, $cite_x);
+    preg_match_all("~\{\{\s*[Cc]itation\b(?! \w)~", $startcode, $citation);
+    if (count($cite_x[0]) * count($citation[0]) >0) {
+      // Two types are present
+      $changeCitationFormat = true;
+      $useCitationFormat = (count($cite_x[0]) < count($citation[0]));
+      print ($useCitationFormat)?"\n\n\n\nUSING CITATION FORMAT\n\n\n\n":"\n\n\n\nUSING CITE XXX FORMAT\n\n\n\n";
+      print count($cite_x[0]) . " cite / citation " . count($citation[0]);
+      sleep(2);
+    } else {
+      $changeCitationFormat = false;
+      $useCitationFormat = false;
+    }
+  }
 	if (preg_match("/\{\{nobots\}\}|\{\{bots\s*\|\s*deny\s*=[^}]*(Citation[ _]bot|all)[^}]*\}\}|\{\{bots\s*\|\s*allow=none\}\}/i", $startcode, $denyMsg)) {
 		echo "**** Bot forbidden by bots / nobots tag: $denyMsg[0]";
 		$page = nextPage();
