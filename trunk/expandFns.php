@@ -1,6 +1,8 @@
 <?
 // $Id$
 
+ini_set ("user_agent", "Citation_bot; verisimilus@toolserver.org");
+
 function includeIfNew($file){
 	// include missing files
 	$alreadyIn = get_included_files();

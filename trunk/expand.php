@@ -1149,7 +1149,7 @@ Done.  Just a couple of things to tweak now...";
         }
 				echo $smartSum;
 				$editSummary = $editSummaryStart . $editInitiator . $smartSum . $initiatedBy . $editSummaryEnd;
-        $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea>" . htmlentities($pagecode) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made.<br><b>Changes:</b> <i>$smartSum</i></p>";
+        $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . htmlentities(mb_convert_encoding($pagecode, "UTF-8")) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made.<br><b>Changes:</b> <i>$smartSum</i></p>";
 
 				if ($ON) {
 					if ( strpos($page, "andbox")>1) {
