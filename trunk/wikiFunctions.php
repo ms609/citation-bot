@@ -7,7 +7,7 @@ function categoryMembers($cat){
 
   $url="http://en.wikipedia.org/w/api.php?cmtitle=Category:$cat&action=query&cmlimit=5&format=xml&list=categorymembers";
 	$qc = "query-continue";
-   
+
 	do {
 		set_time_limit(40);
     $res = simplexml_load_file($url . ($continue?("&cmcontinue=" . urlencode($continue)):""));
@@ -25,6 +25,11 @@ function categoryMembers($cat){
 function whatTranscludes($template, $namespace=99){
 	$titles= whatTranscludes2($template, $namespace);
 	return $titles["title"];
+}
+
+function getLastRev($page){
+  $xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
+  return $xml->query->pages->page->revisions->rev["revid"];
 }
 
 function getArticleId($page){

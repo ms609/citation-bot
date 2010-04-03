@@ -157,7 +157,6 @@ while ($page) {
 				//Make a note of how things started so we can give an intelligent edit summary
 				foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
 
-
         //Check for the doi-inline template in the title
         if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~",
                         str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0]), $match)) {
@@ -336,7 +335,7 @@ while ($page) {
 				$parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
 				$partsLimit = count($parts);
 				if (strpos($parts[0], "|") >0 && strpos($parts[0],"[[") === FALSE && strpos($parts[0], "{{") === FALSE) set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
-				for ($partsI=1; $partsI<=$partsLimit; $partsI+=4) {
+        for ($partsI=1; $partsI<=$partsLimit; $partsI+=4) {
 					$value = $parts[$partsI+3];
 					$pipePos = strpos($value, "|");
 					if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
@@ -353,8 +352,10 @@ while ($page) {
 					unset($p["doix"]);
 				}
 				//Make a note of how things started so we can give an intelligent edit summary
-				foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
-
+				foreach($p as $param=>$value)	if (is($param)) {
+          $pStart[$param] = $value[0];
+        }
+   
 				if (is("inventor") || is("inventor-last") || is("patent-number")) print "<p>Unrecognised citation type. Ignoring.</p>";// Don't deal with patents!
 				else {
         //Check for the doi-inline template in the title
@@ -1174,7 +1175,11 @@ Done.  Just a couple of things to tweak now...";
 									} else echo "Failed.  Abandoning page." . $outputText;
 								}
 							}
-							echo $htmlOutput?" <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n<br>":".";
+							echo $htmlOutput ?
+                      " <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a> / "
+                      . "<a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&diff=prev&oldid=" . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
+                      :".";
+
 						}
 						$page = nextPage();
 						$pageDoneIn = time() - $startPage;
