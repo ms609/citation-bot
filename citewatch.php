@@ -25,21 +25,27 @@ function getCiteList($page){
 }
 
 function nextPage(){
-	global $toDo, $toDoi, $toPmid, $dotDecode, $dotEncode, $freshcode, $now, $oDoi;
+	global $toDo, $toDoi, $toPmid, $dotDecode, $dotEncode, $freshcode, $article_in_progress, $oDoi, $ii;
+  $ii++;
+  if ($freshcode) print "\n ### $ii -- $freshcode ";
+  #if ($ii > 10) die ("Fresh code: \n " . $freshcode);
 	$freshcode = '';
   // Get next PMID from our to-do list
   $oPmid = @array_shift($toPmid);
 	if ($oPmid) {
 		print "\n   > PMID $oPmid: ";
-		$page = "Template:Cite pmid/$oPmid";
+		$pmid_page = "Template:Cite pmid/$oPmid";
     // Is there already a page for this PMID?
-		if (getArticleId($page)) {
-      if (isRedirect($page)) {
-        if (preg_match("~/(10.\d{4}/.*)]]~", str_replace($dotEncode, $dotDecode, getRawWikiText(urlencode($page))), $reDoi)) {
+		if (getArticleId($pmid_page)) {
+      if (isRedirect($pmid_page)) {
+        // Check that redirect leads to a cite doi:
+        if (preg_match("~/(10.\d{4}/.*)]]~", str_replace($dotEncode, $dotDecode, getRawWikiText(urlencode($pmid_page))), $reDoi)) {
           print "Redirects to ";
+          // Check that destination page exists
           if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, trim($reDoi[1])))) {
             print $reDoi[1] . ".";
           } else {
+             // Create it if it doesn't
              print "nonexistant page. Creating > ";
              $toDoi[] = $reDoi[1];
           }
@@ -49,48 +55,51 @@ function nextPage(){
   			return (nextPage());
       }
 		} else {
-      // Get DOI from PubMed
+      // Page has not yet been created for this PMID.
+      // Can we retriev a DOI from PubMed?
 			$pma = (pmArticleDetails($oPmid));
-			$getDoi=$pma["doi"];
+			$getDoi = $pma["doi"];
 			if ($getDoi) {
         // redirect to a Cite Doi page, to avoid duplication
 				$encDoi = str_replace($dotDecode, $dotEncode, $getDoi);
 				print "Redirecting PMID $oPmid to $encDoi";
-				print write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI citation")?" : Done.":" : ERROR\n\n > Write failed!\n";
-				$toDoi[]=$getDoi;	
+				print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI citation")
+            ? " : Done."
+            : " : ERROR\n\n > Write failed!\n";
+				$toDoi[] = $getDoi;
 			} else {
-        // Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
+        // No DOI found.  Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
 				$freshcode = "{{Cite journal\n| pmid = $oPmid\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
 				print "No DOI found!";
-				return $page;
+				return $pmid_page;
 			}
 		}
 	}
   // Pop from the end so we immediately handle the new doi added by the PMID process, if there was one.
   $oDoi = @array_pop($toDoi);
 	if ($oDoi){
-			$page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
-			if (articleID($page)) {
+			$doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
+			if (articleID($doi_page)) {
 				print "\n    > DOI $oDoi already exists.";
 				return (nextPage());
 			} else {
 				print "\n > New DOI: $oDoi";
 				$freshcode = "{{Cite journal\n| doi = $oDoi\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
-				return $page;
+				return $doi_page;
 			}
 	} else {
 		// Next page, please
-    $now = array_pop($toDo);
-		if ($now && trim($now)) {
-			print "\n\n** Next page: $now";
-			$toCite = getCiteList($now);
+    $article_in_progress = array_pop($toDo);
+		if ($article_in_progress && trim($article_in_progress)) {
+			print "\n\n** Next article: $article_in_progress";
+			$toCite = getCiteList($article_in_progress);
 			$toDoi = $toCite[0];
       foreach ($toCite[1] as $jid){
         $toDoi[] = "10.2307/$jid";
       }
       $toDoi = array_unique($toDoi);
 			$toPmid = array_unique($toCite[2]);
-		} elseif ($now) {
+		} elseif ($article_in_progress) {
       return nextPage();
     } else {
       return null;
@@ -98,6 +107,7 @@ function nextPage(){
 	}
 	return nextPage();
 }
+
 $page = nextPage();
 $ON = true;
 $citedoi = true;
