@@ -25,11 +25,11 @@ function getCiteList($page){
 }
 
 function nextPage(){
-	global $toDo, $toDoi, $toPmid, $dotDecode, $dotEncode, $freshcode, $article_in_progress, $oDoi, $ii;
+	global $toDo, $toDoi, $toPmid, $dotDecode, $dotEncode, $cite_doi_start_code, $article_in_progress, $oDoi, $ii;
   $ii++;
-  if ($freshcode) print "\n ### $ii -- $freshcode ";
-  #if ($ii > 10) die ("Fresh code: \n " . $freshcode);
-	$freshcode = '';
+  if ($cite_doi_start_code) print "\n ### $ii -- $cite_doi_start_code ";
+  #if ($ii > 10) die ("Fresh code: \n " . $cite_doi_start_code);
+	$cite_doi_start_code = '';
   // Get next PMID from our to-do list
   $oPmid = @array_shift($toPmid);
 	if ($oPmid) {
@@ -68,9 +68,9 @@ function nextPage(){
             : " : ERROR\n\n > Write failed!\n";
 				$toDoi[] = $getDoi;
 			} else {
-        // No DOI found.  Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
-				$freshcode = "{{Cite journal\n| pmid = $oPmid\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
 				print "No DOI found!";
+        // No DOI found.  Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
+				$cite_doi_start_code = "{{Cite journal\n| pmid = $oPmid\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
 				return $pmid_page;
 			}
 		}
@@ -84,7 +84,7 @@ function nextPage(){
 				return (nextPage());
 			} else {
 				print "\n > New DOI: $oDoi";
-				$freshcode = "{{Cite journal\n| doi = $oDoi\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
+				$cite_doi_start_code = "{{Cite journal\n| doi = $oDoi\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
 				return $doi_page;
 			}
 	} else {
