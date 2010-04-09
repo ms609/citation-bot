@@ -1,6 +1,7 @@
 <?
 // $Id$
 
+session_start();
 ini_set ("user_agent", "Citation_bot; verisimilus@toolserver.org");
 
 function includeIfNew($file){
@@ -106,18 +107,41 @@ function countMainLinks($title) {
 	return count($matches[0]);
 }
 
+
+// This function is called from the end of this page.
 function logIn($username, $password) {
 
-	global $bot;
-	$loginUrl = wikiroot . "title=Special:Userlogin&action=submitlogin&type=login";
-	$submit_vars["wpName"] = $username;
-	$submit_vars["wpPassword"] = $password;
-	$submit_vars["wpRemember"] = 1;
-	$submit_vars["wpLoginattempt"] = "Log+in";
 
-	$bot->submit($loginUrl, $submit_vars);
-	if (ereg("You have successfully signed in to Wikipedia", $bot->results)) return true;
-	return;
+  global $bot; // Snoopy class loaded elsewhere
+
+  // Set POST variables to retrieve a token
+	$submit_vars["format"] = "json";
+	$submit_vars["action"] = "login";
+	$submit_vars["lgname"] = $username;
+	$submit_vars["lgpassword"] = $password;
+	// Submit POST variables and retrieve a token
+  $bot->submit(api, $submit_vars);
+  $first_response = json_decode($bot->results);
+  $submit_vars["lgtoken"] = $first_response->login->token;
+  
+  // Store cookies; resubmit with new request (which hast token added to post vars)
+  $cookie_prefix = $first_response->login->cookieprefix;
+  $bot->cookies[$cookie_prefix . "_session"] = $first_response->login->sessionid;
+  $bot->submit(api, $submit_vars);
+  $login_result = json_decode($bot->results);
+  
+	if ($login_result->login->result == "Success") {
+    print "\n Using account " . $login_result->login->lgusername;
+    // Add other cookies, which are necessary to remain logged in.
+    $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
+    $bot->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
+    $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
+    return true;
+  } else {
+    print "\nCould not log in to Wikipedia servers.  Edits will not be committed.\n";
+    global $ON; $ON = false;
+    return false;
+  }
 }
 
 function inputValue($tag, $form) {
