@@ -10,9 +10,6 @@ $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
 
-print "OK";
-die( write("User:DOI_bot/Zandbox", "Edit while blocked", "I should be blocked?"));
-
 function updateQueue() {
   print "** Updating backlog...\nSeeing what links to 'Cite Journal'...";
   $cite_journal = whatTranscludes2("Cite_journal", 0);
@@ -34,7 +31,6 @@ function updateQueue() {
 
 function nextPage(){
   #return "User:DOI bot/Zandbox";
-  return "microRNA";
   global $ON, $STOP;
 	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
 	global $db;
