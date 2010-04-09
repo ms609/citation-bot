@@ -122,22 +122,29 @@ function logIn($username, $password) {
   $bot->submit(api, $submit_vars);
   $first_response = json_decode($bot->results);
   $submit_vars["lgtoken"] = $first_response->login->token;
-
   // Store cookies; resubmit with new request (which hast token added to post vars)
-  $cookie_prefix = $first_response->login->cookieprefix;
-  $bot->cookies[$cookie_prefix . "_session"] = $first_response->login->sessionid;
+  foreach ($bot->headers as $header) {
+    if (substr($header, 0,10) == "Set-Cookie") {
+      $cookies = explode(";", substr($header, 12));
+      foreach ($cookies as $oCook) {
+        $cookie = explode("=", $oCook);
+        $bot->cookies[trim($cookie[0])] = $cookie[1];
+      }
+    }
+  }
+
   $bot->submit(api, $submit_vars);
   $login_result = json_decode($bot->results);
-
 	if ($login_result->login->result == "Success") {
     print "\n Using account " . $login_result->login->lgusername;
     // Add other cookies, which are necessary to remain logged in.
+    $cookie_prefix = "enwiki";
     $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
     $bot->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
     $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
     return true;
   } else {
-    print "\nCould not log in to Wikipedia servers.  Edits will not be committed.\n";
+    die( "\nCould not log in to Wikipedia servers.  Edits will not be committed.\n"); // Will not display to user
     global $ON; $ON = false;
     return false;
   }
@@ -156,8 +163,22 @@ function inputValue($tag, $form) {
 function write($page, $data, $edit_summary = "Bot edit") {
 
 	global $bot;
+/*
+  $bot->cookies["enwiki_session"] = "";
+  print_r($bot->cookies);
+  $bot->fetch(api . "?action=logout");
 
-  $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($page));
+  // Check that bot is logged in:
+  $bot->fetch(api . "?action=query&prop=info&meta=userinfo");
+  $result = json_decode($bot->results);
+  print_r($result);
+  
+  if ($result->query->userinfo->anon) {
+    die("logged out");
+    return "LOGGED OUT:  The bot has been logged out from Wikipedia servers";
+  }
+  die("Logged in");
+  */$bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($page));
   $result = json_decode($bot->results);
 
   foreach ($result->query->pages as $i_page) {
@@ -172,8 +193,8 @@ function write($page, $data, $edit_summary = "Bot edit") {
     "summary"   => $edit_summary,
     "minor"     => "1",
     "bot"       => "1",
-    "basetimestamp" => $my_page->touched,
-    "starttimestamp" => $my_page->starttimestamp,
+    #"basetimestamp" => $my_page->touched,
+    #"starttimestamp" => $my_page->starttimestamp,
     "md5"       => md5($data),
     "watchlist" => "nochange",
     "format"    => "json",

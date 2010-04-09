@@ -49,9 +49,8 @@ while ($page) {
       // Two types are present
       $changeCitationFormat = true;
       $useCitationFormat = (count($cite_x[0]) < count($citation[0]));
-      print ($useCitationFormat)?"\n\n\n\nUSING CITATION FORMAT\n\n\n\n":"\n\n\n\nUSING CITE XXX FORMAT\n\n\n\n";
-      print count($cite_x[0]) . " cite / citation " . count($citation[0]);
-      sleep(2);
+      print (($useCitationFormat)?"\"Citation\"":'"Cite xxx"') . " format is dominant on this page: " .
+            count($cite_x[0]) . " cite / " . count($citation[0]) . " citation." ;
     } else {
       $changeCitationFormat = false;
       $useCitationFormat = false;
@@ -1176,7 +1175,7 @@ Done.  Just a couple of things to tweak now...";
 									if ($status == "Success") {
 										updateBacklog($page);
 										echo "Success. Phew!";
-									} else echo "Failed.  Error code:  $status. " . $outputText;
+									} else echo "Failed.  Error code:  $status. " . ($htmloutput?$outputText:"Pagecode displayed in HTML output only");
 								}
 							}
 							echo $htmlOutput ?
@@ -1187,7 +1186,7 @@ Done.  Just a couple of things to tweak now...";
 						}
 						$page = nextPage();
 						$pageDoneIn = time() - $startPage;
-						if ($pageDoneIn<3) {echo "Quick work ($pageDoneIn secs). Waiting, to avoid server overload."; sleep(3);} else echo "<i>Page took $pageDoneIn secs to process.</i>";
+						if ($pageDoneIn<3) {echo "Quick work ($pageDoneIn secs). Waiting, to avoid server overload."; sleep(1);} else echo "<i>Page took $pageDoneIn secs to process.</i>";
 				} else {
 					echo $outputText;
 					$page = null;
