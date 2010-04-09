@@ -1,4 +1,4 @@
-<?php
+e<?php
 // $Revision$
 // $Id$
 
@@ -1162,20 +1162,21 @@ Done.  Just a couple of things to tweak now...";
 								.	"Problems? [[User_talk:Smith609|Contact the bot's operator]]. ");
 						} else {
 							echo "<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> ... ";
-							if (write($page . $_GET["subpage"], $pagecode, $editSummary)) {
+							if (write($page . $_GET["subpage"], $pagecode, $editSummary) == "Success") {
 								updateBacklog($page);
 								echo "Success.";
 							} else {
 								echo "Edit may have failed. Retrying: <span style='font-size:1px'>xxx</span> ";
-								if (write($page . $_GET["subpage"], $pagecode, $editSummary)) {
+								if (write($page . $_GET["subpage"], $pagecode, $editSummary) == "Success") {
 									updateBacklog($page);
 									echo "Success.";
 								} else {
 									echo "Still no good. One last try: ";
-									if (write($page . $_GET["subpage"], $pagecode, $editSummary)) {
+                  $status = write($page . $_GET["subpage"], $pagecode, $editSummary);
+									if ($status == "Success") {
 										updateBacklog($page);
 										echo "Success. Phew!";
-									} else echo "Failed.  Abandoning page." . $outputText;
+									} else echo "Failed.  Error code:  $status. " . $outputText;
 								}
 							}
 							echo $htmlOutput ?
