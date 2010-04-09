@@ -111,7 +111,6 @@ function countMainLinks($title) {
 // This function is called from the end of this page.
 function logIn($username, $password) {
 
-
   global $bot; // Snoopy class loaded elsewhere
 
   // Set POST variables to retrieve a token
@@ -153,38 +152,36 @@ function inputValue($tag, $form) {
 	return false;
 }
 
-function write($page, $data, $editsummary = "Bot edit") {
+
+function write($page, $data, $edit_summary = "Bot edit") {
 
 	global $bot;
 
-	//Load edit page so we can scrape starttimes
-	$editUrl = wikiroot . "title=" . urlencode($page) . "&action=edit";
+  $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($page));
+  $result = json_decode($bot->results);
 
-	$bot->fetchform($editUrl);
-	$form = $bot->results;
+  foreach ($result->query->pages as $i_page) {
+    $my_page = $i_page;
+  }
+  print_r($my_page);
+	$submit_vars = array (
+    "action"    => "edit",
+    "title"     => $my_page->title,
+    "text"      => $data,
+    "token"     => $my_page->edittoken,
+    "summary"   => $edit_summary,
+    "minor"     => "1",
+    "bot"       => "1",
+    "basetimestamp" => $my_page->touched,
+    "starttimestamp" => $my_page->starttimestamp,
+    "md5"       => md5($data),
+    "watchlist" => "nochange",
+    "format"    => "json",
+  );
 
-	//Set our post vars to the values of the inputs:
-	$submit_vars["wpEdittime"] = inputValue("wpEdittime", $form);
-	$submit_vars["wpStarttime"] = inputValue("wpStarttime", $form);
-	$submit_vars["wpEditToken"] = inputValue("wpEditToken", $form);
-
-
-	if (!$submit_vars["wpEditToken"]) return false; // Couldn't obtain input value.  Is the page protected?
-
-	// The less glamorous post vars also need setting:
-	$submit_vars["wpScrollTop"] = "0";
-	$submit_vars["wpSection"] = "";
-	$submit_vars["wpTextbox1"] = $data;
-	$submit_vars["wpSummary"] = $editsummary;
-	$submit_vars["wpMinoredit"] = 1;
-	$submit_vars["wpWatchthis"] = 0;
-
-	// Set this var to determine the action - Save page!
-	$submit_vars["wpSave"] = "Save+page";
-
-	$submitUrl = wikiroot . "title=" . urlencode($page) . "&action=submit";
-
-	return $bot->submit($submitUrl, $submit_vars);
+	$bot->submit(api, $submit_vars);
+  $result = json_decode($bot->results);
+  return ($result->edit->result == "Success");
 }
 
 function noteDoi($doi, $src){
