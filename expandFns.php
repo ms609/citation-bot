@@ -163,22 +163,16 @@ function inputValue($tag, $form) {
 function write($page, $data, $edit_summary = "Bot edit") {
 
 	global $bot;
-/*
-  $bot->cookies["enwiki_session"] = "";
-  print_r($bot->cookies);
-  $bot->fetch(api . "?action=logout");
 
   // Check that bot is logged in:
-  $bot->fetch(api . "?action=query&prop=info&meta=userinfo");
+  $bot->fetch(api . "?action=query&prop=info&meta=userinfo&format=json");
   $result = json_decode($bot->results);
-  print_r($result);
   
-  if ($result->query->userinfo->anon) {
-    die("logged out");
+  if ($result->query->userinfo->id == 0) {
     return "LOGGED OUT:  The bot has been logged out from Wikipedia servers";
   }
-  die("Logged in");
-  */$bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($page));
+
+  $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($page));
   $result = json_decode($bot->results);
 
   foreach ($result->query->pages as $i_page) {

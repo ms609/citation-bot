@@ -39,6 +39,7 @@ function nextPage(){
 	$result = mysql_fetch_row($result);
 	return $result[0];
 }
+
 #$STOP = true;
 #$ON = false;
 $page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
