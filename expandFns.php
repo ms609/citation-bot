@@ -163,7 +163,7 @@ function write($page, $data, $edit_summary = "Bot edit") {
   foreach ($result->query->pages as $i_page) {
     $my_page = $i_page;
   }
-  print_r($my_page);
+  
 	$submit_vars = array (
     "action"    => "edit",
     "title"     => $my_page->title,
