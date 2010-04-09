@@ -2,6 +2,7 @@
 
 $bot = new Snoopy();
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
+define("api", "http://en.wikipedia.org/w/api.php");
 if ($linkto2) print "\n// included DOItools2 & initialised \$bot\n";
 define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\"\?&>]|&l?g?t;|<[^\s\"\?&]*>))(?=[\s\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 define("timelimit", $fastMode?4:($slowMode?15:10));

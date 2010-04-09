@@ -10,6 +10,41 @@ $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
 
+
+function writez($page, $data, $edit_summary = "Bot edit") {
+
+	global $bot;
+
+  $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($page));
+  $result = json_decode($bot->results);
+  
+  foreach ($result->query->pages as $i_page) {
+    $my_page = $i_page;
+  }
+
+	$submit_vars = array (
+    "title"     => $page,
+    "text"      => $data,
+    "minor"     => 1,
+    "bot"       => 1,
+    "watchlist" => "nochange",
+    "summary"   => $edit_summary,
+    "format"    => "json",
+    "token"     => $my_page->edittoken,
+  );
+
+  print_r($submit_vars);
+	$bot->submit(api, $submit_vars);
+  $result = json_decode($bot->results);
+  print_r($result);
+  return "Success?";
+}
+
+die (substr(writez ("User:DOI bot/Zandbox", "New content", "Adapting bot to use API"),0,900));
+
+
+
+
 function updateQueue() {
   print "** Updating backlog...\nSeeing what links to 'Cite Journal'...";
   $cite_journal = whatTranscludes2("Cite_journal", 0);
@@ -30,6 +65,8 @@ function updateQueue() {
 }
 
 function nextPage(){
+  return "User:DOI bot/Zandbox";
+  return "microRNA";
   global $ON, $STOP;
 	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
 	global $db;
@@ -39,7 +76,7 @@ function nextPage(){
 	return $result[0];
 }
 #$STOP = true;
-$ON = false;
+#$ON = false;
 $page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
 if ($ON) $page = nextPage();
 #$page = " Template:Cite doi/10.1002.2F.28SICI.291097-0290.2819980420.2958:2.2F3.3C121::AID-BIT2.3E3.0.CO.3B2-N";
