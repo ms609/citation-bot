@@ -30,7 +30,7 @@ function updateQueue() {
 }
 
 function nextPage(){
-  return "User:DOI bot/Zandbox";
+  #return "User:DOI bot/Zandbox";
   return "microRNA";
   global $ON, $STOP;
 	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
