@@ -36,7 +36,7 @@ function writez($page, $data, $edit_summary = "Bot edit") {
   print_r($submit_vars);
 	$bot->submit(api, $submit_vars);
   $result = json_decode($bot->results);
-  print_r($result);
+  print_r(substr($result, 700);
   return "Success?";
 }
 
