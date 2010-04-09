@@ -10,6 +10,9 @@ $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
 
+print "OK";
+die( write("User:DOI_bot/Zandbox", "Edit while blocked", "I should be blocked?"));
+
 function updateQueue() {
   print "** Updating backlog...\nSeeing what links to 'Cite Journal'...";
   $cite_journal = whatTranscludes2("Cite_journal", 0);

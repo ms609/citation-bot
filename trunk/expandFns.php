@@ -122,13 +122,13 @@ function logIn($username, $password) {
   $bot->submit(api, $submit_vars);
   $first_response = json_decode($bot->results);
   $submit_vars["lgtoken"] = $first_response->login->token;
-  
+
   // Store cookies; resubmit with new request (which hast token added to post vars)
   $cookie_prefix = $first_response->login->cookieprefix;
   $bot->cookies[$cookie_prefix . "_session"] = $first_response->login->sessionid;
   $bot->submit(api, $submit_vars);
   $login_result = json_decode($bot->results);
-  
+
 	if ($login_result->login->result == "Success") {
     print "\n Using account " . $login_result->login->lgusername;
     // Add other cookies, which are necessary to remain logged in.
@@ -163,7 +163,7 @@ function write($page, $data, $edit_summary = "Bot edit") {
   foreach ($result->query->pages as $i_page) {
     $my_page = $i_page;
   }
-  
+
 	$submit_vars = array (
     "action"    => "edit",
     "title"     => $my_page->title,
@@ -181,7 +181,16 @@ function write($page, $data, $edit_summary = "Bot edit") {
 
 	$bot->submit(api, $submit_vars);
   $result = json_decode($bot->results);
-  return ($result->edit->result == "Success");
+  print_r($result);
+  if ($result->edit->result == "Success") {
+    return "Success";
+  } else if ($result->edit->result) {
+    return $result->edit->result;
+  } else if ($result->error->code) {
+    return strtoupper($result->error->code) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), $result->error->info);
+  } else {
+    return "Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
+  }
 }
 
 function noteDoi($doi, $src){
