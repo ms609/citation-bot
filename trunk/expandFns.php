@@ -181,12 +181,13 @@ function write($page, $data, $edit_summary = "Bot edit") {
 
 	$bot->submit(api, $submit_vars);
   $result = json_decode($bot->results);
-  print_r($result);
   if ($result->edit->result == "Success") {
+    // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
     return "Success";
   } else if ($result->edit->result) {
     return $result->edit->result;
   } else if ($result->error->code) {
+    // Return error code
     return strtoupper($result->error->code) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), $result->error->info);
   } else {
     return "Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
