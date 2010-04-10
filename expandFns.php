@@ -167,7 +167,7 @@ function write($page, $data, $edit_summary = "Bot edit") {
   // Check that bot is logged in:
   $bot->fetch(api . "?action=query&prop=info&meta=userinfo&format=json");
   $result = json_decode($bot->results);
-  
+
   if ($result->query->userinfo->id == 0) {
     return "LOGGED OUT:  The bot has been logged out from Wikipedia servers";
   }
@@ -265,5 +265,30 @@ function logBrokenDoi($doi, $p, $error){
 // 200 is a broken DOI, found in the source of the URL
 // Broken DOIs are only logged if they can be spotted in the URL page specified.
 
+
+// Log in to Wikipedia
 logIn(USERNAME, PASSWORD);
+
+// Get a current list of parameters used in citations from WP
+$page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters&format=json");
+$json = json_decode($bot->results, true);
+$parameter_list = (explode("\n", $json["query"]["pages"][26899494]["revisions"][0]["*"]));
+function ascii_sort($val_1, $val_2)
+{
+  $return = 0;
+  $len_1 = strlen($val_1);
+  $len_2 = strlen($val_2);
+
+  if ($len_1 > $len_2)
+  {
+    $return = -1;
+  }
+  else if ($len_1 < $len_2)
+  {
+    $return = 1;
+  }
+  return $return;
+}
+
+uasort($parameter_list, "ascii_sort");
 ?>
