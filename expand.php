@@ -182,6 +182,7 @@ while ($page) {
 				echo "\n* {$p["title"][0]}";
 
 				// Fix typos in parameter names
+        $p = correct_parameter_spelling($p);
 
 				if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
 
@@ -428,6 +429,7 @@ echo "
 					}
 
 					// Fix typos in parameter names
+          $p = correct_parameter_spelling($p);
 
 					// DOI - urldecode
 					if (isset($p["doi"][0])) {

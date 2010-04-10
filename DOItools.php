@@ -648,6 +648,68 @@ function useUnusedData()
 	}
 }
 
+
+// Pass $p and this function will check each parameter name against the list of accepted names (loaded in expand.php).
+// It will correct any that appear to be mistyped.
+function correct_parameter_spelling($p)
+{
+  global $parameter_list;
+  foreach ($p as $key => $value)
+  {
+    if (!in_array($key, $parameter_list))
+    {
+      print "\n  *  Unrecognised parameter $key ";
+      $shortest = -1;
+
+      // Check the parameter list to find a likely replacement
+      foreach ($parameter_list as $parameter)
+      {
+        $lev = levenshtein($key, $parameter, 5, 4, 6);
+
+        // Strict inequality as we want to favour the longest match possible
+        if ($lev < $shortest || $shortest < 0)
+        {
+          $comp = $closest;
+          $closest = $parameter;
+          $shortish = $shortest;
+          $shortest = $lev;
+        }
+        // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
+        else if ($lev < $shortish)
+        {
+          $shortish = $lev;
+          $comp = $parameter;
+        }
+      }
+      //print "$shortest -- $closest // $shortish: $comp\n";
+      if ($shortest < 12 && $shortest < $shortish)
+      {
+        $mod[$key] = $closest;
+        print "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+      }
+      else
+      {
+        $similarity = similar_text($key, $closest) / strlen($key);
+        if ($similarity > 0.5)
+        {
+          $mod[$key] = $closest;
+          print "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+        }
+        else
+        {
+          print "could not be replaced with confidence.  Please check the citation yourself.";
+        }
+      }
+    }
+  }
+  foreach ($mod as $wrong => $right)
+  {
+    $p[$right] = $p[$wrong];
+    unset ($p[$wrong]);
+  }
+  exit;
+}
+
 function file_size($url, $redirects=0){
 
 //Copied from WWW.
