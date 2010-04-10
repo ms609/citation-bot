@@ -555,7 +555,13 @@ function useUnusedData()
           if ($lev < $shortest || $shortest < 0)
           {
             $closest = $parameter;
+            $shortish = $shortest;
             $shortest = $lev;
+          }
+          // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
+          else if ($lev < $shortish)
+          {
+            $shortish = $lev;
           }
         }
         if ($shortest < 3)
@@ -563,7 +569,7 @@ function useUnusedData()
           // remove leading spaces or hyphens (which may have been typoed for an equals)
           if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match))
           {
-            set ($closest, $match[1] . " [$shortest]");
+            set ($closest, $match[1] . " [$shortest / $shortish]");
           }
         }
         // Is the data a URL, and is the URL parameter blank?
