@@ -682,7 +682,13 @@ function correct_parameter_spelling($p)
           $comp = $parameter;
         }
       }
+      $key_len = strlen($key);
 
+      // Account for short words...
+      if ($key_len < 4) {
+        $shortest *= ($key_len / similar_text($key, $closest));
+        $shortish *= ($key_len / similar_text($key, $comp));
+      }
       if ($shortest < 12 && $shortest < $shortish)
       {
         $mod[$key] = $closest;
