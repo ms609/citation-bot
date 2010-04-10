@@ -73,7 +73,7 @@ while ($page) {
 		$pagecode = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
 				preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
         preg_replace
-										("~(?<!\?&)\bid(\s*=\s*)(DOI\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","doi$1$4$3$5",
+										("~(?<!\?&)\bid(\s*=[^\|]*)(DOI\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","doi$1$4$3$5",
 				preg_replace("~(id\s*=\s*)\[{2}?(PMID[:\]\s]*(\d*)|\{\{PMID[:\]\s]*\|\s*(\d*)\s*\}\})~","pm$1$4$3",
 				preg_replace("~[^\?&]\bid(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","doi$1$2",
 
@@ -85,7 +85,7 @@ while ($page) {
        print "Converted dashes in all page parameters to en-dashes.\n";
      }
 
-	//Search for any duplicate refs with names
+	/*/Search for any duplicate refs with names
 	if (false && preg_match_all("~<[\n ]*ref[^>]*name=(\"[^\"><]+\"|'[^']+|[^ ><]+)[^/>]*>(([\s\S](?!<)|[\s\S]<(?!ref))*?)</ref[\s\n]*>~", $pagecode, $refs)) {
 		dbg($refs);#############
 		$countRefs = count($refs[0]);
@@ -115,7 +115,7 @@ while ($page) {
 			$pagecode = preg_replace("~^([\s\S]*)" . preg_quote("<ref name=$name/>") . "~", "$1" . $text,
 									preg_replace("~" . preg_quote($text) . "~", "<ref name=$name/>", $pagecode));
 		}
-	}
+	}*/
 
 ###################################  START ASSESSING BOOKS ######################################
 
