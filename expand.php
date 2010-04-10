@@ -181,13 +181,30 @@ while ($page) {
 				}
 				echo "\n* {$p["title"][0]}";
 
-				// Fix typos in parameter names
-        $p = correct_parameter_spelling($p);
-
-				if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
+				// Fix typos in parameter names.  First, common mistakes that aren't typos
 
 				//volume
-				if (isset($p["vol"]) && !isset($p["volume"][0])) {$p["volume"] = $p["vol"]; unset($p["vol"]);}
+				if (isset($p["vol"]) && !isset($p["volume"][0]))
+        {
+          $p["volume"] = $p["vol"];
+          unset($p["vol"]);
+        }
+
+        // location
+        if (isset($p["place"]) && !isset($p["location"][0]))
+        {
+          $p["location"] = $p["place"];
+          unset $p["place"];
+        }
+
+        // Now, check for typos
+        $p = correct_parameter_spelling($p);
+
+        // edition -- remove 'edition' from parameter value
+        if (is("edition"))
+        {
+          $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
+        }
 
 				//page nos
 				preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
@@ -428,7 +445,21 @@ echo "
 						if (!is("pages") && !is("page")) set("pages", 1*$sici[7]);
 					}
 
-					// Fix typos in parameter names
+					// Fix use of wrong parameter names
+					//volume
+					if (isset($p["vol"]) && !isset($p["volume"][0]))
+          {
+            $p["volume"] = $p["vol"];
+            unset($p["vol"]);
+          }
+					// place
+					if (isset($p["place"]) && !isset($p["location"][0]))
+          {
+            $p["location"] = $p["place"];
+            unset($p["place"]);
+          }
+
+          // Fix typos in parameter names
           $p = correct_parameter_spelling($p);
 
 					// DOI - urldecode
@@ -452,8 +483,6 @@ echo "
             unset($p['co-authors']);
           }
 
-					//volume
-					if (isset($p["vol"]) && !isset($p["volume"][0])) {$p["volume"] = $p["vol"]; unset($p["vol"]);}
 
 					// pmid = PMID 1234 can produce pmpmid = 1234
 					if (isset($p["pmpmid"])) {$p["pmid"] = $p["pmpmid"]; unset($p["pmpmid"]);}
