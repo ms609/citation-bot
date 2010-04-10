@@ -689,7 +689,7 @@ echo "
             }
           } else {
             echo " nothing found.";
-            if (strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation") {
+            if (strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && !is("journal")) {
               // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
               echo "\n - Checking for ISBN";
 							$isbnToStartWith = isset($p["isbn"]);
