@@ -1,4 +1,4 @@
-e<?php
+<?php
 // $Revision$
 // $Id$
 
@@ -41,17 +41,27 @@ while ($page) {
 	if ($citedoi && !$startcode) $startcode = $cite_doi_start_code;
 
 	// Which template family is dominant?
-
-  if (!$citedoi && stripos($startcode, "{{harv") === false) {
+  
+  if (!$citedoi) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $startcode, $cite_x);
     preg_match_all("~\{\{\s*[Cc]itation\b(?! \w)~", $startcode, $citation);
-    if (count($cite_x[0]) * count($citation[0]) >0) {
-      // Two types are present
+    if (stripos($startcode, "{{harv") === false) {
+      if (count($cite_x[0]) * count($citation[0]) > 0) {
+        // Two types are present
+        $changeCitationFormat = true;
+        $useCitationFormat = (count($cite_x[0]) < count($citation[0]));
+        print (($useCitationFormat)?"\"Citation\"":'"Cite xxx"') . " format is dominant on this page: " .
+             count($cite_x[0]) . " cite / " . count($citation[0]) . " citation." ;
+      } else {
+         $changeCitationFormat = false;
+         $useCitationFormat = false;
+      }
+    } else if (count($cite_x[0]) > 0) {
+      // If there's a {{harv}} citation in the page we need to use the "citation" format.
       $changeCitationFormat = true;
-      $useCitationFormat = (count($cite_x[0]) < count($citation[0]));
-      print (($useCitationFormat)?"\"Citation\"":'"Cite xxx"') . " format is dominant on this page: " .
-            count($cite_x[0]) . " cite / " . count($citation[0]) . " citation." ;
+      $useCitationFormat = true;
     } else {
+      // If there's a {{harv}} citation but everything already uses {{citation}} we don't need to change anything
       $changeCitationFormat = false;
       $useCitationFormat = false;
     }
