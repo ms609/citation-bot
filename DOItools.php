@@ -578,11 +578,12 @@ function useUnusedData()
         }
         
         if ($shortest < 3
-        &&  ($shortest + 1 < $shortish  // No close competitor
-            || $shortest / $shortish <= 2/3
-            || strlen($closest) > strlen($comp)
-            )
-        )
+           && (similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4)
+           &&  ($shortest + 1 < $shortish  // No close competitor
+               || $shortest / $shortish <= 2/3
+               || strlen($closest) > strlen($comp)
+               )
+           )
         {
             // remove leading spaces or hyphens (which may have been typoed for an equals)
             if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match))
@@ -640,7 +641,7 @@ function useUnusedData()
           default:
             // No good; we'll have to return it to the unused data parameter
             $i++;
-            $p["unused_datum_$i"][0] = implode(" ", $pAll);
+            $p["unused_data"][0] .= "|" . implode(" ", $pAll);
           }
         }
       }
@@ -674,14 +675,14 @@ function correct_parameter_spelling($p)
           $shortish = $shortest;
           $shortest = $lev;
         }
-        // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
+        // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
         else if ($lev < $shortish)
         {
           $shortish = $lev;
           $comp = $parameter;
         }
       }
-      //print "$shortest -- $closest // $shortish: $comp\n";
+
       if ($shortest < 12 && $shortest < $shortish)
       {
         $mod[$key] = $closest;
