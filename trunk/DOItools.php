@@ -707,7 +707,7 @@ function correct_parameter_spelling($p)
     $p[$right] = $p[$wrong];
     unset ($p[$wrong]);
   }
-  exit;
+  return $p;
 }
 
 function file_size($url, $redirects=0){
