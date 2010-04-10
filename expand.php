@@ -190,13 +190,6 @@ while ($page) {
           unset($p["vol"]);
         }
 
-        // location
-        if (isset($p["place"]) && !isset($p["location"][0]))
-        {
-          $p["location"] = $p["place"];
-          unset ($p["place"]);
-        }
-
         // Now, check for typos
         $p = correct_parameter_spelling($p);
 
@@ -451,12 +444,6 @@ echo "
           {
             $p["volume"] = $p["vol"];
             unset($p["vol"]);
-          }
-					// place
-					if (isset($p["place"]) && !isset($p["location"][0]))
-          {
-            $p["location"] = $p["place"];
-            unset($p["place"]);
           }
 
           // Fix typos in parameter names
