@@ -655,8 +655,21 @@ function useUnusedData()
 function correct_parameter_spelling($p)
 {
   global $parameter_list;
-  foreach ($p as $key => $value)
-  {
+  
+  // Common mistakes that aren't picked up by the levenshtein approach
+  $common_mistakes = array (
+                            "vol"         => "volume",
+                            "editorlink1" =>  "editor1-link",
+                            "editorlink2" =>  "editor2-link",
+                            "editorlink3" =>  "editor3-link",
+                            "editorlink4" =>  "editor4-link",
+                            "editor1link" =>  "editor1-link",
+                            "editor2link" =>  "editor2-link",
+                            "editor3link" =>  "editor3-link",
+                            "editor4link" =>  "editor4-link",
+                            );
+
+  foreach ($p as $key => $value) {
     if (!in_array($key, $parameter_list))
     {
       print "\n  *  Unrecognised parameter $key ";
@@ -707,6 +720,13 @@ function correct_parameter_spelling($p)
           print "could not be replaced with confidence.  Please check the citation yourself.";
         }
       }
+    }
+  }
+
+  // Now check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
+  foreach ($common_mistakes as $mistake => $corrected) {
+    if (isset($p[$mistake])) {
+      $mod[$mistake] = $corrected;
     }
   }
   foreach ($mod as $wrong => $right)

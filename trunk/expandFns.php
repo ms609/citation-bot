@@ -10,7 +10,7 @@ function includeIfNew($file){
 	foreach ($alreadyIn as $include){
 		if (strstr($include, $file)) return false;
 	}
-	if (true || $GLOBALS["linkto2"]) echo "\n// including $file";
+	if ($GLOBALS["linkto2"]) echo "\n// including $file";
 	require_once($file . $GLOBALS["linkto2"] . ".php");
 	return true;
 }

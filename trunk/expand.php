@@ -181,15 +181,6 @@ while ($page) {
 				}
 				echo "\n* {$p["title"][0]}";
 
-				// Fix typos in parameter names.  First, common mistakes that aren't typos
-
-				//volume
-				if (isset($p["vol"]) && !isset($p["volume"][0]))
-        {
-          $p["volume"] = $p["vol"];
-          unset($p["vol"]);
-        }
-
         // Now, check for typos
         $p = correct_parameter_spelling($p);
 
@@ -437,15 +428,6 @@ echo "
 						if (!is("issue") && $sici[6]) set("issue", 1*$sici[6]);
 						if (!is("pages") && !is("page")) set("pages", 1*$sici[7]);
 					}
-
-					// Fix use of wrong parameter names
-					//volume
-					if (isset($p["vol"]) && !isset($p["volume"][0]))
-          {
-            $p["volume"] = $p["vol"];
-            unset($p["vol"]);
-          }
-
           // Fix typos in parameter names
           $p = correct_parameter_spelling($p);
 
