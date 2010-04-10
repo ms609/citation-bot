@@ -538,13 +538,23 @@ function useUnusedData()
         $shortest = -1;
         foreach ($parameter_list as $parameter)
         {
+          $test_dat = preg_replace("~\d~", "_$0",
+                      preg_replace("~[ -+].*$~", "", substr(strtolower($dat), 0, $para_len)));
           $para_len = strlen($parameter);
           if ($para_len < 3)
           {
             break; // minimum length to avoid false positives
           }
 
-          $lev = levenshtein(substr(strtolower($dat), 0, $para_len), $parameter);
+          if (preg_match("~\d~", $parameter))
+          {
+            $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
+            $para_len++;
+          }
+          else
+          {
+            $lev = levenshtein($test_dat, $parameter);
+          }
           if ($lev == 0)
           {
             $closest = $parameter;
@@ -554,6 +564,7 @@ function useUnusedData()
           // Strict inequality as we want to favour the longest match possible
           if ($lev < $shortest || $shortest < 0)
           {
+            $comp = $closest;
             $closest = $parameter;
             $shortish = $shortest;
             $shortest = $lev;
@@ -562,15 +573,23 @@ function useUnusedData()
           else if ($lev < $shortish)
           {
             $shortish = $lev;
+            $comp = $parameter;
           }
         }
-        if ($shortest < 3)
+        
+        if ($shortest < 3
+        &&  ($shortest + 1 < $shortish  // No close competitor
+            || $shortest / $shortish <= 2/3
+            || strlen($closest) > strlen($comp)
+            )
+        )
         {
-          // remove leading spaces or hyphens (which may have been typoed for an equals)
-          if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match))
-          {
-            set ($closest, $match[1] . " [$shortest / $shortish]");
-          }
+            // remove leading spaces or hyphens (which may have been typoed for an equals)
+            if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match))
+            {
+              set ($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+            }
+
         }
         // Is the data a URL, and is the URL parameter blank?
         else if (substr(trim($dat), 0, 7) == 'http://' && !isset($p['url']))
