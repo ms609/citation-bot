@@ -217,7 +217,7 @@ function crossRefData($doi){
 	global $crossRefId;
   $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:" . str_replace(array("%3C", "%3E"), array("%253C", "%253E"), $doi) . "&noredirect=true";
   $xml = @simplexml_load_file($url);
-  
+
 	if ($xml) {
     $result = $xml->query_result->body->query;
   }
@@ -319,13 +319,13 @@ function textToSearchKey($key){
 }
 
 /* pmSearch
- * 
- * Searches pubmed based on terms provided in an array.  
+ *
+ * Searches pubmed based on terms provided in an array.
  * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
  * return the results as array (first result, # of results)
  * If $check_for_errors is true, it will return 'fasle' on errors returned by pubmed
  */
-function pmSearch($p, $terms, $check_for_errors = false) {  
+function pmSearch($p, $terms, $check_for_errors = false) {
   foreach ($terms as $term) {
     $key = textToSearchKey($term);
     if ($key && trim($p[$term][0]) != "") {
@@ -339,7 +339,7 @@ function pmSearch($p, $terms, $check_for_errors = false) {
     print "\n - Errors detected in PMID search; abandoned.";
     return array(null, 0);
   }
-  
+
   return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(null, 0);// first results; number of results
 }
 
@@ -358,7 +358,7 @@ function pmSearchResults($p){
       if ($results[1] == 1) return $results;
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
-    
+
     if (is("journal") && is("volume") && is("pages")) {
       $results = pmSearch($p, array("journal", "volume", "issue", "pages"));
       if ($results[1] == 1) return $results;
@@ -383,7 +383,7 @@ function pmArticleDetails($pmid, $id = "pmid"){
 	$result = Array();
 	$xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($id == "pmid")?"pubmed":"pmc") . "&id=$pmid");
   // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
-  
+
   foreach($xml->DocSum->Item as $item){
 		if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $result["doi"] = $match[0];
 		switch ($item["Name"]) {
@@ -511,60 +511,114 @@ function getInfoFromISBN(){
 	}
 }
 
-function useUnusedData(){
-
-	global $p;
+function useUnusedData()
+{
 	// See if we can use any of the parameters lacking equals signs:
-	$freeDat = explode("|", trim($p["unused_data"][0]));
+	global $p;
+
+  // Separate up the unused data by pipes, into "$freeDat"
+  $freeDat = explode("|", trim($p["unused_data"][0]));
+
+  // Empty the parameter.  We'll put back anything we don't manage to assign to a parameter.
 	unset($p["unused_data"]);
-	if (isset($freeDat[0])) {
-		foreach ($freeDat as $dat) {
-			if (preg_match("~^\s*(\w+)\s*-(.*)~", $dat, $match)) {
-				set ($match[1], $match[2]);
-			}
-			else if (substr(trim($dat), 0, 7) == 'http://' && !isset($p['url'])) {
-				set ("url", $dat);
-			}
-			elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
-				set("isbn", $match[1]);
-				$pAll = "";
-			} else {
-				$pAll = explode(" ", trim($dat));
-				$p1 = strtolower($pAll[0]);
-				switch ($p1) {
-				case "volume": case "vol":
-				case "pages": case "page":
-				case "year": case "date":
-				case "title":
-				case "authors": case "author":
-				case "issue":
-				case "journal":
-				case "accessdate":
-				case "archiveurl":
-				case "archivedate":
-				case "format":
-				case "url":
-				if (!is($p1)) {
-					unset($pAll[0]);
-					$p[$p1][0] = implode(" ", $pAll);
-				}
-				break;
-				case "issues":
-				if (!is($p1)) {
-					unset($pAll[0]);
-					$p['issue'][0] = implode(" ", $pAll);
-				}
-				break;
-				case "access date":
-				if (!is($p1)) {
-					unset($pAll[0]);
-					$p['accessdate'][0] = implode(" ", $pAll);
-				}
-				break;
-				default:
-					$p["unused_data"][0] .= "|" . implode(" ", $pAll);
-				}
-			}
+
+  if (isset($freeDat[0]))
+  {
+		foreach ($freeDat as $dat)
+    {
+      // If the unused data starts with a pipe, the first dat will be blank, so there's no point in checking it.
+      if ($dat)
+      {
+        $dat = trim($dat);
+
+        // Load list of parameters used in citation templates.
+        //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
+        global $parameter_list;
+
+        $shortest = -1;
+        foreach ($parameter_list as $parameter)
+        {
+          $para_len = strlen($parameter);
+          if ($para_len < 3)
+          {
+            break; // minimum length to avoid false positives
+          }
+
+          $lev = levenshtein(substr(strtolower($dat), 0, $para_len), $parameter);
+          if ($lev == 0)
+          {
+            $closest = $parameter;
+            $shortest = 0;
+            break;
+          }
+          // Strict inequality as we want to favour the longest match possible
+          if ($lev < $shortest || $shortest < 0)
+          {
+            $closest = $parameter;
+            $shortest = $lev;
+          }
+        }
+        if ($shortest < 3)
+        {
+          // remove leading spaces or hyphens (which may have been typoed for an equals)
+          if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match))
+          {
+            set ($closest, $match[1] . " [$shortest]");
+          }
+        }
+        // Is the data a URL, and is the URL parameter blank?
+        else if (substr(trim($dat), 0, 7) == 'http://' && !isset($p['url']))
+        {
+          set ("url", $dat);
+        }
+        // Is it a number formatted like an ISBN?
+        elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match))
+        {
+          set("isbn", $match[1]);
+          $pAll = "";
+        }
+        else
+        {
+          // Extract whatever appears before the first space, and compare it to common parameters
+          $pAll = explode(" ", trim($dat));
+          $p1 = strtolower($pAll[0]);
+          switch ($p1) {
+          case "volume": case "vol":
+          case "pages": case "page":
+          case "year": case "date":
+          case "title":
+          case "authors": case "author":
+          case "issue":
+          case "journal":
+          case "accessdate":
+          case "archiveurl":
+          case "archivedate":
+          case "format":
+          case "url":
+          if (!is($p1)) {
+            unset($pAll[0]);
+            $p[$p1][0] = implode(" ", $pAll);
+          }
+          break;
+          case "issues":
+          if (!is($p1)) {
+            unset($pAll[0]);
+            $p['issue'][0] = implode(" ", $pAll);
+          }
+          break;
+          case "access date":
+          if (!is($p1)) {
+            unset($pAll[0]);
+            $p['accessdate'][0] = implode(" ", $pAll);
+          }
+          break;
+          default:
+            // No good; we'll have to return it to the unused data parameter
+            $i++;
+            $p["unused_datum_$i"][0] = implode(" ", $pAll);
+          }
+        }
+      }
 		}
 	}
 }
@@ -830,7 +884,7 @@ function checkTextForMetas($text){
 		$newp["year"][0] = date("Y", strtotime($newp["date"][0]));
 		//$newp["month"][0] = date("M", strtotime($newp["date"][0])); DISABLED BY EUBLIDES
 		unset($newp["date"]);
-	}	
+	}
 	foreach ($newp as $p=>$p0) ifNullSet($p, $p0[0]);
 }
 
@@ -993,7 +1047,7 @@ function formatForename($forename){
  * Returns a string of initals, formatted for Cite Doi output
  *
  * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
- * 
+ *
  */
 function formatInitials($str){
 	$str = trim($str);
@@ -1325,7 +1379,7 @@ function parameterOrder($first, $author){
      "pages",
      "nopp",
      "publisher",
-     "location", 
+     "location",
      "date",
      "origyear",
      "year",
