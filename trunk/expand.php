@@ -194,7 +194,7 @@ while ($page) {
         if (isset($p["place"]) && !isset($p["location"][0]))
         {
           $p["location"] = $p["place"];
-          unset $p["place"];
+          unset ($p["place"]);
         }
 
         // Now, check for typos
@@ -882,7 +882,8 @@ Done.  Just a couple of things to tweak now...";
 
 
           // Check that the URL functions, and mark as dead if not.
-          if (!is("format") && is("url") && !is("accessdate")){
+          if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
+          {
             print "\n - Checking that URL is live...";
             $formatSet = isset($p["format"]);
             $p["format"][0] = assessUrl($p["url"][0]);
