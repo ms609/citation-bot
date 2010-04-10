@@ -41,7 +41,7 @@ while ($page) {
 	if ($citedoi && !$startcode) $startcode = $cite_doi_start_code;
 
 	// Which template family is dominant?
-  
+
   if (!$citedoi) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $startcode, $cite_x);
     preg_match_all("~\{\{\s*[Cc]itation\b(?! \w)~", $startcode, $citation);
@@ -336,6 +336,7 @@ while ($page) {
 					preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~","doi$1=$1$2", $citation[$cit_i+1])); // Replaces doi: with doi =
 				while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
 				preg_match(siciRegExp, urldecode($c), $sici);
+        
 
 ##############################
 #             Split citation into parameters                     #
@@ -378,7 +379,7 @@ while ($page) {
 //
 echo "
 *-> {$p["title"][0]}
- 1: Tidy citation and try ISBN";
+ 1: Tidy citation and try <s>ISBN</s> SICI";
 //  See if we can get any 'free' metadata from:
 //  * mis-labelled parameters
 //  * ISBN
@@ -687,15 +688,19 @@ echo "
               }
             }
           } else {
-            echo " nothing found.\n - Checking for ISBN";
+            echo " nothing found.";
+            if (strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation") {
+              // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
+              echo "\n - Checking for ISBN";
 							$isbnToStartWith = isset($p["isbn"]);
-								if (!isset($p["isbn"][0]) && is("title")) set("isbn", findISBN( $p["title"][0], $p["author"][0] . " " . $p["last"][0] . $p["last1"][0]));
-								else echo "\n  Already has an ISBN. ";
-								if (!$isbnToStartWith && !$p["isbn"][0]) {
-                    unset($p["isbn"]);
-                } else {
-                  // getInfoFromISBN(); // TODO.  Too buggy. Disabled.
-                }
+              if (!isset($p["isbn"][0]) && is("title")) set("isbn", findISBN( $p["title"][0], $p["author"][0] . " " . $p["last"][0] . $p["last1"][0]));
+              else echo "\n  Already has an ISBN. ";
+              if (!$isbnToStartWith && !$p["isbn"][0]) {
+                  unset($p["isbn"]);
+              } else {
+                // getInfoFromISBN(); // TODO.  Too buggy. Disabled.
+              }
+            }
           }
          }
 
