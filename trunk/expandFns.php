@@ -14,23 +14,17 @@ function includeIfNew($file){
 	require_once($file . $GLOBALS["linkto2"] . ".php");
 	return true;
 }
-
-echo " \n Getting login details ... ";
 require_once("/home/verisimilus/public_html/Bot/DOI_bot/doiBot$linkto2.login");
-echo " done.";
 # Snoopy should be set so the host name is en.wikipedia.org.
 includeIfNew('Snoopy.class');
 includeIfNew("wikiFunctions");
 includeIfNew("DOItools");
-echo "\n Connecting to MYSQL database ... ";
 require_once("/home/verisimilus/public_html/res/mysql_connect.php");
 $db = udbconnect("yarrow");
-echo " connected.";
 if(!true && !myIP()) {
 	print "Sorry, the Citation bot is temporarily unavilable while bugs are fixed.  Please try back later."; exit;
 }
 
-echo "\n Initializing ... ... ";
 #Yahoo Application ID
 $yAppId = "wLWQRfDV34GGTxHoNZjroF_m94yRvVD_eGRA9KKFhPZsE4rAXNGOih3eCrI9Eh3ewBa6Ccqg";
 
@@ -50,8 +44,7 @@ define("restrictedDuties", !true);
 define("editinterval", 10);
 define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
-//define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
-#define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DO I is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
+// doiRegExp is defined in DOItools.php
 
 //Common replacements
 $doiIn = array("[", 			"]", 			"<", 			">"	,			"&#60;!", 	"-&#62;",		"%2F"	);
@@ -116,7 +109,8 @@ function countMainLinks($title) {
 
 // This function is called from the end of this page.
 function logIn($username, $password) {
-    global $bot; // Snoopy class loaded elsewhere
+
+  global $bot; // Snoopy class loaded elsewhere
 
   // Set POST variables to retrieve a token
 	$submit_vars["format"] = "json";
@@ -172,7 +166,7 @@ function write($page, $data, $edit_summary = "Bot edit") {
   // Check that bot is logged in:
   $bot->fetch(api . "?action=query&prop=info&meta=userinfo&format=json");
   $result = json_decode($bot->results);
-
+  
   if ($result->query->userinfo->id == 0) {
     return "LOGGED OUT:  The bot has been logged out from Wikipedia servers";
   }
@@ -270,32 +264,5 @@ function logBrokenDoi($doi, $p, $error){
 // 200 is a broken DOI, found in the source of the URL
 // Broken DOIs are only logged if they can be spotted in the URL page specified.
 
-echo "\n Establishing connection to Wikipedia servers ... ";
-// Log in to Wikipedia
 logIn(USERNAME, PASSWORD);
-
-echo "\n Fetching parameter list ... ";
-// Get a current list of parameters used in citations from WP
-$page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters&format=json");
-$json = json_decode($bot->results, true);
-$parameter_list = (explode("\n", $json["query"]["pages"][26899494]["revisions"][0]["*"]));
-function ascii_sort($val_1, $val_2)
-{
-  $return = 0;
-  $len_1 = strlen($val_1);
-  $len_2 = strlen($val_2);
-
-  if ($len_1 > $len_2)
-  {
-    $return = -1;
-  }
-  else if ($len_1 < $len_2)
-  {
-    $return = 1;
-  }
-  return $return;
-}
-print "sorting ... ";
-uasort($parameter_list, "ascii_sort");
-print "done.";
 ?>

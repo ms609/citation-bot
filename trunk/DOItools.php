@@ -4,13 +4,14 @@ $bot = new Snoopy();
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 define("api", "http://en.wikipedia.org/w/api.php");
 if ($linkto2) print "\n// included DOItools2 & initialised \$bot\n";
-define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
+define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\"\?&>]|&l?g?t;|<[^\s\"\?&]*>))(?=[\s\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 define("timelimit", $fastMode?4:($slowMode?15:10));
 define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
 define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
 
+
 require_once("/home/verisimilus/public_html/crossref.login");
-$crossRefId = CROSSREFUSERNAME . ":" . CROSSREFPASSWORD;
+$crossRefId=CROSSREFUSERNAME.":".CROSSREFPASSWORD;
 
 
 global $dontCap, $unCapped;
@@ -50,13 +51,13 @@ function set($key, $value){
   }
 }
 
-function dbg($array, $key = false) {
+function dbg($array, $key = false){
 if(myIP())
 	echo "<pre>" . str_replace("<", "&lt;", $key?print_r(array($key=>$array),1):print_r($array,1)), "</pre>";
 else echo "<p>Debug mode active</p>";
 }
 
-function myIP() {
+function myIP(){
 	switch ($_SERVER["REMOTE_ADDR"]){
 		case "1":
     case "":
@@ -215,11 +216,12 @@ function getDataFromArxiv($a) {
 function crossRefData($doi){
 	global $crossRefId;
   $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
-
   $xml = @simplexml_load_file($url);
-  if ($xml) {
+  
+	if ($xml) {
     $result = $xml->query_result->body->query;
-  } else {
+  }
+  else {
      echo "Error loading CrossRef file from DOI $doi!<br>";
      return false;
   }
@@ -317,13 +319,13 @@ function textToSearchKey($key){
 }
 
 /* pmSearch
- *
- * Searches pubmed based on terms provided in an array.
+ * 
+ * Searches pubmed based on terms provided in an array.  
  * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
  * return the results as array (first result, # of results)
  * If $check_for_errors is true, it will return 'fasle' on errors returned by pubmed
  */
-function pmSearch($p, $terms, $check_for_errors = false) {
+function pmSearch($p, $terms, $check_for_errors = false) {  
   foreach ($terms as $term) {
     $key = textToSearchKey($term);
     if ($key && trim($p[$term][0]) != "") {
@@ -337,7 +339,7 @@ function pmSearch($p, $terms, $check_for_errors = false) {
     print "\n - Errors detected in PMID search; abandoned.";
     return array(null, 0);
   }
-
+  
   return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(null, 0);// first results; number of results
 }
 
@@ -356,7 +358,7 @@ function pmSearchResults($p){
       if ($results[1] == 1) return $results;
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
-
+    
     if (is("journal") && is("volume") && is("pages")) {
       $results = pmSearch($p, array("journal", "volume", "issue", "pages"));
       if ($results[1] == 1) return $results;
@@ -382,8 +384,8 @@ function pmArticleDetails($pmid, $id = "pmid"){
 	$xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($id == "pmid")?"pubmed":"pmc") . "&id=$pmid");
   // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
   
-  foreach($xml->DocSum->Item as $item) {
-    if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $result["doi"] = $match[0];
+  foreach($xml->DocSum->Item as $item){
+		if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $result["doi"] = $match[0];
 		switch ($item["Name"]) {
 							case "Title": $result["title"] = str_replace(array("[", "]"), "",(string) $item);
 			break; 	case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
@@ -435,15 +437,9 @@ function pmArticleDetails($pmid, $id = "pmid"){
               preg_match("~\d+~", (string) $subItem, $match);
               $result["pmc"] = $match[0];
               break;
-						case "doi": case "pii":
-              if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
-                $result["doi"] = $match[0];
-              }
-              break;
-            default:
-              if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
-                $result["doi"] = $match[0];
-              }
+						case "doi":
+              preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match);
+              $result["doi"] = $match[0];
               break;
 					}
 				}
@@ -515,237 +511,62 @@ function getInfoFromISBN(){
 	}
 }
 
-function useUnusedData()
-{
-	// See if we can use any of the parameters lacking equals signs:
+function useUnusedData(){
+
 	global $p;
-
-  // Separate up the unused data by pipes, into "$freeDat"
-  $freeDat = explode("|", trim($p["unused_data"][0]));
-
-  // Empty the parameter.  We'll put back anything we don't manage to assign to a parameter.
+	// See if we can use any of the parameters lacking equals signs:
+	$freeDat = explode("|", trim($p["unused_data"][0]));
 	unset($p["unused_data"]);
-
-  if (isset($freeDat[0]))
-  {
-		foreach ($freeDat as $dat)
-    {
-      // If the unused data starts with a pipe, the first dat will be blank, so there's no point in checking it.
-      if ($dat)
-      {
-        $dat = trim($dat);
-
-        // Load list of parameters used in citation templates.
-        //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
-        global $parameter_list;
-
-        $shortest = -1;
-        foreach ($parameter_list as $parameter)
-        {
-          $test_dat = preg_replace("~\d~", "_$0",
-                      preg_replace("~[ -+].*$~", "", substr(strtolower($dat), 0, $para_len)));
-          $para_len = strlen($parameter);
-          if ($para_len < 3)
-          {
-            break; // minimum length to avoid false positives
-          }
-
-          if (preg_match("~\d~", $parameter))
-          {
-            $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
-            $para_len++;
-          }
-          else
-          {
-            $lev = levenshtein($test_dat, $parameter);
-          }
-          if ($lev == 0)
-          {
-            $closest = $parameter;
-            $shortest = 0;
-            break;
-          }
-          // Strict inequality as we want to favour the longest match possible
-          if ($lev < $shortest || $shortest < 0)
-          {
-            $comp = $closest;
-            $closest = $parameter;
-            $shortish = $shortest;
-            $shortest = $lev;
-          }
-          // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
-          else if ($lev < $shortish)
-          {
-            $shortish = $lev;
-            $comp = $parameter;
-          }
-        }
-        
-        if ($shortest < 3
-           && (similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4)
-           &&  ($shortest + 1 < $shortish  // No close competitor
-               || $shortest / $shortish <= 2/3
-               || strlen($closest) > strlen($comp)
-               )
-           )
-        {
-            // remove leading spaces or hyphens (which may have been typoed for an equals)
-            if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match))
-            {
-              set ($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
-            }
-
-        }
-        // Is the data a URL, and is the URL parameter blank?
-        else if (substr(trim($dat), 0, 7) == 'http://' && !isset($p['url']))
-        {
-          set ("url", $dat);
-        }
-        // Is it a number formatted like an ISBN?
-        elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match))
-        {
-          set("isbn", $match[1]);
-          $pAll = "";
-        }
-        else
-        {
-          // Extract whatever appears before the first space, and compare it to common parameters
-          $pAll = explode(" ", trim($dat));
-          $p1 = strtolower($pAll[0]);
-          switch ($p1) {
-          case "volume": case "vol":
-          case "pages": case "page":
-          case "year": case "date":
-          case "title":
-          case "authors": case "author":
-          case "issue":
-          case "journal":
-          case "accessdate":
-          case "archiveurl":
-          case "archivedate":
-          case "format":
-          case "url":
-          if (!is($p1)) {
-            unset($pAll[0]);
-            $p[$p1][0] = implode(" ", $pAll);
-          }
-          break;
-          case "issues":
-          if (!is($p1)) {
-            unset($pAll[0]);
-            $p['issue'][0] = implode(" ", $pAll);
-          }
-          break;
-          case "access date":
-          if (!is($p1)) {
-            unset($pAll[0]);
-            $p['accessdate'][0] = implode(" ", $pAll);
-          }
-          break;
-          default:
-            // No good; we'll have to return it to the unused data parameter
-            $i++;
-            $p["unused_data"][0] .= "|" . implode(" ", $pAll);
-          }
-        }
-      }
+	if (isset($freeDat[0])) {
+		foreach ($freeDat as $dat) {
+			if (preg_match("~^\s*(\w+)\s*-(.*)~", $dat, $match)) {
+				set ($match[1], $match[2]);
+			}
+			else if (substr(trim($dat), 0, 7) == 'http://' && !isset($p['url'])) {
+				set ("url", $dat);
+			}
+			elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+				set("isbn", $match[1]);
+				$pAll = "";
+			} else {
+				$pAll = explode(" ", trim($dat));
+				$p1 = strtolower($pAll[0]);
+				switch ($p1) {
+				case "volume": case "vol":
+				case "pages": case "page":
+				case "year": case "date":
+				case "title":
+				case "authors": case "author":
+				case "issue":
+				case "journal":
+				case "accessdate":
+				case "archiveurl":
+				case "archivedate":
+				case "format":
+				case "url":
+				if (!is($p1)) {
+					unset($pAll[0]);
+					$p[$p1][0] = implode(" ", $pAll);
+				}
+				break;
+				case "issues":
+				if (!is($p1)) {
+					unset($pAll[0]);
+					$p['issue'][0] = implode(" ", $pAll);
+				}
+				break;
+				case "access date":
+				if (!is($p1)) {
+					unset($pAll[0]);
+					$p['accessdate'][0] = implode(" ", $pAll);
+				}
+				break;
+				default:
+					$p["unused_data"][0] .= "|" . implode(" ", $pAll);
+				}
+			}
 		}
 	}
-}
-
-
-// Pass $p and this function will check each parameter name against the list of accepted names (loaded in expand.php).
-// It will correct any that appear to be mistyped.
-function correct_parameter_spelling($p)
-{
-  global $parameter_list;
-  foreach ($p as $key => $value) {
-    $parameters_used[] = $key;
-  }
-  $unused_parameters = array_diff($parameter_list, $parameters_used);
-  
-  // Common mistakes that aren't picked up by the levenshtein approach
-  $common_mistakes = array (
-                            "vol"         =>  "volume",
-                            "translator"  =>  "others",
-                            "translators" =>  "others",
-                            "editorlink1" =>  "editor1-link",
-                            "editorlink2" =>  "editor2-link",
-                            "editorlink3" =>  "editor3-link",
-                            "editorlink4" =>  "editor4-link",
-                            "editor1link" =>  "editor1-link",
-                            "editor2link" =>  "editor2-link",
-                            "editor3link" =>  "editor3-link",
-                            "editor4link" =>  "editor4-link",
-                            );
-
-  foreach ($p as $key => $value) {
-    if (!in_array($key, $parameter_list))
-    {
-      print "\n  *  Unrecognised parameter $key ";
-      $shortest = -1;
-
-      // Check the parameter list to find a likely replacement
-      foreach ($unused_parameters as $parameter)
-      {
-        $lev = levenshtein($key, $parameter, 5, 4, 6);
-
-        // Strict inequality as we want to favour the longest match possible
-        if ($lev < $shortest || $shortest < 0)
-        {
-          $comp = $closest;
-          $closest = $parameter;
-          $shortish = $shortest;
-          $shortest = $lev;
-        }
-        // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
-        else if ($lev < $shortish)
-        {
-          $shortish = $lev;
-          $comp = $parameter;
-        }
-      }
-      $key_len = strlen($key);
-
-      // Account for short words...
-      if ($key_len < 4) {
-        $shortest *= ($key_len / similar_text($key, $closest));
-        $shortish *= ($key_len / similar_text($key, $comp));
-      }
-      if ($shortest < 12 && $shortest < $shortish)
-      {
-        $mod[$key] = $closest;
-        print "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
-      }
-      else
-      {
-        $similarity = similar_text($key, $closest) / strlen($key);
-        if ($similarity > 0.6)
-        {
-          $mod[$key] = $closest;
-          print "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
-        }
-        else
-        {
-          print "could not be replaced with confidence.  Please check the citation yourself.";
-        }
-      }
-    }
-  }
-  // Now check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
-  foreach ($common_mistakes as $mistake => $corrected) {
-    if (isset($p[$mistake])) {
-      $mod[$mistake] = $corrected;
-    }
-  }
-  foreach ($mod as $wrong => $right)
-  {
-    if (!is($right)) {
-      $p[$right] = $p[$wrong];
-      unset ($p[$wrong]);
-    }
-  }
-  return $p;
 }
 
 function file_size($url, $redirects=0){
@@ -923,6 +744,18 @@ function getDoiFromText($source, $testDoi = false){
 			if ($dois[1][2]){
 				echo "Multiple DOIs found: ";
 				return false ; //We can't be sure that we've found the right one.
+				//See if a DO I appears in close proximity to the title we require.
+				/*$noBreaks = "(.(?!<br[^>]*>.*|</?h\d[^>]*>.*|</?li[^>]*>.*|</?td[^>]*>.*|</?p[^>]*>.*))";
+				if (preg_match("~" . preg_quote($title) . $noBreaks . "{0,200}" . doiRegexp . "~Ui", $source, $ourDoi)) {
+					echo "\nFound DOI in text immediately after title: ", htmlentities($ourDoi[2]), "<br><small>Title was ", htmlentities($ourDoi[0]), ".</a></small><br>";
+					return $ourDoi[2];
+				} elseif (preg_match("~" . preg_quote($title) . "~Ui", $source, $ourDoi) && preg_match("~" . doiRegexp . $noBreaks . "{0,1000}" . $title . "~Ui", $source, $ourDoi))  {
+					echo "\nFound DOI in text immediately before title:". htmlentities($ourDoi[1])."<br><small> Match was ".htmlentities($ourDoi[0])." .</a></small><br>";
+					return $ourDoi[1];
+				} else {
+					echo "No DOIs were close enough to the title to guarantee a match.<br>";
+					return $testDoi?testDoi(trimEnd($dois[1][0])):false;
+				}	*/
 			} elseif (!$dois[1][1] || $dois[1][1] == $dois[1][0]) {
 				//DOI is unique.  If it appears early in the document, use it.
 				if ($testDoi) {$doi = testDoi(trimEnd($dois[1][0])); if ($doi) return $doi;} // DOI redirects to our URL so MUST be correct
@@ -997,7 +830,7 @@ function checkTextForMetas($text){
 		$newp["year"][0] = date("Y", strtotime($newp["date"][0]));
 		//$newp["month"][0] = date("M", strtotime($newp["date"][0])); DISABLED BY EUBLIDES
 		unset($newp["date"]);
-	}
+	}	
 	foreach ($newp as $p=>$p0) ifNullSet($p, $p0[0]);
 }
 
@@ -1160,7 +993,7 @@ function formatForename($forename){
  * Returns a string of initals, formatted for Cite Doi output
  *
  * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
- *
+ * 
  */
 function formatInitials($str){
 	$str = trim($str);
@@ -1492,7 +1325,7 @@ function parameterOrder($first, $author){
      "pages",
      "nopp",
      "publisher",
-     "location",
+     "location", 
      "date",
      "origyear",
      "year",
