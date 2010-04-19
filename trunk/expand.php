@@ -150,11 +150,16 @@ while ($page) {
 				// Split citation into parameters
 				$parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
 				$partsLimit = count($parts);
-				if (strpos($parts[0], "|") >0 && strpos($parts[0],"[[") === FALSE && strpos($parts[0], "{{") === FALSE) set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
+				if (strpos($parts[0], "|") >0
+            && strpos($parts[0],"[[") === FALSE
+            && strpos($parts[0], "{{") === FALSE
+          ) {
+          set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
+        }
 				for ($partsI=1; $partsI<=$partsLimit; $partsI+=4) {
 					$value = $parts[$partsI+3];
 					$pipePos = strpos($value, "|");
-					if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
+					if ($pipePos > 0 && strpos($value, "[[") === false && strpos($value, "{{") === FALSE) {
 						// There are two "parameters" on one line.  One must be missing an equals.
 						$p["unused_data"][0] .= " " . substr($value, $pipePos);
 						$value = substr($value, 0, $pipePos);
@@ -175,9 +180,10 @@ while ($page) {
 
 				useUnusedData();
 
-				if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
-				else {
-					if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+				if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
+          unset($p["unused_data"]);
+        } else if (substr(trim($p["unused_data"][0]), 0, 1) == "|") {
+          $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
 				}
 				echo "\n* {$p["title"][0]}";
 
@@ -250,7 +256,7 @@ while ($page) {
 				if ($dateToStartWith) unset($p["year"]); // If there was a date parameter to start with, don't add a year too!
 
 				// If we have any unused data, check to see if any is redundant!
-				if (is("unused_data")){
+				if (is("unused_data")) {
 					$freeDat = explode("|", trim($p["unused_data"][0]));
 					unset($p["unused_data"]);
 					foreach ($freeDat as $dat) {
@@ -264,7 +270,9 @@ while ($page) {
 					}
 					if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
 					else {
-						if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+						if (substr(trim($p["unused_data"][0]), 0, 1) == "|") {
+              $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+            }
 						echo "\n* XXX Unused data in following citation: {$p["unused_data"][0]}";
 					}
 				}
@@ -344,22 +352,28 @@ while ($page) {
 #             Split citation into parameters                     #
 ##############################
 
-				$parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
+				$parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_ ]*\b)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
 				$partsLimit = count($parts);
-				if (strpos($parts[0], "|") >0 && strpos($parts[0],"[[") === FALSE && strpos($parts[0], "{{") === FALSE) set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
-        for ($partsI=1; $partsI<=$partsLimit; $partsI+=4) {
-					$value = $parts[$partsI+3];
-					$pipePos = strpos($value, "|");
-					if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
+				if (strpos($parts[0], "|") > 0 &&
+            strpos($parts[0],"[[") === FALSE &&
+            strpos($parts[0], "{{") === FALSE) {
+          set("unused_data", substr($parts[0], strpos($parts[0], "|") + 1));
+        }
+        for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
+					$parameter_value = $parts[$partsI + 3];
+					$pipePos = strpos($parameter_value, "|");
+					if ($pipePos > 0 &&
+              strpos($parameter_value, "[[") === FALSE &&
+              strpos($parameter_value, "{{") === FALSE) {
 						// There are two "parameters" on one line.  One must be missing an equals.
-						$p["unused_data"][0] .= " " . substr($value, $pipePos);
-						$value = substr($value, 0, $pipePos);
+						$p["unused_data"][0] .= " " . substr($parameter_value, $pipePos);
+            $parameter_value = substr($parameter_value, 0, $pipePos);
 					}
 					// Load each line into $p[param][0123]
-          loadParam($parts[$partsI+1], $value, $parts[$partsI], $parts[$partsI+2]);
+          loadParam($parts[$partsI+1], $parameter_value, $parts[$partsI], $parts[$partsI+2]);
 				}
 
-				if ($p["doix"]){
+				if ($p["doix"]) {
 					$p["doi"][0] = str_replace($dotEncode, $dotDecode, $p["doix"][0]);
 					unset($p["doix"]);
 				}
@@ -368,15 +382,20 @@ while ($page) {
           $pStart[$param] = $value[0];
         }
 
-				if (is("inventor") || is("inventor-last") || is("patent-number")) print "<p>Unrecognised citation type. Ignoring.</p>";// Don't deal with patents!
-				else {
+				if (is("inventor") ||
+            is("inventor-last") ||
+            is("patent-number")) {
+          print "<p>Citation bot does not handle patent citations.</p>";
+        } else {
         //Check for the doi-inline template in the title
-        if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~",
-                        str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0]), $match)) {
+        if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~"
+            , str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0])
+            , $match
+            )
+        ) {
           set('title', $match[2]);
           set('doi', $match[1]);
         }
-
 ###########################
 //
 echo "
@@ -434,11 +453,16 @@ echo "
 					// DOI - urldecode
 					if (isset($p["doi"][0])) {
             $p['doi'][0] = trim(preg_replace("~\<!--.*--\>~", "", $p["doi"][0]));
-						$p["doi"][0] = str_replace($pcEncode,$pcDecode,str_replace(' ', '+', trim(urldecode($p["doi"][0]))));
-						$noComDoi= preg_replace("~<!--[\s\S]*-->~U", "", $p["doi"][0]);
-						if (preg_match("~10\.\d{4}/\S+~", $noComDoi,$match)) set("doi", $match[0]);
+						$p["doi"][0] = str_replace($pcEncode, $pcDecode,
+                             str_replace(' ', '+', trim(urldecode($p["doi"][0]))));
+						$doi_with_comments_removed = preg_replace("~<!--[\s\S]*-->~U", "", $p["doi"][0]);
+						if (preg_match("~10\.\d{4}/\S+~", $doi_with_comments_removed, $match)) {
+              set("doi", $match[0]);
+            }
 					} else {
-						if (preg_match("~10\.\d{4}/[^&\s]*~", urldecode($c), $match)) $p["doi"][0] = $match[0];
+						if (preg_match("~10\.\d{4}/[^&\s\|]*~", urldecode($c), $match)) {
+              $p["doi"][0] = $match[0];
+            }
 					}
 					$doiToStartWith = isset($p["doi"]);
 
@@ -600,6 +624,7 @@ echo "
 */
 					// Is there already a date parameter?
 					$dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
+
 
 #####################################
 //
@@ -1132,7 +1157,7 @@ Done.  Just a couple of things to tweak now...";
 			$pagecode .= $citation[$cit_i]; // Adds any text that comes after the last citation
 		}
 		if ($changeCitationFormat && $useCitationFormat) {
-			$pagecode = preg_replace("~[cC]ite[ _](web|conference|encyclopedia|news)~", "Citation", $pagecode);
+			$pagecode = preg_replace("~\b[cC]ite[ _](web|conference|encyclopedia|news)~", "Citation", $pagecode);
 		}
 
 		if (trim($pagecode)){
