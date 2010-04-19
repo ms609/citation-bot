@@ -4,14 +4,13 @@ $bot = new Snoopy();
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 define("api", "http://en.wikipedia.org/w/api.php");
 if ($linkto2) print "\n// included DOItools2 & initialised \$bot\n";
-define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\"\?&>]|&l?g?t;|<[^\s\"\?&]*>))(?=[\s\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
+define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 define("timelimit", $fastMode?4:($slowMode?15:10));
 define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
 define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
 
-
 require_once("/home/verisimilus/public_html/crossref.login");
-$crossRefId=CROSSREFUSERNAME.":".CROSSREFPASSWORD;
+$crossRefId = CROSSREFUSERNAME . ":" . CROSSREFPASSWORD;
 
 
 global $dontCap, $unCapped;
@@ -51,13 +50,13 @@ function set($key, $value){
   }
 }
 
-function dbg($array, $key = false){
+function dbg($array, $key = false) {
 if(myIP())
 	echo "<pre>" . str_replace("<", "&lt;", $key?print_r(array($key=>$array),1):print_r($array,1)), "</pre>";
 else echo "<p>Debug mode active</p>";
 }
 
-function myIP(){
+function myIP() {
 	switch ($_SERVER["REMOTE_ADDR"]){
 		case "1":
     case "":
@@ -215,13 +214,12 @@ function getDataFromArxiv($a) {
 
 function crossRefData($doi){
 	global $crossRefId;
-  $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:" . str_replace(array("%3C", "%3E"), array("%253C", "%253E"), $doi) . "&noredirect=true";
-  $xml = @simplexml_load_file($url);
+  $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
 
-	if ($xml) {
+  $xml = @simplexml_load_file($url);
+  if ($xml) {
     $result = $xml->query_result->body->query;
-  }
-  else {
+  } else {
      echo "Error loading CrossRef file from DOI $doi!<br>";
      return false;
   }
@@ -383,9 +381,9 @@ function pmArticleDetails($pmid, $id = "pmid"){
 	$result = Array();
 	$xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($id == "pmid")?"pubmed":"pmc") . "&id=$pmid");
   // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
-
-  foreach($xml->DocSum->Item as $item){
-		if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $result["doi"] = $match[0];
+  
+  foreach($xml->DocSum->Item as $item) {
+    if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $result["doi"] = $match[0];
 		switch ($item["Name"]) {
 							case "Title": $result["title"] = str_replace(array("[", "]"), "",(string) $item);
 			break; 	case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
@@ -437,9 +435,15 @@ function pmArticleDetails($pmid, $id = "pmid"){
               preg_match("~\d+~", (string) $subItem, $match);
               $result["pmc"] = $match[0];
               break;
-						case "doi":
-              preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match);
-              $result["doi"] = $match[0];
+						case "doi": case "pii":
+              if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
+                $result["doi"] = $match[0];
+              }
+              break;
+            default:
+              if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
+                $result["doi"] = $match[0];
+              }
               break;
 					}
 				}
@@ -655,10 +659,16 @@ function useUnusedData()
 function correct_parameter_spelling($p)
 {
   global $parameter_list;
+  foreach ($p as $key => $value) {
+    $parameters_used[] = $key;
+  }
+  $unused_parameters = array_diff($parameter_list, $parameters_used);
   
   // Common mistakes that aren't picked up by the levenshtein approach
   $common_mistakes = array (
-                            "vol"         => "volume",
+                            "vol"         =>  "volume",
+                            "translator"  =>  "others",
+                            "translators" =>  "others",
                             "editorlink1" =>  "editor1-link",
                             "editorlink2" =>  "editor2-link",
                             "editorlink3" =>  "editor3-link",
@@ -676,7 +686,7 @@ function correct_parameter_spelling($p)
       $shortest = -1;
 
       // Check the parameter list to find a likely replacement
-      foreach ($parameter_list as $parameter)
+      foreach ($unused_parameters as $parameter)
       {
         $lev = levenshtein($key, $parameter, 5, 4, 6);
 
@@ -710,7 +720,7 @@ function correct_parameter_spelling($p)
       else
       {
         $similarity = similar_text($key, $closest) / strlen($key);
-        if ($similarity > 0.5)
+        if ($similarity > 0.6)
         {
           $mod[$key] = $closest;
           print "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
@@ -722,7 +732,6 @@ function correct_parameter_spelling($p)
       }
     }
   }
-
   // Now check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
   foreach ($common_mistakes as $mistake => $corrected) {
     if (isset($p[$mistake])) {
@@ -731,8 +740,10 @@ function correct_parameter_spelling($p)
   }
   foreach ($mod as $wrong => $right)
   {
-    $p[$right] = $p[$wrong];
-    unset ($p[$wrong]);
+    if (!is($right)) {
+      $p[$right] = $p[$wrong];
+      unset ($p[$wrong]);
+    }
   }
   return $p;
 }
@@ -912,18 +923,6 @@ function getDoiFromText($source, $testDoi = false){
 			if ($dois[1][2]){
 				echo "Multiple DOIs found: ";
 				return false ; //We can't be sure that we've found the right one.
-				//See if a DO I appears in close proximity to the title we require.
-				/*$noBreaks = "(.(?!<br[^>]*>.*|</?h\d[^>]*>.*|</?li[^>]*>.*|</?td[^>]*>.*|</?p[^>]*>.*))";
-				if (preg_match("~" . preg_quote($title) . $noBreaks . "{0,200}" . doiRegexp . "~Ui", $source, $ourDoi)) {
-					echo "\nFound DOI in text immediately after title: ", htmlentities($ourDoi[2]), "<br><small>Title was ", htmlentities($ourDoi[0]), ".</a></small><br>";
-					return $ourDoi[2];
-				} elseif (preg_match("~" . preg_quote($title) . "~Ui", $source, $ourDoi) && preg_match("~" . doiRegexp . $noBreaks . "{0,1000}" . $title . "~Ui", $source, $ourDoi))  {
-					echo "\nFound DOI in text immediately before title:". htmlentities($ourDoi[1])."<br><small> Match was ".htmlentities($ourDoi[0])." .</a></small><br>";
-					return $ourDoi[1];
-				} else {
-					echo "No DOIs were close enough to the title to guarantee a match.<br>";
-					return $testDoi?testDoi(trimEnd($dois[1][0])):false;
-				}	*/
 			} elseif (!$dois[1][1] || $dois[1][1] == $dois[1][0]) {
 				//DOI is unique.  If it appears early in the document, use it.
 				if ($testDoi) {$doi = testDoi(trimEnd($dois[1][0])); if ($doi) return $doi;} // DOI redirects to our URL so MUST be correct
