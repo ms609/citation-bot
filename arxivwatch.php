@@ -2,7 +2,7 @@
 <?php
 // $Id: $
 
-$accountSuffix = '_2'; // Comes before expandFns, which contains login call
+$accountSuffix = '_2'; // Before expandfunctions, which contains login
 require_once("expandFns.php"); //Must include first
 require_once("DOItools.php");
 require_once("wikiFunctions.php");

@@ -48,7 +48,8 @@ $user = str_replace(array("[[", "]]", "User:"), "", $_REQUEST['user']);
 
 if (getArticleId("User:$user")) {
   print "Activated by $user\n";
-  $editInitiator = "r" . revisionID() . "-[[User:$user|$user]]-";
+  $editInitiator = "[" . revisionID() . "]";
+  $editSummaryEnd = "[[User:$user|$user]]";
 }
 
 

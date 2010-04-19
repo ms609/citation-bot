@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+die ("OOD");
 // $Id$
 
 $accountSuffix = '_2'; // Before expandfunctions
