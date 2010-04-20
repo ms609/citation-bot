@@ -745,10 +745,7 @@ echo "
             || preg_match("~10.2307/(\d+)~", $p['doi'][0], $jid)
               ) {
             print "\n - Checking JSTOR record {$jid[0]} for data.";
-            $newData = jstorData($jid[1]);
-            foreach ($newData as $key => $value) {
-              ifNullSet($key, $value);
-            }
+            get_data_from_jstor("10.2307/" . $jid[1]); // updates $p using ifNullSet
           }
 
           if (!nothingMissing($journal) && is('pmid')) {
