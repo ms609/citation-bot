@@ -841,7 +841,6 @@ echo "
 #####################################
 
 
-
 						// Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
             if (preg_match("~^10.\d{4}.2F~", $p['doi'][0])) {
 							$p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doi'][0]);
@@ -889,6 +888,13 @@ echo "
                 echo " Completed page range! (" . $p['pages'][0]  . ')';
               }
 						}
+            for ($i = 1; $i < 9; $i ++) {
+              foreach (array("author", "last", "first") as $param) {
+                if (trim($p[$param . $i][0]) == "") {
+                  unset ($p[$param . $i]);
+                }
+              }
+            }
 					}
 
 #####################################

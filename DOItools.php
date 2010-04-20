@@ -661,6 +661,9 @@ function correct_parameter_spelling($p)
     $parameters_used[] = $key;
   }
   $unused_parameters = array_diff($parameter_list, $parameters_used);
+  var_dump($parameter_list);
+  print_r($unused_parameters);
+  exit;
 
   // Common mistakes that aren't picked up by the levenshtein approach
   $common_mistakes = array (
@@ -714,6 +717,7 @@ function correct_parameter_spelling($p)
       {
         $mod[$key] = $closest;
         print "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+        exit;
       }
       else
       {
