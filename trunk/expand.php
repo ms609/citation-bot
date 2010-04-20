@@ -11,7 +11,9 @@ if ($file_revision_id > $doitools_revision_id) {
   $last_revision_id = $file_revision_id;
 }
 
-print '\nVersion: r' . $last_revision_id;
+if ($htmlOutput) {
+  print '\nVersion: r' . $last_revision_id;
+}
 
 
 function loadParam($param, $value, $equals, $pipe) {
@@ -37,11 +39,13 @@ while ($page) {
 
 	$bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
 	$startcode = $bot->results;
-	if ($citedoi && !$startcode) $startcode = $cite_doi_start_code;
+	if ($editing_cite_doi_template && !$startcode) {
+    $startcode = $cite_doi_start_code;
+  }
 
 	// Which template family is dominant?
 
-  if (!$citedoi) {
+  if (!$editing_cite_doi_template) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $startcode, $cite_x);
     preg_match_all("~\{\{\s*[Cc]itation\b(?! \w)~", $startcode, $citation);
     if (stripos($startcode, "{{harv") === false) {
@@ -762,21 +766,23 @@ echo "
 							}
               if ($url) {
                 set ("url", $url);
-                if ($citedoi) {
-                  # set ("format", "Free full text"); // DOn't do this any more.
-                }
               }
             }
           }
 
           if (!nothingMissing($journal)) {
             if (is("doi")) {
+              $jstor_redirect = null;  // reset
+              $jstor_redirect_target = null;  // reset
                 if (substr($p["doi"][0], 3, 4) == "2307") {
                   echo "\n - Populating from JSTOR database: ";
                   if (get_data_from_jstor($p["doi"][0])) {
                     $crossRef = crossRefData($p["doi"][0]);
                     if (!$crossRef) {
                       // JSTOR's UID is not registered as a DOI, meaning that there is another (correct - DOIs should be unique) DOI, issued by the publisher.
+                      if ($editing_cite_doi_template) {
+                        $jstor_redirect = $p["doi"][0];
+                        }
                       unset ($p["doi"][0]);
                       preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
                       $crossRef = crossRefDoi($p["title"][0], $p["journal"][0], is("author1")?$p["author1"][0]:$p["author"][0]
@@ -791,7 +797,7 @@ echo "
               
               if ($crossRef) {
                 echo "\n - Checking CrossRef for more details";
-                if ($citedoi) {
+                if ($editing_cite_doi_template) {
                   $doiCrossRef = $crossRef;
                 }
                 ifNullSet("title", $crossRef->article_title);
@@ -808,6 +814,9 @@ echo "
                   }
                 }
                 ifNullSet("doi", $crossRef->doi);
+                if ($jstor_redirect) {
+                  $jstor_redirect_target = $crossRef->doi;
+                }
                 ifNullSet($journal, $crossRef->journal_title);
                 ifNullSet("volume", $crossRef->volume);
                 if (!is("page")) ifNullSet("pages", $crossRef->first_page);
@@ -823,7 +832,7 @@ echo "
         }
 #####################################
 //
-if ($citedoi && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
+if ($editing_cite_doi_template && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
 echo "
  5: Cite Doi Enhancement";
 // We have now recovered all possible information from CrossRef.
@@ -854,21 +863,23 @@ echo "
 						if (!is('coauthors')
 							 && !is('author2')
 							 && !is('last2')
-							 && is('doi')
+			  				 && is('doi')
 							){
               echo "\n - Looking for co-authors & page numbers...";
   						$moreAuthors = findMoreAuthors($p['doi'][0], $firstauthor[0], $p['pages'][0]);
-							$count = count($moreAuthors['authors']);
-							if ($count) {
+							$count_new_authors = count($moreAuthors['authors']);
+							if ($count_new_authors) {
                 echo " Found more authors! ";
-								for ($j = 0; $j < $count; $j++) {
+								for ($j = 0; $j < $count_new_authors; $j++) {
 									$au = explode(', ', $moreAuthors['authors'][$j]);
 									if ($au[1]) {
 										set ('last' . ($j+1), $au[0]);
 										set ('first' . ($j+1), preg_replace("~(\w)\w*\.? ?~", "$1.", $au[1]));
 										unset($p['author' . ($j+1)]);
 									} else {
-										set ('author' . ($j+1), $au[0]);
+										if ($au[0]) {
+                      set ('author' . ($j+1), $au[0]);
+                    }
 									}
 								}
 								unset($p['author']);
@@ -1206,11 +1217,17 @@ Done.  Just a couple of things to tweak now...";
 				$editSummary = $editSummaryStart . $editInitiator . $smartSum . $initiatedBy . $editSummaryEnd;
         $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . htmlentities(mb_convert_encoding($pagecode, "UTF-8")) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made.<br><b>Changes:</b> <i>$smartSum</i></p>";
 
-        if ($citedoi && strtolower(substr(trim($pagecode), 0, 5)) != "{{cit") {
+        if ($editing_cite_doi_template && strtolower(substr(trim($pagecode), 0, 5)) != "{{cit") {
              mail ("MartinS+citewatch@gmail.com", "Citewatch ERROR", "Output does not begin with {{Cit, but [" . strtolower(substr(trim($pagecode), 0, 5)) . "].\n\n[Page = $page]\n[SmartSum = $smartSum ]\n[\$citation = ". print_r($citation, 1) . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n [p = " . print_r($p,1) . "] \n[pagecode =$pagecode]\n\n[freshcode =$cite_doi_start_code]\n\n> Error message generated by expand.php.");
         }
         elseif ($ON) {
-					if ( strpos($page, "andbox")>1) {
+          if ($jstor_redirect && $jstor_redirect_target) {
+            $page = "Template:Cite doi/" . wikititle_encode($jstor_redirect_target);
+            write ("Template:Cite doi/" . wikititle_encode($jstor_redirect), "#REDIRECT [[$page]]"
+              , $editInitiator . "Redirecting from JSTOR UID to official unique DOI, to avoid duplication");
+            print "\n * Redirected " . wikititle_encode($jstor_redirect) . " to $page. ";
+          }
+          if ( strpos($page, "andbox")>1) {
 							echo $htmlOutput?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
 							write($page . $_GET["subpage"], $pagecode, $editInitiator . "Citation maintenance: Fixing/testing bugs. "
 								.	"Problems? [[User_talk:Smith609|Contact the bot's operator]]. ");
@@ -1256,7 +1273,7 @@ Done.  Just a couple of things to tweak now...";
         $changedDashes = null;
 			} else {
 				echo "\n ** No changes required --> no edit made.";
-        if ($citedoi) {
+        if ($editing_cite_doi_template) {
           if (!articleID($page) && !$doiCrossRef) {
             print "\n\n* $page found on \n  $now\n\n \n\n\n\n";
             $talkPage = "Talk:$now";
@@ -1285,7 +1302,7 @@ Done.  Just a couple of things to tweak now...";
               print " Message left.\n";
             }
           }
-          $doiCrossRef = false;
+          $doiCrossRef = null;
         } else {
           updateBacklog($page);
         }
@@ -1294,7 +1311,7 @@ Done.  Just a couple of things to tweak now...";
 		} else {
 			if (trim($startcode)=='') {
 				echo "<b>Blank page.</b> Perhaps it's been deleted?";
-				if (!$citedoi) updateBacklog($page);
+				if (!$editing_cite_doi_template) updateBacklog($page);
 				$page = nextPage();
 			} else {
 				echo "<b>Error:</b> Blank page produced. This bug has been reported. Page content: $startcode";

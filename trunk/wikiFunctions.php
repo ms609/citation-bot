@@ -27,6 +27,11 @@ function whatTranscludes($template, $namespace=99){
 	return $titles["title"];
 }
 
+function wikititle_encode($in) {
+  global $dotDecode, $dotEncode;
+  return str_replace($dotDecode, $dotEncode, $in);
+}
+
 function getLastRev($page){
   $xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
   return $xml->query->pages->page->revisions->rev["revid"];
