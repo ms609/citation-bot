@@ -661,10 +661,7 @@ function correct_parameter_spelling($p)
     $parameters_used[] = $key;
   }
   $unused_parameters = array_diff($parameter_list, $parameters_used);
-  var_dump($parameter_list);
-  print_r($unused_parameters);
-  exit;
-
+  
   // Common mistakes that aren't picked up by the levenshtein approach
   $common_mistakes = array (
                             "vol"         =>  "volume",
@@ -1355,7 +1352,9 @@ function citeDoiOutputFormat() {
       if (strpos($p["first$i"][1], "\n") !== false) {
         $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
       }
-      $p["author$i"][1] = "\n| "; // hard-coding first$i will change the default for author$i.
+      if (is("author$i")) {
+        $p["author$i"][1] = "\n| "; // hard-coding first$i will change the default for author$i.
+      }
     }
   }
   if ($p['pages'][0]) {
