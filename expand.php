@@ -2,18 +2,16 @@
 // $Revision$
 // $Id$
 
-$svnid = '$Rev: 72 $';
-$scid = substr($svnid, 6);
-$revId = intval(substr($scid, 0, strlen($scid) - 2));
-$dtRevId = revisionID();
-if ($revId > $dtRevId) {
-  $editInitator = str_replace($dtRevId, $revId, $editInitiator);
+$file_revision_id = str_replace(array("Revision: ", "$"), "", '$Revision$');
+$doitools_revision_id = revisionID();
+if ($file_revision_id > $doitools_revision_id) {
+  $editInitator = str_replace($doitools_revision_id, $this_revision_id, $editInitiator);
+  $last_revision_id = $doitools_revision_id;
 } else {
-  $revId = $dtRevId;
+  $last_revision_id = $file_revision_id;
 }
 
-
-print 'Revision: r' . $revId;
+print '\nVersion: r' . $last_revision_id;
 
 function loadParam($param, $value, $equals, $pipe) {
   global $p;
