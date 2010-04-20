@@ -721,10 +721,7 @@ echo "
             || preg_match("~10.2307/(\d+)~", $p['doi'][0], $jid)
               ) {
             print "\n - Checking JSTOR record {$jid[0]} for data.";
-            $newData = jstorData($jid[1]);
-            foreach ($newData as $key => $value) {
-              ifNullSet($key, $value);
-            }
+            get_data_from_jstor("10.2307/" . $jid[1]);
           }
 
           if (!nothingMissing($journal) && is('pmid')) {
@@ -1234,7 +1231,7 @@ Done.  Just a couple of things to tweak now...";
             if ($talkId) {
               $text = getRawWikiText($talkPage);
             } else $text = '';
-            print "\n* -[Text:$text]-";
+            print "\n* -[Text: $text]-";
             if (strpos($text, "|DOI]] [[doi:".$oDoi) || strpos($text, "d/nodoi&a")) {
               print strpos($text, "|DOI]] [[doi:".$oDoi) . strpos($text, "d/nodoi&a");
               print "\n - Message already on talk page.  Zzz.\n";
