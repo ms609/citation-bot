@@ -1063,7 +1063,7 @@ function findMoreAuthors($doi, $a1, $pages) {
 
   $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
 	$url = "http://dx.doi.org/$doi";
-	echo "\n\n\n *Looking for more authors @ $url:";
+	echo "\n -*Looking for more authors @ $url:";
 
   echo "\n  - Using meta tags...";
 
