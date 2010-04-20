@@ -44,8 +44,8 @@ function is($key){
 function set($key, $value){
 	global $p;
   if (trim($value) != "") {
-    $p[$key][0] = $value;
-    echo "\n  +$key: $value";
+    $p[$key][0] = (string) $value;
+    echo "\n    + $key: $value";
   }
 }
 
@@ -212,22 +212,20 @@ function getDataFromArxiv($a) {
 }
 
 function get_data_from_jstor($jid) {
-  echo "\n - Querying JSTOR resource $jid: ";
   $jstor_url = "http://dfr.jstor.org/sru/?operation=searchRetrieve&query=dc.identifier%3D%22$jid%22&version=1.1";
   $data = @file_get_contents ($jstor_url);
   $xml = simplexml_load_string(str_replace(":", "_", $data));
   if ($xml->srw_numberOfRecords == 1) {
-    echo "success.";
     $data = $xml->srw_records->srw_record->srw_recordData;
     ifNullSet("url", "http://jstor.org/stable/" . substr($jid, 8));
-    if (preg_match("~(pp\. )?((\w*\d+.*)~", $data->dc_coverage, $match)) {
+    if (preg_match("~(pp\. )?(\w*\d+.*)~", $data->dc_coverage, $match)) {
       ifNullSet("pages", $match[2]);
     }
     foreach ($data->dc_creator as $author) {
       $i++;
       ifNullSet("author$i", formatAuthor($author));
     }
-    ifNullSet("title", $data->dc_title) ;
+    ifNullSet("title", (string) $data->dc_title) ;
     if (preg_match("~(.*),\s+Vol\.\s+([^,]+)(, No\. (\S+))?~", $data->dc_relation, $match)) {
       ifNullSet("journal", $match[1]);
       ifNullSet("volume", $match[2]);
@@ -241,6 +239,7 @@ function get_data_from_jstor($jid) {
     if (preg_match ("~\d{4}~", $data->dc_date[0], $match)) {
       ifNullSet("year", $match[0]);
     }
+    return true;
   } else {
     echo $xml->srw_numberOfRecords . " records obtained. ";
     return false;
@@ -250,14 +249,9 @@ function get_data_from_jstor($jid) {
 function crossRefData($doi){
 	global $crossRefId;
   $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
-
   $xml = @simplexml_load_file($url);
   if ($xml) {
     $result = $xml->query_result->body->query;
-  } elseif (substr($doi, 3, 4) == "2307") {
-    echo "DOI not in Crossref; trying JSTOR.";
-    get_data_from_jstor($doi);
-    return false;
   } else {
      echo "Error loading CrossRef file from DOI $doi!  <br>\n";
      return false;
@@ -265,7 +259,7 @@ function crossRefData($doi){
 	return ($result["status"]=="resolved")?$result:false;
 }
 
-function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $endpage, $issn, $url1, $debug=false ){
+function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $endpage, $issn, $url1, $debug = false ){
 	global $crossRefId;
 	if ($journal || $issn) {
 		$url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
@@ -276,9 +270,11 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 		if ($volume) $url .= "&volume=" . urlencode($volume);
 		if ($startpage) $url .= "&spage=" . urlencode($startpage);
 		if ($endpage > $startpage) $url .= "&epage=" . urlencode($endpage);
-		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef.";
-		if ($result["status"]=="resolved") return $result;
-	}
+    if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef.";
+		if ($result["status"] == "resolved") {
+      return $result;
+    }
+  }
 	if ($url1) {
 		$url = "http://www.crossref.org/openurl/?url_ver=Z39.88-2004&req_dat=$crossRefId&rft_id=info:http://" . urlencode(str_replace(Array("http://", "&noredirect=true"), Array("", ""), urldecode($url1)));
 		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef via URL.";
