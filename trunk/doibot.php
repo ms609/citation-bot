@@ -43,8 +43,8 @@
 
 ## Set up - including dotDecode array
 $htmlOutput=true;
-$editInitiator = '[U' . revisionID() . ']';
-$user = str_replace(array("[[", "]]", "User:"), "", $_REQUEST['user']);
+$editInitiator = "[" . revisionID() . "]";
+$editSummaryEnd = "[[User:$user|$user]]";
 
 if (getArticleId("User:$user")) {
   print "Activated by $user\n";

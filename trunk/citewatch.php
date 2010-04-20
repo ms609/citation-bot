@@ -29,8 +29,6 @@ function nextPage(){
 	global $toDo, $toDoi, $toPmid, $dotDecode, $dotEncode, $cite_doi_start_code, $article_in_progress, $oDoi, $ii;
   $ii++;
   if ($cite_doi_start_code) print "\n ### $ii -- $cite_doi_start_code ";
-  #if ($ii > 10) die ("Fresh code: \n " . $cite_doi_start_code);
-	$cite_doi_start_code = '';
   // Get next PMID from our to-do list
   $oPmid = @array_shift($toPmid);
 	if ($oPmid) {
@@ -47,7 +45,7 @@ function nextPage(){
             print $reDoi[1] . ".";
           } else {
              // Create it if it doesn't
-             print "nonexistant page. Creating > ";
+             print "nonexistent page. Creating > ";
              $toDoi[] = $reDoi[1];
           }
         }
@@ -81,10 +79,10 @@ function nextPage(){
 	if ($oDoi){
 			$doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
 			if (articleID($doi_page)) {
-				print "\n    > DOI $oDoi already exists.";
+				//print "\n   > DOI $oDoi already exists.";
 				return (nextPage());
 			} else {
-				print "\n > New DOI: $oDoi";
+				print "\n   > New DOI: $oDoi\n";
 				$cite_doi_start_code = "{{Cite journal\n| doi = $oDoi\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
 				return $doi_page;
 			}
