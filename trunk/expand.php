@@ -653,16 +653,23 @@ echo "
             //Try URL param
 						if (!isset($p["doi"][0])) {
 							if (strpos($p["url"][0], "http://") !== false) {
-								//Try using URL parameter
-								echo $htmlOutput
-                      ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
-                      : "\n - Trying URL {$p["url"][0]}";
-								$doi = findDoi($p["url"][0]);
-								if ($doi) {
-									echo " found doi $doi";
-									$p["doi"][0] = $doi;
-								} else {
-                  echo " no doi found.";
+                if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)) {
+                  echo $htmlOutput
+                        ? ("\n - Getting data from <a href=\"" . $p["url"][0] . "\">JSTOR record</a>.")
+                        : "\n - Querying JSTOR record from URL " . $jid[0];
+                  get_data_from_jstor("10.2307/$jid[1]");
+                } else {
+                  //Try using URL parameter
+                  echo $htmlOutput
+                        ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
+                        : "\n - Trying URL {$p["url"][0]}";
+                  $doi = findDoi($p["url"][0]);
+                  if ($doi) {
+                    echo " found doi $doi";
+                    $p["doi"][0] = $doi;
+                  } else {
+                    echo " no doi found.";
+                  }
                 }
               } else {
                 echo "No valid URL specified.  ";
@@ -685,7 +692,6 @@ echo "
 //  If we don't find one, we'll check for an ISBN in case it's a book.
 //
 #####################################
-
 
 
 
@@ -736,22 +742,16 @@ echo "
 } else {
 echo "
  4: Expand citation";
-//  Try JSTOR (quick & easy); CrossRef...
+//  CrossRef...
 //
 #####################################
 
 
-          if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)
-            || preg_match("~10.2307/(\d+)~", $p['doi'][0], $jid)
-              ) {
-            print "\n - Checking JSTOR record {$jid[0]} for data.";
-            get_data_from_jstor("10.2307/" . $jid[1]); // updates $p using ifNullSet
-          }
-
+        
           if (!nothingMissing($journal) && is('pmid')) {
             echo "\n - Checking PMID {$p['pmid'][0]} for more details";
             $details = pmArticleDetails($p['pmid'][0]);
-            foreach ($details as $key=>$value) {
+            foreach ($details as $key => $value) {
               ifNullSet($key, $value);
             }
             if (false && !is("url")) { // TODO:  BUGGY - CHECK PMID DATABASES, and see other occurrence above
@@ -771,9 +771,26 @@ echo "
 
           if (!nothingMissing($journal)) {
             if (is("doi")) {
-              echo "\n - Checking CrossRef for more details";
-              $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
+                if (substr($p["doi"][0], 3, 4) == "2307") {
+                  echo "\n - Populating from JSTOR database: ";
+                  if (get_data_from_jstor($p["doi"][0])) {
+                    $crossRef = crossRefData($p["doi"][0]);
+                    if (!$crossRef) {
+                      // JSTOR's UID is not registered as a DOI, meaning that there is another (correct - DOIs should be unique) DOI, issued by the publisher.
+                      unset ($p["doi"][0]);
+                      preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
+                      $crossRef = crossRefDoi($p["title"][0], $p["journal"][0], is("author1")?$p["author1"][0]:$p["author"][0]
+                                             , $p["year"][0], $p["volume"][0], $pagenos[1], $pagenos[3], $p["issn"][0], null);
+                    }
+                  } else {
+                    echo "not found in JSTOR?";
+                  }
+                } else {
+                  $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
+                }
+              
               if ($crossRef) {
+                echo "\n - Checking CrossRef for more details";
                 if ($citedoi) {
                   $doiCrossRef = $crossRef;
                 }
@@ -790,6 +807,7 @@ echo "
                     }
                   }
                 }
+                ifNullSet("doi", $crossRef->doi);
                 ifNullSet($journal, $crossRef->journal_title);
                 ifNullSet("volume", $crossRef->volume);
                 if (!is("page")) ifNullSet("pages", $crossRef->first_page);
