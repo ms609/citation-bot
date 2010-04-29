@@ -19,7 +19,7 @@ function updateQueue() {
   $ids = array_merge($cite_journal["id"], $citation["id"]);
   print "and writing to file...";
   $count = count($pages);
-  for ($i=0; $i<$count; $i++){
+  for ($i = 0; $i < $count; $i++){
     $result = mysql_query("SELECT page FROM citation WHERE id = {$ids[$i]}") or die (mysql_error());
     if (!mysql_fetch_row($result)) {
       mysql_query("INSERT INTO citation (id, page) VALUES ('{$ids[$i]}', '". addslashes($pages[$i]) ."')" )or die(mysql_error());

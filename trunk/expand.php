@@ -419,7 +419,7 @@ echo "
 
 
           // If the page has been created manually from a cite doi link, it will have an encoded 'doix' parameter - decode this.
-          if (preg_match("~^10.\d{4}.2F~", $p['doix'][0])) {
+          if (preg_match("~^10.\d{4}\.2F~", $p['doix'][0])) {
             $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doix'][0]);
             unset($p['doix']);
           }
@@ -1224,6 +1224,7 @@ Done.  Just a couple of things to tweak now...";
         $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . htmlentities(mb_convert_encoding($pagecode, "UTF-8")) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made.<br><b>Changes:</b> <i>$smartSum</i></p>";
 
         if ($editing_cite_doi_template && strtolower(substr(trim($pagecode), 0, 5)) != "{{cit") {
+          die ("oof");
              mail ("MartinS+citewatch@gmail.com"
                   , "Citewatch ERROR"
                   , "Output does not begin with {{Cit, but [" . strtolower(substr(trim($pagecode), 0, 5)) . "]

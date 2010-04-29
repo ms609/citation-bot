@@ -46,7 +46,7 @@ $htmlOutput=true;
 $editInitiator = "[" . revisionID() . "]";
 $editSummaryEnd = "[[User:$user|$user]]";
 
-if (getArticleId("User:$user")) {
+if ($user && getArticleId("User:$user")) {
   print "Activated by $user\n";
   $editInitiator = "[" . revisionID() . "]";
   $editSummaryEnd = "[[User:$user|$user]]";
