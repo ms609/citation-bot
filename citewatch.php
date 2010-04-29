@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 // $Id$
-
+die ("Too many mails being sent!");
 $accountSuffix = '_2'; // Before expandfunctions
 require_once("expandFns.php"); // includes login
 

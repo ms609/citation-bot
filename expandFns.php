@@ -67,20 +67,15 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 #ob_start(); //Faster, but output is saved until page finshed.
 ini_set("memory_limit","256M");
 
-$searchGoogle=$_REQUEST["google"];
-$searchYahoo=$_REQUEST["yahoo"];
-$searchDepth=$_REQUEST["depth"];
-$fastMode=$_REQUEST["fast"];
-$slowMode=$_REQUEST["slow"];
-//$user = $_REQUEST["user"];
+$fastMode = $_REQUEST["fast"];
+$slowMode = $_REQUEST["slow"];
+$user = $_REQUEST["user"];
 $bugFix = $_REQUEST["bugfix"];
 $crossRefOnly = $_REQUEST["crossrefonly"]?true:$_REQUEST["turbo"];
 
 if ($_REQUEST["edit"] || $_GET["doi"] || $_GET["pmid"]) $ON = true;
 
 $editSummaryStart = ($bugFix?"Double-checking that a [[User:DOI_bot/bugs|bug]] has been fixed. ":"Citation maintenance. ");
-$editSummaryEnd = (isset($user)?" Initiated by [[User:$user|$user]].":"")
-                                                .       " You can [[WP:UCB|use this bot]] yourself! Please [[User:Citation_bot/bugs|report any bugs]].";
 
 ob_flush();
 
