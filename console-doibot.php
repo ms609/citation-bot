@@ -9,6 +9,7 @@ include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
+print "HELLO WORKD";
 
 function updateQueue() {
   print "** Updating backlog...\nSeeing what links to 'Cite Journal'...";
@@ -30,7 +31,7 @@ function updateQueue() {
 }
 
 function nextPage(){
-  #return "User:DOI bot/Zandbox";
+#  return "Template:Cite_doi/10.1007.2FBF02985970";
   global $ON, $STOP;
 	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
 	global $db;

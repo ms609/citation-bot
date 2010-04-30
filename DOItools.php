@@ -714,7 +714,6 @@ function correct_parameter_spelling($p)
       {
         $mod[$key] = $closest;
         print "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
-        exit;
       }
       else
       {
