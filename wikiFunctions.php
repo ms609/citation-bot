@@ -44,7 +44,13 @@ function getArticleId($page){
 
 function isRedirect($page){
 	$xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
-	return $xml->query->pages->page["redirect"];
+	if ($xml->query->pages->page["pageid"]) {
+    // Page exists
+    return ($xml->query->pages->page["redirect"])?$xml->query->pages->page["redirect"]:0;
+    }
+    else {
+      return -1;
+   }
 }
 
 function articleID($page, $namespace = 0){
