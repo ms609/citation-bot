@@ -46,7 +46,7 @@ function isRedirect($page){
 	$xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
 	if ($xml->query->pages->page["pageid"]) {
     // Page exists
-    return ($xml->query->pages->page["redirect"])?$xml->query->pages->page["redirect"]:0;
+    return ($xml->query->pages->page["redirect"])?1:0;
     }
     else {
       return -1;

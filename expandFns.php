@@ -189,7 +189,7 @@ function write($page, $data, $edit_summary = "Bot edit") {
     "bot"       => "1",
     #"basetimestamp" => $my_page->touched,
     #"starttimestamp" => $my_page->starttimestamp,
-    "md5"       => md5($data),
+    #"md5"       => md5($data),
     "watchlist" => "nochange",
     "format"    => "json",
   );

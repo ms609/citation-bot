@@ -4,12 +4,14 @@
 
 $accountSuffix = '_2'; // Before expandfunctions
 require_once("expandFns.php"); // includes login
+#die ("[" . isRedirect("Template:Cite pmc/2749442") . "]");
 
 $editInitiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
 
 echo "\nRetrieving category members: ";
 $toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+shuffle($toDo);
 echo count($toDo);
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");
 $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
@@ -77,7 +79,7 @@ function nextPage(){
   			return nextPage();
 
 
-      default:
+      case 1:
         // page is a redirect
         $pmc_page_text = getRawWikiText(urlencode($pmc_page));
         // Check that redirect leads to  a cite DOI:
@@ -141,9 +143,9 @@ function nextPage(){
         }
         break;
       case 0:
-        print "Page exists.";
+        print "Citation OK.";
   			return nextPage();
-      default:
+      case 1:
         // Check that redirect leads to a cite doi:
         if (preg_match("~/(10.\d{4}/.*)]]~",
               str_replace($dotEncode, $dotDecode, getRawWikiText(urlencode($pmid_page))), $redirect_target_doi)) {
@@ -180,7 +182,7 @@ function nextPage(){
 		if ($article_in_progress && trim($article_in_progress)) {
 			print "\n\n** Next article: $article_in_progress";
 			$toCite = getCiteList($article_in_progress);
-			$doi_todo = $toCite[0];
+      $doi_todo = $toCite[0];
       foreach ($toCite[1] as $jid){
         $doi_todo[] = "10.2307/$jid";
       }
