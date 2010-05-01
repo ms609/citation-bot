@@ -1293,7 +1293,7 @@ Done.  Just a couple of things to tweak now...";
 				echo "\n ** No changes required --> no edit made.";
         if ($editing_cite_doi_template) {
           if (!articleID($page) && !$doiCrossRef && $oDoi) {
-            print "\n\n* $page found in article [[$article_in_progress]]";
+            print "\n\n* Non-functional identifier $page found in article [[$article_in_progress]]";
             if (getNamespace($article_in_progress) == 0) {
               $talkPage = "Talk:$article_in_progress";
               $talkMessage = "== Reference to broken DOI ==\n"
@@ -1306,15 +1306,12 @@ Done.  Just a couple of things to tweak now...";
                            . "\nThe script that left this message was unable to track down the user who added the citation; "
                            . "it may be prudent to alert them to this message.  Thanks, ";
               $talkId = articleId($article_in_progress, 1);
-              print "; talk page's article ID [[$talkId]]";
               if ($talkId) {
                 $text = getRawWikiText($talkPage);
               } else {
                 $text = '';
               }
-              print "\n* -[Text:$text]-";
               if (strpos($text, "|DOI]] [[doi:".$oDoi) || strpos($text, "d/nodoi&a")) {
-                print strpos($text, "|DOI]] [[doi:".$oDoi) . strpos($text, "d/nodoi&a");
                 print "\n - Message already on talk page.  Zzz.\n";
               } else {
                 print "\n * Writing message on talk page..." . $talkPage . "\n\n";
