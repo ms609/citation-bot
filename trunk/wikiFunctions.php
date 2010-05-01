@@ -101,11 +101,7 @@ function doi_citation_exists ($doi) {
   $results = mysql_fetch_row($result);
   mysql_close();
   if ($result) {
-    if ($results) {
-      return $results?1:0;
-    } else {
-      return -1;
-    }
+    return $results?1:0;
   } else {
     // On error consult wikipedia API
     global $dotEncode, $dotDecode;

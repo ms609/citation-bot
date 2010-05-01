@@ -12,7 +12,8 @@ $htmlOutput = false;
 echo "\n Retrieving category members: ";
 $toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
 #$toDo = array("User:Smith609/Sandbox");
-#shuffle($toDo);
+shuffle($toDo);
+
 echo count($toDo);
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");
 $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
@@ -167,7 +168,7 @@ function nextPage(){
   }
   // Pop from the end so we immediately handle the new doi added by the PMID process, if there was one.
   $oDoi = @array_pop($doi_todo);
-	if ($oDoi) {
+  if ($oDoi) {
     $doi_citation_exists = doi_citation_exists($oDoi);
     if ($doi_citation_exists) {
       //print "\n   > DOI $oDoi already exists.";
