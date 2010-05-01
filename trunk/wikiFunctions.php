@@ -94,9 +94,30 @@ function citation_is_redirect ($type, $id) {
   }
 }
 
+function doi_citation_exists ($doi) {
+  $db = udbconnect("yarrow");
+  $sql = "SELECT doi FROM cite_doi WHERE doi='" . addslashes($doi) . "'";
+  $result = mysql_query($sql);
+  $results = mysql_fetch_row($result);
+  mysql_close();
+  if ($result) {
+    if ($results) {
+      return $results?1:0;
+    } else {
+      return -1;
+    }
+  } else {
+    // On error consult wikipedia API
+    global $dotEncode, $dotDecode;
+    $doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
+    return (articleID($doi_page)?2:0);
+  }
+}
+
 function log_citation ($type, $source, $target = false) {
   $db = udbconnect("yarrow");
-  $sql = "INSERT INTO cite_$type SET $type='$source'" . ($type=="doi"?"":", redirect='$target'");
+  $sql = "INSERT INTO cite_$type SET $type='" . addslashes($source) . "'"
+       . ($type=="doi"?"":", redirect='" . addslashes($target) . "'");
   $result = mysql_query($sql);
   return $result?true:false;
 }
