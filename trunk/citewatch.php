@@ -11,6 +11,7 @@ $htmlOutput = false;
 
 echo "\nRetrieving category members: ";
 $toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+#$toDo = array("User:Smith609/Sandbox");
 shuffle($toDo);
 echo count($toDo);
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");
@@ -36,7 +37,7 @@ function nextPage(){
     print "\n   > PMC $oPmc: ";
     $pmc_page = "Template:Cite pmc/$oPmc";
     // Is there already a page for this PMC?
-    switch (isRedirect ($pmc_page)) {
+    switch (citation_is_redirect ("pmc", $oPmc)) {
       case -1:
         // page does not exist
         $pmc_details = pmArticleDetails($oPmc, "pmc");
@@ -74,7 +75,8 @@ function nextPage(){
       case 0:
         // Page exists and is not redirect
         print "Page exists and is not redirect.";
-  			return nextPage();
+        log_citation("pmc", $oPmc);
+        return nextPage();
 
 
       case 1:
@@ -85,6 +87,7 @@ function nextPage(){
           print "Redirects to ";
           // Check that destination page exists
           if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, trim($redirect_target_doi[1])))) {
+            log_citation("pmc", $oPmc, $redirect_target_doi[1]);
             print $redirect_target_doi[1] . ".";
           } else {
             // Create it if it doesn't
@@ -119,7 +122,7 @@ function nextPage(){
 		print "\n   > PMID $oPmid: ";
 		$pmid_page = "Template:Cite pmid/$oPmid";
     // Is there already a page for this PMID?
-		switch (isRedirect($pmid_page)) {
+		switch (citation_is_redirect("pmid", $oPmid)) {
       case -1:
         // Page has not yet been created for this PMID.
         // Can we retrive a DOI from PubMed?
@@ -141,6 +144,7 @@ function nextPage(){
         }
         break;
       case 0:
+        log_citation("pmid", $oPmid);
         print "Citation OK.";
   			return nextPage();
       case 1:
@@ -150,6 +154,7 @@ function nextPage(){
           print "Redirects to ";
           // Check that destination page exists
           if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, trim($redirect_target_doi[1])))) {
+            log_citation("pmid", $oPmid, $redirect_target_doi[1]);
             print $redirect_target_doi[1] . ".";
           } else {
            // Create it if it doesn't
@@ -163,10 +168,10 @@ function nextPage(){
   // Pop from the end so we immediately handle the new doi added by the PMID process, if there was one.
   $oDoi = @array_pop($doi_todo);
 	if ($oDoi) {
-echo "\n\n" . 99;
 			$doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
 			if (articleID($doi_page)) {
 				//print "\n   > DOI $oDoi already exists.";
+        log_citation("doi", $oDoi);
         print ".";
 				return nextPage();
 			} else {
