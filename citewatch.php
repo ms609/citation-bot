@@ -12,7 +12,7 @@ $htmlOutput = false;
 echo "\n Retrieving category members: ";
 $toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
 #$toDo = array("User:Smith609/Sandbox");
-#$toDo = array("Roundup");
+#$toDo = array("Mollusc shell");
 shuffle($toDo);
 
 echo count($toDo);
@@ -80,8 +80,10 @@ function nextPage(){
         log_citation("pmc", $oPmc);
         return nextPage();
 
-
       case 1:
+        print "On record as a redirect";
+      break;
+      case 2:
         // page is a redirect
         $pmc_page_text = getRawWikiText($pmc_page);
         // Check that redirect leads to  a cite DOI:
@@ -150,6 +152,9 @@ function nextPage(){
         print "Citation OK.";
   			return nextPage();
       case 1:
+        print "On record as a redirect";
+      break;
+      case 2:
         // Check that redirect leads to a cite doi:
         if (preg_match("~/(10.\d{4}/.*)]]~",
               str_replace($dotEncode, $dotDecode, getRawWikiText($pmid_page)), $redirect_target_doi)) {
@@ -183,6 +188,7 @@ function nextPage(){
       return nextPage();
     } else {
       print "\n   > New DOI $oDoi added to queue.\n";
+      sleep(4);
       $cite_doi_start_code = "{{Cite journal\n| doi = $oDoi\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
       return "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
     }
