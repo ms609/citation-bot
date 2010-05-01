@@ -9,26 +9,6 @@ include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
-print "HELLO WORKD";
-
-function updateQueue() {
-  print "** Updating backlog...\nSeeing what links to 'Cite Journal'...";
-  $cite_journal = whatTranscludes2("Cite_journal", 0);
-  print "\nand 'Citation'... ";
-  $citation =  whatTranscludes2("Citation", 0);
-  $pages = array_merge($cite_journal["title"], $citation["title"]);
-  $ids = array_merge($cite_journal["id"], $citation["id"]);
-  print "and writing to file...";
-  $count = count($pages);
-  for ($i = 0; $i < $count; $i++){
-    $result = mysql_query("SELECT page FROM citation WHERE id = {$ids[$i]}") or die (mysql_error());
-    if (!mysql_fetch_row($result)) {
-      mysql_query("INSERT INTO citation (id, page) VALUES ('{$ids[$i]}', '". addslashes($pages[$i]) ."')" )or die(mysql_error());
-      print "<br>{$pages[$i]} @ {$ids[$i]}";
-    } else print ".";
-  }
-  print "\ndone.";
-}
 
 function nextPage(){
 #  return "Template:Cite_doi/10.1007.2FBF02985970";
@@ -42,7 +22,7 @@ function nextPage(){
 }
 
 #$STOP = true;
-$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
+#$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
 
 $page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
 if ($ON) {
