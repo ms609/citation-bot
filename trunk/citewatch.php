@@ -83,7 +83,7 @@ function nextPage(){
 
       case 1:
         // page is a redirect
-        $pmc_page_text = getRawWikiText(urlencode($pmc_page));
+        $pmc_page_text = getRawWikiText($pmc_page);
         // Check that redirect leads to  a cite DOI:
         if (preg_match("~/(10.\d{4}/.*)]]~", str_replace($dotEncode, $dotDecode, $pmc_page_text), $redirect_target_doi)) {
           print "Redirects to ";
@@ -152,7 +152,7 @@ function nextPage(){
       case 1:
         // Check that redirect leads to a cite doi:
         if (preg_match("~/(10.\d{4}/.*)]]~",
-              str_replace($dotEncode, $dotDecode, getRawWikiText(urlencode($pmid_page))), $redirect_target_doi)) {
+              str_replace($dotEncode, $dotDecode, getRawWikiText($pmid_page)), $redirect_target_doi)) {
           print "Redirects to ";
           // Check that destination page exists
           if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, trim($redirect_target_doi[1])))) {
@@ -163,6 +163,9 @@ function nextPage(){
            print "nonexistent page. Creating > ";
            $doi_todo[] = $redirect_target_doi[1];
           }
+        } else {
+          print "$pmid_page Redirects to " . getRawWikiText($pmid_page);
+          exit;
         }
       break;
     }
