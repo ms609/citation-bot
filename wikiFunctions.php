@@ -101,12 +101,24 @@ function doi_citation_exists ($doi) {
   $results = mysql_fetch_row($result);
   mysql_close();
   if ($result) {
-    return $results?1:0;
+    if ($results[0]) {
+      return true;
+    } else {
+      global $dotEncode, $dotDecode;
+      $doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi);
+      if (articleID($doi_page)) {
+        log_citation("doi", $doi);
+        return true;
+      } else return false;
+    }
   } else {
     // On error consult wikipedia API
     global $dotEncode, $dotDecode;
-    $doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
-    return (articleID($doi_page)?2:0);
+    $doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi);
+    if (articleID($doi_page)) {
+      log_citation("doi", $doi);
+      return true;
+    } else return false;
   }
 }
 
