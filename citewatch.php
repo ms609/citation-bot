@@ -9,11 +9,10 @@ require_once("expandFns.php"); // includes login
 $editInitiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
 
-echo "\nRetrieving category members: ";
-#$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+echo "\n Retrieving category members: ";
+$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
 #$toDo = array("User:Smith609/Sandbox");
-$toDo = array("User:Andrewjlockley/methane geoengineering2", "User:Andrewjlockley/methane geoengineering");
-shuffle($toDo);
+#shuffle($toDo);
 echo count($toDo);
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");
 $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
@@ -169,17 +168,19 @@ function nextPage(){
   // Pop from the end so we immediately handle the new doi added by the PMID process, if there was one.
   $oDoi = @array_pop($doi_todo);
 	if ($oDoi) {
-			$doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
-			if (articleID($doi_page)) {
-				//print "\n   > DOI $oDoi already exists.";
+    $doi_citation_exists = doi_citation_exists($oDoi);
+    if ($doi_citation_exists) {
+      //print "\n   > DOI $oDoi already exists.";
+      if ($doi_citation_exists > 1) {
         log_citation("doi", $oDoi);
-        print ".";
-				return nextPage();
-			} else {
-				print "\n   > New DOI: $oDoi\n";
-				$cite_doi_start_code = "{{Cite journal\n| doi = $oDoi\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
-				return $doi_page;
-			}
+      }
+      print ".";
+      return nextPage();
+    } else {
+      print "\n   > New DOI $oDoi added to queue.\n";
+      $cite_doi_start_code = "{{Cite journal\n| doi = $oDoi\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
+      return "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
+    }
 	} else {
 		// Next page, please
     $article_in_progress = array_pop($toDo);

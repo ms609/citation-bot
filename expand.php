@@ -1292,7 +1292,7 @@ Done.  Just a couple of things to tweak now...";
 			} else {
 				echo "\n ** No changes required --> no edit made.";
         if ($editing_cite_doi_template) {
-          if (!articleID($page) && !$doiCrossRef) {
+          if (!articleID($page) && !$doiCrossRef && $oDoi) {
             print "\n\n* $page found in article [[$article_in_progress]]";
             if (getNamespace($article_in_progress) == 0) {
               $talkPage = "Talk:$article_in_progress";
