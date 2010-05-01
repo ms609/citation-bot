@@ -80,7 +80,7 @@ function citation_is_redirect ($type, $id) {
   $db = udbconnect("yarrow");
   $sql = "SELECT $type, redirect FROM cite_$type WHERE $type='$id'";
   $result = mysql_query($sql);
-  $results = mysql_fetch_row($result);
+  $results = mysql_fetch_array($result, MYSQL_ASSOC);
   mysql_close();
   if ($result) {
     if ($results) {
