@@ -38,6 +38,7 @@ function getLastRev($page){
 }
 
 function getArticleId($page){
+  print ("\n $page \n");
 	$xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["pageid"];
 }
@@ -62,15 +63,15 @@ function articleID($page, $namespace = 0) {
   if (substr(strtolower($page), 0, 9) == 'template:'){
     $page = substr($page, 9);
     $namespace = 10;
-  }
-  if (strpos($page, ':')) {
+  } else if (strpos($page, ':')) {
     // I'm too lazy to deduce the correct namespace prefix.
     return getArticleId($page);
   }
   $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
   #$enwiki_db = udbconnect('enwiki_p', 'sql-s1');
   $enwiki_db = udbconnect('enwiki_p', 'sql-s1-fast');
-  $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='$namespace' && page_title='$page'") or die (mysql_error());
+  $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
+          . "' && page_title='$page'") or die (mysql_error());
   $results = mysql_fetch_array($result, MYSQL_ASSOC);
   mysql_close($enwiki_db);
   return $results['page_id'];
@@ -86,7 +87,18 @@ function citation_is_redirect ($type, $id) {
     if ($results) {
       return $results["redirect"]?1:0;
     } else {
-      return -1;
+      // this page isn't in our mysql database
+      $page_status = isRedirect("Template:Cite $type/$id");
+      if ($page_status == 1) {
+        var_dump($result);
+        var_dump($results);
+        var_dump($id);
+        sleep(5);
+        // Page exists; we need to check that the redirect has been created.
+        return 2;
+      } else {
+        return $page_status;
+      }
     }
   } else {
     // On error consult wikipedia API
@@ -109,7 +121,9 @@ function doi_citation_exists ($doi) {
       if (articleID($doi_page)) {
         log_citation("doi", $doi);
         return true;
-      } else return false;
+      } else {
+        return false;
+      }
     }
   } else {
     // On error consult wikipedia API
