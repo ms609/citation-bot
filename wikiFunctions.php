@@ -77,10 +77,10 @@ function articleID($page, $namespace = 0) {
 }
 
 function citation_is_redirect ($type, $id) {
-  return (isRedirect("Template:Cite $type/$id")); ## TODO
   $db = udbconnect("yarrow");
-  $result = mysql_query("SELECT $type, redirect FROM cite_$type WHERE $type='$id'");
-  $results = mysql_fetch_array($result, MYSQL_ASSOC);
+  $sql = "SELECT $type, redirect FROM cite_$type WHERE $type='$id'";
+  $result = mysql_query($sql);
+  $results = mysql_fetch_row($result);
   mysql_close();
   if ($result) {
     if ($results) {
@@ -95,18 +95,15 @@ function citation_is_redirect ($type, $id) {
 }
 
 function log_citation ($type, $source, $target = false) {
-  return false; // TODO
   $db = udbconnect("yarrow");
   $sql = "INSERT INTO cite_$type SET $type='$source'" . ($type=="doi"?"":", redirect='$target'");
-  print $sql . "\n";
-  $result = mysql_query($sql) or die (mysql_error());
-  mysql_close();
-  die (mysql_query($sql) or die (mysql_error()));
-  return mysql_query($sql) or die (mysql_error());
+  $result = mysql_query($sql);
+  return $result?true:false;
 }
 
 function getRawWikiText($page) {
-  return file_get_contents("http://toolserver.org/~daniel/WikiSense/WikiProxy.php?wiki=en&title=$page&rev=&go=Fetch&token=");
+  return file_get_contents("http://toolserver.org/~daniel/WikiSense/WikiProxy.php?wiki=en&title="
+      . urlencode($page) . "&rev=&go=Fetch&token=");
 }
 
 function whatTranscludes2($template, $namespace=99){

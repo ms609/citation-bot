@@ -1332,6 +1332,7 @@ Done.  Just a couple of things to tweak now...";
                     , "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
                   );
                 } else {
+                  var_dump($article_in_progress);
                   die ("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
                 }
 
