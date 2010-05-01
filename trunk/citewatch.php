@@ -28,9 +28,7 @@ function getCiteList($page){
 }
 
 function nextPage(){
-	global $toDo, $doi_todo, $pmid_todo, $pmc_todo, $dotDecode, $dotEncode, $cite_doi_start_code, $article_in_progress, $oDoi;
-
-  
+	global $toDo, $doi_todo, $pmid_todo, $pmc_todo, $dotDecode, $dotEncode, $cite_doi_start_code, $article_in_progress, $oDoi; 
 
   // Get the next PMC from our to-do list
   $oPmc = @array_shift($pmc_todo);
@@ -162,10 +160,10 @@ function nextPage(){
       break;
     }
   }
-	
   // Pop from the end so we immediately handle the new doi added by the PMID process, if there was one.
   $oDoi = @array_pop($doi_todo);
-	if ($oDoi){
+	if ($oDoi) {
+echo "\n\n" . 99;
 			$doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
 			if (articleID($doi_page)) {
 				//print "\n   > DOI $oDoi already exists.";

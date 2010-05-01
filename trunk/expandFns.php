@@ -84,16 +84,17 @@ ob_flush();
 
 function updateBacklog($page) {
   $sPage = addslashes($page);
-        $id = articleId($page);
+  $id = articleId($page);
   $db = udbconnect("yarrow");
-  $result = mysql_query("SELECT page FROM citation WHERE id = '$id'") or die (mysql_error());
-        $result = mysql_fetch_row($result);
-        $sql = $result?"UPDATE citation SET fast = '" . date ("c") . "', revision = '" . revisionID()
-                . "' WHERE page = '$sPage'"
-                : "INSERT INTO citation VALUES ('"
-                . $id . "', '$sPage', '" . date ("c") . "', '0000-00-00', '" . revisionID() ."')";
-        #print "\n$sql";
-        $result = mysql_query ($sql) or die(mysql_error());
+  $result = mysql_query("SELECT page FROM citation WHERE id = '$id'") or print (mysql_error());
+  $result = mysql_fetch_row($result);
+  $sql = $result?"UPDATE citation SET fast = '" . date ("c") . "', revision = '" . revisionID()
+          . "' WHERE page = '$sPage'"
+          : "INSERT INTO citation VALUES ('"
+          . $id . "', '$sPage', '" . date ("c") . "', '0000-00-00', '" . revisionID() ."')";
+  #print "\n$sql";
+  $result = mysql_query ($sql) or print (mysql_error());
+  mysql_close($db);
 }
 
 function countMainLinks($title) {
@@ -162,7 +163,7 @@ function inputValue($tag, $form) {
 
 function write($page, $data, $edit_summary = "Bot edit") {
 
-        global $bot;
+  global $bot;
 
   // Check that bot is logged in:
   $bot->fetch(api . "?action=query&prop=info&meta=userinfo&format=json");

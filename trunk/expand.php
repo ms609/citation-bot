@@ -1308,13 +1308,18 @@ Done.  Just a couple of things to tweak now...";
             print "; article ID [[$talkId]]";
             if ($talkId) {
               $text = getRawWikiText($talkPage);
-            } else $text = '';
+            } else {
+              $text = '';
+            }
             print "\n* -[Text:$text]-";
             if (strpos($text, "|DOI]] [[doi:".$oDoi) || strpos($text, "d/nodoi&a")) {
               print strpos($text, "|DOI]] [[doi:".$oDoi) . strpos($text, "d/nodoi&a");
               print "\n - Message already on talk page.  Zzz.\n";
             } else {
               print "\n * Writing message on talk page..." . $talkPage . "\n\n";
+              print "\n\n Talk page $talkPage has ID $talkId; text was: [$text].  Our page was $page and the
+                      article in progress was $article_in_progress.\n";
+              exit;
               write($talkPage, $text . "\n" . $talkMessage . "~~~~", "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!");
               print " Message left.\n";
             }
