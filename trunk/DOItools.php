@@ -28,12 +28,13 @@ if (preg_match_all('~\n\*\s*(.+)~', $bot->results, $dontCaps)) {
 
 /** Returns revision number */
 function revisionID() {
+    global $last_revision_id;
+    if ($last_revision_id) return $last_revision_id;
     $svnid = '$Rev$';
     $scid = substr($svnid, 6);
     $thisRevId = intval(substr($scid, 0, strlen($scid) - 2));
     return $thisRevId;
     $repos_handle = svn_repos_open('~/citation-bot');
-    print "\n";
     return svn_fs_youngest_rev($repos_handle);
 }
 
@@ -270,14 +271,14 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 		if ($volume) $url .= "&volume=" . urlencode($volume);
 		if ($startpage) $url .= "&spage=" . urlencode($startpage);
 		if ($endpage > $startpage) $url .= "&epage=" . urlencode($endpage);
-    if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef.";
+    if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef. ";
 		if ($result["status"] == "resolved") {
       return $result;
     }
   }
 	if ($url1) {
 		$url = "http://www.crossref.org/openurl/?url_ver=Z39.88-2004&req_dat=$crossRefId&rft_id=info:http://" . urlencode(str_replace(Array("http://", "&noredirect=true"), Array("", ""), urldecode($url1)));
-		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef via URL.";
+		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef via URL. ";
 		if ($debug) print $url . "<BR>";
 		if ($result["status"]=="resolved") return $result;
 		print "URL search failed.  Trying other parameters... ";

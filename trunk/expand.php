@@ -12,7 +12,7 @@ if ($file_revision_id < $doitools_revision_id) {
 }
 
 if ($htmlOutput) {
-  print "\nVersion: r" . $last_revision_id;
+  print "Version: r" . $last_revision_id;
 }
 
 
@@ -53,7 +53,7 @@ while ($page) {
         // Two types are present
         $changeCitationFormat = true;
         $useCitationFormat = (count($cite_x[0]) < count($citation[0]));
-        print (($useCitationFormat)?"\"Citation\"":'"Cite xxx"') . " format is dominant on this page: " .
+        print "\n * " . (($useCitationFormat)?"\"Citation\"":'"Cite xxx"') . " format is dominant on this page: " .
              count($cite_x[0]) . " cite / " . count($citation[0]) . " citation." ;
       } else {
          $changeCitationFormat = false;

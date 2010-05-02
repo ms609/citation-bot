@@ -11,10 +11,10 @@ $editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
 
 function nextPage(){
-  return "ObjectPro";
+  #return "ObjectPro";
   global $ON, $STOP;
 	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
-	global $db;
+	$db = udbconnect();
 	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
 	$result = mysql_query("SELECT page FROM citation ORDER BY fast ASC") or die (mysql_error());
 	$result = mysql_fetch_row($result);
