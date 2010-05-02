@@ -88,7 +88,6 @@ function updateBacklog($page) {
   $db = udbconnect("yarrow");
   $result = mysql_query("SELECT page FROM citation WHERE id = '$id'") or print (mysql_error());
   $result = mysql_fetch_row($result);
-  var_dump($result);
   $sql = $result?"UPDATE citation SET fast = '" . date ("c") . "', revision = '" . revisionID()
           . "' WHERE page = '$sPage'"
           : "INSERT INTO citation VALUES ('"
@@ -208,6 +207,19 @@ function write($page, $data, $edit_summary = "Bot edit") {
     return strtoupper($result->error->code) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), $result->error->info);
   } else {
     return "Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
+  }
+}
+
+function mark_broken_doi_template($article_in_progress, $oDoi) {
+  if (getRawWikiText($article_in_progress)) {
+  write ($article_in_progress
+      , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i",
+                                            "{{broken doi|$oDoi}}", getRawWikiText($article_in_progress))
+      , "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
+    );
+  } else {
+    var_dump($article_in_progress);
+    die ("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
   }
 }
 

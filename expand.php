@@ -1320,19 +1320,10 @@ Done.  Just a couple of things to tweak now...";
                 write($talkPage, $text . "\n" . $talkMessage . "~~~~", "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!");
                 print " Message left.\n";
               }
+              mark_broken_doi_template($article_in_progress, $oDoi);
             } else {
               print "\n * Article in question is not in article space.  Switched to use 'Template:Broken DOI'." ;
-              if (getRawWikiText($article_in_progress)) {
-                write ($article_in_progress
-                    , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i",
-                                                          "{{broken doi|$oDoi}}", getRawWikiText($article_in_progress))
-                    , "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
-                  );
-                } else {
-                  var_dump($article_in_progress);
-                  die ("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
-                }
-
+              mark_broken_doi_template($article_in_progress, $oDoi);
             }
           }
           $doiCrossRef = null;
