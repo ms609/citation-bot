@@ -89,10 +89,6 @@ function citation_is_redirect ($type, $id) {
       // this page isn't in our mysql database
       $page_status = isRedirect("Template:Cite $type/$id");
       if ($page_status == 1) {
-        var_dump($result);
-        var_dump($results);
-        var_dump($id);
-        sleep(5);
         // Page exists; we need to check that the redirect has been created.
         return 2;
       } else {
