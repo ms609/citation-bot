@@ -38,8 +38,7 @@ function getLastRev($page){
 }
 
 function getArticleId($page){
-  print ("\n $page \n");
-	$xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
+  $xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["pageid"];
 }
 
@@ -164,7 +163,7 @@ function whatTranscludes2($template, $namespace=99){
 	return $list;
 }
 /*  The following function appears in ~/public_html/res/mysql_connect.php and is reproduced here for SVN safekeeping.
-function udbconnect($dbName, $server = "sql") {
+function udbconnect($dbName = "yarrow", $server = "sql") {
         // fix redundant error-reporting
         $errorlevel = ini_set('error_reporting','0');
 

@@ -55,9 +55,9 @@ if ($user && getArticleId("User:$user")) {
 
 ###
 
-function nextPage(){
-return null; #Console should take care of the backlog now.
-	global $db;
+function nextPage() {
+  return null; #Console should take care of the backlog now.
+	$db = udbconnect();
 	if (restrictedDuties) return false; ######## Stop bot working through backlog until systemic bugs are fixed ########
 	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
 	if(rand(1, 5000) == 100000)	{
