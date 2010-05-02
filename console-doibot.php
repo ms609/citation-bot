@@ -11,7 +11,7 @@ $editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
 
 function nextPage(){
-#  return "Template:Cite_doi/10.1007.2FBF02985970";
+  return "ObjectPro";
   global $ON, $STOP;
 	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
 	global $db;
