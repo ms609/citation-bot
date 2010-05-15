@@ -11,7 +11,7 @@ if ($file_revision_id < $doitools_revision_id) {
   $last_revision_id = $file_revision_id;
 }
 print "\nRevision #$last_revision_id";
-die ("\n$editInitiator\n");
+
 function loadParam($param, $value, $equals, $pipe) {
   global $p;
   $param = strtolower($param);
