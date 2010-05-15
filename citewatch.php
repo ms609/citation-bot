@@ -2,17 +2,17 @@
 <?php
 // $Id$
 
+
 $accountSuffix = '_2'; // Before expandfunctions
 require_once("expandFns.php"); // includes login
-#die ("[" . isRedirect("Template:Cite pmc/2749442") . "]");
 
 $editInitiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
 
 echo "\n Retrieving category members: ";
 #$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
-#$toDo = array("User:Smith609/Sandbox");
-$toDo = array("Mainspace sandbox");
+$toDo = array("User:DOI bot/Zandbox");
+#$toDo = array("Mainspace sandbox");
 shuffle($toDo);
 
 echo count($toDo);
