@@ -14,6 +14,7 @@ $crossRefId = CROSSREFUSERNAME . ":" . CROSSREFPASSWORD;
 
 global $dontCap, $unCapped;
 // Remember to enclose any word in spaces.
+// $dontCap is a global array of strings that should not be capitalized in their titlecase format; $unCapped is their correct capitalization
 $dontCap  = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Out ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ');
 $unCapped = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' out ',' over ',' to ',' into ',' with ', ' USA ' ,' USA ',' et ');
 
@@ -22,7 +23,14 @@ $bot->fetch(wikiroot . "title=" . urlencode('User:Citation_bot/capitalisation_ex
 if (preg_match_all('~\n\*\s*(.+)~', $bot->results, $dontCaps)) {
 	foreach ($dontCaps[1] as $o) {
 		$unCapped[] = ' ' . trim($o) . ' ';
-		$dontCap[] = ' ' . trim((strlen(str_replace(array("[", "]"), "", trim($o)))>6)?mb_convert_case($o, MB_CASE_TITLE, "UTF-8"):$o) . ' ';
+    // dontCap is a global array of strings that should not be capitalized in their titlecase format; $unCapped is their correct capitalization
+    $dontCap[] = ' '
+               . trim(
+                      (strlen(str_replace(array("[", "]"), "", trim($o))) > 6)
+                      ? mb_convert_case($o, MB_CASE_TITLE, "UTF-8")
+                      :$o
+                 )
+               . ' ';
 	}
 }
 
@@ -1029,9 +1037,11 @@ function truncatePublisher($p){
 
 function niceTitle($in, $sents = true){
 	global $dontCap, $unCapped;
-	if ($in == strtoupper($in) && strlen(str_replace(array("[", "]"), "", trim($in)))>6) {
+
+	if ($in == strtoupper($in) && strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
 		$in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
 	}
+  $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
 	if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
 		$newcase = preg_replace("~(\w\s+)A(\s+\w)~", "$1a$2",
 					preg_replace_callback("~\w{2}'[A-Z]\b~" /*Apostrophes*/, create_function(
@@ -1040,15 +1050,15 @@ function niceTitle($in, $sents = true){
 	        ), preg_replace_callback("~[?.!]\s+[a-z]~" /*Capitalise after punctuation*/, create_function(
 	            '$matches',
 	            'return strtoupper($matches[0]);'
-	        ), trim((str_replace($dontCap, $unCapped, " " .  $in . " "))))));
+	        ), trim($captIn))));
 	} else {
 		$newcase = preg_replace("~(\w\s+)A(\s+\w)~", "$1a$2",
 					preg_replace_callback("~\w{2}'[A-Z]\b~" /*Apostrophes*/, create_function(
 	            '$matches',
 	            'return strtolower($matches[0]);'
-	        ), trim((str_replace($dontCap, $unCapped, " " . $in . " ")))));
+	        ), trim(($captIn))));
 	}
-	return strtoupper($newcase[0]) . substr($newcase, 1);
+	return ($captIn == $in?strtoupper($newcase[0]):$newcase[0]) . substr($newcase, 1);
 }
 
 /** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
