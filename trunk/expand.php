@@ -10,9 +10,8 @@ if ($file_revision_id < $doitools_revision_id) {
 } else {
   $last_revision_id = $file_revision_id;
 }
-
-if ($htmlOutput) {
-  print "Version: r" . $last_revision_id;
+if ($editInitiator) {
+  $editInitator = str_replace($doitools_revision_id, $last_revision_id, $editInitator);
 }
 
 
