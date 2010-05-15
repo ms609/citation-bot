@@ -1312,21 +1312,26 @@ Done.  Just a couple of things to tweak now...";
                            . "\nThe script that left this message was unable to track down the user who added the citation; "
                            . "it may be prudent to alert them to this message.  Thanks, ";
               $talkId = articleId($article_in_progress, 1);
+
               if ($talkId) {
                 $text = getRawWikiText($talkPage);
+                print "\nTALK PAGE EXISTS " . strlen($text) . "\n\n";
               } else {
                 $text = '';
+                print "\nTALK PAGE DOES NOT EXIST\n\n";
               }
               if (strpos($text, "|DOI]] [[doi:".$oDoi) || strpos($text, "d/nodoi&a")) {
                 print "\n - Message already on talk page.  Zzz.\n";
-              } else if ($text) {
+              } else if ($text && $talkId || !$text && !$talkId) {
                 print "\n * Writing message on talk page..." . $talkPage . "\n\n";
-                print "\n\n Talk page $talkPage has ID $talkId; text was: [$text].  Our page was $page and the
-                        article in progress was $article_in_progress.\n";
-                write($talkPage, $text . "\n" . $talkMessage . "~~~~", "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!");
+                print "\n\n Talk page $talkPage has ID $talkId; text was: [$text].  Our page was $page and " .
+                        "the article in progress was $article_in_progress.\n";
+                write($talkPage,
+                        ($text . "\n" . $talkMessage . "~~~~"),
+                        "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!");
                 print " Message left.\n";
               } else {
-                print "\n * Attempt to write message on talk page returned blank string. \n ?????????????????????????"; //TODO!
+                print "\n *  Talk page exists, but no text could be attributed to it. \n ?????????????????????????"; //TODO!
               }
               mark_broken_doi_template($article_in_progress, $oDoi);
             } else {
