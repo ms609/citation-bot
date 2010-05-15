@@ -21,12 +21,10 @@ function loadParam($param, $value, $equals, $pipe) {
       $param = substr($param, 0, strlen($param)-1) . (substr($param, strlen($param)-1) + 1);
     } else {
       // Parameter already exists
-      $param = null;
+      $param = "DUPLICATE DATA: $param";
     }
   }
-  if ($param) {
-    $p[$param] = Array($value, $equals, $pipe);
-  }
+  $p[$param] = Array($value, $equals, $pipe);
 }
 
 while ($page) {
