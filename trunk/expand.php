@@ -47,26 +47,24 @@ while ($page) {
 
   if (!$editing_cite_doi_template) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $startcode, $cite_x);
+    preg_match_all("~\{\{\s*cite[ _](doi|pm|jstor|arx)~i", $startcode, $cite_id);
     preg_match_all("~\{\{\s*[Cc]itation\b(?! \w)~", $startcode, $citation);
-    if (stripos($startcode, "{{harv") === false) {
-      if (count($cite_x[0]) * count($citation[0]) > 0) {
-        // Two types are present
-        $changeCitationFormat = true;
-        $useCitationFormat = (count($cite_x[0]) < count($citation[0]));
-        print "\n * " . (($useCitationFormat)?"\"Citation\"":'"Cite xxx"') . " format is dominant on this page: " .
-             count($cite_x[0]) . " cite / " . count($citation[0]) . " citation." ;
-      } else {
-         $changeCitationFormat = false;
-         $useCitationFormat = false;
-      }
-    } else if (count($cite_x[0]) > 0) {
-      // If there's a {{harv}} citation in the page we need to use the "citation" format.
-      $changeCitationFormat = true;
-      $useCitationFormat = true;
+    $cite_x_count = count ($cite_x[0]);
+    $citation_count = count ($citation[0]);
+    $cite_id_count = count ($cite_id[0]);
+    if ($cite_id_count > 3 || $cite_id_count + 1 >= ($cite_x_count + $citation_count - $cite_id_count)) {
+      print "\n - switch to cite id format is supported.";
+    }
+    $harv_template_present = (stripos($startcode, "{{harv") === false)?false:true;
+    if ($cite_x_count * $citation_count > 0) {
+      // Two types are present
+      $unify_citation_templates = true;
+      $citation_template_dominant = ($cite_x_count < $citation_count);
+      print "\n * " . (($citation_template_dominant)?"\"Citation\"":'"Cite xxx"') . " format is dominant on this page: " .
+           $cite_x_count . " cite / " . $citation_count . " citation." ;
     } else {
-      // If there's a {{harv}} citation but everything already uses {{citation}} we don't need to change anything
-      $changeCitationFormat = false;
-      $useCitationFormat = false;
+       $unify_citation_templates = false;
+       $citation_template_dominant = false;
     }
   }
 	if (preg_match("/\{\{nobots\}\}|\{\{bots\s*\|\s*deny\s*=[^}]*(Citation[ _]bot|all)[^}]*\}\}|\{\{bots\s*\|\s*allow=none\}\}/i", $startcode, $denyMsg)) {
@@ -309,7 +307,7 @@ while ($page) {
 				}
 
 				// Convert into citation or cite journal, as appropriate
-				if ($useCitationFormat) {
+				if ($citation_template_dominant) {
 					$citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
 				}
 				// Restore comments we hid earlier
@@ -1003,11 +1001,43 @@ Done.  Just a couple of things to tweak now...";
 					}
 				}
 
+				if ($unify_citation_templates) {
+					if ($citation_template_dominant) {
+						$citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
+					} else {
+            if ($harv_template_present) {
+              ifNullSet("ref", "harv");
+            }
+						if (!is('date') && !is('month') && (is('isbn') || is("oclc" || is("series")))) {
+             // Books usually catalogued by year; no month expected
+              $citeTemplate = "Cite book";
+            }
+						elseif (is('chapter') || is('editor') || is('editor-last') || is('editor1') || is('editor1-last')) {
+              $citeTemplate = "Cite book";
+            }
+						elseif (is('conference') || is('conferenceurl')) {$citeTemplate = "Cite conference";}
+						elseif (is('encyclopedia')) {
+              $citeTemplate = "Cite encyclopedia";
+            }
+						elseif (is('agency') || is('newspaper') || is('magazine') || is('periodical')) {
+							$citeTemplate = "Cite news";
+						}
+						elseif (is('journal')) {$citeTemplate = "Cite journal";}
+						elseif (is('publisher')) {
+              // This should be after we've checked for a journal parameter
+              if (preg_match("~\w\.\w\w~", $p['publisher'][0])) {
+               // it's a fair bet the publisher is a web address
+                $citeTemplate = "Cite web";
+              } else {
+                $citeTemplate = "Cite document";
+              }
+            }
+						elseif (is('url')) {$citeTemplate = "Cite web";} // fall back to this if URL
+						else {$citeTemplate = "Cite journal";} // If no URL, cite journal ought to handle it okay
+						$citation[$cit_i+2] = preg_replace("~[cC]itation~", $citeTemplate, $citation[$cit_i+2]);
+					}
+				}
 
-				//And we're done!
-				$endtime = time();
-				$timetaken = $endtime - $starttime;
-				print "\n*** Complete. Citation assessed in $timetaken secs.\n\n\n";
 				foreach ($p as $oP){
 					$pipe=$oP[1]?$oP[1]:null;
 					$equals=$oP[2]?$oP[2]:null;
@@ -1025,32 +1055,13 @@ Done.  Just a couple of things to tweak now...";
 						elseif ($pStart[$param] != $value) $changes[$param] = true;
 					}
 				}
-				if ($changeCitationFormat) {
-					if ($useCitationFormat) {
-						$citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
-					} else {
-						if (is('isbn') || is("oclc")) {$citeTemplate = "Cite book";}
-						elseif (is('chapter')) {$citeTemplate = "Cite book";}
-						elseif (is('conference') || is('conferenceurl')) {$citeTemplate = "Cite conference";}
-						elseif (is('encyclopedia')) {$citeTemplate = "Cite encyclopedia";}
-						elseif (is('agency') || is('newspaper') || is('magazine') || is('periodical')) {
-							$citeTemplate = "Cite news";
-						}
-						elseif (is('journal')) {$citeTemplate = "Cite journal";}
-						elseif (is('publisher')) {
-              // This should be after we've checked for a journal parameter
-              if (preg_match("~\w\.\w\w~", $p['publisher'][0])) {
-               // it's a fair bet the publisher is a web address
-                $citeTemplate = "Cite web";
-              } else {
-                $citeTemplate = "Cite book";
-              }
-            }
-						elseif (is('url')) {$citeTemplate = "Cite web";} // fall back to this if URL
-						else {$citeTemplate = "Cite journal";} // If no URL, cite journal ought to handle it okay
-						$citation[$cit_i+2] = preg_replace("~[cC]itation~", $citeTemplate, $citation[$cit_i+2]);
-					}
-				}
+
+
+				//And we're done!
+				$endtime = time();
+				$timetaken = $endtime - $starttime;
+				print "\n*** Complete. Citation assessed in $timetaken secs.\n\n\n";
+        
 				// Restore comments we hid earlier
 				for ($j = 0; $j < $countComments; $j++) {
 					$cText = str_replace("<!-- Citation bot : comment placeholder c$j -->"
@@ -1149,8 +1160,10 @@ Done.  Just a couple of things to tweak now...";
 					$p['id'][0] = "{{arXiv|{$p['eprint'][0]}}}";
 					unset($p['class']);
 					unset($p['eprint']);
-					$changeCiteType = true;
-				}
+					$changeCiteType = true;  
+				} else {
+          $changeCiteType = false;
+        }
 
 				//And we're done!
 				$endtime = time();
@@ -1187,13 +1200,14 @@ Done.  Just a couple of things to tweak now...";
 
 			$pagecode .= $citation[$cit_i]; // Adds any text that comes after the last citation
 		}
-		if ($changeCitationFormat && $useCitationFormat) {
+		/*
+      if ($unify_citation_templates && $citation_template_dominant) {
 			$pagecode = preg_replace("~\b[cC]ite[ _](web|conference|encyclopedia|news)~", "Citation", $pagecode);
-		}
+		}  */
 
-		if (trim($pagecode)){
+		if (trim($pagecode)) {
 			if (strtolower($pagecode) != strtolower($startcode)) {
-				if ($additions){
+				if ($additions) {
 					$smartSum = "Added: ";
 					foreach ($additions as $param=>$v)	{$smartSum .= "$param, "; unset($changes[$param]);}
 					$smartSum = substr($smartSum, 0, strlen($smartSum)-2);
@@ -1209,7 +1223,7 @@ Done.  Just a couple of things to tweak now...";
 					$smartSum = substr($smartSum,0, strlen($smartSum)-2);
 					$smartSum.=". ";
 				}
-				if ($changeCiteType || $changeCitationFormat) {
+				if ($changeCiteType || $unify_citation_templates) {
           $smartSum .= "Unified citation types. ";
         }
 				if (!$smartSum) {
@@ -1313,12 +1327,14 @@ Done.  Just a couple of things to tweak now...";
               }
               if (strpos($text, "|DOI]] [[doi:".$oDoi) || strpos($text, "d/nodoi&a")) {
                 print "\n - Message already on talk page.  Zzz.\n";
-              } else {
+              } else if ($text) {
                 print "\n * Writing message on talk page..." . $talkPage . "\n\n";
                 print "\n\n Talk page $talkPage has ID $talkId; text was: [$text].  Our page was $page and the
                         article in progress was $article_in_progress.\n";
                 write($talkPage, $text . "\n" . $talkMessage . "~~~~", "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!");
                 print " Message left.\n";
+              } else {
+                print "\n * Attempt to write message on talk page returned blank string. \n ?????????????????????????"; //TODO!
               }
               mark_broken_doi_template($article_in_progress, $oDoi);
             } else {
