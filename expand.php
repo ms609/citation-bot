@@ -5,13 +5,13 @@
 $file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision$');
 $doitools_revision_id = revisionID();
 if ($file_revision_id < $doitools_revision_id) {
-  $editInitiator = str_replace($doitools_revision_id, $this_revision_id, $editInitiator);
   $last_revision_id = $doitools_revision_id;
 } else {
+  $editInitiator = str_replace($doitools_revision_id, $file_revision_id, $editInitiator);
   $last_revision_id = $file_revision_id;
 }
 print "\nRevision #$last_revision_id";
-
+die ("\n$editInitiator\n");
 function loadParam($param, $value, $equals, $pipe) {
   global $p;
   $param = strtolower($param);
