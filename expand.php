@@ -10,7 +10,7 @@ if ($file_revision_id < $doitools_revision_id) {
 } else {
   $last_revision_id = $file_revision_id;
 }
-
+print "\nRevision #$last_revision_id";
 
 function loadParam($param, $value, $equals, $pipe) {
   global $p;
@@ -63,16 +63,16 @@ while ($page) {
        $citation_template_dominant = false;
     }
   }
-	if (preg_match("/\{\{nobots\}\}|\{\{bots\s*\|\s*deny\s*=[^}]*(Citation[ _]bot|all)[^}]*\}\}|\{\{bots\s*\|\s*allow=none\}\}/i", $startcode, $denyMsg)) {
+	if (preg_match("/\{\{nobots\}\}|\{\{bots\s*\|\s*deny\s*=[^}]*(Citation[ _]bot|DOI[ _]bot|all)[^}]*\}\}|\{\{bots\s*\|\s*allow=none\}\}/i", $startcode, $denyMsg)) {
 		echo "**** Bot forbidden by bots / nobots tag: $denyMsg[0]";
 		$page = nextPage();
 	} else {
 		$pagecode = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
 				preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
         preg_replace
-										("~(?<!\?&)\bid(\s*=[^\|]*)(DOI\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","doi$1$4$3$5",
+										("~(?<!\?&)\bid(\s*=[^\|]*)(DOI:?\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","doi$1$4$3$5",
 				preg_replace("~(id\s*=\s*)\[{2}?(PMID[:\]\s]*(\d*)|\{\{PMID[:\]\s]*\|\s*(\d*)\s*\}\})~","pm$1$4$3",
-				preg_replace("~[^\?&]\bid(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","doi$1$2",
+				preg_replace("~(?<!\?&)\bid(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","doi$1$2",
 
 				preg_replace("~url(\s*)=(\s*)http://dx.doi.org/~", "doi$1=$2", $startcode))))));
 
@@ -338,12 +338,10 @@ while ($page) {
           // Comments will be replaced in the cText variable later
           $countComments = null;
         }
-
-				$c = preg_replace("~(doi\s*=\s*)doi\s?=\s?(\d\d)~","$1$2",
-					preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~","doi$1=$1$2", $citation[$cit_i+1])); // Replaces doi: with doi =
+				$c = preg_replace("~(doi\s*=\s*)doi\s?=\s?(\d\d)~i","$1$2",
+					preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~i","doi$1=$1$2", $citation[$cit_i+1])); // Replaces doi: with doi =
 				while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
 				preg_match(siciRegExp, urldecode($c), $sici);
-        
 
 ##############################
 #             Split citation into parameters                     #

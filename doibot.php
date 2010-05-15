@@ -32,7 +32,7 @@
 	<div id="globalWrapper">
 		<div id="column-content">
 	<div id="content">
-<h1 class="firstHeading">Welcome to Citation Bot revision <? revisionId(); ?></h1>
+<h1 class="firstHeading">Welcome to Citation Bot</h1>
 <div id="bodyContent">			
 	<h3 id="siteSub"><? echo restrictedDuties?"Thanks for using this bot. Please be aware that there are one or two tiny bugs that are yet to be fixed, 
 		so the bot will run in 'manual mode' only.  Do carefully check that any edits it makes do not cause unintended consequences! 
@@ -44,12 +44,12 @@
 ## Set up - including dotDecode array
 $htmlOutput=true;
 $editInitiator = "[" . revisionID() . "]";
-$editSummaryEnd = "[[User:$user|$user]]";
 
 if ($user && getArticleId("User:$user")) {
   print "Activated by $user\n";
-  $editInitiator = "[" . revisionID() . "]";
   $editSummaryEnd = "[[User:$user|$user]]";
+} else {
+  $editSummaryEnd = "User-activated.";
 }
 
 
