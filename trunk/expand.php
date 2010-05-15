@@ -792,7 +792,8 @@ echo "
                 }
                 ifNullSet("title", $crossRef->article_title);
                 ifNullSet("year", $crossRef->year);
-                if ($crossRef->contributors->contributor) {
+                if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
+                    && $crossRef->contributors->contributor) {
                   $authors=null;
                   $au_i = 0;
                   foreach ($crossRef->contributors->contributor as $author) {
@@ -1331,7 +1332,7 @@ Done.  Just a couple of things to tweak now...";
                         "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!");
                 print " Message left.\n";
               } else {
-                print "\n *  Talk page exists, but no text could be attributed to it. \n ?????????????????????????"; //TODO!
+                print "\n *  Talk page exists, but no text could be attributed to it. \n ?????????????????????????";
               }
               mark_broken_doi_template($article_in_progress, $oDoi);
             } else {
