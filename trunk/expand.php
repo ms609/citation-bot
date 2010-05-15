@@ -2,16 +2,13 @@
 // $Revision$
 // $Id$
 
-$file_revision_id = str_replace(array("Revision: ", "$"), "", '$Revision$');
+$file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision$');
 $doitools_revision_id = revisionID();
 if ($file_revision_id < $doitools_revision_id) {
-  $editInitator = str_replace($doitools_revision_id, $this_revision_id, $editInitiator);
+  $editInitiator = str_replace($doitools_revision_id, $this_revision_id, $editInitiator);
   $last_revision_id = $doitools_revision_id;
 } else {
   $last_revision_id = $file_revision_id;
-}
-if ($editInitiator) {
-  $editInitator = str_replace($doitools_revision_id, $last_revision_id, $editInitator);
 }
 
 
