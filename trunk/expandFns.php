@@ -137,7 +137,7 @@ function logIn($username, $password) {
   $bot->submit(api, $submit_vars);
   $login_result = json_decode($bot->results);
         if ($login_result->login->result == "Success") {
-    print "\n Using account " . $login_result->login->lgusername;
+    print "\n Using account " . $login_result->login->lgusername . ".";
     // Add other cookies, which are necessary to remain logged in.
     $cookie_prefix = "enwiki";
     $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
@@ -304,7 +304,6 @@ function ascii_sort($val_1, $val_2)
   }
   return $return;
 }
-print "sorting ... ";
 uasort($parameter_list, "ascii_sort");
 print "done.";
 ?>

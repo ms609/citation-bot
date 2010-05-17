@@ -1058,7 +1058,13 @@ function niceTitle($in, $sents = true){
 	            'return strtolower($matches[0]);'
 	        ), trim(($captIn))));
 	}
-	return ($captIn == $in?strtoupper($newcase[0]):$newcase[0]) . substr($newcase, 1);
+  if (in_array(" " . trim($newcase) . " ", $unCapped)) {
+    // Keep "z/Journal" with lcfirst
+    return $newcase;
+  } else {
+    // Catch "the Journal" --> "The Journal"
+    return ucfirst($newcase);
+  }
 }
 
 /** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
