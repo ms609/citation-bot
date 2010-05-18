@@ -22,7 +22,7 @@ function nextPage(){
 }
 
 #$STOP = true;
-$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
+#$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
 
 $page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
 if ($ON) {

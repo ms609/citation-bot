@@ -430,6 +430,10 @@ echo "
             }
 					}
 
+          if (trim ($p["quotes"][0]) == "yes" || trim ($p["quotes"][0]) == "no") {
+            unset ($p["quotes"]);
+          }
+
 					// Load missing parameters from SICI, if we found one...
 					if ($sici[0]){
 						if (!is($journal) && !is("issn")) set("issn", $sici[1]);
@@ -996,11 +1000,13 @@ Done.  Just a couple of things to tweak now...";
 
 				if ($unify_citation_templates) {
 					if ($citation_template_dominant) {
+            ifNullSet("postscript", "<!--none-->");
 						$citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
 					} else {
             if ($harv_template_present) {
               ifNullSet("ref", "harv");
             }
+            ifNullSet("postscript", ".");
 						if (!is('date') && !is('month') && (is('isbn') || is("oclc" || is("series")))) {
              // Books usually catalogued by year; no month expected
               $citeTemplate = "Cite book";
