@@ -75,7 +75,7 @@ $crossRefOnly = $_REQUEST["crossrefonly"]?true:$_REQUEST["turbo"];
 
 if ($_REQUEST["edit"] || $_GET["doi"] || $_GET["pmid"]) $ON = true;
 
-$editSummaryStart = ($bugFix?"Double-checking that a [[User:DOI_bot/bugs|bug]] has been fixed. ":"Citation maintenance. ");
+$editSummaryStart = ($bugFix?"Double-checking that a [[User:DOI_bot/bugs|bug]] has been fixed. ":"Citations: ");
 
 ob_flush();
 
