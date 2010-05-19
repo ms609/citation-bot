@@ -1000,13 +1000,19 @@ Done.  Just a couple of things to tweak now...";
 
 				if ($unify_citation_templates) {
 					if ($citation_template_dominant) {
-            ifNullSet("postscript", "<!--none-->");
-						$citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
+            if (preg_match("~[cC]ite[ _]\w+~", $citation[$cit_i+2])) {
+              // Switching FROM cite xx TO citation; cite xx has a trailing period by default
+              ifNullSet("postscript", ".");
+              $citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
+            }
 					} else {
             if ($harv_template_present) {
               ifNullSet("ref", "harv");
             }
-            ifNullSet("postscript", ".");
+            if (preg_match("~[cC]itation~", $citation[$cit_i+2])) {
+              // Switching FROM cite xx TO citation; citation has no trailing period by default
+              ifNullSet("postscript", "<!--None-->");
+            }
 						if (!is('date') && !is('month') && (is('isbn') || is("oclc" || is("series")))) {
              // Books usually catalogued by year; no month expected
               $citeTemplate = "Cite book";
