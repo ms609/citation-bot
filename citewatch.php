@@ -10,9 +10,9 @@ $editInitiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
 
 echo "\n Retrieving category members: ";
-#$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"), categoryMembers("Pages_with_incomplete_Google_book_references") );
 #$toDo = array("User:DOI bot/Zandbox");
-$toDo = array("Colorectal cancer");
+#$toDo = array("Colorectal cancer");
 shuffle($toDo);
 
 echo count($toDo);
@@ -27,11 +27,51 @@ function getCiteList($page){
 	preg_match_all ("~\{\{[\s\n]*cite[ _]jstor[\n\s]*\|[\n\s]*(\d+)[\n\s]*\}\}~i", $raw, $jstorid);
 	preg_match_all ("~\{\{[\s\n]*cite[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*\}\}~i", $raw, $pmid);
 	preg_match_all ("~\{\{[\s\n]*cite[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*\}\}~i", $raw, $pmc);
-	return Array($doi[1], $jstorid[1], $pmid[1], $pmc[1]);
+	preg_match_all ("~\{\{[\s\n]*cite[ _]google[ )]book[\n\s]*\|[\n\s]*(\d\w+)[\n\s]*\}\}~i", $raw, $gbook);
+	return Array($doi[1], $jstorid[1], $pmid[1], $pmc[1], $gbook[1]);
 }
 
 function nextPage(){
-	global $toDo, $doi_todo, $pmid_todo, $pmc_todo, $dotDecode, $dotEncode, $cite_doi_start_code, $article_in_progress, $oDoi; 
+	global $toDo, $doi_todo, $pmid_todo, $pmc_todo, $gbook_todo, $isbn_todo,
+         $dotDecode, $dotEncode, $cite_doi_start_code, $article_in_progress, $oDoi;
+
+  $o_gbook = @$array_shift($gbook_todo);
+  if ($o_gbook) {
+    print "\n   > Google Book $o_gbook: ";
+    $gbook_page = "Template:Cite google book/$o_gbook";
+    switch (citation_is_redirect("gbook", $o_gbook) {
+      case -1: // Page does not exist
+        $p = null;
+        google_book_details($o_gbook);
+        print write($gbook_page, "#REDIRECT[[Template:Cite isbn/{$p['isbn'][0]}]]", "Redirecting to ISBN citation")
+            ? " : Done."
+            : " : ERROR\n\n > Write failed!\n";
+        $isbn_todo[] = str_replace("-", "", $p["isbn"][0]);
+        break;
+      case 0:
+        // Page exists and is not redirect
+        print "Page exists and is not redirect.";
+        log_citation("pmc", $oPmc);
+        return nextPage();
+      case 1:
+        print "On record as a redirect";
+      break;
+      case 2:
+        // page is an existing redirect.
+        print "Redirects to non-existant page.  Please remind Smith609 to implement page creation.";
+      
+      }
+  }
+  $o_isbn = @array_shift($isbn_todo);
+  if ($o_isbn) {
+    print "\n   > ISBN $o_isbn";
+    $isbn_page = "Template:Cite isbn/$o_isbn";
+    switch(citation_is_redirect("isbn", $o_isbn) {
+        case -1: // 404
+          $p = null;
+
+      }
+  }
 
   // Get the next PMC from our to-do list
   $oPmc = @array_shift($pmc_todo);
@@ -74,6 +114,7 @@ function nextPage(){
             print "Could not find PMID or DOI for this PMC.  \n??????????????????????????????????????????????????";
           }
         }
+      break;
       case 0:
         // Page exists and is not redirect
         print "Page exists and is not redirect.";
@@ -213,7 +254,7 @@ function nextPage(){
     }
 	}
   // Loaded $article_in_progress; now xxx_todo will all be full again.
-  print " D" . count($doi_todo) . "/M" . count($pmid_todo) . "/C" . count($pmc_todo);
+  print " D" . count($doi_todo) . "/M" . count($pmid_todo) . "/C" . count($pmc_todo) . "/I" . count ($isbn_todo)  . "gB" . count($gbook_todo);
 	return nextPage();
 }
 
