@@ -33,11 +33,11 @@
 		<div id="column-content">
 	<div id="content">
 <h1 class="firstHeading">Welcome to Citation Bot</h1>
-<div id="bodyContent">			
-	<h3 id="siteSub"><? echo restrictedDuties?"Thanks for using this bot. Please be aware that there are one or two tiny bugs that are yet to be fixed, 
-		so the bot will run in 'manual mode' only.  Do carefully check that any edits it makes do not cause unintended consequences! 
-		The bot has begun, so p":"P";?>lease wait patiently while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> 
-		<small>(<a href="http://en.wikipedia.org/wiki/Special:Contributions/Citation_bot">contribs</a>)</small> works on the citations you requested. 
+<div id="bodyContent">
+	<h3 id="siteSub"><? echo restrictedDuties?"Thanks for using this bot. Please be aware that there are one or two tiny bugs that are yet to be fixed,
+		so the bot will run in 'manual mode' only.  Do carefully check that any edits it makes do not cause unintended consequences!
+		The bot has begun, so p":"P";?>lease wait patiently while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a>
+		<small>(<a href="http://en.wikipedia.org/wiki/Special:Contributions/Citation_bot">contribs</a>)</small> works on the citations you requested.
 		You can follow its progress below...</h3>
 <pre><?
 
@@ -84,34 +84,57 @@ function nextPage() {
 	return $result[0];
 }
 
-$getDoi = $_GET["doi"];
+$doi_input = $_GET["doi"];
+$pmid_input = $_GET["pmid"];
+$pmc_input = $_GET["pmc"];
 
-if ($_GET["pmid"]) {
-	$page = "Template:Cite pmid/" . str_replace($dotDecode, $dotEncode, $_GET["pmid"]);
-	$pma = (pmArticleDetails($_GET["pmid"]));
-	$getDoi=$pma["doi"];
-	if ($getDoi) {
-		$encDoi = str_replace($dotDecode, $dotEncode, $getDoi);
-		write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
-		print "<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
-	}
-	else $freshcode = "{{Cite journal \n| pmid = {$_GET["pmid"]}\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
-	$citedoi = true;
-} else if ($_GET["pmc"]) {
-	$page = "Template:Cite pmc/" . str_replace($dotDecode, $dotEncode, $_GET["pmc"]);
-	$freshcode = "{{Cite journal \n| pmc = {$_GET["pmc"]}\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
-	$citedoi = true;
+if ($pmc_input) {
+  $page = "Template:Cite pmc/" . $pmc_input;
+  $article_details = pmArticleDetails($pmc_input, "pmc");
+  print_r($article_details);
+  if ($article_details) {
+    $doi_input = $article_details["doi"];
+    if ($doi_input) {
+      $encDoi = str_replace($dotDecode, $dotEncode, $doi_input);
+      write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
+      print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
+    }	else {
+      $pmid_input = $article_details["pmid"];
+      write($page, "#REDIRECT[[Template:Cite pmid/$pmid_input]]", "Redirecting to PMID for consistency");
+      print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite pmid/$pmid_input'>Template:Cite pmid/$pmid_input</a></p>";
+      $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
+    }
+  } else {
+   print ("\n<p>PMC $pmc_input not found.  Try removing 'PMC' prefix?</p>");
+   $dont_expand = true;
+  }
 }
-if ($getDoi) {
-	$page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $getDoi);
-	$freshcode = "{{Cite journal \n| doi = $getDoi\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
-	$citedoi = true;
-} else if (!$freshcode) {
+if ($pmid_input) {
+	$page = "Template:Cite pmid/" . str_replace($dotDecode, $dotEncode, $pmid_input);
+	$pma = pmArticleDetails($pmid_input);
+	$doi_input = $pma["doi"];
+	if ($doi_input) {
+		$encDoi = str_replace($dotDecode, $dotEncode, $doi_input);
+		write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
+		print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
+	}	else {
+    $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
+  }
+}
+if ($doi_input) {
+	$page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi_input);
+	$cite_doi_start_code = "{{Cite journal \n| doi = $doi_input\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
+} else if (!$cite_doi_start_code) {
   $page = ($_REQUEST["page"])?ucfirst($_REQUEST["page"]):nextPage();
 }
 
+if ($cite_doi_start_code) {
+  $editing_cite_doi_template = true;
+  $ON = true;
+}
+
 ################## Here we go! ######################
-include("expand.php");
+if (!$dont_expand) include("expand.php");
 ################# And we're back. #####################
 
 
