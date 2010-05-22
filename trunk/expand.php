@@ -326,7 +326,7 @@ while ($page) {
 		}
 ###################################  START ASSESSING JOURNAL/OTHER CITATIONS ######################################
 
-		if ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $pagecode, -1, PREG_SPLIT_DELIM_CAPTURE)) {
+		if ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $pagecode, -1, PREG_SPLIT_DELIM_CAPTURE)) {
 			$pagecode = null;
 			$iLimit = (count($citation)-1);
 			for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5){//Number of brackets in cite journal regexp + 1
@@ -397,6 +397,8 @@ while ($page) {
           set('title', $match[2]);
           set('doi', $match[1]);
         }
+        
+        
 ###########################
 //
 echo "
@@ -414,7 +416,13 @@ echo "
 					// See if we can use any of the parameters lacking equals signs:
 					$freeDat = explode("|", trim($p["unused_data"][0]));
 					useUnusedData();
-
+          
+          if (google_book_expansion()) {
+            print "\n * Expanded from Google Books API.";
+          }
+          /*  ISBN lookup removed - too buggy.  TODO (also commented out above)
+					if (is("isbn")) getInfoFromISBN();
+*/
 
           // If the page has been created manually from a cite doi link, it will have an encoded 'doix' parameter - decode this.
           if (preg_match("~^10.\d{4}\.2F~", $p['doix'][0])) {
@@ -426,9 +434,6 @@ echo "
             unset($p['url']);
           }
 
-          /*  ISBN lookup removed - too buggy.  TODO (also commented out above)
-					if (is("isbn")) getInfoFromISBN();
-*/
 
           if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
             unset($p["unused_data"]);

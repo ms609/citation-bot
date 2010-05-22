@@ -488,7 +488,16 @@ function pmFullTextUrl($pmid){
 function google_book_expansion() {
   global $p;
   if (is("url") && preg_match("~books\.google\.com/.*\bid=([\w\d]+)~", $p["url"][0], $gid)) {
-    $p["url"][0] = "http://books.google.com/?id=" . $gid[1];
+    $url_parts = explode("&", str_replace("?", "&", $p["url"][0]));
+    $url = "http://books.google.com/?id=" . $gid[1];
+    foreach ($url_parts as $part) {
+      $part_start = explode("=", $part);
+      switch ($part_start[0]) {
+        case "dq": case "pg": case "q":
+        $url .= "&" . $part;
+      }
+    }
+    $p["url"][0] = $url;
     google_book_details($gid[1]);
     return true;
   }
@@ -723,9 +732,6 @@ function correct_parameter_spelling($p)
   
   // Common mistakes that aren't picked up by the levenshtein approach
   $common_mistakes = array (
-                            "vol"         =>  "volume",
-                            "translator"  =>  "others",
-                            "translators" =>  "others",
                             "editorlink1" =>  "editor1-link",
                             "editorlink2" =>  "editor2-link",
                             "editorlink3" =>  "editor3-link",
@@ -734,6 +740,11 @@ function correct_parameter_spelling($p)
                             "editor2link" =>  "editor2-link",
                             "editor3link" =>  "editor3-link",
                             "editor4link" =>  "editor4-link",
+                            "ibsn"        =>  "isbn",
+                            "number"      =>  "issue",
+                            "translator"  =>  "others",
+                            "translators" =>  "others",
+                            "vol"         =>  "volume",
                             );
 
   unset($p[""]);
