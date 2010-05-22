@@ -115,29 +115,33 @@ function ifNullSet($param, $value){
 	switch ($param) {
 		case "editor": case "editor-last": case "editor-first":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["editor"][0])=="" && trim($p["editor-last"][0])=="" && trim($p["editor-first"][0])=="" && trim($value)!="") {
+			if (trim($p["editor"][0]) == "" && trim($p["editor-last"][0]) == "" && trim($p["editor-first"][0]) == "" && trim($value)!="") {
         set ($param, $value);
+        return true;
       }
 			break;
 		case "author": case "last1": case "last":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["last1"][0])=="" && trim($p["last"][0])=="" && trim($p["author"][0])=="" && trim($p["author1"][0])=="" &&
-			    trim($p["editor"][0])=="" && trim($p["editor-last"][0])=="" && trim($p["editor-first"][0])==""
+			if (trim($p["last1"][0]) == "" && trim($p["last"][0]) == "" && trim($p["author"][0]) == "" && trim($p["author1"][0]) == "" &&
+			    trim($p["editor"][0]) == "" && trim($p["editor-last"][0]) == "" && trim($p["editor-first"][0]) == ""
 					&& trim($value) != "") {
         set ($param, $value);
+        return true;
       }
 			break;
 		case "first": case "first1": case "author1":
       if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == ""
         && trim($p["author"][0]) == "" && trim ($p['author1'][0]) == "") {
         set ($param, $value);
+        return true;
       }
       break;
 		case "coauthor": case "coauthors":
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["last2"][0])=="" && trim($p["coauthor"][0])=="" &&trim($p["coauthors"][0])=="" && trim($p["author"][0])=="" && trim($value)!="") {
+			if (trim($p["last2"][0]) == "" && trim($p["coauthor"][0]) == "" &&trim($p["coauthors"][0]) == "" && trim($p["author"][0]) == "" && trim($value)!="") {
         // Note; we shouldn't be using this parameter ever....
         set ($param, $value);
+        return true;
       }
 			break;
 		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
@@ -147,6 +151,7 @@ function ifNullSet($param, $value){
           && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
           && underTwoAuthors($p['author'][0]))  {
         set ($param, $value);
+        return true;
       }
 			break;
     case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10":
@@ -155,27 +160,33 @@ function ifNullSet($param, $value){
         && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
         && trim($value) != "")  {
         set ($param, $value);
+        return true;
       }
 			break;
 		case "year":
-			if (trim($p["date"][0])=="" && trim($p["year"][0])=="" && trim($value)!="")  {
+			if (trim($p["date"][0]) == "" && trim($p["year"][0]) == "" && trim($value)!="")  {
         set ($param, $value);
+        return true;
       }
 			break;
 		case "periodical": case "journal":
-			if (trim($p["journal"][0])=="" && trim($p["periodical"][0])=="" && trim($value)!="") {
+			if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($value)!="") {
         set ($param, $value);
+        return true;
       }
 			break;
     case "page": case "pages":
 			if (trim($p["pages"][0]) == "" && trim($p["page"][0]) == "" && trim($value) != "") {
         set ($param, $value);
+        return true;
       }
       break;
 		default: if (trim($p[$param][0]) == "" && trim($value) != "") {
         set ($param, $value);
+        return true;
       }
 	}
+  return false;
 }
 
 function nothingMissing($journal){
@@ -488,7 +499,6 @@ function google_book_details ($gid) {
   $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
   $simplified_xml = str_replace(":", "___", file_get_contents($google_book_url));
   $xml = simplexml_load_string($simplified_xml);
-  print_r($xml);
   if ($xml->dc___title[1]) {
     ifNullSet("title", $xml->dc___title[0] . ": " . $xml->dc___title[1]);
   } else {
@@ -788,7 +798,7 @@ function correct_parameter_spelling($p)
   }
   foreach ($mod as $wrong => $right)
   {
-    if (!is($right)) {
+    if (ifNullSet($right, $p[$wrong][0])) {
       $p[$right] = $p[$wrong];
       unset ($p[$wrong]);
     }
