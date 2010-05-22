@@ -185,6 +185,14 @@ while ($page) {
         // Now, check for typos
         $p = correct_parameter_spelling($p);
 
+
+        if (google_book_expansion()) {
+          print "\n * Expanded from Google Books API.";
+        } 
+
+
+        // Having expanded all that we can expand, tidy things up.
+        
         // edition -- remove 'edition' from parameter value
         if (is("edition"))
         {

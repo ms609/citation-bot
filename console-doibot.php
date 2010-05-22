@@ -22,7 +22,7 @@ function nextPage(){
 }
 
 #$STOP = true;
-#$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
+$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
 
 $page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
 if ($ON) {
@@ -35,4 +35,5 @@ if ($ON) {
 // The line to swtich between active & sandbox modes is in the comment block above.
 #$page = "";
 include("expand.php");// i.e. GO!
+
 print "\n Done. \n";

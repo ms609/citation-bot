@@ -474,6 +474,46 @@ function pmFullTextUrl($pmid){
 	}
 }
 
+function google_book_expansion() {
+  global $p;
+  if (is("url") && preg_match("~books\.google\.com/.*\bid=([\w\d]+)~", $p["url"][0], $gid)) {
+    $p["url"][0] = "http://books.google.com/?id=" . $gid[1];
+    google_book_details($gid[1]);
+    return true;
+  }
+  return false;
+}
+
+function google_book_details ($gid) {
+  $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
+  $simplified_xml = str_replace(":", "___", file_get_contents($google_book_url));
+  $xml = simplexml_load_string($simplified_xml);
+  print_r($xml);
+  if ($xml->dc___title[1]) {
+    ifNullSet("title", $xml->dc___title[0] . ": " . $xml->dc___title[1]);
+  } else {
+    ifNullSet("title", $xml->title);
+  }
+  ifNullSet("publisher", $xml->dc___publisher);
+  foreach ($xml->dc___identifier as $ident) {
+    if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
+      $isbn = $match[1];
+    }
+  }
+  ifNullSet("isbn", $isbn);
+  foreach ($xml->dc___format as $format) {
+    if (preg_match("~([\d\-]+).*pages~", $format, $match)) {
+      ifNullSet("pages", $match[1]);
+    }
+  }
+  $i = null;
+  foreach ($xml->dc___creator as $author) {
+    $i++;
+    ifNullSet("author$i", formatAuthor($author));
+  }
+  ifNullSet("date", $xml->dc___date);
+}
+
 function findISBN($title, $auth=false){
 	global $isbnKey2;
 	$title = trim($title); $auth=trim($auth);
@@ -481,10 +521,10 @@ function findISBN($title, $auth=false){
 	if (false) dbg(array(
 		$title  => $author,
 		(string) $xml->BookList->BookData[$i]->Title => similar_text($xml->BookList->BookData[$i]->Title, $title),
-		(string)$xml->BookList->BookData[$i]->Title . "au" => similar_text($xml->BookList->BookData[$i]->Title, $author),
-		(string)$xml->BookList->BookData[$i]->TitleLong => similar_text($xml->BookList->BookData[$i]->TitleLong, $title),
-		(string)$xml->BookList->BookData[$i]->TitleLong  . "au"=> similar_text($xml->BookList->BookData[$i]->TitleLong, $author),
-		(string)$xml->BookList->BookData[$i]->AuthorsText => similar_text($xml->BookList->BookData[$i]->AuthorsText, $title),
+		(string) $xml->BookList->BookData[$i]->Title . "au" => similar_text($xml->BookList->BookData[$i]->Title, $author),
+		(string) $xml->BookList->BookData[$i]->TitleLong => similar_text($xml->BookList->BookData[$i]->TitleLong, $title),
+		(string) $xml->BookList->BookData[$i]->TitleLong  . "au"=> similar_text($xml->BookList->BookData[$i]->TitleLong, $author),
+		(string) $xml->BookList->BookData[$i]->AuthorsText => similar_text($xml->BookList->BookData[$i]->AuthorsText, $title),
 		(string) $xml->BookList->BookData[$i]->AuthorsText ."au"=> similar_text($xml->BookList->BookData[$i]->AuthorsText, $author)
 	));
 	if ($xml->BookList["total_results"] == 1) return (string) $xml->BookList->BookData["isbn"];
@@ -686,6 +726,7 @@ function correct_parameter_spelling($p)
                             "editor4link" =>  "editor4-link",
                             );
 
+  unset($p[""]);
   foreach ($p as $key => $value) {
     if (!in_array($key, $parameter_list))
     {
