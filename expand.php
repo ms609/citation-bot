@@ -420,6 +420,11 @@ echo "
           if (google_book_expansion()) {
             print "\n * Expanded from Google Books API.";
           }
+          
+          if (is("url")) {
+            ifNullSet("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
+          }
+
           /*  ISBN lookup removed - too buggy.  TODO (also commented out above)
 					if (is("isbn")) getInfoFromISBN();
 */
