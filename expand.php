@@ -421,7 +421,7 @@ echo "
             print "\n * Expanded from Google Books API.";
           }
           
-          if (is("url")) {
+          if (is("url") && !is("journal")) {
             ifNullSet("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
           }
 
