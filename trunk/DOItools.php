@@ -493,7 +493,7 @@ function google_book_expansion() {
     foreach ($url_parts as $part) {
       $part_start = explode("=", $part);
       switch ($part_start[0]) {
-        case "dq": case "pg": case "q":
+        case "dq": case "pg": case "q": case "printsec":
         $url .= "&" . $part;
       }
     }
@@ -732,19 +732,26 @@ function correct_parameter_spelling($p)
   
   // Common mistakes that aren't picked up by the levenshtein approach
   $common_mistakes = array (
-                            "editorlink1" =>  "editor1-link",
-                            "editorlink2" =>  "editor2-link",
-                            "editorlink3" =>  "editor3-link",
-                            "editorlink4" =>  "editor4-link",
-                            "editor1link" =>  "editor1-link",
-                            "editor2link" =>  "editor2-link",
-                            "editor3link" =>  "editor3-link",
-                            "editor4link" =>  "editor4-link",
-                            "ibsn"        =>  "isbn",
-                            "number"      =>  "issue",
-                            "translator"  =>  "others",
-                            "translators" =>  "others",
-                            "vol"         =>  "volume",
+                            "editorlink1"   =>  "editor1-link",
+                            "editorlink2"   =>  "editor2-link",
+                            "editorlink3"   =>  "editor3-link",
+                            "editorlink4"   =>  "editor4-link",
+                            "editor1link"   =>  "editor1-link",
+                            "editor2link"   =>  "editor2-link",
+                            "editor3link"   =>  "editor3-link",
+                            "editor4link"   =>  "editor4-link",
+                            "editorn-link"  =>  "editor2-link",
+                            "editorn-last"  =>  "editor2-last",
+                            "editorn-first" =>  "editor2-first",
+                            "editorn"       =>  "editor2",
+                            "firstn"        =>  "first2",
+                            "lastn"         =>  "last2",
+                            "authorn"       =>  "author2",
+                            "ibsn"          =>  "isbn",
+                            "number"        =>  "issue",
+                            "translator"    =>  "others",
+                            "translators"   =>  "others",
+                            "vol"           =>  "volume",
                             );
 
   unset($p[""]);

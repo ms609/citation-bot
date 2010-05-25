@@ -7,7 +7,7 @@ $fastMode=false;
 $accountSuffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
-$editInitiator = '[Pu' . revisionID() . '&beta;]';
+$editInitiator = '[Pu' . revisionID() . '&gamma;]';
 $ON = true; // Override later if necessary
 
 function nextPage(){
