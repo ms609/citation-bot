@@ -487,7 +487,7 @@ function pmFullTextUrl($pmid){
 
 function google_book_expansion() {
   global $p;
-  if (is("url") && preg_match("~books\.google\.com/.*\bid=([\w\d]+)~", $p["url"][0], $gid)) {
+  if (is("url") && preg_match("~books\.google\.com/.*\bid=([\w\d\-]+)~", $p["url"][0], $gid)) {
     $url_parts = explode("&", str_replace("?", "&", $p["url"][0]));
     $url = "http://books.google.com/?id=" . $gid[1];
     foreach ($url_parts as $part) {
