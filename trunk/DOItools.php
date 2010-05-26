@@ -163,6 +163,12 @@ function ifNullSet($param, $value){
         return true;
       }
 			break;
+    case "date":
+      if (preg_match("~^\d{4}$~", trim($value))) {
+        // Not adding any date data beyond the year, so 'year' parameter is more suitable
+        $param = "year";
+      }
+      // Don't break here; we want to go straight in to year;
 		case "year":
 			if (trim($p["date"][0]) == "" && trim($p["year"][0]) == "" && trim($value)!="")  {
         set ($param, $value);
@@ -493,8 +499,9 @@ function google_book_expansion() {
     foreach ($url_parts as $part) {
       $part_start = explode("=", $part);
       switch ($part_start[0]) {
-        case "dq": case "pg": case "q": case "printsec":
+        case "dq": case "pg": case "q": case "printsec": case "cd":
         $url .= "&" . $part;
+        case "as": case "useragent": case "as_brr": case "source": // List of parameters known to be safe
       }
     }
     $p["url"][0] = $url;
@@ -520,15 +527,13 @@ function google_book_details ($gid) {
     }
   }
   ifNullSet("isbn", $isbn);
-  foreach ($xml->dc___format as $format) {
-    if (preg_match("~([\d\-]+).*pages~", $format, $match)) {
-      ifNullSet("pages", $match[1]);
-    }
-  }
+  // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
   $i = null;
-  foreach ($xml->dc___creator as $author) {
-    $i++;
-    ifNullSet("author$i", formatAuthor($author));
+  if (!is("editor") && !is("editor1") && !is("editor1-last") && !is("editor-last")) {
+    foreach ($xml->dc___creator as $author) {
+      $i++;
+      ifNullSet("author$i", formatAuthor($author));
+    }
   }
   ifNullSet("date", $xml->dc___date);
 }
@@ -554,7 +559,7 @@ function getInfoFromISBN(){
 	global $p, $isbnKey;
 	$params = array("author"=>"author", "year"=>"year", "publisher"=>"publisher", "location"=>"city", "title"=>"title"/*, "oclc"=>"oclcnum"*/);
 	if (is("author") || is("first") || is("author1") ||
-			is("editor") || is("editor-author") || is("editor-author1") || is("editor1-author")
+			is("editor") || is("editor-last") || is("editor-last1") || is("editor1-last")
 			|| is("author") || is("author1")) unset($params["author"]);
 	if (is("publisher")) {unset($params["location"]); unset($params["publisher"]);}
 	if (is("title")) unset ($params["title"]);
@@ -732,6 +737,10 @@ function correct_parameter_spelling($p)
   
   // Common mistakes that aren't picked up by the levenshtein approach
   $common_mistakes = array (
+                            "authorn"       =>  "author2",
+                            "ed"            =>  "editor",
+                            "ed2"           =>  "editor2",
+                            "ed3"           =>  "editor3",
                             "editorlink1"   =>  "editor1-link",
                             "editorlink2"   =>  "editor2-link",
                             "editorlink3"   =>  "editor3-link",
@@ -740,15 +749,15 @@ function correct_parameter_spelling($p)
                             "editor2link"   =>  "editor2-link",
                             "editor3link"   =>  "editor3-link",
                             "editor4link"   =>  "editor4-link",
+                            "editorn"       =>  "editor2",
                             "editorn-link"  =>  "editor2-link",
                             "editorn-last"  =>  "editor2-last",
                             "editorn-first" =>  "editor2-first",
-                            "editorn"       =>  "editor2",
                             "firstn"        =>  "first2",
-                            "lastn"         =>  "last2",
-                            "authorn"       =>  "author2",
                             "ibsn"          =>  "isbn",
+                            "lastn"         =>  "last2",
                             "number"        =>  "issue",
+                            "origmonth"     =>  "month",
                             "translator"    =>  "others",
                             "translators"   =>  "others",
                             "vol"           =>  "volume",
@@ -1556,7 +1565,7 @@ function parameterOrder($first, $author){
      "author8", "author8", "first8", "authorlink8", "author8-link",
      "author9", "author9", "first9", "authorlink9", "author9-link",
      "editor", "editor1",
-     "editor-author", "editor1-author",
+     "editor-last", "editor1-last",
      "editor-first", "editor1-first",
      "editor-link", "editor1-link", "editor1-link",
      "editor2", "editor2-author", "editor2-first", "editor2-link", "editor2-link",

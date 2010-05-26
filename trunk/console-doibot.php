@@ -7,7 +7,7 @@ $fastMode=false;
 $accountSuffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
-$editInitiator = '[Pu' . revisionID() . '&gamma;]';
+$editInitiator = '[Pu' . revisionID() . '&beta;]';
 $ON = true; // Override later if necessary
 
 function nextPage(){
@@ -21,7 +21,7 @@ function nextPage(){
 }
 
 #$STOP = true;
-#$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
+$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
 
 $page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
 if ($ON) {
