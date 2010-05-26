@@ -596,7 +596,7 @@ function useUnusedData()
 
   // Empty the parameter.  We'll put back anything we don't manage to assign to a parameter.
 	unset($p["unused_data"]);
-
+  
   if (isset($freeDat[0]))
   {
 		foreach ($freeDat as $dat)
@@ -613,9 +613,15 @@ function useUnusedData()
         $shortest = -1;
         foreach ($parameter_list as $parameter)
         {
+          $para_len = strlen($parameter);
+          if (substr($dat, 0, $para_len) == $parameter) {
+            $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
+            $parameter_value = ($character_after_parameter == "-")?substr(trim(substr($dat, $para_len)), 1):substr($dat, $para_len);
+            ifNullSet($parameter, $parameter_value);
+            break;
+          }
           $test_dat = preg_replace("~\d~", "_$0",
                       preg_replace("~[ -+].*$~", "", substr(strtolower($dat), 0, $para_len)));
-          $para_len = strlen($parameter);
           if ($para_len < 3)
           {
             break; // minimum length to avoid false positives
