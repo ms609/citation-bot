@@ -15,8 +15,8 @@ $crossRefId = CROSSREFUSERNAME . ":" . CROSSREFPASSWORD;
 global $dontCap, $unCapped;
 // Remember to enclose any word in spaces.
 // $dontCap is a global array of strings that should not be capitalized in their titlecase format; $unCapped is their correct capitalization
-$dontCap  = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Out ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ');
-$unCapped = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' out ',' over ',' to ',' into ',' with ', ' USA ' ,' USA ',' et ');
+$dontCap  = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ');
+$unCapped = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ');
 
 // journal acrynyms which should be capitilised are downloaded from User:Citation_bot/capitalisation_exclusions
 $bot->fetch(wikiroot . "title=" . urlencode('User:Citation_bot/capitalisation_exclusions') . "&action=raw");
@@ -499,7 +499,7 @@ function google_book_expansion() {
     foreach ($url_parts as $part) {
       $part_start = explode("=", $part);
       switch ($part_start[0]) {
-        case "dq": case "pg": case "q": case "printsec": case "cd":
+        case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd":
         $url .= "&" . $part;
         case "as": case "useragent": case "as_brr": case "source": // List of parameters known to be safe
       }
@@ -734,7 +734,7 @@ function correct_parameter_spelling($p)
     $parameters_used[] = $key;
   }
   $unused_parameters = array_diff($parameter_list, $parameters_used);
-  
+
   // Common mistakes that aren't picked up by the levenshtein approach
   $common_mistakes = array (
                             "authorn"       =>  "author2",
