@@ -63,6 +63,7 @@ while ($page) {
   }
 	if (preg_match("/\{\{nobots\}\}|\{\{bots\s*\|\s*deny\s*=[^}]*(Citation[ _]bot|DOI[ _]bot|all)[^}]*\}\}|\{\{bots\s*\|\s*allow=none\}\}/i", $startcode, $denyMsg)) {
 		echo "**** Bot forbidden by bots / nobots tag: $denyMsg[0]";
+    updateBacklog($page);
 		$page = nextPage();
 	} else {
 		$pagecode = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
@@ -421,7 +422,7 @@ echo "
             print "\n * Expanded from Google Books API.";
           }
           
-          if (is("url") && !is("journal") && !is("periodical")) {
+          if (is("url") && !is("journal") && !is("periodical") && !is("magazine") && !is("newspaper")) {
             ifNullSet("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
           }
 
@@ -1231,7 +1232,7 @@ Done.  Just a couple of things to tweak now...";
 		if (trim($pagecode)) {
 			if (strtolower($pagecode) != strtolower($startcode)) {
 				if ($additions) {
-					$smartSum = "Added: ";
+					$smartSum = "+: ";
 					foreach ($additions as $param=>$v)	{$smartSum .= "$param, "; unset($changes[$param]);}
 					$smartSum = substr($smartSum, 0, strlen($smartSum)-2);
 					$smartSum .= ". ";
@@ -1241,7 +1242,7 @@ Done.  Just a couple of things to tweak now...";
 					unset($changes["accessdate"]);
 				}
 				if ($changes) {
-					$smartSum .= "Formatted: ";
+					$smartSum .= "Tweaked: ";
 					foreach ($changes as $param=>$v)	$smartSum .= 				"$param, ";
 					$smartSum = substr($smartSum,0, strlen($smartSum)-2);
 					$smartSum.=". ";
