@@ -243,7 +243,12 @@ function get_data_from_jstor($jid) {
   $xml = simplexml_load_string(str_replace(":", "_", $data));
   if ($xml->srw_numberOfRecords == 1) {
     $data = $xml->srw_records->srw_record->srw_recordData;
-    ifNullSet("url", "http://jstor.org/stable/" . substr($jid, 8));
+    global $p;
+    if (trim(substr($p["doi"][0], 0, 7)) == "10.2307") {
+      if (!ifNullSet("url", "http://jstor.org/stable/" . substr($jid, 8)) && !strpos("jstor", $p["url"][0])) {
+        ifNullSet("jstor", $jid); // TODO -- untested.
+      }
+    }
     if (preg_match("~(pp\. )?(\w*\d+.*)~", $data->dc_coverage, $match)) {
       ifNullSet("pages", $match[2]);
     }
@@ -499,9 +504,15 @@ function google_book_expansion() {
     foreach ($url_parts as $part) {
       $part_start = explode("=", $part);
       switch ($part_start[0]) {
-        case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd":
-        $url .= "&" . $part;
-        case "as": case "useragent": case "as_brr": case "source": // List of parameters known to be safe
+        case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq":
+          $url .= "&" . $part;
+        // TODO: vq takes precedence over dq > q.  Only use one of the above.
+        case "as": case "useragent": case "as_brr": case "source":  case "hl":
+        case "ei": case "ots": case "sig": case "source": case "lr":
+        case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe
+          break;
+        default:
+          // TODO: log other parameters so that I can test their effect.
       }
     }
     $p["url"][0] = $url;
@@ -529,7 +540,8 @@ function google_book_details ($gid) {
   ifNullSet("isbn", $isbn);
   // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
   $i = null;
-  if (!is("editor") && !is("editor1") && !is("editor1-last") && !is("editor-last")) {
+  if (!is("editor") && !is("editor1") && !is("editor1-last") && !is("editor-last")
+          && !is("author") && !is("author1") && !is("last")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
     foreach ($xml->dc___creator as $author) {
       $i++;
       ifNullSet("author$i", formatAuthor($author));
@@ -561,7 +573,10 @@ function getInfoFromISBN(){
 	if (is("author") || is("first") || is("author1") ||
 			is("editor") || is("editor-last") || is("editor-last1") || is("editor1-last")
 			|| is("author") || is("author1")) unset($params["author"]);
-	if (is("publisher")) {unset($params["location"]); unset($params["publisher"]);}
+	if (is("publisher")) {
+    unset($params["location"]);
+    unset($params["publisher"]);
+  }
 	if (is("title")) unset ($params["title"]);
 	if (is("year")||is("date")) unset ($params["year"]);
 	if (is("location")) unset ($params["location"]);
