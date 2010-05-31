@@ -632,6 +632,9 @@ function useUnusedData()
                 $endnote_authors++;
                 $endnote_parameter = "author$endnote_authors";
                 break;
+              case "V":
+                $endnote_parameter = "volume";
+                break;
               case "J":
                 $endnote_parameter = "journal";
                 break;
@@ -644,14 +647,21 @@ function useUnusedData()
               case "D":
                 $endnote_parameter = "date";
                 break;
+              case "U":
+                $endnote_parameter = "url";
+                break;
               case "0":
                 // Citation type
-                $dat = str_replace("\n%$endnote_line", "", $dat);
+                $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
               default:
                 $endnote_parameter = false;
             }
             if ($endnote_parameter && ifNullSet($endnote_parameter, substr($endnote_line, 1))) {
-              $dat = str_replace("\n%$endnote_line", "", $dat);
+              global $smartSum;
+              if (!strpos("Converted Endnote citation to WP format", $smartSum)) {
+                $smartSum .= "Converted Endnote citation to WP format. ";
+              }
+              $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
             }
           }
         }
