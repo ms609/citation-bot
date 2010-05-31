@@ -39,7 +39,7 @@ function nextPage(){
   if ($o_gbook) {
     print "\n   > Google Book $o_gbook: ";
     $gbook_page = "Template:Cite google book/$o_gbook";
-    switch (citation_is_redirect("gbook", $o_gbook) {
+    switch (citation_is_redirect("gbook", $o_gbook)) {
       case -1: // Page does not exist
         $p = null;
         google_book_details($o_gbook);
@@ -66,10 +66,9 @@ function nextPage(){
   if ($o_isbn) {
     print "\n   > ISBN $o_isbn";
     $isbn_page = "Template:Cite isbn/$o_isbn";
-    switch(citation_is_redirect("isbn", $o_isbn) {
+    switch(citation_is_redirect("isbn", $o_isbn)) {
         case -1: // 404
           $p = null;
-
       }
   }
 
