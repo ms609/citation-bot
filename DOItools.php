@@ -611,7 +611,7 @@ function useUnusedData()
 
   // Empty the parameter.  We'll put back anything we don't manage to assign to a parameter.
 	unset($p["unused_data"]);
-  
+
   if (isset($freeDat[0]))
   {
 		foreach ($freeDat as $dat)
@@ -620,6 +620,41 @@ function useUnusedData()
       if ($dat)
       {
         $dat = trim($dat);
+
+        $endnote_test = explode("\n%", "\n" . $dat);
+        if ($endnote_test[1]) {
+          foreach ($endnote_test as $endnote_line) {
+            switch ($endnote_line[0]) {
+              case "T":
+                $endnote_parameter = "title";
+                break;
+              case "A":
+                $endnote_authors++;
+                $endnote_parameter = "author$endnote_authors";
+                break;
+              case "J":
+                $endnote_parameter = "journal";
+                break;
+              case "N":
+                $endnote_parameter = "issue";
+                break;
+              case "P":
+                $endnote_parameter = "pages";
+                break;
+              case "D":
+                $endnote_parameter = "date";
+                break;
+              case "0":
+                // Citation type
+                $dat = str_replace("\n%$endnote_line", "", $dat);
+              default:
+                $endnote_parameter = false;
+            }
+            if ($endnote_parameter && ifNullSet($endnote_parameter, substr($endnote_line, 1))) {
+              $dat = str_replace("\n%$endnote_line", "", $dat);
+            }
+          }
+        }
 
         // Load list of parameters used in citation templates.
         //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
