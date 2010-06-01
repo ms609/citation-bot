@@ -969,7 +969,7 @@ function findDoi($url){
 				preg_match ("~Content-Length: ([\d,]+)~", curl_exec($ch), $size);
 				curl_close($ch);
 			} else $size[1]=1; // Temporary measure; return to 1!
-			if ($size[1] > 0 &&  $size[1] < 1280000) {
+			if ($size[1] > 0 &&  $size[1] < 100000) {
 				echo "\nQuerying URL with reported file size of ", $size[1], "b...<br>\n";
 				//Initiate cURL resource
 				$ch = curl_init();
@@ -978,7 +978,7 @@ function findDoi($url){
 				if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {echo "404 returned from URL.<br>"; return false;}
 				if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {echo "501 returned from URL.<br>"; return false;}
 				curl_close($ch);
-				if (strlen($source)<1280000) {
+				if (strlen($source) < 10000) {
 					$doi = getDoiFromText($source, true);
 					if (!$doi) checkTextForMetas($source);
 				} else echo "\nFile size was too large. Abandoned.";
