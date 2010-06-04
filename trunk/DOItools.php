@@ -498,7 +498,7 @@ function pmFullTextUrl($pmid){
 
 function google_book_expansion() {
   global $p;
-  if (is("url") && preg_match("~books\.google\.com/.*\bid=([\w\d\-]+)~", $p["url"][0], $gid)) {
+  if (is("url") && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $p["url"][0], $gid)) {
     $url_parts = explode("&", str_replace("?", "&", $p["url"][0]));
     $url = "http://books.google.com/?id=" . $gid[1];
     foreach ($url_parts as $part) {
@@ -645,13 +645,13 @@ function useUnusedData()
                 $endnote_parameter = "pages";
                 break;
               case "D":
+              case "8":
                 $endnote_parameter = "date";
                 break;
               case "U":
                 $endnote_parameter = "url";
                 break;
-              case "0":
-                // Citation type
+              case "0":// Citation type
                 $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
               default:
                 $endnote_parameter = false;
@@ -953,14 +953,17 @@ function findDoi($url){
 
 		//Try meta tags first.
 		if ($meta = @get_meta_tags($url)){
-			if (isset($meta["citation_pmid"])) {global $p; $p["pmid"][0] = $meta["citation_pmid"];}
-			foreach ($meta as $oTag){
-				if (preg_match("~^\s*10\.\d{4}/\S*\s*~", $oTag)) {$doi = $oTag;	print "DOI IS: $doi<br>";break;}
+			ifNullSet("pmid", $meta["citation_pmid"]);
+      foreach ($meta as $oTag){
+				if (preg_match("~^\s*10\.\d{4}/\S*\s*~", $oTag)) {
+          $doi = $oTag;
+          break;
+        }
 			}
 		}
 
 		if (!$doi) {//If we've not scraped the DOI, we'll have to hope that it's mentioned somewhere in the text!
-			if (substr($url, strlen($url)-4) == ".pdf") {
+			if (substr($url, -4) == ".pdf") {
 				//Check file isn't going to overload our memory
 				$ch = curl_init();
 				curlSetup($ch, $url);
@@ -968,7 +971,7 @@ function findDoi($url){
 				curl_setopt($ch, CURLOPT_NOBODY, 1);
 				preg_match ("~Content-Length: ([\d,]+)~", curl_exec($ch), $size);
 				curl_close($ch);
-			} else $size[1]=1; // Temporary measure; return to 1!
+			} else $size[1] = 1; // Temporary measure; return to 1!
 			if ($size[1] > 0 &&  $size[1] < 100000) {
 				echo "\nQuerying URL with reported file size of ", $size[1], "b...<br>\n";
 				//Initiate cURL resource
@@ -978,9 +981,11 @@ function findDoi($url){
 				if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {echo "404 returned from URL.<br>"; return false;}
 				if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {echo "501 returned from URL.<br>"; return false;}
 				curl_close($ch);
-				if (strlen($source) < 10000) {
+				if (strlen($source) < 100000) {
 					$doi = getDoiFromText($source, true);
-					if (!$doi) checkTextForMetas($source);
+					if (!$doi) {
+            checkTextForMetas($source);
+          }
 				} else echo "\nFile size was too large. Abandoned.";
 			} else echo $htmlOutput?("\n\n **ERROR: PDF may have been too large to open.  File size: ". $size[1]. "b<br>"):"\nPDF too large ({$size[1]}b)";
 		} else print "DOI found from meta tags.<br>";
@@ -1008,11 +1013,11 @@ function findDoi($url){
 function scrapeDoi($url){
 	global $urlsTried, $p;
 	$title = $p["title"][0];
-	if (substr($url, strlen($url)-3) == "pdf") {
+	if (substr($url, -3) == "pdf") {
 		echo "<br>PDF detected.  <small>It is too resource intensive to check that the PDF refers to the correct article.</small><br>";
-	}elseif (substr($url, strlen($url)-3) == "doc") {
+	} else if (substr($url, strlen($url)-3) == "doc") {
 		echo "<br>DOC detected.  <small>DOCs cannot be scraped.</small><br>";
-	}else{
+	} else {
 		if (!@array_search($url, $urlsTried)
 			&& strpos($url, "www.answers.com") === FALSE
 			&& strpos($url, "destinationscience") === FALSE
@@ -1058,7 +1063,9 @@ function scrapeDoi($url){
 		$searchLimit++;
 		}
 	}
-	if (!$doi) $urlsTried[] = $url; //Log barren urls so we don't search them again.  We may want to search
+	if (!$doi) {
+    $urlsTried[] = $url; //Log barren urls so we don't search them again.  We may want to search
+  }
 }
 
 function getDoiFromText($source, $testDoi = false){
