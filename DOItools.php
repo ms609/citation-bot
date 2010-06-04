@@ -644,8 +644,9 @@ function useUnusedData()
               case "P":
                 $endnote_parameter = "pages";
                 break;
-              case "D":
               case "8":
+                $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
+              case "D":
                 $endnote_parameter = "date";
                 break;
               case "U":
