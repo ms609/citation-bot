@@ -653,6 +653,7 @@ function useUnusedData()
                 $endnote_parameter = "url";
                 break;
               case "0":// Citation type
+              case "X": // Abstract
                 $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
               default:
                 $endnote_parameter = false;

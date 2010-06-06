@@ -1032,7 +1032,11 @@ Done.  Just a couple of things to tweak now...";
               // Switching FROM cite xx TO citation; citation has no trailing period by default
               ifNullSet("postscript", "<!--None-->");
             }
-						if (!is('date') && !is('month') && (is('isbn') || is("oclc" || is("series")))) {
+            if (is('inventor-last') || is('inventor-surname') || is('inventor1-surname')
+                    || is('inventor1-last') || is ('inventor')) {
+              $citeTemplate = "Cite patent";
+            }
+						elseif (!is('date') && !is('month') && (is('isbn') || is("oclc" || is("series")))) {
              // Books usually catalogued by year; no month expected
               $citeTemplate = "Cite book";
             }
