@@ -31,14 +31,9 @@ if(!true && !myIP()) {
 }
 
 echo "\n Initializing ... ... ";
-#Yahoo Application ID
-$yAppId = "wLWQRfDV34GGTxHoNZjroF_m94yRvVD_eGRA9KKFhPZsE4rAXNGOih3eCrI9Eh3ewBa6Ccqg";
 
-//Google AppId
-#$gAppId = "ABQIAAAAsqKZCEjzSKO3mjAh0efRehT5mbzX3Oi5P88WWtRyN9u9YXZnqRT56kmFtGXDpeNI_FTpsOOoAuCoFA";
-# Above ID is for /~ms609; below is for /Wiki/Bot
-$gAppId = "ABQIAAAAsqKZCEjzSKO3mjAh0efRehQrFKyE8YGyge8HxpDYaz1oDCwgkBTqu-eqTpVxlupEyuIYijuXU6B-aw";
-$crossRefId=CROSSREFUSERNAME.":".CROSSREFPASSWORD;
+require_once("/home/verisimilus/public_html/crossref.login");
+$crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
 $isbnKey2 = "268OHQMW";
 $bot = new Snoopy();

@@ -8,10 +8,6 @@ define("timelimit", $fastMode?4:($slowMode?15:10));
 define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
 define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
 
-require_once("/home/verisimilus/public_html/crossref.login");
-$crossRefId = CROSSREFUSERNAME . ":" . CROSSREFPASSWORD;
-
-
 global $dontCap, $unCapped;
 // Remember to enclose any word in spaces.
 // $dontCap is a global array of strings that should not be capitalized in their titlecase format; $unCapped is their correct capitalization
@@ -625,15 +621,16 @@ function useUnusedData()
         if ($endnote_test[1]) {
           foreach ($endnote_test as $endnote_line) {
             switch ($endnote_line[0]) {
-              case "T":
-                $endnote_parameter = "title";
-                break;
               case "A":
                 $endnote_authors++;
                 $endnote_parameter = "author$endnote_authors";
                 break;
-              case "V":
-                $endnote_parameter = "volume";
+              case "D":
+                $endnote_parameter = "date";
+                break;
+              case "I":
+                $endnote_parameter = "publisher";
+                break;
                 break;
               case "J":
                 $endnote_parameter = "journal";
@@ -644,13 +641,16 @@ function useUnusedData()
               case "P":
                 $endnote_parameter = "pages";
                 break;
+              case "T":
+                $endnote_parameter = "title";
+                break;
               case "8":
                 $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
-              case "D":
-                $endnote_parameter = "date";
-                break;
               case "U":
                 $endnote_parameter = "url";
+                break;
+              case "V":
+                $endnote_parameter = "volume";
                 break;
               case "0":// Citation type
               case "X": // Abstract
