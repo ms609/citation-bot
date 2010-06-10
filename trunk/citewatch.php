@@ -32,9 +32,9 @@ function getCiteList($page){
 }
 
 function nextPage(){
-	global $toDo, $doi_todo, $pmid_todo, $pmc_todo, $gbook_todo, $isbn_todo,
+	global $toDo, $doi_todo, $pmid_todo, $pmc_todo, /*$gbook_todo, $isbn_todo,*/
          $dotDecode, $dotEncode, $cite_doi_start_code, $article_in_progress, $oDoi;
-
+/*
   $o_gbook = @$array_shift($gbook_todo);
   if ($o_gbook) {
     print "\n   > Google Book $o_gbook: ";
@@ -70,7 +70,7 @@ function nextPage(){
         case -1: // 404
           $p = null;
       }
-  }
+  }*/
 
   // Get the next PMC from our to-do list
   $oPmc = @array_shift($pmc_todo);

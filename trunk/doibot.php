@@ -132,6 +132,7 @@ if ($cite_doi_start_code) {
   $editing_cite_doi_template = true;
   $ON = true;
 }
+$slow_mode = $_REQUEST["slow"];
 
 ################## Here we go! ######################
 if (!$dont_expand) include("expand.php");
