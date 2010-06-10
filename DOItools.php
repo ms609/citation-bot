@@ -205,7 +205,8 @@ function nothingMissing($journal){
 }
 
 function getDataFromArxiv($a) {
-	if ($xml = simplexml_load_file( "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a")){
+  $xml = simplexml_load_file( "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a");
+	if ($xml) {
 		global $p;
 		foreach ($xml->entry->author as $auth) {
 			$i++;
@@ -484,7 +485,8 @@ function pmExpand($p, $id){
 }
 
 function pmFullTextUrl($pmid){
-	if ($xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&id=$pmid&cmd=llinks&tool=DOIbot&email=martins+pubmed@gmail.com")){
+  $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&id=$pmid&cmd=llinks&tool=DOIbot&email=martins+pubmed@gmail.com");
+	if ($xml) {
 		foreach ($xml->LinkSet->IdUrlList->IdUrlSet->ObjUrl as $url){
 			foreach ($url->Attribute as $attrib) $requiredFound = strpos($url->Attribute, "required")?true:$requiredFound;
 			if (!$requiredFound) return (string) $url->Url;
@@ -666,6 +668,71 @@ function useUnusedData()
               $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
             }
           }
+        }
+        if (preg_match("~^TY  - [A-Z]+~", $dat)) {
+          // RIS formatted data:
+          $ris = explode("\n", $dat);
+          foreach ($ris as $ris_line) {
+            $ris_part = explode(" - ", $ris_line . " ");
+            switch (trim($ris_part[0])) {
+              case "T1":
+                $ris_parameter = "title";
+                break;
+              case "AU":
+                $ris_authors++;
+                $ris_parameter = "author$ris_authors";
+                $ris_part[1] = formatAuthor($ris_part[1]);
+                break;
+              case "Y1":
+                $ris_parameter = "date";
+                break;
+              case "SP":
+                $start_page = trim($ris_part[1]);
+                $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+                break;
+              case "EP":
+                $end_page = trim($ris_part[1]);
+                $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+                ifNullSet("pages", $start_page . "-" . $end_page);
+                break;
+              case "DO":
+                $ris_parameter = "doi";
+                break;
+              case "JO":
+                $ris_parameter = "journal";
+                break;
+              case "VL":
+                $ris_parameter = "volume";
+                break;
+              case "IS":
+                $ris_parameter = "issue";
+                break;
+              case "SN":
+                $ris_parameter = "issn";
+                break;
+              case "UR":
+                $ris_parameter = "url";
+                break;
+              case "PB":
+                $ris_parameter = "publisher";
+                break;
+              case "M3": case "PY": case "N1": case "N2": case "ER": case "TY":
+                $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              default:
+                $ris_parameter = false;
+            }
+            unset($ris_part[0]);
+            if ($ris_parameter
+                    && ifNullSet($ris_parameter, trim(implode($ris_part)))
+                ) {
+              global $smartSum;
+              if (!strpos("Converted RIS citation to WP format", $smartSum)) {
+                $smartSum .= "Converted RIS citation to WP format. ";
+              }
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+            }
+          }
+
         }
 
         // Load list of parameters used in citation templates.
@@ -945,7 +1012,7 @@ function deWikify($string){
 }
 
 function findDoi($url){
-	global $urlsTried;
+	global $urlsTried, $slow_mode;
 
 	if (!@array_search($url, $urlsTried)){
 
@@ -954,7 +1021,8 @@ function findDoi($url){
 		if (preg_match("|/(10\.\d{4}/[^?]*)|i", urldecode($url), $doi)) {echo "Found DOI in URL.<br>"; $urlsTried[] = $url;  return $doi[1];}
 
 		//Try meta tags first.
-		if ($meta = @get_meta_tags($url)){
+    $meta = @get_meta_tags($url);
+		if ($meta) {
 			ifNullSet("pmid", $meta["citation_pmid"]);
       foreach ($meta as $oTag){
 				if (preg_match("~^\s*10\.\d{4}/\S*\s*~", $oTag)) {
@@ -974,7 +1042,7 @@ function findDoi($url){
 				preg_match ("~Content-Length: ([\d,]+)~", curl_exec($ch), $size);
 				curl_close($ch);
 			} else $size[1] = 1; // Temporary measure; return to 1!
-			if ($size[1] > 0 &&  $size[1] < 100000) {
+			if ($slow_mode && $size[1] > 0 &&  $size[1] < 100000) { // TODO. The bot seems to keep crashing here; let's evaluate whether it's worth doing.  For now, restrict to slow mode.
 				echo "\nQuerying URL with reported file size of ", $size[1], "b...<br>\n";
 				//Initiate cURL resource
 				$ch = curl_init();
