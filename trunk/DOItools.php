@@ -525,11 +525,11 @@ function google_book_details ($gid) {
   $simplified_xml = str_replace(":", "___", file_get_contents($google_book_url));
   $xml = simplexml_load_string($simplified_xml);
   if ($xml->dc___title[1]) {
-    ifNullSet("title", $xml->dc___title[0] . ": " . $xml->dc___title[1]);
+    ifNullSet("title", str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]));
   } else {
-    ifNullSet("title", $xml->title);
+    ifNullSet("title", str_replace("___", ":", $xml->title));
   }
-  ifNullSet("publisher", $xml->dc___publisher);
+  ifNullSet("publisher", str_replace("___", ":", $xml->dc___publisher));
   foreach ($xml->dc___identifier as $ident) {
     if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
       $isbn = $match[1];
@@ -539,10 +539,10 @@ function google_book_details ($gid) {
   // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
   $i = null;
   if (!is("editor") && !is("editor1") && !is("editor1-last") && !is("editor-last")
-          && !is("author") && !is("author1") && !is("last")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
+          && !is("author") && !is("author1") && !is("last") && !is("last1")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
     foreach ($xml->dc___creator as $author) {
       $i++;
-      ifNullSet("author$i", formatAuthor($author));
+      ifNullSet("author$i", formatAuthor(str_replace("___", ":", $author)));
     }
   }
   ifNullSet("date", $xml->dc___date);
