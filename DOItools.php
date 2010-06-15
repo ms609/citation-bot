@@ -243,7 +243,7 @@ function get_data_from_jstor($jid) {
     global $p;
     if (trim(substr($p["doi"][0], 0, 7)) == "10.2307") {
       if (!ifNullSet("url", "http://jstor.org/stable/" . substr($jid, 8)) && !strpos("jstor", $p["url"][0])) {
-        ifNullSet("jstor", $jid); // TODO -- untested.
+        ifNullSet("jstor", substr($jid, 8)); // TODO -- untested.
       }
     }
     if (preg_match("~(pp\. )?(\w*\d+.*)~", $data->dc___coverage, $match)) {
