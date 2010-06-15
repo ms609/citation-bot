@@ -237,39 +237,39 @@ function getDataFromArxiv($a) {
 function get_data_from_jstor($jid) {
   $jstor_url = "http://dfr.jstor.org/sru/?operation=searchRetrieve&query=dc.identifier%3D%22$jid%22&version=1.1";
   $data = @file_get_contents ($jstor_url);
-  $xml = simplexml_load_string(str_replace(":", "_", $data));
-  if ($xml->srw_numberOfRecords == 1) {
-    $data = $xml->srw_records->srw_record->srw_recordData;
+  $xml = simplexml_load_string(str_replace(":", "___", $data));
+  if ($xml->srw___numberOfRecords == 1) {
+    $data = $xml->srw___records->srw___record->srw___recordData;
     global $p;
     if (trim(substr($p["doi"][0], 0, 7)) == "10.2307") {
       if (!ifNullSet("url", "http://jstor.org/stable/" . substr($jid, 8)) && !strpos("jstor", $p["url"][0])) {
         ifNullSet("jstor", $jid); // TODO -- untested.
       }
     }
-    if (preg_match("~(pp\. )?(\w*\d+.*)~", $data->dc_coverage, $match)) {
-      ifNullSet("pages", $match[2]);
+    if (preg_match("~(pp\. )?(\w*\d+.*)~", $data->dc___coverage, $match)) {
+      ifNullSet("pages", str_replace("___", ":", $match[2]));
     }
-    foreach ($data->dc_creator as $author) {
+    foreach ($data->dc___creator as $author) {
       $i++;
-      ifNullSet("author$i", formatAuthor($author));
+      ifNullSet("author$i", formatAuthor(str_replace("___", ":", $author)));
     }
-    ifNullSet("title", (string) $data->dc_title) ;
-    if (preg_match("~(.*),\s+Vol\.\s+([^,]+)(, No\. (\S+))?~", $data->dc_relation, $match)) {
+    ifNullSet("title", (string) str_replace("___", ":", $data->dc___title)) ;
+    if (preg_match("~(.*),\s+Vol\.\s+([^,]+)(, No\. (\S+))?~", str_replace("___", ":", $data->dc___relation), $match)) {
       ifNullSet("journal", $match[1]);
       ifNullSet("volume", $match[2]);
       ifNullSet("issue", $match[4]);
     } else {
-      echo "unhandled data: $data->dc_relation";
+      echo "unhandled data: $data->dc___relation";
     }
-    if (preg_match("~[^/;]*~", $data->dc_publisher, $match)) {
+    if (preg_match("~[^/;]*~", $data->dc___publisher, str_replace("___", ":", $match))) {
       ifNullSet("publisher", $match[0]);
     }
-    if (preg_match ("~\d{4}~", $data->dc_date[0], $match)) {
-      ifNullSet("year", $match[0]);
+    if (preg_match ("~\d{4}~", $data->dc___date[0], $match)) {
+      ifNullSet("year", str_replace("___", ":", $match[0]));
     }
     return true;
   } else {
-    echo $xml->srw_numberOfRecords . " records obtained. ";
+    echo $xml->srw___numberOfRecords . " records obtained. ";
     return false;
   }
 }
@@ -656,6 +656,8 @@ function useUnusedData()
                 break;
               case "0":// Citation type
               case "X": // Abstract
+              case "@": // ISSN
+              case "M": // Object identifier
                 $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
               default:
                 $endnote_parameter = false;
