@@ -9,14 +9,18 @@ include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
+define ("START_HOUR", date("H"));
+
 
 function nextPage(){
   global $ON, $STOP;
 	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
+  if (date("H") != START_HOUR) die ("\n ** EXIT: It's " . date("H") . " o'clock!\n");
 	$db = udbconnect();
 	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
 	$result = mysql_query("SELECT page FROM citation ORDER BY fast ASC") or die (mysql_error());
 	$result = mysql_fetch_row($result);
+  mysql_close($db);
 	return $result[0];
 }
 
