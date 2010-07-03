@@ -422,9 +422,10 @@ echo "
             print "\n * Expanded from Google Books API.";
           }
           
-          if (is("url") && !is("journal") && !is("periodical") && !is("magazine") && !is("newspaper")) {
+          /*if (is("url") && !is("journal") && !is("periodical") && !is("magazine") && !is("newspaper")) {
+			SpencerK's API; disabled until he fixes it
             ifNullSet("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
-          }
+          }*/
 
           /*  ISBN lookup removed - too buggy.  TODO (also commented out above)
 					if (is("isbn")) getInfoFromISBN();
