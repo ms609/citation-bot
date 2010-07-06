@@ -261,9 +261,10 @@ function get_data_from_jstor($jid) {
     } else {
       echo "unhandled data: $data->dc___relation";
     }
+    /* -- JSTOR's publisher field is often dodgily formatted.
     if (preg_match("~[^/;]*~", $data->dc___publisher, str_replace("___", ":", $match))) {
       ifNullSet("publisher", $match[0]);
-    }
+    }*/
     if (preg_match ("~\d{4}~", $data->dc___date[0], $match)) {
       ifNullSet("year", str_replace("___", ":", $match[0]));
     }
@@ -529,7 +530,9 @@ function google_book_details ($gid) {
   } else {
     ifNullSet("title", str_replace("___", ":", $xml->title));
   }
+  /*  Possibly contains dud information on occasion
   ifNullSet("publisher", str_replace("___", ":", $xml->dc___publisher));
+    */
   foreach ($xml->dc___identifier as $ident) {
     if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
       $isbn = $match[1];

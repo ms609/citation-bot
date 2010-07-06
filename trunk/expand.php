@@ -423,7 +423,7 @@ echo "
           }
           
           /*if (is("url") && !is("journal") && !is("periodical") && !is("magazine") && !is("newspaper")) {
-			SpencerK's API; disabled until he fixes it
+			SpencerK's API; disabled until I check whether it is ever a source of errors
             ifNullSet("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
           }*/
 
