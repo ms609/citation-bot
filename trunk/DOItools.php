@@ -877,6 +877,21 @@ function correct_parameter_spelling($p)
 
   // Common mistakes that aren't picked up by the levenshtein approach
   $common_mistakes = array (
+                            "author2-last"  =>  "last2",
+                            "author3-last"  =>  "last3",
+                            "author4-last"  =>  "last4",
+                            "author5-last"  =>  "last5",
+                            "author6-last"  =>  "last6",
+                            "author7-last"  =>  "last7",
+                            "author8-last"  =>  "last8",
+                            "author2-first" =>  "first2",
+                            "author3-first" =>  "first3",
+                            "author4-first" =>  "first4",
+                            "author5-first" =>  "first5",
+                            "author6-first" =>  "first6",
+                            "author7-first" =>  "first7",
+                            "author8-first" =>  "first8",
+                            "authorurl"     =>  "authorlink",
                             "authorn"       =>  "author2",
                             "ed"            =>  "editor",
                             "ed2"           =>  "editor2",
