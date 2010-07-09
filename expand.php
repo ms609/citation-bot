@@ -1238,7 +1238,10 @@ Done.  Just a couple of things to tweak now...";
 			if (strtolower($pagecode) != strtolower($startcode)) {
 				if ($additions) {
 					$smartSum = "+: ";
-					foreach ($additions as $param=>$v)	{$smartSum .= "$param, "; unset($changes[$param]);}
+					foreach ($additions as $param=>$v)	{
+            $smartSum .= "$param, ";
+            unset($changes[$param]);
+          }
 					$smartSum = substr($smartSum, 0, strlen($smartSum)-2);
 					$smartSum .= ". ";
 				}
@@ -1259,7 +1262,7 @@ Done.  Just a couple of things to tweak now...";
           if ($changedDashes) {
             $smartSum .= "Formatted [[WP:ENDASH|dashes]]. ";
           } else {
-            $smartSum = "Removed redundant parameters. ";
+            $smartSum = "Misc citation tidying. ";
           }
         }
 				echo $smartSum;
