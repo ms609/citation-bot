@@ -542,7 +542,9 @@ function google_book_details ($gid) {
   // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
   $i = null;
   if (!is("editor") && !is("editor1") && !is("editor1-last") && !is("editor-last")
-          && !is("author") && !is("author1") && !is("last") && !is("last1")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
+          && !is("author") && !is("author1") && !is("last") && !is("last1")
+          && !is("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
+
     foreach ($xml->dc___creator as $author) {
       $i++;
       ifNullSet("author$i", formatAuthor(str_replace("___", ":", $author)));
