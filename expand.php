@@ -24,7 +24,7 @@ function loadParam($param, $value, $equals, $pipe, $weight) {
       $param = "DUPLICATE DATA: $param";
     }
   }
-  $p[$param] = Array($value, $equals, $pipe, "weight" => $weight);
+  $p[$param] = Array($value, $equals, $pipe, "weight" => ($weight + 3) / 4 * 10); // weight will be 10, 20, 30, 40 ...
 }
 
 while ($page) {
