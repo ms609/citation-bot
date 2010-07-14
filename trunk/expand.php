@@ -971,7 +971,7 @@ Done.  Just a couple of things to tweak now...";
         }
 
         // Unset authors above 'author9' - the template won't render them.
-        for ($au_i = 10; is("authors$au_i") || is("last$au_i"); $au_i++){
+        for ($au_i = 10; is("author$au_i") || is("last$au_i"); $au_i++){
           unset($p["author$au_i"]);
           unset($p["first$au_i"]);
           unset($p["last$au_i"]);

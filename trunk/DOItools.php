@@ -102,9 +102,9 @@ function jrTest($name) {
   }
   return array($name, $junior);
 }
-function ifNullSet($param, $value){
+function ifNullSet($param, $value) {
 	global $p;
-  if (substr($param, strlen($param)-3, 1) > 0 || substr($param, strlen($param)-2) > 10) {
+  if (substr($param, strlen($param)-3, 1) > 0 || substr($param, strlen($param)-2) > 9) {
       // The parameter is of 'fisrt101' or 'last10' format and adds nothing but clutter
       return false;
   }
@@ -116,11 +116,17 @@ function ifNullSet($param, $value){
         return true;
       }
 			break;
-		case "author": case "last1": case "last":
+		case "author": case "last1": case "last": case "authors": // "authors" is automatically corrected by the bot to "author"; include to avoid a false positive.
 			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["last1"][0]) == "" && trim($p["last"][0]) == "" && trim($p["author"][0]) == "" && trim($p["author1"][0]) == "" &&
-			    trim($p["editor"][0]) == "" && trim($p["editor-last"][0]) == "" && trim($p["editor-first"][0]) == ""
-					&& trim($value) != "") {
+			if (trim($p["last1"][0]) == ""
+          && trim($p["last"][0]) == ""
+          && trim($p["author"][0]) == ""
+          && trim($p["author1"][0]) == ""
+          && trim($p["editor"][0]) == ""
+          && trim($p["editor-last"][0]) == ""
+          && trim($p["editor-first"][0]) == ""
+					&& trim($value) != ""
+         ) {
         set ($param, $value);
         return true;
       }
@@ -980,8 +986,7 @@ function correct_parameter_spelling($p)
       $mod[$mistake] = $corrected;
     }
   }
-  foreach ($mod as $wrong => $right)
-  {
+  foreach ($mod as $wrong => $right) {
     if (ifNullSet($right, $p[$wrong][0])) {
       $p[$right] = $p[$wrong];
       unset ($p[$wrong]);
