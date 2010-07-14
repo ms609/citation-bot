@@ -8,6 +8,67 @@ define("timelimit", $fastMode?4:($slowMode?15:10));
 define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
 define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
 
+function list_parameters () { // Lists the parameters in order.
+    return Array(
+     "null",
+     "author", "author1", "last", "last1", "first", "first1", "authorlink", "authorlink1", "author1-link",
+     "coauthors", "author2", "last2", "first2", "authorlink2", "author2-link",
+     "author3", "last3", "first3", "authorlink3", "author3-link",
+     "author4", "last4", "first4", "authorlink4", "author4-link",
+     "author5", "last5", "first5", "authorlink5", "author5-link",
+     "author6", "last6", "first6", "authorlink6", "author6-link",
+     "author7", "last7", "first7", "authorlink7", "author7-link",
+     "author8", "last8", "first8", "authorlink8", "author8-link",
+     "author9", "last9", "first9", "authorlink9", "author9-link",
+     "editor", "editor1",
+     "editor-last", "editor1-last",
+     "editor-first", "editor1-first",
+     "editor-link", "editor1-link",
+     "editor2", "editor2-author", "editor2-first", "editor2-link", 
+     "editor3", "editor3-author", "editor3-first", "editor3-link", 
+     "editor4", "editor4-author", "editor4-first", "editor4-link", 
+     "others",
+     "chapter", "trans_chapter",  "chapterurl",
+     "title", "trans_title", "language",
+     "url",
+     "archiveurl",
+     "archivedate",
+     "format",
+     "accessdate",
+     "edition",
+     "series",
+     "journal",
+     "volume",
+     "issue",
+     "page",
+     "pages",
+     "nopp",
+     "publisher",
+     "location",
+     "date",
+     "origyear",
+     "year",
+     "month",
+     "location",
+     "language",
+     "isbn",
+     "issn",
+     "oclc",
+     "pmid", "pmc",
+     "doi",
+     "doi_brokendate",
+     "bibcode",
+     "id",
+     "quote",
+     "ref",
+     "laysummary",
+     "laydate",
+     "separator",
+     "postscript",
+     "authorauthoramp",
+   );
+}
+
 global $dontCap, $unCapped;
 // Remember to enclose any word in spaces.
 // $dontCap is a global array of strings that should not be capitalized in their titlecase format; $unCapped is their correct capitalization
@@ -48,9 +109,37 @@ function is($key){
 }
 function set($key, $value){
 	global $p;
+  $parameter_order = list_parameters();
   if (trim($value) != "") {
     $p[$key][0] = (string) $value;
     echo "\n    + $key: $value";
+    if (!$p[$key]["weight"]) {
+      // Calculate the appropriate weight:
+      #print "-$key-" . array_search($key, $parameter_order) . array_search("year", $parameter_order);
+      $key_position = array_search($key, $parameter_order);
+      if (!$key_position) {
+        $p[$key]["weight"] = 16384;
+      } else {
+        $lightest_weight = 16384; // 2^14, arbritarily large
+        for ($i = count($parameter_order); $i >= $key_position && $i > 0; $i--) {
+          if ($p[$parameter_order[$i]]["weight"] > 0) {
+            $lightest_weight = $p[$parameter_order[$i]]["weight"];
+            $lightest_param = $parameter_order[$i];
+          }
+        }
+  
+        for ($i = $key_position; $i >= 0; $i--) {
+          if ($p[$parameter_order[$i]]["weight"] > 0) {
+            $heaviest_weight = $p[$parameter_order[$i]]["weight"];
+            $heaviest_param = $parameter_order[$i];
+            break;
+          }
+        }
+        $p[$key]["weight"] = ($lightest_weight + $heaviest_weight) / 2;
+        #echo " ($lightest_param, $lightest_weight + $heaviest_param, $heaviest_weight / 2 = {$p[$key]["weight"]})";
+        echo " ({$p[$key]["weight"]})";
+      }
+    }
   }
 }
 
@@ -1700,7 +1789,7 @@ print "assessing URL ";
 	return null;
 }
 
-function testDoi($doi){
+function testDoi($doi) {
 	global $p;
 	echo "<div style='font-size:small; color:#888'>[";
 	if ($p["url"][0]){
@@ -1719,68 +1808,8 @@ function testDoi($doi){
 	return false;
 }
 
-function parameterOrder($first, $author){
-  $order = Array(
-     "null",
-     "author", "author1",
-     "author", "author1",
-     "first", "first1",
-     "authorlink", "authorlink1", "author1-link",
-     "coauthors", "author2", "author2", "first2", "authorlink2", "author2-link",
-     "author3", "author3", "first3", "authorlink3", "author3-link",
-     "author4", "author4", "first4", "authorlink4", "author4-link",
-     "author5", "author5", "first5", "authorlink5", "author5-link",
-     "author6", "author6", "first6", "authorlink6", "author6-link",
-     "author7", "author7", "first7", "authorlink7", "author7-link",
-     "author8", "author8", "first8", "authorlink8", "author8-link",
-     "author9", "author9", "first9", "authorlink9", "author9-link",
-     "editor", "editor1",
-     "editor-last", "editor1-last",
-     "editor-first", "editor1-first",
-     "editor-link", "editor1-link", "editor1-link",
-     "editor2", "editor2-author", "editor2-first", "editor2-link", "editor2-link",
-     "editor3", "editor3-author", "editor3-first", "editor3-link", "editor3-link",
-     "editor4", "editor4-author", "editor4-first", "editor4-link", "editor4-link",
-     "others",
-     "chapter", "trans_chapter",  "chapterurl",
-     "title", "trans_title", "language",
-     "url",
-     "archiveurl",
-     "archivedate",
-     "format",
-     "accessdate",
-     "edition",
-     "series",
-     "journal",
-     "volume",
-     "issue",
-     "page",
-     "pages",
-     "nopp",
-     "publisher",
-     "location",
-     "date",
-     "origyear",
-     "year",
-     "month",
-     "location",
-     "language",
-     "isbn",
-     "issn",
-     "oclc",
-     "pmid", "pmc",
-     "doi",
-     "doi_brokendate",
-     "bibcode",
-     "id",
-     "quote",
-     "ref",
-     "laysummary",
-     "laydate",
-     "separator",
-     "postscript",
-     "authorauthoramp",
-   );
+function parameterOrder($first, $author) {
+  $order = list_parameters();
   $first_pos = array_search($first, $order);
   $author_pos = array_search($author, $order);
   if ($first_pos && $author_pos) {
