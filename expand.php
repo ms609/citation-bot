@@ -12,7 +12,7 @@ if ($file_revision_id < $doitools_revision_id) {
 }
 print "\nRevision #$last_revision_id";
 
-function loadParam($param, $value, $equals, $pipe) {
+function loadParam($param, $value, $equals, $pipe, $weight) {
   global $p;
   $param = strtolower($param);
   if (is($param)) {
@@ -24,7 +24,7 @@ function loadParam($param, $value, $equals, $pipe) {
       $param = "DUPLICATE DATA: $param";
     }
   }
-  $p[$param] = Array($value, $equals, $pipe);
+  $p[$param] = Array($value, $equals, $pipe, "weight" => $weight);
 }
 
 while ($page) {
@@ -372,7 +372,7 @@ while ($page) {
             $parameter_value = substr($parameter_value, 0, $pipePos);
 					}
 					// Load each line into $p[param][0123]
-          loadParam($parts[$partsI+1], $parameter_value, $parts[$partsI], $parts[$partsI+2]);
+          loadParam($parts[$partsI+1], $parameter_value, $parts[$partsI], $parts[$partsI+2], $partsI);
 				}
 
 				if ($p["doix"]) {
@@ -380,7 +380,7 @@ while ($page) {
 					unset($p["doix"]);
 				}
 				//Make a note of how things started so we can give an intelligent edit summary
-				foreach($p as $param=>$value)	if (is($param)) {
+				foreach ($p as $param=>$value)	if (is($param)) {
           $pStart[$param] = $value[0];
         }
 
@@ -1067,21 +1067,39 @@ Done.  Just a couple of things to tweak now...";
 					}
 				}
 
+        // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
 				foreach ($p as $oP){
-					$pipe=$oP[1]?$oP[1]:null;
-					$equals=$oP[2]?$oP[2]:null;
+					$pipe = $oP[1]?$oP[1]:null;
+					$equals = $oP[2]?$oP[2]:null;
 					if ($pipe) break;
 				}
 				if (!$pipe) $pipe = "\n | ";
 				if (!$equals) $equals = " = ";
+
+
+        // Sort parameters and copy into $pEnd
+        function bubble_p ($a, $b) {
+          return strnatcmp ($a["weight"], $b["weight"]);
+        }
+
+        uasort($p, "bubble_p");
+        
 				foreach($p as $param => $v) {
-					if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
-					if (is($param)) $pEnd[$param] = $v[0];
+					if ($param) {
+            $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
+          }
+					if (is($param)) {
+            $pEnd[$param] = $v[0];
+          }
 				}
 				if ($pEnd) {
 					foreach ($pEnd as $param => $value) {
-						if (!$pStart[$param]) $additions[$param] = true;
-						elseif ($pStart[$param] != $value) $changes[$param] = true;
+						if (!$pStart[$param]) {
+              $additions[$param] = true;
+            }
+						elseif ($pStart[$param] != $value) {
+              $changes[$param] = true;
+            }
 					}
 				}
 
