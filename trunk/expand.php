@@ -354,7 +354,7 @@ while ($page) {
 #             Split citation into parameters                     #
 ##############################
 
-				$parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_ ]*\b)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
+				$parts = preg_split("~(\s*\|\s*)([\w\d-_ ]*\b)(\s*=\s*)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
 				$partsLimit = count($parts);
 				if (strpos($parts[0], "|") > 0 &&
             strpos($parts[0],"[[") === FALSE &&
@@ -1078,10 +1078,7 @@ Done.  Just a couple of things to tweak now...";
 
 
         // Sort parameters and copy into $pEnd
-        function bubble_p ($a, $b) {
-          return strnatcmp ($a["weight"], $b["weight"]);
-        }
-
+        echo "\n (sorting parameters)";
         uasort($p, "bubble_p");
         
 				foreach($p as $param => $v) {
