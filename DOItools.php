@@ -103,11 +103,16 @@ function revisionID() {
     return svn_fs_youngest_rev($repos_handle);
 }
 
+function bubble_p ($a, $b) {
+  return ($a["weight"] > $b["weight"]) ? 1 : -1;
+}
+
 function is($key){
 	global $p;
   return ("" != trim($p[$key][0]))?true:false;
 }
-function set($key, $value){
+
+function set($key, $value) {
 	global $p;
   $parameter_order = list_parameters();
   if (trim($value) != "") {
@@ -118,9 +123,9 @@ function set($key, $value){
       #print "-$key-" . array_search($key, $parameter_order) . array_search("year", $parameter_order);
       $key_position = array_search($key, $parameter_order);
       if (!$key_position) {
-        $p[$key]["weight"] = 16384;
+        $p[$key]["weight"] = 16383;
       } else {
-        $lightest_weight = 16384; // 2^14, arbritarily large
+        $lightest_weight = 16383; // (2^14)-1, arbritarily large
         for ($i = count($parameter_order); $i >= $key_position && $i > 0; $i--) {
           if ($p[$parameter_order[$i]]["weight"] > 0) {
             $lightest_weight = $p[$parameter_order[$i]]["weight"];
