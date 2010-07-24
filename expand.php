@@ -922,7 +922,10 @@ Done.  Just a couple of things to tweak now...";
 
 
           // Check that the URL functions, and mark as dead if not.
-          if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
+          /*  Disable; to re-enable, we should log possible 404s and check back later.
+           * Also, dead-link notifications should be placed ''after'', not within, the template.
+
+           if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
           {
             print "\n - Checking that URL is live...";
             $formatSet = isset($p["format"]);
@@ -931,7 +934,7 @@ Done.  Just a couple of things to tweak now...";
               unset($p["format"]);
             }
             echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
-          }
+          }*/
 				}
 
 				// Now wikify some common formatting errors - i.e. tidy up!
