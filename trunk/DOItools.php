@@ -970,8 +970,7 @@ function useUnusedData()
 
 // Pass $p and this function will check each parameter name against the list of accepted names (loaded in expand.php).
 // It will correct any that appear to be mistyped.
-function correct_parameter_spelling($p)
-{
+function correct_parameter_spelling($p) {
   global $parameter_list;
   foreach ($p as $key => $value) {
     $parameters_used[] = $key;
@@ -1088,6 +1087,44 @@ function correct_parameter_spelling($p)
     }
   }
   return $p;
+}
+
+// Check that a DOI is correctly formatted and modify it if not
+function verify_doi ($doi) {
+    // DOI not correctly formatted
+    switch (substr($doi, -1)) {
+      case ".":
+        // Missing a terminal 'x'?
+        $trial[] = $doi . "x";
+      case ",": case ";":
+        // Or is this extra punctuation copied in?
+        $trial[] = substr($doi, 0, -1);
+    }
+    if (substr($doi, 0, 3) != "10.") {
+      // missing the start
+      $trial[] = $doi;
+    }
+    if (preg_match("~^(.+)10.\d{4}/~", trim($doi), $match)) {
+      $trial[] = $match[1];
+    }
+
+    $replacements = array (
+      "&lt;" => "<",
+      "&gt;" => ">",
+    );
+    if (preg_match("~&(l|g)t;~", $doi)) {
+      $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
+    }
+    foreach ($trial as $try) {
+      // Check that it begins with 10.
+      if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) {
+        $try = "10." . $match[1];
+      }
+      if (crossRefData($try)) {
+        set("doi", $try);
+        return ($doi);
+      }
+    }
 }
 
 function file_size($url, $redirects=0){
