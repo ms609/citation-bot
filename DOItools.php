@@ -608,13 +608,14 @@ function google_book_expansion() {
         // TODO: vq takes precedence over dq > q.  Only use one of the above.
         case "as": case "useragent": case "as_brr": case "source":  case "hl":
         case "ei": case "ots": case "sig": case "source": case "lr":
-        case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe
-          break;
+        case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
         default:
-          // TODO: log other parameters so that I can test their effect.
+          $removed_redundant = true;
       }
     }
-    $p["url"][0] = $url;
+    if ($removed_redundant) {
+      $p["url"][0] = $url;
+    }
     google_book_details($gid[1]);
     return true;
   }
@@ -1777,7 +1778,7 @@ function equivUrl ($u){
 }
 
 function assessUrl($url){
-print "assessing URL ";
+  print "assessing URL ";
 	#if (strpos($url, "abstract") >0 || (strpos($url, "/abs") >0 && strpos($url, "adsabs.") === false)) return "abstract page";
 	$ch = curl_init();
 	curlSetUp($ch, str_replace("&amp;", "&", $url));
