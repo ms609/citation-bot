@@ -222,39 +222,52 @@ function noteDoi($doi, $src){
         echo "<h3 style='color:coral;'>Found <a href='http://dx.doi.org/$doi'>DOI</a> $doi from $src.</h3>";
 }
 
-function isDoiBroken ($doi, $p = false){
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_NOBODY, 1);
-        curl_setopt($ch, CURLOPT_URL, "http://dx.doi.org/$doi");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);  //This means we can't get stuck.
-        curl_setopt($ch, CURLOPT_TIMEOUT, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        preg_match("~\d{3}~", $result, $code);
-        switch ($code[0]){
-                case false:
-                        $parsed = parse_url("http://dx.doi.org/$doi");
-                        $host = $parsed["host"];
-                        $fp = @fsockopen($host, 80, $errno, $errstr, 20);
-                        if ($fp) return false; // Page exists, but had timed out when we first tried.
-                        logBrokenDoi($doi, $p, 404);
-                        return 404; // DOI is correct but points to a dead page
-                case 200:
-                        if ($p["url"][0]) {
-                                $ch = curl_init();
-                                curlSetup($ch, $p["url"][0]);
-                                $content = curl_exec($ch);
-                                if (!preg_match("~\Wwiki(\W|pedia)~", $content) && preg_match("~" . preg_quote(urlencode($doi)) . "~", urlencode($content))) {
-                                        logBrokenDoi($doi, $p, 200);
-                                        return 200; // DOI is present in page, so probably correct
-                                } else return 999; // DOI could not be found in URL - or URL is a wiki mirror
-                        }       else return 100; // No URL to check for DOI
-        }
-        return false;
+
+function isDoiBroken ($doi, $p = false, $slow_mode = false) {
+
+  $doi = verify_doi($doi);
+  
+  if (crossRefData($doi)) {
+    if ($slow_mode) {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_HEADER, 1);
+      curl_setopt($ch, CURLOPT_NOBODY, 1);
+      curl_setopt($ch, CURLOPT_URL, "http://dx.doi.org/$doi");
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
+      curl_setopt($ch, CURLOPT_MAXREDIRS, 5);  //This means we can't get stuck.
+      curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+      $result = curl_exec($ch);
+      curl_close($ch);
+      preg_match("~\d{3}~", $result, $code);
+      switch ($code[0]){
+        case false:
+                $parsed = parse_url("http://dx.doi.org/$doi");
+                $host = $parsed["host"];
+                $fp = @fsockopen($host, 80, $errno, $errstr, 20);
+                if ($fp) {
+                  return false; // Page exists, but had timed out when we first tried.
+                } else {
+                  logBrokenDoi($doi, $p, 404);
+                  return 404; // DOI is correct but points to a dead page
+                }
+        case 200:
+                if ($p["url"][0]) {
+                        $ch = curl_init();
+                        curlSetup($ch, $p["url"][0]);
+                        $content = curl_exec($ch);
+                        if (!preg_match("~\Wwiki(\W|pedia)~", $content) && preg_match("~" . preg_quote(urlencode($doi)) . "~", urlencode($content))) {
+                                logBrokenDoi($doi, $p, 200);
+                                return 200; // DOI is present in page, so probably correct
+                        } else return 999; // DOI could not be found in URL - or URL is a wiki mirror
+                }       else return 100; // No URL to check for DOI
+      }
+    } else {
+      return false;
+    }
+  } 
+  return true;
 }
 
 function logBrokenDoi($doi, $p, $error){

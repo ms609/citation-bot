@@ -482,6 +482,8 @@ echo "
             }
 					}
 					$doiToStartWith = isset($p["doi"]);
+          // Check that the DOI works; if not, fix it.
+          verify_doi($p["doi"][0]);
 
           // co-authors
           if (is('co-author') && !is('coauthors') && !is('coauthor')) {
@@ -983,7 +985,7 @@ Done.  Just a couple of things to tweak now...";
 				// Check that the DOI functions.
 				if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slowMode) {
 					echo "\nChecking that DOI {$p["doi"][0]} is operational...";
-					$brokenDoi = isDoiBroken($p["doi"][0], $p);
+					$brokenDoi = isDoiBroken($p["doi"][0], $p, $slowMode);
 					if ($brokenDoi && !is("doi_brokendate")) {
 						set("doi_brokendate", date("Y-m-d"));
 					}
