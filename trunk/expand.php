@@ -988,6 +988,8 @@ Done.  Just a couple of things to tweak now...";
 					$brokenDoi = isDoiBroken($p["doi"][0], $p, $slowMode);
 					if ($brokenDoi && !is("doi_brokendate")) {
 						set("doi_brokendate", date("Y-m-d"));
+            print "\n\n $doi \n\n";
+            sleep(5);
 					}
 					ELSE if (!$brokenDoi) unset($p["doi_brokendate"]);
 					echo $brokenDoi?" It isn't.":"OK!", "</p>";
