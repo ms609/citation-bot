@@ -1125,9 +1125,10 @@ function verify_doi ($doi) {
       }
       if (crossRefData($try)) {
         set("doi", $try);
-        return ($doi);
+        return ($try);
       }
     }
+    return ($doi);
 }
 
 function file_size($url, $redirects=0){
