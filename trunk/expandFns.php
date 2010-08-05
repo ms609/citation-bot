@@ -226,9 +226,11 @@ function noteDoi($doi, $src){
 function isDoiBroken ($doi, $p = false, $slow_mode = false) {
 
   $doi = verify_doi($doi);
+  print "\n\n\n\n -- $doi -- \n\n";
   
   if (crossRefData($doi)) {
-    if (false && $slow_mode) { // TODO!
+    if ($slow_mode) {
+      echo "\"";
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HEADER, 1);
       curl_setopt($ch, CURLOPT_NOBODY, 1);
@@ -252,6 +254,9 @@ function isDoiBroken ($doi, $p = false, $slow_mode = false) {
                   logBrokenDoi($doi, $p, 404);
                   return 404; // DOI is correct but points to a dead page
                 }
+        case 302: // Moved temporarily
+        case 303: // See other
+          return false;
         case 200:
                 if ($p["url"][0]) {
                         $ch = curl_init();
@@ -266,7 +271,7 @@ function isDoiBroken ($doi, $p = false, $slow_mode = false) {
     } else {
       return false;
     }
-  } 
+  }
   return true;
 }
 

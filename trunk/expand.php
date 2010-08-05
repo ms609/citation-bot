@@ -1333,7 +1333,7 @@ Done.  Just a couple of things to tweak now...";
 									if ($status == "Success") {
 										updateBacklog($page);
 										echo "Success. Phew!";
-									} else echo "Failed.  Error code:  $status. " . ($htmloutput?$outputText:"Pagecode displayed in HTML output only");
+									} else echo "Failed.  Error code:  $status. " . ($htmlOutput?$outputText:"Pagecode displayed in HTML output only");
 								}
 							}
 							echo $htmlOutput ?
