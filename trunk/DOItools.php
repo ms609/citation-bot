@@ -606,14 +606,17 @@ function google_book_expansion() {
         case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq":
           $url .= "&" . $part;
         // TODO: vq takes precedence over dq > q.  Only use one of the above.
+        case "id":
+          break; // Don't "remove redundant"
         case "as": case "useragent": case "as_brr": case "source":  case "hl":
         case "ei": case "ots": case "sig": case "source": case "lr":
         case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
         default:
-          $removed_redundant = true;
+          echo "\n - $part";
+          $removed_redundant++;
       }
     }
-    if ($removed_redundant) {
+    if ($removed_redundant > 1) { // http:// is counted as 1 parameter
       $p["url"][0] = $url;
     }
     google_book_details($gid[1]);

@@ -228,7 +228,7 @@ function isDoiBroken ($doi, $p = false, $slow_mode = false) {
   $doi = verify_doi($doi);
   
   if (crossRefData($doi)) {
-    if ($slow_mode) {
+    if (false && $slow_mode) { // TODO!
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HEADER, 1);
       curl_setopt($ch, CURLOPT_NOBODY, 1);
@@ -241,7 +241,7 @@ function isDoiBroken ($doi, $p = false, $slow_mode = false) {
       $result = curl_exec($ch);
       curl_close($ch);
       preg_match("~\d{3}~", $result, $code);
-      switch ($code[0]){
+      switch ($code[0]) {
         case false:
                 $parsed = parse_url("http://dx.doi.org/$doi");
                 $host = $parsed["host"];
