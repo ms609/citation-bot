@@ -56,7 +56,7 @@ function list_parameters () { // Lists the parameters in order.
      "oclc",
      "pmid", "pmc",
      "doi",
-     "doi_brokendate",
+     "doi_brokendate", "doi_inactivedate",
      "bibcode",
      "id",
      "quote",

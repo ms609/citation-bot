@@ -986,13 +986,13 @@ Done.  Just a couple of things to tweak now...";
 				if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slowMode) {
 					echo "\nChecking that DOI {$p["doi"][0]} is operational...";
 					$brokenDoi = isDoiBroken($p["doi"][0], $p, $slowMode);
-					if ($brokenDoi && !is("doi_brokendate")) {
-						set("doi_brokendate", date("Y-m-d"));
+					if ($brokenDoi && !is("doi_brokendate") && !is("doi_inactivedate")) {
+						set("doi_inactivedate", date("Y-m-d"));
             print "\n\n $doi \n\n";
             sleep(5);
 					}
-					ELSE if (!$brokenDoi) unset($p["doi_brokendate"]);
-					echo $brokenDoi?" It isn't.":"OK!", "</p>";
+					ELSE if (!$brokenDoi) unset($p["doi_brokendate"]); unset($p["doi_inactivedate"]);
+          echo $brokenDoi?" It isn't.":"OK!", "</p>";
 				}
 
 				//DOIlabel is now redundant
