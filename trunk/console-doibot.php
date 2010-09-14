@@ -38,8 +38,7 @@ if ($ON) {
 #$ON = true; // Uncomment this line to test edits in the Zandbox; but remember to break the bot after it touches the page or it'll keep on going!
 // The line to swtich between active & sandbox modes is in the comment block above.
 #$page = "";
-
-$slowMode = true;
+#$slowMode = true;
 include("expand.php");// i.e. GO!
 
 print "\n Done. \n";
