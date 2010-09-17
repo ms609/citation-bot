@@ -24,9 +24,9 @@ function list_parameters () { // Lists the parameters in order.
      "editor-last", "editor1-last",
      "editor-first", "editor1-first",
      "editor-link", "editor1-link",
-     "editor2", "editor2-author", "editor2-first", "editor2-link", 
-     "editor3", "editor3-author", "editor3-first", "editor3-link", 
-     "editor4", "editor4-author", "editor4-first", "editor4-link", 
+     "editor2", "editor2-author", "editor2-first", "editor2-link",
+     "editor3", "editor3-author", "editor3-first", "editor3-link",
+     "editor4", "editor4-author", "editor4-first", "editor4-link",
      "others",
      "chapter", "trans_chapter",  "chapterurl",
      "title", "trans_title", "language",
@@ -132,7 +132,7 @@ function set($key, $value) {
             $lightest_param = $parameter_order[$i];
           }
         }
-  
+
         for ($i = $key_position; $i >= 0; $i--) {
           if ($p[$parameter_order[$i]]["weight"] > 0) {
             $heaviest_weight = $p[$parameter_order[$i]]["weight"];
@@ -598,7 +598,13 @@ function pmFullTextUrl($pmid){
 function google_book_expansion() {
   global $p;
   if (is("url") && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $p["url"][0], $gid)) {
-    $url_parts = explode("&", str_replace("?", "&", $p["url"][0]));
+    $url = $p["url"][0];
+    if (strpos($url, "#")) {
+      $url_parts = explode("#", $url);
+      $url = $url_parts[0];
+      $hash = "#" . $url_parts[1];
+    }
+    $url_parts = explode("&", str_replace("?", "&", $url));
     $url = "http://books.google.com/?id=" . $gid[1];
     foreach ($url_parts as $part) {
       $part_start = explode("=", $part);
@@ -617,7 +623,7 @@ function google_book_expansion() {
       }
     }
     if ($removed_redundant > 1) { // http:// is counted as 1 parameter
-      $p["url"][0] = $url;
+      $p["url"][0] = $url . $hash;
     }
     google_book_details($gid[1]);
     return true;
