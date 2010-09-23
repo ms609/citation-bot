@@ -1038,7 +1038,7 @@ Done.  Just a couple of things to tweak now...";
             }
             if (preg_match("~[cC]itation~", $citation[$cit_i+2])) {
               // Switching FROM cite xx TO citation; citation has no trailing period by default
-              ifNullSet("postscript", "<!-- Bot inserted parameter. Either remove it; or change its value to \".\" for the cite to end in a \".\", as necessary. -->[[Category:Articles with inconsistent citation formats]]");
+              ifNullSet("postscript", "<!-- Bot inserted parameter. Either remove it; or change its value to \".\" for the cite to end in a \".\", as necessary. -->{{inconsistent citations}}");
             }
             if (is('inventor-last') || is('inventor-surname') || is('inventor1-surname')
                     || is('inventor1-last') || is ('inventor')) {

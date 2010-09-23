@@ -35,7 +35,7 @@ if ($ON) {
   echo " done. ";
 }
 #$page = " Template:Cite doi/10.1002.2F.28SICI.291097-0290.2819980420.2958:2.2F3.3C121::AID-BIT2.3E3.0.CO.3B2-N";
-#$ON = true; // Uncomment this line to test edits in the Zandbox; but remember to break the bot after it touches the page or it'll keep on going!
+$ON = true; // Uncomment this line to test edits in the Zandbox; but remember to break the bot after it touches the page or it'll keep on going!
 // The line to swtich between active & sandbox modes is in the comment block above.
 #$page = "";
 #$slowMode = true;
