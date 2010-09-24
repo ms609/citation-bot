@@ -1004,6 +1004,7 @@ function correct_parameter_spelling($p) {
                             "author8-first" =>  "first8",
                             "authorurl"     =>  "authorlink",
                             "authorn"       =>  "author2",
+                            "authors"       =>  "author",
                             "ed"            =>  "editor",
                             "ed2"           =>  "editor2",
                             "ed3"           =>  "editor3",
