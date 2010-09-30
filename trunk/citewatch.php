@@ -19,7 +19,7 @@ echo count($toDo);
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");
 $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
 
-function getCiteList($page){
+function getCiteList($page) {
 	global $bot;
 	$bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
 	$raw = $bot->results;
@@ -31,7 +31,7 @@ function getCiteList($page){
 	return Array($doi[1], $jstorid[1], $pmid[1], $pmc[1], $gbook[1]);
 }
 
-function nextPage(){
+function nextPage($page){
 	global $toDo, $doi_todo, $pmid_todo, $pmc_todo, /*$gbook_todo, $isbn_todo,*/
          $dotDecode, $dotEncode, $cite_doi_start_code, $article_in_progress, $oDoi;
 /*
@@ -234,6 +234,7 @@ function nextPage(){
     }
 	} else {
 		// Next page, please
+    touch($article_in_progress);
     $article_in_progress = array_pop($toDo);
 		if ($article_in_progress && trim($article_in_progress)) {
 			print "\n\n** Next article: $article_in_progress";

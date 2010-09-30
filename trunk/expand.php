@@ -1179,9 +1179,13 @@ Done.  Just a couple of things to tweak now...";
 				$dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
 				print $p["eprint"][0] . "\n";
 				if (is("eprint")
-						&& !(is("title") && is("author") && is("year") && is("version")))
-						getDataFromArxiv($p["eprint"][0]);
-
+						&& !(is("title") && is("author") && is("year") && is("version"))) {
+            $p["eprint"][0] = str_ireplace("arXiv:", "", $p["eprint"][0]);
+            if (!getDataFromArxiv($p["eprint"][0]) && is("class")) {
+              getDataFromArxiv($p["class"][0] . "/" . $p["eprint"][0]);
+            }
+        }
+        
 				// Now wikify some common formatting errors - i.e. tidy up!
 				if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);
 

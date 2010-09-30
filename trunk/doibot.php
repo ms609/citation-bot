@@ -58,7 +58,10 @@ if (is_valid_user($user)) {
 function nextPage() {
   return null; #Console should take care of the backlog now.
 	$db = udbconnect();
-	if (restrictedDuties) return false; ######## Stop bot working through backlog until systemic bugs are fixed ########
+	if (restrictedDuties) {
+    mysql_close($db);
+    return false; ######## Stop bot working through backlog until systemic bugs are fixed ########
+  }
 	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
 	if(rand(1, 5000) == 100000)	{
 		print "<p style=font-size:larger>Updating backlog...</p><p>\nSeeing what links to 'Cite Journal'...";
@@ -80,6 +83,7 @@ function nextPage() {
 	}
 	$result = mysql_query("SELECT page FROM citation ORDER BY fast ASC") or die (mysql_error());
 	$result = mysql_fetch_row($result);
+  mysql_close($db);
 	global $page;
 	return $result[0];
 }
