@@ -45,7 +45,7 @@
 $htmlOutput=true;
 $editInitiator = "[" . revisionID() . "]";
 
-if ($user && getArticleId("User:$user")) {
+if (is_valid_user($user)) {
   print "Activated by $user\n";
   $editSummaryEnd = "[[User:$user|$user]]";
 } else {
