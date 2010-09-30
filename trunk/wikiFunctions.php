@@ -7,18 +7,29 @@ function categoryMembers($cat){
 
   $url="http://en.wikipedia.org/w/api.php?cmtitle=Category:$cat&action=query&cmlimit=5&format=xml&list=categorymembers";
 	$qc = "query-continue";
+  $prev_continue = -1;
 
 	do {
 		set_time_limit(40);
-    $res = simplexml_load_file($url . ($continue?("&cmcontinue=" . urlencode($continue)):""));
-  	if ($res) {
+    $query_url = $url . "&cmcontinue=$continue"; #($continue?("&cmcontinue=" . urlencode($continue)):"");
+    $res = simplexml_load_file($query_url);
+    if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
           $list[] = (string) $page["title"];
         }
     } else {
       echo 'Error reading API from ' . $url . ($continue?"&cmcontinue=$continue":"") . "\n\n";
     }
-	} while ($continue = $res->$qc->categorymembers["cmcontinue"]);
+
+    print "\n $continue = $prev_continue ?";
+    if ($continue == $prev_continue) {
+      die ("\nStuck in loop... Please report bug\n");
+      // TODO bug reporting improvements; e-mail me?
+    } else {
+      $prev_continue = $continue;
+      $continue = $res->$qc->categorymembers["cmcontinue"];
+    }
+	} while ($continue);
 	return $list?$list:Array(" ");
 }
 
@@ -142,6 +153,10 @@ function log_citation ($type, $source, $target = false) {
 function getRawWikiText($page) {
   return file_get_contents("http://toolserver.org/~daniel/WikiSense/WikiProxy.php?wiki=en&title="
       . urlencode($page) . "&rev=&go=Fetch&token=");
+}
+
+function is_valid_user($user) {
+  return ($user && getArticleId("User:$user"));
 }
 
 function whatTranscludes2($template, $namespace=99){
