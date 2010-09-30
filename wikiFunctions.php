@@ -21,7 +21,6 @@ function categoryMembers($cat){
       echo 'Error reading API from ' . $url . ($continue?"&cmcontinue=$continue":"") . "\n\n";
     }
 
-    print "\n $continue = $prev_continue ?";
     if ($continue == $prev_continue) {
       die ("\nStuck in loop... Please report bug\n");
       // TODO bug reporting improvements; e-mail me?
@@ -158,6 +157,14 @@ function getRawWikiText($page) {
 function is_valid_user($user) {
   return ($user && getArticleId("User:$user"));
 }
+/*
+function touch($page) {
+    $content = getRawWikiText($page);
+    if ($content) {
+      return write($page, $content, "Null edit to update categorization");
+    }
+    else return false;
+ }*/
 
 function whatTranscludes2($template, $namespace=99){
 	$url = "http://en.wikipedia.org/w/api.php?action=query&list=embeddedin&eilimit=500&format=xml&eititle=Template:$template" . (($namespace==99)?"":"&einamespace=$namespace");

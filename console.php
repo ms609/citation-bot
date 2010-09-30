@@ -13,7 +13,13 @@ $ON = true; // Override later if necessary
 define ("START_HOUR", date("H"));
 
 
-function nextPage(){
+function nextPage($page){
+  // touch last page
+  if ($page) {
+    touch($page);
+  }
+
+  // Get next page
   global $ON, $STOP;
 	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
   if (date("H") != START_HOUR) die ("\n ** EXIT: It's " . date("H") . " o'clock!\n");
