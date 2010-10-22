@@ -1,5 +1,7 @@
-<?php
+<?
 // $Id: $
+
+define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
 
 function categoryMembers($cat){
   //print "Category: $cat\n";
@@ -7,28 +9,18 @@ function categoryMembers($cat){
 
   $url="http://en.wikipedia.org/w/api.php?cmtitle=Category:$cat&action=query&cmlimit=5&format=xml&list=categorymembers";
 	$qc = "query-continue";
-  $prev_continue = -1;
 
 	do {
 		set_time_limit(40);
-    $query_url = $url . "&cmcontinue=$continue"; #($continue?("&cmcontinue=" . urlencode($continue)):"");
-    $res = simplexml_load_file($query_url);
-    if ($res) {
+    $res = simplexml_load_file($url . ($continue?("&cmcontinue=" . urlencode($continue)):""));
+  	if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
           $list[] = (string) $page["title"];
         }
     } else {
       echo 'Error reading API from ' . $url . ($continue?"&cmcontinue=$continue":"") . "\n\n";
     }
-
-    if ($continue == $prev_continue) {
-      die ("\nStuck in loop... Please report bug\n");
-      // TODO bug reporting improvements; e-mail me?
-    } else {
-      $prev_continue = $continue;
-      $continue = $res->$qc->categorymembers["cmcontinue"];
-    }
-	} while ($continue);
+	} while ($continue = $res->$qc->categorymembers["cmcontinue"]);
 	return $list?$list:Array(" ");
 }
 
@@ -47,25 +39,33 @@ function getLastRev($page){
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
-function getArticleId($page){
+function getArticleId($page) {
   $xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["pageid"];
 }
 
-function getNamespace($page){
+function getNamespace($page) {
 	$xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["ns"];
 }
 
-function isRedirect($page){
-	$xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
+function isRedirect($page) {
+  $url = "http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page);
+  $xml = simplexml_load_file($url);
 	if ($xml->query->pages->page["pageid"]) {
     // Page exists
-    return ($xml->query->pages->page["redirect"])?1:0;
-    }
-    else {
-      return -1;
+    return array ((($xml->query->pages->page["redirect"])?1:0),
+                    $xml->query->pages->page["pageid"]);
+    } else {
+      return array (-1, null);
    }
+}
+
+function parse_wikitext($text, $title="API") {
+  $a = json_decode(file_get_contents(api
+          . "format=json&action=parse&text=" . urlencode($text)
+          . "&title=" . urlencode($title)), true) ;
+  return $a["parse"]["text"]["*"];
 }
 
 function articleID($page, $namespace = 0) {
@@ -86,85 +86,43 @@ function articleID($page, $namespace = 0) {
   return $results['page_id'];
 }
 
-function citation_is_redirect ($type, $id) {
-  $db = udbconnect("yarrow");
-  $sql = "SELECT $type, redirect FROM cite_$type WHERE $type='$id'";
-  $result = mysql_query($sql);
-  $results = mysql_fetch_array($result, MYSQL_ASSOC);
-  mysql_close();
-  if ($result) {
-    if ($results) {
-      return $results["redirect"]?1:0;
-    } else {
-      // this page isn't in our mysql database
-      $page_status = isRedirect("Template:Cite $type/$id");
-      if ($page_status == 1) {
-        // Page exists; we need to check that the redirect has been created.
-        return 2;
-      } else {
-        return $page_status;
-      }
-    }
-  } else {
-    // On error consult wikipedia API
-    return (isRedirect("Template:Cite $type/$id"));
+function getRawWikiText($page, $wait = false, $verbose = false) {
+  $encode_page = urlencode($page);
+  $url = "http://toolserver.org/~daniel/WikiSense/WikiProxy.php?wiki=en&title="
+      . $encode_page . "&rev=&go=Fetch&token=";
+  $contents = (string) file_get_contents($url);
+  if (!$contents) {
+    print $verbose ? "\n <br />Couldn't fetch $page; retrying" : "";
+    // Retry if no response
+    $contents = (string) file_get_contents($url);
   }
-}
-
-function doi_citation_exists ($doi) {
-  $db = udbconnect("yarrow");
-  $sql = "SELECT doi FROM cite_doi WHERE doi='" . addslashes($doi) . "'";
-  $result = mysql_query($sql);
-  $results = mysql_fetch_row($result);
-  mysql_close();
-  if ($result) {
-    if ($results[0]) {
-      return true;
-    } else {
-      global $dotEncode, $dotDecode;
-      $doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi);
-      if (articleID($doi_page)) {
-        log_citation("doi", $doi);
-        return true;
-      } else {
-        return false;
-      }
-    }
-  } else {
-    // On error consult wikipedia API
-    global $dotEncode, $dotDecode;
-    $doi_page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi);
-    if (articleID($doi_page)) {
-      log_citation("doi", $doi);
-      return true;
-    } else return false;
+  if ($wait && !$contents) {
+    print $verbose ? "\n . " : "";
+    // If still no response, wait & retry
+    sleep(1);
+    $contents = (string) file_get_contents($url);
   }
-}
-
-function log_citation ($type, $source, $target = false) {
-  $db = udbconnect("yarrow");
-  $sql = "INSERT INTO cite_$type SET $type='" . addslashes($source) . "'"
-       . ($type=="doi"?"":", redirect='" . addslashes($target) . "'");
-  $result = mysql_query($sql);
-  return $result?true:false;
-}
-
-function getRawWikiText($page) {
-  return file_get_contents("http://toolserver.org/~daniel/WikiSense/WikiProxy.php?wiki=en&title="
-      . urlencode($page) . "&rev=&go=Fetch&token=");
+  if (!$contents && $wait) {
+    // If still no response, wait & retry
+    print $verbose ? "\n ..... " : "";
+    sleep(3);
+    $contents = (string) file_get_contents($url);
+  }
+  if (!$contents) {
+    print $verbose ? "\n scraping... " : "";
+    // Get the text by scraping edit page
+    $url = wikiroot . "title=" . $encode_page . "&action=edit";
+    $scrapings = file_get_contents($url);
+    if (preg_match("~<textarea.*>([\s\S]*)</textarea>~", $scrapings, $match)) {
+      return $match[1];
+    }
+  }
+  return $contents;
 }
 
 function is_valid_user($user) {
   return ($user && getArticleId("User:$user"));
 }
-/*
-function touch($page) {
-    $content = getRawWikiText($page);
-    if ($content) {
-      return write($page, $content, "Null edit to update categorization");
-    }
-    else return false;
- }*/
 
 function whatTranscludes2($template, $namespace=99){
 	$url = "http://en.wikipedia.org/w/api.php?action=query&list=embeddedin&eilimit=500&format=xml&eititle=Template:$template" . (($namespace==99)?"":"&einamespace=$namespace");
@@ -180,32 +138,106 @@ function whatTranscludes2($template, $namespace=99){
 	} while ($continue = $res->$qc->embeddedin["eicontinue"]);
 	return $list;
 }
-/*  The following function appears in ~/public_html/res/mysql_connect.php and is reproduced here for SVN safekeeping.
-function udbconnect($dbName = "yarrow", $server = "sql") {
-        // fix redundant error-reporting
-        $errorlevel = ini_set('error_reporting','0');
 
-        // connect
-        $mycnf = parse_ini_file("/home/".get_current_user()."/.my.cnf");
-        $username = $mycnf['user'];
-        $password = $mycnf['password'];
-        unset($mycnf);
-        $db = mysql_connect($server, $username, $password) or die("\n!!! * Database server login failed.\n This is probably a temporary problem with the server and will hopefully be fixed soon.  The server returned: \"" . mysql_error() . "\"  \nError message generated by /res/mysql_connect.php\n");
-        unset($username);
-        unset($password);
+#### Functions below were written offline so need testing & debgging
 
-        // select database
-        if($db && $server == "sql") {
-           mysql_select_db(str_replace('-','_',"u_verisimilus_$dbName")) or print "\nDatabase connection failed: " . mysql_error() . "";
-        } else if ($db) {
-           mysql_select_db($dbName) or die(mysql_error());
-        } else {
-          die ("\nNo DB selected!\n");
-        }
+// Extract template
+// Pass the code to find the template in, and the name of the template (with spaces, not underscores, if appropriate)
+function extract_template($code, $target) {
+  $placeholder = "!-TEMPLATE PLACEHOLDER TP%s-!";
+  $placeholder_regexp = "~$placeholder~";
+  while (preg_match(template_regexp, $code, $match)) {
+    ++$i;
+    $template[$i] = $match[0];
+    $template_name = str_replace("_", " ", trim($match[1]));
 
-        // restore error-reporting
-        ini_set('error-reporting',$errorlevel);
+    if (strtolower($template_name) == strtolower($target)) {
+      $return = $template[$i];
+      while (preg_match(sprintf($placeholder_regexp, "(\d+)"), $return, $match)) {
+        $template_n = $match[1];
+        $return = preg_replace(sprintf($placeholder_regexp, $template_n), $template[$template_n], $return);
+      }
+      return $return;
+    }
 
-				return ($db);
+    $code = str_replace($template[$i], sprintf($placeholder, $i), $code);
+  }
+  return false;
 }
-*/
+
+// Extracts parameters in a Wikipedia template.
+// Returns the parameters as an array (
+// "parameter_name" => Array (value, equals sign, pipe)
+// )
+// Test cases should include comments with multiple pipes spanning multiple lines and including wikilinks
+
+function extract_parameters($template) {
+  // First, replace pipes that don't mark parameter boundaries with !-PIPE PLACEHOLDER-!
+  $pipe_placeholder = "!-PIPE PLACEHOLDER pp-!";
+  // This will include pipes in [[Wikilinks|]]:
+  $wikilink_regexp = "~(\[\[[^\]]+)\|([^\]]+\]\])~";
+  //  and in <!-- comments -->
+  $comment_regexp = "~(<!--.*?)\|(.*?-->)~";
+
+  // Remove whitespace and braces from template
+  $template = trim($template);
+  $template = substr($template, 2, strlen($template)-4);
+  // Replace pipes with placeholders in comments and links
+  $template = preg_replace($wikilink_regexp, "$1$pipe_placeholder$2", $template);
+  while (preg_match($comment_regexp, $template)) {
+    $template = preg_replace($comment_regexp, "$1$pipe_placeholder$2", $template);
+  }
+  // Replace templates with placeholders
+  $template_placeholder = "!-TEMPLATE PLACEHOLDER TP%s-!";
+  $template_placeholder_regexp = "~$template_placeholder~";
+  #$template_regexp = "~\{\{\s*[^\|\}]+([^\{]|\{[^\{]|\{\{[^/}]+\}\})*?\}\}~";
+  while (preg_match(template_regexp, $template, $match)) {
+    ++$i;
+    $subtemplate[$i] = $match[1]; // TODO: check that this still works with the global template_regexp
+    $template = str_replace($subtemplate[$i], sprintf($template_placeholder, $i), $template);
+  }
+
+  $splits = preg_split("~(\s*\|\s*)~", $template, -1, PREG_SPLIT_DELIM_CAPTURE);
+  // The first line doesn't contain a parameter; it's the template name
+  unset($lines[0]);
+  $i = 0;
+  foreach ($splits as $split) {
+    ++$i;
+    if ($i % 2) {
+      $lines[$i / 2] = $split;
+    } else {
+      $pipe[($i+1) / 2] = $split;
+    }
+  }
+
+  foreach ($lines as $i => $line) {
+    preg_match("~^([^= ]*)(\s*=\s*)([\s\S]*)$~", $line, $match);
+    $value = $match[3];
+    while (preg_match(sprintf($template_placeholder_regexp, "(\d+)"), $value, $sub_match)) {
+      $template_n = $sub_match[1];
+      $value = preg_replace(sprintf($template_placeholder_regexp, $template_n), $subtemplate[$template_n], $value);
+    }
+    $parameters[$match[1]] = Array(str_replace($pipe_placeholder, "|", $value), $pipe[$i], $match[2]); 
+  }
+  return $parameters;
+}
+
+// Transforms an array in "$p format" back into a template
+function generate_template ($name, $parameters) {
+  $output = '{{' . $name;
+  foreach ($parameters as $key => $value) {
+    // Array (value, equals, pipe[, weight] )
+    $output .= $value[1] . $key . $value[2] . $value[0];
+  }
+  return $output . '}}';
+}
+
+function wikiLink($page, $style) {
+  $css = $style?" style='color:$style !important'":"";
+  return "<a href='" . wikiroot . "title=" . urlencode($page) . "' title='$page on Wikipedia'$css>$page</a>";
+}
+
+function geo_range_ok ($template) {
+  $text = parse_wikitext ($template); // TODO check that this function returns the expected output
+  return strpos($text, "Expression error:") ? false : true;
+}
