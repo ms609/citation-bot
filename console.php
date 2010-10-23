@@ -51,9 +51,9 @@ $ON = true; // Uncomment this line to test edits in the Zandbox; but remember to
 //
 //include("expand.php");// i.e. GO!
 
-$end_text = combine_duplicate_references(ref_templates(getRawWikiText($page), "doi"));
+$end_text = combine_duplicate_references(ref_templates(ref_templates(ref_templates(getRawWikiText($page, false, false, false), "doi"), "pmid"), "jstor"));
 //$end_text = ref_templates($end_text, "pmid");
 print "\n" . $end_text;
-write($page, $end_text, "Testing routine for Task #6: Multiple refs with same name");
+//write($page, $end_text, "Re task #7");
 
 print "\n Done. \n";
