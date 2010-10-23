@@ -400,6 +400,19 @@ function ref_templates($page_code, $type) {
   return $page_code;
 }
 
+function name_references($page_code) {
+  if (preg_match_all("~<ref>.*</ref>~U", $page_code, $refs)) {
+    foreach ($refs as $ref) {
+      $ref_name = get_name_for_reference($ref, $page_code);
+      if (substr($ref_name, 0, 4) != "ref_") {
+        // i.e. we have used an interesting reference name
+        $page_code = str_replace($ref, str_replace("<ref>", "<ref name=\"$ref_name\">", $ref), $page_code);
+      }
+    }
+  }
+  return $page_code;
+}
+
 function get_name_for_reference($text, $page_code) {
   $parsed = parse_wikitext(strip_tags($text));
   $template_name = preg_match("~rft\.aulast=(\w+)~", $parsed, $author)
