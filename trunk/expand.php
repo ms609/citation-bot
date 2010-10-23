@@ -705,10 +705,10 @@ echo "
           if ($results[1] == 1) {
             set('pmid', $results[0]);
             $details = pmArticleDetails($results[0]);
+            echo " 1 result found; updating citation";
             foreach ($details as $key=>$value) {
               ifNullSet ($key, $value);
             }
-            echo " 1 result found; citation updated";
             if (!is('doi')) {
               // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
               echo "\n - Looking for DOI in CrossRef database with new information ... ";

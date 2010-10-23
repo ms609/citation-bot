@@ -4,8 +4,11 @@
 // Returns pagecode if the calling script should continue; false otherwise
 function expand($page, $commit_edits = false, $editing_cite_doi_template = false, $cite_doi_start_code = null, $htmlOutput = false) {
 
-  $commit_edits = false;
-  global $bot, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2;
+  if ($htmlOutput == -1) {
+    ob_start();
+  }
+  #$commit_edits = false;
+  global $p, $bot, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2;
 
   $file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision$');
   $doitools_revision_id = revisionID();
@@ -288,7 +291,6 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
           if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
           if (is($param)) $pEnd[$param] = $v[0];
         }
-        $last_p = $p;
         $p = null;
         if ($pEnd) {
           foreach ($pEnd as $param => $value) {
@@ -641,6 +643,7 @@ echo "
 if (is('doi')) {
 echo "
  2: DOI already present :-)";
+// TODO: Use DOI to expand citation
 } else {
 echo "
  2: Find DOI";
@@ -695,6 +698,7 @@ echo "
 if (is ('pmid')) {
 echo "
  3: PMID already present :-)";
+// TODO: use PMID to expand citation
 } else {
 echo "
  3: Find PMID & expand";
@@ -711,10 +715,10 @@ echo "
           if ($results[1] == 1) {
             set('pmid', $results[0]);
             $details = pmArticleDetails($results[0]);
+            echo " 1 result found; updating citation";
             foreach ($details as $key=>$value) {
               ifNullSet ($key, $value);
             }
-            echo " 1 result found; citation updated";
             if (!is('doi')) {
               // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
               echo "\n - Looking for DOI in CrossRef database with new information ... ";
@@ -871,7 +875,7 @@ echo "
                && !is('author2')
                && !is('last2')
                  && is('doi')
-              ){
+              ) {
               echo "\n - Looking for co-authors & page numbers...";
               $moreAuthors = findMoreAuthors($p['doi'][0], $firstauthor[0], $p['pages'][0]);
               $count_new_authors = count($moreAuthors['authors']);
@@ -1113,7 +1117,6 @@ Done.  Just a couple of things to tweak now...";
         $pagecode .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
         $cText = null;
         $crossRef = null;
-        $last_p = $p;
         $p = null;
       }
 
@@ -1231,7 +1234,6 @@ Done.  Just a couple of things to tweak now...";
           if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
           if (is($param)) $pEnd[$param] = $v[0];
         }
-        $last_p = $p;
         $p = null;
         if ($pEnd)
           foreach ($pEnd as $param => $value)
@@ -1339,11 +1341,13 @@ Done.  Just a couple of things to tweak now...";
                       :".";
 
             }
+            ob_end_clean();
             return $pagecode;
             $pageDoneIn = time() - $startPage;
             if ($pageDoneIn<3) {echo "Quick work ($pageDoneIn secs). Waiting, to avoid server overload."; sleep(1);} else echo "<i>Page took $pageDoneIn secs to process.</i>";
         } else {
           echo $outputText;
+          ob_end_clean();
           return $pagecode;
         }
 
@@ -1402,6 +1406,7 @@ Done.  Just a couple of things to tweak now...";
         } else {
           updateBacklog($page);
         }
+        ob_end_clean();
         return $pagecode;
       }
     } else {
@@ -1410,6 +1415,7 @@ Done.  Just a couple of things to tweak now...";
         if (!$editing_cite_doi_template) {
           updateBacklog($page);
         }
+        ob_end_clean();
         return false;
       } else {
         echo "<b>Error:</b> Blank page produced. This bug has been reported. Page content: $startcode";
@@ -1425,5 +1431,6 @@ Done.  Just a couple of things to tweak now...";
   $isbnKey = "3TUCZUGQ"; //This way we shouldn't exhaust theISBN key for on-demand users.
   $isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
   $editSummaryEnd = " You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
+  ob_end_clean();
   return $pagecode;
 }
