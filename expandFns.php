@@ -328,27 +328,33 @@ function create_cite_template($type, $id) {
 }
 
 function combine_duplicate_references($page_code) {
-  preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*REMOVETHISWORD/>~", $page_code, $empty_refs);
+  preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
     // match 1 = ref names
-  if (preg_match_all("~<ref(\s*name=[\"']?([^\"'>]+)[\"']?\s*)?>(([^<]|<(?!ref))*?)</ref>~i", $page_code, $refs)) {
-    // match 0 = full ref; 1 = redundant; 2 = ref name; 3 = ref content 4 = redundant
-    $refs_content = $refs[3];
-    foreach ($refs[3] as $i => $content) {
+  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>(([^<]|<(?!ref))*?)</ref>~i", $page_code, $refs)) {
+    // match 0 = full ref; 1 = redundant; 2= used in regexp for backreference;
+    // 3 = ref name; 4 = ref content; 5 = redundant
+    $refs_content = $refs[4];
+    foreach ($refs[4] as $i => $content) {
       $refs_content[$i] = "!--didnt_match_this--!";
       if (false !== ($key = array_search($content, $refs_content))) {
         $duplicate_references[] = $refs[0][$key]; // This way round the later reference gets deleted
-        $duplicate_names[] = $refs[2][$key]; // This way round the later reference gets deleted
-        $duplicate_of[] = $refs[2][$i];
+        $duplicate_names[] = $refs[3][$key]; // This way round the later reference gets deleted
+        $duplicate_of[] = $refs[3][$i];
       }
     }
+    print_r($duplicate_references);
     if ($duplicate_references) {
       foreach ($duplicate_references as $i => $duplicate) {
         print ("\n replacing reference $duplicate \n");
 
-        $page_code = str_replace($duplicate, "<ref name=\"{$duplicate_of[$i]}\" />",
-                     preg_replace("~<ref\s*name=[\"']?" . preg_quote($duplicate_names[$i])
-                                  . "[\"']?(\s*/>)~", "<ref name=\"" . $duplicate_of[$i] . "$1",
-                            $page_code));
+        $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($duplicate_names[$i])
+                                  . "(?P=quote)(\s*/>)~", "<ref name=\"" . $duplicate_of[$i] . "$2",
+                            $page_code);
+        $first_duplicate_pos = strpos($page_code, $duplicate) + strlen($duplicate);
+        $first_duplicate = substr($page_code, 0, $first_duplicate_pos);
+        $page_code = $first_duplicate . str_replace($duplicate,
+                    "<ref name=\"{$duplicate_of[$i]}\" />", substr($page_code, $first_duplicate_pos));
+        
       }
     }
   }
@@ -361,11 +367,10 @@ function ref_templates($page_code, $type) {
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
     if (!getArticleId("Template:cite $type/" . wikititle_encode($ref_id))) {
-      $template = extract_template(create_cite_template($type, $ref_id), "cite journal");
+      $template = extract_parameters(extract_template(create_cite_template($type, $ref_id), "cite journal"));
     } else {
       $template = cite_template_contents($type, $ref_id);
     }
-    print_r($template);
     $template_name = (trim($template["last1"][0]) != "" && trim($template["year"][0]) != "")
                     ? $template["last1"][0] . $template["year"][0]
                     : "ref_";

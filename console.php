@@ -54,6 +54,6 @@ $ON = true; // Uncomment this line to test edits in the Zandbox; but remember to
 $end_text = combine_duplicate_references(ref_templates(getRawWikiText($page), "doi"));
 //$end_text = ref_templates($end_text, "pmid");
 print "\n" . $end_text;
-//write($page, $end_text, "Testing routine for Task #6: second pass, no modification to code");
+write($page, $end_text, "Testing routine for Task #6: Multiple refs with same name");
 
 print "\n Done. \n";
