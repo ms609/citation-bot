@@ -426,7 +426,13 @@ function get_data_from_jstor($jid) {
     }
     foreach ($data->dc___creator as $author) {
       $i++;
-      ifNullSet("author$i", formatAuthor(str_replace("___", ":", $author)));
+      $oAuthor = formatAuthor(str_replace("___", ":", $author));
+      $oAuthor = explode(", ", $oAuthor);
+      $first = str_replace(" .", "",
+                 preg_replace("~(\w)\w*\W*((\w)\w*\W+)?((\w)\w*\W+)?((\w)\w*)?~",
+                              "$1. $3. $5. $7.", $oAuthor[1]));
+      ifNullSet("last$i", $oAuthor[0]);
+      ifNullSet("first$i", $first);
     }
     ifNullSet("title", (string) str_replace("___", ":", $data->dc___title)) ;
     if (preg_match("~(.*),\s+Vol\.\s+([^,]+)(, No\. (\S+))?~", str_replace("___", ":", $data->dc___relation), $match)) {

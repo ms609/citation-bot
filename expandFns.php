@@ -354,7 +354,7 @@ function combine_duplicate_references($page_code) {
         $first_duplicate = substr($page_code, 0, $first_duplicate_pos);
         $page_code = $first_duplicate . str_replace($duplicate,
                     "<ref name=\"{$duplicate_of[$i]}\" />", substr($page_code, $first_duplicate_pos));
-        
+
       }
     }
   }
@@ -372,7 +372,7 @@ function ref_templates($page_code, $type) {
       $template = cite_template_contents($type, $ref_id);
     }
     $template_name = (trim($template["last1"][0]) != "" && trim($template["year"][0]) != "")
-                    ? $template["last1"][0] . $template["year"][0]
+                    ? (trim($template["last1"][0]) . trim($template["year"][0]))
                     : "ref_";
     while (preg_match("~<ref name=['\"]?"
             . preg_quote($template_name . $alphabet[$i++])
