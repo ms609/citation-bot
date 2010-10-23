@@ -199,7 +199,6 @@ function extract_parameters($template) {
 
   $splits = preg_split("~(\s*\|\s*)~", $template, -1, PREG_SPLIT_DELIM_CAPTURE);
   // The first line doesn't contain a parameter; it's the template name
-  unset($lines[0]);
   $i = 0;
   foreach ($splits as $split) {
     ++$i;
@@ -209,15 +208,25 @@ function extract_parameters($template) {
       $pipe[($i+1) / 2] = $split;
     }
   }
+  unset($lines[0]);
 
+  $unnamed_parameter_count = 0;
   foreach ($lines as $i => $line) {
-    preg_match("~^([^= ]*)(\s*=\s*)([\s\S]*)$~", $line, $match);
-    $value = $match[3];
+    preg_match("~^([^= ]*)(\s*=\s*)?([\s\S]*)$~", $line, $match);
+    if ($match[2]) {
+      // then an equals sign is present; i.e. we have a named parameter
+      $value = $match[3];
+      $parameter_name = $match[1];
+    } else {
+      $value = $match[1];
+      $parameter_name = "unnamed_parameter_" . ++$unnamed_parameter_count;
+    }
+    // Restore templates that were replaced with placeholders
     while (preg_match(sprintf($template_placeholder_regexp, "(\d+)"), $value, $sub_match)) {
       $template_n = $sub_match[1];
       $value = preg_replace(sprintf($template_placeholder_regexp, $template_n), $subtemplate[$template_n], $value);
     }
-    $parameters[$match[1]] = Array(str_replace($pipe_placeholder, "|", $value), $pipe[$i], $match[2]); 
+    $parameters[$parameter_name] = Array(str_replace($pipe_placeholder, "|", $value), $pipe[$i], $match[2]);
   }
   return $parameters;
 }
