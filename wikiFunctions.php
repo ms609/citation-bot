@@ -62,9 +62,10 @@ function isRedirect($page) {
 }
 
 function parse_wikitext($text, $title="API") {
-  $a = json_decode(file_get_contents(api
-          . "format=json&action=parse&text=" . urlencode($text)
-          . "&title=" . urlencode($title)), true) ;
+  $url = api
+          . "?format=json&action=parse&text=" . urlencode($text)
+          . "&title=" . urlencode($title);
+  $a = json_decode(file_get_contents($url), true) ;
   return $a["parse"]["text"]["*"];
 }
 

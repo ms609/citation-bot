@@ -313,7 +313,8 @@ function loadParam($param, $value, $equals, $pipe, $weight) {
 }
 
 function cite_template_contents($type, $id) {
-  $template_name = "Template:Cite $type/" . wikititle_encode($id);
+  $page = get_template_prefix($type);
+  $template_name = $page . wikititle_encode($id);
   $text = getRawWikiText($template_name);
   if (!$text) {
     return false;
@@ -324,7 +325,15 @@ function cite_template_contents($type, $id) {
 
 function create_cite_template($type, $id) {
   print ("\n -- Create cite template at Template:Cite $type/$id");
-  return expand("Template:Cite $type/" . wikititle_encode($id), true, true, "{{Cite journal\n | $type = $id \n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>");
+  $page = get_template_prefix($type);
+  return expand($page . wikititle_encode($id), true, true, "{{Cite journal\n | $type = $id \n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>");
+}
+
+function get_template_prefix($type) {
+  return "Template: Cite "
+        . ($type == "jstor"
+        ? ("jstor/10.2307" . wikititle_encode("/"))
+        : $type . "/");
 }
 
 function combine_duplicate_references($page_code) {
@@ -345,16 +354,26 @@ function combine_duplicate_references($page_code) {
     print_r($duplicate_references);
     if ($duplicate_references) {
       foreach ($duplicate_references as $i => $duplicate) {
+
         print ("\n replacing reference $duplicate \n");
-
+        $template_name = $duplicate_of[$i] ? $duplicate_of[$i] : get_name_for_reference($duplicate, $page_code);
+        // First replace any <ref name=that'sall/> with the new name
         $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($duplicate_names[$i])
-                                  . "(?P=quote)(\s*/>)~", "<ref name=\"" . $duplicate_of[$i] . "$2",
+                                  . "(?P=quote)(\s*/>)~", "<ref name=\"" . $template_name . "$2",
                             $page_code);
-        $first_duplicate_pos = strpos($page_code, $duplicate) + strlen($duplicate);
-        $first_duplicate = substr($page_code, 0, $first_duplicate_pos);
+        if ($duplicate_of[$i]) {
+          $template_name = $duplicate_of[$i];
+          $first_duplicate_pos = strpos($ready_to_replace, $duplicate) + strlen($duplicate);
+          $first_duplicate = substr($page_code, 0, $first_duplicate_pos);
+        } else {          
+          $first_duplicate_pos = strpos($ready_to_replace, $duplicate);
+          $first_duplicate = substr($page_code, 0, $first_duplicate_pos) // Sneak this in to "first_duplicate"
+                           . str_replace("<ref>", "<ref name=\"$template_name\">", $duplicate);
+          $first_duplicate_pos += strlen($duplicate);
+        }
+        // Then check that the first occurrence won't be replaced
         $page_code = $first_duplicate . str_replace($duplicate,
-                    "<ref name=\"{$duplicate_of[$i]}\" />", substr($page_code, $first_duplicate_pos));
-
+                    "<ref name=\"$template_name\" />", substr($ready_to_replace, $first_duplicate_pos));
       }
     }
   }
@@ -362,7 +381,6 @@ function combine_duplicate_references($page_code) {
 }
 
 function ref_templates($page_code, $type) {
-  global $alphabet;
   while (false !== ($ref_template = extract_template($page_code, "ref $type"))) {
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
@@ -371,13 +389,10 @@ function ref_templates($page_code, $type) {
     } else {
       $template = cite_template_contents($type, $ref_id);
     }
-    $template_name = (trim($template["last1"][0]) != "" && trim($template["year"][0]) != "")
+    $template_name = generate_template_name((trim($template["last1"][0]) != "" && trim($template["year"][0]) != "")
                     ? (trim($template["last1"][0]) . trim($template["year"][0]))
-                    : "ref_";
-    while (preg_match("~<ref name=['\"]?"
-            . preg_quote($template_name . $alphabet[$i++])
-                    . "['\"/]*>~i", $page_code)) {}
-    $ref_content = "<ref name=\"$template_name{$alphabet[--$i]}\">"
+                    : "ref_", $page_code);
+    $ref_content = "<ref name=\"$template_name\">"
                  . $ref_template
                  . "</ref>";
     $page_code = str_replace($ref_template, str_ireplace("ref $type", "cite $type", $ref_content), $page_code);
@@ -385,6 +400,24 @@ function ref_templates($page_code, $type) {
   return $page_code;
 }
 
+function get_name_for_reference($text, $page_code) {
+  $parsed = parse_wikitext(strip_tags($text));
+  $template_name = preg_match("~rft\.aulast=(\w+)~", $parsed, $author)
+          ? $author[1] .
+            (preg_match("~rft\.date=(\d+)~", $parsed, $date)
+            ? $date[1]
+            : "" )
+          : "ref_";
+  return generate_template_name($template_name, $page_code);
+}
+
+function generate_template_name ($template_name, $page_code) {
+  global $alphabet;
+  while (preg_match("~<ref name=(?P<quote>['\"]?)"
+              . preg_quote($template_name . $alphabet[$i++])
+                      . "(?P=quote)[/\s]*>~i", $page_code)) {}
+  return $template_name . $alphabet[--$i];
+}
 
 echo "\n Establishing connection to Wikipedia servers ... ";
 // Log in to Wikipedia
