@@ -12,21 +12,6 @@ if ($file_revision_id < $doitools_revision_id) {
 }
 print "\nRevision #$last_revision_id";
 
-function loadParam($param, $value, $equals, $pipe, $weight) {
-  global $p;
-  $param = strtolower($param);
-  if (is($param)) {
-    if (substr($param, strlen($param)-1) > 0 && trim($value) != trim($p[$param][0])) {
-      // Add one to last1 to create last2
-      $param = substr($param, 0, strlen($param)-1) . (substr($param, strlen($param)-1) + 1);
-    } else {
-      // Parameter already exists
-      $param = "DUPLICATE DATA: $param";
-    }
-  }
-  $p[$param] = Array($value, $equals, $pipe, "weight" => ($weight + 3) / 4 * 10); // weight will be 10, 20, 30, 40 ...
-}
-
 while ($page) {
 	$startPage = time();
 	echo $htmlOutput?("\n<hr>[" . date("H:i:s", $startPage) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $startPage));
@@ -189,11 +174,11 @@ while ($page) {
 
         if (google_book_expansion()) {
           print "\n * Expanded from Google Books API.";
-        } 
+        }
 
 
         // Having expanded all that we can expand, tidy things up.
-        
+
         // edition -- remove 'edition' from parameter value
         if (is("edition"))
         {
@@ -398,8 +383,8 @@ while ($page) {
           set('title', $match[2]);
           set('doi', $match[1]);
         }
-        
-        
+
+
 ###########################
 //
 echo "
@@ -417,11 +402,11 @@ echo "
 					// See if we can use any of the parameters lacking equals signs:
 					$freeDat = explode("|", trim($p["unused_data"][0]));
 					useUnusedData();
-          
+
           if (google_book_expansion()) {
             print "\n * Expanded from Google Books API.";
           }
-          
+
           /*if (is("url") && !is("journal") && !is("periodical") && !is("magazine") && !is("newspaper")) {
 			SpencerK's API; disabled until I check whether it is ever a source of errors
             ifNullSet("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
@@ -767,7 +752,7 @@ echo "
 #####################################
 
 
-        
+
           if (!nothingMissing($journal) && is('pmid')) {
             echo "\n - Checking PMID {$p['pmid'][0]} for more details";
             $details = pmArticleDetails($p['pmid'][0]);
@@ -810,7 +795,7 @@ echo "
                 } else {
                   $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
                 }
-              
+
               if ($crossRef) {
                 echo "\n - Checking CrossRef for more details";
                 if ($editing_cite_doi_template) {
@@ -1087,7 +1072,7 @@ Done.  Just a couple of things to tweak now...";
         // Sort parameters and copy into $pEnd
         echo "\n (sorting parameters)";
         uasort($p, "bubble_p");
-        
+
 				foreach($p as $param => $v) {
 					if ($param) {
             $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
@@ -1112,7 +1097,7 @@ Done.  Just a couple of things to tweak now...";
 				$endtime = time();
 				$timetaken = $endtime - $starttime;
 				print "\n*** Complete. Citation assessed in $timetaken secs.\n\n\n";
-        
+
 				// Restore comments we hid earlier
 				for ($j = 0; $j < $countComments; $j++) {
 					$cText = str_replace("<!-- Citation bot : comment placeholder c$j -->"
@@ -1185,7 +1170,7 @@ Done.  Just a couple of things to tweak now...";
               getDataFromArxiv($p["class"][0] . "/" . $p["eprint"][0]);
             }
         }
-        
+
 				// Now wikify some common formatting errors - i.e. tidy up!
 				if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);
 
@@ -1215,7 +1200,7 @@ Done.  Just a couple of things to tweak now...";
 					$p['id'][0] = "{{arXiv|{$p['eprint'][0]}}}";
 					unset($p['class']);
 					unset($p['eprint']);
-					$changeCiteType = true;  
+					$changeCiteType = true;
 				} else {
           $changeCiteType = false;
         }
