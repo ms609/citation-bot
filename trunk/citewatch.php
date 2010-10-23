@@ -183,7 +183,7 @@ function nextPage($page){
         } else {
           print "No DOI found!";
           // No DOI found.  Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
-          $cite_doi_start_code = "{{Cite journal\n| pmid = $oPmid\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
+          $cite_doi_start_code = "{{Cite journal\n| pmid = $oPmid\n}}<noinclude>{{Documentation|Template:cite_pmid/subpage}}</noinclude>";
           return $pmid_page;
         }
         break;
@@ -229,7 +229,7 @@ function nextPage($page){
     } else {
       print "\n   > New DOI $oDoi added to queue.\n";
       sleep(4);
-      $cite_doi_start_code = "{{Cite journal\n| doi = $oDoi\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
+      $cite_doi_start_code = "{{Cite journal\n| doi = $oDoi\n}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>";
       return "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $oDoi);
     }
 	} else {

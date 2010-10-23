@@ -94,19 +94,19 @@ function getRawWikiText($page, $wait = false, $verbose = false) {
   if (!$contents) {
     print $verbose ? "\n <br />Couldn't fetch $page; retrying" : "";
     // Retry if no response
-    $contents = (string) file_get_contents($url);
+    $contents = (string) @file_get_contents($url);
   }
   if ($wait && !$contents) {
     print $verbose ? "\n . " : "";
     // If still no response, wait & retry
     sleep(1);
-    $contents = (string) file_get_contents($url);
+    $contents = (string) @file_get_contents($url);
   }
   if (!$contents && $wait) {
     // If still no response, wait & retry
     print $verbose ? "\n ..... " : "";
     sleep(3);
-    $contents = (string) file_get_contents($url);
+    $contents = (string) @file_get_contents($url);
   }
   if (!$contents) {
     print $verbose ? "\n scraping... " : "";
