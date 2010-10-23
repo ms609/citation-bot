@@ -304,6 +304,81 @@ function nothingMissing($journal){
   );
 }
 
+
+function expand_from_pubmed() {
+  global $p;
+  echo "\n - Checking PMID {$p['pmid'][0]} for more details";
+  $details = pmArticleDetails($p['pmid'][0]);
+  foreach ($details as $key => $value) {
+    ifNullSet($key, $value);
+  }
+  if (false && !is("url")) { // TODO:  BUGGY - CHECK PMID DATABASES, and see other occurrence above
+    if (!is('pmc')) {
+    $url = pmFullTextUrl($p["pmid"][0]);
+    } else {
+      unset ($p['url']);
+    }
+    if ($url) {
+      set ("url", $url);
+    }
+  }
+}
+
+function expand_from_doi($crossRef, $editing_cite_doi_template) {
+  global $p, $doiCrossRef, $jstor_redirect;
+  if (substr($p["doi"][0], 3, 4) == "2307") {
+    echo "\n - Populating from JSTOR database: ";
+    if (get_data_from_jstor($p["doi"][0])) {
+      $crossRef = crossRefData($p["doi"][0]);
+      if (!$crossRef) {
+        // JSTOR's UID is not registered as a DOI, meaning that there is another (correct - DOIs should be unique) DOI, issued by the publisher.
+        if ($editing_cite_doi_template) {
+          $jstor_redirect = $p["doi"][0];
+          }
+        unset ($p["doi"][0]);
+        preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
+        $crossRef = crossRefDoi($p["title"][0], $p["journal"][0], is("author1")?$p["author1"][0]:$p["author"][0]
+                               , $p["year"][0], $p["volume"][0], $pagenos[1], $pagenos[3], $p["issn"][0], null);
+      }
+    } else {
+      echo "not found in JSTOR?";
+    }
+  } else {
+    // Not a JSTOR doi, use CrossRef
+    $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
+  }
+
+  if ($crossRef) {
+    echo "\n - Checking CrossRef for more details";
+    if ($editing_cite_doi_template) {
+      $doiCrossRef = $crossRef;
+    }
+    ifNullSet("title", $crossRef->article_title);
+    ifNullSet("year", $crossRef->year);
+    if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
+        && $crossRef->contributors->contributor) {
+      foreach ($crossRef->contributors->contributor as $author) {
+        $au_i++;
+        if ($au_i < 10) {
+          ifNullSet("last$au_i", formatSurname($author->surname));
+          ifNullSet("first$au_i", formatForename($author->given_name));
+        }
+      }
+    }
+    ifNullSet("doi", $crossRef->doi);
+    if ($jstor_redirect) {
+      global $jstor_redirect_target;
+      $jstor_redirect_target = $crossRef->doi;
+    }
+    ifNullSet($journal, $crossRef->journal_title);
+    ifNullSet("volume", $crossRef->volume);
+    if (!is("page")) ifNullSet("pages", $crossRef->first_page);
+  } else {
+    echo "\n - No CrossRef record found :-(";
+  }
+  return $crossRef;
+}
+
 function getDataFromArxiv($a) {
   $xml = simplexml_load_file( "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a");
 	if ($xml) {
@@ -1432,6 +1507,7 @@ function niceTitle($in, $sents = true){
 	if ($in == strtoupper($in) && strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
 		$in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
 	}
+  $in = str_ireplace(" (New York, N.Y.)", "", $in); // Pubmed likes to include this after "Science", for some reason
   $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
 	if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
 		$newcase = preg_replace("~(\w\s+)A(\s+\w)~", "$1a$2",

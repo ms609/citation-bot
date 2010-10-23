@@ -7,7 +7,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
   if ($htmlOutput == -1) {
     ob_start();
   }
-  #$commit_edits = false;
+  $commit_edits = false;
   global $p, $bot, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2;
 
   $file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision$');
@@ -397,7 +397,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
 //
 echo "
 *-> {$p["title"][0]}
- 1: Tidy citation and try <s>ISBN</s> SICI";
+ 1: Tidy citation and try to expand";
 //  See if we can get any 'free' metadata from:
 //  * mis-labelled parameters
 //  * ISBN
@@ -636,11 +636,16 @@ echo "
 */
           // Is there already a date parameter?
           $dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
+          
+          // By this point we'll have recovered any DOI or PMID that is hidden in the citation data itself.
 
 
 #####################################
 //
 if (is('doi')) {
+  if (!nothingMissing($journal)) {
+    expand_from_doi($crossRef, $editing_cite_doi_template);
+  }
 echo "
  2: DOI already present :-)";
 // TODO: Use DOI to expand citation
@@ -666,27 +671,35 @@ echo "
 
             //Try URL param
             if (!isset($p["doi"][0])) {
-              if (strpos($p["url"][0], "http://") !== false) {
-                if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)) {
+              if (is("jstor")) {
+                if (get_data_from_jstor("10.2307/" . $p["jstor"][0])) {
                   echo $htmlOutput
-                        ? ("\n - Getting data from <a href=\"" . $p["url"][0] . "\">JSTOR record</a>.")
-                        : "\n - Querying JSTOR record from URL " . $jid[0];
-                  get_data_from_jstor("10.2307/$jid[1]");
-                } else {
-                  //Try using URL parameter
-                  echo $htmlOutput
-                        ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
-                        : "\n - Trying URL {$p["url"][0]}";
-                  $doi = findDoi($p["url"][0]);
-                  if ($doi) {
-                    echo " found doi $doi";
-                    $p["doi"][0] = $doi;
-                  } else {
-                    echo " no doi found.";
-                  }
+                        ? "\n - Got data from JSTOR.<br />"
+                        : "\n - Got data from JSTOR.";
                 }
               } else {
-                echo "No valid URL specified.  ";
+                if (strpos($p["url"][0], "http://") !== false) {
+                  if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)) {
+                    echo $htmlOutput
+                          ? ("\n - Getting data from <a href=\"" . $p["url"][0] . "\">JSTOR record</a>.")
+                          : "\n - Querying JSTOR record from URL " . $jid[0];
+                    get_data_from_jstor("10.2307/$jid[1]");
+                  } else {
+                    //Try using URL parameter
+                    echo $htmlOutput
+                          ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
+                          : "\n - Trying URL {$p["url"][0]}";
+                    $doi = findDoi($p["url"][0]);
+                    if ($doi) {
+                      echo " found doi $doi";
+                      $p["doi"][0] = $doi;
+                    } else {
+                      echo " no doi found.";
+                    }
+                  }
+                } else {
+                  echo "No valid URL specified.  ";
+                }
               }
             }
           }
@@ -696,6 +709,9 @@ echo "
 #####################################
 //
 if (is ('pmid')) {
+if (!nothingMissing($journal)) {
+  expand_from_pubmed();
+}
 echo "
  3: PMID already present :-)";
 // TODO: use PMID to expand citation
@@ -764,82 +780,16 @@ echo "
 
 
           if (!nothingMissing($journal) && is('pmid')) {
-            echo "\n - Checking PMID {$p['pmid'][0]} for more details";
-            $details = pmArticleDetails($p['pmid'][0]);
-            foreach ($details as $key => $value) {
-              ifNullSet($key, $value);
-            }
-            if (false && !is("url")) { // TODO:  BUGGY - CHECK PMID DATABASES, and see other occurrence above
-              if (!is('pmc')) {
-              $url = pmFullTextUrl($p["pmid"][0]);
-              } else {
-                unset ($p['url']);
-              }
-              if ($url) {
-                set ("url", $url);
-              }
-            }
+            expand_from_pubmed();
           }
 
           if (!nothingMissing($journal)) {
             if (is("doi")) {
-              $jstor_redirect = null;  // reset
-              $jstor_redirect_target = null;  // reset
-                if (substr($p["doi"][0], 3, 4) == "2307") {
-                  echo "\n - Populating from JSTOR database: ";
-                  if (get_data_from_jstor($p["doi"][0])) {
-                    $crossRef = crossRefData($p["doi"][0]);
-                    if (!$crossRef) {
-                      // JSTOR's UID is not registered as a DOI, meaning that there is another (correct - DOIs should be unique) DOI, issued by the publisher.
-                      if ($editing_cite_doi_template) {
-                        $jstor_redirect = $p["doi"][0];
-                        }
-                      unset ($p["doi"][0]);
-                      preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
-                      $crossRef = crossRefDoi($p["title"][0], $p["journal"][0], is("author1")?$p["author1"][0]:$p["author"][0]
-                                             , $p["year"][0], $p["volume"][0], $pagenos[1], $pagenos[3], $p["issn"][0], null);
-                    }
-                  } else {
-                    echo "not found in JSTOR?";
-                  }
-                } else {
-                  $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
-                }
-
-              if ($crossRef) {
-                echo "\n - Checking CrossRef for more details";
-                if ($editing_cite_doi_template) {
-                  $doiCrossRef = $crossRef;
-                }
-                ifNullSet("title", $crossRef->article_title);
-                ifNullSet("year", $crossRef->year);
-                if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
-                    && $crossRef->contributors->contributor) {
-                  $authors=null;
-                  $au_i = 0;
-                  foreach ($crossRef->contributors->contributor as $author) {
-                    $au_i++;
-                    if ($au_i < 10) {
-                      ifNullSet("last$au_i", formatSurname($author->surname));
-                      ifNullSet("first$au_i", formatForename($author->given_name));
-                    }
-                  }
-                }
-                ifNullSet("doi", $crossRef->doi);
-                if ($jstor_redirect) {
-                  $jstor_redirect_target = $crossRef->doi;
-                }
-                ifNullSet($journal, $crossRef->journal_title);
-                ifNullSet("volume", $crossRef->volume);
-                if (!is("page")) ifNullSet("pages", $crossRef->first_page);
-              } else {
-                echo "\n - No CrossRef record found :-(";
-              }
+              $crossRef = expand_from_doi($crossRef, $editing_cite_doi_template);
             } else {
               echo "\n - No DOI; can't check CrossRef";
               $crossRef = null;
             }
-
           }
         }
 #####################################
@@ -1312,7 +1262,7 @@ Done.  Just a couple of things to tweak now...";
               , $editInitiator . "Redirecting from JSTOR UID to official unique DOI, to avoid duplication");
             print "\n * Redirected " . wikititle_encode($jstor_redirect) . " to $page. ";
           }
-          if ( strpos($page, "andbox")>1) {
+          if (strpos($page, "andbox") > 1) {
               echo $htmlOutput?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
               write($page . $_GET["subpage"], $pagecode, $editInitiator . "Citation maintenance: Fixing/testing bugs. "
                 .	"Problems? [[User_talk:Smith609|Contact the bot's operator]]. ");

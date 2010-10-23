@@ -324,7 +324,7 @@ function cite_template_contents($type, $id) {
 
 function create_cite_template($type, $id) {
   print ("\n -- Create cite template at Template:Cite $type/$id");
-  return expand("Template: Cite $type/" . wikititle_encode($id), true, true, "{{Cite journal\n | $type = $id \n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>");
+  return expand("Template:Cite $type/" . wikititle_encode($id), true, true, "{{Cite journal\n | $type = $id \n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>");
 }
 
 function combine_duplicate_references($page_code) {
