@@ -3,12 +3,12 @@
 
 // Returns pagecode if the calling script should continue; false otherwise
 function expand($page, $commit_edits = false, $editing_cite_doi_template = false, $cite_doi_start_code = null, $htmlOutput = false) {
-
-  if ($htmlOutput == -1) {
-    ob_start();
-  }
   $commit_edits = false;
+
   global $p, $bot, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2;
+  if ($htmlOutput == -1) {
+    //ob_start();
+  }
 
   $file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision$');
   $doitools_revision_id = revisionID();
@@ -291,6 +291,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
           if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
           if (is($param)) $pEnd[$param] = $v[0];
         }
+        $last_p = $p;
         $p = null;
         if ($pEnd) {
           foreach ($pEnd as $param => $value) {
@@ -636,7 +637,7 @@ echo "
 */
           // Is there already a date parameter?
           $dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
-          
+
           // By this point we'll have recovered any DOI or PMID that is hidden in the citation data itself.
 
 
@@ -1067,6 +1068,7 @@ Done.  Just a couple of things to tweak now...";
         $pagecode .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
         $cText = null;
         $crossRef = null;
+        $last_p = $p;
         $p = null;
       }
 
@@ -1184,6 +1186,7 @@ Done.  Just a couple of things to tweak now...";
           if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
           if (is($param)) $pEnd[$param] = $v[0];
         }
+        $last_p = $p;
         $p = null;
         if ($pEnd)
           foreach ($pEnd as $param => $value)
@@ -1238,7 +1241,7 @@ Done.  Just a couple of things to tweak now...";
         }
         echo $smartSum;
         $editSummary = $editSummaryStart . $editInitiator . $smartSum . $initiatedBy . $editSummaryEnd;
-        $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . htmlentities(mb_convert_encoding($pagecode, "UTF-8")) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made.<br><b>Changes:</b> <i>$smartSum</i></p>";
+        $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . htmlentities(mb_convert_encoding($pagecode, "UTF-8")) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to $page.<br><b>Changes:</b> <i>$smartSum</i></p>";
 
         if ($editing_cite_doi_template && strtolower(substr(trim($pagecode), 0, 5)) != "{{cit") {
           if (substr($pagecode, 0, 15) == "HTTP/1.0 200 OK") {
@@ -1261,6 +1264,43 @@ Done.  Just a couple of things to tweak now...";
             write ("Template:Cite doi/" . wikititle_encode($jstor_redirect), "#REDIRECT [[$page]]"
               , $editInitiator . "Redirecting from JSTOR UID to official unique DOI, to avoid duplication");
             print "\n * Redirected " . wikititle_encode($jstor_redirect) . " to $page. ";
+          }
+          if ($editing_cite_doi_template) {
+            $p = $last_p; // temporary
+            // Create any necessary redirects
+            $pmid_page = "Template:Cite pmc/" . $p["pmc"][0];
+            $pmid_page = "Template:Cite pmid/" . $p["pmid"][0];
+            $doi_page = "Template:Cite doi/" . wikititle_encode($p["doi"][0]);
+            $jstor_page = "Template:Cite doi/10.2307" . wikititle_encode("/" . $p["jstor"][0]);
+            if (is("doi")) {
+              $redirect_target = $doi_page;
+            } else if (is("pmid")) {
+              $redirect_target = $pmid_page;
+            } else if (is("pmc")) {
+              $redirect_target = $pmc_page;
+            } else if (is("jstor")) {
+              $redirect_target = $jstor_page;
+            }
+            // Check for re-directs and create if necessary
+            if (is("pmc") && $redirect_target != $pmc_page && !getArticleId($pmc_page)) {
+              write ($pmc_page, "#REDIRECT [[$redirect_target]]"
+                , $editInitiator . "Redirecting to avoid duplication");
+              $page = $redirect_target;
+            }
+            if (is("pmid") && $redirect_target != $pmid_page && !getArticleId($pmid_page)) {
+              write ($pmid_page, "#REDIRECT [[$redirect_target]]"
+                , $editInitiator . "Redirecting to avoid duplication");
+              $page = $redirect_target;
+            }
+            if (is("jstor") && $redirect_target != $jstor_page && !getArticleId($jstor_page)) {
+              write ($jstor_page, "#REDIRECT [[$redirect_target]]"
+                , $editInitiator . "Redirecting from JSTOR UID to official unique DOI, to avoid duplication");
+              $page = $redirect_target;
+            }
+            if (stripos($page, "plate:Cite jstor") && $p["jstor"][0]) {
+              $page = $jstor_page;
+            }
+            $p = null; // re-reset
           }
           if (strpos($page, "andbox") > 1) {
               echo $htmlOutput?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
