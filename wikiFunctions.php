@@ -7,7 +7,7 @@ function categoryMembers($cat){
   //print "Category: $cat\n";
   // rm restore 5 to 500.
 
-  $url="http://en.wikipedia.org/w/api.php?cmtitle=Category:$cat&action=query&cmlimit=5&format=xml&list=categorymembers";
+  $url= api . "?cmtitle=Category:$cat&action=query&cmlimit=5&format=xml&list=categorymembers";
 	$qc = "query-continue";
 
 	do {
@@ -35,22 +35,22 @@ function wikititle_encode($in) {
 }
 
 function getLastRev($page){
-  $xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
+  $xml = simplexml_load_file(api . "?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
 function getArticleId($page) {
-  $xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
+  $xml = simplexml_load_file(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["pageid"];
 }
 
 function getNamespace($page) {
-	$xml = simplexml_load_file("http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page));
+	$xml = simplexml_load_file(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["ns"];
 }
 
 function isRedirect($page) {
-  $url = "http://en.wikipedia.org/w/api.php?action=query&format=xml&prop=info&titles=" . urlencode($page);
+  $url = api . "?action=query&format=xml&prop=info&titles=" . urlencode($page);
   $xml = simplexml_load_file($url);
 	if ($xml->query->pages->page["pageid"]) {
     // Page exists
@@ -65,7 +65,12 @@ function parse_wikitext($text, $title="API") {
   $url = api
           . "?format=json&action=parse&text=" . urlencode($text)
           . "&title=" . urlencode($title);
-  $a = json_decode(file_get_contents($url), true) ;
+  $a = json_decode(file_get_contents($url), true);
+  if (!$a) {
+    // Wait a sec and try again
+    sleep(2);
+    $a = json_decode(file_get_contents($url), true);
+  }
   return $a["parse"]["text"]["*"];
 }
 
@@ -89,7 +94,11 @@ function articleID($page, $namespace = 0) {
 
 function getRawWikiText($page, $wait = false, $verbose = false, $use_daniel = true) {
   $encode_page = urlencode($page);
-  if ($use_daniel) {
+  print $verbose ? "\n scraping... " : "";
+    // Get the text by scraping edit page
+    $url = wikiroot . "title=" . $encode_page . "&action=raw";
+    $contents = (string) @file_get_contents($url);
+  if (!$contents && $use_daniel) {
     $url = "http://toolserver.org/~daniel/WikiSense/WikiProxy.php?wiki=en&title="
         . $encode_page . "&rev=&go=Fetch&token=";
     $contents = (string) file_get_contents($url);
@@ -111,15 +120,6 @@ function getRawWikiText($page, $wait = false, $verbose = false, $use_daniel = tr
       $contents = (string) @file_get_contents($url);
     }
   }
-  if (!$contents) {
-    print $verbose ? "\n scraping... " : "";
-    // Get the text by scraping edit page
-    $url = wikiroot . "title=" . $encode_page . "&action=edit";
-    $scrapings = file_get_contents($url);
-    if (preg_match("~<textarea.*>([\s\S]*)</textarea>~", $scrapings, $match)) {
-      return $match[1];
-    }
-  }
   return $contents;
 }
 
@@ -128,7 +128,7 @@ function is_valid_user($user) {
 }
 
 function whatTranscludes2($template, $namespace=99){
-	$url = "http://en.wikipedia.org/w/api.php?action=query&list=embeddedin&eilimit=500&format=xml&eititle=Template:$template" . (($namespace==99)?"":"&einamespace=$namespace");
+	$url = api . "?action=query&list=embeddedin&eilimit=500&format=xml&eititle=Template:$template" . (($namespace==99)?"":"&einamespace=$namespace");
 	$qc = "query-continue";
 	if ($_GET["debug"]) print_r($res);
 	do{
@@ -190,17 +190,18 @@ function extract_parameters($template) {
   while (preg_match($comment_regexp, $template)) {
     $template = preg_replace($comment_regexp, "$1$pipe_placeholder$2", $template);
   }
+
   // Replace templates with placeholders
   $template_placeholder = "!-TEMPLATE PLACEHOLDER TP%s-!";
   $template_placeholder_regexp = "~$template_placeholder~";
   #$template_regexp = "~\{\{\s*[^\|\}]+([^\{]|\{[^\{]|\{\{[^/}]+\}\})*?\}\}~";
+
   while (preg_match(template_regexp, $template, $match)) {
-    ++$i;
-    $subtemplate[$i] = $match[1]; // TODO: check that this still works with the global template_regexp
+    $subtemplate[++$i] = $match[0];
     $template = str_replace($subtemplate[$i], sprintf($template_placeholder, $i), $template);
   }
-
   $splits = preg_split("~(\s*\|\s*)~", $template, -1, PREG_SPLIT_DELIM_CAPTURE);
+
   // The first line doesn't contain a parameter; it's the template name
   $i = 0;
   foreach ($splits as $split) {
@@ -244,9 +245,10 @@ function generate_template ($name, $parameters) {
   return $output . '}}';
 }
 
-function wikiLink($page, $style) {
+function wikiLink($page, $style, $target = null) {
+  if (!$target) $target = $page;
   $css = $style?" style='color:$style !important'":"";
-  return "<a href='" . wikiroot . "title=" . urlencode($page) . "' title='$page on Wikipedia'$css>$page</a>";
+  return "<a href='" . wikiroot . "title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
 }
 
 function geo_range_ok ($template) {

@@ -52,11 +52,12 @@ $ON = true; // Uncomment this line to test edits in the Zandbox; but remember to
 //include("expand.php");// i.e. GO!
 
 
+$page = "User:DOI_bot/Zandbox";
 $start_code = getRawWikiText($page, false, false);
-print $start_code . "\n\n";
-$end_text = combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc"));
+
+$end_text = name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc")));
 //$end_text = ref_templates($end_text, "pmid");
 print "\n" . $end_text;
-//write($page, $end_text, "Re task #7: ref JSTOR, with tweak to created format");
+//write($page, $end_text, "Re task #6 : Trial edit");
 
 print "\n Done. \n";
