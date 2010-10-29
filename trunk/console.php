@@ -57,7 +57,7 @@ $start_code = getRawWikiText($page, false, false);
 
 $end_text = name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc")));
 //$end_text = ref_templates($end_text, "pmid");
-print "\n" . $end_text;
-//write($page, $end_text, "Re task #6 : Trial edit");
+//print "\n" . $end_text;
+//write($page, $end_text, $editInitiator . "Re task #6 : Trial edit");
 
 print "\n Done. \n";

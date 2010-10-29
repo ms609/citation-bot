@@ -382,36 +382,38 @@ function combine_duplicate_references($page_code) {
         $content_of_duplicate[] = $content;
       }
     }
-    if ($content_of_duplicate) {
-      foreach ($content_of_duplicate as $i => $duplicate) {
-
-        print ("\n - Replacing duplicate reference $duplicate \n");
-        $replacement_template_name = $name_of_original[$i]
-                                   ? $name_of_original[$i]
-                                   : get_name_for_reference($full_original[$i], $original_page_code);
-        preg_match("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
-                                  . "(?P=quote)(\s*/>)~",
-                            $page_code, $match);
-        // First replace any <ref name=that'sall/> with the new name
-        $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
-                                  . "(?P=quote)(\s*/>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
-                            $page_code);
-        
-        if ($name_of_duplicate[$i]) { // or of_original?
-          $replacement_template_name = $name_of_original[$i];
-          $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]) + strlen($full_original[$i]);
-          $code_upto_original_ref = substr($page_code, 0, $original_ref_end_pos);
-        } else {
-          $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]);
-          $code_upto_original_ref = substr($page_code, 0, $original_ref_end_pos) // Sneak this in to "first_duplicate"
-                           . preg_replace("~<ref(\s+name=(?P<quote>[\"']?)" . preg_quote($name_of_original[$i])
-                                   . "(?P=quote)\s*)?>~", "<ref name=\"$replacement_template_name\">", $full_original[$i]);
-          $original_ref_end_pos += strlen($full_original[$i]);
-        }
-        // Then check that the first occurrence won't be replaced
-        if ($original_ref_end_pos) {
-          $page_code = $code_upto_original_ref . str_replace($full_duplicate[$i],
+    if ($full_duplicate) {
+      foreach ($full_duplicate as $i => $this_duplicate) {
+        if (false === array_search($this_duplicate, $already_replaced)) {
+          $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once
+          print ("\n - Replacing duplicate reference $this_duplicate (original: $full_original[$i])");
+          $replacement_template_name = $name_of_original[$i]
+                                     ? $name_of_original[$i]
+                                     : get_name_for_reference($full_original[$i], $original_page_code);
+          preg_match("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
+                                    . "(?P=quote)(\s*/>)~",
+                              $page_code, $match);
+          // First replace any <ref name=that'sall/> with the new name
+          $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
+                                    . "(?P=quote)(\s*/>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
+                              $page_code);
+          if ($name_of_original[$i]) {
+            // Don't replace the original template!
+            $replacement_template_name = $name_of_original[$i];
+            $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]) + strlen($full_original[$i]);
+            $code_upto_original_ref = substr($ready_to_replace, 0, $original_ref_end_pos);
+          } else {
+            // We need add a name to the original template, and not to replace it
+            $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]);
+            $code_upto_original_ref = substr($ready_to_replace, 0, $original_ref_end_pos) // Sneak this in to "first_duplicate"
+                             . preg_replace("~<ref(\s+name=(?P<quote>[\"']?)" . preg_quote($name_of_original[$i])
+                                     . "(?P=quote)\s*)?>~i", "<ref name=\"$replacement_template_name\">", $full_original[$i]);
+            $original_ref_end_pos += strlen($full_original[$i]);
+          }
+          // Then check that the first occurrence won't be replaced
+          $page_code = $code_upto_original_ref . str_replace($this_duplicate,
                     "<ref name=\"$replacement_template_name\" />", substr($ready_to_replace, $original_ref_end_pos));
+          #print "with  \"<ref name=\"$replacement_template_name\" />\"\n";
         }
       }
     }
