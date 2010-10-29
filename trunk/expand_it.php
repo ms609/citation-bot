@@ -3,7 +3,7 @@
 
 // Returns pagecode if the calling script should continue; false otherwise
 function expand($page, $commit_edits = false, $editing_cite_doi_template = false, $cite_doi_start_code = null, $htmlOutput = false) {
-  $commit_edits = false;
+  #$commit_edits = false;
 
   global $p, $bot, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2;
   if ($htmlOutput == -1) {
