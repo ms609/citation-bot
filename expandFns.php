@@ -386,7 +386,7 @@ function combine_duplicate_references($page_code) {
       foreach ($full_duplicate as $i => $this_duplicate) {
         if (false === array_search($this_duplicate, $already_replaced)) {
           $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once
-          print ("\n - Replacing duplicate reference $this_duplicate (original: $full_original[$i])");
+          print "\n - Replacing duplicate reference $this_duplicate"; // . " (original: $full_original[$i])";
           $replacement_template_name = $name_of_original[$i]
                                      ? $name_of_original[$i]
                                      : get_name_for_reference($full_original[$i], $original_page_code);

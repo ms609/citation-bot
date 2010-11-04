@@ -114,6 +114,9 @@ function is($key){
 
 function set($key, $value) {
 	global $p;
+  // Dud DOI in PMID database
+  if ($key == "doi" && $value == "10.1267/science.040579197") {return false;}
+  
   $parameter_order = list_parameters();
   if (trim($value) != "") {
     $p[$key][0] = (string) $value;

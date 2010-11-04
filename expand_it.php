@@ -193,6 +193,11 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
           $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
         }
 
+        if ($p["doi"][0] == "10.1267/science.040579197") {
+          // This is a bogus DOI from the PMID example file
+          unset ($p["doi"]);
+        }
+
         //page nos
         preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
 
@@ -941,9 +946,15 @@ Done.  Just a couple of things to tweak now...";
           echo $brokenDoi?" It isn't.":"OK!", "</p>";
         }
 
+
+        if ($p["doi"][0] == "10.1267/science.040579197") {
+          // This is a bogus DOI from the PMID example file
+          unset ($p["doi"]);
+        }
+
         //DOIlabel is now redundant
         unset($p["doilabel"]);
-        // See http://en.wikipedia.org/wiki/Category:Citation_templates_using_redundant_parameters for pages still using it.
+        // See http://en.wikipedia.org/wiki/Category:Citation_templates_using_redundant_parameters for pages still using it.  I cleared this on Nov 4to 2010 when it contained several protein pages
 
         //Edition - don't want 'Edition ed.'
         if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
