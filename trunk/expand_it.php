@@ -8,7 +8,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
   
   global $p, $bot, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2;
   if ($htmlOutput == -1) {
-    //ob_start();
+    ob_start();
   }
 
   $file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision$');
@@ -19,11 +19,11 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
     $editInitiator = str_replace($doitools_revision_id, $file_revision_id, $editInitiator);
     $last_revision_id = $file_revision_id;
   }
-  print $htmlOutput < 0 ?  "" : "\nRevision #$last_revision_id";
+  echo "\nRevision #$last_revision_id";
 
 
   $startPage = time();
-  echo $htmlOutput?("\n<hr>[" . date("H:i:s", $startPage) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $startPage));
+  echo $htmlOutput ? ("\n<hr>[" . date("H:i:s", $startPage) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $startPage));
 
   $bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
   $startcode = $bot->results;
@@ -41,14 +41,14 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
     $citation_count = count ($citation[0]);
     $cite_id_count = count ($cite_id[0]);
     if ($cite_id_count > 3 || $cite_id_count + 1 >= ($cite_x_count + $citation_count - $cite_id_count)) {
-      print $htmlOutput < 0 ?  "" : "\n - switch to cite id format is supported.";
+      echo "\n - switch to cite id format is supported.";
     }
     $harv_template_present = (stripos($startcode, "{{harv") === false)?false:true;
     if ($cite_x_count * $citation_count > 0) {
       // Two types are present
       $unify_citation_templates = true;
       $citation_template_dominant = ($cite_x_count < $citation_count);
-      print $htmlOutput < 0 ?  "" : "\n * " . (($citation_template_dominant)?"\"Citation\"":'"Cite xxx"') . " format is dominant on this page: " .
+      echo "\n * " . (($citation_template_dominant)?"\"Citation\"":'"Cite xxx"') . " format is dominant on this page: " .
            $cite_x_count . " cite / " . $citation_count . " citation." ;
     } else {
        $unify_citation_templates = false;
@@ -72,7 +72,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
      if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $pagecode)) {
        $pagecode = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $pagecode);
        $changedDashes = true;
-       print $htmlOutput < 0 ?  "" : "Converted dashes in all page parameters to en-dashes.\n";
+       echo "Converted dashes in all page parameters to en-dashes.\n";
      }
 
   /*/Search for any duplicate refs with names
@@ -182,7 +182,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
 
 
         if (google_book_expansion()) {
-          print $htmlOutput < 0 ?  "" : "\n * Expanded from Google Books API.";
+          echo "\n * Expanded from Google Books API.";
         }
 
 
@@ -218,7 +218,9 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
 
         $isbnToStartWith = isset($p["isbn"]);
         if (!isset($p["isbn"][0]) && is("title")) set("isbn", findISBN( $p["title"][0], $p["author"][0] . " " . $p["last"][0] . $p["last1"][0]));
-        else echo "\n  Already has an ISBN. ";
+        else {
+          echo "\n  Already has an ISBN. ";
+        }
         if (!$isbnToStartWith && !$p["isbn"][0]) unset($p["isbn"]);
 
         /*  ISBN lookup disabled -- too buggy.
@@ -283,7 +285,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
         //And we're done!
         $endtime = time();
         $timetaken = $endtime - $starttime;
-        print $htmlOutput < 0 ?  "" : "\n  Book reference assessed in $timetaken secs.";
+        echo "\n  Book reference assessed in $timetaken secs.";
 
         // Get a format for spacing around the pipe or equals
         foreach ($p as $oP){
@@ -387,7 +389,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
         if (is("inventor") ||
             is("inventor-last") ||
             is("patent-number")) {
-          print $htmlOutput < 0 ?  "" : "<p>Citation bot does not handle patent citations.</p>";
+          echo "<p>Citation bot does not handle patent citations.</p>";
         } else {
         //Check for the doi-inline template in the title
         if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~"
@@ -419,7 +421,7 @@ echo "
           useUnusedData();
 
           if (google_book_expansion()) {
-            print $htmlOutput < 0 ?  "" : "\n * Expanded from Google Books API.";
+            echo "\n * Expanded from Google Books API.";
           }
 
           /*if (is("url") && !is("journal") && !is("periodical") && !is("magazine") && !is("newspaper")) {
@@ -533,7 +535,7 @@ echo "
               }
               // Observe an 'et al', and remove it.
               $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)$~", "", $p['author'][0]);
-              print $htmlOutput < 0 ?  "" : " - $truncate_after authors then <i>et al</i>. Will grow list later.";
+              echo " - $truncate_after authors then <i>et al</i>. Will grow list later.";
               $authors_missing = true;
               //ifNullSet('display-authors', $truncate_after);
             }
@@ -541,7 +543,7 @@ echo "
 */
 
           $author_param = trim($p['author'][0]);
-          print $htmlOutput < 0 ?  "" : "\n" . $author_param;
+          echo "\n" . $author_param;
           /*  REMOVED THIS SECTION IN R61
           // Replace 'and' with an appropriate punctuation 'signpost'
           if (preg_match("~ ([Aa]nd|\&) ([\w\W]+)$~U", $author_param, $match)){
@@ -733,7 +735,7 @@ echo "
 
 
 
-          print $htmlOutput < 0 ?  "" : "\n - Searching PubMed... ";
+          echo "\n - Searching PubMed... ";
           $results = (pmSearchResults($p));
           if ($results[1] == 1) {
             set('pmid', $results[0]);
@@ -881,7 +883,7 @@ Done.  Just a couple of things to tweak now...";
 
            if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
           {
-            print $htmlOutput < 0 ?  "" : "\n - Checking that URL is live...";
+            echo "\n - Checking that URL is live...";
             $formatSet = isset($p["format"]);
             $p["format"][0] = assessUrl($p["url"][0]);
             if (!$formatSet && trim($p["format"][0]) == "") {
@@ -918,7 +920,7 @@ Done.  Just a couple of things to tweak now...";
             if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p["author$au_i"][0], $match)) {
               ifNullSet("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
               set("author$au_i", $match[3]); // Replace author with unlinked version
-              print $htmlOutput < 0 ?  "" : "Dissecting authorlink";
+              echo "Dissecting authorlink";
             }
           }
 
@@ -940,7 +942,7 @@ Done.  Just a couple of things to tweak now...";
           $brokenDoi = isDoiBroken($p["doi"][0], $p, $slowMode);
           if ($brokenDoi && !is("doi_brokendate") && !is("doi_inactivedate")) {
             set("doi_inactivedate", date("Y-m-d"));
-            print $htmlOutput < 0 ?  "" : "\n\n $doi \n\n";
+            echo "\n\n $doi \n\n";
             sleep(5);
           }
           ELSE if (!$brokenDoi) unset($p["doi_brokendate"]); unset($p["doi_inactivedate"]);
@@ -1071,7 +1073,7 @@ Done.  Just a couple of things to tweak now...";
         //And we're done!
         $endtime = time();
         $timetaken = $endtime - $starttime;
-        print $htmlOutput < 0 ?  "" : "\n*** Complete. Citation assessed in $timetaken secs.\n\n\n";
+        echo "\n*** Complete. Citation assessed in $timetaken secs.\n\n\n";
 
         // Restore comments we hid earlier
         for ($j = 0; $j < $countComments; $j++) {
@@ -1138,7 +1140,7 @@ Done.  Just a couple of things to tweak now...";
 
         // Is there already a date parameter?
         $dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
-        print $htmlOutput < 0 ?  "" : $p["eprint"][0] . "\n";
+        echo $p["eprint"][0] . "\n";
         if (is("eprint")
             && !(is("title") && is("author") && is("year") && is("version"))) {
             $p["eprint"][0] = str_ireplace("arXiv:", "", $p["eprint"][0]);
@@ -1184,7 +1186,7 @@ Done.  Just a couple of things to tweak now...";
         //And we're done!
         $endtime = time();
         $timetaken = $endtime - $starttime;
-        print $htmlOutput < 0 ?  "" : "* Citation assessed in $timetaken secs. " . ($changeToJournal?"Changing to Cite Journal. ":"Keeping as cite arXiv") . "\n";
+        echo "* Citation assessed in $timetaken secs. " . ($changeToJournal?"Changing to Cite Journal. ":"Keeping as cite arXiv") . "\n";
         foreach ($p as $oP){
           $pipe=$oP[1]?$oP[1]:null;
           $equals=$oP[2]?$oP[2]:null;
@@ -1259,7 +1261,7 @@ Done.  Just a couple of things to tweak now...";
 
         if ($editing_cite_doi_template && strtolower(substr(trim($pagecode), 0, 5)) != "{{cit") {
           if (substr($pagecode, 0, 15) == "HTTP/1.0 200 OK") {
-            print $htmlOutput < 0 ?  "" : "Headers included in pagecode; removing...\n";
+            echo "Headers included in pagecode; removing...\n";
             $pagecode = preg_replace("~$[\s\S]+\{\{~", "{{", $pagecode);
           } else {
             mail ("MartinS+citewatch@gmail.com"
@@ -1277,7 +1279,7 @@ Done.  Just a couple of things to tweak now...";
             $page = "Template:Cite doi/" . wikititle_encode($jstor_redirect_target);
             write ("Template:Cite doi/" . wikititle_encode($jstor_redirect), "#REDIRECT [[$page]]"
               , $editInitiator . "Redirecting from JSTOR UID to official unique DOI, to avoid duplication");
-            print $htmlOutput < 0 ?  "" : "\n * Redirected " . wikititle_encode($jstor_redirect) . " to $page. ";
+            echo "\n * Redirected " . wikititle_encode($jstor_redirect) . " to $page. ";
           }
           if ($editing_cite_doi_template) {
             $p = $last_p; // temporary
@@ -1366,7 +1368,7 @@ Done.  Just a couple of things to tweak now...";
         echo "\n ** No changes required --> no edit made.";
         if ($editing_cite_doi_template) {
           if (!articleID($page) && !$doiCrossRef && $oDoi) {
-            print $htmlOutput < 0 ?  "" : "\n\n* Non-functional identifier $page found in article [[$article_in_progress]]";
+            echo "\n\n* Non-functional identifier $page found in article [[$article_in_progress]]";
             if (getNamespace($article_in_progress) == 0) {
               $talkPage = "Talk:$article_in_progress";
               $talkMessage = "== Reference to broken DOI ==\n"
@@ -1382,27 +1384,27 @@ Done.  Just a couple of things to tweak now...";
 
               if ($talkId) {
                 $text = getRawWikiText($talkPage);
-                print $htmlOutput < 0 ?  "" : "\nTALK PAGE EXISTS " . strlen($text) . "\n\n";
+                echo "\nTALK PAGE EXISTS " . strlen($text) . "\n\n";
               } else {
                 $text = '';
-                print $htmlOutput < 0 ?  "" : "\nTALK PAGE DOES NOT EXIST\n\n";
+                echo "\nTALK PAGE DOES NOT EXIST\n\n";
               }
               if (strpos($text, "|DOI]] [[doi:".$oDoi) || strpos($text, "d/nodoi&a")) {
-                print $htmlOutput < 0 ?  "" : "\n - Message already on talk page.  Zzz.\n";
+                echo "\n - Message already on talk page.  Zzz.\n";
               } else if ($text && $talkId || !$text && !$talkId) {
-                print $htmlOutput < 0 ?  "" : "\n * Writing message on talk page..." . $talkPage . "\n\n";
-                print $htmlOutput < 0 ?  "" : "\n\n Talk page $talkPage has ID $talkId; text was: [$text].  Our page was $page and " .
+                echo "\n * Writing message on talk page..." . $talkPage . "\n\n";
+                echo "\n\n Talk page $talkPage has ID $talkId; text was: [$text].  Our page was $page and " .
                         "the article in progress was $article_in_progress.\n";
                 write($talkPage,
                         ($text . "\n" . $talkMessage . "~~~~"),
                         "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!");
-                print $htmlOutput < 0 ?  "" : " Message left.\n";
+                echo " Message left.\n";
               } else {
-                print $htmlOutput < 0 ?  "" : "\n *  Talk page exists, but no text could be attributed to it. \n ?????????????????????????";
+                echo "\n *  Talk page exists, but no text could be attributed to it. \n ?????????????????????????";
               }
               mark_broken_doi_template($article_in_progress, $oDoi);
             } else {
-              print $htmlOutput < 0 ?  "" : "\n * Article in question is not in article space.  Switched to use 'Template:Broken DOI'." ;
+              echo "\n * Article in question is not in article space.  Switched to use 'Template:Broken DOI'." ;
               mark_broken_doi_template($article_in_progress, $oDoi);
             }
           }

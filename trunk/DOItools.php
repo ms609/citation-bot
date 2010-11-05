@@ -373,7 +373,7 @@ function expand_from_doi($crossRef, $editing_cite_doi_template) {
       global $jstor_redirect_target;
       $jstor_redirect_target = $crossRef->doi;
     }
-    ifNullSet($journal, $crossRef->journal_title);
+    ifNullSet("journal", $crossRef->journal_title);
     ifNullSet("volume", $crossRef->volume);
     if (!is("page")) ifNullSet("pages", $crossRef->first_page);
   } else {
