@@ -4,7 +4,7 @@
 $ON = true;
 
 
-$accountSuffix = '_2'; // Before expandfunctions
+$accountSuffix = '_4'; // Was 2. Before expandfunctions
 require_once("expandFns.php"); // includes login
 require_once("citewatchFns.php"); // inadvertently removed from wikiFunctions.php in r192
 
@@ -17,7 +17,8 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
 require_once("expand_it.php");
 
 echo "\n Retrieving category members: ";
-$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+#$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+$toDo = array("Protein_kinase_R");
 #$toDo = array("User:DOI bot/Zandbox");
 shuffle($toDo);
 $space = (array_keys($toDo, " "));
@@ -30,12 +31,16 @@ function getCiteList($page) {
 	global $bot;
 	$bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
 	$raw = $bot->results;
-	preg_match_all ("~\{\{[\s\n]*cite[ _]doi[\s\n]*\|[\s\n]*(10\.[^ \}]+)[\s\n]*\}\}~i", $raw, $doi);
+	preg_match_all ("~\{\{[\s\n]*cite[ _]doi[\s\n]*\|[\s\n]*([^ \}]+)[\s\n]*\}\}~i", $raw, $doi);
 	preg_match_all ("~\{\{[\s\n]*cite[ _]jstor[\n\s]*\|[\n\s]*(\d+)[\n\s]*\}\}~i", $raw, $jstorid);
 	preg_match_all ("~\{\{[\s\n]*cite[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*\}\}~i", $raw, $pmid);
 	preg_match_all ("~\{\{[\s\n]*cite[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*\}\}~i", $raw, $pmc);
-	preg_match_all ("~\{\{[\s\n]*cite[ _]google[ )]book[\n\s]*\|[\n\s]*(\d\w+)[\n\s]*\}\}~i", $raw, $gbook);
-	return Array($doi[1], $jstorid[1], $pmid[1], $pmc[1], $gbook[1]);
+  $category =  "[[Category:Articles citing non-functional identifiers]]";
+	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($page, $category)) {
+    global $editInitiator;
+    write($page, $raw . "\n$category", "$editInitiator Page contains malformed 'Cite xxx' templates; please fix!");
+  }
+  return Array($doi[1], $jstorid[1], $pmid[1], $pmc[1]);
 }
 
 function create_page ($type, $id) {
@@ -58,6 +63,9 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   if ($article_in_progress && trim($article_in_progress)) {
     print "\n\n** Finding citations in article: $article_in_progress";
     $toCite = getCiteList($article_in_progress);
+    if (!$toCite) {
+      echo " - None found!";
+    }
     $doi_todo = $toCite[0];
     foreach ($toCite[1] as $jid){
       $doi_todo[] = "10.2307/$jid";
@@ -224,8 +232,13 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
       }
       print ".";
     } else {
-      print "\n   > Creating new page at $oDoi \n";
-      print create_page("doi", $oDoi) ? "Done. " : "Failed. )-: ";
+      echo "\n   > Creating new page at $oDoi: ";
+      if (expand_from_doi($crossRef, true, true)) {
+        echo create_page("doi", $oDoi) ? "Done. " : "Failed. )-: ";
+      } else {
+        echo "Invalid DOI. Aborted operation.\n  > Marking DOI as broken:";
+        print mark_broken_doi_template($article_in_progress, $oDoi) ? " done. " : " write operation failed. ";
+      }
     }
   }
 
