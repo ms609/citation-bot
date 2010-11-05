@@ -35,7 +35,6 @@ function getCiteList($page) {
 }
 
 function create_page ($type, $id) {
-  print "\n Creating page of type $type with ID $id \n";
   $type = strtolower($type);
   global $ON, $dotDecode, $dotEncode;
   switch ($type) {
@@ -46,7 +45,7 @@ function create_page ($type, $id) {
       $encoded_id = $id;
   }
   return expand("Template:Cite $type/$encoded_id", $ON, true,
-                  "{{Cite journal\n| $type = $id\n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>");
+                  "{{Cite journal\n| $type = $id\n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>", -1);
 }
 
 while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in list */)) {
@@ -134,7 +133,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           } else {
             // Create it if it doesn't
             print "non-existent page. Creating > ";
-            create_page("doi", $redirect_target_doi[1]);
+            print create_page("doi", $redirect_target_doi[1]) ? " Done." : "Failed )-: ";
           }
         } else if (preg_match("~pmid/(\d+)\s*]]~", $pmc_page_text, $redirect_target_pmid)) {
           print "Redirects to ";
@@ -144,7 +143,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           } else {
             // Create the target page
             print "non-existent page; creating > ";
-            create_page("pmid", $redirect_target_pmid[1]);
+            print create_page("pmid", $redirect_target_pmid[1]) ? "Done. " : "Failed )-:";
           }
         } else {
           print "Cannot identify destination of redirect.  \n??????????????????????????????????????????????????????? ";
@@ -166,8 +165,9 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         if ($doi_from_pmid) {
           // redirect to a Cite Doi page, to avoid duplication
           $encoded_doi = str_replace($dotDecode, $dotEncode, $doi_from_pmid);
+          print "Creating new page at DOI $doi_from_pmid";
           if (create_page("doi", $doi_from_pmid)) {
-            print "Redirecting PMID $oPmid to $encoded_doi";
+            print "Created. \n  > Redirecting PMID $oPmid to $encoded_doi";
             print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation")
                 ? " : Done."
                 : " : ERROR\n\n > Write failed!\n";
@@ -177,11 +177,12 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         } else {
           print "No DOI found!";
           // No DOI found.  Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
-          create_page("pmid", $oPmid);
+          print create_page("pmid", $oPmid) ? " - Created page at PMID $oPmid" : " Couldn't create page at PMID $oPmid";
         }
       break;
       case 0:
         log_citation("pmid", $oPmid);
+        // Save to database
         print "Citation OK.";
       break;
       case 1:
@@ -199,12 +200,14 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           } else {
            // Create it if it doesn't
            print "nonexistent page. Creating > ";
-           create_page("doi", $redirect_target_doi[1]);
+           print create_page("doi", $redirect_target_doi[1]) ? "Success " : "Failure";
           }
         } else {
-          die ("$pmid_page Redirects to " . getRawWikiText($pmid_page));
+          exit ("$pmid_page Redirects to " . getRawWikiText($pmid_page));
         }
-      // end of case 2.
+      break;
+      default:
+        exit ("That's odd. This hasn't worked.  our PMID: $oPmid; citation_is_redirect: " . citation_is_redirect("pmid", $oPmid));
     }
   }
   
@@ -218,15 +221,16 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
       print ".";
     } else {
       print "\n   > Creating new page at $oDoi \n";
-      create_page("doi", $oDoi);
+      print create_page("doi", $oDoi) ? "Done. " : "Failed. )-: ";
     }
   }
 
   // Now that we've created all the necessary templates for this page, let's move on to the next in our to-do list.
 
-  print "That's this one done; let's touch it.";
+  print "\n** Completed page; touching...";
   // Touch the current article to update its categories:
   touch($article_in_progress);
+  print " Done.";
 }
 
 print "\n===End===\n\n";?>
