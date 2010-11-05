@@ -1114,10 +1114,17 @@ function correct_parameter_spelling($p) {
                             "ibsn"          =>  "isbn",
                             "lastn"         =>  "last2",
                             "number"        =>  "issue",
+                            "no"            =>  "issue",
+                            "No"            =>  "issue",
+                            "No."           =>  "issue",
                             "origmonth"     =>  "month",
+                            "pp"            =>  "pages",
+                            "pp."           =>  "pages",
                             "translator"    =>  "others",
                             "translators"   =>  "others",
                             "vol"           =>  "volume",
+                            "Vol"           =>  "volume",
+                            "Vol."          =>  "volume",
                             );
 
   unset($p[""]);
