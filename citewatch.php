@@ -20,6 +20,10 @@ echo "\n Retrieving category members: ";
 $toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
 #$toDo = array("User:DOI bot/Zandbox");
 shuffle($toDo);
+$space = (array_keys($toDo, " "));
+if ($space) {
+  unset($toDo[$space[0]]);
+}
 echo count($toDo) . " pages found.";
 
 function getCiteList($page) {
@@ -167,7 +171,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           $encoded_doi = str_replace($dotDecode, $dotEncode, $doi_from_pmid);
           print "Creating new page at DOI $doi_from_pmid";
           if (create_page("doi", $doi_from_pmid)) {
-            print "Created. \n  > Redirecting PMID $oPmid to $encoded_doi";
+            print "\n    Created. \n  > Redirecting PMID $oPmid to $encoded_doi";
             print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation")
                 ? " : Done."
                 : " : ERROR\n\n > Write failed!\n";
