@@ -210,11 +210,13 @@ function write($page, $data, $edit_summary = "Bot edit") {
 }
 
 function mark_broken_doi_template($article_in_progress, $oDoi) {
+  print $article_in_progress . $oDoi;
   if (getRawWikiText($article_in_progress)) {
-  write ($article_in_progress
+    global $editInitiator;
+    return write ($article_in_progress
       , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i",
                                             "{{broken doi|$oDoi}}", getRawWikiText($article_in_progress))
-      , "Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
+      , "$editInitiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
     );
   } else {
     var_dump($article_in_progress);

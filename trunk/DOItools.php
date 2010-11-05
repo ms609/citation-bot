@@ -327,7 +327,10 @@ function expand_from_pubmed() {
   }
 }
 
-function expand_from_doi($crossRef, $editing_cite_doi_template) {
+function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false) {
+  if ($silence) {
+    ob_start();
+  }
   global $p, $doiCrossRef, $jstor_redirect;
   if (substr($p["doi"][0], 3, 4) == "2307") {
     echo "\n - Populating from JSTOR database: ";
@@ -378,6 +381,9 @@ function expand_from_doi($crossRef, $editing_cite_doi_template) {
     if (!is("page")) ifNullSet("pages", $crossRef->first_page);
   } else {
     echo "\n - No CrossRef record found :-(";
+  }
+  if ($silence) {
+    ob_end_clean();
   }
   return $crossRef;
 }
