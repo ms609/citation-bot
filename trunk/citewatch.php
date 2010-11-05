@@ -1,25 +1,26 @@
 #!/usr/bin/php
 <?php
 // $Id$
+$ON = true;
 
 
 $accountSuffix = '_2'; // Before expandfunctions
 require_once("expandFns.php"); // includes login
+require_once("citewatchFns.php"); // inadvertently removed from wikiFunctions.php in r192
 
 $editInitiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
 
+$dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");
+$dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
+
 require_once("expand_it.php");
 
 echo "\n Retrieving category members: ";
-$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"), categoryMembers("Pages_with_incomplete_Google_book_references") );
+$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
 #$toDo = array("User:DOI bot/Zandbox");
-#$toDo = array("Colorectal cancer");
 shuffle($toDo);
-
-echo count($toDo);
-$dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");
-$dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
+echo count($toDo) . " pages found.";
 
 function getCiteList($page) {
 	global $bot;
@@ -34,6 +35,7 @@ function getCiteList($page) {
 }
 
 function create_page ($type, $id) {
+  print "\n Creating page of type $type with ID $id \n";
   $type = strtolower($type);
   global $ON, $dotDecode, $dotEncode;
   switch ($type) {
@@ -47,7 +49,7 @@ function create_page ($type, $id) {
                   "{{Cite journal\n| $type = $id\n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>");
 }
 
-while (false !== ($article_in_progress = array_pop($toDo))/* pages in list */) {
+while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in list */)) {
 
   // load citations from article
   if ($article_in_progress && trim($article_in_progress)) {
@@ -61,12 +63,13 @@ while (false !== ($article_in_progress = array_pop($toDo))/* pages in list */) {
     $pmid_todo = array_unique($toCite[2]);
     $pmc_todo = array_unique($toCite[3]);
   } elseif ($article_in_progress) {
-    print "Null article!";
+    print_r($toDo);
+    print "Null article: [$article_in_progress]";
     break;
   }
 
   // Get the next PMC from our to-do list
-  while (false !== ($oPmc = array_shift($pmc_todo))) {
+  while ($pmc_todo && (false !== ($oPmc = array_shift($pmc_todo)))) {
      print "\n   > PMC $oPmc: ";
     $pmc_page = "Template:Cite pmc/$oPmc";
     // Is there already a page for this PMC?
@@ -100,7 +103,7 @@ while (false !== ($article_in_progress = array_pop($toDo))/* pages in list */) {
           }
         } else {
           print "No DOI found; using PMID instead";
-          if ($pmid_from_pmc && create_page($pmid_from_pmc)) {
+          if ($pmid_from_pmc && create_page("pmid", $pmid_from_pmc)) {
             print "\n  > Redirecting PMC $oPmc to PMID $pmid_from_pmc";
             print write($pmc_page, "#REDIRECT[[Template:Cite pmid/$pmid_from_pmc]]", "Redirecting to PMID citation")
                 ? " : Done."
@@ -150,7 +153,7 @@ while (false !== ($article_in_progress = array_pop($toDo))/* pages in list */) {
     }
   }
 
-  while (false !== ($oPmid = array_shift($pmid_todo))) {
+  while ($pmid_todo && (false !== ($oPmid = array_shift($pmid_todo)))) {
     print "\n   > PMID $oPmid: ";
     $pmid_page = "Template:Cite pmid/$oPmid";
     // Is there already a page for this PMID?
@@ -176,7 +179,7 @@ while (false !== ($article_in_progress = array_pop($toDo))/* pages in list */) {
           // No DOI found.  Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
           create_page("pmid", $oPmid);
         }
-        break;
+      break;
       case 0:
         log_citation("pmid", $oPmid);
         print "Citation OK.";
@@ -201,11 +204,11 @@ while (false !== ($article_in_progress = array_pop($toDo))/* pages in list */) {
         } else {
           die ("$pmid_page Redirects to " . getRawWikiText($pmid_page));
         }
-      break;
+      // end of case 2.
     }
   }
-
-  while (false !== ($oDoi = @array_pop($doi_todo))) {
+  
+  while ($doi_todo && (false !== ($oDoi = @array_pop($doi_todo)))) {
     $doi_citation_exists = doi_citation_exists($oDoi);
     if ($doi_citation_exists) {
       //print "\n   > DOI $oDoi already exists.";
@@ -213,15 +216,15 @@ while (false !== ($article_in_progress = array_pop($toDo))/* pages in list */) {
         log_citation("doi", $oDoi);
       }
       print ".";
-      break;
     } else {
       print "\n   > Creating new page at $oDoi \n";
-      create_page($oDoi);
+      create_page("doi", $oDoi);
     }
   }
 
   // Now that we've created all the necessary templates for this page, let's move on to the next in our to-do list.
 
+  print "That's this one done; let's touch it.";
   // Touch the current article to update its categories:
   touch($article_in_progress);
 }
