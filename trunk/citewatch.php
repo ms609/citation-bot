@@ -4,7 +4,7 @@
 $ON = true;
 
 
-$accountSuffix = '_4'; // Was 2. Before expandfunctions
+$accountSuffix = '_2'; // Was 2. Before expandfunctions
 require_once("expandFns.php"); // includes login
 require_once("citewatchFns.php"); // inadvertently removed from wikiFunctions.php in r192
 
@@ -17,8 +17,7 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
 require_once("expand_it.php");
 
 echo "\n Retrieving category members: ";
-#$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
-$toDo = array("Protein_kinase_R");
+$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
 #$toDo = array("User:DOI bot/Zandbox");
 shuffle($toDo);
 $space = (array_keys($toDo, " "));
@@ -73,6 +72,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
     $doi_todo = array_unique($doi_todo);
     $pmid_todo = array_unique($toCite[2]);
     $pmc_todo = array_unique($toCite[3]);
+    print " ... " . (count($doi_todo) + count($pmid_todo) + count($pmc_todo)) . " found.";
   } elseif ($article_in_progress) {
     print_r($toDo);
     print "Null article: [$article_in_progress]";
