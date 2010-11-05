@@ -1,1 +1,2 @@
 DirectoryIndex doibot.html
+php_value error_reporting 4
