@@ -983,13 +983,13 @@ Done.  Just a couple of things to tweak now...";
         }
 
         if ($unify_citation_templates) {
-          if ($citation_template_dominant) {
+					if ($citation_template_dominant) {
             if (preg_match("~[cC]ite[ _]\w+~", $citation[$cit_i+2])) {
               // Switching FROM cite xx TO citation; cite xx has a trailing period by default
               ifNullSet("postscript", ".");
               $citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
             }
-          } else {
+					} else {
             if ($harv_template_present) {
               ifNullSet("ref", "harv");
             }
@@ -1001,22 +1001,24 @@ Done.  Just a couple of things to tweak now...";
                     || is('inventor1-last') || is ('inventor')) {
               $citeTemplate = "Cite patent";
             }
-            elseif (!is('date') && !is('month') && (is('isbn') || is("oclc" || is("series")))) {
+						elseif (is('journal')) {$citeTemplate = "Cite journal";}
+						elseif (is('agency') || is('newspaper') || is('magazine') || is('periodical')) {
+							$citeTemplate = "Cite news";
+						}
+						elseif (is('encyclopedia')) {
+              $citeTemplate = "Cite encyclopedia";
+            }
+						elseif (is('conference') || is('conferenceurl')) {$citeTemplate = "Cite conference";}
+
+            // Straightforward cases now out of the way... now for the trickier ones
+						elseif (is('chapter') || is('editor') || is('editor-last') || is('editor1') || is('editor1-last')) {
+              $citeTemplate = "Cite book";
+            }
+						elseif (!is('date') && !is('month') && (is('isbn') || is("oclc" || is("series")))) {
              // Books usually catalogued by year; no month expected
               $citeTemplate = "Cite book";
             }
-            elseif (is('chapter') || is('editor') || is('editor-last') || is('editor1') || is('editor1-last')) {
-              $citeTemplate = "Cite book";
-            }
-            elseif (is('conference') || is('conferenceurl')) {$citeTemplate = "Cite conference";}
-            elseif (is('encyclopedia')) {
-              $citeTemplate = "Cite encyclopedia";
-            }
-            elseif (is('agency') || is('newspaper') || is('magazine') || is('periodical')) {
-              $citeTemplate = "Cite news";
-            }
-            elseif (is('journal')) {$citeTemplate = "Cite journal";}
-            elseif (is('publisher')) {
+						elseif (is('publisher')) {
               // This should be after we've checked for a journal parameter
               if (preg_match("~\w\.\w\w~", $p['publisher'][0])) {
                // it's a fair bet the publisher is a web address
@@ -1025,11 +1027,11 @@ Done.  Just a couple of things to tweak now...";
                 $citeTemplate = "Cite document";
               }
             }
-            elseif (is('url')) {$citeTemplate = "Cite web";} // fall back to this if URL
-            else {$citeTemplate = "Cite journal";} // If no URL, cite journal ought to handle it okay
-            $citation[$cit_i+2] = preg_replace("~[cC]itation~", $citeTemplate, $citation[$cit_i+2]);
-          }
-        }
+						elseif (is('url')) {$citeTemplate = "Cite web";} // fall back to this if URL
+						else {$citeTemplate = "Cite document";} // If no URL, cite journal ought to handle it okay
+						$citation[$cit_i+2] = preg_replace("~[cC]itation~", $citeTemplate, $citation[$cit_i+2]);
+					}
+				}
 
         // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
         foreach ($p as $oP){

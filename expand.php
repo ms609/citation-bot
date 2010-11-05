@@ -1029,21 +1029,23 @@ Done.  Just a couple of things to tweak now...";
                     || is('inventor1-last') || is ('inventor')) {
               $citeTemplate = "Cite patent";
             }
+						elseif (is('journal')) {$citeTemplate = "Cite journal";}
+						elseif (is('agency') || is('newspaper') || is('magazine') || is('periodical')) {
+							$citeTemplate = "Cite news";
+						}
+						elseif (is('encyclopedia')) {
+              $citeTemplate = "Cite encyclopedia";
+            }
+						elseif (is('conference') || is('conferenceurl')) {$citeTemplate = "Cite conference";}
+
+            // Straightforward cases now out of the way... now for the trickier ones
+						elseif (is('chapter') || is('editor') || is('editor-last') || is('editor1') || is('editor1-last')) {
+              $citeTemplate = "Cite book";
+            }
 						elseif (!is('date') && !is('month') && (is('isbn') || is("oclc" || is("series")))) {
              // Books usually catalogued by year; no month expected
               $citeTemplate = "Cite book";
             }
-						elseif (is('chapter') || is('editor') || is('editor-last') || is('editor1') || is('editor1-last')) {
-              $citeTemplate = "Cite book";
-            }
-						elseif (is('conference') || is('conferenceurl')) {$citeTemplate = "Cite conference";}
-						elseif (is('encyclopedia')) {
-              $citeTemplate = "Cite encyclopedia";
-            }
-						elseif (is('agency') || is('newspaper') || is('magazine') || is('periodical')) {
-							$citeTemplate = "Cite news";
-						}
-						elseif (is('journal')) {$citeTemplate = "Cite journal";}
 						elseif (is('publisher')) {
               // This should be after we've checked for a journal parameter
               if (preg_match("~\w\.\w\w~", $p['publisher'][0])) {
@@ -1054,7 +1056,7 @@ Done.  Just a couple of things to tweak now...";
               }
             }
 						elseif (is('url')) {$citeTemplate = "Cite web";} // fall back to this if URL
-						else {$citeTemplate = "Cite journal";} // If no URL, cite journal ought to handle it okay
+						else {$citeTemplate = "Cite document";} // If no URL, cite journal ought to handle it okay
 						$citation[$cit_i+2] = preg_replace("~[cC]itation~", $citeTemplate, $citation[$cit_i+2]);
 					}
 				}
@@ -1248,7 +1250,7 @@ Done.  Just a couple of things to tweak now...";
 		if (trim($pagecode)) {
 			if (strtolower($pagecode) != strtolower($startcode)) {
 				if ($additions) {
-					$smartSum = "+: ";
+					$smartSum = " added: ";
 					foreach ($additions as $param=>$v)	{
             $smartSum .= "$param, ";
             unset($changes[$param]);
@@ -1322,7 +1324,7 @@ Done.  Just a couple of things to tweak now...";
 									if ($status == "Success") {
 										updateBacklog($page);
 										echo "Success. Phew!";
-									} else echo "Failed.  Error code:  $status. " . ($htmlOutput?$outputText:"Pagecode displayed in HTML output only");
+									} else echo "Failed.  Error code:  $status. " . ($htmlOutput?preg_replace('/([\200-\277])/e', "'&#'.(ord('\\1')).';'",$outputText):"Pagecode displayed in HTML output only");
 								}
 							}
 							echo $htmlOutput ?
