@@ -52,12 +52,17 @@ $ON = true; // Uncomment this line to test edits in the Zandbox; but remember to
 //include("expand.php");// i.e. GO!
 
 
-$page = "Hildenbrandia";
+$page = "Chiton";
 $start_code = getRawWikiText($page, false, false);
+$slow_mode = true;
 
-$end_text = name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc")));
+//name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc"))),
+$end_text = expand(        
+        $page,
+        $ON
+        );
 //$end_text = ref_templates($end_text, "pmid");
 //print "\n" . $end_text;
-write($page, $end_text, $editInitiator . "Re task #6 : Trial edit");
+//write($page, $end_text, $editInitiator . "Re task #6 : Trial edit");
 
 print "\n Done. \n";
