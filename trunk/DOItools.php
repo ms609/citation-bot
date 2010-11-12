@@ -1280,6 +1280,8 @@ function deWikify($string){
 
 function findDoi($url){
 	global $urlsTried, $slow_mode;
+  // Metas might be hidden if we don't have access the the page, so try the abstract:
+  $url = preg_replace("~\.full(\.pdf)?$~", ".abstract", $url);
 
 	if (!@array_search($url, $urlsTried)){
 
@@ -1309,27 +1311,42 @@ function findDoi($url){
 				preg_match ("~Content-Length: ([\d,]+)~", curl_exec($ch), $size);
 				curl_close($ch);
 			} else $size[1] = 1; // Temporary measure; return to 1!
-			if ($slow_mode && $size[1] > 0 &&  $size[1] < 100000) { // TODO. The bot seems to keep crashing here; let's evaluate whether it's worth doing.  For now, restrict to slow mode.
-				echo "\nQuerying URL with reported file size of ", $size[1], "b...<br>\n";
+			if (!$slow_mode) {
+        echo "\n -- Aborted: not running in 'slow_mode'!";
+      } else if ($size[1] > 0 &&  $size[1] < 100000) { // TODO. The bot seems to keep crashing here; let's evaluate whether it's worth doing.  For now, restrict to slow mode.
+				echo "\n -- Querying URL with reported file size of ", $size[1], "b...", $htmlOutput?"<br>":"\n";
 				//Initiate cURL resource
 				$ch = curl_init();
 				curlSetup($ch, $url);
 				$source = curl_exec($ch);
-				if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {echo "404 returned from URL.<br>"; return false;}
-				if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {echo "501 returned from URL.<br>"; return false;}
+				if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
+          echo " -- 404 returned from URL.", $htmlOutput?"<br>":"\n";
+          // Try anyway.  There may still be metas.
+        } else if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {
+          echo " -- 501 returned from URL.", $htmlOutput?"<br>":"\n";
+          return false;
+        }
 				curl_close($ch);
 				if (strlen($source) < 100000) {
 					$doi = getDoiFromText($source, true);
 					if (!$doi) {
             checkTextForMetas($source);
           }
-				} else echo "\nFile size was too large. Abandoned.";
-			} else echo $htmlOutput?("\n\n **ERROR: PDF may have been too large to open.  File size: ". $size[1]. "b<br>"):"\nPDF too large ({$size[1]}b)";
-		} else print "DOI found from meta tags.<br>";
+				} else {
+          echo "\n -- File size was too large. Abandoned.";
+        }
+			} else {
+        echo $htmlOutput
+             ? ("\n\n ** ERROR: PDF may have been too large to open.  File size: ". $size[1]. "b<br>")
+             : "\n -- PDF too large ({$size[1]}b)";
+      }
+		} else {
+      print " -- DOI found from meta tags.<br>";
+    }
 		if ($doi){
 			if (!preg_match("/>\d\.\d\.\w\w;\d/", $doi))
 			{ //If the DOI contains a tag but doesn't conform to the usual suntax with square brackes, it's probably picked up an HTML entity.
-				echo "DOI may have picked up some tags. ";
+				echo " -- DOI may have picked up some tags. ";
 				$content = strip_tags(str_replace("<", " <", $source)); // if doi is superceded by a <tag>, any ensuing text would run into it when we removed tags unless we added a space before it!
 				preg_match("~" . doiRegexp . "~Ui", $content, $dois); // What comes after doi, then any nonword, but before whitespace
 				if ($dois[1]) {$doi = trim($dois[1]); print " Removing them.<br>";} else {
@@ -1445,8 +1462,11 @@ function getDoiFromText($source, $testDoi = false){
 
 function checkTextForMetas($text){
   // Find all meta tags using preg_match
-	preg_match_all("~<meta\s+name=['\"]([^'\"]+)['\"] content=[\"']([^>]+)[\"']>~", $text, $match);
-
+	preg_match_all("~<meta\s+name=['\"]([^'\"]+)['\"]\s+content=[\"']([^>]+)[\"']\s*/?>~", $text, $match);
+	preg_match_all("~<meta\s+content=[\"']([^>]+)[\"']\s+name=['\"]([^'\"]+)['\"]\s*/?>~", $text, $match2);
+  $matched_names = array_merge($match[1], $match2[2]);
+  $matched_content = array_merge($match[2], $match2[1]);
+  print_r($matched_content, $matched_names);
   // Define translation from meta tag names to wiki parameters
 	$m2p = array(
 						"citation_journal_title" => "journal",
@@ -1461,16 +1481,20 @@ function checkTextForMetas($text){
 	);
 
   // Transform matches into an array:  pairs (meta name => value)
-	$stopI = count($match[1]);
+	$stopI = count($matched_content);
 	for ($i = 0; $i < $stopI; $i++) {
-     $pairs[] = array($match[1][$i], $match[2][$i]);
+     $pairs[] = array($matched_names[$i], $matched_content[$i]);
   }
 
   // Rename each pair to $newp  (wiki name => value)
 	foreach ($pairs as $pair) {
-		foreach ($m2p as $mk=>$mv) {
-			if ($pair[0] == $mk) {
-        $newp[$mv][] = $pair[1];
+    $i = 1;
+		foreach ($m2p as $metaKey => $metaValue) {
+			if (strtolower($pair[0]) == strtolower($metaKey)) {
+        if ($metaValue == "author") {
+          $metaValue = "author" . $i++;
+        }
+        ifNullSet($metaValue, $pair[1]);
       }
     }
   }
@@ -1493,7 +1517,7 @@ function checkTextForMetas($text){
 		//$newp["month"][0] = date("M", strtotime($newp["date"][0])); DISABLED BY EUBLIDES
 		unset($newp["date"]);
 	}
-	foreach ($newp as $p=>$p0) ifNullSet($p, $p0[0]);
+	foreach ($newp as $p => $p0) ifNullSet($p, $p0[0]);
 }
 
 function literate($string){
