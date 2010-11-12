@@ -14,18 +14,17 @@ $editInitiator = '[Bot task 6 / 7: Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
 define ("START_HOUR", date("H"));
 
-
 function nextPage($page){
   // touch last page
   if ($page) {
-    touch($page);
+    touchPage($page);
   }
 
   // Get next page
   global $ON, $STOP;
 	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
   if (date("H") != START_HOUR) die ("\n ** EXIT: It's " . date("H") . " o'clock!\n");
-	//$db = udbconnect();
+	$db = udbconnect("yarrow");
 	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
 	$result = mysql_query("SELECT page FROM citation ORDER BY fast ASC") or die (mysql_error());
 	$result = mysql_fetch_row($result);
@@ -52,15 +51,16 @@ $ON = true; // Uncomment this line to test edits in the Zandbox; but remember to
 //include("expand.php");// i.e. GO!
 
 
-$page = "Chiton";
-$start_code = getRawWikiText($page, false, false);
+/*$start_code = getRawWikiText($page, false, false);*/
 $slow_mode = true;
 
+expand("Roy_Kerr", true); exit;
+
+while ($page) {
+  $page = nextPage($page);
+  $end_text = expand($page, $ON);
+}
 //name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc"))),
-$end_text = expand(        
-        $page,
-        $ON
-        );
 //$end_text = ref_templates($end_text, "pmid");
 //print "\n" . $end_text;
 //write($page, $end_text, $editInitiator . "Re task #6 : Trial edit");

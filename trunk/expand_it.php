@@ -444,7 +444,6 @@ echo "
             unset($p['url']);
           }
 
-
           if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
             unset($p["unused_data"]);
           } else {
@@ -452,6 +451,7 @@ echo "
               $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
             }
           }
+
 
           if (trim ($p["quotes"][0]) == "yes" || trim ($p["quotes"][0]) == "no") {
             unset ($p["quotes"]);
@@ -469,14 +469,13 @@ echo "
           }
           // Fix typos in parameter names
           $p = correct_parameter_spelling($p);
-
           // DOI - urldecode
           if (isset($p["doi"][0])) {
             $p['doi'][0] = trim(preg_replace("~\<!--.*--\>~", "", $p["doi"][0]));
             $p["doi"][0] = str_replace($pcEncode, $pcDecode,
                              str_replace(' ', '+', trim(urldecode($p["doi"][0]))));
             $doi_with_comments_removed = preg_replace("~<!--[\s\S]*-->~U", "", $p["doi"][0]);
-            if (preg_match("~10\.\d{4}/\S+~", $doi_with_comments_removed, $match)) {
+            if (preg_match("~10\.\d{4}/\S+~", $doi_with_comments_removed, $match) && $p["doi"][0] != $match[0]) {
               set("doi", $match[0]);
             }
           } else {
@@ -487,7 +486,6 @@ echo "
           $doiToStartWith = isset($p["doi"]);
           // Check that the DOI works; if not, fix it.
           verify_doi($p["doi"][0]);
-
           // co-authors
           if (is('co-author') && !is('coauthors') && !is('coauthor')) {
             $p['coauthor'] = $p['co-author'];

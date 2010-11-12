@@ -1187,10 +1187,12 @@ function correct_parameter_spelling($p) {
       $mod[$mistake] = $corrected;
     }
   }
-  foreach ($mod as $wrong => $right) {
-    if (ifNullSet($right, $p[$wrong][0])) {
-      $p[$right] = $p[$wrong];
-      unset ($p[$wrong]);
+  if ($mod) {
+    foreach ($mod as $wrong => $right) {
+      if (ifNullSet($right, $p[$wrong][0])) {
+        $p[$right] = $p[$wrong];
+        unset ($p[$wrong]);
+      }
     }
   }
   return $p;
@@ -1222,14 +1224,16 @@ function verify_doi ($doi) {
     if (preg_match("~&(l|g)t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
-    foreach ($trial as $try) {
-      // Check that it begins with 10.
-      if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) {
-        $try = "10." . $match[1];
-      }
-      if (crossRefData($try)) {
-        set("doi", $try);
-        return ($try);
+    if ($trial) {
+      foreach ($trial as $try) {
+        // Check that it begins with 10.
+        if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) {
+          $try = "10." . $match[1];
+        }
+        if (crossRefData($try)) {
+          set("doi", $try);
+          return ($try);
+        }
       }
     }
     return ($doi);
