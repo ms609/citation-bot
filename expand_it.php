@@ -498,7 +498,10 @@ echo "
 
 
           // pmid = PMID 1234 can produce pmpmid = 1234
-          if (isset($p["pmpmid"])) {$p["pmid"] = $p["pmpmid"]; unset($p["pmpmid"]);}
+          if (isset($p["pmpmid"])) {
+            $p["pmid"] = $p["pmpmid"];
+            unset($p["pmpmid"]);
+          }
 
           //pages
           preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
@@ -542,7 +545,7 @@ echo "
 */
 
           $author_param = trim($p['author'][0]);
-          echo "\n" . $author_param;
+          //print "\n" . $author_param;
           /*  REMOVED THIS SECTION IN R61
           // Replace 'and' with an appropriate punctuation 'signpost'
           if (preg_match("~ ([Aa]nd|\&) ([\w\W]+)$~U", $author_param, $match)){
