@@ -24,10 +24,10 @@ includeIfNew("wikiFunctions");
 includeIfNew("DOItools");
 includeIfNew("expand_it");
 if (!$abort_mysql_connection) {
-  echo "\n Connecting to MYSQL database ... ";
+  echo "\n Initializing MYSQL database ... ";
   require_once("/home/verisimilus/public_html/res/mysql_connect.php");
-  $db = udbconnect("yarrow");
-  echo " connected.";
+  //$db = udbconnect("yarrow");
+  echo " loaded connect script.  Will connect when necessary.";
 }
 if(!true && !myIP()) {
         print "Sorry, the Citation bot is temporarily unavilable while bugs are fixed.  Please try back later."; exit;

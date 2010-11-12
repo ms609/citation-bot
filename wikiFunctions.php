@@ -12,7 +12,7 @@ function categoryMembers($cat){
 
 	do {
 		set_time_limit(40);
-    $res = simplexml_load_file($url . ($continue?("&cmcontinue=" . urlencode($continue)):""));
+    $res = loadXmlViaBot($url . ($continue?("&cmcontinue=" . urlencode($continue)):""));
   	if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
           $list[] = (string) $page["title"];
@@ -35,23 +35,39 @@ function wikititle_encode($in) {
 }
 
 function getLastRev($page){
-  $xml = simplexml_load_file(api . "?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
+  $xml = loadXmlViaBot(api . "?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
+function touchPage($page) {
+  $text = getRawWikiText($page);
+  if ($text) {
+    global $editInitiator;
+    write ($page, $text, $editInitiator . " Touching page to update categories.  This edit should not affect the page content.");
+  } else {
+    return false;
+  }
+}
+
+function loadXmlViaBot($url) {
+  global $bot;
+  $bot->fetch($url);
+  return simplexml_load_string($bot->results);
+}
+
 function getArticleId($page) {
-  $xml = simplexml_load_file(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
+  $xml = loadXmlViaBot(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["pageid"];
 }
 
 function getNamespace($page) {
-	$xml = simplexml_load_file(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
+	$xml = loadXmlViaBot(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["ns"];
 }
 
 function isRedirect($page) {
   $url = api . "?action=query&format=xml&prop=info&titles=" . urlencode($page);
-  $xml = simplexml_load_file($url);
+  $xml = loadXmlViaBot($url);
 	if ($xml->query->pages->page["pageid"]) {
     // Page exists
     return array ((($xml->query->pages->page["redirect"])?1:0),
@@ -133,7 +149,7 @@ function whatTranscludes2($template, $namespace=99){
 	if ($_GET["debug"]) print_r($res);
 	do{
 		set_time_limit(20);
-		if (!$res=simplexml_load_file($url.($continue?"&eicontinue=$continue":""))) echo 'Error reading API from' .$url.($continue?"&cmcontinue=$continue":"");
+		if (!$res=loadXmlViaBot($url.($continue?"&eicontinue=$continue":""))) echo 'Error reading API from' .$url.($continue?"&cmcontinue=$continue":"");
 		foreach($res->query->embeddedin->ei as $page) {
 			$list["title"][]=$page["title"];
 			$list["id"][]=$page["pageid"];
