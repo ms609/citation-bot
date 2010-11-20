@@ -54,8 +54,8 @@ $ON = true; // Uncomment this line to test edits in the Zandbox; but remember to
 /*$start_code = getRawWikiText($page, false, false);*/
 $slow_mode = true;
 
-expand("Roy_Kerr", true); exit;
-
+print "\n";
+//
 while ($page) {
   $page = nextPage($page);
   $end_text = expand($page, $ON);

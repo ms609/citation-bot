@@ -17,8 +17,8 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
 require_once("expand_it.php");
 
 echo "\n Retrieving category members: ";
-$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
-#$toDo = array("User:DOI bot/Zandbox");
+#$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+$toDo = array("User:DOI bot/Zandbox");
 shuffle($toDo);
 $space = (array_keys($toDo, " "));
 if ($space) {
@@ -233,12 +233,14 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
       print ".";
     } else {
       echo "\n   > Creating new page at $oDoi: ";
+      $p["doi"][0] = $oDoi; // Required for expand_from_doi
       if (expand_from_doi($crossRef, true, true)) {
         echo create_page("doi", $oDoi) ? "Done. " : "Failed. )-: ";
       } else {
         echo "Invalid DOI. Aborted operation.\n  > Marking DOI as broken:";
-        print mark_broken_doi_template($article_in_progress, $oDoi) ? " done. " : " write operation failed. ";
+        # Disabled.  print mark_broken_doi_template($article_in_progress, $oDoi) ? " done. " : " write operation failed. ";
       }
+      unset ($p["doi"]);
     }
   }
 
