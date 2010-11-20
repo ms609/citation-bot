@@ -458,8 +458,8 @@ function name_references($page_code) {
 
 function get_name_for_reference($text, $page_code) {
   $parsed = parse_wikitext(strip_tags($text));
-  $date = (preg_match("~rft\.date=(\d+)~", $parsed, $date)
-            ? $date[1]
+  $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date)
+            ?  $date[1]
             : "" );
   $author = preg_match("~rft\.aulast=(\w+)~", $parsed, $author)
           ? $author[1]

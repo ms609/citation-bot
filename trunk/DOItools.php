@@ -109,7 +109,7 @@ function bubble_p ($a, $b) {
 
 function is($key){
 	global $p;
-  return ("" != trim($p[$key][0]))?true:false;
+  return ("" != trim($p[$key][0])) ? true : false;
 }
 
 function set($key, $value) {
