@@ -1306,14 +1306,15 @@ function findDoi($url){
 		}
 
 		if (!$doi) {//If we've not scraped the DOI, we'll have to hope that it's mentioned somewhere in the text!
-			if (substr($url, -4) == ".pdf") {
+			if (substr($url, -4) == ".pdf") {/*
 				//Check file isn't going to overload our memory
 				$ch = curl_init();
 				curlSetup($ch, $url);
 				curl_setopt($ch, CURLOPT_HEADER, 1);
 				curl_setopt($ch, CURLOPT_NOBODY, 1);
 				preg_match ("~Content-Length: ([\d,]+)~", curl_exec($ch), $size);
-				curl_close($ch);
+				curl_close($ch);*/
+        $size[1] = 9999999; // Takin too much memory...
 			} else $size[1] = 1; // Temporary measure; return to 1!
 			if (!$slow_mode) {
         echo "\n -- Aborted: not running in 'slow_mode'!";
