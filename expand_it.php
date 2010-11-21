@@ -695,6 +695,10 @@ echo "
                           ? ("\n - Getting data from <a href=\"" . $p["url"][0] . "\">JSTOR record</a>.")
                           : "\n - Querying JSTOR record from URL " . $jid[0];
                     get_data_from_jstor("10.2307/$jid[1]");
+                  } elseif (substr($p["url"][0], -4) == ".pdf") {
+                    echo $htmlOutput
+                          ? ("\n - Avoiding <a href=\"" . $p["url"][0] . "\">PDF URL</a>. <br>")
+                          : "\n - Avoiding PDF URL {$p["url"][0]}";
                   } else {
                     //Try using URL parameter
                     echo $htmlOutput

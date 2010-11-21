@@ -17,8 +17,8 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
 require_once("expand_it.php");
 
 echo "\n Retrieving category members: ";
-#$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
-$toDo = array("User:DOI bot/Zandbox");
+$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+#$toDo = array("User:DOI bot/Zandbox");
 shuffle($toDo);
 $space = (array_keys($toDo, " "));
 if ($space) {
@@ -248,7 +248,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
 
   print "\n** Completed page; touching...";
   // Touch the current article to update its categories:
-  touch($article_in_progress);
+  touchPage($article_in_progress);
   print " Done.";
 }
 
