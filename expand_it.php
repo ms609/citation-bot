@@ -5,8 +5,7 @@
 // Returns pagecode if the calling script should continue; false otherwise
 function expand($page, $commit_edits = false, $editing_cite_doi_template = false, $cite_doi_start_code = null, $htmlOutput = false) {
   #$commit_edits = false;
-  
-  global $p, $bot, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2;
+  global $p, $bot, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2, $slowMode;
   if ($htmlOutput == -1) {
     ob_start();
   }
@@ -68,7 +67,9 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
         preg_replace("~(\|\s*)id(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","$1doi$2$3",
 
         preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~", "$1doi$2=$3", 
-                name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc")))))))));
+                $startcode
+                #name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc")))
+                ))))));
 
      if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $pagecode)) {
        $pagecode = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $pagecode);
