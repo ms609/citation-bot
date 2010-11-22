@@ -838,7 +838,6 @@ function useUnusedData()
               case "I":
                 $endnote_parameter = "publisher";
                 break;
-                break;
               case "J":
                 $endnote_parameter = "journal";
                 break;
@@ -851,14 +850,14 @@ function useUnusedData()
               case "T":
                 $endnote_parameter = "title";
                 break;
-              case "8":
-                $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
               case "U":
                 $endnote_parameter = "url";
                 break;
               case "V":
                 $endnote_parameter = "volume";
                 break;
+              case "R": // Resource identifier... *may* be DOI but probably isn't always.
+              case "8": // Date
               case "0":// Citation type
               case "X": // Abstract
               case "@": // ISSN

@@ -30,10 +30,10 @@ function getCiteList($page) {
 	global $bot;
 	$bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
 	$raw = $bot->results;
-	preg_match_all ("~\{\{[\s\n]*cite[ _]doi[\s\n]*\|[\s\n]*([^ \}]+)[\s\n]*\}\}~i", $raw, $doi);
-	preg_match_all ("~\{\{[\s\n]*cite[ _]jstor[\n\s]*\|[\n\s]*(\d+)[\n\s]*\}\}~i", $raw, $jstorid);
-	preg_match_all ("~\{\{[\s\n]*cite[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*\}\}~i", $raw, $pmid);
-	preg_match_all ("~\{\{[\s\n]*cite[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*\}\}~i", $raw, $pmc);
+	preg_match_all ("~\{\{[\s\n]*cite[ _]doi[\s\n]*\|[\s\n]*([^ \}]+)[\s\n]*(\||\}\})~i", $raw, $doi);
+	preg_match_all ("~\{\{[\s\n]*cite[ _]jstor[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $jstorid);
+	preg_match_all ("~\{\{[\s\n]*cite[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmid);
+	preg_match_all ("~\{\{[\s\n]*cite[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmc);
   $category =  "[[Category:Articles citing non-functional identifiers]]";
 	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($page, $category)) {
     global $editInitiator;
@@ -136,7 +136,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         // page is a redirect
         $pmc_page_text = getRawWikiText($pmc_page);
         // Check that redirect leads to  a cite DOI:
-        if (preg_match("~/(10.\d{4}/.*)]]~", str_replace($dotEncode, $dotDecode, $pmc_page_text), $redirect_target_doi)) {
+        if (preg_match("~/(10\..*)]]~", str_replace($dotEncode, $dotDecode, $pmc_page_text), $redirect_target_doi)) {
           print "Redirects to ";
           // Check that destination page exists
           if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, trim($redirect_target_doi[1])))) {
@@ -202,7 +202,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
       break;
       case 2:
         // Check that redirect leads to a cite doi:
-        if (preg_match("~/(10.\d{4}/.*)]]~",
+        if (preg_match("~/(10\..*)]]~",
               str_replace($dotEncode, $dotDecode, getRawWikiText($pmid_page)), $redirect_target_doi)) {
           print "Redirects to ";
           // Check that destination page exists

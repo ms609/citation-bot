@@ -435,7 +435,7 @@ echo "
 */
 
           // If the page has been created manually from a cite doi link, it will have an encoded 'doix' parameter - decode this.
-          if (preg_match("~^10.\d{4}\.2F~", $p['doix'][0])) {
+          if (preg_match("~^10.\d~", $p['doix'][0])) {
             $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doix'][0]);
             unset($p['doix']);
           }
