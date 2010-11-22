@@ -4,14 +4,28 @@
 
 #$abort_mysql_connection = true; // Whilst there's a problem with login
 
+foreach ($argv as $arg) {
+  if (substr($arg, 0, 2) == "--") {
+    $argument[substr($arg, 2)] = 1;
+  } elseif (substr($arg, 0, 1) == "-") {
+    $oArg = substr($arg, 1);
+  } else {
+    switch ($oArg) {
+      case "P": case "A": case "T":
+        $argument["pages"][] = $arg;
+        break;
+      default:
+      $argument[$oArg][] = $arg;
+    }
+  }
+}
+
 error_reporting(E_ALL^E_NOTICE);
-$slowMode = false;
-$fastMode = false;
+$slowMode = $argument["slow"] || $argument["slowmode"] || $argument["thorough"];
 $accountSuffix = '_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
-$editInitiator = '[Bot task 6 / 7: Pu' . revisionID() . ']';
-$ON = true; // Override later if necessary
+$editInitiator = '[Pu' . revisionID() . 'a]';
 define ("START_HOUR", date("H"));
 
 function nextPage($page){
@@ -32,37 +46,42 @@ function nextPage($page){
 	return $result[0];
 }
 
-#$STOP = true;
-$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
 
-$page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
-if ($ON) {
-  echo "\n Fetching first page from backlog ... ";
-  $page = nextPage();
-  echo " done. ";
+$ON = $argument["on"];
+if ($argument["pages"]) {
+  foreach ($argument["pages"] as $page) {
+    expand($page, $ON);
+  }
+} elseif ($argument["sandbox"] || $argument["sand"]) {
+  expand("User:DOI bot/Zandbox", $ON);
+} else {
+   if ($ON) {
+    echo "\n Fetching first page from backlog ... ";
+    $page = nextPage($page);
+    echo " done. ";
+  }
+  #$page = " Template:Cite doi/10.1002.2F.28SICI.291097-0290.2819980420.2958:2.2F3.3C121::AID-BIT2.3E3.0.CO.3B2-N";
+  #$ON = true; // Uncomment this line to test edits in the Zandbox; but remember to break the bot after it touches the page or it'll keep on going!
+  // The line to swtich between active & sandbox modes is in the comment block above.
+  #$page = "";
+  #$slowMode = true;
+
+  //
+  //include("expand.php");// i.e. GO!
+
+  /*$start_code = getRawWikiText($page, false, false);*/
+  $slow_mode = true;
+
+  print "\n";
+  //
+  /*
+  while ($page) {
+    $page = nextPage($page);
+    $end_text = expand($page, $ON);
+  }
+  *///name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc"))),
+  //$end_text = ref_templates($end_text, "pmid");
+  //print "\n" . $end_text;
+  //write($page, $end_text, $editInitiator . "Re task #6 : Trial edit");
 }
-#$page = " Template:Cite doi/10.1002.2F.28SICI.291097-0290.2819980420.2958:2.2F3.3C121::AID-BIT2.3E3.0.CO.3B2-N";
-$ON = true; // Uncomment this line to test edits in the Zandbox; but remember to break the bot after it touches the page or it'll keep on going!
-// The line to swtich between active & sandbox modes is in the comment block above.
-#$page = "";
-#$slowMode = true;
-
-//
-//include("expand.php");// i.e. GO!
-
-
-/*$start_code = getRawWikiText($page, false, false);*/
-$slow_mode = true;
-
-print "\n";
-//
-while ($page) {
-  $page = nextPage($page);
-  $end_text = expand($page, $ON);
-}
-//name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc"))),
-//$end_text = ref_templates($end_text, "pmid");
-//print "\n" . $end_text;
-//write($page, $end_text, $editInitiator . "Re task #6 : Trial edit");
-
 print "\n Done. \n";
