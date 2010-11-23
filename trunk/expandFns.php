@@ -461,14 +461,52 @@ function get_name_for_reference($text, $page_code) {
   $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date)
             ?  $date[1]
             : "" );
-  $author = preg_match("~rft\.aulast=(\w+)~", $parsed, $author)
+  $author = preg_match("~rft\.aulast=([^&]+)~", $parsed, $author)
           ? $author[1]
-          : preg_match("~rft\.au=(\w+)~", $parsed, $author)
+          : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
           ? $author[1]
           : "ref_";
 
-  $replacement_template_name = $author . $date;
+  $author = preg_replace("~[^\s\w\-]|\b\w\b~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
+  $author = preg_match("~[a-z]~", $author)
+          ? preg_replace("~\b[A-Z]+\b~", "", $author)
+          : strtolower($author);
+  preg_match("~\w+~", $author, $author);
+  $replacement_template_name = ucfirst($author[0]) . $date;
   return generate_template_name($replacement_template_name, $page_code);
+}
+
+// Function from http://stackoverflow.com/questions/1890854
+// Modified to expect utf8-encoded string
+function normalize_special_characters( $str )
+{
+  $str = utf8_decode($str);
+    # Quotes cleanup
+    $str = ereg_replace( chr(ord("`")), "'", $str );        # `
+    $str = ereg_replace( chr(ord("´")), "'", $str );        # ´
+    $str = ereg_replace( chr(ord("„")), ",", $str );        # „
+    $str = ereg_replace( chr(ord("`")), "'", $str );        # `
+    $str = ereg_replace( chr(ord("´")), "'", $str );        # ´
+    $str = ereg_replace( chr(ord("“")), "\"", $str );        # “
+    $str = ereg_replace( chr(ord("”")), "\"", $str );        # ”
+    $str = ereg_replace( chr(ord("´")), "'", $str );        # ´
+
+$unwanted_array = array(    'Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+                            'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U',
+                            'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c',
+                            'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
+                            'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y' );
+$str = strtr( $str, $unwanted_array );
+
+# Bullets, dashes, and trademarks
+$str = ereg_replace( chr(149), "&#8226;", $str );    # bullet •
+$str = ereg_replace( chr(150), "&ndash;", $str );    # en dash
+$str = ereg_replace( chr(151), "&mdash;", $str );    # em dash
+$str = ereg_replace( chr(153), "&#8482;", $str );    # trademark
+$str = ereg_replace( chr(169), "&copy;", $str );    # copyright mark
+$str = ereg_replace( chr(174), "&reg;", $str );        # registration mark
+
+    return utf8_encode($str);
 }
 
 function generate_template_name ($replacement_template_name, $page_code) {
