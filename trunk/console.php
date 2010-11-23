@@ -46,10 +46,6 @@ function nextPage($page){
 	return $result[0];
 }
 
-print name_references(getRawWikiText("User:DOI bot/Zandbox"));
-
-die("\nDone.\n");
-
 $ON = $argument["on"];
 if ($argument["pages"]) {
   foreach ($argument["pages"] as $page) {
@@ -87,4 +83,4 @@ if ($argument["pages"]) {
   //print "\n" . $end_text;
   //write($page, $end_text, $editInitiator . "Re task #6 : Trial edit");
 }
-print "\n Done. \n";
+die ("\n Done. \n");
