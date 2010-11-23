@@ -71,11 +71,10 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
                 #name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc")))
                 ))))));
 
-     if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $pagecode)) {
-       $pagecode = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $pagecode);
-       $changedDashes = true;
-       echo "Converted dashes in all page parameters to en-dashes.\n";
-     }
+    $prior_pagecode = $pagecode;
+    $pagecode = convert_to_en_dashes($prior_pagecode);
+    $changedDashes = ($prior_pagecode == $pagecode);
+  }
 
   /*/Search for any duplicate refs with names
   if (false && preg_match_all("~<[\n ]*ref[^>]*name=(\"[^\"><]+\"|'[^']+|[^ ><]+)[^/>]*>(([\s\S](?!<)|[\s\S]<(?!ref))*?)</ref[\s\n]*>~", $pagecode, $refs)) {
@@ -912,10 +911,9 @@ Done.  Just a couple of things to tweak now...";
 
         // Use en-dashes in page ranges
         if (isset($p["pages"][0])) {
-          if (mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
-            $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
-            $changedDashes = true;
-          }
+          $prior_pages = $p["pages"][0];
+          $p["pages"][0] = convert_to_en_dashes($prior_pages);
+          $changedDashes = ($prior_pages == $p["pages"][0]);
         }
         // If there was a date parameter to start with, don't add a year too.  This will be created by the template.
         if ($dateToStartWith) {
