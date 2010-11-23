@@ -46,6 +46,9 @@ function nextPage($page){
 	return $result[0];
 }
 
+print name_references(getRawWikiText("User:DOI bot/Zandbox"));
+
+die("\nDone.\n");
 
 $ON = $argument["on"];
 if ($argument["pages"]) {
