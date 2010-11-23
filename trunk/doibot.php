@@ -66,10 +66,12 @@ function nextPage() {
 	if(rand(1, 5000) == 100000)	{
 		print "<p style=font-size:larger>Updating backlog...</p><p>\nSeeing what links to 'Cite Journal'...";
 		$cite_journal = whatTranscludes2("Cite_journal", 0);
+		$cite_book = whatTranscludes2("Cite_book", 0);
+		$cite_enc = whatTranscludes2("Cite_encyclopedia", 0);
 		print "\nand 'Citation'... ";
 		$citation =  whatTranscludes2("Citation", 0);
-		$pages = array_merge($cite_journal["title"], $citation["title"]);
-		$ids = array_merge($cite_journal["id"], $citation["id"]);
+		$pages = array_merge($cite_journal["title"], $cite_book["title"], $cite_enc["title"], $citation["title"]);
+		$ids   = array_merge($cite_journal["id"],    $cite_book["id"],    $cite_enc["id"],    $citation["id"]);
 		print "and writing to file...";
 		$count = count($pages);
 		for ($i=0; $i<$count; $i++){
