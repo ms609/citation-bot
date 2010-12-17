@@ -517,11 +517,6 @@ function generate_template_name ($replacement_template_name, $page_code) {
   return $replacement_template_name . $alphabet[--$i];
 }
 
-function convert_to_en_dashes ($range) {
-  return mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $range);
-}
-
-
 echo "\n Establishing connection to Wikipedia servers ... ";
 // Log in to Wikipedia
 logIn(USERNAME, PASSWORD);
