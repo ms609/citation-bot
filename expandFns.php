@@ -40,7 +40,7 @@ $crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
 $isbnKey2 = "268OHQMW";
 $bot = new Snoopy();
-$alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", );
+$alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
 
 mb_internal_encoding( 'UTF-8' ); // Avoid ??s
 
@@ -136,7 +136,7 @@ function logIn($username, $password) {
   $bot->submit(api, $submit_vars);
   $login_result = json_decode($bot->results);
         if ($login_result->login->result == "Success") {
-    print "\n Using account " . $login_result->login->lgusername . ".";
+    echo "\n Using account " . $login_result->login->lgusername . ".";
     // Add other cookies, which are necessary to remain logged in.
     $cookie_prefix = "enwiki";
     $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
@@ -232,7 +232,6 @@ function noteDoi($doi, $src){
 function isDoiBroken ($doi, $p = false, $slow_mode = false) {
 
   $doi = verify_doi($doi);
-  print "\n\n\n\n -- $doi -- \n\n";
 
   if (crossRefData($doi)) {
     if ($slow_mode) {
@@ -345,6 +344,8 @@ function standardize_reference($reference) {
 
 function combine_duplicate_references($page_code) {
 
+  echo " combining,";
+
   $original_page_code = $page_code;
   preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
     // match 1 = ref names
@@ -394,7 +395,7 @@ function combine_duplicate_references($page_code) {
                                      : get_name_for_reference($full_original[$i], $original_page_code);
           preg_match("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
                                     . "(?P=quote)(\s*/>)~",
-                              $page_code, $match);
+                              $page_code);
           // First replace any <ref name=that'sall/> with the new name
           $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
                                     . "(?P=quote)(\s*/>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
@@ -424,6 +425,7 @@ function combine_duplicate_references($page_code) {
 }
 
 function ref_templates($page_code, $type) {
+  echo " catching ref-dois,";
   while (false !== ($ref_template = extract_template($page_code, "ref $type"))) {
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
@@ -444,6 +446,7 @@ function ref_templates($page_code, $type) {
 }
 
 function name_references($page_code) {
+  echo " naming";
   if (preg_match_all("~<ref>.*</ref>~U", $page_code, $refs)) {
     foreach ($refs[0] as $ref) {
       $ref_name = get_name_for_reference($ref, $page_code);
@@ -451,6 +454,7 @@ function name_references($page_code) {
         // i.e. we have used an interesting reference name
         $page_code = str_replace($ref, str_replace("<ref>", "<ref name=\"$ref_name\">", $ref), $page_code);
       }
+      echo ".";
     }
   }
   return $page_code;
@@ -466,6 +470,7 @@ function get_name_for_reference($text, $page_code) {
           : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
           ? $author[1]
           : "ref_";
+
 
   $author = preg_replace("~[^\s\w\-]|\b\w\b~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
   $author = preg_match("~[a-z]~", $author)
@@ -511,9 +516,15 @@ $str = ereg_replace( chr(174), "&reg;", $str );        # registration mark
 
 function generate_template_name ($replacement_template_name, $page_code) {
   global $alphabet;
+  $die_length = count($alphabet);
   while (preg_match("~<ref name=(?P<quote>['\"]?)"
               . preg_quote($replacement_template_name . $alphabet[$i++])
-                      . "(?P=quote)[/\s]*>~i", $page_code)) {}
+                      . "(?P=quote)[/\s]*>~i", $page_code, $match)) {
+    if ($i >= $die_length) {
+      $replacement_template_name .= $alphabet[++$j];
+      $i = 0;
+    }
+  }
   return $replacement_template_name . $alphabet[--$i];
 }
 
