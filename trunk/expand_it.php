@@ -31,7 +31,6 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
   }
 
   // Which template family is dominant?
-
   if (!$editing_cite_doi_template) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $startcode, $cite_x);
     preg_match_all("~\{\{\s*cite[ _](doi|pm|jstor|arx)~i", $startcode, $cite_id);
@@ -59,6 +58,9 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
     updateBacklog($page);
     return false;
   } else {
+    print "\n Reference tags:";
+    $pagecode = name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc")));
+    print "Common replacements ";
     $pagecode = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
         preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
         preg_replace
@@ -67,48 +69,16 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
         preg_replace("~(\|\s*)id(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","$1doi$2$3",
 
         preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~", "$1doi$2=$3", 
-                #$startcode
-                name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc")))
+                $pagecode
+                #name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc")))
                 ))))));
-
-     if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $pagecode)) {
-       $pagecode = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $pagecode);
-       $changedDashes = true;
-       echo "Converted dashes in all page parameters to en-dashes.\n";
-     }
-
-  /*/Search for any duplicate refs with names
-  if (false && preg_match_all("~<[\n ]*ref[^>]*name=(\"[^\"><]+\"|'[^']+|[^ ><]+)[^/>]*>(([\s\S](?!<)|[\s\S]<(?!ref))*?)</ref[\s\n]*>~", $pagecode, $refs)) {
-    dbg($refs);#############
-    $countRefs = count($refs[0]);
-    for ($cit_i = 0; $cit_i < $countRefs; $cit_i++) {
-      $refs[2][$cit_i] = trim($refs[2][$cit_i]);
-      for ($j=0; $j<$cit_i; $j++){
-        $refs[2][$j] = trim($refs[2][$j]);
-        if (
-          strlen($refs[2][$j]) / strlen($refs[2][$cit_i]) > 0.9
-          && strlen($refs[2][$j]) / strlen($refs[2][$cit_i]) <1.1
-          && similar_text($refs[2][$cit_i], $refs[2][$j]) / strlen($refs[2][$cit_i]) >= 1  # We can lower this if we can avoid hitting "Volume II/III" and "page 30/45"
-          && ( similar_text($refs[2][$cit_i], $refs[2][$j]) / strlen($refs[2][$cit_i]) == 1
-            || similar_text($refs[2][$cit_i], $refs[2][$j]) > 52) //Avoid comparing strings that are too short; e.g. "ibid p20"
-          ) {if ($_GET["DEBUG"]) dbg(array(
-          " i & j " => "$cit_i & $j",
-          "J" => $refs[2][$j],
-          "Jlen" => strlen($refs[2][$j]),
-          "I" => $refs[2][$cit_i],
-          "Ilen" => strlen($refs[2][$cit_i]),
-          "SimTxt" => similar_text($refs[2][$j],$refs[2][$cit_i]) . " = " . similar_text($refs[2][$cit_i], $refs[2][$j]) / strlen($refs[2][$cit_i])
-          ));
-            $duplicateRefs[$refs[0][$cit_i]] = $refs[1][$j]; // Full text to be replaced, and name to replace it by
-          }
-      }
+    print " Done...";
+    if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $pagecode)) {
+      $pagecode = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $pagecode);
+      $changedDashes = true;
+      echo "Converted dashes in all page parameters to en-dashes.\n";
     }
-    foreach ($duplicateRefs as $text => $name){
-      $pagecode = preg_replace("~^([\s\S]*)" . preg_quote("<ref name=$name/>") . "~", "$1" . $text,
-                  preg_replace("~" . preg_quote($text) . "~", "<ref name=$name/>", $pagecode));
-    }
-  }*/
-
+    
 ###################################  START ASSESSING BOOKS ######################################
 
     if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $pagecode, -1, PREG_SPLIT_DELIM_CAPTURE))) {
