@@ -447,7 +447,7 @@ function ref_templates($page_code, $type) {
 
 function name_references($page_code) {
   echo " naming";
-  if (preg_match_all("~<ref>.*</ref>~U", $page_code, $refs)) {
+  if (preg_match_all("~<ref>[^\{]*\{\{\s*(?=[cC]it|[rR]ef).*</ref>~U", $page_code, $refs)) {
     foreach ($refs[0] as $ref) {
       $ref_name = get_name_for_reference($ref, $page_code);
       if (substr($ref_name, 0, 4) != "ref_") {
