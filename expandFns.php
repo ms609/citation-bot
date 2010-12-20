@@ -479,7 +479,7 @@ function get_name_for_reference($text, $page_code) {
   } else {
     preg_match("~\w+\s\w+~", authorify($btitle), $author);
   }
-  $replacement_template_name = ucfirst($author[0]) . $date;
+  $replacement_template_name = str_replace(" ", "", ucfirst($author[0])) . $date;
   return generate_template_name($replacement_template_name, $page_code);
 }
 
