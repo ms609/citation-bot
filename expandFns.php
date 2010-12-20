@@ -349,7 +349,7 @@ function combine_duplicate_references($page_code) {
   $original_page_code = $page_code;
   preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
     // match 1 = ref names
-  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>(([^<]|<(?!ref))*?)</ref>~i", $page_code, $refs)) {
+  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>(([^<]|<(?![Rr]ef))*?)</ref>~i", $page_code, $refs)) {
     // match 0 = full ref; 1 = redundant; 2= used in regexp for backreference;
     // 3 = ref name; 4 = ref content; 5 = redundant
     foreach ($refs[4] as $ref) {
@@ -470,15 +470,25 @@ function get_name_for_reference($text, $page_code) {
           : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
           ? $author[1]
           : "ref_";
+  $btitle = preg_match("~rft\.aulast=([^&]+)~", $parsed, $btitle)
+          ? $btitle[1]
+          : "";
 
+  if ($author != "ref_") {
+    preg_match("~\w+~", authorify($author), $author);
+  } else {
+    preg_match("~\w+\s\w+~", authorify($btitle), $author);
+  }
+  $replacement_template_name = ucfirst($author[0]) . $date;
+  return generate_template_name($replacement_template_name, $page_code);
+}
 
+function authorify ($author) {
   $author = preg_replace("~[^\s\w\-]|\b\w\b~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
   $author = preg_match("~[a-z]~", $author)
           ? preg_replace("~\b[A-Z]+\b~", "", $author)
           : strtolower($author);
-  preg_match("~\w+~", $author, $author);
-  $replacement_template_name = ucfirst($author[0]) . $date;
-  return generate_template_name($replacement_template_name, $page_code);
+  return $author;
 }
 
 // Function from http://stackoverflow.com/questions/1890854
