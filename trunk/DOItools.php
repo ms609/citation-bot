@@ -379,6 +379,7 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
     ifNullSet("journal", $crossRef->journal_title);
     ifNullSet("volume", $crossRef->volume);
     if (!is("page")) ifNullSet("pages", $crossRef->first_page);
+    searchForPmid();
   } else {
     echo "\n - No CrossRef record found :-(";
   }
@@ -551,7 +552,7 @@ function pmSearch($p, $terms, $check_for_errors = false) {
   $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
   $xml = simplexml_load_file($url);
   if ($check_for_errors && $xml->ErrorList) {
-    print "\n - Errors detected in PMID search; abandoned.";
+    print "\n - Errors detected in PMID search (" . print_r($xml->ErrorList, 1) . "); abandoned.";
     return array(null, 0);
   }
 
