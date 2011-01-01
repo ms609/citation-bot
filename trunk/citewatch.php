@@ -42,7 +42,7 @@ function getCiteList($page) {
   return Array($doi[1], $jstorid[1], $pmid[1], $pmc[1]);
 }
 
-function create_page ($type, $id) {
+function create_page ($type, $id, $bonus_ids) {
   $type = strtolower($type);
   global $ON, $dotDecode, $dotEncode;
   switch ($type) {
@@ -52,8 +52,11 @@ function create_page ($type, $id) {
     default:
       $encoded_id = $id;
   }
+  foreach ($bonus_ids as $key => $value) {
+    $bonus .= "| $key = $value\n";
+  }
   return expand("Template:Cite $type/$encoded_id", $ON, true,
-                  "{{Cite journal\n| $type = $id\n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>", -1);
+                  "{{Cite journal\n| $type = $id\n$bonus}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>", -1);
 }
 
 while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in list */)) {
@@ -100,7 +103,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           // redirect to a Cite Doi page, to avoid duplication
           $encoded_doi = str_replace($dotDecode, $dotEncode, $doi_from_pmc);
           print "\n  > Creating page at Template:Cite doi/$encoded_doi...";
-          if (create_page("doi", $doi_from_pmc)) {
+          if (create_page("doi", $doi_from_pmc, array ("pmid" => $pmid_from_pmc, "pmc" => $oPmc))) {
             print "\n  > Now redirecting PMC $oPmc to $encoded_doi";
             print write($pmc_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation")
                 ? " : Done."
@@ -114,7 +117,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           }
         } else {
           print "No DOI found; using PMID instead";
-          if ($pmid_from_pmc && create_page("pmid", $pmid_from_pmc)) {
+          if ($pmid_from_pmc && create_page("pmid", $pmid_from_pmc, array("pmc", $oPmc))) {
             print "\n  > Redirecting PMC $oPmc to PMID $pmid_from_pmc";
             print write($pmc_page, "#REDIRECT[[Template:Cite pmid/$pmid_from_pmc]]", "Redirecting to PMID citation")
                 ? " : Done."
@@ -178,7 +181,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           // redirect to a Cite Doi page, to avoid duplication
           $encoded_doi = str_replace($dotDecode, $dotEncode, $doi_from_pmid);
           print "Creating new page at DOI $doi_from_pmid";
-          if (create_page("doi", $doi_from_pmid)) {
+          if (create_page("doi", $doi_from_pmid, array("pmid", $oPmid))) {
             print "\n    Created. \n  > Redirecting PMID $oPmid to $encoded_doi";
             print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation")
                 ? " : Done."
