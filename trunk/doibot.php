@@ -152,7 +152,11 @@ if (!$dont_expand) {
 
 
 
-?></pre>
+?>
+
+End of output
+   # # #
+</pre>
 
 <div class="printfooter">
 
