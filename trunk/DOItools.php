@@ -115,7 +115,12 @@ function is($key){
 function set($key, $value) {
 	global $p;
   // Dud DOI in PMID database
-  if ($key == "doi" && $value == "10.1267/science.040579197") {return false;}
+  if ($key == "doi") {
+    if ($value == "10.1267/science.040579197") {return false;}
+    else {
+      $value = str_replace(array("?cookieset=1",), "", $value);
+    }
+  }
   
   $parameter_order = list_parameters();
   if (trim($value) != "") {
