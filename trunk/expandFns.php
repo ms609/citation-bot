@@ -460,8 +460,8 @@ function name_references($page_code) {
 }
 
 function get_name_for_reference($text, $page_code) {
-  $untagged_text = strip_tags($text);
-  $parsed = parse_wikitext($untagged_text);
+  $parsed = parse_wikitext(strip_tags($text));
+  $parsed_plaintext = strip_tags($parsed);
   $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date)
             ?  $date[1]
             : "" );
@@ -473,14 +473,13 @@ function get_name_for_reference($text, $page_code) {
   $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle)
           ? $btitle[1]
           : "";
-  print "\n - BTITLE: $untagged_text \n\n $btitle \n\n";
   if ($author != "ref_") {
     preg_match("~\w+~", authorify($author), $author);
   } else if ($btitle) {
     preg_match("~\w+\s?\w+~", authorify($btitle), $author);
-  } else if ($untagged_text) {
-    if (!preg_match("~\w+\s?\w+~", authorify($untagged_text), $author)) {
-      preg_match("~\w+~", authorify($untagged_text), $author);
+  } else if ($parsed_plaintext) {
+    if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
+      preg_match("~\w+~", authorify($parsed_plaintext), $author);
     }
   }
   $replacement_template_name = str_replace(" ", "", ucfirst($author[0])) . $date;
@@ -488,8 +487,34 @@ function get_name_for_reference($text, $page_code) {
   return generate_template_name($replacement_template_name, $page_code);
 }
 
+function generate_template_name ($replacement_template_name, $page_code) {
+  if (!trim(preg_replace("~\d~", "", $replacement_template_name))) {
+    $replacement_template_name = "ref" . $replacement_template_name;
+  }
+  global $alphabet;
+  $die_length = count($alphabet);
+  $underscore = (preg_match("~[\d_]$~", $replacement_template_name)
+            ? ""
+            : "_");
+  while (preg_match("~<ref name=(?P<quote>['\"]?)"
+              . preg_quote($replacement_template_name) . "_?" . $alphabet[$i++]
+                      . "(?P=quote)[/\s]*>~i", $page_code, $match)) {
+    if ($i >= $die_length) {
+      $replacement_template_name .= $underscore . $alphabet[++$j];
+      $underscore = "";
+      $i = 0;
+    }
+  }
+  if ($i < 2) {
+    $underscore = "";
+  }
+  return $replacement_template_name
+         . $underscore
+         . $alphabet[--$i];
+}
+
 function authorify ($author) {
-  $author = preg_replace("~[^\s\w]|\b\w\b|-~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
+  $author = preg_replace("~[^\s\w]|\b\w\b|[\d\-]~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
   $author = preg_match("~[a-z]~", $author)
           ? preg_replace("~\b[A-Z]+\b~", "", $author)
           : strtolower($author);
@@ -529,29 +554,6 @@ $str = ereg_replace( chr(174), "&reg;", $str );        # registration mark
     return utf8_encode($str);
 }
 
-function generate_template_name ($replacement_template_name, $page_code) {
-  if (!$replacement_template_name) $replacement_template_name = "ref";
-  global $alphabet;
-  $die_length = count($alphabet);
-  $underscore = (preg_match("~[\d_]$~", $replacement_template_name)
-            ? ""
-            : "_");
-  while (preg_match("~<ref name=(?P<quote>['\"]?)"
-              . preg_quote($replacement_template_name) . "_?" . $alphabet[$i++]
-                      . "(?P=quote)[/\s]*>~i", $page_code, $match)) {
-    if ($i >= $die_length) {
-      $replacement_template_name .= $underscore . $alphabet[++$j];
-      $underscore = "";
-      $i = 0;
-    }
-  }
-  if ($i < 2) {
-    $underscore = "";
-  }
-  return $replacement_template_name
-         . $underscore
-         . $alphabet[--$i];
-}
 
 echo "\n Establishing connection to Wikipedia servers ... ";
 // Log in to Wikipedia
