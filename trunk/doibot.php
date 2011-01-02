@@ -42,7 +42,7 @@
 <pre><?
 
 ## Set up - including dotDecode array
-$htmlOutput=true;
+$htmlOutput = true;
 $editInitiator = "[" . revisionID() . "]";
 
 if (is_valid_user($user)) {
@@ -141,11 +141,10 @@ if ($cite_doi_start_code) {
 $slow_mode = $_REQUEST["slow"];
 
 ################## Here we go! ######################
-if (!$dont_expand) include("expand.php");
+if (!$dont_expand) {
+  expand($page, $ON, $editing_cite_doi_template, $cite_doi_start_code, true);
+}
 ################# And we're back. #####################
-
-
-
 
 
 
