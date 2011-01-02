@@ -424,8 +424,8 @@ function combine_duplicate_references($page_code) {
 }
 
 function ref_templates($page_code, $type) {
-  echo " catching ref-dois,";
   while (false !== ($ref_template = extract_template($page_code, "ref $type"))) {
+    echo " converted {{ref doi}},";
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
     if (!getArticleId("Template:cite $type/" . wikititle_encode($ref_id))) {
