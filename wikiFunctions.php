@@ -4,15 +4,12 @@
 define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
 
 function categoryMembers($cat){
-  //print "Category: $cat\n";
-  // rm restore 5 to 500.
-
-  $url= api . "?cmtitle=Category:$cat&action=query&cmlimit=5&format=xml&list=categorymembers";
+  $url= api . "?cmtitle=Category:$cat&action=query&cmlimit=500&format=xml&list=categorymembers";
 	$qc = "query-continue";
 
 	do {
 		set_time_limit(40);
-    $res = loadXmlViaBot($url . ($continue?("&cmcontinue=" . urlencode($continue)):""));
+    $res = simplexml_load_file($url . ($continue?("&cmcontinue=" . $continue):"")); // Don't URLencode.
   	if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
           $list[] = (string) $page["title"];
@@ -21,11 +18,12 @@ function categoryMembers($cat){
       echo 'Error reading API from ' . $url . ($continue?"&cmcontinue=$continue":"") . "\n\n";
     }
 	} while ($continue = $res->$qc->categorymembers["cmcontinue"]);
-	return $list?$list:Array(" ");
+  return $list?$list:Array(null);
 }
 
+// Returns an array; Array ("title1", "title2" ... );
 function whatTranscludes($template, $namespace=99){
-	$titles= whatTranscludes2($template, $namespace);
+	$titles = whatTranscludes2($template, $namespace);
 	return $titles["title"];
 }
 
@@ -35,39 +33,45 @@ function wikititle_encode($in) {
 }
 
 function getLastRev($page){
-  $xml = loadXmlViaBot(api . "?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
+  $xml = simplexml_load_file(api . "?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
-function touchPage($page) {
-  $text = getRawWikiText($page);
-  if ($text) {
-    global $editInitiator;
-    write ($page, $text, $editInitiator . " Touching page to update categories.  This edit should not affect the page content.");
-  } else {
-    return false;
-  }
-}
-
-function loadXmlViaBot($url) {
+function getPrefixIndex($prefix, $namespace = 0, $start = "") {
   global $bot;
-  $bot->fetch($url);
-  return simplexml_load_string($bot->results);
+  $qc = "query-continue";
+  $continue = urlencode($start);
+  $url = api . "?action=query&list=allpages&format=xml&apnamespace=$namespace"
+                  . "&apprefix=" . urlencode($prefix)
+                  . "&aplimit=5000";
+  do {
+		set_time_limit(20);
+    $bot->fetch($url . ($continue?"&apfrom=$continue":""));
+		if ($bot->results && (false !== ($xml = simplexml_load_string($bot->results)))) { // TODO: see what's causing an error here.
+      foreach ($xml->query->allpages->p as $page) {
+        $page_titles[] = (string) $page["title"];
+        $page_ids[] = (integer) $page["pageid"];
+      }
+    } else {
+      echo 'Error reading API from ' . $url . ($continue?"&apfrom=$continue":"");
+    }
+	} while ($continue = $xml->$qc->allpages["apfrom"]);
+  return $page_titles;
 }
 
 function getArticleId($page) {
-  $xml = loadXmlViaBot(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
+  $xml = simplexml_load_file(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["pageid"];
 }
 
 function getNamespace($page) {
-	$xml = loadXmlViaBot(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
+	$xml = simplexml_load_file(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["ns"];
 }
 
 function isRedirect($page) {
   $url = api . "?action=query&format=xml&prop=info&titles=" . urlencode($page);
-  $xml = loadXmlViaBot($url);
+  $xml = simplexml_load_file($url);
 	if ($xml->query->pages->page["pageid"]) {
     // Page exists
     return array ((($xml->query->pages->page["redirect"])?1:0),
@@ -144,15 +148,19 @@ function is_valid_user($user) {
 }
 
 function whatTranscludes2($template, $namespace=99){
-	$url = api . "?action=query&list=embeddedin&eilimit=500&format=xml&eititle=Template:$template" . (($namespace==99)?"":"&einamespace=$namespace");
+	$url = api . "?action=query&list=embeddedin&eilimit=5000&format=xml&eititle=Template:" . urlencode($template) . (($namespace==99)?"":"&einamespace=$namespace");
 	$qc = "query-continue";
 	if ($_GET["debug"]) print_r($res);
-	do{
+  global $bot;
+	do {
 		set_time_limit(20);
-		if (!$res=loadXmlViaBot($url.($continue?"&eicontinue=$continue":""))) echo 'Error reading API from' .$url.($continue?"&cmcontinue=$continue":"");
+    $bot->fetch($url . ($continue?"&eicontinue=$continue":""));
+		if (!$res=simplexml_load_string($bot->results)) {
+      echo 'Error reading API from ' . $url . ($continue?"&cmcontinue=$continue":"");
+    }
 		foreach($res->query->embeddedin->ei as $page) {
-			$list["title"][]=$page["title"];
-			$list["id"][]=$page["pageid"];
+			$list["title"][] = (string) $page["title"];
+			$list["id"][]= (integer) $page["pageid"];
 		}
 	} while ($continue = $res->$qc->embeddedin["eicontinue"]);
 	return $list;
@@ -217,7 +225,7 @@ function extract_parameters($template) {
     $template = str_replace($subtemplate[$i], sprintf($template_placeholder, $i), $template);
   }
   $splits = preg_split("~(\s*\|\s*)~", $template, -1, PREG_SPLIT_DELIM_CAPTURE);
-
+  
   // The first line doesn't contain a parameter; it's the template name
   $i = 0;
   foreach ($splits as $split) {
@@ -256,12 +264,12 @@ function generate_template ($name, $parameters) {
   $output = '{{' . $name;
   foreach ($parameters as $key => $value) {
     // Array (value, equals, pipe[, weight] )
-    $output .= $value[1] . $key . $value[2] . $value[0];
+    $output .= $value[1] . (substr($key, 0, 18) == "unnamed_parameter_" || $key=="0"?"":$key) . $value[2] . $value[0];
   }
   return $output . '}}';
 }
 
-function wikiLink($page, $style, $target = null) {
+function wikiLink($page, $style = "#036;", $target = null) {
   if (!$target) $target = $page;
   $css = $style?" style='color:$style !important'":"";
   return "<a href='" . wikiroot . "title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
