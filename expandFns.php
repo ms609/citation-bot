@@ -470,25 +470,26 @@ function get_name_for_reference($text, $page_code) {
           : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
           ? $author[1]
           : "ref_";
-  $btitle = preg_match("~rft\.[ba]title=([^&]+)~", $parsed, $btitle)
+  $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle)
           ? $btitle[1]
           : "";
-
+  print "\n - BTITLE: $untagged_text \n\n $btitle \n\n";
   if ($author != "ref_") {
     preg_match("~\w+~", authorify($author), $author);
   } else if ($btitle) {
-    preg_match("~\w+\s\w+~", authorify($btitle), $author);
+    preg_match("~\w+\s?\w+~", authorify($btitle), $author);
   } else if ($untagged_text) {
-    if (!preg_match("~\w+\s\w+~", authorify($untagged_text), $author)) {
+    if (!preg_match("~\w+\s?\w+~", authorify($untagged_text), $author)) {
       preg_match("~\w+~", authorify($untagged_text), $author);
     }
   }
   $replacement_template_name = str_replace(" ", "", ucfirst($author[0])) . $date;
+  print "\n Replacement name: $replacement_template_name\n\n";
   return generate_template_name($replacement_template_name, $page_code);
 }
 
 function authorify ($author) {
-  $author = preg_replace("~[^\s\w\-]|\b\w\b~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
+  $author = preg_replace("~[^\s\w]|\b\w\b|-~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
   $author = preg_match("~[a-z]~", $author)
           ? preg_replace("~\b[A-Z]+\b~", "", $author)
           : strtolower($author);
@@ -529,6 +530,7 @@ $str = ereg_replace( chr(174), "&reg;", $str );        # registration mark
 }
 
 function generate_template_name ($replacement_template_name, $page_code) {
+  if (!$replacement_template_name) $replacement_template_name = "ref";
   global $alphabet;
   $die_length = count($alphabet);
   $underscore = (preg_match("~[\d_]$~", $replacement_template_name)
