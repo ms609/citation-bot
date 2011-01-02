@@ -460,7 +460,8 @@ function name_references($page_code) {
 }
 
 function get_name_for_reference($text, $page_code) {
-  $parsed = parse_wikitext(strip_tags($text));
+  $untagged_text = strip_tags($text);
+  $parsed = parse_wikitext($untagged_text);
   $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date)
             ?  $date[1]
             : "" );
@@ -469,7 +470,7 @@ function get_name_for_reference($text, $page_code) {
           : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
           ? $author[1]
           : "ref_";
-  $btitle = preg_match("~rft\.btitle=([^&]+)~", $parsed, $btitle)
+  $btitle = preg_match("~rft\.[ba]title=([^&]+)~", $parsed, $btitle)
           ? $btitle[1]
           : "";
 
@@ -477,9 +478,9 @@ function get_name_for_reference($text, $page_code) {
     preg_match("~\w+~", authorify($author), $author);
   } else if ($btitle) {
     preg_match("~\w+\s\w+~", authorify($btitle), $author);
-  } else if ($text) {
-    if (!preg_match("~\w+\s\w+~", authorify($text), $author)) {
-      preg_match("~\w+~", authorify($text), $author);
+  } else if ($untagged_text) {
+    if (!preg_match("~\w+\s\w+~", authorify($untagged_text), $author)) {
+      preg_match("~\w+~", authorify($untagged_text), $author);
     }
   }
   $replacement_template_name = str_replace(" ", "", ucfirst($author[0])) . $date;
