@@ -365,7 +365,6 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
       $doiCrossRef = $crossRef;
     }
     ifNullSet("title", $crossRef->article_title);
-    print 55;
     ifNullSet("year", $crossRef->year);
     if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
         && $crossRef->contributors->contributor) {
@@ -377,13 +376,11 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
         }
       }
     }
-    print 66;
     ifNullSet("doi", $crossRef->doi);
     if ($jstor_redirect) {
       global $jstor_redirect_target;
       $jstor_redirect_target = $crossRef->doi;
     }
-    print 47;
     ifNullSet("journal", $crossRef->journal_title);
     ifNullSet("volume", $crossRef->volume);
     if (!is("page")) ifNullSet("pages", $crossRef->first_page);
@@ -561,7 +558,9 @@ function pmSearch($p, $terms, $check_for_errors = false) {
   $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
   $xml = simplexml_load_file($url);
   if ($check_for_errors && $xml->ErrorList) {
-    print "\n - Errors detected in PMID search (" . print_r($xml->ErrorList, 1) . "); abandoned.";
+    print $xml->ErrorList->PhraseNotFound
+            ? " no results."
+            : "\n - Errors detected in PMID search (" . print_r($xml->ErrorList, 1) . "); abandoned.";
     return array(null, 0);
   }
 
