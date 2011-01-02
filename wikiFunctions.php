@@ -81,11 +81,27 @@ function isRedirect($page) {
    }
 }
 
+
 function parse_wikitext($text, $title="API") {
-  $url = api
-          . "?format=json&action=parse&text=" . urlencode($text)
-          . "&title=" . urlencode($title);
-  $a = json_decode(file_get_contents($url), true);
+  $postdata = http_build_query(
+    array(
+        'format' => 'json',
+        'action' => 'parse',
+        'text'   => $text,
+        'title'  => $title,
+    )
+  );
+
+  $opts = array('http' =>
+      array(
+          'method'  => 'POST',
+          'header'  => 'Content-type: application/x-www-form-urlencoded',
+          'content' => $postdata
+      )
+  );
+
+  $context  = stream_context_create($opts);
+  $a = json_decode(file_get_contents(api, false, $context), true);
   if (!$a) {
     // Wait a sec and try again
     sleep(2);

@@ -447,7 +447,7 @@ function ref_templates($page_code, $type) {
 
 function name_references($page_code) {
   echo " naming";
-  if (preg_match_all("~<ref>[^\{]*\{\{\s*(?=[cC]it|[rR]ef).*</ref>~U", $page_code, $refs)) {
+  if (preg_match_all("~<ref>[^\{<]*\{\{\s*(?=[cC]it|[rR]ef).*</ref>~U", $page_code, $refs)) {
     foreach ($refs[0] as $ref) {
       $ref_name = get_name_for_reference($ref, $page_code);
       if (substr($ref_name, 0, 4) != "ref_") {
@@ -476,8 +476,13 @@ function get_name_for_reference($text, $page_code) {
 
   if ($author != "ref_") {
     preg_match("~\w+~", authorify($author), $author);
-  } else {
+  } else if ($btitle) {
     preg_match("~\w+\s\w+~", authorify($btitle), $author);
+  } else if ($text) {
+    if (!preg_match("~\w+\s\w+~", authorify($text), $author)) {
+      preg_match("~\w+~", authorify($text), $author);
+    }
+    $author[0] = substr($author[0], 3);
   }
   $replacement_template_name = str_replace(" ", "", ucfirst($author[0])) . $date;
   return generate_template_name($replacement_template_name, $page_code);
@@ -564,5 +569,5 @@ function ascii_sort($val_1, $val_2)
   return $return;
 }
 uasort($parameter_list, "ascii_sort");
-print "done.";
+exit ("done.");
 ?>
