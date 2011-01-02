@@ -105,7 +105,7 @@ $slowMode = $_REQUEST["slow"];
 
 if (!$dont_expand) {
   print "\nExpanding '$page'; " . ($ON ? "will" : "won't") . " commit edits.";
-  expand($page, $ON, $editing_cite_doi_template, $cite_doi_start_code);
+  expand($page, $ON, $editing_cite_doi_template, $cite_doi_start_code, $htmlOutput);
 }
 
 ?>
