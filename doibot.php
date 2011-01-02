@@ -1,4 +1,4 @@
-<?php include("expandFns.php");
+<?php require_once ("expandFns.php"); require_once ("expand-it.php");
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 	<head>
@@ -52,47 +52,9 @@ if (is_valid_user($user)) {
   $editSummaryEnd = "User-activated.";
 }
 
-
-###
-
-function nextPage() {
-  return null; #Console should take care of the backlog now.
-	$db = udbconnect();
-	if (restrictedDuties) {
-    mysql_close($db);
-    return false; ######## Stop bot working through backlog until systemic bugs are fixed ########
-  }
-	$result = mysql_query ("SELECT page FROM citation ORDER BY fast ASC") or die(mysql_error());
-	if(rand(1, 5000) == 100000)	{
-		print "<p style=font-size:larger>Updating backlog...</p><p>\nSeeing what links to 'Cite Journal'...";
-		$cite_journal = whatTranscludes2("Cite_journal", 0);
-		$cite_book = whatTranscludes2("Cite_book", 0);
-		$cite_enc = whatTranscludes2("Cite_encyclopedia", 0);
-		print "\nand 'Citation'... ";
-		$citation =  whatTranscludes2("Citation", 0);
-		$pages = array_merge($cite_journal["title"], $cite_book["title"], $cite_enc["title"], $citation["title"]);
-		$ids   = array_merge($cite_journal["id"],    $cite_book["id"],    $cite_enc["id"],    $citation["id"]);
-		print "and writing to file...";
-		$count = count($pages);
-		for ($i=0; $i<$count; $i++){
-			$result = mysql_query("SELECT page FROM citation WHERE id = {$ids[$i]}") or die (mysql_error());
-			if (!mysql_fetch_row($result)) {
-				mysql_query("INSERT INTO citation (id, page) VALUES ('{$ids[$i]}', '". addslashes($pages[$i]) ."')" )or die(mysql_error());
-				print "<br>{$pages[$i]} @ {$ids[$i]}";
-			} else print ".";
-		}
-		print "</p><p style='font-size:larger'>done.</p>";
-	}
-	$result = mysql_query("SELECT page FROM citation ORDER BY fast ASC") or die (mysql_error());
-	$result = mysql_fetch_row($result);
-  mysql_close($db);
-	global $page;
-	return $result[0];
-}
-
 $doi_input = $_GET["doi"];
-$pmid_input = $_GET["pmid"];
-$pmc_input = $_GET["pmc"];
+$pmid_input = str_replace(array("pmid", "PMID"), "", $_GET["pmid"]);
+$pmc_input = str_replace(array("pmc", "PMC"), "", $_GET["pmc"]);
 
 if ($pmc_input) {
   $page = "Template:Cite pmc/" . $pmc_input;
@@ -111,7 +73,7 @@ if ($pmc_input) {
       $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
     }
   } else {
-   print ("\n<p>PMC $pmc_input not found.  Try removing 'PMC' prefix?</p>");
+   print ("\n<p>PMC $pmc_input not found. </p>");
    $dont_expand = true;
   }
 }
@@ -129,28 +91,22 @@ if ($pmid_input) {
 }
 if ($doi_input) {
 	$page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi_input);
-	$cite_doi_start_code = "{{Cite journal \n| doi = $doi_input\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
+	$cite_doi_start_code = "{{Cite journal \n| doi = $doi_input \n| pmid = $pmid_input \n| pmc = $pmc_input\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
 } else if (!$cite_doi_start_code) {
-  $page = ($_REQUEST["page"])?ucfirst($_REQUEST["page"]):nextPage();
+  $page = ucfirst(strip_tags($_REQUEST["page"]));
 }
 
 if ($cite_doi_start_code) {
   $editing_cite_doi_template = true;
   $ON = true;
 }
+
 $slow_mode = $_REQUEST["slow"];
 
-################## Here we go! ######################
 if (!$dont_expand) {
+  print "\nExpanding '$page'; " . ($ON ? "will" : "won't") . " commit edits.";
   expand($page, $ON, $editing_cite_doi_template, $cite_doi_start_code, true);
 }
-################# And we're back. #####################
-
-
-
-
-
-
 
 ?>
 
