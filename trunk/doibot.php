@@ -1,4 +1,4 @@
-<?php require_once ("expandFns.php"); require_once ("expand-it.php");
+<?php require_once ("expandFns.php"); require_once ("expand_it.php");
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 	<head>
@@ -101,11 +101,11 @@ if ($cite_doi_start_code) {
   $ON = true;
 }
 
-$slow_mode = $_REQUEST["slow"];
+$slowMode = $_REQUEST["slow"];
 
 if (!$dont_expand) {
   print "\nExpanding '$page'; " . ($ON ? "will" : "won't") . " commit edits.";
-  expand($page, $ON, $editing_cite_doi_template, $cite_doi_start_code, true);
+  expand($page, $ON, $editing_cite_doi_template, $cite_doi_start_code);
 }
 
 ?>

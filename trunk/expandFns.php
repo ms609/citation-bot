@@ -359,15 +359,15 @@ function combine_duplicate_references($page_code) {
       if (false !== ($key = array_search(standardize_reference($this_ref), $standardized_ref))
               && $key != $i) {
         $full_original[] = $refs[4][$key];
-        $content_of_duplicate[] = $this_ref;
+        $duplicate_content[] = $this_ref;
       }
-      $page_code = str_replace($content_of_duplicate, $full_original, $page_code);
+      $page_code = str_replace($duplicate_content, $full_original, $page_code);
     }
   }
 
   // Reset
   $full_original = null;
-  $content_of_duplicate = null;
+  $duplicate_content = null;
   $standardized_ref = null;
 
   if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>(([^<]|<(?!ref))*?)</ref>~i", $page_code, $refs)) {
@@ -381,7 +381,7 @@ function combine_duplicate_references($page_code) {
         $full_duplicate[] = $refs[0][$i];
         $name_of_original[] = $refs[3][$key];
         $name_of_duplicate[] = $refs[3][$i];
-        $content_of_duplicate[] = $content;
+        $duplicate_content[] = $content;
       }
     }
     if ($full_duplicate) {
@@ -391,7 +391,7 @@ function combine_duplicate_references($page_code) {
           print "\n - Replacing duplicate reference $this_duplicate"; // . " (original: $full_original[$i])";
           $replacement_template_name = $name_of_original[$i]
                                      ? $name_of_original[$i]
-                                     : get_name_for_reference($full_original[$i], $original_page_code);
+                                     : get_name_for_reference($duplicate_content[$i], $page_code);
           preg_match("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
                                     . "(?P=quote)(\s*/>)~",
                               $page_code);
@@ -469,7 +469,7 @@ function get_name_for_reference($text, $page_code) {
           : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
           ? $author[1]
           : "ref_";
-  $btitle = preg_match("~rft\.aulast=([^&]+)~", $parsed, $btitle)
+  $btitle = preg_match("~rft\.btitle=([^&]+)~", $parsed, $btitle)
           ? $btitle[1]
           : "";
 
@@ -481,7 +481,6 @@ function get_name_for_reference($text, $page_code) {
     if (!preg_match("~\w+\s\w+~", authorify($text), $author)) {
       preg_match("~\w+~", authorify($text), $author);
     }
-    $author[0] = substr($author[0], 3);
   }
   $replacement_template_name = str_replace(" ", "", ucfirst($author[0])) . $date;
   return generate_template_name($replacement_template_name, $page_code);
@@ -531,15 +530,24 @@ $str = ereg_replace( chr(174), "&reg;", $str );        # registration mark
 function generate_template_name ($replacement_template_name, $page_code) {
   global $alphabet;
   $die_length = count($alphabet);
+  $underscore = (preg_match("~[\d_]$~", $replacement_template_name)
+            ? ""
+            : "_");
   while (preg_match("~<ref name=(?P<quote>['\"]?)"
-              . preg_quote($replacement_template_name . $alphabet[$i++])
+              . preg_quote($replacement_template_name) . "_?" . $alphabet[$i++]
                       . "(?P=quote)[/\s]*>~i", $page_code, $match)) {
     if ($i >= $die_length) {
-      $replacement_template_name .= $alphabet[++$j];
+      $replacement_template_name .= $underscore . $alphabet[++$j];
+      $underscore = "";
       $i = 0;
     }
   }
-  return $replacement_template_name . $alphabet[--$i];
+  if ($i < 2) {
+    $underscore = "";
+  }
+  return $replacement_template_name
+         . $underscore
+         . $alphabet[--$i];
 }
 
 echo "\n Establishing connection to Wikipedia servers ... ";
