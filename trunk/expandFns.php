@@ -483,7 +483,7 @@ function get_name_for_reference($text, $page_code) {
     }
   }
   $replacement_template_name = str_replace(" ", "", ucfirst($author[0])) . $date;
-  print "\n Replacement name: $replacement_template_name\n\n";
+  #print "\n Replacement name: $replacement_template_name\n\n";
   return generate_template_name($replacement_template_name, $page_code);
 }
 
