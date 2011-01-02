@@ -61,8 +61,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
     print "\n Reference tags:";
     $pagecode = name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc")));
     #$pagecode = ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc");
-    #write($page, $pagecode, "Test edit in userspace");
-    print "Common replacements ";
+    print "\nCommon replacements: ";
     $pagecode = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
         preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
         preg_replace
@@ -72,7 +71,6 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
 
         preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~", "$1doi$2=$3", 
                 $pagecode
-                #name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc")))
                 ))))));
     print " Done...";
     if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $pagecode)) {
@@ -444,7 +442,6 @@ echo "
           $p = correct_parameter_spelling($p);
           // DOI - urldecode
           if (isset($p["doi"][0])) {
-            $p['doi'][0] = trim(preg_replace("~\<!--.*--\>~", "", $p["doi"][0]));
             $p["doi"][0] = str_replace($pcEncode, $pcDecode,
                              str_replace(' ', '+', trim(urldecode($p["doi"][0]))));
             $doi_with_comments_removed = preg_replace("~<!--[\s\S]*-->~U", "", $p["doi"][0]);
@@ -1017,7 +1014,13 @@ Done.  Just a couple of things to tweak now...";
 
         // Restore comments we hid earlier
         for ($j = 0; $j < $countComments; $j++) {
-          $cText = str_replace("<!-- Citation bot : comment placeholder c$j -->"
+          $cText = str_replace(array("<!-- Citation bot : comment placeholder c$j -->",
+                                     str_replace($dotEncode, $dotDecode, "<!-- Citation bot : comment placeholder c$j -->"),
+                                     str_replace($pcEncode, $pcDecode,
+                                                 str_replace(' ', '+',
+                                                   trim(urldecode("<!-- Citation bot : comment placeholder c$j -->")))),
+
+                                    )
                                         , $comments[0][$j]
                                         , $cText);
         }
@@ -1259,7 +1262,9 @@ Done.  Just a couple of things to tweak now...";
             $p = null; // re-reset
           }
           if (strpos($page, "andbox") > 1) {
-              echo $htmlOutput?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title=".urlencode($page)."&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
+              echo $htmlOutput?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title="
+                  . urlencode($page) . "\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title="
+                  . urlencode($page) . "&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
               write($page . $_GET["subpage"], $pagecode, $editInitiator . "Citation maintenance: Fixing/testing bugs. "
                 .	"Problems? [[User_talk:Smith609|Contact the bot's operator]]. ");
             } else {
