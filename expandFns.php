@@ -219,7 +219,6 @@ function mark_broken_doi_template($article_in_progress, $oDoi) {
       , "$editInitiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
     );
   } else {
-    var_dump($article_in_progress);
     die ("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
   }
 }
@@ -569,5 +568,5 @@ function ascii_sort($val_1, $val_2)
   return $return;
 }
 uasort($parameter_list, "ascii_sort");
-exit ("done.");
+echo ("done.");
 ?>
