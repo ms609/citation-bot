@@ -20,27 +20,27 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
   echo "\nRevision #$last_revision_id";
 
 
-  $startPage = time();
-  echo $htmlOutput ? ("\n<hr>[" . date("H:i:s", $startPage) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $startPage));
+  $started_page_at = time();
+  echo $htmlOutput ? ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $started_page_at));
 
   $bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
-  $startcode = $bot->results;
-  if ($editing_cite_doi_template && !$startcode) {
-    $startcode = $cite_doi_start_code;
+  $original_code = $bot->results;
+  if ($editing_cite_doi_template && !$original_code) {
+    $original_code = $cite_doi_start_code;
   }
 
   // Which template family is dominant?
   if (!$editing_cite_doi_template) {
-    preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $startcode, $cite_x);
-    preg_match_all("~\{\{\s*cite[ _](doi|pm|jstor|arx)~i", $startcode, $cite_id);
-    preg_match_all("~\{\{\s*[Cc]itation\b(?! \w)~", $startcode, $citation);
+    preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $original_code, $cite_x);
+    preg_match_all("~\{\{\s*cite[ _](doi|pm|jstor|arx)~i", $original_code, $cite_id);
+    preg_match_all("~\{\{\s*[Cc]itation\b(?! \w)~", $original_code, $citation);
     $cite_x_count = count ($cite_x[0]);
     $citation_count = count ($citation[0]);
     $cite_id_count = count ($cite_id[0]);
     if ($cite_id_count > 3 || $cite_id_count + 1 >= ($cite_x_count + $citation_count - $cite_id_count)) {
       echo "\n - switch to cite id format is supported.";
     }
-    $harv_template_present = (stripos($startcode, "{{harv") === false)?false:true;
+    $harv_template_present = (stripos($original_code, "{{harv") === false)?false:true;
     if ($cite_x_count * $citation_count > 0) {
       // Two types are present
       $unify_citation_templates = true;
@@ -52,16 +52,16 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
        $citation_template_dominant = false;
     }
   }
-  if (preg_match("/\{\{nobots\}\}|\{\{bots\s*\|\s*deny\s*=[^}]*(Citation[ _]bot|DOI[ _]bot|all)[^}]*\}\}|\{\{bots\s*\|\s*allow=none\}\}/i", $startcode, $denyMsg)) {
+  if (preg_match("/\{\{nobots\}\}|\{\{bots\s*\|\s*deny\s*=[^}]*(Citation[ _]bot|DOI[ _]bot|all)[^}]*\}\}|\{\{bots\s*\|\s*allow=none\}\}/i", $original_code, $denyMsg)) {
     echo "**** Bot forbidden by bots / nobots tag: $denyMsg[0]";
     updateBacklog($page);
     return false;
   } else {
     print "\n Reference tags:";
-    $pagecode = name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc")));
-    #$pagecode = ref_templates(ref_templates(ref_templates(ref_templates($startcode, "doi"), "pmid"), "jstor"), "pmc");
+    $new_code = name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc")));
+    #$new_code = ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc");
     print "\nCommon replacements: ";
-    $pagecode = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
+    $new_code = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
         preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
         preg_replace
                     ("~(\|\s*)id(\s*=[^\|]*)(DOI:?\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","$1doi$2$5$4$6",
@@ -69,23 +69,23 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
         preg_replace("~(\|\s*)id(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","$1doi$2$3",
 
         preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~", "$1doi$2=$3", 
-                $pagecode
+                $new_code
                 ))))));
     print " Done...";
-    if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $pagecode)) {
-      $pagecode = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $pagecode);
+    if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $new_code)) {
+      $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $new_code);
       $changedDashes = true;
       echo "Converted dashes in all page parameters to en-dashes.\n";
     }
     
 ###################################  START ASSESSING BOOKS ######################################
 
-    if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $pagecode, -1, PREG_SPLIT_DELIM_CAPTURE))) {
-      $pagecode = null;
+    if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+      $new_code = null;
       $iLimit = (count($citation)-1);
 
-      for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5){//Number of brackets in cite book regexp +1
-        $starttime = time();
+      for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) {//Number of brackets in cite book regexp +1
+        $started_citation_at = time();
 
         // Remove any comments so they don't confuse any regexps.
         if (preg_match_all("~<!--[\s\S]+-->~U", $citation[$cit_i+1], $comments)) {
@@ -255,7 +255,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
 
         //And we're done!
         $endtime = time();
-        $timetaken = $endtime - $starttime;
+        $timetaken = $endtime - $started_citation_at;
         echo "\n  Book reference assessed in $timetaken secs.";
 
         // Get a format for spacing around the pipe or equals
@@ -292,19 +292,19 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
                                         , $comments[0][$j]
                                         , $cText);
         }
-        $pagecode .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
+        $new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
         $cText = null;
         $crossRef = null;
       }
-      $pagecode .= $citation[$cit_i]; // Adds any text that comes after the last citation
+      $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
     }
 ###################################  START ASSESSING JOURNAL/OTHER CITATIONS ######################################
 
-    if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $pagecode, -1, PREG_SPLIT_DELIM_CAPTURE))) {
-      $pagecode = null;
-      $iLimit = (count($citation)-1);
-      for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5){//Number of brackets in cite journal regexp + 1
-        $starttime = time();
+    if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[dD]ocument(?=\s*\|)|\s*[Cc]ite[_ ]?[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+      $new_code = null;
+      $iLimit = (count($citation) - 1);
+      for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) {//Number of brackets in cite journal regexp + 1
+        $started_citation_at = time();
 
         // Strip comments, which may contain misleading pipes etc
         if (preg_match_all("~<!--[\s\S]+-->~U", $citation[$cit_i+1], $comments)) {
@@ -1008,7 +1008,7 @@ Done.  Just a couple of things to tweak now...";
 
         //And we're done!
         $endtime = time();
-        $timetaken = $endtime - $starttime;
+        $timetaken = $endtime - $started_citation_at;
         echo "\n*** Complete. Citation assessed in $timetaken secs.\n\n\n";
 
         // Restore comments we hid earlier
@@ -1023,22 +1023,22 @@ Done.  Just a couple of things to tweak now...";
                                         , $comments[0][$j]
                                         , $cText);
         }
-        $pagecode .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
+        $new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
         $cText = null;
         $crossRef = null;
         $last_p = $p;
         $p = null;
       }
 
-      $pagecode .= $citation[$cit_i]; // Adds any text that comes after the last citation
+      $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
     }
 
 ###################################  Cite arXiv ######################################
-    if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $pagecode, -1, PREG_SPLIT_DELIM_CAPTURE))) {
-      $pagecode = null;
+    if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+      $new_code = null;
       $iLimit = (count($citation)-1);
       for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5){//Number of brackets in cite arXiv regexp + 1
-        $starttime = time();
+        $started_citation_at = time();
         $c = $citation[$cit_i+1];
         while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
         // Split citation into parameters
@@ -1127,7 +1127,7 @@ Done.  Just a couple of things to tweak now...";
 
         //And we're done!
         $endtime = time();
-        $timetaken = $endtime - $starttime;
+        $timetaken = $endtime - $started_citation_at;
         echo "* Citation assessed in $timetaken secs. " . ($changeToJournal?"Changing to Cite Journal. ":"Keeping as cite arXiv") . "\n";
         foreach ($p as $oP){
           $pipe=$oP[1]?$oP[1]:null;
@@ -1153,21 +1153,21 @@ Done.  Just a couple of things to tweak now...";
             } elseif ($pStart[$param] != $value) {
               $changes[$param] = true;
             }
-        $pagecode .=  $citation[$cit_i] . ($cText?"{{" . ($changeToJournal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
-#				$pagecode .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
+        $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($changeToJournal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
+#				$new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
         $cText = null;
         $crossRef = null;
       }
 
-      $pagecode .= $citation[$cit_i]; // Adds any text that comes after the last citation
+      $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
     }
     /*
       if ($unify_citation_templates && $citation_template_dominant) {
-      $pagecode = preg_replace("~\b[cC]ite[ _](web|conference|encyclopedia|news)~", "Citation", $pagecode);
+      $new_code = preg_replace("~\b[cC]ite[ _](web|conference|encyclopedia|news)~", "Citation", $new_code);
     }  */
 
-    if (trim($pagecode)) {
-      if (strtolower($pagecode) != strtolower($startcode)) {
+    if (trim($new_code)) {
+      if (strtolower($new_code) != strtolower($original_code)) {
         if ($additions) {
           $smartSum = "+: ";
           foreach ($additions as $param=>$v)	{
@@ -1199,21 +1199,21 @@ Done.  Just a couple of things to tweak now...";
         }
         echo $smartSum;
         $editSummary = $editSummaryStart . $editInitiator . $smartSum . $initiatedBy . $editSummaryEnd;
-        $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . htmlentities(mb_convert_encoding($pagecode, "UTF-8")) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to $page.<br><b>Changes:</b> <i>$smartSum</i></p>";
+        $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . htmlentities(mb_convert_encoding($new_code, "UTF-8")) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to $page.<br><b>Changes:</b> <i>$smartSum</i></p>";
 
-        if ($editing_cite_doi_template && strtolower(substr(trim($pagecode), 0, 5)) != "{{cit") {
-          if (substr($pagecode, 0, 15) == "HTTP/1.0 200 OK") {
+        if ($editing_cite_doi_template && strtolower(substr(trim($new_code), 0, 5)) != "{{cit") {
+          if (substr($new_code, 0, 15) == "HTTP/1.0 200 OK") {
             echo "Headers included in pagecode; removing...\n";
-            $pagecode = preg_replace("~$[\s\S]+\{\{~", "{{", $pagecode);
+            $new_code = preg_replace("~$[\s\S]+\{\{~", "{{", $new_code);
           } else {
             mail ("MartinS+citewatch@gmail.com"
                   , "Citewatch ERROR"
-                  , "Output does not begin with {{Cit, but [" . strtolower(substr(trim($pagecode), 0, 5)) . "]
+                  , "Output does not begin with {{Cit, but [" . strtolower(substr(trim($new_code), 0, 5)) . "]
                   . \n\n[Page = $page]\n[SmartSum = $smartSum ]\n[\$citation = ". print_r($citation, 1)
                   . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n [p = "
                   . print_r($p,1)
-                  . "] \n[pagecode =$pagecode]\n\n[freshcode =$cite_doi_start_code]\n\n> Error message generated by expand.php.");
-            die ("$pagecode"); // make the next if an elseif if you remove this, and think of some way of the above line not skipping the elseif
+                  . "] \n[pagecode =$new_code]\n\n[freshcode =$cite_doi_start_code]\n\n> Error message generated by expand.php.");
+            die ("$new_code"); // make the next if an elseif if you remove this, and think of some way of the above line not skipping the elseif
           }
         }
         if ($commit_edits) {
@@ -1264,21 +1264,21 @@ Done.  Just a couple of things to tweak now...";
               echo $htmlOutput?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title="
                   . urlencode($page) . "\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title="
                   . urlencode($page) . "&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
-              write($page . $_GET["subpage"], $pagecode, $editInitiator . "Citation maintenance: Fixing/testing bugs. "
+              write($page . $_GET["subpage"], $new_code, $editInitiator . "Citation maintenance: Fixing/testing bugs. "
                 .	"Problems? [[User_talk:Smith609|Contact the bot's operator]]. ");
             } else {
               echo "<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> ... ";
-              if (write($page . $_GET["subpage"], $pagecode, $editSummary) == "Success") {
+              if (write($page . $_GET["subpage"], $new_code, $editSummary) == "Success") {
                 updateBacklog($page);
                 echo "Success.";
               } else {
                 echo "Edit may have failed. Retrying: <span style='font-size:1px'>xxx</span> ";
-                if (write($page . $_GET["subpage"], $pagecode, $editSummary) == "Success") {
+                if (write($page . $_GET["subpage"], $new_code, $editSummary) == "Success") {
                   updateBacklog($page);
                   echo "Success.";
                 } else {
                   echo "Still no good. One last try: ";
-                  $status = write($page . $_GET["subpage"], $pagecode, $editSummary);
+                  $status = write($page . $_GET["subpage"], $new_code, $editSummary);
                   if ($status == "Success") {
                     updateBacklog($page);
                     echo "Success. Phew!";
@@ -1292,13 +1292,13 @@ Done.  Just a couple of things to tweak now...";
 
             }
             ob_end_clean();
-            return $pagecode;
-            $pageDoneIn = time() - $startPage;
+            return $new_code;
+            $pageDoneIn = time() - $started_page_at;
             if ($pageDoneIn<3) {echo "Quick work ($pageDoneIn secs). Waiting, to avoid server overload."; sleep(1);} else echo "<i>Page took $pageDoneIn secs to process.</i>";
         } else {
           echo $outputText;
           ob_end_clean();
-          return $pagecode;
+          return $new_code;
         }
 
         //Unset smart edit summary parameters
@@ -1357,10 +1357,10 @@ Done.  Just a couple of things to tweak now...";
           updateBacklog($page);
         }
         ob_end_clean();
-        return $pagecode;
+        return $new_code;
       }
     } else {
-      if (trim($startcode)=='') {
+      if (trim($original_code)=='') {
         echo "<b>Blank page.</b> Perhaps it's been deleted?";
         if (!$editing_cite_doi_template) {
           updateBacklog($page);
@@ -1368,7 +1368,7 @@ Done.  Just a couple of things to tweak now...";
         ob_end_clean();
         return false;
       } else {
-        echo "<b>Error:</b> Blank page produced. This bug has been reported. Page content: $startcode";
+        echo "<b>Error:</b> Blank page produced. This bug has been reported. Page content: $original_code";
         mail ("MartinS+doibot@gmail.com", "DOI BOT ERROR", "Blank page produced.\n[Page = $page]\n[SmartSum = $smartSum ]\n[\$citation = ". print_r($citation, 1) . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n\nError message generated by expand.php.");
         exit; #legit
         return false;
@@ -1384,7 +1384,7 @@ Done.  Just a couple of things to tweak now...";
   if ($htmlOutput == -1) {
     ob_end_clean();
   }
-  return $pagecode;
+  return $new_code;
 }
 
 function searchForPmid() {
