@@ -53,10 +53,10 @@ function create_page ($type, $id, $bonus_ids) {
       $encoded_id = $id;
   }
   foreach ($bonus_ids as $key => $value) {
-    $bonus .= "| $key = $value\n";
+    $bonus .= " | $key = $value\n";
   }
   return expand("Template:Cite $type/$encoded_id", $ON, true,
-                  "{{Cite journal\n| $type = $id\n$bonus}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>", -1);
+                  "{{Cite journal\n | $type = $id\n$bonus}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>", -1);
 }
 
 while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in list */)) {
