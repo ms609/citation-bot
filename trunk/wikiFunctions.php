@@ -18,7 +18,7 @@ function categoryMembers($cat){
       echo 'Error reading API from ' . $url . ($continue?"&cmcontinue=$continue":"") . "\n\n";
     }
 	} while ($continue = $res->$qc->categorymembers["cmcontinue"]);
-  return $list?$list:Array(null);
+  return $list?$list:Array(" ");
 }
 
 // Returns an array; Array ("title1", "title2" ... );
@@ -81,7 +81,6 @@ function isRedirect($page) {
    }
 }
 
-
 function parse_wikitext($text, $title="API") {
   $postdata = http_build_query(
     array(
@@ -102,6 +101,7 @@ function parse_wikitext($text, $title="API") {
 
   $context  = stream_context_create($opts);
   $a = json_decode(file_get_contents(api, false, $context), true);
+  print_r($a);
   if (!$a) {
     // Wait a sec and try again
     sleep(2);
@@ -256,7 +256,7 @@ function extract_parameters($template) {
 
   $unnamed_parameter_count = 0;
   foreach ($lines as $i => $line) {
-    preg_match("~^([^= ]*)(\s*=\s*)?([\s\S]*)$~", $line, $match);
+    preg_match("~^([^=]*)(\s*=\s*)?([\s\S]*)$~", $line, $match);
     if ($match[2]) {
       // then an equals sign is present; i.e. we have a named parameter
       $value = $match[3];
