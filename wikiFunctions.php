@@ -2,6 +2,7 @@
 // $Id: $
 
 define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
+define ("BRACESPACE", "!BOTCODE-spaceBeforeTheBrace");
 
 function categoryMembers($cat){
   $url= api . "?cmtitle=Category:$cat&action=query&cmlimit=500&format=xml&list=categorymembers";
@@ -101,7 +102,6 @@ function parse_wikitext($text, $title="API") {
 
   $context  = stream_context_create($opts);
   $a = json_decode(file_get_contents(api, false, $context), true);
-  print_r($a);
   if (!$a) {
     // Wait a sec and try again
     sleep(2);
@@ -224,7 +224,12 @@ function extract_parameters($template) {
 
   // Remove whitespace and braces from template
   $template = trim($template);
-  $template = substr($template, 2, strlen($template)-4);
+  $template = substr($template, 2, strlen($template) - 4);
+  if (preg_match ("~\s*$~", $template, $space_before_the_brace)) {
+    $template = preg_replace("~\s*$~", "", $template);
+    $parameters[BRACESPACE] = $space_before_the_brace;
+  }
+
   // Replace pipes with placeholders in comments and links
   $template = preg_replace($wikilink_regexp, "$1$pipe_placeholder$2", $template);
   while (preg_match($comment_regexp, $template)) {
@@ -241,7 +246,7 @@ function extract_parameters($template) {
     $template = str_replace($subtemplate[$i], sprintf($template_placeholder, $i), $template);
   }
   $splits = preg_split("~(\s*\|\s*)~", $template, -1, PREG_SPLIT_DELIM_CAPTURE);
-  
+
   // The first line doesn't contain a parameter; it's the template name
   $i = 0;
   foreach ($splits as $split) {
@@ -256,7 +261,7 @@ function extract_parameters($template) {
 
   $unnamed_parameter_count = 0;
   foreach ($lines as $i => $line) {
-    preg_match("~^([^=]*)(\s*=\s*)?([\s\S]*)$~", $line, $match);
+    preg_match("~^([^=]*)\b(\s*=\s*)?([\s\S]*)$~", $line, $match);
     if ($match[2]) {
       // then an equals sign is present; i.e. we have a named parameter
       $value = $match[3];
@@ -278,11 +283,13 @@ function extract_parameters($template) {
 // Transforms an array in "$p format" back into a template
 function generate_template ($name, $parameters) {
   $output = '{{' . $name;
+  $space_before_the_brace = $parameters[BRACESPACE][0];
+  unset($parameters[BRACESPACE]);
   foreach ($parameters as $key => $value) {
     // Array (value, equals, pipe[, weight] )
     $output .= $value[1] . (substr($key, 0, 18) == "unnamed_parameter_" || $key=="0"?"":$key) . $value[2] . $value[0];
   }
-  return $output . '}}';
+  return $output . $space_before_the_brace . '}}';
 }
 
 function wikiLink($page, $style = "#036;", $target = null) {
