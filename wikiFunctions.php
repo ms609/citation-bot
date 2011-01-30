@@ -10,7 +10,7 @@ function categoryMembers($cat){
 
 	do {
 		set_time_limit(40);
-    $res = simplexml_load_file($url . ($continue?("&cmcontinue=" . $continue):"")); // Don't URLencode.
+    $res = load_xml_via_bot($url . ($continue?("&cmcontinue=" . $continue):"")); // Don't URLencode.
   	if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
           $list[] = (string) $page["title"];
@@ -34,7 +34,7 @@ function wikititle_encode($in) {
 }
 
 function getLastRev($page){
-  $xml = simplexml_load_file(api . "?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
+  $xml = load_xml_via_bot(api . "?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
@@ -61,18 +61,18 @@ function getPrefixIndex($prefix, $namespace = 0, $start = "") {
 }
 
 function getArticleId($page) {
-  $xml = simplexml_load_file(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
+  $xml = load_xml_via_bot(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["pageid"];
 }
 
 function getNamespace($page) {
-	$xml = simplexml_load_file(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
+	$xml = load_xml_via_bot(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
   return $xml->query->pages->page["ns"];
 }
 
 function isRedirect($page) {
   $url = api . "?action=query&format=xml&prop=info&titles=" . urlencode($page);
-  $xml = simplexml_load_file($url);
+  $xml = load_xml_via_bot($url);
 	if ($xml->query->pages->page["pageid"]) {
     // Page exists
     return array ((($xml->query->pages->page["redirect"])?1:0),
@@ -301,4 +301,20 @@ function wikiLink($page, $style = "#036;", $target = null) {
 function geo_range_ok ($template) {
   $text = parse_wikitext ($template); // TODO check that this function returns the expected output
   return strpos($text, "Expression error:") ? false : true;
+}
+
+function load_xml_via_bot($url) {
+  global $bot;
+  $bot->fetch($url);
+  return simplexml_load_string($bot->results);
+}
+
+function touch_page($page) {
+  $text = getRawWikiText($page);
+  if ($text) {
+    global $editInitiator;
+    write ($page, $text, $editInitiator . " Touching page to update categories.  This edit should not affect the page content.");
+  } else {
+    return false;
+  }
 }

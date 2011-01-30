@@ -251,7 +251,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
 
   print "\n** Completed page; touching...";
   // Touch the current article to update its categories:
-  touchPage($article_in_progress);
+  touch_page($article_in_progress);
   print " Done.";
 }
 
