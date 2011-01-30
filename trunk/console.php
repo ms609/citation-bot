@@ -40,7 +40,7 @@ die("\n");
 function nextPage($page){
   // touch last page
   if ($page) {
-    touchPage($page);
+    touch_page($page);
   }
 
   // Get next page
