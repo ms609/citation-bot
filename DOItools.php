@@ -1688,6 +1688,7 @@ function formatSurname($surname){
 function fmtSurname2($surname){
   return str_replace(" - ", "-", ucwords($surname));
 }
+
 function formatForename($forename){
 	return str_replace(array(" ."), "", trim(preg_replace_callback("~\w{4,}~",  create_function(
             '$matches',

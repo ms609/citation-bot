@@ -27,6 +27,15 @@ include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . 'a]';
 define ("START_HOUR", date("H"));
+/*
+ 
+print "\n";
+
+print preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", "Amélie SMth");
+
+die("\n");
+ 
+ */
 
 function nextPage($page){
   // touch last page
