@@ -749,7 +749,7 @@ echo "
 
 
             // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
-            if (preg_match("~^10.\d{4}.2F~", $p['doi'][0])) {
+            if (strpos($p['doi'][0], ".2F~") && !strpos($p['doi'][0], "/")) {
               $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doi'][0]);
             }
 
@@ -780,7 +780,7 @@ echo "
                   $au = explode(', ', $moreAuthors['authors'][$j]);
                   if ($au[1]) {
                     set ('last' . ($j+1), $au[0]);
-                    set ('first' . ($j+1), preg_replace("~(\w)\w*\.? ?~", "$1.", $au[1]));
+                    set ('first' . ($j+1), preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", $au[1]));
                     unset($p['author' . ($j+1)]);
                   } else {
                     if ($au[0]) {
