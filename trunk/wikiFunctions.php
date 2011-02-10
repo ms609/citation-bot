@@ -1,24 +1,29 @@
 <?
 // $Id: $
-
 define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
 define ("BRACESPACE", "!BOTCODE-spaceBeforeTheBrace");
 
 function categoryMembers($cat){
-  $url= api . "?cmtitle=Category:$cat&action=query&cmlimit=500&format=xml&list=categorymembers";
-	$qc = "query-continue";
+  $vars = Array(
+    "cmtitle" => "Category:$cat", // Don't URLencode.
+    "action" => "query",
+    "cmlimit" => "500",
+    "format" => "xml",
+    "list" => "categorymembers",
+  );
+  $qc = "query-continue";
 
 	do {
 		set_time_limit(40);
-    $res = load_xml_via_bot($url . ($continue?("&cmcontinue=" . $continue):"")); // Don't URLencode.
+    $res = load_xml_via_bot($vars);
   	if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
           $list[] = (string) $page["title"];
         }
     } else {
-      echo 'Error reading API from ' . $url . ($continue?"&cmcontinue=$continue":"") . "\n\n";
+      echo 'Error reading API from ' . $url . "\n\n";
     }
-	} while ($continue = $res->$qc->categorymembers["cmcontinue"]);
+	} while ($vars["cmcontinue"] = $res->$qc->categorymembers["cmcontinue"]);
   return $list?$list:Array(" ");
 }
 
@@ -34,7 +39,12 @@ function wikititle_encode($in) {
 }
 
 function getLastRev($page){
-  $xml = load_xml_via_bot(api . "?action=query&prop=revisions&format=xml&titles=" . urlencode($page));
+  $xml = load_xml_via_bot(Array(
+      "action" => "query",
+      "prop" => "revisions",
+      "format" => "xml",
+      "titles" => urlencode($page),
+    ));
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
@@ -61,17 +71,29 @@ function getPrefixIndex($prefix, $namespace = 0, $start = "") {
 }
 
 function getArticleId($page) {
-  $xml = load_xml_via_bot(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
+  $xml = load_xml_via_bot(Array("action" => "query",
+      "format" => "xml",
+      "prop" => "info",
+      "titles" =>  urlencode($page),
+      ));
   return $xml->query->pages->page["pageid"];
 }
 
 function getNamespace($page) {
-	$xml = load_xml_via_bot(api . "?action=query&format=xml&prop=info&titles=" . urlencode($page));
+	$xml = load_xml_via_bot(Array("action" => "query",
+      "format" => "xml",
+      "prop" => "info",
+      "titles" =>  urlencode($page),
+      ));
   return $xml->query->pages->page["ns"];
 }
 
 function isRedirect($page) {
-  $url = api . "?action=query&format=xml&prop=info&titles=" . urlencode($page);
+  $url = Array("action" => "query",
+      "format" => "xml",
+      "prop" => "info",
+      "titles" => urlencode($page),
+      );
   $xml = load_xml_via_bot($url);
 	if ($xml->query->pages->page["pageid"]) {
     // Page exists
@@ -83,31 +105,23 @@ function isRedirect($page) {
 }
 
 function parse_wikitext($text, $title="API") {
-  $postdata = http_build_query(
-    array(
+  $bot = new Snoopy();
+  $bot->httpmethod="POST";
+  $vars = array(
         'format' => 'json',
         'action' => 'parse',
         'text'   => $text,
         'title'  => $title,
-    )
-  );
-
-  $opts = array('http' =>
-      array(
-          'method'  => 'POST',
-          'header'  => 'Content-type: application/x-www-form-urlencoded',
-          'content' => $postdata
-      )
-  );
-
-  $context  = stream_context_create($opts);
-  $a = json_decode(file_get_contents(api, false, $context), true);
+    );
+  $bot->submit(api, $vars);
+  $a = json_decode($bot->results);
   if (!$a) {
     // Wait a sec and try again
     sleep(2);
-    $a = json_decode(file_get_contents($url), true);
+    $bot->submit(api, $vars);
+    $a = json_decode($bot->results);
   }
-  return $a["parse"]["text"]["*"];
+  return $a->parse->text->{"*"};
 }
 
 function articleID($page, $namespace = 0) {
@@ -163,22 +177,26 @@ function is_valid_user($user) {
   return ($user && getArticleId("User:$user"));
 }
 
-function whatTranscludes2($template, $namespace=99){
-	$url = api . "?action=query&list=embeddedin&eilimit=5000&format=xml&eititle=Template:" . urlencode($template) . (($namespace==99)?"":"&einamespace=$namespace");
-	$qc = "query-continue";
-	if ($_GET["debug"]) print_r($res);
-  global $bot;
+function whatTranscludes2($template, $namespace = 99) {
+	$vars = Array (
+      "action" => "query",
+      "list" => "embeddedin",
+      "eilimit" => "5000",
+      "format" => "xml",
+      "eititle" => "Template:" . $template,
+      "einamespace" => ($namespace==99)?"":$namespace,
+  );
 	do {
 		set_time_limit(20);
-    $bot->fetch($url . ($continue?"&eicontinue=$continue":""));
-		if (!$res=simplexml_load_string($bot->results)) {
-      echo 'Error reading API from ' . $url . ($continue?"&cmcontinue=$continue":"");
-    }
-		foreach($res->query->embeddedin->ei as $page) {
+    $res = load_xml_via_bot($vars);
+    print_r($res->query);
+		if (!$res) {
+      echo 'Error reading API from ' . $url . "\n";
+    } else foreach($res->query->embeddedin->ei as $page) {
 			$list["title"][] = (string) $page["title"];
-			$list["id"][]= (integer) $page["pageid"];
+			$list["id"][] = (integer) $page["pageid"];
 		}
-	} while ($continue = $res->$qc->embeddedin["eicontinue"]);
+	} while ($vars["eicontinue"] = $res->{"query-continue"}->embeddedin["eicontinue"]);
 	return $list;
 }
 
@@ -303,9 +321,10 @@ function geo_range_ok ($template) {
   return strpos($text, "Expression error:") ? false : true;
 }
 
-function load_xml_via_bot($url) {
-  global $bot;
-  $bot->fetch($url);
+function load_xml_via_bot($vars) {
+  $bot = new Snoopy();
+  $bot->httpmethod = "POST";
+  $bot->submit(api, $vars);
   return simplexml_load_string($bot->results);
 }
 
@@ -314,6 +333,7 @@ function touch_page($page) {
   if ($text) {
     global $editInitiator;
     write ($page, $text, $editInitiator . " Touching page to update categories.  This edit should not affect the page content.");
+    return true;
   } else {
     return false;
   }
