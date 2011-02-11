@@ -436,13 +436,16 @@ function ref_templates($page_code, $type) {
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
     if (!getArticleId("Template:cite $type/" . wikititle_encode($ref_id))) {
-      $template = extract_parameters(extract_template(create_cite_template($type, $ref_id), "cite journal"));
+      $citation_code = create_cite_template($type, $ref_id);
+      $template = extract_parameters(extract_template($citation_code, "cite journal"));
     } else {
       $template = cite_template_contents($type, $ref_id);
     }
-    $replacement_template_name = generate_template_name((trim($template["last1"][0]) != "" && trim($template["year"][0]) != "")
-                    ? (trim($template["last1"][0]) . trim($template["year"][0]))
-                    : "ref_", $page_code);
+    $replacement_template_name = generate_template_name(
+                    (trim($template["last1"][0]) != "" && trim($template["year"][0]) != "")
+                    ? trim($template["last1"][0]) . trim($template["year"][0])
+                    : "ref_"
+            , $page_code);
     $ref_content = "<ref name=\"$replacement_template_name\">"
                  . $ref_template
                  . "</ref>";
@@ -459,6 +462,25 @@ function name_references($page_code) {
       if (substr($ref_name, 0, 4) != "ref_") {
         // i.e. we have used an interesting reference name
         $page_code = str_replace($ref, str_replace("<ref>", "<ref name=\"$ref_name\">", $ref), $page_code);
+      }
+      echo ".";
+    }
+  }
+  return $page_code;
+}
+
+
+function rename_references($page_code) {
+  echo " renaming references with meaningless names";
+  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)ref_?[ab]?(?:[a-z]|utogenerated)?(?P=quote)\s*>)[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
+    $countRefs = count($refs[0]);
+    print_r($refs);
+    for ($i = 0; $i < $countRefs; ++$i) {
+      $ref_name = get_name_for_reference($refs[0][$i], $page_code);
+      print $ref_name;
+      if (substr($ref_name, 0, 4) != "ref_") {
+        // i.e. we have used an interesting reference name
+        $page_code = str_replace($refs[1][$i], "<ref name=\"$ref_name\">", $page_code);
       }
       echo ".";
     }

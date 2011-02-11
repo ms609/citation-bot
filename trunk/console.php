@@ -54,7 +54,10 @@ function nextPage($page){
   mysql_close($db);
 	return $result[0];
 }
+###########
 
+
+###########
 $ON = $argument["on"];
 if ($argument["pages"]) {
   foreach ($argument["pages"] as $page) {
