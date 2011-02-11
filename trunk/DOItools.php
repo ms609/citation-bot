@@ -333,6 +333,7 @@ function expand_from_pubmed() {
 }
 
 function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false) {
+
   if ($silence) {
     ob_start();
   }
@@ -369,10 +370,18 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
     if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
         && $crossRef->contributors->contributor) {
       foreach ($crossRef->contributors->contributor as $author) {
-        $au_i++;
-        if ($au_i < 10) {
-          ifNullSet("last$au_i", formatSurname($author->surname));
-          ifNullSet("first$au_i", formatForename($author->given_name));
+        if ($author["contributor_role"]=="editor") {
+          ++$ed_i;
+          if ($ed_i < 5) {
+            ifNullSet("editor$ed_i-last", formatSurname($author->surname));
+            ifNullSet("editor$ed_i-first", formatForename($author->given_name));
+          }
+        } else {
+          ++$au_i;
+          if ($au_i < 10) {
+            ifNullSet("last$au_i", formatSurname($author->surname));
+            ifNullSet("first$au_i", formatForename($author->given_name));
+          }
         }
       }
     }
@@ -476,7 +485,6 @@ function crossRefData($doi){
 	global $crossRefId;
   $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
   $xml = @simplexml_load_file($url);
-  die();
   if ($xml) {
     $result = $xml->query_result->body->query;
   } else {

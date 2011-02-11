@@ -413,7 +413,6 @@ echo "
             ifNullSet ('pmid', $match[1]);
             unset($p['url']);
           }
-
           if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
             unset($p["unused_data"]);
           } else {
