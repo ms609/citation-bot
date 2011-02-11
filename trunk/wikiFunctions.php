@@ -23,7 +23,7 @@ function categoryMembers($cat){
     } else {
       echo 'Error reading API from ' . $url . "\n\n";
     }
-	} while ($vars["cmcontinue"] = $res->$qc->categorymembers["cmcontinue"]);
+	} while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
   return $list?$list:Array(" ");
 }
 
@@ -50,23 +50,27 @@ function getLastRev($page){
 
 function getPrefixIndex($prefix, $namespace = 0, $start = "") {
   global $bot;
-  $qc = "query-continue";
   $continue = urlencode($start);
-  $url = api . "?action=query&list=allpages&format=xml&apnamespace=$namespace"
-                  . "&apprefix=" . urlencode($prefix)
-                  . "&aplimit=5000";
+  $vars = Array ("action" => "query",
+    "list" => "allpages",
+    "format" => "xml",
+    "apnamespace" => $namespace,
+    "apprefix" => $prefix,
+    "aplimit" => "5000",
+  );
   do {
-		set_time_limit(20);
-    $bot->fetch($url . ($continue?"&apfrom=$continue":""));
-		if ($bot->results && (false !== ($xml = simplexml_load_string($bot->results)))) { // TODO: see what's causing an error here.
-      foreach ($xml->query->allpages->p as $page) {
+		set_time_limit(10);
+    $res = load_xml_via_bot($vars);
+    if ($res) {
+      foreach ($res->query->allpages->p as $page) {
         $page_titles[] = (string) $page["title"];
         $page_ids[] = (integer) $page["pageid"];
       }
     } else {
-      echo 'Error reading API from ' . $url . ($continue?"&apfrom=$continue":"");
+      echo 'Error reading API from ' . $url;
     }
-	} while ($continue = $xml->$qc->allpages["apfrom"]);
+	} while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
+  set_time_limit(45);
   return $page_titles;
 }
 
@@ -196,7 +200,7 @@ function whatTranscludes2($template, $namespace = 99) {
 			$list["title"][] = (string) $page["title"];
 			$list["id"][] = (integer) $page["pageid"];
 		}
-	} while ($vars["eicontinue"] = $res->{"query-continue"}->embeddedin["eicontinue"]);
+	} while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
 	return $list;
 }
 
