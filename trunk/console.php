@@ -25,7 +25,7 @@ $slowMode = $argument["slow"] || $argument["slowmode"] || $argument["thorough"];
 $accountSuffix = '_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
-$editInitiator = '[Pu' . revisionID() . 'a]';
+$editInitiator = '[Pu' . revisionID() . '&beta;]';
 define ("START_HOUR", date("H"));
 /*
  
