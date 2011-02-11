@@ -8,7 +8,7 @@ define("timelimit", $fastMode?4:($slowMode?15:10));
 define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
 define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
 
-function list_parameters () { // Lists the parameters in order.
+function list_parameters () { // Lists the parameters in order. 
     return Array(
      "null",
      "author", "author1", "last", "last1", "first", "first1", "authorlink", "authorlink1", "author1-link",
@@ -1676,17 +1676,18 @@ function findMoreAuthors($doi, $a1, $pages) {
 	return $return;
 }
 
-function formatSurname($surname){
-	$surname = strtolower(trim(str_replace("-", " - ", $surname)));
-	if (substr($surname, 0, 2) == "o'") return "O'" . fmtSurname2(substr($surname, 2));
-	else if (substr($surname, 0, 2) == "mc") return "Mc" . fmtSurname2(substr($surname, 2));
-	else if (substr($surname, 0, 3) == "mac" && strlen($surname) > 5 && !strpos($surname, "-")) return "Mac" . fmtSurname2(substr($surname, 3));
-	else if (substr($surname, 0, 1) == "&") return "&" . fmtSurname2(substr($surname, 1));
+function formatSurname($surname) {
+  $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
+  print $surname;
+  if (mb_substr($surname, 0, 2) == "o'") return "O'" . fmtSurname2(mb_substr($surname, 2));
+	else if (mb_substr($surname, 0, 2) == "mc") return "Mc" . fmtSurname2(mb_substr($surname, 2));
+	else if (mb_substr($surname, 0, 3) == "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-")) return "Mac" . fmtSurname2(mb_substr($surname, 3));
+	else if (mb_substr($surname, 0, 1) == "&") return "&" . fmtSurname2(mb_substr($surname, 1));
 	else return fmtSurname2($surname); // Case of surname
 }
 
-function fmtSurname2($surname){
-  return str_replace(" - ", "-", ucwords($surname));
+function fmtSurname2($surname) {
+  return mb_ereg_replace(" - ", "-", mb_convert_case($surname, MB_CASE_TITLE));
 }
 
 function formatForename($forename){

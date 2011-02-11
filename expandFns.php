@@ -13,7 +13,7 @@ function includeIfNew($file){
         if ($GLOBALS["linkto2"]) echo "\n// including $file";
         require_once($file . $GLOBALS["linkto2"] . ".php");
         return true;
-}
+} 
 
 echo " \n Getting login details ... ";
 require_once("/home/verisimilus/public_html/Bot/DOI_bot/doiBot$linkto2.login");
@@ -354,17 +354,16 @@ function combine_duplicate_references($page_code) {
     foreach ($refs[4] as $ref) {
       $standardized_ref[] = standardize_reference($ref);
     }
-    // Replace essentially-identical references with identical references
+    // Turn essentially-identical references into exactly-identical references
     foreach ($refs[4] as $i => $this_ref) {
       if (false !== ($key = array_search(standardize_reference($this_ref), $standardized_ref))
               && $key != $i) {
-        $full_original[] = $refs[4][$key];
-        $duplicate_content[] = $this_ref;
+        $full_original[] = ">" . $refs[4][$key] . "<"; // be careful; I hope that this is specific enough.
+        $duplicate_content[] = ">" . $this_ref . "<";
       }
       $page_code = str_replace($duplicate_content, $full_original, $page_code);
     }
   }
-
   // Reset
   $full_original = null;
   $duplicate_content = null;
@@ -384,17 +383,25 @@ function combine_duplicate_references($page_code) {
         $duplicate_content[] = $content;
       }
     }
+    $already_replaced = Array(); // so that we can use FALSE and not NULL in the check...
+    print_r($full_original);
+    print_r($full_duplicate);
+    print_r($name_of_original);
+    print_r($name_of_duplicate);
+    print_r($duplicate_content);
     if ($full_duplicate) {
       foreach ($full_duplicate as $i => $this_duplicate) {
-        if (false === array_search($this_duplicate, $already_replaced)) {
+        print "\n === $i : $this_duplicate ===\n";
+        if (FALSE === array_search($this_duplicate, $already_replaced)) {
           $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once
-          print "\n - Replacing duplicate reference $this_duplicate"; // . " (original: $full_original[$i])";
+          echo "\n - Replacing duplicate reference $this_duplicate"; // . " (original: $full_original[$i])";
           $replacement_template_name = $name_of_original[$i]
                                      ? $name_of_original[$i]
                                      : get_name_for_reference($duplicate_content[$i], $page_code);
-          preg_match("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
-                                    . "(?P=quote)(\s*/>)~",
-                              $page_code);
+          //preg_match("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
+            //                        . "(?P=quote)(\s*/>)~",
+              //                $page_code,
+                /*  $match1);*/
           // First replace any <ref name=that'sall/> with the new name
           $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
                                     . "(?P=quote)(\s*/>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
