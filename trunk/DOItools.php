@@ -442,8 +442,9 @@ function get_data_from_jstor($jid) {
     $data = $xml->srw___records->srw___record->srw___recordData;
     global $p;
     if (trim(substr($p["doi"][0], 0, 7)) == "10.2307") {
-      if (!ifNullSet("url", "http://jstor.org/stable/" . substr($jid, 8)) && !strpos($p["url"][0], "jstor")) {
-        ifNullSet("jstor", substr($jid, 8)); // TODO -- untested.
+      if (strpos($p["url"][0], "jstor.org")) {
+        unset($p["url"]);
+        ifNullSet("jstor", substr($jid, 8));
       }
     }
     if (preg_match("~(pp\. )?(\w*\d+.*)~", $data->dc___coverage, $match)) {
