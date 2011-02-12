@@ -33,19 +33,19 @@ if(!true && !myIP()) {
         print "Sorry, the Citation bot is temporarily unavilable while bugs are fixed.  Please try back later."; exit;
 }
 
-echo "\n Initializing ... ... ";
-
+echo "\n Initializing ...  ";
 require_once("/home/verisimilus/public_html/crossref.login");
+echo "...";
 $crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
 $isbnKey2 = "268OHQMW";
+print "Initializing snoopy: ";
 $bot = new Snoopy();
+print "ok.";
 $alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
-
+print " - ";
 mb_internal_encoding( 'UTF-8' ); // Avoid ??s
 
-define("debugon", $_GET["debug"]);
-define("restrictedDuties", !true);
 define("editinterval", 10);
 define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
@@ -64,7 +64,8 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 
 //Optimisation
 #ob_start(); //Faster, but output is saved until page finshed.
-ini_set("memory_limit","256M");
+print ",...";
+ini_set("memory_limit", "256M");
 
 $fastMode = $_REQUEST["fast"];
 $slowMode = $_REQUEST["slow"];
@@ -76,7 +77,8 @@ if ($_REQUEST["edit"] || $_GET["doi"] || $_GET["pmid"]) $ON = true;
 
 $editSummaryStart = ($bugFix?"Double-checking that a [[User:DOI_bot/bugs|bug]] has been fixed. ":"Citations: ");
 
-ob_flush();
+print "loading Fns";
+ob_end_flush();
 
 
 ################ Functions ##############
@@ -159,7 +161,6 @@ function inputValue($tag, $form) {
         return false;
 }
 
-
 function write($page, $data, $edit_summary = "Bot edit") {
 
   global $bot;
@@ -226,7 +227,6 @@ function mark_broken_doi_template($article_in_progress, $oDoi) {
 function noteDoi($doi, $src){
         echo "<h3 style='color:coral;'>Found <a href='http://dx.doi.org/$doi'>DOI</a> $doi from $src.</h3>";
 }
-
 
 function isDoiBroken ($doi, $p = false, $slow_mode = false) {
 
@@ -295,7 +295,6 @@ function logBrokenDoi($doi, $p, $error){
 // 404 is a working DOI pointing to a page not found;
 // 200 is a broken DOI, found in the source of the URL
 // Broken DOIs are only logged if they can be spotted in the URL page specified.
-
 
 function loadParam($param, $value, $equals, $pipe, $weight) {
   global $p;
@@ -469,7 +468,6 @@ function name_references($page_code) {
   return $page_code;
 }
 
-
 function rename_references($page_code) {
   echo " renaming references with meaningless names";
   if (preg_match_all("~(<ref name=(?P<quote>[\"']?)ref_?[ab]?(?:[a-z]|utogenerated)?(?P=quote)\s*>)[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
@@ -552,8 +550,7 @@ function authorify ($author) {
 
 // Function from http://stackoverflow.com/questions/1890854
 // Modified to expect utf8-encoded string
-function normalize_special_characters( $str )
-{
+function normalize_special_characters( $str ) {
   $str = utf8_decode($str);
     # Quotes cleanup
     $str = ereg_replace( chr(ord("`")), "'", $str );        # `
@@ -582,7 +579,6 @@ $str = ereg_replace( chr(174), "&reg;", $str );        # registration mark
 
     return utf8_encode($str);
 }
-
 
 echo "\n Establishing connection to Wikipedia servers ... ";
 // Log in to Wikipedia
