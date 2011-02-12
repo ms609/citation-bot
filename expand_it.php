@@ -432,8 +432,12 @@ echo "
                                               "http://ukads.nottingham.ac.uk",
                                               "http://www.ads.lipi.go.id",
                                             ))) {
-              ifNullSet("bibcode", urldecode($bibcode[1]));
+              if (trim($p["bibcode"][0]) == "") {
+                $p["bibcode"] = $p["url"];
+                $p["bibcode"][0] = urldecode($bibcode[1]);
+              }
               unset($p["url"]);
+              unset($p["accessdate"]);
             }
           }
           if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
@@ -644,6 +648,7 @@ echo "
 
 #####################################
 //
+print_r($crossRef);
 if (is('doi')) {
   if (!nothingMissing($journal)) {
     expand_from_doi($crossRef, $editing_cite_doi_template);

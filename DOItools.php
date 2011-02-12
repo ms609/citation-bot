@@ -370,7 +370,7 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
     if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
         && $crossRef->contributors->contributor) {
       foreach ($crossRef->contributors->contributor as $author) {
-        if ($author["contributor_role"]=="editor") {
+        if ($author["contributor_role"] == "editor") {
           ++$ed_i;
           if ($ed_i < 5) {
             ifNullSet("editor$ed_i-last", formatSurname($author->surname));
