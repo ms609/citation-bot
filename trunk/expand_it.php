@@ -416,7 +416,6 @@ echo "
           
           // Is the URL a Bibcode in disguise?
           $bibcode = split("/abs/", $p["url"][0]);
-          print_r($bibcode);
           if ($bibcode[1]) {
             if (in_array($bibcode[0],  Array ("http://adsabs.harvard.edu",
                                               "http://ads.ari.uni-heidelberg.de",
@@ -433,7 +432,7 @@ echo "
                                               "http://ukads.nottingham.ac.uk",
                                               "http://www.ads.lipi.go.id",
                                             ))) {
-              ifNullSet("bibcode", $bibcode[1]);
+              ifNullSet("bibcode", urldecode($bibcode[1]));
               unset($p["url"]);
             }
           }

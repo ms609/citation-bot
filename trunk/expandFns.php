@@ -383,11 +383,6 @@ function combine_duplicate_references($page_code) {
       }
     }
     $already_replaced = Array(); // so that we can use FALSE and not NULL in the check...
-    print_r($full_original);
-    print_r($full_duplicate);
-    print_r($name_of_original);
-    print_r($name_of_duplicate);
-    print_r($duplicate_content);
     if ($full_duplicate) {
       foreach ($full_duplicate as $i => $this_duplicate) {
         print "\n === $i : $this_duplicate ===\n";
@@ -469,15 +464,14 @@ function name_references($page_code) {
 }
 
 function rename_references($page_code) {
-  echo " renaming references with meaningless names";
   if (preg_match_all("~(<ref name=(?P<quote>[\"']?)ref_?[ab]?(?:[a-z]|utogenerated)?(?P=quote)\s*>)[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
     $countRefs = count($refs[0]);
-    print_r($refs);
     for ($i = 0; $i < $countRefs; ++$i) {
       $ref_name = get_name_for_reference($refs[0][$i], $page_code);
       print $ref_name;
       if (substr($ref_name, 0, 4) != "ref_") {
         // i.e. we have used an interesting reference name
+        echo " renaming references with meaningless names";
         $page_code = str_replace($refs[1][$i], "<ref name=\"$ref_name\">", $page_code);
       }
       echo ".";
