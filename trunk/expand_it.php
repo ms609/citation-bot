@@ -413,6 +413,30 @@ echo "
             ifNullSet ('pmid', $match[1]);
             unset($p['url']);
           }
+          
+          // Is the URL a Bibcode in disguise?
+          $bibcode = split("/abs/", $p["url"][0]);
+          print_r($bibcode);
+          if ($bibcode[1]) {
+            if (in_array($bibcode[0],  Array ("http://adsabs.harvard.edu",
+                                              "http://ads.ari.uni-heidelberg.de",
+                                              "http://ads.inasan.ru",
+                                              "http://ads.mao.kiev.ua",
+                                              "http://ads.astro.puc.cl",
+                                              "http://ads.on.br",
+                                              "http://ads.nao.ac.jp",
+                                              "http://ads.bao.ac.cn",
+                                              "http://ads.iucaa.ernet.in",
+                                              "http://ads.lipi.go.id",
+                                              "http://cdsads.u-strasbg.fr",
+                                              "http://esoads.eso.org",
+                                              "http://ukads.nottingham.ac.uk",
+                                              "http://www.ads.lipi.go.id",
+                                            ))) {
+              ifNullSet("bibcode", $bibcode[1]);
+              unset($p["url"]);
+            }
+          }
           if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
             unset($p["unused_data"]);
           } else {
