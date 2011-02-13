@@ -75,10 +75,11 @@ function getPrefixIndex($prefix, $namespace = 0, $start = "") {
 }
 
 function getArticleId($page) {
-  $xml = load_xml_via_bot(Array("action" => "query",
+  $xml = load_xml_via_bot(Array(
+      "action" => "query",
       "format" => "xml",
       "prop" => "info",
-      "titles" =>  urlencode($page),
+      "titles" =>  $page,
       ));
   return $xml->query->pages->page["pageid"];
 }

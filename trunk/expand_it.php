@@ -415,31 +415,31 @@ echo "
           }
           
           // Is the URL a Bibcode in disguise?
-          $bibcode = split("/abs/", $p["url"][0]);
-          if ($bibcode[1]) {
-            if (in_array($bibcode[0],  Array ("http://adsabs.harvard.edu",
-                                              "http://ads.ari.uni-heidelberg.de",
-                                              "http://ads.inasan.ru",
-                                              "http://ads.mao.kiev.ua",
-                                              "http://ads.astro.puc.cl",
-                                              "http://ads.on.br",
-                                              "http://ads.nao.ac.jp",
-                                              "http://ads.bao.ac.cn",
-                                              "http://ads.iucaa.ernet.in",
-                                              "http://ads.lipi.go.id",
-                                              "http://cdsads.u-strasbg.fr",
-                                              "http://esoads.eso.org",
-                                              "http://ukads.nottingham.ac.uk",
-                                              "http://www.ads.lipi.go.id",
-                                            ))) {
-              if (trim($p["bibcode"][0]) == "") {
-                $p["bibcode"] = $p["url"];
-                $p["bibcode"][0] = urldecode($bibcode[1]);
-              }
-              unset($p["url"]);
-              unset($p["accessdate"]);
+          $bibcode_regexp = "~^(?:" . str_replace(".", "\.", implode("|", Array (
+                "http://(?:\w+.)?adsabs.harvard.edu",
+                "http://ads.ari.uni-heidelberg.de",
+                "http://ads.inasan.ru",
+                "http://ads.mao.kiev.ua",
+                "http://ads.astro.puc.cl",
+                "http://ads.on.br",
+                "http://ads.nao.ac.jp",
+                "http://ads.bao.ac.cn",
+                "http://ads.iucaa.ernet.in",
+                "http://ads.lipi.go.id",
+                "http://cdsads.u-strasbg.fr",
+                "http://esoads.eso.org",
+                "http://ukads.nottingham.ac.uk",
+                "http://www.ads.lipi.go.id",
+              )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
+          if (preg_match($bibcode_regexp, urldecode($p["url"][0]), $bibcode)) {
+            if (trim($p["bibcode"][0]) == "") {
+              $p["bibcode"] = $p["url"];
+              $p["bibcode"][0] = urldecode($bibcode[1]);
             }
+            unset($p["url"]);
+            unset($p["accessdate"]);
           }
+          
           if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
             unset($p["unused_data"]);
           } else {
@@ -1226,7 +1226,7 @@ Done.  Just a couple of things to tweak now...";
         }
         echo $smartSum;
         $editSummary = $editSummaryStart . $editInitiator . $smartSum . $initiatedBy . $editSummaryEnd;
-        $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . htmlentities(mb_convert_encoding($new_code, "UTF-8")) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to $page.<br><b>Changes:</b> <i>$smartSum</i></p>";
+        $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . ($htmlOutput?htmlentities(mb_convert_encoding($new_code, "UTF-8")):$new_code) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to $page.<br><b>Changes:</b> <i>$smartSum</i></p>";
 
         if ($editing_cite_doi_template && strtolower(substr(trim($new_code), 0, 5)) != "{{cit") {
           if (substr($new_code, 0, 15) == "HTTP/1.0 200 OK") {
