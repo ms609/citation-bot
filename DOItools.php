@@ -894,13 +894,14 @@ function useUnusedData()
             }
           }
         }
-        if (preg_match("~^TY  - [A-Z]+~", $dat)) {
+        if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) {
           // RIS formatted data:
           $ris = explode("\n", $dat);
           foreach ($ris as $ris_line) {
             $ris_part = explode(" - ", $ris_line . " ");
             switch (trim($ris_part[0])) {
               case "T1":
+              case "TI":
                 $ris_parameter = "title";
                 break;
               case "AU":
@@ -924,6 +925,7 @@ function useUnusedData()
                 $ris_parameter = "doi";
                 break;
               case "JO":
+              case "JF":
                 $ris_parameter = "journal";
                 break;
               case "VL":
@@ -941,7 +943,7 @@ function useUnusedData()
               case "PB":
                 $ris_parameter = "publisher";
                 break;
-              case "M3": case "PY": case "N1": case "N2": case "ER": case "TY":
+              case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
                 $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
               default:
                 $ris_parameter = false;
