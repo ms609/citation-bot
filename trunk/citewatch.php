@@ -30,11 +30,11 @@ function getCiteList($page) {
 	global $bot;
 	$bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
 	$raw = $bot->results;
-	preg_match_all ("~\{\{[\s\n]*cite[ _]doi[\s\n]*\|[\s\n]*([^ \}]+)[\s\n]*(\||\}\})~i", $raw, $doi);
-	preg_match_all ("~\{\{[\s\n]*cite[ _]jstor[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $jstorid);
-	preg_match_all ("~\{\{[\s\n]*cite[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmid);
-	preg_match_all ("~\{\{[\s\n]*cite[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmc);
-  $category =  "[[Category:Articles citing non-functional identifiers]]";
+	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]doi[\s\n]*\|[\s\n]*([^ \}]+)[\s\n]*(\||\}\})~i", $raw, $doi);
+	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]jstor[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $jstorid);
+	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmid);
+	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmc);
+  $category = "[[Category:Articles citing non-functional identifiers]]";
 	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($page, $category)) {
     global $editInitiator;
     write($page, $raw . "\n$category", "$editInitiator Page contains malformed 'Cite xxx' templates; please fix!");
