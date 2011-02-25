@@ -30,7 +30,7 @@ if (!$abort_mysql_connection) {
   echo " loaded connect script.  Will connect when necessary.";
 }
 if(!true && !myIP()) {
-        print "Sorry, the Citation bot is temporarily unavilable while bugs are fixed.  Please try back later."; exit;
+        echo "Sorry, the Citation bot is temporarily unavilable while bugs are fixed.  Please try back later."; exit;
 }
 
 echo "\n Initializing ...  ";
@@ -39,11 +39,8 @@ echo "...";
 $crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
 $isbnKey2 = "268OHQMW";
-print "Initializing snoopy: ";
 $bot = new Snoopy();
-print "ok.";
 $alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
-print " - ";
 mb_internal_encoding( 'UTF-8' ); // Avoid ??s
 
 define("editinterval", 10);
@@ -64,7 +61,6 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 
 //Optimisation
 #ob_start(); //Faster, but output is saved until page finshed.
-print ",...";
 ini_set("memory_limit", "256M");
 
 $fastMode = $_REQUEST["fast"];
@@ -77,7 +73,6 @@ if ($_REQUEST["edit"] || $_GET["doi"] || $_GET["pmid"]) $ON = true;
 
 $editSummaryStart = ($bugFix?"Double-checking that a [[User:DOI_bot/bugs|bug]] has been fixed. ":"Citations: ");
 
-print "loading Fns";
 ob_end_flush();
 
 
@@ -93,7 +88,6 @@ function updateBacklog($page) {
           . "' WHERE page = '$sPage'"
           : "INSERT INTO citation VALUES ('"
           . $id . "', '$sPage', '" . date ("c") . "', '0000-00-00', '" . revisionID() ."')";
-  #print "\n$sql";
   $result = mysql_query($sql) or print (mysql_error());
   mysql_close($db);
 }
@@ -211,7 +205,6 @@ function write($page, $data, $edit_summary = "Bot edit") {
 }
 
 function mark_broken_doi_template($article_in_progress, $oDoi) {
-  print $article_in_progress . $oDoi;
   if (getRawWikiText($article_in_progress)) {
     global $editInitiator;
     return write ($article_in_progress
@@ -298,14 +291,20 @@ function logBrokenDoi($doi, $p, $error){
 
 function loadParam($param, $value, $equals, $pipe, $weight) {
   global $p;
-  $param = strtolower($param);
+  $param = strtolower(trim(str_replace("DUPLICATE DATA:", "", $param)));
+  if ($param == "unused_data") {
+    $value = trim(str_replace("DUPLICATE DATA:", "", $value));
+  }
   if (is($param)) {
     if (substr($param, strlen($param)-1) > 0 && trim($value) != trim($p[$param][0])) {
       // Add one to last1 to create last2
       $param = substr($param, 0, strlen($param)-1) . (substr($param, strlen($param)-1) + 1);
     } else {
       // Parameter already exists
-      $param = "DUPLICATE DATA: $param";
+      if ($param != "unused_data" && $p[$param][0] != $value) {
+        // If they have different values, best keep them; if not: discard the exact duplicate!
+        $param = "DUPLICATE DATA: $param";
+      }
     }
   }
   $p[$param] = Array($value, $equals, $pipe, "weight" => ($weight + 3) / 4 * 10); // weight will be 10, 20, 30, 40 ...
@@ -323,7 +322,6 @@ function cite_template_contents($type, $id) {
 }
 
 function create_cite_template($type, $id) {
-  print ("\n -- Create cite template at Template:Cite $type/$id");
   $page = get_template_prefix($type);
   return expand($page . wikititle_encode($id), true, true, "{{Cite journal\n | $type = $id \n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>");
 }
@@ -391,7 +389,6 @@ function combine_duplicate_references($page_code) {
     $already_replaced = Array(); // so that we can use FALSE and not NULL in the check...
     if ($full_duplicate) {
       foreach ($full_duplicate as $i => $this_duplicate) {
-        print "\n === $i : $this_duplicate ===\n";
         if (FALSE === array_search($this_duplicate, $already_replaced)) {
           $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once
           echo "\n - Replacing duplicate reference $this_duplicate"; // . " (original: $full_original[$i])";
@@ -478,7 +475,6 @@ function rename_references($page_code) {
     $countRefs = count($refs[0]);
     for ($i = 0; $i < $countRefs; ++$i) {
       $ref_name = get_name_for_reference($refs[0][$i], $page_code);
-      print $ref_name;
       if (substr($ref_name, 0, 4) != "ref_") {
         // i.e. we have used an interesting reference name
         echo " renaming references with meaningless names";
