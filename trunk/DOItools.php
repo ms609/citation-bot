@@ -2,7 +2,7 @@
 $bot = new Snoopy();
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 define("api", "http://en.wikipedia.org/w/api.php");
-if ($linkto2) print "\n// included DOItools2 & initialised \$bot\n";
+if ($linkto2) echo "\n// included DOItools2 & initialised \$bot\n";
 define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 define("timelimit", $fastMode?4:($slowMode?15:10));
 define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
@@ -529,9 +529,9 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 	if ($url1) {
 		$url = "http://www.crossref.org/openurl/?url_ver=Z39.88-2004&req_dat=$crossRefId&rft_id=info:http://" . urlencode(str_replace(Array("http://", "&noredirect=true"), Array("", ""), urldecode($url1)));
 		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef via URL. ";
-		if ($debug) print $url . "<BR>";
+		if ($debug) echo $url . "<BR>";
 		if ($result["status"]=="resolved") return $result;
-		print "URL search failed.  Trying other parameters... ";
+		echo "URL search failed.  Trying other parameters... ";
 	}
 	global $fastMode;
 	if ($fastMode || !$author || !($journal || $issn) ) return;
@@ -544,7 +544,7 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 	if ($volume) $url .= "&volume=" . urlencode($volume);
 	if ($startpage) $url .= "&spage=" . urlencode($startpage);
 	if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef.";
-	if ($result["status"]=="resolved") {print " Successful! - $url; -"; return $result;}
+	if ($result["status"]=="resolved") {echo " Successful! - $url; -"; return $result;}
 }
 
 function textToSearchKey($key){
@@ -583,7 +583,7 @@ function pmSearch($p, $terms, $check_for_errors = false) {
   $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
   $xml = simplexml_load_file($url);
   if ($check_for_errors && $xml->ErrorList) {
-    print $xml->ErrorList->PhraseNotFound
+    echo $xml->ErrorList->PhraseNotFound
             ? " no results."
             : "\n - Errors detected in PMID search (" . print_r($xml->ErrorList, 1) . "); abandoned.";
     return array(null, 0);
@@ -833,7 +833,9 @@ function getInfoFromISBN(){
 			$params = array("title"=>"Title", "author"=>"AuthorsText", "publisher"=>"PublisherText");
 			if (is("author") || is("first") || is("author1") || is("author1")) unset($params["author"]);
 			foreach ($params as $key => $value)	if (!is($key)) $p[$key][0] = niceTitle((string) $xml->BookList->BookData->$value);
-		} else if ($xml->ErrorMessage) print "<p class=warning>Error: Daily limit of ISBN queries has been exceeded!</p>";
+		} else if ($xml->ErrorMessage) {
+      echo "<p class=warning>Error: Daily limit of ISBN queries has been exceeded!</p>";
+    }
 		else $p["ISBN-status"][0] = "May be invalid - please double check";
 	}
 }
@@ -1175,7 +1177,7 @@ function correct_parameter_spelling($p) {
   foreach ($p as $key => $value) {
     if (!in_array($key, $parameter_list))
     {
-      print "\n  *  Unrecognised parameter $key ";
+      echo "\n  *  Unrecognised parameter $key ";
       $shortest = -1;
 
       // Check the parameter list to find a likely replacement
@@ -1208,7 +1210,7 @@ function correct_parameter_spelling($p) {
       if ($shortest < 12 && $shortest < $shortish)
       {
         $mod[$key] = $closest;
-        print "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+        echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
       }
       else
       {
@@ -1216,11 +1218,11 @@ function correct_parameter_spelling($p) {
         if ($similarity > 0.6)
         {
           $mod[$key] = $closest;
-          print "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+          echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
         }
         else
         {
-          print "could not be replaced with confidence.  Please check the citation yourself.";
+          echo "could not be replaced with confidence.  Please check the citation yourself.";
         }
       }
     }
@@ -1390,7 +1392,7 @@ function findDoi($url){
              : "\n -- PDF too large ({$size[1]}b)";
       }
 		} else {
-      print " -- DOI found from meta tags.<br>";
+      echo " -- DOI found from meta tags.<br>";
     }
 		if ($doi){
 			if (!preg_match("/>\d\.\d\.\w\w;\d/", $doi))
@@ -1398,8 +1400,8 @@ function findDoi($url){
 				echo " -- DOI may have picked up some tags. ";
 				$content = strip_tags(str_replace("<", " <", $source)); // if doi is superceded by a <tag>, any ensuing text would run into it when we removed tags unless we added a space before it!
 				preg_match("~" . doiRegexp . "~Ui", $content, $dois); // What comes after doi, then any nonword, but before whitespace
-				if ($dois[1]) {$doi = trim($dois[1]); print " Removing them.<br>";} else {
-					print "More probably, the DOI was itself in a tag. CHECK it's right!<br>";
+				if ($dois[1]) {$doi = trim($dois[1]); echo " Removing them.<br>";} else {
+					echo "More probably, the DOI was itself in a tag. CHECK it's right!<br>";
 					//If we can't find it when tags have been removed, it might be in a <a> tag, for example.  Use it "neat"...
 				}
 			}
@@ -1515,7 +1517,6 @@ function checkTextForMetas($text){
 	preg_match_all("~<meta\s+content=[\"']([^>]+)[\"']\s+name=['\"]([^'\"]+)['\"]\s*/?>~", $text, $match2);
   $matched_names = array_merge($match[1], $match2[2]);
   $matched_content = array_merge($match[2], $match2[1]);
-  print_r($matched_content, $matched_names);
   // Define translation from meta tag names to wiki parameters
 	$m2p = array(
 						"citation_journal_title" => "journal",
@@ -1998,7 +1999,7 @@ function equivUrl ($u){
 }
 
 function assessUrl($url){
-  print "assessing URL ";
+  echo "assessing URL ";
 	#if (strpos($url, "abstract") >0 || (strpos($url, "/abs") >0 && strpos($url, "adsabs.") === false)) return "abstract page";
 	$ch = curl_init();
 	curlSetUp($ch, str_replace("&amp;", "&", $url));

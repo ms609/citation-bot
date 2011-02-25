@@ -656,7 +656,6 @@ echo "
 
 #####################################
 //
-print_r($crossRef);
 if (is('doi')) {
   if (!nothingMissing($journal)) {
     expand_from_doi($crossRef, $editing_cite_doi_template);
