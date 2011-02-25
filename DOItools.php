@@ -1918,7 +1918,7 @@ function citeDoiOutputFormat() {
     if (strpos($p["author$i"][0], ', ')) {
       // $au is an array with two parameters: the surname [0] and forename [1].
       $au = explode(', ', $p["author$i"][0]);
-      unset($p['author' . ($i)]);
+      unset($p["author$i"]);
       set("author$i", $au[0]); // i.e. drop the forename; this is safe in $au[1]
     } else if (is("first$i")) {
       $au[1] = $p["first$i"][0];
@@ -1926,9 +1926,9 @@ function citeDoiOutputFormat() {
        unset($au);
     }
     if ($au[1]) {
-      if (trim(strtoupper(preg_replace("~(\w)\w*.? ?~", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
+      if (trim(strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
         // Don't try to modify if we don't need to change
-        set("first$i", strtoupper(preg_replace("~(\w)\w*.? ?~", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
+        set("first$i", strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
       }
       if (strpos($p["first$i"][1], "\n") !== false || (!$p["first$i"][1] && $p["first$i"][0])) {
         $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space

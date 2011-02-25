@@ -895,7 +895,7 @@ Done.  Just a couple of things to tweak now...";
           }
 
         // If we're on a Cite Doi page, format authors accordingly
-        if (strpos($page, 'ite doi') || strpos($page, 'ite_doi')) {
+        if (preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
           citeDoiOutputFormat();
         }
 
@@ -916,7 +916,7 @@ Done.  Just a couple of things to tweak now...";
             sleep(5);
           }
           ELSE if (!$brokenDoi) unset($p["doi_brokendate"]); unset($p["doi_inactivedate"]);
-          echo $brokenDoi?" It isn't.":"OK!", "</p>";
+          echo $brokenDoi?" It isn't.":" It is.", "</p>";
         }
 
 
