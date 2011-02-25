@@ -465,7 +465,22 @@ function get_data_from_jstor($jid) {
       ifNullSet("journal", $match[1]);
       ifNullSet("volume", $match[2]);
       ifNullSet("issue", $match[4]);
+      $handled_data = true;
     } else {
+      if (preg_match("~Vol\.___\s*([\w\d]+)~", $data->dc___relation, $match)) {
+        ifNullSet("volume", $match[1]);
+        $handled_data = true;
+      }
+      if (preg_match("~No\.___\s*([\w\d]+)~", $data->dc___relation, $match)) {
+        ifNullSet("issue", $match[1]);
+        $handled_data = true;
+      }
+      if (preg_match("~JOURNAL___\s*([\w\d\s]+)~", $data->dc___relation, $match)) {
+        ifNullSet("journal", $match[1]);
+        $handled_data = true;
+      }
+    }
+    if (!$handled_data) {
       echo "unhandled data: $data->dc___relation";
     }
     /* -- JSTOR's publisher field is often dodgily formatted.

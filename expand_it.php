@@ -60,7 +60,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
     print "\n Reference tags:";
     $new_code = rename_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc")));
     #$new_code = ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc");
-    print "\nCommon replacements: ";
+    print "\n Common replacements: ";
     $new_code = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
         preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
         preg_replace
@@ -374,6 +374,7 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
 
 
 ###########################
+//  JOURNALS
 //
 echo "
 *-> {$p["title"][0]}

@@ -331,6 +331,14 @@ function create_cite_template($type, $id) {
 function get_template_prefix($type) {
   return "Template: Cite "
         . ($type == "jstor"
+        ? ("doi/10.2307" . wikititle_encode("/"))
+        : $type . "/");
+  // Not sure that this works:
+  return "Template: Cite $type/";
+  // Do we really need to handle JSTORs differently?
+  // The below code errantly produces cite jstor/10.2307/JSTORID, not cite jstor/JSTORID.
+  return "Template: Cite "
+        . ($type == "jstor"
         ? ("jstor/10.2307" . wikititle_encode("/"))
         : $type . "/");
 }
@@ -341,8 +349,6 @@ function standardize_reference($reference) {
 }
 
 function combine_duplicate_references($page_code) {
-
-  echo " combining,";
 
   $original_page_code = $page_code;
   preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
@@ -421,14 +427,18 @@ function combine_duplicate_references($page_code) {
       }
     }
   }
+  echo ($original_page_code == $page_code)
+    ? "\n - No duplicate references to combine"
+    : "\n - Combined duplicate references (if any exist).";
   return $page_code;
 }
 
 function ref_templates($page_code, $type) {
   while (false !== ($ref_template = extract_template($page_code, "ref $type"))) {
-    echo " converted {{ref doi}},";
+    echo " converted {{ref $type}},";
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
+
     if (!getArticleId("Template:cite $type/" . wikititle_encode($ref_id))) {
       $citation_code = create_cite_template($type, $ref_id);
       $template = extract_parameters(extract_template($citation_code, "cite journal"));
