@@ -893,11 +893,17 @@ function useUnusedData()
               case "V":
                 $endnote_parameter = "volume";
                 break;
+              case "@": // ISSN
+                if (preg_match("~@\s*[\d\-]{10,}~", $endnote_line)) {
+                  $endnote_parameter = "isbn";
+                  break;
+                } else {
+                  die($endnote_line . "\n");
+                }
               case "R": // Resource identifier... *may* be DOI but probably isn't always.
               case "8": // Date
               case "0":// Citation type
               case "X": // Abstract
-              case "@": // ISSN
               case "M": // Object identifier
                 $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
               default:
