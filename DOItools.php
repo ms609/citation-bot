@@ -872,6 +872,9 @@ function useUnusedData()
               case "I":
                 $endnote_parameter = "publisher";
                 break;
+              case "C":
+                $endnote_parameter = "location";
+                break;
               case "J":
                 $endnote_parameter = "journal";
                 break;
