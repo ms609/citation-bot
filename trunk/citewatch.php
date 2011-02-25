@@ -52,6 +52,10 @@ function create_page ($type, $id, $bonus_ids) {
     default:
       $encoded_id = $id;
   }
+
+  // Don't go creating a page that already exists.
+  if (getArticleId("Template:Cite $type/$encoded_id")) return false;
+
   foreach ($bonus_ids as $key => $value) {
     $bonus .= " | $key = $value\n";
   }
@@ -105,25 +109,30 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           print "\n  > Creating page at Template:Cite doi/$encoded_doi...";
           if (create_page("doi", $doi_from_pmc, array ("pmid" => $pmid_from_pmc, "pmc" => $oPmc))) {
             print "\n  > Now redirecting PMC $oPmc to $encoded_doi";
-            print write($pmc_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation")
+            print write($pmc_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation [citewatch.php]")
                 ? " : Done."
                 : " : ERROR\n\n > Write failed!\n";
             if ($pmid_from_pmc && !getArticleId($pmid_page)) {
               print "\n  > Now redirecting PMID $pmid_from_pmc to $encoded_doi";
-              print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation")
+              print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation [citewatch.php]")
                   ? " : Done."
                   : " : ERROR\n\n > Write failed!\n";
             }
           }
         } else {
           print "No DOI found; using PMID instead";
-          if ($pmid_from_pmc && create_page("pmid", $pmid_from_pmc, array("pmc", $oPmc))) {
+          if ($pmid_from_pmc){
+            if (create_page("pmid", $pmid_from_pmc, array("pmc", $oPmc))) {
             print "\n  > Redirecting PMC $oPmc to PMID $pmid_from_pmc";
-            print write($pmc_page, "#REDIRECT[[Template:Cite pmid/$pmid_from_pmc]]", "Redirecting to PMID citation")
+            print write($pmc_page, "#REDIRECT[[Template:Cite pmid/$pmid_from_pmc]]", "Redirecting to PMID citation [citewatch.php]")
                 ? " : Done."
                 : " : ERROR\n\n > Write failed!\n";
+          
+            } else {
+              print "\n     - Page already exists.";
+            }
           } else {
-            print "Could not find PMID or DOI for this PMC.  \n??????????????????????????????????????????????????";
+            print "\n Could not find PMID or DOI for this PMC.  \n??????????????????????????????????????????????????";
           }
         }
       break;
