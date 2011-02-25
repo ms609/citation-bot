@@ -361,7 +361,7 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
   }
 
   if ($crossRef) {
-    echo "\n - Checking CrossRef for more details";
+    echo "\n - Checking CrossRef for more details [DOItools.php/expand_from_doi]";
     if ($editing_cite_doi_template) {
       $doiCrossRef = $crossRef;
     }

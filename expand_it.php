@@ -57,10 +57,11 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
     updateBacklog($page);
     return false;
   } else {
-    print "\n Reference tags:";
+    echo "\n Reference tags:";
     $new_code = rename_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc")));
     #$new_code = ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc");
-    print "\n Common replacements: ";
+    echo "\n Making some common replacements. ";
+    
     $new_code = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
         preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
         preg_replace
@@ -71,7 +72,6 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
         preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~", "$1doi$2=$3", 
                 $new_code
                 ))))));
-    print " Done...";
     if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $new_code)) {
       $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $new_code);
       $changedDashes = true;
@@ -320,7 +320,9 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
         }
         $c = preg_replace("~(doi\s*=\s*)doi\s?=\s?(\d\d)~i","$1$2",
           preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~i","doi$1=$1$2", $citation[$cit_i+1])); // Replaces doi: with doi =
-        while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
+        while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
+          $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
+        }
         preg_match(siciRegExp, urldecode($c), $sici);
 
 ##############################
@@ -371,7 +373,6 @@ function expand($page, $commit_edits = false, $editing_cite_doi_template = false
           set('title', $match[2]);
           set('doi', $match[1]);
         }
-
 
 ###########################
 //  JOURNALS
@@ -474,10 +475,16 @@ echo "
             if (preg_match("~10\.\d{4}/\S+~", $doi_with_comments_removed, $match) && $p["doi"][0] != $match[0]) {
               set("doi", $match[0]);
             }
-          } else {
-            if (preg_match("~10\.\d{4}/[^&\s\|]*~", urldecode($c), $match)) {
-              $p["doi"][0] = $match[0];
-            }
+          } elseif (preg_match("~10\.\d{4}/[^&\s\|]*~", $p["url"][0], $match)) {
+            // Search the URL for anything in a DOI format.
+            $p["doi"]= $p["url"];
+            $p["doi"][0] = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
+            unset ($p["url"]);
+          } elseif (preg_match("~10\.\d{4}/[^&\s\|]*~", urldecode($c), $match)) {
+              // Search the entire citation text for anything in a DOI format.
+              // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
+              // Wiley have a habit of using the DOI as part of the URL, so we ought to trim any /abstract or /pdf that's following it.
+              $p["doi"][0] = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
           }
           $doiToStartWith = isset($p["doi"]);
           // Check that the DOI works; if not, fix it.
