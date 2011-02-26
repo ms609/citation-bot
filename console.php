@@ -60,6 +60,7 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
+die ( redirect_target($argument["pages"][0]) .  "\n");
 
 ###########
 

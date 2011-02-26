@@ -43,7 +43,7 @@ function getLastRev($page){
       "action" => "query",
       "prop" => "revisions",
       "format" => "xml",
-      "titles" => urlencode($page),
+      "titles" => $page,
     ));
   return $xml->query->pages->page->revisions->rev["revid"];
 }
@@ -79,7 +79,7 @@ function getArticleId($page) {
       "action" => "query",
       "format" => "xml",
       "prop" => "info",
-      "titles" =>  $page,
+      "titles" => $page,
       ));
   return $xml->query->pages->page["pageid"];
 }
@@ -88,16 +88,17 @@ function getNamespace($page) {
 	$xml = load_xml_via_bot(Array("action" => "query",
       "format" => "xml",
       "prop" => "info",
-      "titles" =>  urlencode($page),
+      "titles" => $page,
       ));
   return $xml->query->pages->page["ns"];
 }
 
 function isRedirect($page) {
-  $url = Array("action" => "query",
+  $url = Array(
+      "action" => "query",
       "format" => "xml",
       "prop" => "info",
-      "titles" => urlencode($page),
+      "titles" => $page,
       );
   $xml = load_xml_via_bot($url);
 	if ($xml->query->pages->page["pageid"]) {
@@ -107,6 +108,18 @@ function isRedirect($page) {
     } else {
       return array (-1, null);
    }
+}
+
+function redirect_target($page) {
+  $url = Array(
+      "action" => "query",
+      "format" => "xml",
+      "redirects" => "1",
+      "titles" => $page,
+      );
+  $xml = load_xml_via_bot($url);
+  print_r($xml->query);
+  return $xml->pages->page["title"];
 }
 
 function parse_wikitext($text, $title="API") {
