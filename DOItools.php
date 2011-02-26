@@ -628,6 +628,47 @@ function pmSearchResults($p){
   }
 }
 
+function searchForPmid() {
+  global $p;
+  echo "\n - Searching PubMed... ";
+  $results = (pmSearchResults($p));
+  if ($results[1] == 1) {
+    ifNullSet('pmid', $results[0]);
+    $details = pmArticleDetails($results[0]);
+    echo " 1 result found; updating citation";
+    foreach ($details as $key=>$value) {
+      ifNullSet ($key, $value);
+    }
+    if (!is('doi')) {
+      // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
+      echo "\n - Looking for DOI in CrossRef database with new information ... ";
+      $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
+                              trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
+                              $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+      if ($crossRef) {
+        $p["doi"][0] = $crossRef->doi;
+        echo "Match found: " . $p["doi"][0];
+      } else {
+        echo "no match.";
+      }
+    }
+  } else {
+    echo " nothing found.";
+    if (strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && !is("journal")) {
+      // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
+      echo "\n - Checking for ISBN";
+      $isbnToStartWith = isset($p["isbn"]);
+      if (!isset($p["isbn"][0]) && is("title")) set("isbn", findISBN( $p["title"][0], $p["author"][0] . " " . $p["last"][0] . $p["last1"][0]));
+      else echo "\n  Already has an ISBN. ";
+      if (!$isbnToStartWith && !$p["isbn"][0]) {
+          unset($p["isbn"]);
+      } else {
+        // getInfoFromISBN(); // Too buggy. Disabled.
+      }
+    }
+  }
+}
+
 function pmArticleDetails($pmid, $id = "pmid"){
 	$result = Array();
 	$xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($id == "pmid")?"pubmed":"pmc") . "&id=$pmid");
