@@ -1326,7 +1326,7 @@ function verify_doi ($doi) {
     return ($doi);
 }
 
-function file_size($url, $redirects=0){
+function file_size($url, $redirects = 0){
 
 //Copied from WWW.
   $parsed = parse_url($url);
@@ -1347,9 +1347,9 @@ function file_size($url, $redirects=0){
    foreach($arr_headers as $header) {
 			// follow redirect
 			$s = 'Location: ';
-			if($redirects<3 && substr(strtolower ($header), 0, strlen($s)) == strtolower($s)) {
+			if($redirects < 3 && substr(strtolower ($header), 0, strlen($s)) == strtolower($s)) {
 				$url = trim(substr($header, strlen($s)));
-				return file_size($url, $redirects+1);
+				return file_size($url, $redirects + 1);
 			}
 			// parse for content length
        $s = "Content-Length: ";
