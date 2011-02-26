@@ -841,7 +841,7 @@ echo "
 #####################################
 //
 echo "
-Done.  Just a couple of things to tweak now...";
+ 5: Formatting and other tweaks";
 //
 //
 #####################################
@@ -920,14 +920,16 @@ Done.  Just a couple of things to tweak now...";
         }
 
 
+        // Clean up after errors in publishers' databases
+        if (0 === strpos(trim($p["journal"][0]), "BMC ") && $p["pages"][0]) {
+          unset ($p["issue"]);
+          echo "\n - dropping issue number (BMC journals only have page numbers)";
+        }
+
         if ($p["doi"][0] == "10.1267/science.040579197") {
           // This is a bogus DOI from the PMID example file
           unset ($p["doi"]);
         }
-
-        //DOIlabel is now redundant
-        unset($p["doilabel"]);
-        // See http://en.wikipedia.org/wiki/Category:Citation_templates_using_redundant_parameters for pages still using it.  I cleared this on Nov 4to 2010 when it contained several protein pages
 
         //Edition - don't want 'Edition ed.'
         if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
