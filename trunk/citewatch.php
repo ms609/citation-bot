@@ -17,8 +17,8 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
 require_once("expand_it.php");
 
 echo "\n Retrieving category members: ";
-$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
-#$toDo = array("User:DOI bot/Zandbox");
+#$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+$toDo = array("User:DOI bot/Zandbox");
 shuffle($toDo);
 $space = (array_keys($toDo, " "));
 if ($space) {
@@ -236,6 +236,16 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   }
   
   while ($doi_todo && (false !== ($oDoi = @array_pop($doi_todo)))) {
+    if (preg_match("~^[doi:\s]+(.+)~", $oDoi, $match)) {
+      $oDoi = $match[1];
+      $this_page_wikitext = getRawWikiText($article_in_progress);
+      if ($this_page_wikitext && $ON) {
+        print "\n - Removing doi: from [[$article_in_progress]]";
+        write ($article_in_progress,
+                str_replace($match[0], $match[1], $this_page_wikitext),
+                "$editInitiator Corrected syntax in Cite doi-type template.");
+      }
+    }
     $doi_citation_exists = doi_citation_exists($oDoi);
     if ($doi_citation_exists) {
       //print "\n   > DOI $oDoi already exists.";
