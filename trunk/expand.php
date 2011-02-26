@@ -36,7 +36,7 @@ function expand($page, // Title of WP page
     $commit_edits = false;
   }
   $new_code = expand_text($original_code, $commit_edits, $editing_cite_doi_template,
-          $cite_doi_start_code = null, $html_output = false);
+          $cite_doi_start_code);
 
 
   if (strtolower($new_code) == strtolower($original_code)) {
@@ -148,7 +148,7 @@ function expand_text ($original_code,
 
   if ($html_output === -1) {
     ob_start();
-  }
+  } else {print "\n\n\nHTML:[$html_output]";}
   
   // Which template family is dominant?
   if (!$editing_cite_doi_template) {
@@ -903,7 +903,7 @@ if (!nothingMissing($journal)) {
   expand_from_doi($crossRef, $editing_cite_doi_template);
 }
 echo "
-2: DOI already present :-)";
+2: DOI already present";
 // TODO: Use DOI to expand citation
 } else {
 echo "
@@ -969,7 +969,7 @@ echo "
 #####################################
 //
         if (is ('pmid')) {
-          echo "\n3: PMID already present :-)";
+          echo "\n3: PMID already present";
         } else {
           echo "\n3: Find PMID & expand";
           searchForPmid();
