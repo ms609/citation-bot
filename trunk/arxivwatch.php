@@ -4,8 +4,6 @@
 
 $accountSuffix = '_2'; // Before expandfunctions, which contains login
 require_once("expandFns.php"); //Must include first
-require_once("DOItools.php");
-require_once("wikiFunctions.php");
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 $editInitiator = '[ax'. revisionID() . ']';
 $htmlOutput = false;
