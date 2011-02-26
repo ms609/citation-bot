@@ -5,10 +5,9 @@
 function expand($page, // Title of WP page
         $commit_edits = false,
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
-        $cite_doi_start_code = null, // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
-        $html_output = false// $html_output controls the format of printed text.  -1: none; 0: fmt for console; 1: full HTML; 0.9: abridged HTML
+        $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $bot, $editInitiator;
+  global $bot, $editInitiator, $html_output;
   if ($html_output === -1) {
     ob_start();
   }
@@ -23,7 +22,7 @@ function expand($page, // Title of WP page
   }
   echo "\nRevision #$last_revision_id";
 
-  echo $html_output ? ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $started_page_at));
+  echo $html_output > 0 ? ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $started_page_at));
 
   $bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
   $original_code = $bot->results;
@@ -44,6 +43,9 @@ function expand($page, // Title of WP page
     echo trim($new_code) ? "\n ** No changes required." : "\n ** Blank page retrieved.";
     echo "\n # # # \n";
     updateBacklog($page);
+    if ($html_output === -1) {
+      ob_end_clean();
+    }
     return $original_code;
     // If no changes are necessary, we don't need to do anything.
   }
@@ -124,14 +126,15 @@ function expand($page, // Title of WP page
       $doiCrossRef = null;
     }
   }
-  ob_end_clean();
+  if ($html_output === -1) {
+    ob_end_clean();
+  }
 
   // These variables should change after the first edit
   $isbnKey = "3TUCZUGQ"; //This way we shouldn't exhaust theISBN key for on-demand users.
   $isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
   $editSummaryEnd = " You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   return $new_code;
-
 }
 
 // This function, given $original_code, returns the $text with any citation templates expanded as far as possible.
@@ -139,11 +142,14 @@ function expand($page, // Title of WP page
 function expand_text ($original_code,
         $commit_edits = false,
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
-        $cite_doi_start_code = null, // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
-        $html_output = false// $html_output controls the format of printed text.  -1: none; 0: fmt for console; 1: full HTML; 0.9: abridged HTML
+        $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $p, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2, $slowMode;
+  global $p, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2, $slowMode, $html_output;
 
+  if ($html_output === -1) {
+    ob_start();
+  }
+  
   // Which template family is dominant?
   if (!$editing_cite_doi_template) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $original_code, $cite_x);
@@ -1278,7 +1284,10 @@ echo "
 
   if (trim($new_code)) {
       $editSummary = $editSummaryStart . $editInitiator . $smartSum . $initiatedBy . $editSummaryEnd;
-      $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" . ($html_output?htmlentities(mb_convert_encoding($new_code, "UTF-8")):$new_code) . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to $page.<br><b>Changes:</b> <i>$smartSum</i></p>";
+      $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" 
+      . ($html_output ? htmlentities(mb_convert_encoding($new_code, "UTF-8")) : $new_code)
+      . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to"
+              . " $page.<br><b>Changes:</b> <i>$smartSum</i></p>";
 
       if ($editing_cite_doi_template && strtolower(substr(trim($new_code), 0, 5)) != "{{cit") {
         if (substr($new_code, 0, 15) == "HTTP/1.0 200 OK") {
@@ -1341,7 +1350,10 @@ echo "
         }
       } else {
         echo $outputText;
-        ob_end_clean();
+
+        if ($html_output === -1) {
+          ob_end_clean();
+        }
         return $new_code;
       }
 
@@ -1359,7 +1371,9 @@ echo "
       if (!$editing_cite_doi_template) {
         updateBacklog($page);
       }
-      ob_end_clean();
+      if ($html_output === -1) {
+        ob_end_clean();
+      }
       return false;
     } else {
       echo "<b>Error:</b> Blank page produced. This bug has been reported. Page content: $original_code";
