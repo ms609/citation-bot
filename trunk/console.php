@@ -4,6 +4,7 @@
 
 #$abort_mysql_connection = true; // Whilst there's a problem with login
 
+
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
@@ -27,6 +28,8 @@ include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . '&beta;]';
 define ("START_HOUR", date("H"));
+
+
 /*
  
 print "\n";
@@ -54,11 +57,20 @@ function nextPage($page){
   mysql_close($db);
 	return $result[0];
 }
-###########
-
-
-###########
 $ON = $argument["on"];
+###########
+
+
+
+
+
+include("expand.php");
+print "\n\n" .  expand_text("{{ref doi|10.1038/nature09108}}", $ON);
+
+die ("\nSTOPPED.\n");
+###########
+
+
 if ($argument["pages"]) {
   foreach ($argument["pages"] as $page) {
     expand($page, $ON);
