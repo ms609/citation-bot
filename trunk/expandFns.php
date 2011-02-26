@@ -514,7 +514,12 @@ function get_name_for_reference($text, $page_code) {
   return generate_template_name($replacement_template_name, $page_code);
 }
 
+
+// Strips special characters from reference name,
+// then does a check against the current page code to generate a unique name for the reference
+// (by suffixing _a, etc, as necessary)
 function generate_template_name ($replacement_template_name, $page_code) {
+  $replacement_template_name = remove_accents($replacement_template_name);
   if (!trim(preg_replace("~\d~", "", $replacement_template_name))) {
     $replacement_template_name = "ref" . $replacement_template_name;
   }
@@ -538,6 +543,12 @@ function generate_template_name ($replacement_template_name, $page_code) {
   return $replacement_template_name
          . $underscore
          . $alphabet[--$i];
+}
+
+function remove_accents ($input) {
+  $search = explode(",","ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
+  $replace = explode(",","c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u");
+  return str_replace($search, $replace, $input);
 }
 
 function authorify ($author) {
