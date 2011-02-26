@@ -22,7 +22,8 @@ echo " done.";
 includeIfNew('Snoopy.class');
 includeIfNew("wikiFunctions");
 includeIfNew("DOItools");
-includeIfNew("expand_it");
+includeIfNew("expand");
+#includeIfNew("expand_it");
 if (!$abort_mysql_connection) {
   echo "\n Initializing MYSQL database ... ";
   require_once("/home/verisimilus/public_html/res/mysql_connect.php");
@@ -432,7 +433,7 @@ function combine_duplicate_references($page_code) {
 
 function ref_templates($page_code, $type) {
   while (false !== ($ref_template = extract_template($page_code, "ref $type"))) {
-    echo " converted {{ref $type}},";
+    echo "  Converted {{ref $type}}.";
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
 
@@ -509,7 +510,7 @@ function get_name_for_reference($text, $page_code) {
       preg_match("~\w+~", authorify($parsed_plaintext), $author);
     }
   }
-  $replacement_template_name = str_replace(" ", "", ucfirst($author[0])) . $date;
+  $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
   #print "\n Replacement name: $replacement_template_name\n\n";
   return generate_template_name($replacement_template_name, $page_code);
 }
