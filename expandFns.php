@@ -13,30 +13,35 @@ function includeIfNew($file){
         if ($GLOBALS["linkto2"]) echo "\n// including $file";
         require_once($file . $GLOBALS["linkto2"] . ".php");
         return true;
-} 
+}
 
-echo " \n Getting login details ... ";
+function quiet_echo ($text) {
+  global $html_output;
+  if ($html_output >= 0) echo $text;
+}
+
+quiet_echo (" \n Getting login details ... ");
 require_once("/home/verisimilus/public_html/Bot/DOI_bot/doiBot$linkto2.login");
-echo " done.";
+quiet_echo (" done.");
 # Snoopy should be set so the host name is en.wikipedia.org.
 includeIfNew('Snoopy.class');
 includeIfNew("wikiFunctions");
 includeIfNew("DOItools");
-includeIfNew("expand");
+require_once("expand.php");
 #includeIfNew("expand_it");
 if (!$abort_mysql_connection) {
-  echo "\n Initializing MYSQL database ... ";
+  quiet_echo ("\n Initializing MYSQL database ... ");
   require_once("/home/verisimilus/public_html/res/mysql_connect.php");
   //$db = udbconnect("yarrow");
-  echo " loaded connect script.  Will connect when necessary.";
+  quiet_echo (" loaded connect script.  Will connect when necessary.");
 }
 if(!true && !myIP()) {
         echo "Sorry, the Citation bot is temporarily unavilable while bugs are fixed.  Please try back later."; exit;
 }
 
-echo "\n Initializing ...  ";
+quiet_echo ("\n Initializing ...  ");
 require_once("/home/verisimilus/public_html/crossref.login");
-echo "...";
+quiet_echo ("...");
 $crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
 $isbnKey2 = "268OHQMW";
@@ -133,7 +138,7 @@ function logIn($username, $password) {
   $bot->submit(api, $submit_vars);
   $login_result = json_decode($bot->results);
         if ($login_result->login->result == "Success") {
-    echo "\n Using account " . $login_result->login->lgusername . ".";
+    quiet_echo ("\n Using account " . $login_result->login->lgusername . ".");
     // Add other cookies, which are necessary to remain logged in.
     $cookie_prefix = "enwiki";
     $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
@@ -219,7 +224,7 @@ function mark_broken_doi_template($article_in_progress, $oDoi) {
 }
 
 function noteDoi($doi, $src){
-        echo "<h3 style='color:coral;'>Found <a href='http://dx.doi.org/$doi'>DOI</a> $doi from $src.</h3>";
+        quiet_echo ("<h3 style='color:coral;'>Found <a href='http://dx.doi.org/$doi'>DOI</a> $doi from $src.</h3>");
 }
 
 function isDoiBroken ($doi, $p = false, $slow_mode = false) {
@@ -228,7 +233,7 @@ function isDoiBroken ($doi, $p = false, $slow_mode = false) {
 
   if (crossRefData($doi)) {
     if ($slow_mode) {
-      echo "\"";
+      quiet_echo ("\"");
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HEADER, 1);
       curl_setopt($ch, CURLOPT_NOBODY, 1);
@@ -592,11 +597,11 @@ $str = ereg_replace( chr(174), "&reg;", $str );        # registration mark
     return utf8_encode($str);
 }
 
-echo "\n Establishing connection to Wikipedia servers ... ";
+quiet_echo ("\n Establishing connection to Wikipedia servers ... ");
 // Log in to Wikipedia
 logIn(USERNAME, PASSWORD);
 
-echo "\n Fetching parameter list ... ";
+quiet_echo ("\n Fetching parameter list ... ");
 // Get a current list of parameters used in citations from WP
 $page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters&format=json");
 $json = json_decode($bot->results, true);
@@ -618,5 +623,5 @@ function ascii_sort($val_1, $val_2)
   return $return;
 }
 uasort($parameter_list, "ascii_sort");
-echo ("done.");
+quiet_echo ("done.");
 ?>

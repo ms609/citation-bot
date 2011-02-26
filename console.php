@@ -61,13 +61,6 @@ $ON = $argument["on"];
 ###########
 
 
-
-
-
-include("expand.php");
-print "\n\n" .  expand_text("{{ref doi|10.1038/nature09108}}", $ON);
-
-die ("\nSTOPPED.\n");
 ###########
 
 
