@@ -758,6 +758,12 @@ echo "
           unset($p["authors"]);
         }
 
+        // Replace "volume = B 120" with "series=VB, volume = 120
+        if (preg_match("~^(\w+\s+)~", $p["volume"][0], $match)) {
+          ifNullSet("series", $match[1]);
+          $p["volume"][0] = substr($p["volume"][0], strlen($match[1]));
+        }
+
         $authors_missing = false; // reset
         // The phrase 'et al' should not be included in the authors parameter.
         // It is discouraged and may be mistaken for an author by the bot.
