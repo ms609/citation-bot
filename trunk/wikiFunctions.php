@@ -122,7 +122,7 @@ function redirect_target($page) {
   return $xml->pages->page["title"];
 }
 
-function parse_wikitext($text, $title="API") {
+function parse_wikitext($text, $title = "API") {
   $bot = new Snoopy();
   $bot->httpmethod="POST";
   $vars = array(

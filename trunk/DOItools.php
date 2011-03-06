@@ -392,7 +392,11 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
     }
     ifNullSet("journal", $crossRef->journal_title);
     ifNullSet("volume", $crossRef->volume);
-    if (!is("page")) ifNullSet("pages", $crossRef->first_page);
+    ifNullSet("issue", $crossRef->issue);
+    if (!is("page")) ifNullSet("pages", $crossRef->first_page
+              . ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)
+              ? "-" . $crossRef->last_page //replaced by an endash later in script
+              : "") );
     echo " (ok)";
     searchForPmid();
   } else {
