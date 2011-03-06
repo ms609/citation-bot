@@ -530,6 +530,7 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
       return $result;
     }
   }
+  //die ("\n\n" . $url . "\n\n");
 	if ($url1) {
 		$url = "http://www.crossref.org/openurl/?url_ver=Z39.88-2004&req_dat=$crossRefId&rft_id=info:http://" . urlencode(str_replace(Array("http://", "&noredirect=true"), Array("", ""), urldecode($url1)));
 		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef via URL. ";
