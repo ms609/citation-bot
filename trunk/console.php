@@ -59,6 +59,8 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
+
+
 /*
 foreach ($argument["pages"] as $page) {
   $input[] = array("{{automatic taxobox$paras}}", $page);
