@@ -22,10 +22,13 @@ function expand($page, // Title of WP page
   }
   echo "\nRevision #$last_revision_id";
 
-  echo $html_output > 0 ? ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s", $started_page_at));
+  echo $html_output > 0 ? ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s"));
 
   $bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
   $original_code = $bot->results;
+  if (strpos($page, "Template:Cite") !== FALSE) {
+    $editing_cite_doi_template = true;
+  }
   if ($editing_cite_doi_template && !$original_code) {
     $original_code = $cite_doi_start_code;
   }
@@ -53,35 +56,36 @@ function expand($page, // Title of WP page
 
   ##### Generate edit summary #####
   if ($additions) {
-    $smartSum = "+: ";
+    $auto_summary = "+: ";
     foreach ($additions as $param=>$v)	{
-      $smartSum .= "$param, ";
+      $auto_summary .= "$param, ";
       unset($changes[$param]);
     }
-    $smartSum = substr($smartSum, 0, strlen($smartSum)-2);
-    $smartSum .= ". ";
+    $auto_summary = substr($auto_summary, 0, strlen($auto_summary)-2);
+    $auto_summary .= ". ";
   }
   if ($changes["accessdate"]) {
-    $smarSum .= "Removed accessdate with no specified URL. ";
+    $auto_summary .= "Removed accessdate with no specified URL. ";
     unset($changes["accessdate"]);
   }
   if ($changes) {
-    $smartSum .= "Tweaked: ";
-    foreach ($changes as $param=>$v)	$smartSum .= 				"$param, ";
-    $smartSum = substr($smartSum,0, strlen($smartSum)-2);
-    $smartSum.=". ";
+    $auto_summary .= "Tweaked: ";
+    foreach ($changes as $param=>$v)	$auto_summary .= 				"$param, ";
+    $auto_summary = substr($auto_summary,0, strlen($auto_summary)-2);
+    $auto_summary.=". ";
   }
   if ($changeCiteType || $unify_citation_templates) {
-    $smartSum .= "Unified citation types. ";
+    $auto_summary .= "Unified citation types. ";
   }
-  if (!$smartSum) {
+  if (!$auto_summary) {
     if ($changedDashes) {
-      $smartSum .= "Formatted [[WP:ENDASH|dashes]]. ";
+      $auto_summary .= "Formatted [[WP:ENDASH|dashes]]. ";
     } else {
-      $smartSum = "Misc citation tidying. ";
+      $auto_summary = "Misc citation tidying. ";
     }
   }
-  echo $smartSum;
+  echo $auto_summary;
+  $edit_summary = $editInitiator . $auto_summary . $edit_summary_end;
   
   if ($commit_edits) {
     if (strpos($page, "andbox") > 1) {
@@ -91,18 +95,19 @@ function expand($page, // Title of WP page
        write($page . $_GET["subpage"], $new_code, $editInitiator . "Citation maintenance: Fixing/testing bugs. "
          .	"Problems? [[User_talk:Smith609|Contact the bot's operator]]. ");
     } else {
+
       echo "<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title=".urlencode($page)."\">$page</a> ... ";
-      if (write($page . $_GET["subpage"], $new_code, $editSummary) == "Success") {
+      if (write($page . $_GET["subpage"], $new_code, $edit_summary) == "Success") {
         updateBacklog($page);
         echo "Success.";
       } else {
         echo "Edit may have failed. Retrying: <span style='font-size:1px'>xxx</span> ";
-        if (write($page . $_GET["subpage"], $new_code, $editSummary) == "Success") {
+        if (write($page . $_GET["subpage"], $new_code, $edit_summary) == "Success") {
           updateBacklog($page);
           echo "Success.";
         } else {
           echo "Still no good. One last try: ";
-          $status = write($page . $_GET["subpage"], $new_code, $editSummary);
+          $status = write($page . $_GET["subpage"], $new_code, $edit_summary);
           if ($status == "Success") {
             updateBacklog($page);
             echo "Success. Phew!";
@@ -133,7 +138,7 @@ function expand($page, // Title of WP page
   // These variables should change after the first edit
   $isbnKey = "3TUCZUGQ"; //This way we shouldn't exhaust theISBN key for on-demand users.
   $isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
-  $editSummaryEnd = " You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
+  $edit_summary_end = " You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   return $new_code;
 }
 
@@ -144,11 +149,11 @@ function expand_text ($original_code,
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $p, $editInitiator, $editSummaryStart, $initiatedBy, $editSummaryEnd, $isbnKey, $isbnKey2, $slowMode, $html_output;
+  global $p, $editInitiator, $edit_summaryStart, $initiatedBy, $edit_summary_end, $isbnKey, $isbnKey2, $slowMode, $html_output;
 
   if ($html_output === -1) {
     ob_start();
-  } else {print "\n\n\nHTML:[$html_output]";}
+  } 
   
   // Which template family is dominant?
   if (!$editing_cite_doi_template) {
@@ -1289,11 +1294,11 @@ echo "
   #########################  code is now complete and ready for prcessing.   #######################
 
   if (trim($new_code)) {
-      $editSummary = $editSummaryStart . $editInitiator . $smartSum . $initiatedBy . $editSummaryEnd;
+      $edit_summary = $edit_summaryStart . $editInitiator . $auto_summary . $initiatedBy . $edit_summary_end;
       $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" 
       . ($html_output ? htmlentities(mb_convert_encoding($new_code, "UTF-8")) : $new_code)
       . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to"
-              . " $page.<br><b>Changes:</b> <i>$smartSum</i></p>";
+              . " $page.<br><b>Changes:</b> <i>$auto_summary</i></p>";
 
       if ($editing_cite_doi_template && strtolower(substr(trim($new_code), 0, 5)) != "{{cit") {
         if (substr($new_code, 0, 15) == "HTTP/1.0 200 OK") {
@@ -1303,7 +1308,7 @@ echo "
           mail ("MartinS+citewatch@gmail.com"
                 , "Citewatch ERROR"
                 , "Output does not begin with {{Cit, but [" . strtolower(substr(trim($new_code), 0, 5)) . "]
-                . \n\n[Page = $page]\n[SmartSum = $smartSum ]\n[\$citation = ". print_r($citation, 1)
+                . \n\n[Page = $page]\n[SmartSum = $auto_summary ]\n[\$citation = ". print_r($citation, 1)
                 . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n [p = "
                 . print_r($p,1)
                 . "] \n[pagecode =$new_code]\n\n[freshcode =$cite_doi_start_code]\n\n> Error message generated by expand.php.");
@@ -1368,7 +1373,7 @@ echo "
       $pEnd = null;
       $additions = null;
       $changes = null;
-      $smartSum = null;
+      $auto_summary = null;
       $changedDashes = null;
     
   } else {
@@ -1383,7 +1388,7 @@ echo "
       return false;
     } else {
       echo "<b>Error:</b> Blank page produced. This bug has been reported. Page content: $original_code";
-      mail ("MartinS+doibot@gmail.com", "DOI BOT ERROR", "Blank page produced.\n[Page = $page]\n[SmartSum = $smartSum ]\n[\$citation = ". print_r($citation, 1) . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n\nError message generated by expand.php.");
+      mail ("MartinS+doibot@gmail.com", "DOI BOT ERROR", "Blank page produced.\n[Page = $page]\n[SmartSum = $auto_summary ]\n[\$citation = ". print_r($citation, 1) . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n\nError message generated by expand.php.");
       exit;
     }
   }
