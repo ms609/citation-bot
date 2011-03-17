@@ -326,6 +326,10 @@ function rename_parameter ($old_name, $new_name, $new_value = null) {
       $p[$new_name][0] = $new_value;
     }
     unset($p[$old_name]);
+    if ($old_name == "url") {
+      unset($p["accessdate"]);
+    }
+    return true;
   }
 }
 

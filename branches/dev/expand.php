@@ -384,7 +384,7 @@ function expand_text ($original_code,
 
       //Check for the doi-inline template in the title
       if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~",
-                      str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0]), $match)) {
+                      str_replace(pipePlaceholder, "|", $p['title'][0]), $match)) {
         set('title', $match[2]);
         set('doi', $match[1]);
       }
@@ -614,7 +614,7 @@ function expand_text ($original_code,
       } else {
       //Check for the doi-inline template in the title
       if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~"
-          , str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0])
+          , str_replace(pipePlaceholder, "|", $p['title'][0])
           , $match
           )
       ) {
@@ -672,30 +672,46 @@ echo "
           unset($p['url']);
         }
 
-        // Is the URL a Bibcode in disguise?
-        $bibcode_regexp = "~^(?:" . str_replace(".", "\.", implode("|", Array (
-              "http://(?:\w+.)?adsabs.harvard.edu",
-              "http://ads.ari.uni-heidelberg.de",
-              "http://ads.inasan.ru",
-              "http://ads.mao.kiev.ua",
-              "http://ads.astro.puc.cl",
-              "http://ads.on.br",
-              "http://ads.nao.ac.jp",
-              "http://ads.bao.ac.cn",
-              "http://ads.iucaa.ernet.in",
-              "http://ads.lipi.go.id",
-              "http://cdsads.u-strasbg.fr",
-              "http://esoads.eso.org",
-              "http://ukads.nottingham.ac.uk",
-              "http://www.ads.lipi.go.id",
-            )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
-        if (preg_match($bibcode_regexp, urldecode($p["url"][0]), $bibcode)) {
-          if (trim($p["bibcode"][0]) == "") {
-            $p["bibcode"] = $p["url"];
-            $p["bibcode"][0] = urldecode($bibcode[1]);
+        // Convert URLs to article identifiers:
+        $url = $p["url"][0];
+        // JSTOR
+        if (strpos($url, "jstor.org") !== FALSE) {
+          if (preg_match("~\d+~", $url, $match)) {
+            rename_parameter("url", "jstor", $match[0]);
           }
-          unset($p["url"]);
-          unset($p["accessdate"]);
+        } else {
+          // BIBCODE
+          $bibcode_regexp = "~^(?:" . str_replace(".", "\.", implode("|", Array (
+                "http://(?:\w+.)?adsabs.harvard.edu",
+                "http://ads.ari.uni-heidelberg.de",
+                "http://ads.inasan.ru",
+                "http://ads.mao.kiev.ua",
+                "http://ads.astro.puc.cl",
+                "http://ads.on.br",
+                "http://ads.nao.ac.jp",
+                "http://ads.bao.ac.cn",
+                "http://ads.iucaa.ernet.in",
+                "http://ads.lipi.go.id",
+                "http://cdsads.u-strasbg.fr",
+                "http://esoads.eso.org",
+                "http://ukads.nottingham.ac.uk",
+                "http://www.ads.lipi.go.id",
+              )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
+          if (preg_match($bibcode_regexp, urldecode($url), $bibcode)) {
+            rename_parameter("url", "bibcode", urldecode($bibcode[1]));
+          }
+        }
+
+        // Try to extract identifiers from ID parameter
+        if (is("id")) {
+          $id = str_replace(pipePlaceholder, "|", $p["id"][0]);
+          if (preg_match("~[^\}\w]*jstor\s*\|\s*(\d+)[^\{\w\d]*~i", $id, $match)) {
+            $p["id"][0] = str_replace($match[0], "", $id);
+            ifNullSet("jstor", $match[1]);
+          }
+          if (!trim($p["id"][0])) {
+            unset($p["id"]);
+          }
         }
 
         if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
