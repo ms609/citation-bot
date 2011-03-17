@@ -369,6 +369,44 @@ function standardize_reference($reference) {
   return str_replace($whitespace, "", $reference);
 }
 
+function get_identifiers_from_url() {
+  // Convert URLs to article identifiers:
+  global $p;
+  $url = $p["url"][0];
+  
+  // JSTOR
+  if (strpos($url, "jstor.org") !== FALSE) {
+    if (preg_match("~\d+~", $url, $match)) {
+      rename_parameter("url", "jstor", $match[0]);
+    }
+  } else {
+    // BIBCODE
+    $bibcode_regexp = "~^(?:" . str_replace(".", "\.", implode("|", Array (
+          "http://(?:\w+.)?adsabs.harvard.edu",
+          "http://ads.ari.uni-heidelberg.de",
+          "http://ads.inasan.ru",
+          "http://ads.mao.kiev.ua",
+          "http://ads.astro.puc.cl",
+          "http://ads.on.br",
+          "http://ads.nao.ac.jp",
+          "http://ads.bao.ac.cn",
+          "http://ads.iucaa.ernet.in",
+          "http://ads.lipi.go.id",
+          "http://cdsads.u-strasbg.fr",
+          "http://esoads.eso.org",
+          "http://ukads.nottingham.ac.uk",
+          "http://www.ads.lipi.go.id",
+        )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
+    if (preg_match($bibcode_regexp, urldecode($url), $bibcode)) {
+      rename_parameter("url", "bibcode", urldecode($bibcode[1]));
+    } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
+      //ARXIV
+        rename_parameter("url", "arxiv", $match[1]);
+    } else if (preg_match("~http://www.ncbi.nlm.nih.gov/.+=(\d\d\d+)~", $url, $match)) {
+      rename_parameter('url', 'pmid', $match[1]);
+    }
+  }
+}
 function combine_duplicate_references($page_code) {
 
   $original_page_code = $page_code;

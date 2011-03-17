@@ -61,12 +61,7 @@ $ON = $argument["on"];
 ###########
 
 
-die (expand_text("{{cite journal |author=Kanouse BB.
-  |year=1948|title=Studies in the genus ''Otidea''
-  |url=http://jstor.org/stable/3755023
-  |journal=Mycologia |volume=41 |issue=6 |pages=660–77
-  |doi=10.2307/3755023
-  |id={{JSTOR|3755023}} }}
+die (expand_text("{{cite web | url = http://arxiv.org/abs/0710.4523 | title = Test para. }}
 
 ") );
 #die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );

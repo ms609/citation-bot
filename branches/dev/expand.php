@@ -198,6 +198,129 @@ function expand_text ($original_code,
     echo "Converted dashes in all page parameters to en-dashes.";
   }
 
+###################################  Cite web ######################################
+  // Convert Cite webs to Cite arXivs, etc, if necessary
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+    $new_code = null;
+    $iLimit = (count($citation) - 1);
+    for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5){//Number of brackets in cite arXiv regexp + 1
+      $started_citation_at = time();
+      $c = $citation[$cit_i + 1];
+      while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
+      // Split citation into parameters
+      $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
+      $partsLimit = count($parts);
+      if (strpos($parts[0], "|") >0 && strpos($parts[0],"[[") === FALSE && strpos($parts[0], "{{") === FALSE) set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
+      for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
+        $value = $parts[$partsI + 3];
+        $pipePos = strpos($value, "|");
+        if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
+          // There are two "parameters" on one line.  One must be missing an equals.
+          $p["unused_data"][0] .= " " . substr($value, $pipePos);
+          $value = substr($value, 0, $pipePos);
+        }
+        // Load each line into $p[param][0123]
+        $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
+      }
+      print_r($p);
+      //Make a note of how things started so we can give an intelligent edit summary
+      foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
+      // See if we can use any of the parameters lacking equals signs:
+      $freeDat = explode("|", trim($p["unused_data"][0]));
+      useUnusedData();
+      if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
+      else if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+
+      echo "\n* Cite web: {$p["title"][0]}";
+
+      // Fix typos in parameter names
+      //Authors
+      if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
+      preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
+      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
+      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
+
+      // Delete any parameters >10, which won't be displayed anyway
+      for ($au_i = 10; isset($p["last$au_i"]) || isset($p["author$au_i"]); $au_i++) {
+        unset($p["last$au_i"]);
+        unset($p["first$au_i"]);
+        unset($p["author$au_i"]);
+      }
+      
+      // Get identifiers from URL
+      get_identifiers_from_url();
+
+      // Now wikify some common formatting errors - i.e. tidy up!
+      if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);
+
+      // If we have any unused data, check to see if any is redundant!
+      if (is("unused_data")){
+        $freeDat = explode("|", trim($p["unused_data"][0]));
+        unset($p["unused_data"]);
+        foreach ($freeDat as $dat) {
+          $eraseThis = false;
+          foreach ($p as $oP) {
+            similar_text(strtolower($oP[0]), strtolower($dat), $percentSim);
+            if ($percentSim >= 85)
+              $eraseThis = true;
+          }
+          if (!$eraseThis) $p["unused_data"][0] .= "|" . $dat;
+        }
+        if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
+        else {
+          if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+          echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
+        }
+      }
+
+      // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
+      $changeToJournal = is('journal');
+      if ($changeToJournal && is('eprint')) {
+        rename_parameter('eprint', 'arxiv');
+        $changeCiteType = true;
+      } else {
+        $changeCiteType = false;
+      }
+
+      //And we're done!
+      $endtime = time();
+      $timetaken = $endtime - $started_citation_at;
+      echo "* Citation assessed in $timetaken secs. " . ($changeToJournal?"Changing to Cite Journal. ":"Keeping as cite web") . "\n";
+      foreach ($p as $oP){
+        $pipe = $oP[1]?$oP[1]:null;
+        $equals = $oP[2]?$oP[2]:null;
+        if ($pipe) break;
+      }
+      if (!$pipe) {
+         $pipe = "\n | ";
+      }
+      if (!$equals) {
+        $equals = " = ";
+      }
+      foreach($p as $param => $v) {
+        if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
+        if (is($param)) $pEnd[$param] = $v[0];
+      }
+      $last_p = $p;
+      $p = null;
+      if ($pEnd)
+        foreach ($pEnd as $param => $value)
+          if (!$pStart[$param]) {
+            $additions[$param] = true;
+          } elseif ($pStart[$param] != $value) {
+            $changes[$param] = true;
+          }
+      $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($changeToJournal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
+#				$new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
+      $cText = null;
+      $crossRef = null;
+    }
+
+    $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
+  }
+
+
+
 ###################################  Cite arXiv ######################################
   // Makes sense to do this first as it might add DOIs, changing the citation type.
   if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
@@ -283,10 +406,8 @@ function expand_text ($original_code,
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
       $changeToJournal = is('journal');
       if ($changeToJournal && is('eprint')) {
-        $p['id'][0] = "{{arXiv|{$p['eprint'][0]}}}";
+        rename_parameter('eprint', 'arxiv');
         unset($p['class']);
-        unset($p['eprint']);
-        $changeCiteType = true;
       } else {
         $changeCiteType = false;
       }
@@ -621,13 +742,7 @@ function expand_text ($original_code,
         set('title', $match[2]);
         set('doi', $match[1]);
       }
-      // Convert URLs to article identifiers:
-      $url = $p["url"][0];
-      if (strpos($url, "jstor.org") !== FALSE) {
-        if (preg_match("~\d+~", $url, $match)) {
-          rename_parameter("url", "jstor", $match[0]);
-        }
-      }
+      
 
 
 ###########################
@@ -667,40 +782,8 @@ echo "
           $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doix'][0]);
           unset($p['doix']);
         }
-        if (preg_match("~http://www.ncbi.nlm.nih.gov/.+=(\d\d\d+)~", $p['url'][0], $match)) {
-          ifNullSet ('pmid', $match[1]);
-          unset($p['url']);
-        }
+        get_identifiers_from_url();
 
-        // Convert URLs to article identifiers:
-        $url = $p["url"][0];
-        // JSTOR
-        if (strpos($url, "jstor.org") !== FALSE) {
-          if (preg_match("~\d+~", $url, $match)) {
-            rename_parameter("url", "jstor", $match[0]);
-          }
-        } else {
-          // BIBCODE
-          $bibcode_regexp = "~^(?:" . str_replace(".", "\.", implode("|", Array (
-                "http://(?:\w+.)?adsabs.harvard.edu",
-                "http://ads.ari.uni-heidelberg.de",
-                "http://ads.inasan.ru",
-                "http://ads.mao.kiev.ua",
-                "http://ads.astro.puc.cl",
-                "http://ads.on.br",
-                "http://ads.nao.ac.jp",
-                "http://ads.bao.ac.cn",
-                "http://ads.iucaa.ernet.in",
-                "http://ads.lipi.go.id",
-                "http://cdsads.u-strasbg.fr",
-                "http://esoads.eso.org",
-                "http://ukads.nottingham.ac.uk",
-                "http://www.ads.lipi.go.id",
-              )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
-          if (preg_match($bibcode_regexp, urldecode($url), $bibcode)) {
-            rename_parameter("url", "bibcode", urldecode($bibcode[1]));
-          }
-        }
 
         // Try to extract identifiers from ID parameter
         if (is("id")) {
@@ -709,6 +792,11 @@ echo "
             $p["id"][0] = str_replace($match[0], "", $id);
             ifNullSet("jstor", $match[1]);
           }
+          if (preg_match("~[^\}\w]*arxiv\s*\|\s*([\w/\.\d]+)[^\{\w\d]*~i", $id, $match)) {
+            $p["id"][0] = str_replace($match[0], "", $id);
+            ifNullSet("arxiv", $match[1]);
+          }
+
           if (!trim($p["id"][0])) {
             unset($p["id"]);
           }
