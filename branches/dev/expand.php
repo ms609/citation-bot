@@ -26,6 +26,10 @@ function expand($page, // Title of WP page
 
   $bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
   $original_code = $bot->results;
+  if (stripos($original_code, "#redirect") !== FALSE) {
+    echo "Page is a redirect.";
+    return false;
+  }
   if (strpos($page, "Template:Cite") !== FALSE) {
     $editing_cite_doi_template = true;
   }
@@ -222,7 +226,7 @@ function expand_text ($original_code,
         // Load each line into $p[param][0123]
         $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
       }
-      print_r($p);
+      
       //Make a note of how things started so we can give an intelligent edit summary
       foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
       // See if we can use any of the parameters lacking equals signs:
@@ -274,18 +278,25 @@ function expand_text ($original_code,
       }
 
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
-      $changeToJournal = is('journal');
-      if ($changeToJournal && is('eprint')) {
+      $change_to_journal = is('journal');
+      $change_to_arxiv = is('arxiv');
+      if (($change_to_arxiv || $change_to_journal) && is('eprint')) {
         rename_parameter('eprint', 'arxiv');
         $changeCiteType = true;
-      } else {
-        $changeCiteType = false;
+      } else if (is('arxiv') && !is('class')) {
+        rename_parameter('arxiv', 'eprint');
       }
 
       //And we're done!
       $endtime = time();
       $timetaken = $endtime - $started_citation_at;
-      echo "* Citation assessed in $timetaken secs. " . ($changeToJournal?"Changing to Cite Journal. ":"Keeping as cite web") . "\n";
+      echo "* Citation assessed in $timetaken secs. "
+          . ($change_to_journal
+              ?"Changing to Cite Journal. "
+              :($change_to_arxiv
+                ?"Changing to Arxiv. "
+                :"Keeping as cite web. ")
+              ) . "\n";
       foreach ($p as $oP){
         $pipe = $oP[1]?$oP[1]:null;
         $equals = $oP[2]?$oP[2]:null;
@@ -310,7 +321,7 @@ function expand_text ($original_code,
           } elseif ($pStart[$param] != $value) {
             $changes[$param] = true;
           }
-      $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($changeToJournal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
+      $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($change_to_journal?"cite journal":($change_to_arxiv?"cite arxiv":$citation[$cit_i+2])) . "$cText{$citation[$cit_i+4]}}}":"");
 #				$new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
       $cText = null;
       $crossRef = null;
@@ -404,8 +415,8 @@ function expand_text ($original_code,
       }
 
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
-      $changeToJournal = is('journal');
-      if ($changeToJournal && is('eprint')) {
+      $change_to_journal = is('journal');
+      if ($change_to_journal && is('eprint')) {
         rename_parameter('eprint', 'arxiv');
         unset($p['class']);
       } else {
@@ -415,7 +426,7 @@ function expand_text ($original_code,
       //And we're done!
       $endtime = time();
       $timetaken = $endtime - $started_citation_at;
-      echo "* Citation assessed in $timetaken secs. " . ($changeToJournal?"Changing to Cite Journal. ":"Keeping as cite arXiv") . "\n";
+      echo "* Citation assessed in $timetaken secs. " . ($change_to_journal?"Changing to Cite Journal. ":"Keeping as cite arXiv") . "\n";
       foreach ($p as $oP){
         $pipe=$oP[1]?$oP[1]:null;
         $equals=$oP[2]?$oP[2]:null;
@@ -440,7 +451,7 @@ function expand_text ($original_code,
           } elseif ($pStart[$param] != $value) {
             $changes[$param] = true;
           }
-      $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($changeToJournal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
+      $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($change_to_journal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
 #				$new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
       $cText = null;
       $crossRef = null;
@@ -1411,7 +1422,6 @@ echo "
       . ($html_output ? htmlentities(mb_convert_encoding($new_code, "UTF-8")) : $new_code)
       . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to"
               . " $page.<br><b>Changes:</b> <i>$auto_summary</i></p>";
-
       if ($editing_cite_doi_template && strtolower(substr(trim($new_code), 0, 5)) != "{{cit") {
         if (substr($new_code, 0, 15) == "HTTP/1.0 200 OK") {
           echo "Headers included in pagecode; removing...\n";

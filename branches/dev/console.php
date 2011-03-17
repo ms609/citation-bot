@@ -61,9 +61,6 @@ $ON = $argument["on"];
 ###########
 
 
-die (expand_text("{{cite web | url = http://arxiv.org/abs/0710.4523 | title = Test para. }}
-
-") );
 #die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
 /*
 foreach ($argument["pages"] as $page) {
