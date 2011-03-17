@@ -28,7 +28,8 @@ function expand($page, // Title of WP page
   $original_code = $bot->results;
   if (stripos($original_code, "#redirect") !== FALSE) {
     echo "Page is a redirect.";
-    return false;
+    updateBacklog($page);
+    return $original_code;
   }
   if (strpos($page, "Template:Cite") !== FALSE) {
     $editing_cite_doi_template = true;
@@ -1543,7 +1544,7 @@ function leave_broken_doi_message($id, $page, $doi) {
       $text = '';
       echo "\nTALK PAGE DOES NOT EXIST\n\n";
     }
-    if (strpos($text, "|DOI]] [[doi:".$doi) || strpos($text, "d/nodoi&a")) {
+    if (strpos($text, "|DOI]] [[doi:" . $doi) || strpos($text, "d/nodoi&a")) {
       echo "\n - Message already on talk page.  Zzz.\n";
     } else if ($text && $talkId || !$text && !$talkId) {
       echo "\n * Writing message on talk page..." . $talkPage . "\n\n";
