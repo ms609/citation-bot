@@ -447,7 +447,7 @@ function get_data_from_jstor($jid) {
   if ($xml->srw___numberOfRecords == 1) {
     $data = $xml->srw___records->srw___record->srw___recordData;
     global $p;
-    if (trim(substr($p["doi"][0], 0, 7)) == "10.2307") {
+    if (trim(substr($p["doi"][0], 0, 7)) == "10.2307" || is("jstor")) {
       if (strpos($p["url"][0], "jstor.org")) {
         unset($p["url"]);
         ifNullSet("jstor", substr($jid, 8));

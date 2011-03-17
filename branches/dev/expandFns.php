@@ -316,6 +316,19 @@ function loadParam($param, $value, $equals, $pipe, $weight) {
   $p[$param] = Array($value, $equals, $pipe, "weight" => ($weight + 3) / 4 * 10); // weight will be 10, 20, 30, 40 ...
 }
 
+function rename_parameter ($old_name, $new_name, $new_value = null) {
+  global $p;
+  if (is($new_name)) {
+    return false;
+  } else {
+    $p[$new_name] = $p[$old_name];
+    if ($new_value !== null) {
+      $p[$new_name][0] = $new_value;
+    }
+    unset($p[$old_name]);
+  }
+}
+
 function cite_template_contents($type, $id) {
   $page = get_template_prefix($type);
   $replacement_template_name = $page . wikititle_encode($id);

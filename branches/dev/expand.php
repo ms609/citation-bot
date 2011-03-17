@@ -621,6 +621,14 @@ function expand_text ($original_code,
         set('title', $match[2]);
         set('doi', $match[1]);
       }
+      // Convert URLs to article identifiers:
+      $url = $p["url"][0];
+      if (strpos($url, "jstor.org") !== FALSE) {
+        if (preg_match("~\d+~", $url, $match)) {
+          rename_parameter("url", "jstor", $match[0]);
+        }
+      }
+
 
 ###########################
 //  JOURNALS

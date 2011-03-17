@@ -31,13 +31,13 @@ define ("START_HOUR", date("H"));
 
 
 /*
- 
+
 print "\n";
 
 print preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", "Amélie SMth");
 
 die("\n");
- 
+
  */
 
 function nextPage($page){
@@ -60,7 +60,23 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-#die (expand_text("{{Cite journal | 10.3318/IJES.2010.28.1}}") );
+die (expand_text("{{Cite journal
+| doi =
+| url = http://jstor.org/stable/1306131
+| pages = 1090-1094
+| title = Clarification of the Genus ''Nematothallus'' Lang
+| journal = Journal of Paleontology
+| volume = 67
+| issue = 6
+| year = 1993
+| author1 = Strother | first1 = P. K.
+}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
+"));
+die (expand_text("{{cite journal
+  |author=Kempton PE, Wells VL. |year=1973
+  |title=Studies on the fleshy fungi of Alaska. VI. Notes on ''Gyromitra''
+  |url=http://jstor.org/stable/3758111 |journal=Mycologia
+  |volume=65 |issue=2 |pages=396–400 |doi=10.2307/3758111}}") );
 #die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
 /*
 foreach ($argument["pages"] as $page) {
