@@ -60,7 +60,8 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-
+#die (expand_text("{{Cite journal | 10.3318/IJES.2010.28.1}}") );
+#die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
 /*
 foreach ($argument["pages"] as $page) {
   $input[] = array("{{automatic taxobox$paras}}", $page);
