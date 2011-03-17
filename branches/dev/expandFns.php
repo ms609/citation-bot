@@ -407,6 +407,8 @@ function get_identifiers_from_url() {
     }
   }
 }
+
+// This function may need to be called twice; the second pass will combine <ref name="Name" /> with <ref name=Name />.
 function combine_duplicate_references($page_code) {
 
   $original_page_code = $page_code;
@@ -428,15 +430,17 @@ function combine_duplicate_references($page_code) {
       $page_code = str_replace($duplicate_content, $full_original, $page_code);
     }
   }
+
+  // Now all references that need merging will have identical content.  Proceed to do the replacements...
   // Reset
   $full_original = null;
   $duplicate_content = null;
   $standardized_ref = null;
 
   if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>(([^<]|<(?!ref))*?)</ref>~i", $page_code, $refs)) {
-    foreach ($refs[4] as $ref) {
-      $standardized_ref[] = standardize_reference($ref);
-    }
+
+    $standardized_ref = $refs[4]; // They were standardized above.
+
     foreach ($refs[4] as $i => $content) {
       if (false !== ($key = array_search(standardize_reference($refs[4][$i]), $standardized_ref))
               && $key != $i) {
@@ -445,6 +449,9 @@ function combine_duplicate_references($page_code) {
         $name_of_original[] = $refs[3][$key];
         $name_of_duplicate[] = $refs[3][$i];
         $duplicate_content[] = $content;
+        $name_for[$content] = $name_for[$content] ? $name_for[$content]
+                            : ($refs[3][$key] ? $refs[3][$key]
+                            : ($refs[3][$i] ?  $refs[3][$i] : null));
       }
     }
     $already_replaced = Array(); // so that we can use FALSE and not NULL in the check...
@@ -452,23 +459,31 @@ function combine_duplicate_references($page_code) {
       foreach ($full_duplicate as $i => $this_duplicate) {
         if (FALSE === array_search($this_duplicate, $already_replaced)) {
           $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once
-          echo "\n - Replacing duplicate reference $this_duplicate"; // . " (original: $full_original[$i])";
-          $replacement_template_name = $name_of_original[$i]
-                                     ? $name_of_original[$i]
-                                     : get_name_for_reference($duplicate_content[$i], $page_code);
-          //preg_match("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
-            //                        . "(?P=quote)(\s*/>)~",
-              //                $page_code,
-                /*  $match1);*/
-          // First replace any <ref name=that'sall/> with the new name
+          echo "\n - Replacing duplicate reference $this_duplicate. \n - * Reference name: "
+          . ( $name_for[$duplicate_content[$i]] ?  $name_for[$duplicate_content[$i]] : "Autogenerating." ); // . " (original: $full_original[$i])";
+          $replacement_template_name = $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]]
+                                       : get_name_for_reference($duplicate_content[$i], $page_code);
+          // First replace any <ref name=Blah content=none /> with the new name
           $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
                                     . "(?P=quote)(\s*/>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
                               $page_code);
           if ($name_of_original[$i]) {
             // Don't replace the original template!
-            $replacement_template_name = $name_of_original[$i];
             $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]) + strlen($full_original[$i]);
             $code_upto_original_ref = substr($ready_to_replace, 0, $original_ref_end_pos);
+          } elseif ($name_of_duplicate[$i]) {
+            // This is an odd case; in a fashion the simplest.
+            // In effect, we switch the original and duplicate over,..
+            $original_ref_end_pos = 0;
+            $code_upto_original_ref = "";
+            $already_replaced[] = $full_original[$i];
+            $this_duplicate = $full_original[$i];
+            /*
+            $original_ref_end_pos = strpos($ready_to_replace, $full_duplicate[$i]) + strlen($full_duplicate[$i]);
+            $code_upto_original_ref = str_replace($full_original[$i]
+                    , "<ref name=\"$replacement_template_name\" />"
+                    , substr($ready_to_replace, 0, $original_ref_end_pos));
+            print ("\n88\n\n" . $full_original[$i] . "\n\n" . substr($ready_to_replace, 0, $original_ref_end_pos) . "\n88\n");*/
           } else {
             // We need add a name to the original template, and not to replace it
             $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]);

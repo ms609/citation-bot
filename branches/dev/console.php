@@ -61,6 +61,14 @@ $ON = $argument["on"];
 ###########
 
 
+die (expand_text("
+  <ref>{{harvnb|Maggs|1992|p=97}}</ref>
+<ref>{{harvnb|Maggs|1992|p=97}}</ref>
+<ref name=Maggs97>{{harvnb|Maggs|1992|p=97}}</ref>
+<ref>{{harvnb|Maggs|1992|p=97}}</ref>
+
+") );
+
 #die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
 /*
 foreach ($argument["pages"] as $page) {
