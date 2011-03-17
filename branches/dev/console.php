@@ -62,10 +62,9 @@ $ON = $argument["on"];
 
 
 die (expand_text("
-  <ref>{{harvnb|Maggs|1992|p=97}}</ref>
-<ref>{{harvnb|Maggs|1992|p=97}}</ref>
-<ref name=Maggs97>{{harvnb|Maggs|1992|p=97}}</ref>
-<ref>{{harvnb|Maggs|1992|p=97}}</ref>
+{{cite journal | url = http://jstor.org/pss/1233456 }}
+
+{{cite journal | journal = Transactions of the American Mathematical Society | first = H. G. | last = Rice |title = Classes of Recursively Enumerable Sets and Their Decision Problems | year = 1953 | month = March | volume = 74 | issue = 2 | page = 358–366 | url = http://links.jstor.org/sici?sici=0002-9947%28195303%2974%3A2%3C358%3ACORESA%3E2.0.CO%3B2-N | accessdate = 2008-01-27 }}
 
 ") );
 

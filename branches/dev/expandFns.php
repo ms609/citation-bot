@@ -376,7 +376,7 @@ function get_identifiers_from_url() {
   
   // JSTOR
   if (strpos($url, "jstor.org") !== FALSE) {
-    if (preg_match("~\d+~", $url, $match)) {
+    if (preg_match("~(\d{6,})$|(\d{6,})[^\d%\-]~", $url, $match)) {
       rename_parameter("url", "jstor", $match[0]);
     }
   } else {
