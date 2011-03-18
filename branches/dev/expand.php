@@ -187,7 +187,7 @@ function expand_text ($original_code,
   $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc"))));
   echo "\n Making some common replacements. ";
 
-  $new_code = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
+  $new_code = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-X]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
       preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
       preg_replace
                   ("~(\|\s*)id(\s*=[^\|]*)(DOI:?\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","$1doi$2$5$4$6",
@@ -482,7 +482,7 @@ function expand_text ($original_code,
       // Comments have been replaced by placeholders; we'll restore them later.
 
       // Replace ids with appropriately formatted parameters
-      $c = preg_replace("~\bid(\s*=\s*)(isbn\s*)?(\d[\-\d ]{9,})~i","isbn$1$3",
+      $c = preg_replace("~\bid(\s*=\s*)(isbn\s*)?(\d[\-\dX ]{9,})~i","isbn$1$3",
         preg_replace("~(isbn\s*=\s*)isbn\s?=?\s?(\d\d)~i","$1$2",
         preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$cit_i+1]))); // Replaces isbn: with isbn =
       #$noComC = preg_replace("~<!--[\s\S]*-->~U", "", $c);
