@@ -392,7 +392,9 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
     }
     ifNullSet("journal", $crossRef->journal_title);
     ifNullSet("volume", $crossRef->volume);
-    if ((integer) $crossRef->issue > 0) {
+    if ((integer) $crossRef->issue > 1) {
+    // "1" may refer to a journal without issue numbers,
+    //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
       ifNullSet("issue", $crossRef->issue);
     }
     if (!is("page")) ifNullSet("pages", $crossRef->first_page

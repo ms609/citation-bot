@@ -61,11 +61,15 @@ $ON = $argument["on"];
 ###########
 
 
-die (expand_text("{{cite journal
-  |  volume =  161
-  |  pages =  L77
-  |  year =  1970
- }}
+die (expand_text("{{ cite journal | journal=Annual Review of Fluid Mechanics
+  | volume=23 | pages=159–177 | year=1991 | doi=10.1146/annurev.fl.23.010191.001111
+  | title=Exact solutions of the steady-state Navier-Stokes equations | first=C. Y. | last=Wang }}
+
+") );
+
+die (expand_text("*{{cite journal | journal=Annual Review of Fluid Mechanics | volume=20 | issue=1 | pages=225–256
+  | year=1988 | doi=10.1146/annurev.fl.20.010188.001301
+  | title=Hamiltonian Fluid Mechanics | author=R. Salmon}}
 
 ") );
 
