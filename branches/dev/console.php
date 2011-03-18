@@ -61,10 +61,14 @@ $ON = $argument["on"];
 ###########
 
 
-die (expand_text("
-{{cite journal | url = http://jstor.org/pss/1233456 }}
-
-{{cite journal | journal = Transactions of the American Mathematical Society | first = H. G. | last = Rice |title = Classes of Recursively Enumerable Sets and Their Decision Problems | year = 1953 | month = March | volume = 74 | issue = 2 | page = 358–366 | url = http://links.jstor.org/sici?sici=0002-9947%28195303%2974%3A2%3C358%3ACORESA%3E2.0.CO%3B2-N | accessdate = 2008-01-27 }}
+die (expand_text("{{cite journal
+ | author = Edwards, D., Fanning, U.
+ | year = 1985
+ | title = Evolution and environment in the late Silurian-early Devonian: the rise of the pteridophytes.
+ | journal = Philosophical Transactions of the Royal Society London
+ | volume = B 309
+ | pages = 147–165
+ }}
 
 ") );
 
