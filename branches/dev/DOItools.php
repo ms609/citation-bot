@@ -411,7 +411,10 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
 }
 
 function getDataFromArxiv($a) {
-  $xml = simplexml_load_file( "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a");
+  $xml = simplexml_load_string(
+          preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a"))
+          );
+  #$xml = simplexml_load_file( "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a");
 	if ($xml) {
 		global $p;
 		foreach ($xml->entry->author as $auth) {
@@ -431,10 +434,13 @@ function getDataFromArxiv($a) {
         }
       }
 		}
-		ifNullSet("title", (string)$xml->entry->title);
+    ifNullSet("doi", (string)$xml->entry->arxivdoi);
+    ifNullSet("journal", preg_replace("~,?\s+\d{4}~", "", (string)$xml->entry->arxivjournal_ref));
+    ifNullSet("title", (string)$xml->entry->title);
 		ifNullSet("class", (string)$xml->entry->category["term"]);
 		ifNullSet("author", substr($authors, 2));
 		ifNullSet("year", date("Y", strtotime((string)$xml->entry->published)));
+    
 		return true;
 	}
 	return false;

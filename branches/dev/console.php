@@ -61,13 +61,8 @@ $ON = $argument["on"];
 ###########
 
 
-die (expand_text("{{cite journal
- | author = Edwards, D., Fanning, U.
- | year = 1985
- | title = Evolution and environment in the late Silurian-early Devonian: the rise of the pteridophytes.
- | journal = Philosophical Transactions of the Royal Society London
- | volume = B 309
- | pages = 147–165
+die (expand_text("{{cite arxiv
+  | eprint = 1010.3003
  }}
 
 ") );
