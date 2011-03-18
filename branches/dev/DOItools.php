@@ -410,6 +410,30 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
   return $crossRef;
 }
 
+function get_data_from_adsabs() {
+  global $p;
+  $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
+  if (is("bibcode")) {
+    $xml = simplexml_load_file($url_root . "bibcode=" . $p["bibcode"][0]);
+  }
+  if ($xml["retrieved"] == 1) {
+    ifNullSet("doi", (string) $xml->record->DOI);
+    ifNullSet("bibcode", (string) $xml->record->bibcode);
+    ifNullSet("title", (string) $xml->record->title);
+    foreach ($xml->record->author as $author) {
+      ifNullSet("author" . ++$i, $author);
+    }
+    $journal_string = explode(",", (string) $xml->record->journal);
+    ifNullSet("journal", $journal_string[0]);
+    ifNullSet("volume", (string) $xml->record->volume);
+    ifNullSet("year", preg_replace("~\D~", "", (string) $xml->record->pubdate));
+    ifNullSet("pages", (string) $xml->record->page);
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function getDataFromArxiv($a) {
   $xml = simplexml_load_string(
           preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a"))

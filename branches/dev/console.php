@@ -61,8 +61,8 @@ $ON = $argument["on"];
 ###########
 
 
-die (expand_text("{{cite arxiv
-  | eprint = 1010.3003
+die (expand_text("{{cite journal
+  | bibcode = 1970ApJ...161L..77K
  }}
 
 ") );

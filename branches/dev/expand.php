@@ -1035,6 +1035,7 @@ echo "
 
 #####################################
 //
+        
 if (is('doi')) {
 if (!nothingMissing($journal)) {
   expand_from_doi($crossRef, $editing_cite_doi_template);
@@ -1049,18 +1050,24 @@ echo "
 //
 #####################################
 
-
-          //Try CrossRef
-          echo "\n - Checking CrossRef database... ";
-          $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
-                                  trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
-                                  $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
-          if ($crossRef) {
-            $p["doi"][0] = $crossRef->doi;
-            echo "Match found: " . $p["doi"][0];
-          } else {
-            echo "no match.";
+          
+          // Try AdsAbs
+          get_data_from_adsabs();
+          
+          if (!isset($p["doi"][0])) {
+            //Try CrossRef
+            echo "\n - Checking CrossRef database... ";
+            $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
+                                    trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
+                                    $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+            if ($crossRef) {
+              $p["doi"][0] = $crossRef->doi;
+              echo "Match found: " . $p["doi"][0];
+            } else {
+              echo "no match.";
+            }
           }
+
 
           //Try URL param
           if (!isset($p["doi"][0])) {
