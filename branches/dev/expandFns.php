@@ -402,7 +402,7 @@ function get_identifiers_from_url() {
     } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
       //ARXIV
         rename_parameter("url", "arxiv", $match[1]);
-    } else if (strpos(preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
+    } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
       rename_parameter('url', 'pmid', $match[1]);
     }
   }
