@@ -62,7 +62,9 @@ $ON = $argument["on"];
 
 
 die (expand_text("{{cite journal
-  | bibcode = 1970ApJ...161L..77K
+  |  volume =  161
+  |  pages =  L77
+  |  year =  1970
  }}
 
 ") );

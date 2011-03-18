@@ -415,6 +415,18 @@ function get_data_from_adsabs() {
   $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
   if (is("bibcode")) {
     $xml = simplexml_load_file($url_root . "bibcode=" . $p["bibcode"][0]);
+  } elseif (is("doi")) {
+    $xml = simplexml_load_file($url_root . "doi=" . $p["doi"][0]);
+  } elseif (is("title")) {
+    $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $p["title"][0] . '"'));
+  }
+  if ($xml["retrieved"] != 1) {
+    // try partial search using bibcode components:
+    $xml = simplexml_load_file($url_root
+            . "year=" . $p["year"][0]
+            . "&volume=" . $p["volume"][0]
+            . "&page=" . ($p["pages"] ? $p["pages"][0] : $p["page"][0])
+            );
   }
   if ($xml["retrieved"] == 1) {
     ifNullSet("doi", (string) $xml->record->DOI);
@@ -426,6 +438,7 @@ function get_data_from_adsabs() {
     $journal_string = explode(",", (string) $xml->record->journal);
     ifNullSet("journal", $journal_string[0]);
     ifNullSet("volume", (string) $xml->record->volume);
+    ifNullSet("issue", (string) $xml->record->issue);
     ifNullSet("year", preg_replace("~\D~", "", (string) $xml->record->pubdate));
     ifNullSet("pages", (string) $xml->record->page);
     return true;
