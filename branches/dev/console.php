@@ -61,10 +61,7 @@ $ON = $argument["on"];
 ###########
 
 die (expand_text("{{Cite journal
-  | id = {{JSTOR|sici=0093-0334(198907%2F08)19%3A4%3C19%3AALWAOT%3E2.0.CO%3B2-B}}
-To reference a journal itself, use the ISSN:
-
-{{JSTOR|issn=00930334}}
+  | id = {{LCCN|as99|00|123}}
 }}
 
 ") );

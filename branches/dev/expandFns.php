@@ -445,7 +445,9 @@ function id_to_parameters() {
         print "\n    - No match found for $content[0].";
     }
   }
-  $p["id"][0] = $id;
+  if (trim($id)) {
+    $p["id"][0] = $id;
+  }
 }
 
 function get_identifiers_from_url() {
