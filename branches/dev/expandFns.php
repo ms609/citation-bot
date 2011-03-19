@@ -395,25 +395,33 @@ function id_to_parameters() {
         }
         $id = str_replace($match[0][$i], "", $id);
         break;
-      case "bibcode":
-        // label / 2 can be ignored
       case "rfcurl":
         $identifier_parameter = "rfc";
-        break;
+      case "asin":
+        if ($parameters["country"]) {
+          print "\n    - {{ASIN}} country parameter not supported: can't convert.";
+          break;
+        }
       case "oclc":
         if ($content[2]) {
-          print "\n    - OCLC has multiple parameters: can't convert.";
+          print "\n    - {{OCLC}} has multiple parameters: can't convert.";
           break;
         }
       case "ol":
         if ($parameters["author"]) {
+          print "\n    - {{OL}} author parameter not supported: can't convert.";
           break;
         }
-      case "jstor":
+      case "bibcode":
+      case "doi":
       case "isbn":
       case "issn":
-      case "doi":
       case "jfm":
+      case "jstor":
+        if ($parameters["sici"] || $parameters["issn"]) {
+          print "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
+          break;
+        }
       case "mr":
       case "osti":
       case "pmid":
