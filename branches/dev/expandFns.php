@@ -370,6 +370,8 @@ function id_to_parameters() {
   $id = $p["id"][0];
   if (trim($id)) {
     echo ("\n - Trying to convert ID parameter to parameterized identifiers.");
+  } else {
+    return false;
   }
 
   preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
@@ -447,6 +449,8 @@ function id_to_parameters() {
   }
   if (trim($id)) {
     $p["id"][0] = $id;
+  } else {
+    unset($p["id"]);
   }
 }
 

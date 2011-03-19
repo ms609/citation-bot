@@ -60,21 +60,8 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-die (expand_text("{{cite journal
-|last=BELL
-|first=W J
-|authorlink=
-|year=1964|month=July
-|title=The Court Martial Of Dr. William Shippen, Jr., 1780
-|journal=[[Journal of the history of medicine and allied sciences]]
-|volume=19
-|issue=
-|pages=218–38
-| publisher = | location =
-| pmid = 14193224
-| bibcode = | oclc =| id = | url = | language = | format = | accessdate = | laysummary = | laysource = | laydate = | quote =
-| doi = 10.1093/jhmas/XIX.3.218
- }}
+die (expand_text("{{Citation | last1=Berger | first1=Marcel | author1-link=Marcel Berger | last2=Gauduchon | first2=Paul | last3=Mazet | first3=Edmond | title=Le spectre d'une variété riemannienne | publisher=[[Springer-Verlag]] | location=Berlin, New York | series=Lecture Notes in Mathematics | doi=10.1007/BFb0064643
+ | id={{MR|0282313}} | year=1971 | volume=194}}
 
 ") );
 
