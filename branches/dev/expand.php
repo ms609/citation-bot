@@ -1263,7 +1263,6 @@ echo "
         if ($brokenDoi && !is("doi_brokendate") && !is("doi_inactivedate")) {
           set("doi_inactivedate", date("Y-m-d"));
           echo "\n\n $doi \n\n";
-          sleep(5);
         }
         ELSE if (!$brokenDoi) unset($p["doi_brokendate"]); unset($p["doi_inactivedate"]);
         echo $brokenDoi?" It isn't.":" It is.", "</p>";
