@@ -60,20 +60,10 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-
-die (expand_text("{{Cite book
-  | last = Brown
-  | first = Stephen I.
-  | authorlink =
-  | coauthors = Darach Turley
-  | title = Consumer Research: Postcards from the edge
-  | publisher = Routledge
-  |year=1997
-  | location =
-  | pages = 279
-  | url =
-  | doi =
-  | id =  ISBN 041515684X }}
+die (expand_text("{{Cite journal
+  | id = {{arxiv|archive=text|id=123445}}
+{{OL|blah=adgjn|id=18319A|author}}
+}}
 
 ") );
 

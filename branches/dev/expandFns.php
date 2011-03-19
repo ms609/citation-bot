@@ -364,9 +364,76 @@ function get_template_prefix($type) {
         : $type . "/");
 }
 
-function standardize_reference($reference) {
-  $whitespace = Array(" ", "\n", "\r", "\v", "\t");
-  return str_replace($whitespace, "", $reference);
+
+function id_to_parameters() {
+  global $p;
+  $id = $p["id"][0];
+  if (trim($id)) {
+    echo ("\n - Trying to convert ID parameter to parameterized identifiers.");
+  }
+
+  preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
+  
+  foreach ($match["content"] as $i => $content) {
+    $content = explode(pipePlaceholder, $content);
+    unset($parameters);
+    foreach($content as $fragment) {
+      $para = explode("=", $fragment);
+      if (trim($para[1])) {
+        $parameters[$para[0]] = $para[1];
+      }
+    }
+    switch(strtolower(trim($content[0]))) {
+      case "arxiv":
+        array_shift($content);
+        if ($parameters["id"]) {
+          ifNullSet("arxiv", ($parameters["archive"] ? $parameters["archive"] . "/" : "") . $parameters["id"]);
+        } else if ($content[1]) {
+          ifNullSet("arxiv", $content[0] . "/" . $content[1]);
+        } else {
+          ifNullSet("arxiv", implode(pipePlaceholder, $content));
+        }
+        $id = str_replace($match[0][$i], "", $id);
+        break;
+      case "bibcode":
+        // label / 2 can be ignored
+      case "rfcurl":
+        $identifier_parameter = "rfc";
+        break;
+      case "oclc":
+        if ($content[2]) {
+          print "\n    - OCLC has multiple parameters: can't convert.";
+          break;
+        }
+      case "ol":
+        if ($parameters["author"]) {
+          break;
+        }
+      case "jstor":
+      case "isbn":
+      case "issn":
+      case "doi":
+      case "jfm":
+      case "mr":
+      case "osti":
+      case "pmid":
+      case "pmc":
+      case "ssrn":
+      case "zbl":
+        if ($identifier_parameter) {
+          array_shift($content);
+        }
+        ifNullSet($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))), 
+                $parameters["id"] ? $parameters["id"] : $content[0]
+                );
+        $identifier_parameter = null;
+        $id = str_replace($match[0][$i], "", $id);
+        break;
+      default:
+        print "\n    - No match found for $content[0].";
+    }
+  }
+  $p["id"][0] = $id;
 }
 
 function get_identifiers_from_url() {
@@ -406,6 +473,13 @@ function get_identifiers_from_url() {
       rename_parameter('url', 'pmid', $match[1]);
     }
   }
+}
+
+
+
+function standardize_reference($reference) {
+  $whitespace = Array(" ", "\n", "\r", "\v", "\t");
+  return str_replace($whitespace, "", $reference);
 }
 
 // This function may need to be called twice; the second pass will combine <ref name="Name" /> with <ref name=Name />.
