@@ -395,6 +395,10 @@ function id_to_parameters() {
         }
         $id = str_replace($match[0][$i], "", $id);
         break;
+      case "lccn":
+        ifNullSet("lccn", $content[1] . $content[3]);
+        $id = str_replace($match[0][$i], "", $id);
+        break;
       case "rfcurl":
         $identifier_parameter = "rfc";
       case "asin":
