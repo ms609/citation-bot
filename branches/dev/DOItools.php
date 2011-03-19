@@ -512,7 +512,7 @@ function get_data_from_jstor($jid) {
     }
     ifNullSet("title", (string) str_replace("___", ":", $data->dc___title)) ;
     if (preg_match("~(.*),\s+Vol\.\s+([^,]+)(, No\. (\S+))?~", str_replace("___", ":", $data->dc___relation), $match)) {
-      ifNullSet("journal", $match[1]);
+      ifNullSet("journal", str_replace("___", ":", $match[1]));
       ifNullSet("volume", $match[2]);
       ifNullSet("issue", $match[4]);
       $handled_data = true;
@@ -526,7 +526,7 @@ function get_data_from_jstor($jid) {
         $handled_data = true;
       }
       if (preg_match("~JOURNAL___\s*([\w\d\s]+)~", $data->dc___relation, $match)) {
-        ifNullSet("journal", $match[1]);
+        ifNullSet("journal", str_replace("___", ":", $match[1]));
         $handled_data = true;
       }
     }
