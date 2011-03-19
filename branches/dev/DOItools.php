@@ -206,7 +206,7 @@ function jrTest($name) {
 function ifNullSet($param, $value) {
 	global $p;
   if (substr($param, strlen($param)-3, 1) > 0 || substr($param, strlen($param)-2) > 9) {
-      // The parameter is of 'fisrt101' or 'last10' format and adds nothing but clutter
+      // The parameter is of 'first101' or 'last10' format and adds nothing but clutter
       return false;
   }
 	switch ($param) {
@@ -394,7 +394,7 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
     if ((integer) $crossRef->issue > 1) {
     // "1" may refer to a journal without issue numbers,
     //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
-      ifNullSet("issue", trim((string) $crossRef->issue));
+      ifNullSet("issue", $crossRef->issue);
     }
     if (!is("page")) ifNullSet("pages", $crossRef->first_page
               . ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)
@@ -1004,9 +1004,9 @@ function useUnusedData()
                 $endnote_parameter = false;
             }
             if ($endnote_parameter && ifNullSet($endnote_parameter, substr($endnote_line, 1))) {
-              global $smartSum;
-              if (!strpos("Converted Endnote citation to WP format", $smartSum)) {
-                $smartSum .= "Converted Endnote citation to WP format. ";
+              global $auto_summary;
+              if (!strpos("Converted Endnote citation to WP format", $auto_summary)) {
+                $auto_summary .= "Converted Endnote citation to WP format. ";
               }
               $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
             }
@@ -1070,9 +1070,9 @@ function useUnusedData()
             if ($ris_parameter
                     && ifNullSet($ris_parameter, trim(implode($ris_part)))
                 ) {
-              global $smartSum;
-              if (!strpos("Converted RIS citation to WP format", $smartSum)) {
-                $smartSum .= "Converted RIS citation to WP format. ";
+              global $auto_summary;
+              if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
+                $auto_summary .= "Converted RIS citation to WP format. ";
               }
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
             }
