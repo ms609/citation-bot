@@ -880,9 +880,9 @@ function google_book_details ($gid) {
 }
 
 function findISBN($title, $auth=false){
-	global $isbnKey2;
+	global $isbnKey;
 	$title = trim($title); $auth=trim($auth);
-	$xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey2&index1=combined&value1=" . urlencode($title . " " . $auth));
+	$xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth));
 	if (false) dbg(array(
 		$title  => $author,
 		(string) $xml->BookList->BookData[$i]->Title => similar_text($xml->BookList->BookData[$i]->Title, $title),

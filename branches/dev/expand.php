@@ -142,7 +142,7 @@ function expand($page, // Title of WP page
 
   // These variables should change after the first edit
   $isbnKey = "3TUCZUGQ"; //This way we shouldn't exhaust theISBN key for on-demand users.
-  $isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
+  #$isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
   $edit_summary_end = " You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   return $new_code;
 }
@@ -154,7 +154,7 @@ function expand_text ($original_code,
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $p, $editInitiator, $edit_summaryStart, $initiatedBy, $edit_summary_end, $isbnKey, $isbnKey2, $slowMode, $html_output;
+  global $p, $editInitiator, $edit_summaryStart, $initiatedBy, $edit_summary_end,  $slowMode, $html_output;
 
   if ($html_output === -1) {
     ob_start();
