@@ -26,7 +26,7 @@ $slowMode = $argument["slow"] || $argument["slowmode"] || $argument["thorough"];
 $accountSuffix = '_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
-$editInitiator = '[Pu' . revisionID() . '&beta;]';
+$editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
 
 
@@ -59,7 +59,7 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-
+die($editInitiator . "\n");
 die (expand_text("{{Citation | last1=Berger | first1=Marcel | author1-link=Marcel Berger | last2=Gauduchon | first2=Paul | last3=Mazet | first3=Edmond | title=Le spectre d'une variété riemannienne | publisher=[[Springer-Verlag]] | location=Berlin, New York | series=Lecture Notes in Mathematics | doi=10.1007/BFb0064643
  | id={{MR|0282313}} | year=1971 | volume=194}}
 
