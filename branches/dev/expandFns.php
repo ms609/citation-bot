@@ -548,6 +548,14 @@ function get_identifiers_from_url() {
         rename_parameter("url", "arxiv", $match[1]);
     } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
       rename_parameter('url', 'pmid', $match[1]);
+    } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url , $match)) {
+      if ($match['domain'] == ".com") {
+        rename_parameter('url', 'asin', $match['id']);
+      } else {
+        $p["id"][0] .= " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
+        unset($p["url"]);
+        unset($p["accessdate"]);
+      }
     }
   }
 }
