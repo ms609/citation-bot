@@ -59,9 +59,10 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-die($editInitiator . "\n");
-die (expand_text("{{Citation | last1=Berger | first1=Marcel | author1-link=Marcel Berger | last2=Gauduchon | first2=Paul | last3=Mazet | first3=Edmond | title=Le spectre d'une variété riemannienne | publisher=[[Springer-Verlag]] | location=Berlin, New York | series=Lecture Notes in Mathematics | doi=10.1007/BFb0064643
- | id={{MR|0282313}} | year=1971 | volume=194}}
+die (expand_text("*{{cite journal | author=Kong Y, Flick MJ, Kudla AJ, Konieczny SF |title=Muscle LIM protein promotes myogenesis by enhancing the activity of MyoD.
+  |journal=Mol. Cell. Biol. |volume=17
+  |issue= 8 |pages= 4750–60 |year= 1997
+  |pmid= 9234731 |doi= | pmc=232327 }}
 
 ") );
 

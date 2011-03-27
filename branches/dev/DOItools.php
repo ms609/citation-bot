@@ -420,6 +420,11 @@ function get_data_from_adsabs() {
     $xml = simplexml_load_file($url_root . "doi=" . $p["doi"][0]);
   } elseif (is("title")) {
     $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $p["title"][0] . '"'));
+    if (levenshtein(str_replace(array(" ", "\n", "\r"), "", (strtolower($xml->record->title)))
+                   , str_replace(array(" ", "\n", "\r"), "", (strtolower($p["title"][0])))) > 3) {
+      echo "\n   Similar title not found in database";
+      return false;
+    }
   }
   if ($xml["retrieved"] != 1) {
     // try partial search using bibcode components:

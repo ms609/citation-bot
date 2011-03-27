@@ -639,7 +639,8 @@ function name_references($page_code) {
 }
 
 function rename_references($page_code) {
-  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)ref_?[ab]?(?:[a-z]|utogenerated)?(?P=quote)\s*>)[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
+  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-Z])?(?P=quote)\s*>)"
+                    . "[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
     $countRefs = count($refs[0]);
     for ($i = 0; $i < $countRefs; ++$i) {
       $ref_name = get_name_for_reference($refs[0][$i], $page_code);
