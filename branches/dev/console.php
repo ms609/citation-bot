@@ -60,21 +60,7 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-die (expand_text("*{{cite journal
-|last=BELL
-|first=W J
-|authorlink=
-|year=1964|month=July
-|title=The Court Martial Of Dr. William Shippen, Jr., 1780
-|journal=[[Journal of the history of medicine and allied sciences]]
-|volume=19
-|issue=
-|pages=218–38
-| publisher = | location =
-| pmid = 14193224
-| bibcode = | oclc =| id = | url = | language = | format = | accessdate = | laysummary = | laysource = | laydate = | quote =
-| doi = 10.1093/jhmas/XIX.3.218
- }}
+die (expand_text("*{{cite arxiv |eprint=math/0409035}}
  
 ") );
 

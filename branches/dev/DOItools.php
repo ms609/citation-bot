@@ -420,17 +420,16 @@ function get_data_from_adsabs() {
     $xml = simplexml_load_file($url_root . "doi=" . $p["doi"][0]);
   } elseif (is("title")) {
     $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $p["title"][0] . '"'));
-
     $inTitle = str_replace(array(" ", "\n", "\r"), "", (strtolower($xml->record->title)));
     $dbTitle = str_replace(array(" ", "\n", "\r"), "", (strtolower($p["title"][0])));
     if (
          (strlen($inTitle) > 254 || strlen(dbTitle) > 254) 
             ? strlen($inTitle) != strlen($dbTitle) || similar_text($inTitle, $dbTitle)/strlen($inTitle) < 0.98
-            : levenshtein($inTitle, $dbTitle) > 3) {
+            : levenshtein($inTitle, $dbTitle) > 3
+        ) {
       echo "\n   Similar title not found in database";
       return false;
     }
-    print_r($xml);
   }
   if ($xml["retrieved"] != 1 && is("journal")) {
     // try partial search using bibcode components:
@@ -491,11 +490,23 @@ function getDataFromArxiv($a) {
       }
 		}
     ifNullSet("doi", (string)$xml->entry->arxivdoi);
-    ifNullSet("journal", preg_replace("~,?\s+\d{4}~", "", (string)$xml->entry->arxivjournal_ref));
     ifNullSet("title", (string)$xml->entry->title);
 		ifNullSet("class", (string)$xml->entry->category["term"]);
 		ifNullSet("author", substr($authors, 2));
-		ifNullSet("year", date("Y", strtotime((string)$xml->entry->published)));
+    print_r($xml->entry->arxivjournal_ref);
+    if($xml->entry->arxivjournal_ref) {
+      $journal_data = (string) $xml->entry->arxivjournal_ref;
+      if (preg_match("~^(?P<journal>.*?)\s*(?P<vol>\d*)\s*\((?P<year>[12]\d{3})\)\D*(?P<pages>\d*-*\d*)~", $journal_data, $match)) {
+        ifNullSet("year", $match["year"]);
+        ifNullSet("volume", $match["vol"]);
+        ifNullSet("pages", str_replace("--", "-", $match["pages"]));
+        ifNullSet("journal", $match["journal"]);
+      } else {
+        ifNullSet("journal", preg_replace("~,?\s+\d{4}~", "", $journal_data));
+      }
+    } else {
+      ifNullSet("year", date("Y", strtotime((string)$xml->entry->published)));
+    }
     
 		return true;
 	}

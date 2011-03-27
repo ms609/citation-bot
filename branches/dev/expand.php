@@ -367,6 +367,7 @@ function expand_text ($original_code,
       if (is("eprint")
           && !(is("title") && is("author") && is("year") && is("version"))) {
           $p["eprint"][0] = str_ireplace("arXiv:", "", $p["eprint"][0]);
+          echo " * Getting data from arXiv " . $p["eprint"][0];
           if (!getDataFromArxiv($p["eprint"][0]) && is("class")) {
             getDataFromArxiv($p["class"][0] . "/" . $p["eprint"][0]);
           }
