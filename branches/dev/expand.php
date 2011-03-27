@@ -298,30 +298,10 @@ function expand_text ($original_code,
                 ?"Changing to Arxiv. "
                 :"Keeping as cite web. ")
               ) . "\n";
-      foreach ($p as $oP){
-        $pipe = $oP[1]?$oP[1]:null;
-        $equals = $oP[2]?$oP[2]:null;
-        if ($pipe) break;
-      }
-      if (!$pipe) {
-         $pipe = "\n | ";
-      }
-      if (!$equals) {
-        $equals = " = ";
-      }
-      foreach($p as $param => $v) {
-        if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
-        if (is($param)) $pEnd[$param] = $v[0];
-      }
+      $cText .= reassemble_citation($p); // This also populates $additions and $changes
       $last_p = $p;
       $p = null;
-      if ($pEnd)
-        foreach ($pEnd as $param => $value)
-          if (!$pStart[$param]) {
-            $additions[$param] = true;
-          } elseif ($pStart[$param] != $value) {
-            $changes[$param] = true;
-          }
+      
       $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($change_to_journal?"cite journal":($change_to_arxiv?"cite arxiv":$citation[$cit_i+2])) . "$cText{$citation[$cit_i+4]}}}":"");
 #				$new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
       $cText = null;
@@ -428,32 +408,11 @@ function expand_text ($original_code,
       $endtime = time();
       $timetaken = $endtime - $started_citation_at;
       echo "* Citation assessed in $timetaken secs. " . ($change_to_journal?"Changing to Cite Journal. ":"Keeping as cite arXiv") . "\n";
-      foreach ($p as $oP){
-        $pipe=$oP[1]?$oP[1]:null;
-        $equals=$oP[2]?$oP[2]:null;
-        if ($pipe) break;
-      }
-      if (!$pipe) {
-         $pipe = "\n | ";
-      }
-      if (!$equals) {
-        $equals = " = ";
-      }
-      foreach($p as $param => $v) {
-        if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
-        if (is($param)) $pEnd[$param] = $v[0];
-      }
+      $cText .= reassemble_citation($p); // This also populates $additions and $changes
+
       $last_p = $p;
       $p = null;
-      if ($pEnd)
-        foreach ($pEnd as $param => $value)
-          if (!$pStart[$param]) {
-            $additions[$param] = true;
-          } elseif ($pStart[$param] != $value) {
-            $changes[$param] = true;
-          }
       $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($change_to_journal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
-#				$new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
       $cText = null;
       $crossRef = null;
     }
@@ -639,30 +598,10 @@ function expand_text ($original_code,
       $timetaken = $endtime - $started_citation_at;
       echo "\n  Book reference assessed in $timetaken secs.";
 
-      // Get a format for spacing around the pipe or equals
-      foreach ($p as $oP){
-        $pipe = $oP[1] ? $oP[1] : null;
-        $equals = $oP[2] ? $oP[2] : null;
-        if ($pipe) break;
-      }
-      if (!$pipe) $pipe = "\n | ";
-      if (!$equals) $equals = " = ";
-      foreach($p as $param => $v) {
-        if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
-        if (is($param)) $pEnd[$param] = $v[0];
-      }
+      $cText .= reassemble_citation($p); // This also populates $additions and $changes
       $last_p = $p;
       $p = null;
-      if ($pEnd) {
-        foreach ($pEnd as $param => $value) {
-          if (!$pStart[$param]) {
-            $additions[$param] = true;
-          } elseif ($pStart[$param] != $value) {
-            $changes[$param] = true;
-          }
-        }
-      }
-
+      
       // Convert into citation or cite journal, as appropriate
       if ($citation_template_dominant) {
         $citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
@@ -1359,39 +1298,8 @@ echo "
         }
       }
 
-      // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
-      foreach ($p as $oP){
-        $pipe = $oP[1]?$oP[1]:null;
-        $equals = $oP[2]?$oP[2]:null;
-        if ($pipe) break;
-      }
-      if (!$pipe) $pipe = "\n | ";
-      if (!$equals) $equals = " = ";
 
-
-      // Sort parameters and copy into $pEnd
-      echo "\n (sorting parameters)";
-      uasort($p, "bubble_p");
-
-      foreach($p as $param => $v) {
-        if ($param) {
-          $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
-        }
-        if (is($param)) {
-          $pEnd[$param] = $v[0];
-        }
-      }
-      if ($pEnd) {
-        foreach ($pEnd as $param => $value) {
-          if (!$pStart[$param]) {
-            $additions[$param] = true;
-          }
-          elseif ($pStart[$param] != $value) {
-            $changes[$param] = true;
-          }
-        }
-      }
-
+      $cText .= reassemble_citation($p, true); // This also populates $additions and $changes
 
       //And we're done!
       $endtime = time();

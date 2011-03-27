@@ -210,6 +210,48 @@ function write($page, $data, $edit_summary = "Bot edit") {
   }
 }
 
+function reassemble_citation($p, $sort = false) {
+  global $pStart, $additions, $changes;
+  // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
+  foreach ($p as $oP) {
+    $pipe = $oP[1]?$oP[1]:null;
+    $equals = $oP[2]?$oP[2]:null;
+    if ($pipe) break;
+  }
+  if (!$pipe) {
+     $pipe = "\n | ";
+  }
+  if (!$equals) {
+    $equals = " = ";
+  }
+  if ($sort) {
+    echo "\n (sorting parameters)";
+    uasort($p, "bubble_p");
+  }
+
+  foreach($p as $param => $v) {
+    if ($param) {
+      $cText .= ($v[1]?$v[1]:$pipe)
+                . $param
+                . ($v[2]?$v[2]:$equals)
+                . str_replace(array(pipePlaceholder, "\r", "\n"), array("|", "", " "), trim($v[0]));
+    }
+    if (is($param)) {
+      $pEnd[$param] = $v[0];
+    }
+  }
+  if ($pEnd) {
+    foreach ($pEnd as $param => $value){
+      if (!$pStart[$param]) {
+        $additions[$param] = true;
+      } elseif ($pStart[$param] != $value) {
+        $changes[$param] = true;
+      }
+    }
+  }
+  return $cText;
+}
+
 function mark_broken_doi_template($article_in_progress, $oDoi) {
   if (getRawWikiText($article_in_progress)) {
     global $editInitiator;
@@ -461,7 +503,13 @@ function get_identifiers_from_url() {
   
   // JSTOR
   if (strpos($url, "jstor.org") !== FALSE) {
-    if (!strpos($url, "sici") && preg_match("~(\d{6,})$|(\d{6,})[^\d%\-]~", $url, $match)) {
+    if (strpos($url, "sici")) {
+      #print get_final_url($url);
+      #print_r(get_headers($url));
+      #print_r(get_meta_tags($url));
+      #TODO!! get redirect destination of sici URL
+      #die();
+    } elseif (preg_match("~(\d{6,})$|(\d{6,})[^\d%\-]~", $url, $match)) {
       rename_parameter("url", "jstor", $match[0]);
     }
   } else {

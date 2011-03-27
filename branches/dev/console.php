@@ -59,26 +59,20 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
+/*
 die (expand_text("*
 {{cite journal
  | last       =
  | first      =
  | authorlink =
  | coauthors  =
- | year       = 1932-33
- | month      =
- | title      =
- | journal    = Proceedings of the Society for Psychical Research
- | volume     = 41
- | issue      =
- | pages      = 313
  | id         =
- | url        =
+ | url        = http://links.jstor.org/sici?sici=0021-9002(197008)7%3A2%3C508%3AOAR%3E2.0.CO%3B2-Y
  | accessdate = 1 April 2008 |quote= }}
 
 ") );
 
-
+*/
 #die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
 /*
 foreach ($argument["pages"] as $page) {
