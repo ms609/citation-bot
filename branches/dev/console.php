@@ -60,8 +60,9 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-die (expand_text("*{{cite arxiv |eprint=math/0409035}}
- 
+die (expand_text("*{{cite arxiv|eprint=astro-ph/0002510|author1=Alcock|author2=Allsman|author3=Alves|author4=Axelrod|author5=Becker|author6=Bennett|author7=Cook|author8=Drake|author9=Freeman|title=The MACHO project: Microlensing Optical Depth towards the Galactic Bulge
+
+from Difference Image Analysis|class=astro-ph|year=2000}}
 ") );
 
 

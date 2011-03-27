@@ -373,6 +373,12 @@ function expand_text ($original_code,
           }
       }
 
+      if (is ("doi") && !is("journal")) {
+        echo "\n    * Fill in journal from CrossRef?";
+        $crossRef = crossRefData($p["doi"][0]);
+        expand_from_doi($crossRef);
+      }
+
       // Now wikify some common formatting errors - i.e. tidy up!
       if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);
 

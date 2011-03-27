@@ -469,7 +469,6 @@ function getDataFromArxiv($a) {
   $xml = simplexml_load_string(
           preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a"))
           );
-  #$xml = simplexml_load_file( "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a");
 	if ($xml) {
 		global $p;
 		foreach ($xml->entry->author as $auth) {
@@ -493,7 +492,6 @@ function getDataFromArxiv($a) {
     ifNullSet("title", (string)$xml->entry->title);
 		ifNullSet("class", (string)$xml->entry->category["term"]);
 		ifNullSet("author", substr($authors, 2));
-    print_r($xml->entry->arxivjournal_ref);
     if($xml->entry->arxivjournal_ref) {
       $journal_data = (string) $xml->entry->arxivjournal_ref;
       if (preg_match("~^(?P<journal>.*?)\s*(?P<vol>\d*)\s*\((?P<year>[12]\d{3})\)\D*(?P<pages>\d*-*\d*)~", $journal_data, $match)) {
