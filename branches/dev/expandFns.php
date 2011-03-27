@@ -540,6 +540,9 @@ function get_identifiers_from_url() {
         )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
     if (preg_match($bibcode_regexp, urldecode($url), $bibcode)) {
       rename_parameter("url", "bibcode", urldecode($bibcode[1]));
+    } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+            . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $match)) {
+      rename_paramter("url", "pmc", $match[1]);
     } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
       //ARXIV
         rename_parameter("url", "arxiv", $match[1]);
