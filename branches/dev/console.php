@@ -59,10 +59,22 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-die (expand_text("*{{cite journal | author=Kong Y, Flick MJ, Kudla AJ, Konieczny SF |title=Muscle LIM protein promotes myogenesis by enhancing the activity of MyoD.
-  |journal=Mol. Cell. Biol. |volume=17
-  |issue= 8 |pages= 4750–60 |year= 1997
-  |pmid= 9234731 |doi= | pmc=232327 }}
+die (expand_text("*
+{{cite journal
+ | last       =
+ | first      =
+ | authorlink =
+ | coauthors  =
+ | year       = 1932-33
+ | month      =
+ | title      =
+ | journal    = Proceedings of the Society for Psychical Research
+ | volume     = 41
+ | issue      =
+ | pages      = 313
+ | id         =
+ | url        =
+ | accessdate = 1 April 2008 |quote= }}
 
 ") );
 

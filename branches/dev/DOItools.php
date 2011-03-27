@@ -426,13 +426,20 @@ function get_data_from_adsabs() {
       return false;
     }
   }
-  if ($xml["retrieved"] != 1) {
+  if ($xml["retrieved"] != 1 && is("journal")) {
     // try partial search using bibcode components:
     $xml = simplexml_load_file($url_root
             . "year=" . $p["year"][0]
             . "&volume=" . $p["volume"][0]
             . "&page=" . ($p["pages"] ? $p["pages"][0] : $p["page"][0])
             );
+    $journal_string = explode(",", (string) $xml->record->journal);
+    $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
+    if (strpos(strtolower(preg_replace($journal_fuzzyer, "", $p["journal"][0])),
+            strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))) === FALSE) {
+      echo "\n   Match for pagination but database journal \"{$journal_string[0]}\" didn't match \"journal = {$p["journal"][0]}\".";
+      return false;
+    }
   }
   if ($xml["retrieved"] == 1) {
     ifNullSet("doi", (string) $xml->record->DOI);
@@ -572,16 +579,15 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 		if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
 		if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
 		if ($author) $url .= "&auauthor=" . urlencode($author);
-		if ($year) $url .= "&date=" . urlencode($year);
+		if ($year) $url .= "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year));
 		if ($volume) $url .= "&volume=" . urlencode($volume);
 		if ($startpage) $url .= "&spage=" . urlencode($startpage);
 		if ($endpage > $startpage) $url .= "&epage=" . urlencode($endpage);
     if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef. ";
-		if ($result["status"] == "resolved") {
+    if ($result["status"] == "resolved") {
       return $result;
     }
   }
-  //die ("\n\n" . $url . "\n\n");
 	if ($url1) {
 		$url = "http://www.crossref.org/openurl/?url_ver=Z39.88-2004&req_dat=$crossRefId&rft_id=info:http://" . urlencode(str_replace(Array("http://", "&noredirect=true"), Array("", ""), urldecode($url1)));
 		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef via URL. ";
