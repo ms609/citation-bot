@@ -59,20 +59,13 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-/*
-die (expand_text("*
-{{cite journal
- | last       =
- | first      =
- | authorlink =
- | coauthors  =
- | id         =
- | url        = http://links.jstor.org/sici?sici=0021-9002(197008)7%3A2%3C508%3AOAR%3E2.0.CO%3B2-Y
- | accessdate = 1 April 2008 |quote= }}
 
+die (expand_text("{{Citation
+  | last=Brown|first=Lynn|publication-date =28 May 2008
+  | title =Crusoe| publisher = [[NBC]] | url =http://www.nbc.com/Crusoe/| accessdate =08/02/2008}}
 ") );
 
-*/
+
 #die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
 /*
 foreach ($argument["pages"] as $page) {

@@ -420,11 +420,17 @@ function get_data_from_adsabs() {
     $xml = simplexml_load_file($url_root . "doi=" . $p["doi"][0]);
   } elseif (is("title")) {
     $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $p["title"][0] . '"'));
-    if (levenshtein(str_replace(array(" ", "\n", "\r"), "", (strtolower($xml->record->title)))
-                   , str_replace(array(" ", "\n", "\r"), "", (strtolower($p["title"][0])))) > 3) {
+
+    $inTitle = str_replace(array(" ", "\n", "\r"), "", (strtolower($xml->record->title)));
+    $dbTitle = str_replace(array(" ", "\n", "\r"), "", (strtolower($p["title"][0])));
+    if (
+         (strlen($inTitle) > 254 || strlen(dbTitle) > 254) 
+            ? strlen($inTitle) != strlen($dbTitle) || similar_text($inTitle, $dbTitle)/strlen($inTitle) < 0.98
+            : levenshtein($inTitle, $dbTitle) > 3) {
       echo "\n   Similar title not found in database";
       return false;
     }
+    print_r($xml);
   }
   if ($xml["retrieved"] != 1 && is("journal")) {
     // try partial search using bibcode components:
