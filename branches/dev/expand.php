@@ -1033,7 +1033,7 @@ echo "
                         ? ("\n - Getting data from <a href=\"" . $p["url"][0] . "\">JSTOR record</a>.")
                         : "\n - Querying JSTOR record from URL " . $jid[0];
                   get_data_from_jstor("10.2307/$jid[1]");
-                } elseif (substr($p["url"][0], -4) == ".pdf") {
+                } elseif (substr(preg_replace("~<!--.*-->~", "", $p["url"][0]), -4) == ".pdf") {
                   echo $html_output
                         ? ("\n - Avoiding <a href=\"" . $p["url"][0] . "\">PDF URL</a>. <br>")
                         : "\n - Avoiding PDF URL {$p["url"][0]}";
@@ -1042,7 +1042,7 @@ echo "
                   echo $html_output
                         ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
                         : "\n - Trying URL {$p["url"][0]}";
-                  $doi = findDoi($p["url"][0]);
+                  $doi = findDoi(preg_replace("~<!--.*-->~", "", $p["url"][0]));
                   if ($doi) {
                     echo " found doi $doi";
                     $p["doi"][0] = $doi;
