@@ -231,12 +231,13 @@ function reassemble_citation($p, $sort = false) {
 
   foreach($p as $param => $v) {
     if ($param) {
+      print $param; print_r($v);
       $this_equals = ($v[2]?$v[2]:$equals);
-      if (preg_match("~[\r\n]~", $this_equals)) {
+      if (trim($v[0]) && preg_match("~[\r\n]~", $this_equals)) {
         $this_equals = preg_replace("~[\r\n]+$~", "", $this_equals);
         $nline = "\r\n";
       } else {
-        $nline = "";
+        $nline = null;
       }
       $cText .= ($v[1]?$v[1]:$pipe)
                 . $param

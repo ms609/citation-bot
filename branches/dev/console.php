@@ -60,9 +60,15 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-die (expand_text("*{{citation|last=Fitzpatrick|first=Liam
-  |title=Farookh Bulsara|series=60 Years of Asian Heroes|periodical=Time Magazine, Asia Edition|volume=168|issue=21|publication-date=13 November 2006|publisher=Time Asia
-  |location=Hong Kong|url=http://time.com/time/asia/2006/heroes/at_bulsara.html<!-- yes, web article is dated 5 November 2006 -->}}.
+die (expand_text("*{{Citation
+  | last = Hodges
+  | first = Ann
+  | author-link =
+  | title = ABC gets perfect series from two \"Perfect Strangers\"
+  | newspaper = Houston Chronicle
+  | pages =
+  | date = August 3, 1986
+  | url = }}.
         
 ") );
 
