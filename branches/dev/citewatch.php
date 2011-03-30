@@ -199,7 +199,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         } else {
           print "No DOI found!";
           // No DOI found.  Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
-          print create_page("pmid" => $oPmid) ? " - Created page at PMID $oPmid" : " Couldn't create page at PMID $oPmid";
+          print create_page("pmid", $oPmid) ? " - Created page at PMID $oPmid" : " Couldn't create page at PMID $oPmid";
         }
       break;
       case 0:
@@ -253,8 +253,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
       print ".";
     } else {
       echo "\n   > Creating new page at $oDoi: ";
-      $p["doi"][0] = $oDoi; // Required for expand_from_doi
-      if (expand_from_doi($crossRef, true, true)) {
+      if (get_data_from_doi($oDoi, true, true)) {
         echo create_page("doi", $oDoi) ? "Done. " : "Failed. )-: ";
       } else {
         echo "Invalid DOI. Aborted operation.\n  > Marking DOI as broken:";

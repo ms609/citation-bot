@@ -375,8 +375,7 @@ function expand_text ($original_code,
 
       if (is ("doi") && !is("journal")) {
         echo "\n    * Fill in journal from CrossRef?";
-        $crossRef = crossRefData($p["doi"][0]);
-        expand_from_doi($crossRef);
+        get_data_from_doi($p["doi"][0]);
       }
 
       // Now wikify some common formatting errors - i.e. tidy up!
@@ -985,7 +984,7 @@ echo "
         
 if (is('doi')) {
 if (!nothingMissing($journal)) {
-  expand_from_doi($crossRef, $editing_cite_doi_template);
+  expand_from_crossref($crossRef, $editing_cite_doi_template);
 }
 echo "
 2: DOI already present";
@@ -1077,7 +1076,7 @@ echo "
         } else {
           echo "\n4: Expand citation";
           if (is("doi")) {
-            $crossRef = expand_from_doi($crossRef, $editing_cite_doi_template);
+            $crossRef = expand_from_crossref($crossRef, $editing_cite_doi_template);
           } else {
             echo "\n - No DOI; can't check CrossRef";
             $crossRef = null;

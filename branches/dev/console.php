@@ -60,12 +60,11 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-die (expand_text("{{citation
- | last1 = Klein | first1 = Hauke
- | last2 = Margraf | first2 = Marian
- | title = On the linear intersection number of graphs
- | year = 2003
- | id = {{arxiv | math.CO | 0305073}}}}.
+die (expand_text("{{Cite journal
+{{Cite journal
+| doi = 10.1078/1616-5047-00175
+
+}}.
  
 ") );
 
