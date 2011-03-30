@@ -197,8 +197,8 @@ function expand_text ($original_code,
       preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~", "$1doi$2=$3",
               $new_code
               ))))));
-  if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $new_code)) {
-    $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $new_code);
+  if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
+    $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
     $changedDashes = true;
     echo "Converted dashes in all page parameters to en-dashes.";
   }
@@ -256,27 +256,7 @@ function expand_text ($original_code,
       get_identifiers_from_url();
 
       // Now wikify some common formatting errors - i.e. tidy up!
-      if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);
-
-      // If we have any unused data, check to see if any is redundant!
-      if (is("unused_data")){
-        $freeDat = explode("|", trim($p["unused_data"][0]));
-        unset($p["unused_data"]);
-        foreach ($freeDat as $dat) {
-          $eraseThis = false;
-          foreach ($p as $oP) {
-            similar_text(strtolower($oP[0]), strtolower($dat), $percentSim);
-            if ($percentSim >= 85)
-              $eraseThis = true;
-          }
-          if (!$eraseThis) $p["unused_data"][0] .= "|" . $dat;
-        }
-        if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
-        else {
-          if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-          echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
-        }
-      }
+      tidy_citation();
 
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
       $change_to_journal = is('journal');
@@ -378,28 +358,7 @@ function expand_text ($original_code,
         get_data_from_doi($p["doi"][0]);
       }
 
-      // Now wikify some common formatting errors - i.e. tidy up!
-      if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);
-
-      // If we have any unused data, check to see if any is redundant!
-      if (is("unused_data")){
-        $freeDat = explode("|", trim($p["unused_data"][0]));
-        unset($p["unused_data"]);
-        foreach ($freeDat as $dat) {
-          $eraseThis = false;
-          foreach ($p as $oP) {
-            similar_text(strtolower($oP[0]), strtolower($dat), $percentSim);
-            if ($percentSim >= 85)
-              $eraseThis = true;
-          }
-          if (!$eraseThis) $p["unused_data"][0] .= "|" . $dat;
-        }
-        if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
-        else {
-          if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-          echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
-        }
-      }
+      tidy_citation();
 
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
       $change_to_journal = is('journal');
@@ -1227,31 +1186,7 @@ echo "
         unset ($p["doi"]);
       }
 
-      //Edition - don't want 'Edition ed.'
-      if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
-
-      // Remove publisher if [cite journal/doc] warrants it
-      if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
-
-      // If we have any unused data, check to see if any is redundant!
-      if (is("unused_data")){
-        $freeDat = explode("|", trim($p["unused_data"][0]));
-        unset($p["unused_data"]);
-        foreach ($freeDat as $dat) {
-          $eraseThis = false;
-          foreach ($p as $oP) {
-            similar_text(strtolower($oP[0]), strtolower($dat), $percentSim);
-            if ($percentSim >= 85)
-              $eraseThis = true;
-          }
-          if (!$eraseThis) $p["unused_data"][0] .= "|" . $dat;
-        }
-        if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
-        else {
-          if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-          echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
-        }
-      }
+      tidy_citation();
 
       if ($unify_citation_templates) {
         if ($citation_template_dominant) {

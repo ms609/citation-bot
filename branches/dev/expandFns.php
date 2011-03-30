@@ -50,6 +50,8 @@ mb_internal_encoding( 'UTF-8' ); // Avoid ??s
 
 define("editinterval", 10);
 define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
+define("to_en_dash", "-|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
+define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
 #define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DO I is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
@@ -560,7 +562,51 @@ function get_identifiers_from_url() {
   }
 }
 
+function tidy_citation() {
+  global $p, $pStart, $changedDashes;
+  if (!trim($pStart["title"]) && isset($p["title"][0])) {
+    $p["title"][0] = formatTitle($p["title"][0]);
+  }
+  foreach (array("pages", "page", "issue", "year") as $oParameter) {
+    if (is($oParameter)) {
+      if (mb_ereg(to_en_dash, $p[$oParameter][0])) {
+        $changedDashes = true;
+        echo ( "\n - Upgrading to en-dash in $oParameter");
+        $p[$oParameter][0] = mb_ereg_replace(to_en_dash, en_dash, $p[$oParameter][0]);
+      }
+    }
+  }
+  //Edition - don't want 'Edition ed.'
+  if (is("edition")) {
+    $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
+  }
 
+  // Remove publisher if [cite journal/doc] warrants it
+  if (is($p["journal"]) && (is("doi") || is("issn"))) {
+    unset($p["publisher"]);
+  }
+
+
+  // If we have any unused data, check to see if any is redundant!
+  if (is("unused_data")){
+    $freeDat = explode("|", trim($p["unused_data"][0]));
+    unset($p["unused_data"]);
+    foreach ($freeDat as $dat) {
+      $eraseThis = false;
+      foreach ($p as $oP) {
+        similar_text(strtolower($oP[0]), strtolower($dat), $percentSim);
+        if ($percentSim >= 85)
+          $eraseThis = true;
+      }
+      if (!$eraseThis) $p["unused_data"][0] .= "|" . $dat;
+    }
+    if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
+    else {
+      if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+      echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
+    }
+  }
+}
 
 function standardize_reference($reference) {
   $whitespace = Array(" ", "\n", "\r", "\v", "\t");

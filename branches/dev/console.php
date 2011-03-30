@@ -62,7 +62,9 @@ $ON = $argument["on"];
 
 die (expand_text("{{Cite journal
 {{Cite journal
-| doi = 10.1078/1616-5047-00175
+| issue = 1-2
+| pages = 120-124
+| year = 1897-1987
 
 }}.
  
