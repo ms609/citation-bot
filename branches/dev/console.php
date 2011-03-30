@@ -29,7 +29,7 @@ $htmlOutput = false;
 $editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
 
-die (findISBN(""));
+#die (findISBN(""));
 /*
 
 print "\n";
@@ -60,16 +60,13 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-die (expand_text("*{{Citation
-  | last = Hodges
-  | first = Ann
-  | author-link =
-  | title = ABC gets perfect series from two \"Perfect Strangers\"
-  | newspaper = Houston Chronicle
-  | pages =
-  | date = August 3, 1986
-  | url = }}.
-        
+die (expand_text("{{citation
+ | last1 = Klein | first1 = Hauke
+ | last2 = Margraf | first2 = Marian
+ | title = On the linear intersection number of graphs
+ | year = 2003
+ | id = {{arxiv | math.CO | 0305073}}}}.
+ 
 ") );
 
 

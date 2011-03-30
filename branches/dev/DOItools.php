@@ -307,12 +307,12 @@ function nothingMissing($journal){
         && is("title")
         && (is("date") || is("year"))
         && (is("author2") || is("author2"))
-        && !$authors_missing
+        && (!$authors_missing &&  (is("author") || is("author1")))
   );
 }
 
 
-function expand_from_pubmed() {
+function get_data_from_pubmed() {
   global $p;
   echo "\n - Checking PMID {$p['pmid'][0]} for more details";
   $details = pmArticleDetails($p['pmid'][0]);
@@ -321,7 +321,7 @@ function expand_from_pubmed() {
   }
   if (false && !is("url")) { // TODO:  BUGGY - CHECK PMID DATABASES, and see other occurrence above
     if (!is('pmc')) {
-    $url = pmFullTextUrl($p["pmid"][0]);
+     $url = pmFullTextUrl($p["pmid"][0]);
     } else {
       unset ($p['url']);
     }
@@ -331,8 +331,7 @@ function expand_from_pubmed() {
   }
 }
 
-function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false) {
-
+function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence = false) {
   if ($silence) {
     ob_start();
   }
@@ -447,25 +446,63 @@ function get_data_from_adsabs() {
     }
   }
   if ($xml["retrieved"] == 1) {
-    ifNullSet("doi", (string) $xml->record->DOI);
     ifNullSet("bibcode", (string) $xml->record->bibcode);
     ifNullSet("title", (string) $xml->record->title);
     foreach ($xml->record->author as $author) {
       ifNullSet("author" . ++$i, $author);
     }
     $journal_string = explode(",", (string) $xml->record->journal);
-    ifNullSet("journal", $journal_string[0]);
+    $journal_start = strtolower($journal_string[0]);
     ifNullSet("volume", (string) $xml->record->volume);
     ifNullSet("issue", (string) $xml->record->issue);
     ifNullSet("year", preg_replace("~\D~", "", (string) $xml->record->pubdate));
     ifNullSet("pages", (string) $xml->record->page);
+    if (substr($journal_start, 0, 6) == "eprint") {
+      if (substr($journal_start, 7, 6) == "arxiv:") {
+        if (ifNullSet("arxiv", substr($journal_start, 13))) { // nothingMissing will return FALSE as no journal!
+          get_data_from_arxiv(substr($journal_start, 13));
+          }
+      } else {
+        $p["id"][0] .= " " . substr($journal_start, 13);
+      }
+    } else {
+      ifNullSet("journal", $journal_string[0]);
+    }
+    if (ifNullSet("doi", (string) $xml->record->DOI) && nothingMissing("journal")) {
+      get_data_from_doi();
+    }
     return true;
   } else {
     return false;
   }
 }
 
+function expand_from_doi($a, $b, $c = false) {
+  print "\n\n !! ==== \n\n USING DUD FN DOI! \n\n";
+  expand_from_crossref($a, $b, $c);
+}
+
+function get_data_from_doi() {
+  global $editing_cite_doi_template;
+  return expand_from_crossref(crossRefData($doi), $editing_cite_doi_template);
+}
+
 function getDataFromArxiv($a) {
+  print "\n\n !! ==== \n\n USING DUD FN ARXIV! \n\n";
+  return get_data_from_arxiv($a);
+}
+
+function expand_from_pubmed() {
+  print "\n\n !! ==== \n\n USING DUD FN PMID! \n\n";
+  return get_data_from_pubmed();
+}
+
+function getInfoFromISBN() {
+  print "\n\n !! ==== \n\n USING DUD FN ISBN! \n\n";
+  return get_data_from_isbn($a);
+}
+
+function get_data_from_arxiv($a) {
   $xml = simplexml_load_string(
           preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a"))
           );
@@ -488,7 +525,6 @@ function getDataFromArxiv($a) {
         }
       }
 		}
-    ifNullSet("doi", (string)$xml->entry->arxivdoi);
     ifNullSet("title", (string)$xml->entry->title);
 		ifNullSet("class", (string)$xml->entry->category["term"]);
 		ifNullSet("author", substr($authors, 2));
@@ -505,7 +541,9 @@ function getDataFromArxiv($a) {
     } else {
       ifNullSet("year", date("Y", strtotime((string)$xml->entry->published)));
     }
-    
+    if (ifNullSet("doi", (string) $xml->entry->arxivdoi) && !nothingMissing("journal")) {
+      get_data_from_doi((string) $xml->entry->arxivdoi);
+    }    
 		return true;
 	}
 	return false;
@@ -574,7 +612,7 @@ function get_data_from_jstor($jid) {
   }
 }
 
-function crossRefData($doi){
+function crossRefData($doi) {
 	global $crossRefId;
   $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
   $xml = @simplexml_load_file($url);
@@ -920,7 +958,7 @@ function findISBN ($title, $auth = false) {
   } else return false;
 }
 
-function getInfoFromISBN(){
+function get_data_from_isbn() {
 	global $p, $isbnKey;
 	$params = array("author"=>"author", "year"=>"year", "publisher"=>"publisher", "location"=>"city", "title"=>"title"/*, "oclc"=>"oclcnum"*/);
 	if (is("author") || is("first") || is("author1") ||

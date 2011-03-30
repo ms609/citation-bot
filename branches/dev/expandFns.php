@@ -229,7 +229,6 @@ function reassemble_citation($p, $sort = false) {
 
   foreach($p as $param => $v) {
     if ($param) {
-      print $param; print_r($v);
       $this_equals = ($v[2]?$v[2]:$equals);
       if (trim($v[0]) && preg_match("~[\r\n]~", $this_equals)) {
         $this_equals = preg_replace("~[\r\n]+$~", "", $this_equals);
@@ -430,25 +429,26 @@ function id_to_parameters() {
     $content = explode(pipePlaceholder, $content);
     unset($parameters);
     foreach($content as $fragment) {
+      $content[$j++] = $fragment;
       $para = explode("=", $fragment);
       if (trim($para[1])) {
-        $parameters[$para[0]] = $para[1];
+        $parameters[$para[0]] = trim($para[1]);
       }
     }
     switch(strtolower(trim($content[0]))) {
       case "arxiv":
         array_shift($content);
         if ($parameters["id"]) {
-          ifNullSet("arxiv", ($parameters["archive"] ? $parameters["archive"] . "/" : "") . $parameters["id"]);
+          ifNullSet("arxiv", ($parameters["archive"] ? trim($parameters["archive"]) . "/" : "") . trim($parameters["id"]));
         } else if ($content[1]) {
-          ifNullSet("arxiv", $content[0] . "/" . $content[1]);
+          ifNullSet("arxiv", trim($content[0]) . "/" . trim($content[1]));
         } else {
           ifNullSet("arxiv", implode(pipePlaceholder, $content));
         }
         $id = str_replace($match[0][$i], "", $id);
         break;
       case "lccn":
-        ifNullSet("lccn", $content[1] . $content[3]);
+        ifNullSet("lccn", trim($content[1]) . $content[3]);
         $id = str_replace($match[0][$i], "", $id);
         break;
       case "rfcurl":
