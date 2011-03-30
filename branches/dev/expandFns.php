@@ -44,7 +44,6 @@ require_once("/home/verisimilus/public_html/crossref.login");
 quiet_echo ("...");
 $crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
-$isbnKey2 = "268OHQMW";
 $bot = new Snoopy();
 $alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
 mb_internal_encoding( 'UTF-8' ); // Avoid ??s
@@ -211,7 +210,6 @@ function write($page, $data, $edit_summary = "Bot edit") {
 }
 
 function reassemble_citation($p, $sort = false) {
-  global $pStart, $additions, $changes;
   // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
   foreach ($p as $oP) {
     $pipe = $oP[1]?$oP[1]:null;
@@ -249,6 +247,7 @@ function reassemble_citation($p, $sort = false) {
       $pEnd[$param] = $v[0];
     }
   }
+  global $pStart, $additions, $changes;
   if ($pEnd) {
     foreach ($pEnd as $param => $value){
       if (!$pStart[$param]) {

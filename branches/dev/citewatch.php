@@ -33,7 +33,7 @@ function getCiteList($page) {
 	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmid);
 	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmc);
   $category = "[[Category:Articles citing non-functional identifiers]]";
-	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($page, $category)) {
+	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($raw, $category)) {
     global $editInitiator;
     write($page, $raw . "\n$category", "$editInitiator Page contains malformed 'Cite xxx' templates; please fix!");
   }
@@ -120,7 +120,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         } else {
           print "No DOI found; using PMID instead";
           if ($pmid_from_pmc){
-            if (create_page("pmid", $pmid_from_pmc, array("pmc", $oPmc))) {
+            if (create_page("pmid", $pmid_from_pmc, array("pmc" => $oPmc))) {
             print "\n  > Redirecting PMC $oPmc to PMID $pmid_from_pmc";
             print write($pmc_page, "#REDIRECT[[Template:Cite pmid/$pmid_from_pmc]]", "Redirecting to PMID citation [citewatch.php]")
                 ? " : Done."
@@ -188,7 +188,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           // redirect to a Cite Doi page, to avoid duplication
           $encoded_doi = str_replace($dotDecode, $dotEncode, $doi_from_pmid);
           print "Creating new page at DOI $doi_from_pmid";
-          if (create_page("doi", $doi_from_pmid, array("pmid", $oPmid))) {
+          if (create_page("doi", $doi_from_pmid, array("pmid" => $oPmid))) {
             print "\n    Created. \n  > Redirecting PMID $oPmid to $encoded_doi";
             print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation")
                 ? " : Done."
@@ -199,7 +199,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         } else {
           print "No DOI found!";
           // No DOI found.  Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
-          print create_page("pmid", $oPmid) ? " - Created page at PMID $oPmid" : " Couldn't create page at PMID $oPmid";
+          print create_page("pmid" => $oPmid) ? " - Created page at PMID $oPmid" : " Couldn't create page at PMID $oPmid";
         }
       break;
       case 0:

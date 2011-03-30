@@ -905,21 +905,19 @@ function google_book_details ($gid) {
   ifNullSet("date", $xml->dc___date);
 }
 
-function findISBN($title, $auth=false){
-	global $isbnKey;
-	$title = trim($title); $auth=trim($auth);
-	$xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth));
-	if (false) dbg(array(
-		$title  => $author,
-		(string) $xml->BookList->BookData[$i]->Title => similar_text($xml->BookList->BookData[$i]->Title, $title),
-		(string) $xml->BookList->BookData[$i]->Title . "au" => similar_text($xml->BookList->BookData[$i]->Title, $author),
-		(string) $xml->BookList->BookData[$i]->TitleLong => similar_text($xml->BookList->BookData[$i]->TitleLong, $title),
-		(string) $xml->BookList->BookData[$i]->TitleLong  . "au"=> similar_text($xml->BookList->BookData[$i]->TitleLong, $author),
-		(string) $xml->BookList->BookData[$i]->AuthorsText => similar_text($xml->BookList->BookData[$i]->AuthorsText, $title),
-		(string) $xml->BookList->BookData[$i]->AuthorsText ."au"=> similar_text($xml->BookList->BookData[$i]->AuthorsText, $author)
-	));
-	if ($xml->BookList["total_results"] == 1) return (string) $xml->BookList->BookData["isbn"];
-	if ($auth && $title) return ($xml->BookList["total_results"] > 0)?(string) $xml->BookList->BookData["isbn"]:false;
+function findISBN ($title, $auth = false) {
+	global $isbnKey, $over_isbn_limit;
+  // TODO: implement over_isbn_limit based on &results=keystats in API
+  if (!$over_isbn_limit) {
+    $title = trim($title); $auth = trim($auth);
+    $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth));
+    if ($xml->BookList["total_results"] == 1) return (string) $xml->BookList->BookData["isbn"];
+    if ($auth && $title) {
+      return $xml->BookList["total_results"] > 0
+              ? (string) $xml->BookList->BookData["isbn"]
+              : false;
+    }
+  } else return false;
 }
 
 function getInfoFromISBN(){

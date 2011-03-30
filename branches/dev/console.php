@@ -29,7 +29,7 @@ $htmlOutput = false;
 $editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
 
-
+die (findISBN(""));
 /*
 
 print "\n";
