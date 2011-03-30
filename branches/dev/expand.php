@@ -1087,7 +1087,7 @@ echo "
 // We have now recovered all possible information from CrossRef.
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
         echo "\n5: Formatting and other tweaks";
-        if ($editing_cite_doi_template && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
+        if ($editing_cite_doi_template) {
           echo "\n   First: Cite Doi formatting";
           // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
           if (strpos($p['doi'][0], ".2F~") && !strpos($p['doi'][0], "/")) {
