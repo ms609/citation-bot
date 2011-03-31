@@ -769,30 +769,44 @@ function rename_references($page_code) {
 }
 
 function get_name_for_reference($text, $page_code) {
-  $parsed = parse_wikitext(strip_tags($text));
-  $parsed_plaintext = strip_tags($parsed);
-  $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date)
-            ?  $date[1]
-            : "" );
-  $author = preg_match("~rft\.aulast=([^&]+)~", $parsed, $author)
-          ? $author[1]
-          : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
-          ? $author[1]
-          : "ref_";
-  $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle)
-          ? $btitle[1]
-          : "";
-  if ($author != "ref_") {
-    preg_match("~\w+~", authorify($author), $author);
-  } else if ($btitle) {
-    preg_match("~\w+\s?\w+~", authorify($btitle), $author);
-  } else if ($parsed_plaintext) {
-    if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
-      preg_match("~\w+~", authorify($parsed_plaintext), $author);
+ if (strpos($text, "://")) {
+    if (preg_match("~\w+://(?:www\.)([^/]+?)(?:\.\w{2,3}\b)+~i", $text, $match)) {
+      print_r($match);
+      $replacement_template_name = $match[1];
+    } else {
+      $replacement_template_name = "bare_url"; // just in case there's some bizarre way that the URL doesn't match the regexp
     }
-  }
-  $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
+  } else {
+    if (stripos($text, "{{harv") !== FALSE && preg_match("~\|([\s\w\-]+)\|\s*([12]\d{3})\D~", $text, $match)) {
+      $author = $match[1];
+      $date = $match[2];
+    } else {
+      $parsed = parse_wikitext(strip_tags($text));
+      $parsed_plaintext = strip_tags($parsed);
+      $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date)
+                ?  $date[1]
+                : "" );
+      $author = preg_match("~rft\.aulast=([^&]+)~", $parsed, $author)
+              ? $author[1]
+              : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
+              ? $author[1]
+              : "ref_";
+      $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle)
+              ? $btitle[1]
+              : "";
+    }
+    if ($author != "ref_") {
+      preg_match("~\w+~", authorify($author), $author);
+    } else if ($btitle) {
+      preg_match("~\w+\s?\w+~", authorify($btitle), $author);
+    } else if ($parsed_plaintext) {
+      if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
+        preg_match("~\w+~", authorify($parsed_plaintext), $author);
+      }
+    }
+    $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
   #print "\n Replacement name: $replacement_template_name\n\n";
+  }
   return generate_template_name($replacement_template_name, $page_code);
 }
 
@@ -801,7 +815,7 @@ function get_name_for_reference($text, $page_code) {
 // then does a check against the current page code to generate a unique name for the reference
 // (by suffixing _a, etc, as necessary)
 function generate_template_name ($replacement_template_name, $page_code) {
-  $replacement_template_name = remove_accents($replacement_template_name);
+ $replacement_template_name = remove_accents($replacement_template_name);
   if (!trim(preg_replace("~\d~", "", $replacement_template_name))) {
     $replacement_template_name = "ref" . $replacement_template_name;
   }

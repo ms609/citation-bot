@@ -60,14 +60,9 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 
-die (expand_text("{{Cite journal
-{{Cite journal
-| issue = 1-2
-| pages = 120-124
-| year = 1897-1987
-
-}}.
- 
+die (expand_text("
+  <ref>{{Harv|Author|1205}}</ref>
+  <ref>{{Harv|Author|1205}}</ref>
 ") );
 
 
