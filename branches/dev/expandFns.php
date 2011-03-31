@@ -211,11 +211,38 @@ function write($page, $data, $edit_summary = "Bot edit") {
   }
 }
 
+function parameters_from_citation($c) {
+  while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
+    $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
+  }
+  // Split citation into parameters
+  $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
+  $partsLimit = count($parts);
+  if (strpos($parts[0], "|") > 0
+          && strpos($parts[0],"[[") === FALSE
+          && strpos($parts[0], "{{") === FALSE
+      ) {
+    set("unused_data", substr($parts[0], strpos($parts[0], "|") + 1));
+  }
+  for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
+    $value = $parts[$partsI + 3];
+    $pipePos = strpos($value, "|");
+    if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
+      // There are two "parameters" on one line.  One must be missing an equals.
+      $p["unused_data"][0] .= " " . substr($value, $pipePos);
+      $value = substr($value, 0, $pipePos);
+    }
+    // Load each line into $p[param][0123]
+    $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
+  }
+  return $p;
+}
+
 function reassemble_citation($p, $sort = false) {
   // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
   foreach ($p as $oP) {
     $pipe = $oP[1] ? $oP[1] : null;
-    $equals = $oP[2] ? preg_replace("~[\r\n]+\s+$~", "", $oP[2]) : null;
+    $equals = $oP[2] ? $oP[2] : null;
     if ($pipe) break;
   }
   if (!$pipe) {
@@ -230,7 +257,7 @@ function reassemble_citation($p, $sort = false) {
     uasort($p, "bubble_p");
   }
 
-  foreach($p as $param => $v) {
+  foreach ($p as $param => $v) {
     if ($param) {
       $this_equals = ($v[2]?$v[2]:$equals);
       if (trim($v[0]) && preg_match("~[\r\n]~", $this_equals)) {
@@ -416,7 +443,12 @@ function get_template_prefix($type) {
         : $type . "/");
 }
 
-
+//TODO:
+/*
+  // Replace ids with appropriately formatted parameters
+  $c = preg_replace("~\bid(\s*=\s*)(isbn\s*)?(\d[\-\dX ]{9,})~i","isbn$1$3",
+    preg_replace("~(isbn\s*=\s*)isbn\s?=?\s?(\d\d)~i","$1$2",
+    preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$cit_i+1]))); // Replaces isbn: with isbn =*/
 function id_to_parameters() {
   global $p;
   $id = $p["id"][0];

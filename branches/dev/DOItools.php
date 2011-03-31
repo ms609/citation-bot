@@ -273,6 +273,20 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
   return $crossRef;
 }
 
+// text must be text that contains  a SICI.  It could be an entire citation.
+function get_data_from_sici($text) {
+  if (preg_match(siciRegExp, urldecode($text), $sici)) {
+    if (!is($journal) && !is("issn")) set("issn", $sici[1]);
+    #if (!is ("year") && !is("month") && $sici[3]) set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
+    if (!is("year")) set("year", $sici[2]);
+    #if (!is("day") && is("month") && $sici[4]) set ("day", $sici[4]);
+    if (!is("volume")) set("volume", 1*$sici[5]);
+    if (!is("issue") && $sici[6]) set("issue", 1*$sici[6]);
+    if (!is("pages") && !is("page")) set("pages", 1*$sici[7]);
+    return true;
+  } else return false;
+}
+
 function get_data_from_adsabs() {
   global $p;
   $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";

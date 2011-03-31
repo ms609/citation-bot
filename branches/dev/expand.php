@@ -210,26 +210,14 @@ function expand_text ($original_code,
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) {//Number of brackets in cite arXiv regexp + 1
       $started_citation_at = time();
-      $c = $citation[$cit_i + 1];
-      while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
-      // Split citation into parameters
-      $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
-      $partsLimit = count($parts);
-      if (strpos($parts[0], "|") >0 && strpos($parts[0],"[[") === FALSE && strpos($parts[0], "{{") === FALSE) set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
-      for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
-        $value = $parts[$partsI + 3];
-        $pipePos = strpos($value, "|");
-        if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
-          // There are two "parameters" on one line.  One must be missing an equals.
-          $p["unused_data"][0] .= " " . substr($value, $pipePos);
-          $value = substr($value, 0, $pipePos);
-        }
-        // Load each line into $p[param][0123]
-        $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
-      }
-      
+        $p = parameters_from_citation($citation[$cit_i + 1]);
+            
       //Make a note of how things started so we can give an intelligent edit summary
-      foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
+      foreach ($p as $param => $value)	{
+        if (is($param)) {
+          $pStart[$param] = $value[0];
+        }
+      }
       // See if we can use any of the parameters lacking equals signs:
       $freeDat = explode("|", trim($p["unused_data"][0]));
       useUnusedData();
@@ -298,27 +286,15 @@ function expand_text ($original_code,
   if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation)-1);
-    for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5){//Number of brackets in cite arXiv regexp + 1
+    for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5) {//Number of brackets in cite arXiv regexp + 1
       $started_citation_at = time();
-      $c = $citation[$cit_i+1];
-      while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
-      // Split citation into parameters
-      $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
-      $partsLimit = count($parts);
-      if (strpos($parts[0], "|") >0 && strpos($parts[0],"[[") === FALSE && strpos($parts[0], "{{") === FALSE) set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
-      for ($partsI=1; $partsI<=$partsLimit; $partsI+=4) {
-        $value = $parts[$partsI+3];
-        $pipePos = strpos($value, "|");
-        if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
-          // There are two "parameters" on one line.  One must be missing an equals.
-          $p["unused_data"][0] .= " " . substr($value, $pipePos);
-          $value = substr($value, 0, $pipePos);
-        }
-        // Load each line into $p[param][0123]
-        $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
-      }
+      $p = parameters_from_citation($citation[$cit_i+1]);
       //Make a note of how things started so we can give an intelligent edit summary
-      foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
+      foreach($p as $param=>$value)	{
+        if (is($param)) {
+          $pStart[$param] = $value[0];
+        }
+      }
       // See if we can use any of the parameters lacking equals signs:
       $freeDat = explode("|", trim($p["unused_data"][0]));
       useUnusedData();
@@ -403,41 +379,15 @@ function expand_text ($original_code,
                                     , $citation[$cit_i+1]);
         }
       } else $countComments = null;
-      // Comments have been replaced by placeholders; we'll restore them later.
-
-      // Replace ids with appropriately formatted parameters
-      $c = preg_replace("~\bid(\s*=\s*)(isbn\s*)?(\d[\-\dX ]{9,})~i","isbn$1$3",
-        preg_replace("~(isbn\s*=\s*)isbn\s?=?\s?(\d\d)~i","$1$2",
-        preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$cit_i+1]))); // Replaces isbn: with isbn =
-      #$noComC = preg_replace("~<!--[\s\S]*-->~U", "", $c);
-      while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
-        $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
-      }
-      preg_match(siciRegExp, urldecode($c), $sici);
-
-      // Split citation into parameters
-      $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
-      $partsLimit = count($parts);
-      if (strpos($parts[0], "|") >0
-          && strpos($parts[0],"[[") === FALSE
-          && strpos($parts[0], "{{") === FALSE
-        ) {
-        set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
-      }
-      for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
-        $value = $parts[$partsI + 3];
-        $pipePos = strpos($value, "|");
-        if ($pipePos > 0 && strpos($value, "[[") === false && strpos($value, "{{") === FALSE) {
-          // There are two "parameters" on one line.  One must be missing an equals.
-          $p["unused_data"][0] .= " " . substr($value, $pipePos);
-          $value = substr($value, 0, $pipePos);
-        }
-        // Load each line into $p[param][0123]
-        $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
-      }
+   
+      $p = parameters_from_citation($citation[$cit_i+1]);
 
       //Make a note of how things started so we can give an intelligent edit summary
-      foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
+      foreach ($p as $param=>$value) {
+        if (is($param)) {
+          $pStart[$param] = $value[0];
+        }
+      }
 
       //Check for the doi-inline template in the title
       if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~",
@@ -603,38 +553,11 @@ function expand_text ($original_code,
         // Comments will be replaced in the cText variable later
         $countComments = null;
       }
-      $c = preg_replace("~(doi\s*=\s*)doi\s?=\s?(\d\d)~i","$1$2",
-        preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~i","doi$1=$1$2", $citation[$cit_i+1])); // Replaces doi: with doi =
-      while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
-        $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
-      }
-      preg_match(siciRegExp, urldecode($c), $sici);
-
-##############################
-#             Split citation into parameters                     #
-##############################
-
-      $parts = preg_split("~(\s*\|\s*)([\w\d-_ ]*\b)(\s*=\s*)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
-      $partsLimit = count($parts);
-      if (strpos($parts[0], "|") > 0 &&
-          strpos($parts[0],"[[") === FALSE &&
-          strpos($parts[0], "{{") === FALSE) {
-        set("unused_data", substr($parts[0], strpos($parts[0], "|") + 1));
-      }
-      for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
-        $parameter_value = $parts[$partsI + 3];
-        $pipePos = strpos($parameter_value, "|");
-        if ($pipePos > 0 &&
-            strpos($parameter_value, "[[") === FALSE &&
-            strpos($parameter_value, "{{") === FALSE) {
-          // There are two "parameters" on one line.  One must be missing an equals.
-          $p["unused_data"][0] .= " " . substr($parameter_value, $pipePos);
-          $parameter_value = substr($parameter_value, 0, $pipePos);
-        }
-        // Load each line into $p[param][0123]
-        loadParam($parts[$partsI+1], $parameter_value, $parts[$partsI], $parts[$partsI+2], $partsI);
-      }
-
+      $p = parameters_from_citation(// Replaces doi: with doi = whilst we're at it
+              preg_replace("~(doi\s*=\s*)doi\s?=\s?(\d\d)~i","$1$2",
+            preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~i","doi$1=$1$2", $citation[$cit_i+1]))
+            ); 
+      
       if ($p["doix"]) {
         $p["doi"][0] = str_replace($dotEncode, $dotDecode, $p["doix"][0]);
         unset($p["doix"]);
@@ -733,15 +656,8 @@ echo "
         }
 
         // Load missing parameters from SICI, if we found one...
-        if ($sici[0]){
-          if (!is($journal) && !is("issn")) set("issn", $sici[1]);
-          #if (!is ("year") && !is("month") && $sici[3]) set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
-          if (!is("year")) set("year", $sici[2]);
-          #if (!is("day") && is("month") && $sici[4]) set ("day", $sici[4]);
-          if (!is("volume")) set("volume", 1*$sici[5]);
-          if (!is("issue") && $sici[6]) set("issue", 1*$sici[6]);
-          if (!is("pages") && !is("page")) set("pages", 1*$sici[7]);
-        }
+        get_data_from_sici($citation[$cit_i+1]);
+        
         // Fix typos in parameter names
         $p = correct_parameter_spelling($p);
         // DOI - urldecode
