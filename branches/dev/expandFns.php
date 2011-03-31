@@ -214,8 +214,8 @@ function write($page, $data, $edit_summary = "Bot edit") {
 function reassemble_citation($p, $sort = false) {
   // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
   foreach ($p as $oP) {
-    $pipe = $oP[1]?$oP[1]:null;
-    $equals = $oP[2]?$oP[2]:null;
+    $pipe = $oP[1] ? $oP[1] : null;
+    $equals = $oP[2] ? preg_replace("~[\r\n]+\s+$~", "", $oP[2]) : null;
     if ($pipe) break;
   }
   if (!$pipe) {
@@ -224,6 +224,7 @@ function reassemble_citation($p, $sort = false) {
   if (!$equals) {
     $equals = " = ";
   }
+#  var_dump($pipe); var_dump($equals); var_dump(preg_replace("~[\r\n]+$~", "", $equals)); die();
   if ($sort) {
     echo "\n (sorting parameters)";
     uasort($p, "bubble_p");
@@ -233,7 +234,7 @@ function reassemble_citation($p, $sort = false) {
     if ($param) {
       $this_equals = ($v[2]?$v[2]:$equals);
       if (trim($v[0]) && preg_match("~[\r\n]~", $this_equals)) {
-        $this_equals = preg_replace("~[\r\n]+$~", "", $this_equals);
+        $this_equals = preg_replace("~[\r\n]+\s*$~", "", $this_equals);
         $nline = "\r\n";
       } else {
         $nline = null;
@@ -441,16 +442,16 @@ function id_to_parameters() {
       case "arxiv":
         array_shift($content);
         if ($parameters["id"]) {
-          ifNullSet("arxiv", ($parameters["archive"] ? trim($parameters["archive"]) . "/" : "") . trim($parameters["id"]));
+          if_null_set("arxiv", ($parameters["archive"] ? trim($parameters["archive"]) . "/" : "") . trim($parameters["id"]));
         } else if ($content[1]) {
-          ifNullSet("arxiv", trim($content[0]) . "/" . trim($content[1]));
+          if_null_set("arxiv", trim($content[0]) . "/" . trim($content[1]));
         } else {
-          ifNullSet("arxiv", implode(pipePlaceholder, $content));
+          if_null_set("arxiv", implode(pipePlaceholder, $content));
         }
         $id = str_replace($match[0][$i], "", $id);
         break;
       case "lccn":
-        ifNullSet("lccn", trim($content[1]) . $content[3]);
+        if_null_set("lccn", trim($content[1]) . $content[3]);
         $id = str_replace($match[0][$i], "", $id);
         break;
       case "rfcurl":
@@ -489,7 +490,7 @@ function id_to_parameters() {
         if ($identifier_parameter) {
           array_shift($content);
         }
-        ifNullSet($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))), 
+        if_null_set($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))),
                 $parameters["id"] ? $parameters["id"] : $content[0]
                 );
         $identifier_parameter = null;
@@ -854,6 +855,151 @@ function authorify ($author) {
           : strtolower($author);
   return $author;
 }
+
+
+function ifNullSet($a, $b) {
+  print "\n\n Redundant function ifNullSet in expandFns.php";
+  if_null_set($a, $b);
+}
+
+function if_null_set($param, $value) {
+	global $p;
+  if (substr($param, strlen($param)-3, 1) > 0 || substr($param, strlen($param)-2) > 9) {
+      // The parameter is of 'first101' or 'last10' format and adds nothing but clutter
+      return false;
+  }
+	switch ($param) {
+		case "editor": case "editor-last": case "editor-first":
+			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
+			if (trim($p["editor"][0]) == "" && trim($p["editor-last"][0]) == "" && trim($p["editor-first"][0]) == "" && trim($value)!="") {
+        set ($param, $value);
+        return true;
+      }
+			break;
+		case "author": case "last1": case "last": case "authors": // "authors" is automatically corrected by the bot to "author"; include to avoid a false positive.
+			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
+			if (trim($p["last1"][0]) == ""
+          && trim($p["last"][0]) == ""
+          && trim($p["author"][0]) == ""
+          && trim($p["author1"][0]) == ""
+          && trim($p["editor"][0]) == ""
+          && trim($p["editor-last"][0]) == ""
+          && trim($p["editor-first"][0]) == ""
+					&& trim($value) != ""
+         ) {
+        set ($param, $value);
+        return true;
+      }
+			break;
+		case "first": case "first1": case "author1":
+      if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == ""
+        && trim($p["author"][0]) == "" && trim ($p['author1'][0]) == "") {
+        set ($param, $value);
+        return true;
+      }
+      break;
+		case "coauthor": case "coauthors":
+			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
+			if (trim($p["last2"][0]) == "" && trim($p["coauthor"][0]) == "" &&trim($p["coauthors"][0]) == "" && trim($p["author"][0]) == "" && trim($value)!="") {
+        // Note; we shouldn't be using this parameter ever....
+        set ($param, $value);
+        return true;
+      }
+			break;
+		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
+		case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9":
+			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
+      if (trim($p["last" . substr($param, -1)][0]) == "" && trim($p["author" . substr($param, -1)][0]) == ""
+          && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
+          && underTwoAuthors($p['author'][0]))  {
+        set ($param, $value);
+        return true;
+      }
+			break;
+    case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10":
+			if (trim($p[$param][0]) == ""
+        && underTwoAuthors($p['author'][0]) && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
+        && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
+        && trim($value) != "")  {
+        set ($param, $value);
+        return true;
+      }
+			break;
+    case "date":
+      if (preg_match("~^\d{4}$~", trim($value))) {
+        // Not adding any date data beyond the year, so 'year' parameter is more suitable
+        $param = "year";
+      }
+      // Don't break here; we want to go straight in to year;
+		case "year":
+			if (trim($p["date"][0]) == "" && trim($p["year"][0]) == "" && trim($value)!="")  {
+        set ($param, $value);
+        return true;
+      }
+			break;
+		case "periodical": case "journal":
+			if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($value)!="") {
+        set ($param, $value);
+        return true;
+      }
+			break;
+    case "page": case "pages":
+			if (trim($p["pages"][0]) == "" && trim($p["page"][0]) == "" && trim($value) != "") {
+        set ($param, $value);
+        return true;
+      }
+      break;
+		default: if (trim($p[$param][0]) == "" && trim($value) != "") {
+        set ($param, $value);
+        return true;
+      }
+	}
+  return false;
+}
+
+function set($key, $value) {
+	global $p;
+  // Dud DOI in PMID database
+  if ($key == "doi") {
+    if ($value == "10.1267/science.040579197") {return false;}
+    else {
+      $value = str_replace(array("?cookieset=1",), "", $value);
+    }
+  }
+
+  $parameter_order = list_parameters();
+  if (trim($value) != "") {
+    $p[$key][0] = (string) $value;
+    echo "\n    + $key: $value";
+    if (!$p[$key]["weight"]) {
+      // Calculate the appropriate weight:
+      #print "-$key-" . array_search($key, $parameter_order) . array_search("year", $parameter_order);
+      $key_position = array_search($key, $parameter_order);
+      if (!$key_position) {
+        $p[$key]["weight"] = 16383;
+      } else {
+        $lightest_weight = 16383; // (2^14)-1, arbritarily large
+        for ($i = count($parameter_order); $i >= $key_position && $i > 0; $i--) {
+          if ($p[$parameter_order[$i]]["weight"] > 0) {
+            $lightest_weight = $p[$parameter_order[$i]]["weight"];
+            $lightest_param = $parameter_order[$i];
+          }
+        }
+
+        for ($i = $key_position; $i >= 0; $i--) {
+          if ($p[$parameter_order[$i]]["weight"] > 0) {
+            $heaviest_weight = $p[$parameter_order[$i]]["weight"];
+            $heaviest_param = $parameter_order[$i];
+            break;
+          }
+        }
+        $p[$key]["weight"] = ($lightest_weight + $heaviest_weight) / 2;
+        # echo " ({$p[$key]["weight"]})";
+      }
+    }
+  }
+}
+
 
 // Function from http://stackoverflow.com/questions/1890854
 // Modified to expect utf8-encoded string

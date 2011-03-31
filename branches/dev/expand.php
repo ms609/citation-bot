@@ -687,7 +687,7 @@ echo "
 
         /*if (is("url") && !is("journal") && !is("periodical") && !is("magazine") && !is("newspaper")) {
     SpencerK's API; disabled until I check whether it is ever a source of errors
-          ifNullSet("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
+          if_null_set("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
         }*/
 
         /*  ISBN lookup removed - too buggy.  TODO (also commented out above)
@@ -707,11 +707,11 @@ echo "
           $id = str_replace(pipePlaceholder, "|", $p["id"][0]);
           if (preg_match("~[^\}\w]*jstor\s*\|\s*(\d+)[^\{\w\d]*~i", $id, $match)) {
             $p["id"][0] = str_replace($match[0], "", $id);
-            ifNullSet("jstor", $match[1]);
+            if_null_set("jstor", $match[1]);
           }
           if (preg_match("~[^\}\w]*arxiv\s*\|\s*([\w/\.\d]+)[^\{\w\d]*~i", $id, $match)) {
             $p["id"][0] = str_replace($match[0], "", $id);
-            ifNullSet("arxiv", $match[1]);
+            if_null_set("arxiv", $match[1]);
           }
 
           if (!trim($p["id"][0])) {
@@ -826,7 +826,7 @@ echo "
             $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)$~", "", $p['author'][0]);
             echo " - $truncate_after authors then <i>et al</i>. Will grow list later.";
             $authors_missing = true;
-            //ifNullSet('display-authors', $truncate_after);
+            //if_null_set('display-authors', $truncate_after);
           }
         }
 */
@@ -883,7 +883,7 @@ echo "
           unset($p['author']);
           foreach ($auths as $au_i => $auth) {
             if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $auth, $match)) {
-              ifNullSet("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
+              if_null_set("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
               $auth = $match[3];
             }
             $jr_test = jrTest($auth);
@@ -1026,7 +1026,7 @@ echo "
           searchForPmid();
         }
         if (!nothingMissing($journal) && is('pmid')) {
-          expand_from_pubmed();
+          get_data_from_pubmed();
         }
 
 #####################################
@@ -1144,7 +1144,7 @@ echo "
       // Check each author for embedded author links
       for ($au_i = 1; $au_i < 10; $au_i++) {
         if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p["author$au_i"][0], $match)) {
-          ifNullSet("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
+          if_null_set("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
           set("author$au_i", $match[3]); // Replace author with unlinked version
           echo "Dissecting authorlink";
         }
@@ -1192,16 +1192,16 @@ echo "
         if ($citation_template_dominant) {
           if (preg_match("~[cC]ite[ _]\w+~", $citation[$cit_i+2])) {
             // Switching FROM cite xx TO citation; cite xx has a trailing period by default
-            ifNullSet("postscript", ".");
+            if_null_set("postscript", ".");
             $citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
           }
         } else {
           if ($harv_template_present) {
-            ifNullSet("ref", "harv");
+            if_null_set("ref", "harv");
           }
           if (preg_match("~[cC]itation~", $citation[$cit_i+2])) {
             // Switching FROM cite xx TO citation; citation has no trailing period by default
-            ifNullSet("postscript", "<!-- Bot inserted parameter. Either remove it; or change its value to \".\" for the cite to end in a \".\", as necessary. -->{{inconsistent citations}}");
+            if_null_set("postscript", "<!-- Bot inserted parameter. Either remove it; or change its value to \".\" for the cite to end in a \".\", as necessary. -->{{inconsistent citations}}");
           }
           if (is('inventor-last') || is('inventor-surname') || is('inventor1-surname')
                   || is('inventor1-last') || is ('inventor')) {

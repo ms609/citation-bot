@@ -61,8 +61,23 @@ $ON = $argument["on"];
 ###########
 
 die (expand_text("
-  <ref>{{Harv|Author|1205}}</ref>
-  <ref>{{Harv|Author|1205}}</ref>
+<ref name=\"pmid\">
+{{cite journal
+ |author=
+ |title=
+ |journal=
+ |volume=
+ |issue=
+ |pages=
+ |year=
+ |pmc=1774223
+ |doi=
+ |url=http://gut.bmj.com/cgi/pmidlookup?view=long&pmid=15361495
+ |publisher=[[Gut (journal)]]
+|pmid=15361495
+}}</ref>
+
+<ref>http://www.ncbi.nlm.nih.gov/pubmed/15361495</ref>
 ") );
 
 
