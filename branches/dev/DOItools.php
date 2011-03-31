@@ -177,7 +177,7 @@ function nothingMissing($journal){
 
 function get_data_from_pubmed() {
   global $p;
-  echo "\n - Checking PMID {$p['pmid'][0]} for more details";
+  echo "\n - Checking PMID {$p['pmid'][0]} for more details [DOItools.php/get_data_from_pubmed]";
   $details = pmArticleDetails($p['pmid'][0]);
   foreach ($details as $key => $value) {
     if_null_set($key, $value);
@@ -334,7 +334,8 @@ function get_data_from_adsabs() {
     if_null_set("issue", (string) $xml->record->issue);
     if_null_set("year", preg_replace("~\D~", "", (string) $xml->record->pubdate));
     if_null_set("pages", (string) $xml->record->page);
-    if (substr($journal_start, 0, 6) == "eprint") {
+    if (substr(strtolower($journal_start), 0, 6) == "thesis") {}
+    elseif (substr($journal_start, 0, 6) == "eprint") {
       if (substr($journal_start, 7, 6) == "arxiv:") {
         if (if_null_set("arxiv", substr($journal_start, 13))) { // nothingMissing will return FALSE as no journal!
           get_data_from_arxiv(substr($journal_start, 13));

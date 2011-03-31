@@ -30,15 +30,6 @@ $editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
 
 #die (findISBN(""));
-/*
-
-print "\n";
-
-print preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", "Amélie SMth");
-
-die("\n");
-
- */
 
 function nextPage($page){
   // touch last page
@@ -59,26 +50,15 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-
-die (expand_text("
-<ref name=\"pmid\">
-{{cite journal
- |author=
- |title=
- |journal=
- |volume=
- |issue=
- |pages=
- |year=
- |pmc=1774223
- |doi=
- |url=http://gut.bmj.com/cgi/pmidlookup?view=long&pmid=15361495
- |publisher=[[Gut (journal)]]
-|pmid=15361495
-}}</ref>
+/*
+die (expand_text("{{cite journal|last = Wynn|first = Peter
+  |title = On a Device for Computing the ''e<sub>m</sub>''(''S<sub>n</sub>'') Transformation
+  |journal = Mathematical Tables and Other Aids to Computation|volume = 10|issue = 54|date = Apr 1956
+  |pages = 91–96|month = Apr|year = 1956|doi = 10.2307/2002183|jstor = 10.2307/2002183|publisher = American Mathematical Society}}
 
 <ref>http://www.ncbi.nlm.nih.gov/pubmed/15361495</ref>
-") );
+", false));
+ /* */
 
 
 #die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
@@ -113,28 +93,16 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   }
-  #$page = " Template:Cite doi/10.1002.2F.28SICI.291097-0290.2819980420.2958:2.2F3.3C121::AID-BIT2.3E3.0.CO.3B2-N";
-  #$ON = true; // Uncomment this line to test edits in the Zandbox; but remember to break the bot after it touches the page or it'll keep on going!
-  // The line to swtich between active & sandbox modes is in the comment block above.
-  #$page = "";
-  #$slowMode = true;
-
-  //
-  //include("expand.php");// i.e. GO!
-
   /*$start_code = getRawWikiText($page, false, false);*/
   $slow_mode = true;
 
   print "\n";
   //
-  /*
+  
   while ($page) {
     $page = nextPage($page);
     $end_text = expand($page, $ON);
   }
-  *///name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc"))),
-  //$end_text = ref_templates($end_text, "pmid");
-  //print "\n" . $end_text;
   //write($page, $end_text, $editInitiator . "Re task #6 : Trial edit");
 }
 die ("\n Done. \n");

@@ -7,7 +7,7 @@ function expand($page, // Title of WP page
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $bot, $editInitiator, $html_output;
+  global $bot, $editInitiator, $html_output, $modifications;
   if ($html_output === -1) {
     ob_start();
   }
@@ -60,22 +60,22 @@ function expand($page, // Title of WP page
 
 
   ##### Generate edit summary #####
-  if ($additions) {
+  if ($modifications["additions"]) {
     $auto_summary = "+: ";
-    foreach ($additions as $param=>$v)	{
+    foreach ($modifications["additions"] as $param=>$v)	{
       $auto_summary .= "$param, ";
-      unset($changes[$param]);
+      unset($modifications["additions"][$param]);
     }
     $auto_summary = substr($auto_summary, 0, strlen($auto_summary)-2);
     $auto_summary .= ". ";
   }
-  if ($changes["accessdate"]) {
+  if ($modifications["additions"]["accessdate"]) {
     $auto_summary .= "Removed accessdate with no specified URL. ";
-    unset($changes["accessdate"]);
+    unset($modifications["additions"]["accessdate"]);
   }
-  if ($changes) {
+  if ($modifications["additions"]) {
     $auto_summary .= "Tweaked: ";
-    foreach ($changes as $param=>$v)	$auto_summary .= 				"$param, ";
+    foreach ($modifications["additions"] as $param=>$v)	$auto_summary .= 				"$param, ";
     $auto_summary = substr($auto_summary,0, strlen($auto_summary)-2);
     $auto_summary.=". ";
   }
@@ -83,7 +83,7 @@ function expand($page, // Title of WP page
     $auto_summary .= "Unified citation types. ";
   }
   if (!$auto_summary) {
-    if ($changedDashes) {
+    if ($modifications["dashes"]) {
       $auto_summary .= "Formatted [[WP:ENDASH|dashes]]. ";
     } else {
       $auto_summary = "Misc citation tidying. ";
@@ -199,7 +199,7 @@ function expand_text ($original_code,
               ))))));
   if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
     $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
-    $changedDashes = true;
+    $modifications["dashes"] = true;
     echo "Converted dashes in all page parameters to en-dashes.";
   }
 
@@ -266,7 +266,7 @@ function expand_text ($original_code,
                 ?"Changing to Arxiv. "
                 :"Keeping as cite web. ")
               ) . "\n";
-      $cText .= reassemble_citation($p); // This also populates $additions and $changes
+      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["additions"]
       $last_p = $p;
       $p = null;
       
@@ -349,7 +349,7 @@ function expand_text ($original_code,
       $endtime = time();
       $timetaken = $endtime - $started_citation_at;
       echo "* Citation assessed in $timetaken secs. " . ($change_to_journal?"Changing to Cite Journal. ":"Keeping as cite arXiv") . "\n";
-      $cText .= reassemble_citation($p); // This also populates $additions and $changes
+      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["additions"]
 
       $last_p = $p;
       $p = null;
@@ -479,7 +479,7 @@ function expand_text ($original_code,
       if (isset($p["periodical"][0])) $p["periodical"][0] = niceTitle($p["periodical"][0], false);
       if (isset($p["pages"][0]) && mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
         $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
-        $changedDashes = true;
+        $modifications["dashes"] = true;
       }
       #if (isset($p["year"][0]) && trim($p["year"][0]) == trim($p["origyear"][0])) unset($p['origyear']);
       #if (isset($p["publisher"][0])) $p["publisher"][0] = truncatePublisher($p["publisher"][0]);
@@ -513,7 +513,7 @@ function expand_text ($original_code,
       $timetaken = $endtime - $started_citation_at;
       echo "\n  Book reference assessed in $timetaken secs.";
 
-      $cText .= reassemble_citation($p); // This also populates $additions and $changes
+      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["additions"]
       $last_p = $p;
       $p = null;
       
@@ -1049,7 +1049,7 @@ echo "
       if (isset($p["pages"][0])) {
         if (mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
           $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
-          $changedDashes = true;
+          $modifications["dashes"] = true;
         }
       }
       // If there was a date parameter to start with, don't add a year too.  This will be created by the template.
@@ -1156,7 +1156,7 @@ echo "
       }
 
 
-      $cText .= reassemble_citation($p, true); // This also populates $additions and $changes
+      $cText .= reassemble_citation($p, $editing_cite_doi_template); // This also populates $modifications["additions"] and $modifications["additions"]
 
       //And we're done!
       $endtime = time();
@@ -1267,14 +1267,11 @@ echo "
         return $new_code;
       }
 
-      //Unset smart edit summary parameters
+      //Unset smart edit summary parameters.  Some of these are globals modified by other functions.
       $pStart = null;
       $pEnd = null;
-      $additions = null;
-      $changes = null;
-      $auto_summary = null;
-      $changedDashes = null;
-    
+      global $modifications;
+      $modifications = null;    
   } else {
     if (trim($original_code)=='') {
       echo "<b>Blank page.</b> Perhaps it's been deleted?";

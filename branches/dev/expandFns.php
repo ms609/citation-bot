@@ -238,7 +238,7 @@ function parameters_from_citation($c) {
   return $p;
 }
 
-function reassemble_citation($p, $sort = false) {
+function reassemble_citation ($p, $sort = false) {
   // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
   foreach ($p as $oP) {
     $pipe = $oP[1] ? $oP[1] : null;
@@ -276,13 +276,13 @@ function reassemble_citation($p, $sort = false) {
       $pEnd[$param] = $v[0];
     }
   }
-  global $pStart, $additions, $changes;
+  global $pStart, $modifications;
   if ($pEnd) {
     foreach ($pEnd as $param => $value){
       if (!$pStart[$param]) {
-        $additions[$param] = true;
+        $modifications["additions"][$param] = true;
       } elseif ($pStart[$param] != $value) {
-        $changes[$param] = true;
+        $modifications["additions"][$param] = true;
       }
     }
   }
@@ -596,14 +596,14 @@ function get_identifiers_from_url() {
 }
 
 function tidy_citation() {
-  global $p, $pStart, $changedDashes;
+  global $p, $pStart, $modifications;
   if (!trim($pStart["title"]) && isset($p["title"][0])) {
     $p["title"][0] = formatTitle($p["title"][0]);
   }
   foreach (array("pages", "page", "issue", "year") as $oParameter) {
     if (is($oParameter)) {
       if (mb_ereg(to_en_dash, $p[$oParameter][0])) {
-        $changedDashes = true;
+        $modifications["dashes"] = true;
         echo ( "\n - Upgrading to en-dash in $oParameter");
         $p[$oParameter][0] = mb_ereg_replace(to_en_dash, en_dash, $p[$oParameter][0]);
       }
