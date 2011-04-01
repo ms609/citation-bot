@@ -95,7 +95,9 @@ function expand($page, // Title of WP page
   if (!$auto_summary) {
     $auto_summary = "Misc citation tidying. ";
   }
+  print_r($modifications);
   echo $auto_summary;
+  die();
   $edit_summary = $editInitiator . $auto_summary . $edit_summary_end;
   
   if ($commit_edits) {
