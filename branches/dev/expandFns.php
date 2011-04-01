@@ -627,7 +627,7 @@ function tidy_citation() {
     foreach ($freeDat as $dat) {
       $eraseThis = false;
       foreach ($p as $oP) {
-        similar_text(strtolower($oP[0]), strtolower($dat), $percentSim);
+        similar_text(mb_strtolower($oP[0]), mb_strtolower($dat), $percentSim);
         if ($percentSim >= 85)
           $eraseThis = true;
       }

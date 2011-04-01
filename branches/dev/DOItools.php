@@ -296,8 +296,8 @@ function get_data_from_adsabs() {
     $xml = simplexml_load_file($url_root . "doi=" . $p["doi"][0]);
   } elseif (is("title")) {
     $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $p["title"][0] . '"'));
-    $inTitle = str_replace(array(" ", "\n", "\r"), "", (strtolower($xml->record->title)));
-    $dbTitle = str_replace(array(" ", "\n", "\r"), "", (strtolower($p["title"][0])));
+    $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($xml->record->title)));
+    $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($p["title"][0])));
     if (
          (strlen($inTitle) > 254 || strlen(dbTitle) > 254) 
             ? strlen($inTitle) != strlen($dbTitle) || similar_text($inTitle, $dbTitle)/strlen($inTitle) < 0.98
@@ -316,8 +316,8 @@ function get_data_from_adsabs() {
             );
     $journal_string = explode(",", (string) $xml->record->journal);
     $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
-    if (strpos(strtolower(preg_replace($journal_fuzzyer, "", $p["journal"][0])),
-            strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))) === FALSE) {
+    if (strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $p["journal"][0])),
+            mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))) === FALSE) {
       echo "\n   Match for pagination but database journal \"{$journal_string[0]}\" didn't match \"journal = {$p["journal"][0]}\".";
       return false;
     }
@@ -329,12 +329,12 @@ function get_data_from_adsabs() {
       if_null_set("author" . ++$i, $author);
     }
     $journal_string = explode(",", (string) $xml->record->journal);
-    $journal_start = strtolower($journal_string[0]);
+    $journal_start = mb_strtolower($journal_string[0]);
     if_null_set("volume", (string) $xml->record->volume);
     if_null_set("issue", (string) $xml->record->issue);
     if_null_set("year", preg_replace("~\D~", "", (string) $xml->record->pubdate));
     if_null_set("pages", (string) $xml->record->page);
-    if (substr(strtolower($journal_start), 0, 6) == "thesis") {}
+    if (substr(mb_strtolower($journal_start), 0, 6) == "thesis") {}
     elseif (substr($journal_start, 0, 6) == "eprint") {
       if (substr($journal_start, 7, 6) == "arxiv:") {
         if (if_null_set("arxiv", substr($journal_start, 13))) { // nothingMissing will return FALSE as no journal!
@@ -541,7 +541,7 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 }
 
 function textToSearchKey($key){
-	switch (strtolower($key)){
+	switch (mb_strtolower($key)){
 		case "doi": return "AID";
 		case "author": case "author1": return "Author";
 		case "author": case "author1": return "Author";
@@ -647,7 +647,7 @@ function searchForPmid() {
     }
   } else {
     echo " nothing found.";
-    if (strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && !is("journal")) {
+    if (mb_strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && !is("journal")) {
       // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
       echo "\n - Checking for ISBN";
       $isbnToStartWith = isset($p["isbn"]);
@@ -1035,7 +1035,7 @@ function useUnusedData()
             break;
           }
           $test_dat = preg_replace("~\d~", "_$0",
-                      preg_replace("~[ -+].*$~", "", substr(strtolower($dat), 0, $para_len)));
+                      preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
           if ($para_len < 3)
           {
             break; // minimum length to avoid false positives
@@ -1102,7 +1102,7 @@ function useUnusedData()
         {
           // Extract whatever appears before the first space, and compare it to common parameters
           $pAll = explode(" ", trim($dat));
-          $p1 = strtolower($pAll[0]);
+          $p1 = mb_strtolower($pAll[0]);
           switch ($p1) {
           case "volume": case "vol":
           case "pages": case "page":
@@ -1338,13 +1338,13 @@ function file_size($url, $redirects = 0){
    foreach($arr_headers as $header) {
 			// follow redirect
 			$s = 'Location: ';
-			if($redirects < 3 && substr(strtolower ($header), 0, strlen($s)) == strtolower($s)) {
+			if($redirects < 3 && substr(mb_strtolower ($header), 0, strlen($s)) == mb_strtolower($s)) {
 				$url = trim(substr($header, strlen($s)));
 				return file_size($url, $redirects + 1);
 			}
 			// parse for content length
        $s = "Content-Length: ";
-       if(substr(strtolower ($header), 0, strlen($s)) == strtolower($s)) {
+       if(substr(mb_strtolower ($header), 0, strlen($s)) == mb_strtolower($s)) {
            $return = trim(substr($header, strlen($s)));
            break;
        }
@@ -1572,7 +1572,7 @@ function checkTextForMetas($text){
 	foreach ($pairs as $pair) {
     $i = 1;
 		foreach ($m2p as $metaKey => $metaValue) {
-			if (strtolower($pair[0]) == strtolower($metaKey)) {
+			if (mb_strtolower($pair[0]) == mb_strtolower($metaKey)) {
         if ($metaValue == "author") {
           $metaValue = "author" . $i++;
         }
@@ -1606,7 +1606,7 @@ function literate($string){
 	//remove all html, spaces and &eacute; things  from text, only leaving letters and digits
 	preg_match_all("~(&[\w\d]*;)?(\w+)~", $string, $letters);
 		foreach ($letters[2] as $letter) $return .= $letter;
-	return strtolower($return);
+	return mb_strtolower($return);
 }
 
 
@@ -1631,26 +1631,25 @@ function truncatePublisher($p){
 
 function niceTitle($in, $sents = true){
 	global $dontCap, $unCapped;
-
-	if ($in == strtoupper($in) && strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
+	if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
 		$in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
 	}
   $in = str_ireplace(" (New York, N.Y.)", "", $in); // Pubmed likes to include this after "Science", for some reason
   $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
 	if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
-		$newcase = preg_replace("~(\w\s+)A(\s+\w)~", "$1a$2",
-					preg_replace_callback("~\w{2}'[A-Z]\b~" /*Apostrophes*/, create_function(
+		$newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
+					preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
 	            '$matches',
-	            'return strtolower($matches[0]);'
-	        ), preg_replace_callback("~[?.!]\s+[a-z]~" /*Capitalise after punctuation*/, create_function(
+	            'return mb_strtolower($matches[0]);'
+	        ), preg_replace_callback("~[?.:!]\s+[a-z]~u" /*Capitalise after punctuation*/, create_function(
 	            '$matches',
-	            'return strtoupper($matches[0]);'
+	            'return mb_strtoupper($matches[0]);'
 	        ), trim($captIn))));
 	} else {
-		$newcase = preg_replace("~(\w\s+)A(\s+\w)~", "$1a$2",
-					preg_replace_callback("~\w{2}'[A-Z]\b~" /*Apostrophes*/, create_function(
+		$newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
+					preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
 	            '$matches',
-	            'return strtolower($matches[0]);'
+	            'return mb_strtolower($matches[0]);'
 	        ), trim(($captIn))));
 	}
   if (in_array(" " . trim($newcase) . " ", $unCapped)) {
@@ -1658,7 +1657,8 @@ function niceTitle($in, $sents = true){
     return $newcase;
   } else {
     // Catch "the Journal" --> "The Journal"
-    return ucfirst($newcase);
+    $newcase = mb_convert_case(mb_substr($newcase, 0, 1), MB_CASE_TITLE, "UTF-8") . mb_substr($newcase, 1);
+    return $newcase;
   }
 }
 
@@ -1762,7 +1762,7 @@ function fmtSurname2($surname) {
 function formatForename($forename){
 	return str_replace(array(" ."), "", trim(preg_replace_callback("~\w{4,}~",  create_function(
             '$matches',
-            'return ucfirst(strtolower($matches[0]));'
+            'return ucfirst(mb_strtolower($matches[0]));'
         ), $forename)));
 }
 
@@ -1778,13 +1778,13 @@ function formatInitials($str){
 	if ($str == "") return false;
 	if (substr($str, strlen($str)-1) == ";") $end = ";";
 	preg_match_all("~\w~", $str, $match);
-	return strtoupper(implode(".",$match[0]) . ".") . $end;
+	return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
 function isInitials($str){
 	if (!$str) return false;
 	if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return false;
 	if (strlen(str_replace(array("-", ".", ";"), "", $str)) ==1) return true;
-	if (strtoupper($str) != $str) return false;
+	if (mb_strtoupper($str) != $str) return false;
 	return true;
 }
 
@@ -1849,7 +1849,7 @@ function formatAuthor($author){
 						if (isInitials($A)) $i[] = formatInitials($A);
 					}
 				}
-				$fore = strtoupper(implode(".", $i));
+				$fore = mb_strtoupper(implode(".", $i));
 			} else {
 				// it ends with the surname
 				$surname = $auth[$countAuth-1];
@@ -1924,19 +1924,22 @@ function formatAuthors($authors, $returnAsArray = false){
 	}
 }
 
-function formatTitle($title){
-	$title = html_entity_decode($title,null,"UTF-8");
-	if (substr($title, strlen($title)-1) == ".") $title = substr($title, 0, strlen($title)-1);
-	if (substr($title, strlen($title)-6) == "&nbsp;") $title = substr($title, 0, strlen($title)-6);
-	$iIn = array("<i>",
-							"</i>",
+function formatTitle($title) {
+	$title = html_entity_decode($title, null, "UTF-8");
+  $title = (mb_substr($title, -1) == ".")
+            ? mb_substr($title, 0, -1)
+            :(
+              (mb_substr($title, -6) == "&nbsp;")
+              ? mb_substr($title, 0, -6)
+              : $title
+            );
+  $iIn = array("<i>","</i>",
 							"From the Cover: ");
-	$iOut = array("''",
-								"''",
+	$iOut = array("''","''",
 								"");
 	$in = array("&lt;", "&gt;"	);
 	$out = array("<",		">"			);
-	return	str_ireplace($iIn, $iOut, str_replace($in, $out, niceTitle($title))); // order IS important!
+  return str_ireplace($iIn, $iOut, str_ireplace($in, $out, niceTitle($title))); // order IS important!
 }
 
 /** Format authors according to author = Surname; first= N.E.
@@ -1945,6 +1948,12 @@ function formatTitle($title){
 function citeDoiOutputFormat() {
   global $p;
   unset ($p['']);
+
+  // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
+  if (strpos($p['doi'][0], ".2F~") && !strpos($p['doi'][0], "/")) {
+    $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doi'][0]);
+  }
+
   // Cycle through authors
   for ($i = null; $i < 10; $i++) {
     if (strpos($p["author$i"][0], ', ')) {
@@ -1958,9 +1967,9 @@ function citeDoiOutputFormat() {
        unset($au);
     }
     if ($au[1]) {
-      if (trim(strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
+      if (trim(mb_strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
         // Don't try to modify if we don't need to change
-        set("first$i", strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
+        set("first$i", mb_strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
       }
       if (strpos($p["first$i"][1], "\n") !== false || (!$p["first$i"][1] && $p["first$i"][0])) {
         $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
@@ -2006,8 +2015,8 @@ function get_all_meta_tags($url){
 	preg_match("~<meta name=['\"]citation_pmid[\"'] content=['\"](\d+)['\"]~", $pageText, $pmid);
 	if ($creators[1][1]){
 		foreach ($creators[1] as $aut){
-			if (strtoupper($aut) == $aut) {
-				$return["author"] .= " " . ucwords(str_replace(",", ", ", strtolower($aut))) . ";";
+			if (mb_strtoupper($aut) == $aut) {
+				$return["author"] .= " " . ucwords(str_replace(",", ", ", mb_strtolower($aut))) . ";";
 			} else {
 				$aut = preg_split("~([A-Z])~", $aut, null,PREG_SPLIT_DELIM_CAPTURE);
 				$count = count($aut);

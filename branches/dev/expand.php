@@ -187,14 +187,14 @@ function expand_text ($original_code,
   $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc"))));
   echo "\n Making some common replacements. ";
 
-  $new_code = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-X]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
-      preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
+  $new_code = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-X]{10,})[\s\|\}]+[^\}]?\}\}?~iu", "$1|isbn=$3}}",
+      preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~iu", "$1|doi=$3}}",
       preg_replace
-                  ("~(\|\s*)id(\s*=[^\|]*)(DOI:?\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","$1doi$2$5$4$6",
-      preg_replace("~(\|\s*)(id\s*=\s*)\[{0,2}(PMID[:\]\s]*(\d*)|\{\{PMID[:\]\s]*\|\s*(\d*)\s*\}\})~","$1pm$2$5$4",
-      preg_replace("~(\|\s*)id(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","$1doi$2$3",
+                  ("~(\|\s*)id(\s*=[^\|]*)(DOI:?\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Uui","$1doi$2$5$4$6",
+      preg_replace("~(\|\s*)(id\s*=\s*)\[{0,2}(PMID[:\]\s]*(\d*)|\{\{PMID[:\]\s]*\|\s*(\d*)\s*\}\})~u","$1pm$2$5$4",
+      preg_replace("~(\|\s*)id(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~iu","$1doi$2$3",
 
-      preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~", "$1doi$2=$3",
+      preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~u", "$1doi$2=$3",
               $new_code
               ))))));
   if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
@@ -205,7 +205,7 @@ function expand_text ($original_code,
 
 ###################################  Cite web ######################################
   // Convert Cite webs to Cite arXivs, etc, if necessary
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~Uu", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) {//Number of brackets in cite arXiv regexp + 1
@@ -283,7 +283,7 @@ function expand_text ($original_code,
 
 ###################################  Cite arXiv ######################################
   // Makes sense to do this first as it might add DOIs, changing the citation type.
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~Uu", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation)-1);
     for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5) {//Number of brackets in cite arXiv regexp + 1
@@ -363,7 +363,7 @@ function expand_text ($original_code,
 
 ###################################  START ASSESSING BOOKS ######################################
 
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~Uu", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation)-1);
 
@@ -535,7 +535,7 @@ function expand_text ($original_code,
   }
 ###################################  START ASSESSING JOURNAL/OTHER CITATIONS ######################################
 
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[dD]ocument(?=\s*\|)|\s*[Cc]ite[_ ]?[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[dD]ocument(?=\s*\|)|\s*[Cc]ite[_ ]?[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~uU", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) { //Number of brackets in cite journal regexp + 1
@@ -590,7 +590,8 @@ function expand_text ($original_code,
 //
 echo "
 *-> {$p["title"][0]}
-1: Tidy citation and try to expand";
+1: Tidy citation and try to expand
+";
 //  See if we can get any 'free' metadata from:
 //  * mis-labelled parameters
 //  * ISBN
@@ -709,10 +710,10 @@ echo "
         }
 
         // Replace "volume = B 120" with "series=VB, volume = 120
-        if (preg_match("~^([A-J])(?!\w)~", $p["volume"][0], $match)) {
-          if (trim($p["journal"][0]) && substr(trim($p["journal"][0]), -2) != " $match[1]") {
+        if (preg_match("~^([A-J])(?!\w)~u", $p["volume"][0], $match)) {
+          if (trim($p["journal"][0]) && mb_substr(trim($p["journal"][0]), -2) != " $match[1]") {
             $p["journal"][0] .= " $match[1]";
-            $p["volume"][0] = trim(substr($p["volume"][0], strlen($match[1])));
+            $p["volume"][0] = trim(mb_substr($p["volume"][0], mb_strlen($match[1])));
           }
         }
 
@@ -873,8 +874,12 @@ echo "
 
           
           // Try AdsAbs
-          echo "\n - Checking AdsAbs database";
-          get_data_from_adsabs();
+          if ($slow_mode) {
+            echo "\n - Checking AdsAbs database";
+            get_data_from_adsabs();
+          } else {
+             echo "\n - Skipping AdsAbs database: not in slow mode.";
+          }
           
           if (!isset($p["doi"][0])) {
             //Try CrossRef
@@ -961,23 +966,18 @@ echo "
 // We have now recovered all possible information from CrossRef.
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
         echo "\n5: Formatting and other tweaks";
-        if ($editing_cite_doi_template) {
+        if ($editing_cite_doi_template || preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
           echo "\n   First: Cite Doi formatting";
-          // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
-          if (strpos($p['doi'][0], ".2F~") && !strpos($p['doi'][0], "/")) {
-            $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doi'][0]);
-          }
-
           // Get the surname of the first author. (We [apparently] found this earlier, but it might have changed since then)
-          preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
+          preg_match("~[^.,;\s]{2,}~u", $p["author"][0], $firstauthor);
           if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~", $p["author1"][0], $firstauthor);
+            preg_match("~[^.,;\s]{2,}~u", $p["author1"][0], $firstauthor);
           }
           if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
+            preg_match("~[^.,;\s]{2,}~u", $p["last"][0], $firstauthor);
           }
           if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
+            preg_match("~[^.,;\s]{2,}~u", $p["last1"][0], $firstauthor);
           }
 
           // If we only have the first author, look for more!
@@ -1017,8 +1017,10 @@ echo "
               }
             }
           }
+          citeDoiOutputFormat();
         }
 
+print $p["title"][0];
         // Check that the URL functions, and mark as dead if not.
         /*  Disable; to re-enable, we should log possible 404s and check back later.
          * Also, dead-link notifications should be placed ''after'', not within, the template.
@@ -1035,22 +1037,9 @@ echo "
         }*/
       }
 
-      // Now wikify some common formatting errors - i.e. tidy up!
-      //Format title
-      if (!trim($pStart["title"]) && isset($p["title"][0])) {
-        $p["title"][0] = formatTitle($p["title"][0]);
-      }
       // Neaten capitalisation for journal
       if (isset($p[$journal][0])) {
         $p[$journal][0] = niceTitle($p[$journal][0], false);
-      }
-
-      // Use en-dashes in page ranges
-      if (isset($p["pages"][0])) {
-        if (mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
-          $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
-          $modifications["dashes"] = true;
-        }
       }
       // If there was a date parameter to start with, don't add a year too.  This will be created by the template.
       if ($dateToStartWith) {
@@ -1064,11 +1053,6 @@ echo "
           set("author$au_i", $match[3]); // Replace author with unlinked version
           echo "Dissecting authorlink";
         }
-      }
-
-      // If we're on a Cite Doi page, format authors accordingly
-      if (preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
-        citeDoiOutputFormat();
       }
 
       // Unset authors above 'author9' - the template won't render them.
@@ -1089,7 +1073,7 @@ echo "
         ELSE if (!$brokenDoi) unset($p["doi_brokendate"]); unset($p["doi_inactivedate"]);
         echo $brokenDoi?" It isn't.":" It is.", "</p>";
       }
-
+print $p["title"][0];
 
       // Clean up after errors in publishers' databases
       if (0 === strpos(trim($p["journal"][0]), "BMC ") && $p["pages"][0]) {

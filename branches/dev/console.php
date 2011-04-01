@@ -50,12 +50,16 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-/*
-die (expand_text("{{cite journal|last = Wynn|first = Peter
-  |title = On a Device for Computing the ''e<sub>m</sub>''(''S<sub>n</sub>'') Transformation
-  |journal = Mathematical Tables and Other Aids to Computation|volume = 10|issue = 54|date = Apr 1956
-  |pages = 91–96|month = Apr|year = 1956|doi = 10.2307/2002183|jstor = 10.2307/2002183|publisher = American Mathematical Society}}
+/**/
+die (expand_text("{{citation|title=Star Wars Episode IV: a New Hope.|journal=Test.|volume=50}}
 
+{{citation|title=Test.|journal=Test&nbsp;|volume=50}}
+") );
+
+/**/
+die (expand_text("
+
+{{cite journal | author = Ridzon R, Gallagher K, Ciesielski C ''et al.'' | year = 1997 | title = Simultaneous transmission of human immunodeficiency virus and hepatitis C virus from a needle-stick injury | url = | journal = N Engl J Med | volume = 336 | issue = | pages = 919–22 }}<
 <ref>http://www.ncbi.nlm.nih.gov/pubmed/15361495</ref>
 ", false));
  /* */
