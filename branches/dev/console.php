@@ -51,12 +51,16 @@ function nextPage($page){
 $ON = $argument["on"];
 ###########
 /**/
-die (expand_text("{{citation|title=Star Wars Episode IV: a New Hope.|journal=Test.|volume=50}}
+die (expand_text("
+{{cite web
+| url=http://www.ari.uni-heidelberg.de/aricns/cnspages/4c00785.htm
+| title=ARICNS 4C00785
+| publisher=Astronomisches Rechen-Institut
+| accessdate=2007-06-24 |archiveurl = http://web.archive.org/web/20070610061931/http://www.ari.uni-heidelberg.de/aricns/cnspages/4c00785.htm <!-- Bot retrieved archive --> |archivedate = 2007-06-10}}
 
-{{citation|title=Test.|journal=Test&nbsp;|volume=50}}
 ") );
 
-/**/
+//
 die (expand_text("
 
 {{cite journal | author = Ridzon R, Gallagher K, Ciesielski C ''et al.'' | year = 1997 | title = Simultaneous transmission of human immunodeficiency virus and hepatitis C virus from a needle-stick injury | url = | journal = N Engl J Med | volume = 336 | issue = | pages = 919–22 }}<

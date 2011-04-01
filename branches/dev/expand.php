@@ -154,7 +154,7 @@ function expand_text ($original_code,
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $p, $editInitiator, $edit_summaryStart, $initiatedBy, $edit_summary_end,  $slowMode, $html_output;
+  global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy, $edit_summary_end,  $slowMode, $html_output;
 
   if ($html_output === -1) {
     ob_start();
@@ -710,7 +710,7 @@ echo "
         }
 
         // Replace "volume = B 120" with "series=VB, volume = 120
-        if (preg_match("~^([A-J])(?!\w)~u", $p["volume"][0], $match)) {
+        if (preg_match("~^([A-J])(?!\w)\d*\d+~u", $p["volume"][0], $match)) {
           if (trim($p["journal"][0]) && mb_substr(trim($p["journal"][0]), -2) != " $match[1]") {
             $p["journal"][0] .= " $match[1]";
             $p["volume"][0] = trim(mb_substr($p["volume"][0], mb_strlen($match[1])));
