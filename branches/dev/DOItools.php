@@ -406,28 +406,29 @@ function get_data_from_arxiv($a) {
     if_null_set("title", (string)$xml->entry->title);
 		if_null_set("class", (string)$xml->entry->category["term"]);
 		if_null_set("author", substr($authors, 2));
+    if (if_null_set("doi", (string) $xml->entry->arxivdoi) && !nothingMissing("journal")) {
+      get_data_from_doi((string) $xml->entry->arxivdoi);
+    }
     if ($xml->entry->arxivjournal_ref) {
       $journal_data = (string) $xml->entry->arxivjournal_ref;
       if (preg_match("~(\(?([12]\d{3})\)?).*?$~", $journal_data, $match)) {
         $journal_data = str_replace($match[1], "", $journal_data);
         if_null_set("year", $match[2]);
       }
-      if (preg_match("~\d+-\d+~", $journal_data, $match)) {
+      if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
         $journal_data = str_replace($match[0], "", $journal_data);
         if_null_set("pages", str_replace("--", en_dash, $match[0]));
       }
       if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
         if_null_set("volume", $match[1]);
         if_null_set("issue", $match[2]);
-        $journal_data = preg_replace("~\d|[\s:,;]*$~", "", $journal_data);
+        $journal_data = preg_replace("~[\s:,;]*$~", "", 
+                str_replace(array($match[1], $match[2]), "", $journal_data));
       }
       if_null_set("journal", $journal_data);
     } else {
       if_null_set("year", date("Y", strtotime((string)$xml->entry->published)));
-    }
-    if (if_null_set("doi", (string) $xml->entry->arxivdoi) && !nothingMissing("journal")) {
-      get_data_from_doi((string) $xml->entry->arxivdoi);
-    }    
+    } 
 		return true;
 	}
 	return false;

@@ -82,8 +82,11 @@ function expand($page, // Title of WP page
   $auto_summary .= (($modifications["removed"])
           ? "Removed redundant parameters. "
           : ""
-          ) . (($modifications["cite_type"] || $unify_citation_templates) 
+          ) . (($modifications["cite_type"] || $unify_citation_templates)
           ? "Unified citation types. "
+          : ""
+          ) . (($modifications["combine_references"])
+          ? "Combined duplicate references. "
           : ""
           ) . (($modifications["dashes"])
           ? "Formatted [[WP:ENDASH|dashes]]. "
@@ -95,9 +98,8 @@ function expand($page, // Title of WP page
   if (!$auto_summary) {
     $auto_summary = "Misc citation tidying. ";
   }
-  print_r($modifications);
+  $modifications = null;
   echo $auto_summary;
-  die();
   $edit_summary = $editInitiator . $auto_summary . $edit_summary_end;
   
   if ($commit_edits) {
@@ -1253,8 +1255,6 @@ print $p["title"][0];
       //Unset smart edit summary parameters.  Some of these are globals modified by other functions.
       $pStart = null;
       $pEnd = null;
-      global $modifications;
-      $modifications = null;    
   } else {
     if (trim($original_code)=='') {
       echo "<b>Blank page.</b> Perhaps it's been deleted?";

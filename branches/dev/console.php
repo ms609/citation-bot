@@ -50,7 +50,7 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-/**/
+/*/
 die (expand_text("
  {{cite arXiv|eprint=0912.5480|author1=Johnson|title=The Black Hole Case: The Injunction Against the End of the World|class=physics.soc-ph|year=2009}}<
 

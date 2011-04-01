@@ -738,6 +738,8 @@ function combine_duplicate_references($page_code) {
           // Then check that the first occurrence won't be replaced
           $page_code = $code_upto_original_ref . str_replace($this_duplicate,
                     "<ref name=\"$replacement_template_name\" />", substr($ready_to_replace, $original_ref_end_pos));
+          global $modifications;
+          $modifications["combine_references"] = true;
           #print "with  \"<ref name=\"$replacement_template_name\" />\"\n";
         }
       }
