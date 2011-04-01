@@ -334,7 +334,7 @@ function get_data_from_adsabs() {
     if_null_set("issue", (string) $xml->record->issue);
     if_null_set("year", preg_replace("~\D~", "", (string) $xml->record->pubdate));
     if_null_set("pages", (string) $xml->record->page);
-    if (substr(mb_strtolower($journal_start), 0, 6) == "thesis") {}
+    if (preg_match("~\bthesis\b~ui", $journal_start)) {}
     elseif (substr($journal_start, 0, 6) == "eprint") {
       if (substr($journal_start, 7, 6) == "arxiv:") {
         if (if_null_set("arxiv", substr($journal_start, 13))) { // nothingMissing will return FALSE as no journal!
@@ -388,7 +388,7 @@ function get_data_from_arxiv($a) {
 		global $p;
 		foreach ($xml->entry->author as $auth) {
 			$i++;
-      if ($i<10) {
+      if ($i < 10) {
         $name = $auth->name;
         if (preg_match("~(.+\.)(.+?)$~", $name, $names)){
           if_null_set("author$i", $names[2]);
@@ -408,9 +408,15 @@ function get_data_from_arxiv($a) {
 		if_null_set("author", substr($authors, 2));
     if($xml->entry->arxivjournal_ref) {
       $journal_data = (string) $xml->entry->arxivjournal_ref;
-      if (preg_match("~^(?P<journal>.*?)\s*(?P<vol>\d*)\s*\((?P<year>[12]\d{3})\)\D*(?P<pages>\d*-*\d*)~", $journal_data, $match)) {
+      if (preg_match("~^(?P<num1>\d+)\s*(?P<journal>.*?)\s*(?P<num2>\d*)\s*\((?P<year>[12]\d{3})\)\D*(?P<pages>\d*-*\d*)~", $journal_data, $match)
+              ){//|| preg_match("~^(?P<vol>\d+)\s*(?P<journal>.*?oaidgjkdng)) {
         if_null_set("year", $match["year"]);
-        if_null_set("volume", $match["vol"]);
+        if ($match["num1"]) {
+          if_null_set("volume", $match["num1"]);
+          if_null_set("issue", $match["num2"]);
+        } else {
+          if_null_set("volume", $match["num2"]);
+        }
         if_null_set("pages", str_replace("--", "-", $match["pages"]));
         if_null_set("journal", $match["journal"]);
       } else {

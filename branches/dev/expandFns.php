@@ -450,16 +450,15 @@ function get_template_prefix($type) {
     preg_replace("~(isbn\s*=\s*)isbn\s?=?\s?(\d\d)~i","$1$2",
     preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$cit_i+1]))); // Replaces isbn: with isbn =*/
 function id_to_parameters() {
-  global $p;
+  global $p, $modifications;
   $id = $p["id"][0];
   if (trim($id)) {
     echo ("\n - Trying to convert ID parameter to parameterized identifiers.");
   } else {
     return false;
   }
-
   preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
-  
+ 
   foreach ($match["content"] as $i => $content) {
     $content = explode(pipePlaceholder, $content);
     unset($parameters);
@@ -522,9 +521,11 @@ function id_to_parameters() {
         if ($identifier_parameter) {
           array_shift($content);
         }
-        if_null_set($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))),
+        if (!if_null_set($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))),
                 $parameters["id"] ? $parameters["id"] : $content[0]
-                );
+                )) {
+          $modifications["removed"] = true;
+        }
         $identifier_parameter = null;
         $id = str_replace($match[0][$i], "", $id);
         break;
@@ -599,6 +600,10 @@ function tidy_citation() {
   global $p, $pStart, $modifications;
   if (!trim($pStart["title"]) && isset($p["title"][0])) {
     $p["title"][0] = formatTitle($p["title"][0]);
+  } else if ($modifications && is("title")) {
+    $p["title"][0] = (mb_substr($p["title"][0], -1) == ".")
+            ? mb_substr($p["title"][0], 0, -1)
+            : $p["title"][0];
   }
   foreach (array("pages", "page", "issue", "year") as $oParameter) {
     if (is($oParameter)) {

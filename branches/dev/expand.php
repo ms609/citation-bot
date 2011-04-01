@@ -79,15 +79,21 @@ function expand($page, // Title of WP page
     $auto_summary = substr($auto_summary,0, strlen($auto_summary)-2);
     $auto_summary.=". ";
   }
-  if ($changeCiteType || $unify_citation_templates) {
-    $auto_summary .= "Unified citation types. ";
-  }
+  $auto_summary .= (($modifications["removed"])
+          ? "Removed redundant parameters. "
+          : ""
+          ) . (($modifications["cite_type"] || $unify_citation_templates) 
+          ? "Unified citation types. "
+          : ""
+          ) . (($modifications["dashes"])
+          ? "Formatted [[WP:ENDASH|dashes]]. "
+          : ""
+          ) . (($modifications["arxiv_upgrade"])
+          ? "Updated published arXiv refs. "
+          : ""
+  );
   if (!$auto_summary) {
-    if ($modifications["dashes"]) {
-      $auto_summary .= "Formatted [[WP:ENDASH|dashes]]. ";
-    } else {
-      $auto_summary = "Misc citation tidying. ";
-    }
+    $auto_summary = "Misc citation tidying. ";
   }
   echo $auto_summary;
   $edit_summary = $editInitiator . $auto_summary . $edit_summary_end;
@@ -221,8 +227,12 @@ function expand_text ($original_code,
       // See if we can use any of the parameters lacking equals signs:
       $freeDat = explode("|", trim($p["unused_data"][0]));
       useUnusedData();
-      if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
-      else if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+      if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
+        unset($p["unused_data"]);
+      }
+      else if (substr(trim($p["unused_data"][0]), 0, 1) == "|") {
+        $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+      }
 
       echo "\n* Cite web: {$p["title"][0]}";
 
@@ -251,7 +261,7 @@ function expand_text ($original_code,
       $change_to_arxiv = is('arxiv');
       if (($change_to_arxiv || $change_to_journal) && is('eprint')) {
         rename_parameter('eprint', 'arxiv');
-        $changeCiteType = true;
+        $modifications["cite_type"] = true;
       } else if (is('arxiv') && !is('class')) {
         rename_parameter('arxiv', 'eprint');
       }
@@ -324,8 +334,8 @@ function expand_text ($original_code,
           && !(is("title") && is("author") && is("year") && is("version"))) {
           $p["eprint"][0] = str_ireplace("arXiv:", "", $p["eprint"][0]);
           echo " * Getting data from arXiv " . $p["eprint"][0];
-          if (!getDataFromArxiv($p["eprint"][0]) && is("class")) {
-            getDataFromArxiv($p["class"][0] . "/" . $p["eprint"][0]);
+          if (!get_data_from_arxiv($p["eprint"][0]) && is("class")) {
+            get_data_from_arxiv($p["class"][0] . "/" . $p["eprint"][0]);
           }
       }
 
@@ -341,8 +351,9 @@ function expand_text ($original_code,
       if ($change_to_journal && is('eprint')) {
         rename_parameter('eprint', 'arxiv');
         unset($p['class']);
+        $modifications["arxiv_upgrade"] = true;
       } else {
-        $changeCiteType = false;
+        $modifications["cite_type"] = false;
       }
 
       //And we're done!
@@ -429,7 +440,10 @@ function expand_text ($original_code,
       preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
 
       //Authors
-      if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
+      if (isset($p["authors"]) && !isset($p["author"][0])) {
+        $p["author"] = $p["authors"];
+        unset($p["authors"]);
+      }
       preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
       if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
       if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
@@ -438,8 +452,7 @@ function expand_text ($original_code,
       $dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0]));
 
       if (!isset($p["date"][0]) && !isset($p["year"][0]) && is('origyear')) {
-        $p['year'] = $p['origyear'];
-        unset ($p['origyear']);
+        rename_parameter('origyear', 'year');
       }
 
       $isbnToStartWith = isset($p["isbn"]);
@@ -624,24 +637,8 @@ echo "
           unset($p['doix']);
         }
         get_identifiers_from_url();
+        id_to_parameters();
 
-
-        // Try to extract identifiers from ID parameter
-        if (is("id")) {
-          $id = str_replace(pipePlaceholder, "|", $p["id"][0]);
-          if (preg_match("~[^\}\w]*jstor\s*\|\s*(\d+)[^\{\w\d]*~i", $id, $match)) {
-            $p["id"][0] = str_replace($match[0], "", $id);
-            if_null_set("jstor", $match[1]);
-          }
-          if (preg_match("~[^\}\w]*arxiv\s*\|\s*([\w/\.\d]+)[^\{\w\d]*~i", $id, $match)) {
-            $p["id"][0] = str_replace($match[0], "", $id);
-            if_null_set("arxiv", $match[1]);
-          }
-
-          if (!trim($p["id"][0])) {
-            unset($p["id"]);
-          }
-        }
 
         if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
           unset($p["unused_data"]);
