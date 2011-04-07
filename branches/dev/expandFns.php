@@ -4,7 +4,7 @@
 session_start();
 ini_set ("user_agent", "Citation_bot; verisimilus@toolserver.org");
 
-function includeIfNew($file){
+function includeIfNew($file) {
         // include missing files
         $alreadyIn = get_included_files();
         foreach ($alreadyIn as $include){
@@ -457,6 +457,10 @@ function id_to_parameters() {
   } else {
     return false;
   }
+  if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARVIV|LCCN)[\s:]*(\d[^\s\}\{\|]*)~iu", $id, $match)) {
+    if_null_set(strtolower($match[1]), $match[2]);
+    $id = str_replace($match[0], "", $id);
+  }
   preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
  
   foreach ($match["content"] as $i => $content) {
@@ -577,8 +581,10 @@ function get_identifiers_from_url() {
     if (preg_match($bibcode_regexp, urldecode($url), $bibcode)) {
       rename_parameter("url", "bibcode", urldecode($bibcode[1]));
     } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-            . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $match)) {
+            . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
       rename_paramter("url", "pmc", $match[1]);
+    } else if (preg_match("~^http://dx\.doi\.org/(.*)", $url, $match)) {
+      rename_paramter("url", "doi", urldecode($match[1]));
     } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
       //ARXIV
         rename_parameter("url", "arxiv", $match[1]);

@@ -883,16 +883,15 @@ function useUnusedData()
 {
 	// See if we can use any of the parameters lacking equals signs:
 	global $p;
-
-  // Separate up the unused data by pipes, into "$freeDat"
-  $freeDat = explode("|", trim($p["unused_data"][0]));
+  // Separate up the unused data by pipes, into "$free_data"
+  $free_data = explode("|", trim($p["unused_data"][0]));
 
   // Empty the parameter.  We'll put back anything we don't manage to assign to a parameter.
 	unset($p["unused_data"]);
 
-  if (isset($freeDat[0]))
+  if (isset($free_data[0]))
   {
-		foreach ($freeDat as $dat)
+		foreach ($free_data as $dat)
     {
       // If the unused data starts with a pipe, the first dat will be blank, so there's no point in checking it.
       if ($dat)

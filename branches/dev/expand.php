@@ -195,18 +195,6 @@ function expand_text ($original_code,
   }
   echo "\n Reference tags:";
   $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc"))));
-  echo "\n Making some common replacements. ";
-
-  $new_code = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-X]{10,})[\s\|\}]+[^\}]?\}\}?~iu", "$1|isbn=$3}}",
-      preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~iu", "$1|doi=$3}}",
-      preg_replace
-                  ("~(\|\s*)id(\s*=[^\|]*)(DOI:?\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Uui","$1doi$2$5$4$6",
-      preg_replace("~(\|\s*)(id\s*=\s*)\[{0,2}(PMID[:\]\s]*(\d*)|\{\{PMID[:\]\s]*\|\s*(\d*)\s*\}\})~u","$1pm$2$5$4",
-      preg_replace("~(\|\s*)id(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~iu","$1doi$2$3",
-
-      preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~u", "$1doi$2=$3",
-              $new_code
-              ))))));
   if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
     $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
     $modifications["dashes"] = true;
@@ -215,7 +203,7 @@ function expand_text ($original_code,
 
 ###################################  Cite web ######################################
   // Convert Cite webs to Cite arXivs, etc, if necessary
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~Uu", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) {//Number of brackets in cite arXiv regexp + 1
@@ -297,7 +285,7 @@ function expand_text ($original_code,
 
 ###################################  Cite arXiv ######################################
   // Makes sense to do this first as it might add DOIs, changing the citation type.
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~Uu", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation)-1);
     for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5) {//Number of brackets in cite arXiv regexp + 1
@@ -378,7 +366,7 @@ function expand_text ($original_code,
 
 ###################################  START ASSESSING BOOKS ######################################
 
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~Uu", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation)-1);
 
@@ -552,7 +540,7 @@ function expand_text ($original_code,
   }
 ###################################  START ASSESSING JOURNAL/OTHER CITATIONS ######################################
 
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[dD]ocument(?=\s*\|)|\s*[Cc]ite[_ ]?[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~uU", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+    if (false !== ($citation = preg_split("~\{\{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[dD]ocument(?=\s*\|)|\s*[Cc]ite[_ ]?[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^\{\}]|\{\{.*\}\})*)([\n\s]*)\}\}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) { //Number of brackets in cite journal regexp + 1
@@ -570,10 +558,7 @@ function expand_text ($original_code,
         // Comments will be replaced in the cText variable later
         $countComments = null;
       }
-      $p = parameters_from_citation(// Replaces doi: with doi = whilst we're at it
-              preg_replace("~(doi\s*=\s*)doi\s?=\s?(\d\d)~i","$1$2",
-            preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~i","doi$1=$1$2", $citation[$cit_i+1]))
-            ); 
+      $p = parameters_from_citation($citation[$cit_i+1]); 
       
       if ($p["doix"]) {
         $p["doi"][0] = str_replace($dotEncode, $dotDecode, $p["doix"][0]);
@@ -619,7 +604,6 @@ echo "
 
         $journal = is("periodical") ? "periodical" : "journal";
         // See if we can use any of the parameters lacking equals signs:
-        $freeDat = explode("|", trim($p["unused_data"][0]));
         useUnusedData();
 
         if (google_book_expansion()) {

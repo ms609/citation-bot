@@ -50,11 +50,9 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-/*/
+/**/
 die (expand_text("
- {{cite arXiv|eprint=0912.5480|author1=Johnson|title=The Black Hole Case: The Injunction Against the End of the World|class=physics.soc-ph|year=2009}}<
-
-{{cite arXiv|eprint=0802.2218|author1=Panagiota Kanti|title=Black Holes at the LHC|class=hep-th|year=2008}}
+: {{cite journal | url = http://www.nytimes.com/2009/09/06/magazine/06Economic-t.html}}
 ") );
 
 // For version 3:
