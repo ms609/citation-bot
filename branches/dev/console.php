@@ -53,12 +53,7 @@ $ON = $argument["on"];
 /**/
 die (expand_text("
 : {{citation
-|last=Krugman
-|first=Paul
-|authorlink=Paul Krugman
-|url=http://www.nytimes.com/2009/09/06/magazine/06Economic-t.html How Did Economists |title=Get It So Wrong?
-|publisher=[[New York Times]]
-|date=2009-09-02
+|id = {{arxiv|archive = math.LO|id = 9809202}}
 }}
 ") );
 

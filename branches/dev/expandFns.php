@@ -470,7 +470,7 @@ function id_to_parameters() {
       $content[$j++] = $fragment;
       $para = explode("=", $fragment);
       if (trim($para[1])) {
-        $parameters[$para[0]] = trim($para[1]);
+        $parameters[trim($para[0])] = trim($para[1]);
       }
     }
     switch(strtolower(trim($content[0]))) {
