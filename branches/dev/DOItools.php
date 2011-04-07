@@ -1369,6 +1369,8 @@ function deWikify($string){
 function findDoi($url){
 	global $urlsTried, $slow_mode;
   // Metas might be hidden if we don't have access the the page, so try the abstract:
+  $url = explode(" ", trim($url));
+  $url = $url[0];
   $url = preg_replace("~\.full(\.pdf)?$~", ".abstract", $url);
 
 	if (!@array_search($url, $urlsTried)){
