@@ -15,7 +15,9 @@
     ?></textarea>
       <?php
 unset ($postvars["wpTextbox1"]);
-$postvars["wpSummary"] .= " [[WP:UCB|Assisted by Citation bot]]";
+$postvars["wpSummary"] .= stripos($postvars["wpSummary"], "citation bot")
+        ? ""
+        : " | [[WP:UCB|Assisted by Citation bot]]";
 foreach ($postvars as $key => $value) {
   echo "\n\t<input type=\"hidden\" name=\"$key\" value=\"" . str_replace('"', '&#34;', $value) . "\" />";
 }
