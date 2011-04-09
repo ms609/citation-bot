@@ -4,7 +4,7 @@
 session_start();
 ini_set ("user_agent", "Citation_bot; verisimilus@toolserver.org");
 
-function includeIfNew($file){
+function includeIfNew($file) {
         // include missing files
         $alreadyIn = get_included_files();
         foreach ($alreadyIn as $include){
@@ -44,13 +44,14 @@ require_once("/home/verisimilus/public_html/crossref.login");
 quiet_echo ("...");
 $crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
-$isbnKey2 = "268OHQMW";
 $bot = new Snoopy();
 $alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
 mb_internal_encoding( 'UTF-8' ); // Avoid ??s
 
 define("editinterval", 10);
 define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
+define("to_en_dash", "-|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
+define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
 #define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DO I is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
@@ -210,6 +211,85 @@ function write($page, $data, $edit_summary = "Bot edit") {
   }
 }
 
+function parameters_from_citation($c) {
+  while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
+    $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
+  }
+  // Split citation into parameters
+  $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
+  $partsLimit = count($parts);
+  if (strpos($parts[0], "|") > 0
+          && strpos($parts[0],"[[") === FALSE
+          && strpos($parts[0], "{{") === FALSE
+      ) {
+    $p["unused_data"][0] = substr($parts[0], strpos($parts[0], "|") + 1);
+  }
+  for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
+    $value = $parts[$partsI + 3];
+    $pipePos = strpos($value, "|");
+    if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
+      // There are two "parameters" on one line.  One must be missing an equals.
+      $p["unused_data"][0] .= " " . substr($value, $pipePos);
+      print "\n----" . substr($value, $pipePos);
+      $value = substr($value, 0, $pipePos);
+    }
+    // Load each line into $p[param][0123]
+    $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
+  }
+  return $p;
+}
+
+function reassemble_citation ($p, $sort = false) {
+  // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
+  foreach ($p as $oP) {
+    $pipe = $oP[1] ? $oP[1] : null;
+    $equals = $oP[2] ? $oP[2] : null;
+    if ($pipe) break;
+  }
+  if (!$pipe) {
+     $pipe = "\n | ";
+  }
+  if (!$equals) {
+    $equals = " = ";
+  }
+#  var_dump($pipe); var_dump($equals); var_dump(preg_replace("~[\r\n]+$~", "", $equals)); die();
+  if ($sort) {
+    echo "\n (sorting parameters)";
+    uasort($p, "bubble_p");
+  }
+
+  foreach ($p as $param => $v) {
+    if ($param) {
+      $this_equals = ($v[2]?$v[2]:$equals);
+      if (trim($v[0]) && preg_match("~[\r\n]~", $this_equals)) {
+        $this_equals = preg_replace("~[\r\n]+\s*$~", "", $this_equals);
+        $nline = "\r\n";
+      } else {
+        $nline = null;
+      }
+      $cText .= ($v[1]?$v[1]:$pipe)
+                . $param
+                . $this_equals
+                . str_replace(array(pipePlaceholder, "\r", "\n"), array("|", "", " "), trim($v[0]))
+                . $nline;
+    }
+    if (is($param)) {
+      $pEnd[$param] = $v[0];
+    }
+  }
+  global $pStart, $modifications;
+  if ($pEnd) {
+    foreach ($pEnd as $param => $value){
+      if (!$pStart[$param]) {
+        $modifications["additions"][$param] = true;
+      } elseif ($pStart[$param] != $value) {
+        $modifications["additions"][$param] = true;
+      }
+    }
+  }
+  return $cText;
+}
+
 function mark_broken_doi_template($article_in_progress, $oDoi) {
   if (getRawWikiText($article_in_progress)) {
     global $editInitiator;
@@ -316,6 +396,23 @@ function loadParam($param, $value, $equals, $pipe, $weight) {
   $p[$param] = Array($value, $equals, $pipe, "weight" => ($weight + 3) / 4 * 10); // weight will be 10, 20, 30, 40 ...
 }
 
+function rename_parameter ($old_name, $new_name, $new_value = null) {
+  global $p;
+  if (is($new_name)) {
+    return false;
+  } else {
+    $p[$new_name] = $p[$old_name];
+    if ($new_value !== null) {
+      $p[$new_name][0] = $new_value;
+    }
+    unset($p[$old_name]);
+    if ($old_name == "url") {
+      unset($p["accessdate"]);
+    }
+    return true;
+  }
+}
+
 function cite_template_contents($type, $id) {
   $page = get_template_prefix($type);
   $replacement_template_name = $page . wikititle_encode($id);
@@ -347,17 +444,228 @@ function get_template_prefix($type) {
         : $type . "/");
 }
 
+//TODO:
+/*
+  // Replace ids with appropriately formatted parameters
+  $c = preg_replace("~\bid(\s*=\s*)(isbn\s*)?(\d[\-\dX ]{9,})~i","isbn$1$3",
+    preg_replace("~(isbn\s*=\s*)isbn\s?=?\s?(\d\d)~i","$1$2",
+    preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$cit_i+1]))); // Replaces isbn: with isbn =*/
+function id_to_parameters() {
+  global $p, $modifications;
+  $id = $p["id"][0];
+  if (trim($id)) {
+    echo ("\n - Trying to convert ID parameter to parameterized identifiers.");
+  } else {
+    return false;
+  }
+  if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARVIV|LCCN)[\s:]*(\d[^\s\}\{\|]*)~iu", $id, $match)) {
+    if_null_set(strtolower($match[1]), $match[2]);
+    $id = str_replace($match[0], "", $id);
+  }
+  preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
+ 
+  foreach ($match["content"] as $i => $content) {
+    $content = explode(pipePlaceholder, $content);
+    unset($parameters);
+    foreach($content as $fragment) {
+      $content[$j++] = $fragment;
+      $para = explode("=", $fragment);
+      if (trim($para[1])) {
+        $parameters[trim($para[0])] = trim($para[1]);
+      }
+    }
+    switch(strtolower(trim($content[0]))) {
+      case "arxiv":
+        array_shift($content);
+        if ($parameters["id"]) {
+          if_null_set("arxiv", ($parameters["archive"] ? trim($parameters["archive"]) . "/" : "") . trim($parameters["id"]));
+        } else if ($content[1]) {
+          if_null_set("arxiv", trim($content[0]) . "/" . trim($content[1]));
+        } else {
+          if_null_set("arxiv", implode(pipePlaceholder, $content));
+        }
+        $id = str_replace($match[0][$i], "", $id);
+        break;
+      case "lccn":
+        if_null_set("lccn", trim($content[1]) . $content[3]);
+        $id = str_replace($match[0][$i], "", $id);
+        break;
+      case "rfcurl":
+        $identifier_parameter = "rfc";
+      case "asin":
+        if ($parameters["country"]) {
+          print "\n    - {{ASIN}} country parameter not supported: can't convert.";
+          break;
+        }
+      case "oclc":
+        if ($content[2]) {
+          print "\n    - {{OCLC}} has multiple parameters: can't convert.";
+          break;
+        }
+      case "ol":
+        if ($parameters["author"]) {
+          print "\n    - {{OL}} author parameter not supported: can't convert.";
+          break;
+        }
+      case "bibcode":
+      case "doi":
+      case "isbn":
+      case "issn":
+      case "jfm":
+      case "jstor":
+        if ($parameters["sici"] || $parameters["issn"]) {
+          print "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
+          break;
+        }
+      case "mr":
+      case "osti":
+      case "pmid":
+      case "pmc":
+      case "ssrn":
+      case "zbl":
+        if ($identifier_parameter) {
+          array_shift($content);
+        }
+        if (!if_null_set($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))),
+                $parameters["id"] ? $parameters["id"] : $content[0]
+                )) {
+          $modifications["removed"] = true;
+        }
+        $identifier_parameter = null;
+        $id = str_replace($match[0][$i], "", $id);
+        break;
+      default:
+        print "\n    - No match found for $content[0].";
+    }
+  }
+  if (trim($id)) {
+    $p["id"][0] = $id;
+  } else {
+    unset($p["id"]);
+  }
+}
+
+function get_identifiers_from_url() {
+  // Convert URLs to article identifiers:
+  global $p;
+  $url = $p["url"][0];
+  
+  // JSTOR
+  if (strpos($url, "jstor.org") !== FALSE) {
+    if (strpos($url, "sici")) {
+      #print get_final_url($url);
+      #print_r(get_headers($url));
+      #print_r(get_meta_tags($url));
+      #TODO!! get redirect destination of sici URL
+      #die();
+    } elseif (preg_match("~(\d{6,})$|(\d{6,})[^\d%\-]~", $url, $match)) {
+      rename_parameter("url", "jstor", $match[0]);
+    }
+  } else {
+    // BIBCODE
+    $bibcode_regexp = "~^(?:" . str_replace(".", "\.", implode("|", Array (
+          "http://(?:\w+.)?adsabs.harvard.edu",
+          "http://ads.ari.uni-heidelberg.de",
+          "http://ads.inasan.ru",
+          "http://ads.mao.kiev.ua",
+          "http://ads.astro.puc.cl",
+          "http://ads.on.br",
+          "http://ads.nao.ac.jp",
+          "http://ads.bao.ac.cn",
+          "http://ads.iucaa.ernet.in",
+          "http://ads.lipi.go.id",
+          "http://cdsads.u-strasbg.fr",
+          "http://esoads.eso.org",
+          "http://ukads.nottingham.ac.uk",
+          "http://www.ads.lipi.go.id",
+        )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
+    if (preg_match($bibcode_regexp, urldecode($url), $bibcode)) {
+      rename_parameter("url", "bibcode", urldecode($bibcode[1]));
+    } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+            . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
+      rename_paramter("url", "pmc", $match[1]);
+    } else if (preg_match("~^http://dx\.doi\.org/(.*)", $url, $match)) {
+      rename_paramter("url", "doi", urldecode($match[1]));
+    } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
+      //ARXIV
+        rename_parameter("url", "arxiv", $match[1]);
+    } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
+      rename_parameter('url', 'pmid', $match[1]);
+    } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url , $match)) {
+      if ($match['domain'] == ".com") {
+        rename_parameter('url', 'asin', $match['id']);
+      } else {
+        $p["id"][0] .= " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
+        unset($p["url"]);
+        unset($p["accessdate"]);
+      }
+    }
+  }
+}
+
+function tidy_citation() {
+  global $p, $pStart, $modifications;
+  if (!trim($pStart["title"]) && isset($p["title"][0])) {
+    $p["title"][0] = formatTitle($p["title"][0]);
+  } else if ($modifications && is("title")) {
+    $p["title"][0] = (mb_substr($p["title"][0], -1) == ".")
+            ? mb_substr($p["title"][0], 0, -1)
+            : $p["title"][0];
+  }
+  foreach (array("pages", "page", "issue", "year") as $oParameter) {
+    if (is($oParameter)) {
+      if (mb_ereg(to_en_dash, $p[$oParameter][0])) {
+        $modifications["dashes"] = true;
+        echo ( "\n - Upgrading to en-dash in $oParameter");
+        $p[$oParameter][0] = mb_ereg_replace(to_en_dash, en_dash, $p[$oParameter][0]);
+      }
+    }
+  }
+  //Edition - don't want 'Edition ed.'
+  if (is("edition")) {
+    $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
+  }
+
+  // Remove publisher if [cite journal/doc] warrants it
+  if (is($p["journal"]) && (is("doi") || is("issn"))) {
+    unset($p["publisher"]);
+  }
+
+
+  // If we have any unused data, check to see if any is redundant!
+  if (is("unused_data")){
+    $freeDat = explode("|", trim($p["unused_data"][0]));
+    unset($p["unused_data"]);
+    foreach ($freeDat as $dat) {
+      $eraseThis = false;
+      foreach ($p as $oP) {
+        similar_text(mb_strtolower($oP[0]), mb_strtolower($dat), $percentSim);
+        if ($percentSim >= 85)
+          $eraseThis = true;
+      }
+      if (!$eraseThis) $p["unused_data"][0] .= "|" . $dat;
+    }
+    if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
+    else {
+      if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+      echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
+    }
+  }
+}
+
 function standardize_reference($reference) {
   $whitespace = Array(" ", "\n", "\r", "\v", "\t");
   return str_replace($whitespace, "", $reference);
 }
 
+// This function may need to be called twice; the second pass will combine <ref name="Name" /> with <ref name=Name />.
 function combine_duplicate_references($page_code) {
 
   $original_page_code = $page_code;
   preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
     // match 1 = ref names
-  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>(([^<]|<(?![Rr]ef))*?)</ref>~i", $page_code, $refs)) {
+  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
+          . "(([^<]|<(?![Rr]ef))+?)</ref>~i", $page_code, $refs)) {
     // match 0 = full ref; 1 = redundant; 2= used in regexp for backreference;
     // 3 = ref name; 4 = ref content; 5 = redundant
     foreach ($refs[4] as $ref) {
@@ -373,15 +681,18 @@ function combine_duplicate_references($page_code) {
       $page_code = str_replace($duplicate_content, $full_original, $page_code);
     }
   }
+
+  // Now all references that need merging will have identical content.  Proceed to do the replacements...
   // Reset
   $full_original = null;
   $duplicate_content = null;
   $standardized_ref = null;
 
-  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>(([^<]|<(?!ref))*?)</ref>~i", $page_code, $refs)) {
-    foreach ($refs[4] as $ref) {
-      $standardized_ref[] = standardize_reference($ref);
-    }
+  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
+          . "(([^<]|<(?!ref))+?)</ref>~i", $page_code, $refs)) {
+
+    $standardized_ref = $refs[4]; // They were standardized above.
+
     foreach ($refs[4] as $i => $content) {
       if (false !== ($key = array_search(standardize_reference($refs[4][$i]), $standardized_ref))
               && $key != $i) {
@@ -390,6 +701,9 @@ function combine_duplicate_references($page_code) {
         $name_of_original[] = $refs[3][$key];
         $name_of_duplicate[] = $refs[3][$i];
         $duplicate_content[] = $content;
+        $name_for[$content] = $name_for[$content] ? $name_for[$content]
+                            : ($refs[3][$key] ? $refs[3][$key]
+                            : ($refs[3][$i] ?  $refs[3][$i] : null));
       }
     }
     $already_replaced = Array(); // so that we can use FALSE and not NULL in the check...
@@ -397,23 +711,31 @@ function combine_duplicate_references($page_code) {
       foreach ($full_duplicate as $i => $this_duplicate) {
         if (FALSE === array_search($this_duplicate, $already_replaced)) {
           $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once
-          echo "\n - Replacing duplicate reference $this_duplicate"; // . " (original: $full_original[$i])";
-          $replacement_template_name = $name_of_original[$i]
-                                     ? $name_of_original[$i]
-                                     : get_name_for_reference($duplicate_content[$i], $page_code);
-          //preg_match("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
-            //                        . "(?P=quote)(\s*/>)~",
-              //                $page_code,
-                /*  $match1);*/
-          // First replace any <ref name=that'sall/> with the new name
+          echo "\n - Replacing duplicate reference $this_duplicate. \n - * Reference name: "
+          . ( $name_for[$duplicate_content[$i]] ?  $name_for[$duplicate_content[$i]] : "Autogenerating." ); // . " (original: $full_original[$i])";
+          $replacement_template_name = $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]]
+                                       : get_name_for_reference($duplicate_content[$i], $page_code);
+          // First replace any <ref name=Blah content=none /> or <ref name=Blah></ref> with the new name
           $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
-                                    . "(?P=quote)(\s*/>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
+                                    . "(?P=quote)(\s*/>|\s*>\s*</\s*ref>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
                               $page_code);
           if ($name_of_original[$i]) {
             // Don't replace the original template!
-            $replacement_template_name = $name_of_original[$i];
             $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]) + strlen($full_original[$i]);
             $code_upto_original_ref = substr($ready_to_replace, 0, $original_ref_end_pos);
+          } elseif ($name_of_duplicate[$i]) {
+            // This is an odd case; in a fashion the simplest.
+            // In effect, we switch the original and duplicate over,..
+            $original_ref_end_pos = 0;
+            $code_upto_original_ref = "";
+            $already_replaced[] = $full_original[$i];
+            $this_duplicate = $full_original[$i];
+            /*
+            $original_ref_end_pos = strpos($ready_to_replace, $full_duplicate[$i]) + strlen($full_duplicate[$i]);
+            $code_upto_original_ref = str_replace($full_original[$i]
+                    , "<ref name=\"$replacement_template_name\" />"
+                    , substr($ready_to_replace, 0, $original_ref_end_pos));
+            print ("\n88\n\n" . $full_original[$i] . "\n\n" . substr($ready_to_replace, 0, $original_ref_end_pos) . "\n88\n");*/
           } else {
             // We need add a name to the original template, and not to replace it
             $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]);
@@ -425,6 +747,8 @@ function combine_duplicate_references($page_code) {
           // Then check that the first occurrence won't be replaced
           $page_code = $code_upto_original_ref . str_replace($this_duplicate,
                     "<ref name=\"$replacement_template_name\" />", substr($ready_to_replace, $original_ref_end_pos));
+          global $modifications;
+          $modifications["combine_references"] = true;
           #print "with  \"<ref name=\"$replacement_template_name\" />\"\n";
         }
       }
@@ -477,7 +801,8 @@ function name_references($page_code) {
 }
 
 function rename_references($page_code) {
-  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)ref_?[ab]?(?:[a-z]|utogenerated)?(?P=quote)\s*>)[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
+  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-Z])?(?P=quote)\s*>)"
+                    . "[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
     $countRefs = count($refs[0]);
     for ($i = 0; $i < $countRefs; ++$i) {
       $ref_name = get_name_for_reference($refs[0][$i], $page_code);
@@ -493,30 +818,43 @@ function rename_references($page_code) {
 }
 
 function get_name_for_reference($text, $page_code) {
-  $parsed = parse_wikitext(strip_tags($text));
-  $parsed_plaintext = strip_tags($parsed);
-  $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date)
-            ?  $date[1]
-            : "" );
-  $author = preg_match("~rft\.aulast=([^&]+)~", $parsed, $author)
-          ? $author[1]
-          : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
-          ? $author[1]
-          : "ref_";
-  $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle)
-          ? $btitle[1]
-          : "";
-  if ($author != "ref_") {
-    preg_match("~\w+~", authorify($author), $author);
-  } else if ($btitle) {
-    preg_match("~\w+\s?\w+~", authorify($btitle), $author);
-  } else if ($parsed_plaintext) {
-    if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
-      preg_match("~\w+~", authorify($parsed_plaintext), $author);
+ if (strpos($text, "://")) {
+    if (preg_match("~\w+://(?:www\.)([^/]+?)(?:\.\w{2,3}\b)+~i", $text, $match)) {
+      $replacement_template_name = $match[1];
+    } else {
+      $replacement_template_name = "bare_url"; // just in case there's some bizarre way that the URL doesn't match the regexp
     }
-  }
-  $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
+  } else {
+    if (stripos($text, "{{harv") !== FALSE && preg_match("~\|([\s\w\-]+)\|\s*([12]\d{3})\D~", $text, $match)) {
+      $author = $match[1];
+      $date = $match[2];
+    } else {
+      $parsed = parse_wikitext(strip_tags($text));
+      $parsed_plaintext = strip_tags($parsed);
+      $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date)
+                ?  $date[1]
+                : "" );
+      $author = preg_match("~rft\.aulast=([^&]+)~", $parsed, $author)
+              ? $author[1]
+              : preg_match("~rft\.au=([^&]+)~", $parsed, $author)
+              ? $author[1]
+              : "ref_";
+      $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle)
+              ? $btitle[1]
+              : "";
+    }
+    if ($author != "ref_") {
+      preg_match("~\w+~", authorify($author), $author);
+    } else if ($btitle) {
+      preg_match("~\w+\s?\w+~", authorify($btitle), $author);
+    } else if ($parsed_plaintext) {
+      if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
+        preg_match("~\w+~", authorify($parsed_plaintext), $author);
+      }
+    }
+    $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
   #print "\n Replacement name: $replacement_template_name\n\n";
+  }
   return generate_template_name($replacement_template_name, $page_code);
 }
 
@@ -525,7 +863,7 @@ function get_name_for_reference($text, $page_code) {
 // then does a check against the current page code to generate a unique name for the reference
 // (by suffixing _a, etc, as necessary)
 function generate_template_name ($replacement_template_name, $page_code) {
-  $replacement_template_name = remove_accents($replacement_template_name);
+ $replacement_template_name = remove_accents($replacement_template_name);
   if (!trim(preg_replace("~\d~", "", $replacement_template_name))) {
     $replacement_template_name = "ref" . $replacement_template_name;
   }
@@ -564,6 +902,151 @@ function authorify ($author) {
           : strtolower($author);
   return $author;
 }
+
+
+function ifNullSet($a, $b) {
+  print "\n\n Redundant function ifNullSet in expandFns.php";
+  if_null_set($a, $b);
+}
+
+function if_null_set($param, $value) {
+	global $p;
+  if (substr($param, strlen($param)-3, 1) > 0 || substr($param, strlen($param)-2) > 9) {
+      // The parameter is of 'first101' or 'last10' format and adds nothing but clutter
+      return false;
+  }
+	switch ($param) {
+		case "editor": case "editor-last": case "editor-first":
+			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
+			if (trim($p["editor"][0]) == "" && trim($p["editor-last"][0]) == "" && trim($p["editor-first"][0]) == "" && trim($value)!="") {
+        set ($param, $value);
+        return true;
+      }
+			break;
+		case "author": case "last1": case "last": case "authors": // "authors" is automatically corrected by the bot to "author"; include to avoid a false positive.
+			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
+			if (trim($p["last1"][0]) == ""
+          && trim($p["last"][0]) == ""
+          && trim($p["author"][0]) == ""
+          && trim($p["author1"][0]) == ""
+          && trim($p["editor"][0]) == ""
+          && trim($p["editor-last"][0]) == ""
+          && trim($p["editor-first"][0]) == ""
+					&& trim($value) != ""
+         ) {
+        set ($param, $value);
+        return true;
+      }
+			break;
+		case "first": case "first1": case "author1":
+      if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == ""
+        && trim($p["author"][0]) == "" && trim ($p['author1'][0]) == "") {
+        set ($param, $value);
+        return true;
+      }
+      break;
+		case "coauthor": case "coauthors":
+			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
+			if (trim($p["last2"][0]) == "" && trim($p["coauthor"][0]) == "" &&trim($p["coauthors"][0]) == "" && trim($p["author"][0]) == "" && trim($value)!="") {
+        // Note; we shouldn't be using this parameter ever....
+        set ($param, $value);
+        return true;
+      }
+			break;
+		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
+		case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9":
+			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
+      if (trim($p["last" . substr($param, -1)][0]) == "" && trim($p["author" . substr($param, -1)][0]) == ""
+          && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
+          && underTwoAuthors($p['author'][0]))  {
+        set ($param, $value);
+        return true;
+      }
+			break;
+    case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10":
+			if (trim($p[$param][0]) == ""
+        && underTwoAuthors($p['author'][0]) && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
+        && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
+        && trim($value) != "")  {
+        set ($param, $value);
+        return true;
+      }
+			break;
+    case "date":
+      if (preg_match("~^\d{4}$~", trim($value))) {
+        // Not adding any date data beyond the year, so 'year' parameter is more suitable
+        $param = "year";
+      }
+      // Don't break here; we want to go straight in to year;
+		case "year":
+			if (trim($p["date"][0]) == "" && trim($p["year"][0]) == "" && trim($value)!="")  {
+        set ($param, $value);
+        return true;
+      }
+			break;
+		case "periodical": case "journal":
+			if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($value)!="") {
+        set ($param, $value);
+        return true;
+      }
+			break;
+    case "page": case "pages":
+			if (trim($p["pages"][0]) == "" && trim($p["page"][0]) == "" && trim($value) != "") {
+        set ($param, $value);
+        return true;
+      }
+      break;
+		default: if (trim($p[$param][0]) == "" && trim($value) != "") {
+        set ($param, $value);
+        return true;
+      }
+	}
+  return false;
+}
+
+function set($key, $value) {
+	global $p;
+  // Dud DOI in PMID database
+  if ($key == "doi") {
+    if ($value == "10.1267/science.040579197") {return false;}
+    else {
+      $value = str_replace(array("?cookieset=1",), "", $value);
+    }
+  }
+
+  $parameter_order = list_parameters();
+  if (trim($value) != "") {
+    $p[$key][0] = (string) $value;
+    echo "\n    + $key: $value";
+    if (!$p[$key]["weight"]) {
+      // Calculate the appropriate weight:
+      #print "-$key-" . array_search($key, $parameter_order) . array_search("year", $parameter_order);
+      $key_position = array_search($key, $parameter_order);
+      if (!$key_position) {
+        $p[$key]["weight"] = 16383;
+      } else {
+        $lightest_weight = 16383; // (2^14)-1, arbritarily large
+        for ($i = count($parameter_order); $i >= $key_position && $i > 0; $i--) {
+          if ($p[$parameter_order[$i]]["weight"] > 0) {
+            $lightest_weight = $p[$parameter_order[$i]]["weight"];
+            $lightest_param = $parameter_order[$i];
+          }
+        }
+
+        for ($i = $key_position; $i >= 0; $i--) {
+          if ($p[$parameter_order[$i]]["weight"] > 0) {
+            $heaviest_weight = $p[$parameter_order[$i]]["weight"];
+            $heaviest_param = $parameter_order[$i];
+            break;
+          }
+        }
+        $p[$key]["weight"] = ($lightest_weight + $heaviest_weight) / 2;
+        # echo " ({$p[$key]["weight"]})";
+      }
+    }
+  }
+}
+
 
 // Function from http://stackoverflow.com/questions/1890854
 // Modified to expect utf8-encoded string

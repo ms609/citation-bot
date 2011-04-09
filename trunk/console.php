@@ -26,19 +26,10 @@ $slowMode = $argument["slow"] || $argument["slowmode"] || $argument["thorough"];
 $accountSuffix = '_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
-$editInitiator = '[Pu' . revisionID() . '&beta;]';
+$editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
 
-
-/*
- 
-print "\n";
-
-print preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", "Amélie SMth");
-
-die("\n");
- 
- */
+#die (findISBN(""));
 
 function nextPage($page){
   // touch last page
@@ -59,8 +50,28 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
+/**/
+die (expand_text("
+: 1<ref name=Test>Test</ref>
+2<ref name=Example>Example</ref>
+2<ref name=Example2>Example</ref>
+3<ref name=Example2></ref>
+4<ref name=Test></ref>
+1<ref>Test</ref>
 
-#die (expand_text("{{Cite journal | 10.3318/IJES.2010.28.1}}") );
+{{reflist}}
+
+") );
+
+// For version 3:
+die (expand_text("
+
+{{cite journal | author = Ridzon R, Gallagher K, Ciesielski C ''et al.'' | year = 1997 | title = Simultaneous transmission of human immunodeficiency virus and hepatitis C virus from a needle-stick injury | url = | journal = N Engl J Med | volume = 336 | issue = | pages = 919–22 }}. (full stop to innards)<
+<ref>http://www.ncbi.nlm.nih.gov/pubmed/15361495</ref>
+", false));
+ /* */
+
+
 #die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
 /*
 foreach ($argument["pages"] as $page) {
@@ -93,28 +104,16 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   }
-  #$page = " Template:Cite doi/10.1002.2F.28SICI.291097-0290.2819980420.2958:2.2F3.3C121::AID-BIT2.3E3.0.CO.3B2-N";
-  #$ON = true; // Uncomment this line to test edits in the Zandbox; but remember to break the bot after it touches the page or it'll keep on going!
-  // The line to swtich between active & sandbox modes is in the comment block above.
-  #$page = "";
-  #$slowMode = true;
-
-  //
-  //include("expand.php");// i.e. GO!
-
   /*$start_code = getRawWikiText($page, false, false);*/
   $slow_mode = true;
 
   print "\n";
   //
-  /*
+  
   while ($page) {
     $page = nextPage($page);
     $end_text = expand($page, $ON);
   }
-  *///name_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($start_code, "doi"), "pmid"), "jstor"), "pmc"))),
-  //$end_text = ref_templates($end_text, "pmid");
-  //print "\n" . $end_text;
   //write($page, $end_text, $editInitiator . "Re task #6 : Trial edit");
 }
 die ("\n Done. \n");

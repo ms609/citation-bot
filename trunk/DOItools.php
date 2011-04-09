@@ -112,50 +112,6 @@ function is($key){
   return ("" != trim($p[$key][0])) ? true : false;
 }
 
-function set($key, $value) {
-	global $p;
-  // Dud DOI in PMID database
-  if ($key == "doi") {
-    if ($value == "10.1267/science.040579197") {return false;}
-    else {
-      $value = str_replace(array("?cookieset=1",), "", $value);
-    }
-  }
-  
-  $parameter_order = list_parameters();
-  if (trim($value) != "") {
-    $p[$key][0] = (string) $value;
-    echo "\n    + $key: $value";
-    if (!$p[$key]["weight"]) {
-      // Calculate the appropriate weight:
-      #print "-$key-" . array_search($key, $parameter_order) . array_search("year", $parameter_order);
-      $key_position = array_search($key, $parameter_order);
-      if (!$key_position) {
-        $p[$key]["weight"] = 16383;
-      } else {
-        $lightest_weight = 16383; // (2^14)-1, arbritarily large
-        for ($i = count($parameter_order); $i >= $key_position && $i > 0; $i--) {
-          if ($p[$parameter_order[$i]]["weight"] > 0) {
-            $lightest_weight = $p[$parameter_order[$i]]["weight"];
-            $lightest_param = $parameter_order[$i];
-          }
-        }
-
-        for ($i = $key_position; $i >= 0; $i--) {
-          if ($p[$parameter_order[$i]]["weight"] > 0) {
-            $heaviest_weight = $p[$parameter_order[$i]]["weight"];
-            $heaviest_param = $parameter_order[$i];
-            break;
-          }
-        }
-        $p[$key]["weight"] = ($lightest_weight + $heaviest_weight) / 2;
-        #echo " ($lightest_param, $lightest_weight + $heaviest_param, $heaviest_weight / 2 = {$p[$key]["weight"]})";
-        echo " ({$p[$key]["weight"]})";
-      }
-    }
-  }
-}
-
 function dbg($array, $key = false) {
 if(myIP())
 	echo "<pre>" . str_replace("<", "&lt;", $key?print_r(array($key=>$array),1):print_r($array,1)), "</pre>";
@@ -204,100 +160,6 @@ function jrTest($name) {
   }
   return array($name, $junior);
 }
-function ifNullSet($param, $value) {
-	global $p;
-  if (substr($param, strlen($param)-3, 1) > 0 || substr($param, strlen($param)-2) > 9) {
-      // The parameter is of 'fisrt101' or 'last10' format and adds nothing but clutter
-      return false;
-  }
-	switch ($param) {
-		case "editor": case "editor-last": case "editor-first":
-			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["editor"][0]) == "" && trim($p["editor-last"][0]) == "" && trim($p["editor-first"][0]) == "" && trim($value)!="") {
-        set ($param, $value);
-        return true;
-      }
-			break;
-		case "author": case "last1": case "last": case "authors": // "authors" is automatically corrected by the bot to "author"; include to avoid a false positive.
-			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["last1"][0]) == ""
-          && trim($p["last"][0]) == ""
-          && trim($p["author"][0]) == ""
-          && trim($p["author1"][0]) == ""
-          && trim($p["editor"][0]) == ""
-          && trim($p["editor-last"][0]) == ""
-          && trim($p["editor-first"][0]) == ""
-					&& trim($value) != ""
-         ) {
-        set ($param, $value);
-        return true;
-      }
-			break;
-		case "first": case "first1": case "author1":
-      if (trim($p["first"][0]) == "" && trim($p["first1"][0]) == ""
-        && trim($p["author"][0]) == "" && trim ($p['author1'][0]) == "") {
-        set ($param, $value);
-        return true;
-      }
-      break;
-		case "coauthor": case "coauthors":
-			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-			if (trim($p["last2"][0]) == "" && trim($p["coauthor"][0]) == "" &&trim($p["coauthors"][0]) == "" && trim($p["author"][0]) == "" && trim($value)!="") {
-        // Note; we shouldn't be using this parameter ever....
-        set ($param, $value);
-        return true;
-      }
-			break;
-		case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
-		case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9":
-			$param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-      if (trim($p["last" . substr($param, -1)][0]) == "" && trim($p["author" . substr($param, -1)][0]) == ""
-          && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
-          && underTwoAuthors($p['author'][0]))  {
-        set ($param, $value);
-        return true;
-      }
-			break;
-    case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10":
-			if (trim($p[$param][0]) == ""
-        && underTwoAuthors($p['author'][0]) && trim($p["author" . substr($param, strlen($param)-1)][0]) == ""
-        && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
-        && trim($value) != "")  {
-        set ($param, $value);
-        return true;
-      }
-			break;
-    case "date":
-      if (preg_match("~^\d{4}$~", trim($value))) {
-        // Not adding any date data beyond the year, so 'year' parameter is more suitable
-        $param = "year";
-      }
-      // Don't break here; we want to go straight in to year;
-		case "year":
-			if (trim($p["date"][0]) == "" && trim($p["year"][0]) == "" && trim($value)!="")  {
-        set ($param, $value);
-        return true;
-      }
-			break;
-		case "periodical": case "journal":
-			if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($value)!="") {
-        set ($param, $value);
-        return true;
-      }
-			break;
-    case "page": case "pages":
-			if (trim($p["pages"][0]) == "" && trim($p["page"][0]) == "" && trim($value) != "") {
-        set ($param, $value);
-        return true;
-      }
-      break;
-		default: if (trim($p[$param][0]) == "" && trim($value) != "") {
-        set ($param, $value);
-        return true;
-      }
-	}
-  return false;
-}
 
 function nothingMissing($journal){
   global $authors_missing;
@@ -308,21 +170,21 @@ function nothingMissing($journal){
         && is("title")
         && (is("date") || is("year"))
         && (is("author2") || is("author2"))
-        && !$authors_missing
+        && (!$authors_missing &&  (is("author") || is("author1")))
   );
 }
 
 
-function expand_from_pubmed() {
+function get_data_from_pubmed() {
   global $p;
-  echo "\n - Checking PMID {$p['pmid'][0]} for more details";
+  echo "\n - Checking PMID {$p['pmid'][0]} for more details [DOItools.php/get_data_from_pubmed]";
   $details = pmArticleDetails($p['pmid'][0]);
   foreach ($details as $key => $value) {
-    ifNullSet($key, $value);
+    if_null_set($key, $value);
   }
   if (false && !is("url")) { // TODO:  BUGGY - CHECK PMID DATABASES, and see other occurrence above
     if (!is('pmc')) {
-    $url = pmFullTextUrl($p["pmid"][0]);
+     $url = pmFullTextUrl($p["pmid"][0]);
     } else {
       unset ($p['url']);
     }
@@ -332,8 +194,7 @@ function expand_from_pubmed() {
   }
 }
 
-function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false) {
-
+function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence = false) {
   if ($silence) {
     ob_start();
   }
@@ -365,37 +226,39 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
     if ($editing_cite_doi_template) {
       $doiCrossRef = $crossRef;
     }
-    ifNullSet("title", $crossRef->article_title);
-    ifNullSet("year", $crossRef->year);
+    if_null_set("title", $crossRef->article_title);
+    if_null_set("year", $crossRef->year);
     if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
         && $crossRef->contributors->contributor) {
       foreach ($crossRef->contributors->contributor as $author) {
         if ($author["contributor_role"] == "editor") {
           ++$ed_i;
           if ($ed_i < 5) {
-            ifNullSet("editor$ed_i-last", formatSurname($author->surname));
-            ifNullSet("editor$ed_i-first", formatForename($author->given_name));
+            if_null_set("editor$ed_i-last", formatSurname($author->surname));
+            if_null_set("editor$ed_i-first", formatForename($author->given_name));
           }
         } else {
           ++$au_i;
           if ($au_i < 10) {
-            ifNullSet("last$au_i", formatSurname($author->surname));
-            ifNullSet("first$au_i", formatForename($author->given_name));
+            if_null_set("last$au_i", formatSurname($author->surname));
+            if_null_set("first$au_i", formatForename($author->given_name));
           }
         }
       }
     }
-    ifNullSet("doi", $crossRef->doi);
+    if_null_set("doi", $crossRef->doi);
     if ($jstor_redirect) {
       global $jstor_redirect_target;
       $jstor_redirect_target = $crossRef->doi;
     }
-    ifNullSet("journal", $crossRef->journal_title);
-    ifNullSet("volume", $crossRef->volume);
-    if ((integer) $crossRef->issue > 0) {
-      ifNullSet("issue", $crossRef->issue);
+    if_null_set("journal", $crossRef->journal_title);
+    if_null_set("volume", $crossRef->volume);
+    if ((integer) $crossRef->issue > 1) {
+    // "1" may refer to a journal without issue numbers,
+    //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
+      if_null_set("issue", $crossRef->issue);
     }
-    if (!is("page")) ifNullSet("pages", $crossRef->first_page
+    if (!is("page")) if_null_set("pages", $crossRef->first_page
               . ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)
               ? "-" . $crossRef->last_page //replaced by an endash later in script
               : "") );
@@ -410,31 +273,162 @@ function expand_from_doi($crossRef, $editing_cite_doi_template, $silence = false
   return $crossRef;
 }
 
+// text must be text that contains  a SICI.  It could be an entire citation.
+function get_data_from_sici($text) {
+  if (preg_match(siciRegExp, urldecode($text), $sici)) {
+    if (!is($journal) && !is("issn")) set("issn", $sici[1]);
+    #if (!is ("year") && !is("month") && $sici[3]) set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
+    if (!is("year")) set("year", $sici[2]);
+    #if (!is("day") && is("month") && $sici[4]) set ("day", $sici[4]);
+    if (!is("volume")) set("volume", 1*$sici[5]);
+    if (!is("issue") && $sici[6]) set("issue", 1*$sici[6]);
+    if (!is("pages") && !is("page")) set("pages", 1*$sici[7]);
+    return true;
+  } else return false;
+}
+
+function get_data_from_adsabs() {
+  global $p;
+  $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
+  if (is("bibcode")) {
+    $xml = simplexml_load_file($url_root . "bibcode=" . $p["bibcode"][0]);
+  } elseif (is("doi")) {
+    $xml = simplexml_load_file($url_root . "doi=" . $p["doi"][0]);
+  } elseif (is("title")) {
+    $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $p["title"][0] . '"'));
+    $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($xml->record->title)));
+    $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($p["title"][0])));
+    if (
+         (strlen($inTitle) > 254 || strlen(dbTitle) > 254) 
+            ? strlen($inTitle) != strlen($dbTitle) || similar_text($inTitle, $dbTitle)/strlen($inTitle) < 0.98
+            : levenshtein($inTitle, $dbTitle) > 3
+        ) {
+      echo "\n   Similar title not found in database";
+      return false;
+    }
+  }
+  if ($xml["retrieved"] != 1 && is("journal")) {
+    // try partial search using bibcode components:
+    $xml = simplexml_load_file($url_root
+            . "year=" . $p["year"][0]
+            . "&volume=" . $p["volume"][0]
+            . "&page=" . ($p["pages"] ? $p["pages"][0] : $p["page"][0])
+            );
+    $journal_string = explode(",", (string) $xml->record->journal);
+    $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
+    if (strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $p["journal"][0])),
+            mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))) === FALSE) {
+      echo "\n   Match for pagination but database journal \"{$journal_string[0]}\" didn't match \"journal = {$p["journal"][0]}\".";
+      return false;
+    }
+  }
+  if ($xml["retrieved"] == 1) {
+    if_null_set("bibcode", (string) $xml->record->bibcode);
+    if_null_set("title", (string) $xml->record->title);
+    foreach ($xml->record->author as $author) {
+      if_null_set("author" . ++$i, $author);
+    }
+    $journal_string = explode(",", (string) $xml->record->journal);
+    $journal_start = mb_strtolower($journal_string[0]);
+    if_null_set("volume", (string) $xml->record->volume);
+    if_null_set("issue", (string) $xml->record->issue);
+    if_null_set("year", preg_replace("~\D~", "", (string) $xml->record->pubdate));
+    if_null_set("pages", (string) $xml->record->page);
+    if (preg_match("~\bthesis\b~ui", $journal_start)) {}
+    elseif (substr($journal_start, 0, 6) == "eprint") {
+      if (substr($journal_start, 7, 6) == "arxiv:") {
+        if (if_null_set("arxiv", substr($journal_start, 13))) { // nothingMissing will return FALSE as no journal!
+          get_data_from_arxiv(substr($journal_start, 13));
+          }
+      } else {
+        $p["id"][0] .= " " . substr($journal_start, 13);
+      }
+    } else {
+      if_null_set("journal", $journal_string[0]);
+    }
+    if (if_null_set("doi", (string) $xml->record->DOI) && nothingMissing("journal")) {
+      get_data_from_doi();
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function expand_from_doi($a, $b, $c = false) {
+  print "\n\n !! ==== \n\n USING DUD FN DOI! \n\n";
+  expand_from_crossref($a, $b, $c);
+}
+
+function get_data_from_doi() {
+  global $editing_cite_doi_template;
+  return expand_from_crossref(crossRefData($doi), $editing_cite_doi_template);
+}
+
 function getDataFromArxiv($a) {
-  $xml = simplexml_load_file( "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a");
+  print "\n\n !! ==== \n\n USING DUD FN ARXIV! \n\n";
+  return get_data_from_arxiv($a);
+}
+
+function expand_from_pubmed() {
+  print "\n\n !! ==== \n\n USING DUD FN PMID! \n\n";
+  return get_data_from_pubmed();
+}
+
+function getInfoFromISBN() {
+  print "\n\n !! ==== \n\n USING DUD FN ISBN! \n\n";
+  return get_data_from_isbn($a);
+}
+
+function get_data_from_arxiv($a) {
+  $xml = simplexml_load_string(
+          preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$a"))
+          );
 	if ($xml) {
 		global $p;
 		foreach ($xml->entry->author as $auth) {
 			$i++;
-      if ($i<10) {
+      if ($i < 10) {
         $name = $auth->name;
         if (preg_match("~(.+\.)(.+?)$~", $name, $names)){
-          ifNullSet("author$i", $names[2]);
-          ifNullSet("first$i", $names[1]);
+          if_null_set("author$i", $names[2]);
+          if_null_set("first$i", $names[1]);
           // If there's a newline before the forename,, remove it so it displays alongside the surname.
           if (strpos($p["first$i"], "\n" !== false)) {
             $p["first$i"][1] = " | ";
           }
         }
         elseif (trim($p['author'][0]) == "") {
-            ifNullSet("author$i", $name);
+            if_null_set("author$i", $name);
         }
       }
 		}
-		ifNullSet("title", (string)$xml->entry->title);
-		ifNullSet("class", (string)$xml->entry->category["term"]);
-		ifNullSet("author", substr($authors, 2));
-		ifNullSet("year", date("Y", strtotime((string)$xml->entry->published)));
+    if_null_set("title", (string)$xml->entry->title);
+		if_null_set("class", (string)$xml->entry->category["term"]);
+		if_null_set("author", substr($authors, 2));
+    if (if_null_set("doi", (string) $xml->entry->arxivdoi) && !nothingMissing("journal")) {
+      get_data_from_doi((string) $xml->entry->arxivdoi);
+    }
+    if ($xml->entry->arxivjournal_ref) {
+      $journal_data = (string) $xml->entry->arxivjournal_ref;
+      if (preg_match("~(\(?([12]\d{3})\)?).*?$~", $journal_data, $match)) {
+        $journal_data = str_replace($match[1], "", $journal_data);
+        if_null_set("year", $match[2]);
+      }
+      if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
+        $journal_data = str_replace($match[0], "", $journal_data);
+        if_null_set("pages", str_replace("--", en_dash, $match[0]));
+      }
+      if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
+        if_null_set("volume", $match[1]);
+        if_null_set("issue", $match[2]);
+        $journal_data = preg_replace("~[\s:,;]*$~", "", 
+                str_replace(array($match[1], $match[2]), "", $journal_data));
+      }
+      if_null_set("journal", $journal_data);
+    } else {
+      if_null_set("year", date("Y", strtotime((string)$xml->entry->published)));
+    } 
 		return true;
 	}
 	return false;
@@ -447,14 +441,14 @@ function get_data_from_jstor($jid) {
   if ($xml->srw___numberOfRecords == 1) {
     $data = $xml->srw___records->srw___record->srw___recordData;
     global $p;
-    if (trim(substr($p["doi"][0], 0, 7)) == "10.2307") {
+    if (trim(substr($p["doi"][0], 0, 7)) == "10.2307" || is("jstor")) {
       if (strpos($p["url"][0], "jstor.org")) {
         unset($p["url"]);
-        ifNullSet("jstor", substr($jid, 8));
+        if_null_set("jstor", substr($jid, 8));
       }
     }
     if (preg_match("~(pp\. )?(\w*\d+.*)~", $data->dc___coverage, $match)) {
-      ifNullSet("pages", str_replace("___", ":", $match[2]));
+      if_null_set("pages", str_replace("___", ":", $match[2]));
     }
     foreach ($data->dc___creator as $author) {
       $i++;
@@ -463,26 +457,26 @@ function get_data_from_jstor($jid) {
       $first = str_replace(" .", "",
                  preg_replace("~(\w)\w*\W*((\w)\w*\W+)?((\w)\w*\W+)?((\w)\w*)?~",
                               "$1. $3. $5. $7.", $oAuthor[1]));
-      ifNullSet("last$i", $oAuthor[0]);
-      ifNullSet("first$i", $first);
+      if_null_set("last$i", $oAuthor[0]);
+      if_null_set("first$i", $first);
     }
-    ifNullSet("title", (string) str_replace("___", ":", $data->dc___title)) ;
+    if_null_set("title", (string) str_replace("___", ":", $data->dc___title)) ;
     if (preg_match("~(.*),\s+Vol\.\s+([^,]+)(, No\. (\S+))?~", str_replace("___", ":", $data->dc___relation), $match)) {
-      ifNullSet("journal", $match[1]);
-      ifNullSet("volume", $match[2]);
-      ifNullSet("issue", $match[4]);
+      if_null_set("journal", str_replace("___", ":", $match[1]));
+      if_null_set("volume", $match[2]);
+      if_null_set("issue", $match[4]);
       $handled_data = true;
     } else {
       if (preg_match("~Vol\.___\s*([\w\d]+)~", $data->dc___relation, $match)) {
-        ifNullSet("volume", $match[1]);
+        if_null_set("volume", $match[1]);
         $handled_data = true;
       }
       if (preg_match("~No\.___\s*([\w\d]+)~", $data->dc___relation, $match)) {
-        ifNullSet("issue", $match[1]);
+        if_null_set("issue", $match[1]);
         $handled_data = true;
       }
       if (preg_match("~JOURNAL___\s*([\w\d\s]+)~", $data->dc___relation, $match)) {
-        ifNullSet("journal", $match[1]);
+        if_null_set("journal", str_replace("___", ":", $match[1]));
         $handled_data = true;
       }
     }
@@ -491,10 +485,10 @@ function get_data_from_jstor($jid) {
     }
     /* -- JSTOR's publisher field is often dodgily formatted.
     if (preg_match("~[^/;]*~", $data->dc___publisher, str_replace("___", ":", $match))) {
-      ifNullSet("publisher", $match[0]);
+      if_null_set("publisher", $match[0]);
     }*/
     if (preg_match ("~\d{4}~", $data->dc___date[0], $match)) {
-      ifNullSet("year", str_replace("___", ":", $match[0]));
+      if_null_set("year", str_replace("___", ":", $match[0]));
     }
     return true;
   } else {
@@ -503,7 +497,7 @@ function get_data_from_jstor($jid) {
   }
 }
 
-function crossRefData($doi){
+function crossRefData($doi) {
 	global $crossRefId;
   $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
   $xml = @simplexml_load_file($url);
@@ -523,16 +517,15 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 		if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
 		if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
 		if ($author) $url .= "&auauthor=" . urlencode($author);
-		if ($year) $url .= "&date=" . urlencode($year);
+		if ($year) $url .= "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year));
 		if ($volume) $url .= "&volume=" . urlencode($volume);
 		if ($startpage) $url .= "&spage=" . urlencode($startpage);
 		if ($endpage > $startpage) $url .= "&epage=" . urlencode($endpage);
     if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef. ";
-		if ($result["status"] == "resolved") {
+    if ($result["status"] == "resolved") {
       return $result;
     }
   }
-  //die ("\n\n" . $url . "\n\n");
 	if ($url1) {
 		$url = "http://www.crossref.org/openurl/?url_ver=Z39.88-2004&req_dat=$crossRefId&rft_id=info:http://" . urlencode(str_replace(Array("http://", "&noredirect=true"), Array("", ""), urldecode($url1)));
 		if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef via URL. ";
@@ -555,7 +548,7 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
 }
 
 function textToSearchKey($key){
-	switch (strtolower($key)){
+	switch (mb_strtolower($key)){
 		case "doi": return "AID";
 		case "author": case "author1": return "Author";
 		case "author": case "author1": return "Author";
@@ -640,11 +633,11 @@ function searchForPmid() {
   echo "\n - Searching PubMed... ";
   $results = (pmSearchResults($p));
   if ($results[1] == 1) {
-    ifNullSet('pmid', $results[0]);
+    if_null_set('pmid', $results[0]);
     $details = pmArticleDetails($results[0]);
     echo " 1 result found; updating citation";
     foreach ($details as $key=>$value) {
-      ifNullSet ($key, $value);
+      if_null_set ($key, $value);
     }
     if (!is('doi')) {
       // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
@@ -661,7 +654,7 @@ function searchForPmid() {
     }
   } else {
     echo " nothing found.";
-    if (strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && !is("journal")) {
+    if (mb_strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && !is("journal")) {
       // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
       echo "\n - Checking for ISBN";
       $isbnToStartWith = isset($p["isbn"]);
@@ -808,19 +801,19 @@ function google_book_details ($gid) {
   $simplified_xml = str_replace(":", "___", file_get_contents($google_book_url));
   $xml = simplexml_load_string($simplified_xml);
   if ($xml->dc___title[1]) {
-    ifNullSet("title", str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]));
+    if_null_set("title", str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]));
   } else {
-    ifNullSet("title", str_replace("___", ":", $xml->title));
+    if_null_set("title", str_replace("___", ":", $xml->title));
   }
   /*  Possibly contains dud information on occasion
-  ifNullSet("publisher", str_replace("___", ":", $xml->dc___publisher));
+  if_null_set("publisher", str_replace("___", ":", $xml->dc___publisher));
     */
   foreach ($xml->dc___identifier as $ident) {
     if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
       $isbn = $match[1];
     }
   }
-  ifNullSet("isbn", $isbn);
+  if_null_set("isbn", $isbn);
   // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
   $i = null;
   if (!is("editor") && !is("editor1") && !is("editor1-last") && !is("editor-last")
@@ -829,30 +822,28 @@ function google_book_details ($gid) {
 
     foreach ($xml->dc___creator as $author) {
       $i++;
-      ifNullSet("author$i", formatAuthor(str_replace("___", ":", $author)));
+      if_null_set("author$i", formatAuthor(str_replace("___", ":", $author)));
     }
   }
-  ifNullSet("date", $xml->dc___date);
+  if_null_set("date", $xml->dc___date);
 }
 
-function findISBN($title, $auth=false){
-	global $isbnKey2;
-	$title = trim($title); $auth=trim($auth);
-	$xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey2&index1=combined&value1=" . urlencode($title . " " . $auth));
-	if (false) dbg(array(
-		$title  => $author,
-		(string) $xml->BookList->BookData[$i]->Title => similar_text($xml->BookList->BookData[$i]->Title, $title),
-		(string) $xml->BookList->BookData[$i]->Title . "au" => similar_text($xml->BookList->BookData[$i]->Title, $author),
-		(string) $xml->BookList->BookData[$i]->TitleLong => similar_text($xml->BookList->BookData[$i]->TitleLong, $title),
-		(string) $xml->BookList->BookData[$i]->TitleLong  . "au"=> similar_text($xml->BookList->BookData[$i]->TitleLong, $author),
-		(string) $xml->BookList->BookData[$i]->AuthorsText => similar_text($xml->BookList->BookData[$i]->AuthorsText, $title),
-		(string) $xml->BookList->BookData[$i]->AuthorsText ."au"=> similar_text($xml->BookList->BookData[$i]->AuthorsText, $author)
-	));
-	if ($xml->BookList["total_results"] == 1) return (string) $xml->BookList->BookData["isbn"];
-	if ($auth && $title) return ($xml->BookList["total_results"] > 0)?(string) $xml->BookList->BookData["isbn"]:false;
+function findISBN ($title, $auth = false) {
+	global $isbnKey, $over_isbn_limit;
+  // TODO: implement over_isbn_limit based on &results=keystats in API
+  if (!$over_isbn_limit) {
+    $title = trim($title); $auth = trim($auth);
+    $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth));
+    if ($xml->BookList["total_results"] == 1) return (string) $xml->BookList->BookData["isbn"];
+    if ($auth && $title) {
+      return $xml->BookList["total_results"] > 0
+              ? (string) $xml->BookList->BookData["isbn"]
+              : false;
+    }
+  } else return false;
 }
 
-function getInfoFromISBN(){
+function get_data_from_isbn() {
 	global $p, $isbnKey;
 	$params = array("author"=>"author", "year"=>"year", "publisher"=>"publisher", "location"=>"city", "title"=>"title"/*, "oclc"=>"oclcnum"*/);
 	if (is("author") || is("first") || is("author1") ||
@@ -870,7 +861,7 @@ function getInfoFromISBN(){
 	if ($xml["stat"]=="ok") {
 		foreach ($params as $key => $value)	{
 			if (preg_match("~[^\[\]<>]+~", $xml->isbn[$value], $match)) {
-        ifNullSet($key, $match[0]);
+        if_null_set($key, $match[0]);
       }
 		}
 		if (substr($p["author"][0], 0, 3) == "by ") $p["author"][0] =substr( $p["author"][0], 3);
@@ -892,16 +883,15 @@ function useUnusedData()
 {
 	// See if we can use any of the parameters lacking equals signs:
 	global $p;
-
-  // Separate up the unused data by pipes, into "$freeDat"
-  $freeDat = explode("|", trim($p["unused_data"][0]));
+  // Separate up the unused data by pipes, into "$free_data"
+  $free_data = explode("|", trim($p["unused_data"][0]));
 
   // Empty the parameter.  We'll put back anything we don't manage to assign to a parameter.
 	unset($p["unused_data"]);
 
-  if (isset($freeDat[0]))
+  if (isset($free_data[0]))
   {
-		foreach ($freeDat as $dat)
+		foreach ($free_data as $dat)
     {
       // If the unused data starts with a pipe, the first dat will be blank, so there's no point in checking it.
       if ($dat)
@@ -959,10 +949,10 @@ function useUnusedData()
               default:
                 $endnote_parameter = false;
             }
-            if ($endnote_parameter && ifNullSet($endnote_parameter, substr($endnote_line, 1))) {
-              global $smartSum;
-              if (!strpos("Converted Endnote citation to WP format", $smartSum)) {
-                $smartSum .= "Converted Endnote citation to WP format. ";
+            if ($endnote_parameter && if_null_set($endnote_parameter, substr($endnote_line, 1))) {
+              global $auto_summary;
+              if (!strpos("Converted Endnote citation to WP format", $auto_summary)) {
+                $auto_summary .= "Converted Endnote citation to WP format. ";
               }
               $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
             }
@@ -993,7 +983,7 @@ function useUnusedData()
               case "EP":
                 $end_page = trim($ris_part[1]);
                 $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-                ifNullSet("pages", $start_page . "-" . $end_page);
+                if_null_set("pages", $start_page . "-" . $end_page);
                 break;
               case "DO":
                 $ris_parameter = "doi";
@@ -1024,11 +1014,11 @@ function useUnusedData()
             }
             unset($ris_part[0]);
             if ($ris_parameter
-                    && ifNullSet($ris_parameter, trim(implode($ris_part)))
+                    && if_null_set($ris_parameter, trim(implode($ris_part)))
                 ) {
-              global $smartSum;
-              if (!strpos("Converted RIS citation to WP format", $smartSum)) {
-                $smartSum .= "Converted RIS citation to WP format. ";
+              global $auto_summary;
+              if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
+                $auto_summary .= "Converted RIS citation to WP format. ";
               }
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
             }
@@ -1047,11 +1037,11 @@ function useUnusedData()
           if (substr($dat, 0, $para_len) == $parameter) {
             $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
             $parameter_value = ($character_after_parameter == "-")?substr(trim(substr($dat, $para_len)), 1):substr($dat, $para_len);
-            ifNullSet($parameter, $parameter_value);
+            if_null_set($parameter, $parameter_value);
             break;
           }
           $test_dat = preg_replace("~\d~", "_$0",
-                      preg_replace("~[ -+].*$~", "", substr(strtolower($dat), 0, $para_len)));
+                      preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
           if ($para_len < 3)
           {
             break; // minimum length to avoid false positives
@@ -1118,7 +1108,7 @@ function useUnusedData()
         {
           // Extract whatever appears before the first space, and compare it to common parameters
           $pAll = explode(" ", trim($dat));
-          $p1 = strtolower($pAll[0]);
+          $p1 = mb_strtolower($pAll[0]);
           switch ($p1) {
           case "volume": case "vol":
           case "pages": case "page":
@@ -1283,7 +1273,7 @@ function correct_parameter_spelling($p) {
   }
   if ($mod) {
     foreach ($mod as $wrong => $right) {
-      if (ifNullSet($right, $p[$wrong][0])) {
+      if (if_null_set($right, $p[$wrong][0])) {
         $p[$right] = $p[$wrong];
         unset ($p[$wrong]);
       }
@@ -1354,13 +1344,13 @@ function file_size($url, $redirects = 0){
    foreach($arr_headers as $header) {
 			// follow redirect
 			$s = 'Location: ';
-			if($redirects < 3 && substr(strtolower ($header), 0, strlen($s)) == strtolower($s)) {
+			if($redirects < 3 && substr(mb_strtolower ($header), 0, strlen($s)) == mb_strtolower($s)) {
 				$url = trim(substr($header, strlen($s)));
 				return file_size($url, $redirects + 1);
 			}
 			// parse for content length
        $s = "Content-Length: ";
-       if(substr(strtolower ($header), 0, strlen($s)) == strtolower($s)) {
+       if(substr(mb_strtolower ($header), 0, strlen($s)) == mb_strtolower($s)) {
            $return = trim(substr($header, strlen($s)));
            break;
        }
@@ -1379,6 +1369,8 @@ function deWikify($string){
 function findDoi($url){
 	global $urlsTried, $slow_mode;
   // Metas might be hidden if we don't have access the the page, so try the abstract:
+  $url = explode(" ", trim($url));
+  $url = $url[0];
   $url = preg_replace("~\.full(\.pdf)?$~", ".abstract", $url);
 
 	if (!@array_search($url, $urlsTried)){
@@ -1390,7 +1382,7 @@ function findDoi($url){
 		//Try meta tags first.
     $meta = @get_meta_tags($url);
 		if ($meta) {
-			ifNullSet("pmid", $meta["citation_pmid"]);
+			if_null_set("pmid", $meta["citation_pmid"]);
       foreach ($meta as $oTag){
 				if (preg_match("~^\s*10\.\d{4}/\S*\s*~", $oTag)) {
           $doi = $oTag;
@@ -1588,11 +1580,11 @@ function checkTextForMetas($text){
 	foreach ($pairs as $pair) {
     $i = 1;
 		foreach ($m2p as $metaKey => $metaValue) {
-			if (strtolower($pair[0]) == strtolower($metaKey)) {
+			if (mb_strtolower($pair[0]) == mb_strtolower($metaKey)) {
         if ($metaValue == "author") {
           $metaValue = "author" . $i++;
         }
-        ifNullSet($metaValue, $pair[1]);
+        if_null_set($metaValue, $pair[1]);
       }
     }
   }
@@ -1615,14 +1607,14 @@ function checkTextForMetas($text){
 		//$newp["month"][0] = date("M", strtotime($newp["date"][0])); DISABLED BY EUBLIDES
 		unset($newp["date"]);
 	}
-	foreach ($newp as $p => $p0) ifNullSet($p, $p0[0]);
+	foreach ($newp as $p => $p0) if_null_set($p, $p0[0]);
 }
 
 function literate($string){
 	//remove all html, spaces and &eacute; things  from text, only leaving letters and digits
 	preg_match_all("~(&[\w\d]*;)?(\w+)~", $string, $letters);
 		foreach ($letters[2] as $letter) $return .= $letter;
-	return strtolower($return);
+	return mb_strtolower($return);
 }
 
 
@@ -1647,26 +1639,25 @@ function truncatePublisher($p){
 
 function niceTitle($in, $sents = true){
 	global $dontCap, $unCapped;
-
-	if ($in == strtoupper($in) && strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
+	if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
 		$in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
 	}
   $in = str_ireplace(" (New York, N.Y.)", "", $in); // Pubmed likes to include this after "Science", for some reason
   $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
 	if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
-		$newcase = preg_replace("~(\w\s+)A(\s+\w)~", "$1a$2",
-					preg_replace_callback("~\w{2}'[A-Z]\b~" /*Apostrophes*/, create_function(
+		$newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
+					preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
 	            '$matches',
-	            'return strtolower($matches[0]);'
-	        ), preg_replace_callback("~[?.!]\s+[a-z]~" /*Capitalise after punctuation*/, create_function(
+	            'return mb_strtolower($matches[0]);'
+	        ), preg_replace_callback("~[?.:!]\s+[a-z]~u" /*Capitalise after punctuation*/, create_function(
 	            '$matches',
-	            'return strtoupper($matches[0]);'
+	            'return mb_strtoupper($matches[0]);'
 	        ), trim($captIn))));
 	} else {
-		$newcase = preg_replace("~(\w\s+)A(\s+\w)~", "$1a$2",
-					preg_replace_callback("~\w{2}'[A-Z]\b~" /*Apostrophes*/, create_function(
+		$newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
+					preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
 	            '$matches',
-	            'return strtolower($matches[0]);'
+	            'return mb_strtolower($matches[0]);'
 	        ), trim(($captIn))));
 	}
   if (in_array(" " . trim($newcase) . " ", $unCapped)) {
@@ -1674,7 +1665,8 @@ function niceTitle($in, $sents = true){
     return $newcase;
   } else {
     // Catch "the Journal" --> "The Journal"
-    return ucfirst($newcase);
+    $newcase = mb_convert_case(mb_substr($newcase, 0, 1), MB_CASE_TITLE, "UTF-8") . mb_substr($newcase, 1);
+    return $newcase;
   }
 }
 
@@ -1778,7 +1770,7 @@ function fmtSurname2($surname) {
 function formatForename($forename){
 	return str_replace(array(" ."), "", trim(preg_replace_callback("~\w{4,}~",  create_function(
             '$matches',
-            'return ucfirst(strtolower($matches[0]));'
+            'return ucfirst(mb_strtolower($matches[0]));'
         ), $forename)));
 }
 
@@ -1794,13 +1786,13 @@ function formatInitials($str){
 	if ($str == "") return false;
 	if (substr($str, strlen($str)-1) == ";") $end = ";";
 	preg_match_all("~\w~", $str, $match);
-	return strtoupper(implode(".",$match[0]) . ".") . $end;
+	return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
 function isInitials($str){
 	if (!$str) return false;
 	if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return false;
 	if (strlen(str_replace(array("-", ".", ";"), "", $str)) ==1) return true;
-	if (strtoupper($str) != $str) return false;
+	if (mb_strtoupper($str) != $str) return false;
 	return true;
 }
 
@@ -1865,7 +1857,7 @@ function formatAuthor($author){
 						if (isInitials($A)) $i[] = formatInitials($A);
 					}
 				}
-				$fore = strtoupper(implode(".", $i));
+				$fore = mb_strtoupper(implode(".", $i));
 			} else {
 				// it ends with the surname
 				$surname = $auth[$countAuth-1];
@@ -1940,19 +1932,22 @@ function formatAuthors($authors, $returnAsArray = false){
 	}
 }
 
-function formatTitle($title){
-	$title = html_entity_decode($title,null,"UTF-8");
-	if (substr($title, strlen($title)-1) == ".") $title = substr($title, 0, strlen($title)-1);
-	if (substr($title, strlen($title)-6) == "&nbsp;") $title = substr($title, 0, strlen($title)-6);
-	$iIn = array("<i>",
-							"</i>",
+function formatTitle($title) {
+	$title = html_entity_decode($title, null, "UTF-8");
+  $title = (mb_substr($title, -1) == ".")
+            ? mb_substr($title, 0, -1)
+            :(
+              (mb_substr($title, -6) == "&nbsp;")
+              ? mb_substr($title, 0, -6)
+              : $title
+            );
+  $iIn = array("<i>","</i>",
 							"From the Cover: ");
-	$iOut = array("''",
-								"''",
+	$iOut = array("''","''",
 								"");
 	$in = array("&lt;", "&gt;"	);
 	$out = array("<",		">"			);
-	return	str_ireplace($iIn, $iOut, str_replace($in, $out, niceTitle($title))); // order IS important!
+  return str_ireplace($iIn, $iOut, str_ireplace($in, $out, niceTitle($title))); // order IS important!
 }
 
 /** Format authors according to author = Surname; first= N.E.
@@ -1961,6 +1956,12 @@ function formatTitle($title){
 function citeDoiOutputFormat() {
   global $p;
   unset ($p['']);
+
+  // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
+  if (strpos($p['doi'][0], ".2F~") && !strpos($p['doi'][0], "/")) {
+    $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doi'][0]);
+  }
+
   // Cycle through authors
   for ($i = null; $i < 10; $i++) {
     if (strpos($p["author$i"][0], ', ')) {
@@ -1974,9 +1975,9 @@ function citeDoiOutputFormat() {
        unset($au);
     }
     if ($au[1]) {
-      if (trim(strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
+      if (trim(mb_strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
         // Don't try to modify if we don't need to change
-        set("first$i", strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
+        set("first$i", mb_strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
       }
       if (strpos($p["first$i"][1], "\n") !== false || (!$p["first$i"][1] && $p["first$i"][0])) {
         $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
@@ -2022,8 +2023,8 @@ function get_all_meta_tags($url){
 	preg_match("~<meta name=['\"]citation_pmid[\"'] content=['\"](\d+)['\"]~", $pageText, $pmid);
 	if ($creators[1][1]){
 		foreach ($creators[1] as $aut){
-			if (strtoupper($aut) == $aut) {
-				$return["author"] .= " " . ucwords(str_replace(",", ", ", strtolower($aut))) . ";";
+			if (mb_strtoupper($aut) == $aut) {
+				$return["author"] .= " " . ucwords(str_replace(",", ", ", mb_strtolower($aut))) . ";";
 			} else {
 				$aut = preg_split("~([A-Z])~", $aut, null,PREG_SPLIT_DELIM_CAPTURE);
 				$count = count($aut);

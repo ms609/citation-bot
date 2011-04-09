@@ -7,7 +7,7 @@ function expand($page, // Title of WP page
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $bot, $editInitiator, $html_output;
+  global $bot, $editInitiator, $html_output, $modifications;
   if ($html_output === -1) {
     ob_start();
   }
@@ -26,6 +26,11 @@ function expand($page, // Title of WP page
 
   $bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
   $original_code = $bot->results;
+  if (stripos($original_code, "#redirect") !== FALSE) {
+    echo "Page is a redirect.";
+    updateBacklog($page);
+    return $original_code;
+  }
   if (strpos($page, "Template:Cite") !== FALSE) {
     $editing_cite_doi_template = true;
   }
@@ -55,35 +60,45 @@ function expand($page, // Title of WP page
 
 
   ##### Generate edit summary #####
-  if ($additions) {
+  if ($modifications["additions"]) {
     $auto_summary = "+: ";
-    foreach ($additions as $param=>$v)	{
+    foreach ($modifications["additions"] as $param=>$v)	{
       $auto_summary .= "$param, ";
-      unset($changes[$param]);
+      unset($modifications["additions"][$param]);
     }
     $auto_summary = substr($auto_summary, 0, strlen($auto_summary)-2);
     $auto_summary .= ". ";
   }
-  if ($changes["accessdate"]) {
+  if ($modifications["additions"]["accessdate"]) {
     $auto_summary .= "Removed accessdate with no specified URL. ";
-    unset($changes["accessdate"]);
+    unset($modifications["additions"]["accessdate"]);
   }
-  if ($changes) {
+  if ($modifications["additions"]) {
     $auto_summary .= "Tweaked: ";
-    foreach ($changes as $param=>$v)	$auto_summary .= 				"$param, ";
+    foreach ($modifications["additions"] as $param=>$v)	$auto_summary .= 				"$param, ";
     $auto_summary = substr($auto_summary,0, strlen($auto_summary)-2);
     $auto_summary.=". ";
   }
-  if ($changeCiteType || $unify_citation_templates) {
-    $auto_summary .= "Unified citation types. ";
-  }
+  $auto_summary .= (($modifications["removed"])
+          ? "Removed redundant parameters. "
+          : ""
+          ) . (($modifications["cite_type"] || $unify_citation_templates)
+          ? "Unified citation types. "
+          : ""
+          ) . (($modifications["combine_references"])
+          ? "Combined duplicate references. "
+          : ""
+          ) . (($modifications["dashes"])
+          ? "Formatted [[WP:ENDASH|dashes]]. "
+          : ""
+          ) . (($modifications["arxiv_upgrade"])
+          ? "Updated published arXiv refs. "
+          : ""
+  );
   if (!$auto_summary) {
-    if ($changedDashes) {
-      $auto_summary .= "Formatted [[WP:ENDASH|dashes]]. ";
-    } else {
-      $auto_summary = "Misc citation tidying. ";
-    }
+    $auto_summary = "Misc citation tidying. ";
   }
+  $modifications = null;
   echo $auto_summary;
   $edit_summary = $editInitiator . $auto_summary . $edit_summary_end;
   
@@ -137,7 +152,7 @@ function expand($page, // Title of WP page
 
   // These variables should change after the first edit
   $isbnKey = "3TUCZUGQ"; //This way we shouldn't exhaust theISBN key for on-demand users.
-  $isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
+  #$isbnKey2 = "RISPMHTS"; //This way we shouldn't exhaust theISBN key for on-demand users.
   $edit_summary_end = " You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   return $new_code;
 }
@@ -149,7 +164,7 @@ function expand_text ($original_code,
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $p, $editInitiator, $edit_summaryStart, $initiatedBy, $edit_summary_end, $isbnKey, $isbnKey2, $slowMode, $html_output;
+  global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy, $edit_summary_end,  $slowMode, $html_output;
 
   if ($html_output === -1) {
     ob_start();
@@ -179,51 +194,108 @@ function expand_text ($original_code,
     }
   }
   echo "\n Reference tags:";
-  $new_code = rename_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc")));
-  echo "\n Making some common replacements. ";
-
-  $new_code = preg_replace("~(\{\{cit(e[ _]book|ation)[^\}]*)\}\}\s*\{\{\s*isbn[\s\|]+[^\}]*([\d\-]{10,})[\s\|\}]+[^\}]?\}\}?~i", "$1|isbn=$3}}",
-      preg_replace("~(\{\{cit(e[ _]journal|ation)[^\}]*)\}\}\s*\{\{\s*doi[\s\|]+[^\}]*(10\.\d{4}/[^\|\s\}]+)[\s\|\}]+[^\}]?\}\}?~i", "$1|doi=$3}}",
-      preg_replace
-                  ("~(\|\s*)id(\s*=[^\|]*)(DOI:?\s*(\d*)|\{\{DOI\s*\|\s*(\S*)\s*\}\})([\s\|\}])~Ui","$1doi$2$5$4$6",
-      preg_replace("~(\|\s*)(id\s*=\s*)\[{0,2}(PMID[:\]\s]*(\d*)|\{\{PMID[:\]\s]*\|\s*(\d*)\s*\}\})~","$1pm$2$5$4",
-      preg_replace("~(\|\s*)id(\s*=\s*)DOI[\s:]*(\d[^\s\}\|]*)~i","$1doi$2$3",
-
-      preg_replace("~(\|\s*)url(\s*)=(\s*)http://dx.doi.org/~", "$1doi$2=$3",
-              $new_code
-              ))))));
-  if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $new_code)) {
-    $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "p\\1\\2\xe2\x80\x93\\4", $new_code);
-    $changedDashes = true;
+  $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc"))));
+  if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
+    $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
+    $modifications["dashes"] = true;
     echo "Converted dashes in all page parameters to en-dashes.";
   }
+
+###################################  Cite web ######################################
+  // Convert Cite webs to Cite arXivs, etc, if necessary
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+    $new_code = null;
+    $iLimit = (count($citation) - 1);
+    for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) {//Number of brackets in cite arXiv regexp + 1
+      $started_citation_at = time();
+      $p = parameters_from_citation($citation[$cit_i + 1]);
+            
+      //Make a note of how things started so we can give an intelligent edit summary
+      foreach ($p as $param => $value)	{
+        if (is($param)) {
+          $pStart[$param] = $value[0];
+        }
+      }
+      // See if we can use any of the parameters lacking equals signs:
+      useUnusedData();
+      if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
+        unset($p["unused_data"]);
+      }
+      else if (substr(trim($p["unused_data"][0]), 0, 1) == "|") {
+        $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+      }
+
+      echo "\n* Cite web: {$p["title"][0]}";
+
+      // Fix typos in parameter names
+      //Authors
+      if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
+      preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
+      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
+      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
+
+      // Delete any parameters >10, which won't be displayed anyway
+      for ($au_i = 10; isset($p["last$au_i"]) || isset($p["author$au_i"]); $au_i++) {
+        unset($p["last$au_i"]);
+        unset($p["first$au_i"]);
+        unset($p["author$au_i"]);
+      }
+      
+      // Get identifiers from URL
+      get_identifiers_from_url();
+
+      // Now wikify some common formatting errors - i.e. tidy up!
+      tidy_citation();
+
+      // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
+      $change_to_journal = is('journal');
+      $change_to_arxiv = is('arxiv');
+      if (($change_to_arxiv || $change_to_journal) && is('eprint')) {
+        rename_parameter('eprint', 'arxiv');
+        $modifications["cite_type"] = true;
+      } else if (is('arxiv') && !is('class')) {
+        rename_parameter('arxiv', 'eprint');
+      }
+
+      //And we're done!
+      $endtime = time();
+      $timetaken = $endtime - $started_citation_at;
+      echo "* Citation assessed in $timetaken secs. "
+          . ($change_to_journal
+              ?"Changing to Cite Journal. "
+              :($change_to_arxiv
+                ?"Changing to Arxiv. "
+                :"Keeping as cite web. ")
+              ) . "\n";
+      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["additions"]
+      $last_p = $p;
+      $p = null;
+      
+      $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($change_to_journal?"cite journal":($change_to_arxiv?"cite arxiv":$citation[$cit_i+2])) . "$cText{$citation[$cit_i+4]}}}":"");
+#				$new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
+      $cText = null;
+      $crossRef = null;
+    }
+
+    $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
+  }
+
+
 
 ###################################  Cite arXiv ######################################
   // Makes sense to do this first as it might add DOIs, changing the citation type.
   if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation)-1);
-    for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5){//Number of brackets in cite arXiv regexp + 1
+    for ($cit_i=0; $cit_i<$iLimit; $cit_i+=5) {//Number of brackets in cite arXiv regexp + 1
       $started_citation_at = time();
-      $c = $citation[$cit_i+1];
-      while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
-      // Split citation into parameters
-      $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
-      $partsLimit = count($parts);
-      if (strpos($parts[0], "|") >0 && strpos($parts[0],"[[") === FALSE && strpos($parts[0], "{{") === FALSE) set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
-      for ($partsI=1; $partsI<=$partsLimit; $partsI+=4) {
-        $value = $parts[$partsI+3];
-        $pipePos = strpos($value, "|");
-        if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
-          // There are two "parameters" on one line.  One must be missing an equals.
-          $p["unused_data"][0] .= " " . substr($value, $pipePos);
-          $value = substr($value, 0, $pipePos);
-        }
-        // Load each line into $p[param][0123]
-        $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
-      }
+      $p = parameters_from_citation($citation[$cit_i+1]);
       //Make a note of how things started so we can give an intelligent edit summary
-      foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
+      foreach($p as $param=>$value)	{
+        if (is($param)) {
+          $pStart[$param] = $value[0];
+        }
+      }
       // See if we can use any of the parameters lacking equals signs:
       $freeDat = explode("|", trim($p["unused_data"][0]));
       useUnusedData();
@@ -252,75 +324,38 @@ function expand_text ($original_code,
       if (is("eprint")
           && !(is("title") && is("author") && is("year") && is("version"))) {
           $p["eprint"][0] = str_ireplace("arXiv:", "", $p["eprint"][0]);
-          if (!getDataFromArxiv($p["eprint"][0]) && is("class")) {
-            getDataFromArxiv($p["class"][0] . "/" . $p["eprint"][0]);
+          echo " * Getting data from arXiv " . $p["eprint"][0];
+          if (!get_data_from_arxiv($p["eprint"][0]) && is("class")) {
+            get_data_from_arxiv($p["class"][0] . "/" . $p["eprint"][0]);
           }
       }
 
-      // Now wikify some common formatting errors - i.e. tidy up!
-      if (!trim($pStart["title"]) && isset($p["title"][0])) $p["title"][0] = formatTitle($p["title"][0]);
-
-      // If we have any unused data, check to see if any is redundant!
-      if (is("unused_data")){
-        $freeDat = explode("|", trim($p["unused_data"][0]));
-        unset($p["unused_data"]);
-        foreach ($freeDat as $dat) {
-          $eraseThis = false;
-          foreach ($p as $oP) {
-            similar_text(strtolower($oP[0]), strtolower($dat), $percentSim);
-            if ($percentSim >= 85)
-              $eraseThis = true;
-          }
-          if (!$eraseThis) $p["unused_data"][0] .= "|" . $dat;
-        }
-        if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
-        else {
-          if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-          echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
-        }
+      if (is ("doi") && !is("journal")) {
+        echo "\n    * Fill in journal from CrossRef?";
+        get_data_from_doi($p["doi"][0]);
       }
+
+      tidy_citation();
 
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
-      $changeToJournal = is('journal');
-      if ($changeToJournal && is('eprint')) {
-        $p['id'][0] = "{{arXiv|{$p['eprint'][0]}}}";
+      $change_to_journal = is('journal');
+      if ($change_to_journal && is('eprint')) {
+        rename_parameter('eprint', 'arxiv');
         unset($p['class']);
-        unset($p['eprint']);
-        $changeCiteType = true;
+        $modifications["arxiv_upgrade"] = true;
       } else {
-        $changeCiteType = false;
+        $modifications["cite_type"] = false;
       }
 
       //And we're done!
       $endtime = time();
       $timetaken = $endtime - $started_citation_at;
-      echo "* Citation assessed in $timetaken secs. " . ($changeToJournal?"Changing to Cite Journal. ":"Keeping as cite arXiv") . "\n";
-      foreach ($p as $oP){
-        $pipe=$oP[1]?$oP[1]:null;
-        $equals=$oP[2]?$oP[2]:null;
-        if ($pipe) break;
-      }
-      if (!$pipe) {
-         $pipe = "\n | ";
-      }
-      if (!$equals) {
-        $equals = " = ";
-      }
-      foreach($p as $param => $v) {
-        if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
-        if (is($param)) $pEnd[$param] = $v[0];
-      }
+      echo "* Citation assessed in $timetaken secs. " . ($change_to_journal?"Changing to Cite Journal. ":"Keeping as cite arXiv") . "\n";
+      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["additions"]
+
       $last_p = $p;
       $p = null;
-      if ($pEnd)
-        foreach ($pEnd as $param => $value)
-          if (!$pStart[$param]) {
-            $additions[$param] = true;
-          } elseif ($pStart[$param] != $value) {
-            $changes[$param] = true;
-          }
-      $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($changeToJournal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
-#				$new_code .=  $citation[$cit_i] . ($cText?"{{{$citation[$cit_i+2]}$cText{$citation[$cit_i+4]}}}":"");
+      $new_code .=  $citation[$cit_i] . ($cText?"{{" . ($change_to_journal?"cite journal":$citation[$cit_i+2]) . "$cText{$citation[$cit_i+4]}}}":"");
       $cText = null;
       $crossRef = null;
     }
@@ -346,45 +381,19 @@ function expand_text ($original_code,
                                     , $citation[$cit_i+1]);
         }
       } else $countComments = null;
-      // Comments have been replaced by placeholders; we'll restore them later.
-
-      // Replace ids with appropriately formatted parameters
-      $c = preg_replace("~\bid(\s*=\s*)(isbn\s*)?(\d[\-\d ]{9,})~i","isbn$1$3",
-        preg_replace("~(isbn\s*=\s*)isbn\s?=?\s?(\d\d)~i","$1$2",
-        preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$cit_i+1]))); // Replaces isbn: with isbn =
-      #$noComC = preg_replace("~<!--[\s\S]*-->~U", "", $c);
-      while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
-        $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
-      }
-      preg_match(siciRegExp, urldecode($c), $sici);
-
-      // Split citation into parameters
-      $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
-      $partsLimit = count($parts);
-      if (strpos($parts[0], "|") >0
-          && strpos($parts[0],"[[") === FALSE
-          && strpos($parts[0], "{{") === FALSE
-        ) {
-        set("unused_data", substr($parts[0], strpos($parts[0], "|")+1));
-      }
-      for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
-        $value = $parts[$partsI + 3];
-        $pipePos = strpos($value, "|");
-        if ($pipePos > 0 && strpos($value, "[[") === false && strpos($value, "{{") === FALSE) {
-          // There are two "parameters" on one line.  One must be missing an equals.
-          $p["unused_data"][0] .= " " . substr($value, $pipePos);
-          $value = substr($value, 0, $pipePos);
-        }
-        // Load each line into $p[param][0123]
-        $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
-      }
+   
+      $p = parameters_from_citation($citation[$cit_i+1]);
 
       //Make a note of how things started so we can give an intelligent edit summary
-      foreach($p as $param=>$value)	if (is($param)) $pStart[$param] = $value[0];
+      foreach ($p as $param=>$value) {
+        if (is($param)) {
+          $pStart[$param] = $value[0];
+        }
+      }
 
       //Check for the doi-inline template in the title
       if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~",
-                      str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0]), $match)) {
+                      str_replace(pipePlaceholder, "|", $p['title'][0]), $match)) {
         set('title', $match[2]);
         set('doi', $match[1]);
       }
@@ -422,7 +431,10 @@ function expand_text ($original_code,
       preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
 
       //Authors
-      if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
+      if (isset($p["authors"]) && !isset($p["author"][0])) {
+        $p["author"] = $p["authors"];
+        unset($p["authors"]);
+      }
       preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
       if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
       if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
@@ -431,8 +443,7 @@ function expand_text ($original_code,
       $dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0]));
 
       if (!isset($p["date"][0]) && !isset($p["year"][0]) && is('origyear')) {
-        $p['year'] = $p['origyear'];
-        unset ($p['origyear']);
+        rename_parameter('origyear', 'year');
       }
 
       $isbnToStartWith = isset($p["isbn"]);
@@ -472,7 +483,7 @@ function expand_text ($original_code,
       if (isset($p["periodical"][0])) $p["periodical"][0] = niceTitle($p["periodical"][0], false);
       if (isset($p["pages"][0]) && mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
         $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
-        $changedDashes = true;
+        $modifications["dashes"] = true;
       }
       #if (isset($p["year"][0]) && trim($p["year"][0]) == trim($p["origyear"][0])) unset($p['origyear']);
       #if (isset($p["publisher"][0])) $p["publisher"][0] = truncatePublisher($p["publisher"][0]);
@@ -506,30 +517,10 @@ function expand_text ($original_code,
       $timetaken = $endtime - $started_citation_at;
       echo "\n  Book reference assessed in $timetaken secs.";
 
-      // Get a format for spacing around the pipe or equals
-      foreach ($p as $oP){
-        $pipe = $oP[1] ? $oP[1] : null;
-        $equals = $oP[2] ? $oP[2] : null;
-        if ($pipe) break;
-      }
-      if (!$pipe) $pipe = "\n | ";
-      if (!$equals) $equals = " = ";
-      foreach($p as $param => $v) {
-        if ($param) $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
-        if (is($param)) $pEnd[$param] = $v[0];
-      }
+      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["additions"]
       $last_p = $p;
       $p = null;
-      if ($pEnd) {
-        foreach ($pEnd as $param => $value) {
-          if (!$pStart[$param]) {
-            $additions[$param] = true;
-          } elseif ($pStart[$param] != $value) {
-            $changes[$param] = true;
-          }
-        }
-      }
-
+      
       // Convert into citation or cite journal, as appropriate
       if ($citation_template_dominant) {
         $citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
@@ -548,7 +539,7 @@ function expand_text ($original_code,
   }
 ###################################  START ASSESSING JOURNAL/OTHER CITATIONS ######################################
 
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[dD]ocument(?=\s*\|)|\s*[Cc]ite[_ ]?[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+    if (false !== ($citation = preg_split("~\{\{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[dD]ocument(?=\s*\|)|\s*[Cc]ite[_ ]?[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^\{\}]|\{\{.*\}\})*)([\n\s]*)\}\}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) { //Number of brackets in cite journal regexp + 1
@@ -566,38 +557,8 @@ function expand_text ($original_code,
         // Comments will be replaced in the cText variable later
         $countComments = null;
       }
-      $c = preg_replace("~(doi\s*=\s*)doi\s?=\s?(\d\d)~i","$1$2",
-        preg_replace("~(?<![\?&]id=)doi\s?:(\s?)(\d\d)~i","doi$1=$1$2", $citation[$cit_i+1])); // Replaces doi: with doi =
-      while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
-        $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
-      }
-      preg_match(siciRegExp, urldecode($c), $sici);
-
-##############################
-#             Split citation into parameters                     #
-##############################
-
-      $parts = preg_split("~(\s*\|\s*)([\w\d-_ ]*\b)(\s*=\s*)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
-      $partsLimit = count($parts);
-      if (strpos($parts[0], "|") > 0 &&
-          strpos($parts[0],"[[") === FALSE &&
-          strpos($parts[0], "{{") === FALSE) {
-        set("unused_data", substr($parts[0], strpos($parts[0], "|") + 1));
-      }
-      for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
-        $parameter_value = $parts[$partsI + 3];
-        $pipePos = strpos($parameter_value, "|");
-        if ($pipePos > 0 &&
-            strpos($parameter_value, "[[") === FALSE &&
-            strpos($parameter_value, "{{") === FALSE) {
-          // There are two "parameters" on one line.  One must be missing an equals.
-          $p["unused_data"][0] .= " " . substr($parameter_value, $pipePos);
-          $parameter_value = substr($parameter_value, 0, $pipePos);
-        }
-        // Load each line into $p[param][0123]
-        loadParam($parts[$partsI+1], $parameter_value, $parts[$partsI], $parts[$partsI+2], $partsI);
-      }
-
+      $p = parameters_from_citation($citation[$cit_i+1]); 
+      
       if ($p["doix"]) {
         $p["doi"][0] = str_replace($dotEncode, $dotDecode, $p["doix"][0]);
         unset($p["doix"]);
@@ -614,7 +575,7 @@ function expand_text ($original_code,
       } else {
       //Check for the doi-inline template in the title
       if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~"
-          , str_replace('doi_bot_pipe_placeholder', "|", $p['title'][0])
+          , str_replace(pipePlaceholder, "|", $p['title'][0])
           , $match
           )
       ) {
@@ -622,12 +583,16 @@ function expand_text ($original_code,
         set('doi', $match[1]);
       }
 
+      id_to_parameters();
+
+
 ###########################
 //  JOURNALS
 //
 echo "
 *-> {$p["title"][0]}
-1: Tidy citation and try to expand";
+1: Tidy citation and try to expand
+";
 //  See if we can get any 'free' metadata from:
 //  * mis-labelled parameters
 //  * ISBN
@@ -638,7 +603,6 @@ echo "
 
         $journal = is("periodical") ? "periodical" : "journal";
         // See if we can use any of the parameters lacking equals signs:
-        $freeDat = explode("|", trim($p["unused_data"][0]));
         useUnusedData();
 
         if (google_book_expansion()) {
@@ -647,7 +611,7 @@ echo "
 
         /*if (is("url") && !is("journal") && !is("periodical") && !is("magazine") && !is("newspaper")) {
     SpencerK's API; disabled until I check whether it is ever a source of errors
-          ifNullSet("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
+          if_null_set("publisher", trim(file_get_contents("http://referee.freebaseapps.com/?url=" . $p["url"][0])));
         }*/
 
         /*  ISBN lookup removed - too buggy.  TODO (also commented out above)
@@ -659,36 +623,9 @@ echo "
           $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doix'][0]);
           unset($p['doix']);
         }
-        if (preg_match("~http://www.ncbi.nlm.nih.gov/.+=(\d\d\d+)~", $p['url'][0], $match)) {
-          ifNullSet ('pmid', $match[1]);
-          unset($p['url']);
-        }
+        get_identifiers_from_url();
+        id_to_parameters();
 
-        // Is the URL a Bibcode in disguise?
-        $bibcode_regexp = "~^(?:" . str_replace(".", "\.", implode("|", Array (
-              "http://(?:\w+.)?adsabs.harvard.edu",
-              "http://ads.ari.uni-heidelberg.de",
-              "http://ads.inasan.ru",
-              "http://ads.mao.kiev.ua",
-              "http://ads.astro.puc.cl",
-              "http://ads.on.br",
-              "http://ads.nao.ac.jp",
-              "http://ads.bao.ac.cn",
-              "http://ads.iucaa.ernet.in",
-              "http://ads.lipi.go.id",
-              "http://cdsads.u-strasbg.fr",
-              "http://esoads.eso.org",
-              "http://ukads.nottingham.ac.uk",
-              "http://www.ads.lipi.go.id",
-            )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
-        if (preg_match($bibcode_regexp, urldecode($p["url"][0]), $bibcode)) {
-          if (trim($p["bibcode"][0]) == "") {
-            $p["bibcode"] = $p["url"];
-            $p["bibcode"][0] = urldecode($bibcode[1]);
-          }
-          unset($p["url"]);
-          unset($p["accessdate"]);
-        }
 
         if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
           unset($p["unused_data"]);
@@ -704,15 +641,8 @@ echo "
         }
 
         // Load missing parameters from SICI, if we found one...
-        if ($sici[0]){
-          if (!is($journal) && !is("issn")) set("issn", $sici[1]);
-          #if (!is ("year") && !is("month") && $sici[3]) set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
-          if (!is("year")) set("year", $sici[2]);
-          #if (!is("day") && is("month") && $sici[4]) set ("day", $sici[4]);
-          if (!is("volume")) set("volume", 1*$sici[5]);
-          if (!is("issue") && $sici[6]) set("issue", 1*$sici[6]);
-          if (!is("pages") && !is("page")) set("pages", 1*$sici[7]);
-        }
+        get_data_from_sici($citation[$cit_i+1]);
+        
         // Fix typos in parameter names
         $p = correct_parameter_spelling($p);
         // DOI - urldecode
@@ -764,9 +694,11 @@ echo "
         }
 
         // Replace "volume = B 120" with "series=VB, volume = 120
-        if (preg_match("~^(\w+\s+)~", $p["volume"][0], $match)) {
-          ifNullSet("series", $match[1]);
-          $p["volume"][0] = substr($p["volume"][0], strlen($match[1]));
+        if (preg_match("~^([A-J])(?!\w)\d*\d+~u", $p["volume"][0], $match)) {
+          if (trim($p["journal"][0]) && mb_substr(trim($p["journal"][0]), -2) != " $match[1]") {
+            $p["journal"][0] .= " $match[1]";
+            $p["volume"][0] = trim(mb_substr($p["volume"][0], mb_strlen($match[1])));
+          }
         }
 
         $authors_missing = false; // reset
@@ -795,7 +727,7 @@ echo "
             $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)$~", "", $p['author'][0]);
             echo " - $truncate_after authors then <i>et al</i>. Will grow list later.";
             $authors_missing = true;
-            //ifNullSet('display-authors', $truncate_after);
+            //if_null_set('display-authors', $truncate_after);
           }
         }
 */
@@ -852,7 +784,7 @@ echo "
           unset($p['author']);
           foreach ($auths as $au_i => $auth) {
             if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $auth, $match)) {
-              ifNullSet("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
+              if_null_set("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
               $auth = $match[3];
             }
             $jr_test = jrTest($auth);
@@ -909,9 +841,10 @@ echo "
 
 #####################################
 //
+        
 if (is('doi')) {
 if (!nothingMissing($journal)) {
-  expand_from_doi($crossRef, $editing_cite_doi_template);
+  expand_from_crossref($crossRef, $editing_cite_doi_template);
 }
 echo "
 2: DOI already present";
@@ -923,22 +856,34 @@ echo "
 //
 #####################################
 
-
-          //Try CrossRef
-          echo "\n - Checking CrossRef database... ";
-          $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
-                                  trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
-                                  $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
-          if ($crossRef) {
-            $p["doi"][0] = $crossRef->doi;
-            echo "Match found: " . $p["doi"][0];
+          
+          // Try AdsAbs
+          if ($slow_mode) {
+            echo "\n - Checking AdsAbs database";
+            get_data_from_adsabs();
           } else {
-            echo "no match.";
+             echo "\n - Skipping AdsAbs database: not in slow mode.";
           }
+          
+          if (!isset($p["doi"][0])) {
+            //Try CrossRef
+            echo "\n - Checking CrossRef database... ";
+            $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
+                                    trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
+                                    $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+            if ($crossRef) {
+              $p["doi"][0] = $crossRef->doi;
+              echo "Match found: " . $p["doi"][0];
+            } else {
+              echo "no match.";
+            }
+          }
+
 
           //Try URL param
           if (!isset($p["doi"][0])) {
             if (is("jstor")) {
+              echo "\n - Checking JSTOR database";
               if (get_data_from_jstor("10.2307/" . $p["jstor"][0])) {
                 echo $html_output
                       ? "\n - Got data from JSTOR.<br />"
@@ -951,7 +896,7 @@ echo "
                         ? ("\n - Getting data from <a href=\"" . $p["url"][0] . "\">JSTOR record</a>.")
                         : "\n - Querying JSTOR record from URL " . $jid[0];
                   get_data_from_jstor("10.2307/$jid[1]");
-                } elseif (substr($p["url"][0], -4) == ".pdf") {
+                } elseif (substr(preg_replace("~<!--.*-->~", "", $p["url"][0]), -4) == ".pdf") {
                   echo $html_output
                         ? ("\n - Avoiding <a href=\"" . $p["url"][0] . "\">PDF URL</a>. <br>")
                         : "\n - Avoiding PDF URL {$p["url"][0]}";
@@ -960,7 +905,7 @@ echo "
                   echo $html_output
                         ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
                         : "\n - Trying URL {$p["url"][0]}";
-                  $doi = findDoi($p["url"][0]);
+                  $doi = findDoi(preg_replace("~<!--.*-->~", "", $p["url"][0]));
                   if ($doi) {
                     echo " found doi $doi";
                     $p["doi"][0] = $doi;
@@ -986,7 +931,7 @@ echo "
           searchForPmid();
         }
         if (!nothingMissing($journal) && is('pmid')) {
-          expand_from_pubmed();
+          get_data_from_pubmed();
         }
 
 #####################################
@@ -995,7 +940,7 @@ echo "
         } else {
           echo "\n4: Expand citation";
           if (is("doi")) {
-            $crossRef = expand_from_doi($crossRef, $editing_cite_doi_template);
+            $crossRef = expand_from_crossref($crossRef, $editing_cite_doi_template);
           } else {
             echo "\n - No DOI; can't check CrossRef";
             $crossRef = null;
@@ -1005,23 +950,18 @@ echo "
 // We have now recovered all possible information from CrossRef.
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
         echo "\n5: Formatting and other tweaks";
-        if ($editing_cite_doi_template && (strpos($page, 'ite doi') || strpos($page, 'ite_doi'))) {
+        if ($editing_cite_doi_template || preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
           echo "\n   First: Cite Doi formatting";
-          // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
-          if (strpos($p['doi'][0], ".2F~") && !strpos($p['doi'][0], "/")) {
-            $p['doi'][0] = str_replace($dotEncode, $dotDecode, $p['doi'][0]);
-          }
-
           // Get the surname of the first author. (We [apparently] found this earlier, but it might have changed since then)
-          preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
+          preg_match("~[^.,;\s]{2,}~u", $p["author"][0], $firstauthor);
           if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~", $p["author1"][0], $firstauthor);
+            preg_match("~[^.,;\s]{2,}~u", $p["author1"][0], $firstauthor);
           }
           if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
+            preg_match("~[^.,;\s]{2,}~u", $p["last"][0], $firstauthor);
           }
           if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
+            preg_match("~[^.,;\s]{2,}~u", $p["last1"][0], $firstauthor);
           }
 
           // If we only have the first author, look for more!
@@ -1061,8 +1001,10 @@ echo "
               }
             }
           }
+          citeDoiOutputFormat();
         }
 
+print $p["title"][0];
         // Check that the URL functions, and mark as dead if not.
         /*  Disable; to re-enable, we should log possible 404s and check back later.
          * Also, dead-link notifications should be placed ''after'', not within, the template.
@@ -1079,22 +1021,9 @@ echo "
         }*/
       }
 
-      // Now wikify some common formatting errors - i.e. tidy up!
-      //Format title
-      if (!trim($pStart["title"]) && isset($p["title"][0])) {
-        $p["title"][0] = formatTitle($p["title"][0]);
-      }
       // Neaten capitalisation for journal
       if (isset($p[$journal][0])) {
         $p[$journal][0] = niceTitle($p[$journal][0], false);
-      }
-
-      // Use en-dashes in page ranges
-      if (isset($p["pages"][0])) {
-        if (mb_ereg("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", $p["pages"][0])) {
-          $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
-          $changedDashes = true;
-        }
       }
       // If there was a date parameter to start with, don't add a year too.  This will be created by the template.
       if ($dateToStartWith) {
@@ -1104,15 +1033,10 @@ echo "
       // Check each author for embedded author links
       for ($au_i = 1; $au_i < 10; $au_i++) {
         if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p["author$au_i"][0], $match)) {
-          ifNullSet("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
+          if_null_set("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
           set("author$au_i", $match[3]); // Replace author with unlinked version
           echo "Dissecting authorlink";
         }
-      }
-
-      // If we're on a Cite Doi page, format authors accordingly
-      if (preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
-        citeDoiOutputFormat();
       }
 
       // Unset authors above 'author9' - the template won't render them.
@@ -1129,12 +1053,11 @@ echo "
         if ($brokenDoi && !is("doi_brokendate") && !is("doi_inactivedate")) {
           set("doi_inactivedate", date("Y-m-d"));
           echo "\n\n $doi \n\n";
-          sleep(5);
         }
         ELSE if (!$brokenDoi) unset($p["doi_brokendate"]); unset($p["doi_inactivedate"]);
         echo $brokenDoi?" It isn't.":" It is.", "</p>";
       }
-
+print $p["title"][0];
 
       // Clean up after errors in publishers' databases
       if (0 === strpos(trim($p["journal"][0]), "BMC ") && $p["pages"][0]) {
@@ -1147,46 +1070,22 @@ echo "
         unset ($p["doi"]);
       }
 
-      //Edition - don't want 'Edition ed.'
-      if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
-
-      // Remove publisher if [cite journal/doc] warrants it
-      if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
-
-      // If we have any unused data, check to see if any is redundant!
-      if (is("unused_data")){
-        $freeDat = explode("|", trim($p["unused_data"][0]));
-        unset($p["unused_data"]);
-        foreach ($freeDat as $dat) {
-          $eraseThis = false;
-          foreach ($p as $oP) {
-            similar_text(strtolower($oP[0]), strtolower($dat), $percentSim);
-            if ($percentSim >= 85)
-              $eraseThis = true;
-          }
-          if (!$eraseThis) $p["unused_data"][0] .= "|" . $dat;
-        }
-        if (trim(str_replace("|", "", $p["unused_data"][0])) == "") unset($p["unused_data"]);
-        else {
-          if (substr(trim($p["unused_data"][0]), 0, 1) == "|") $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-          echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
-        }
-      }
+      tidy_citation();
 
       if ($unify_citation_templates) {
         if ($citation_template_dominant) {
           if (preg_match("~[cC]ite[ _]\w+~", $citation[$cit_i+2])) {
             // Switching FROM cite xx TO citation; cite xx has a trailing period by default
-            ifNullSet("postscript", ".");
+            if_null_set("postscript", ".");
             $citation[$cit_i+2] = preg_replace("~[cC]ite[ _]\w+~", "Citation", $citation[$cit_i+2]);
           }
         } else {
           if ($harv_template_present) {
-            ifNullSet("ref", "harv");
+            if_null_set("ref", "harv");
           }
           if (preg_match("~[cC]itation~", $citation[$cit_i+2])) {
             // Switching FROM cite xx TO citation; citation has no trailing period by default
-            ifNullSet("postscript", "<!-- Bot inserted parameter. Either remove it; or change its value to \".\" for the cite to end in a \".\", as necessary. -->{{inconsistent citations}}");
+            if_null_set("postscript", "<!-- Bot inserted parameter. Either remove it; or change its value to \".\" for the cite to end in a \".\", as necessary. -->{{inconsistent citations}}");
           }
           if (is('inventor-last') || is('inventor-surname') || is('inventor1-surname')
                   || is('inventor1-last') || is ('inventor')) {
@@ -1224,39 +1123,8 @@ echo "
         }
       }
 
-      // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
-      foreach ($p as $oP){
-        $pipe = $oP[1]?$oP[1]:null;
-        $equals = $oP[2]?$oP[2]:null;
-        if ($pipe) break;
-      }
-      if (!$pipe) $pipe = "\n | ";
-      if (!$equals) $equals = " = ";
 
-
-      // Sort parameters and copy into $pEnd
-      echo "\n (sorting parameters)";
-      uasort($p, "bubble_p");
-
-      foreach($p as $param => $v) {
-        if ($param) {
-          $cText .= ($v[1]?$v[1]:$pipe ). $param . ($v[2]?$v[2]:$equals) . str_replace(pipePlaceholder, "|", trim($v[0]));
-        }
-        if (is($param)) {
-          $pEnd[$param] = $v[0];
-        }
-      }
-      if ($pEnd) {
-        foreach ($pEnd as $param => $value) {
-          if (!$pStart[$param]) {
-            $additions[$param] = true;
-          }
-          elseif ($pStart[$param] != $value) {
-            $changes[$param] = true;
-          }
-        }
-      }
-
+      $cText .= reassemble_citation($p, $editing_cite_doi_template); // This also populates $modifications["additions"] and $modifications["additions"]
 
       //And we're done!
       $endtime = time();
@@ -1299,7 +1167,6 @@ echo "
       . ($html_output ? htmlentities(mb_convert_encoding($new_code, "UTF-8")) : $new_code)
       . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to"
               . " $page.<br><b>Changes:</b> <i>$auto_summary</i></p>";
-
       if ($editing_cite_doi_template && strtolower(substr(trim($new_code), 0, 5)) != "{{cit") {
         if (substr($new_code, 0, 15) == "HTTP/1.0 200 OK") {
           echo "Headers included in pagecode; removing...\n";
@@ -1368,14 +1235,9 @@ echo "
         return $new_code;
       }
 
-      //Unset smart edit summary parameters
+      //Unset smart edit summary parameters.  Some of these are globals modified by other functions.
       $pStart = null;
       $pEnd = null;
-      $additions = null;
-      $changes = null;
-      $auto_summary = null;
-      $changedDashes = null;
-    
   } else {
     if (trim($original_code)=='') {
       echo "<b>Blank page.</b> Perhaps it's been deleted?";
@@ -1421,7 +1283,7 @@ function leave_broken_doi_message($id, $page, $doi) {
       $text = '';
       echo "\nTALK PAGE DOES NOT EXIST\n\n";
     }
-    if (strpos($text, "|DOI]] [[doi:".$doi) || strpos($text, "d/nodoi&a")) {
+    if (strpos($text, "|DOI]] [[doi:" . $doi) || strpos($text, "d/nodoi&a")) {
       echo "\n - Message already on talk page.  Zzz.\n";
     } else if ($text && $talkId || !$text && !$talkId) {
       echo "\n * Writing message on talk page..." . $talkPage . "\n\n";

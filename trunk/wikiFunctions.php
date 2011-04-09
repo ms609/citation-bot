@@ -50,7 +50,7 @@ function getLastRev($page){
 
 function getPrefixIndex($prefix, $namespace = 0, $start = "") {
   global $bot;
-  $continue = urlencode($start);
+  $vars["apfrom"]  = $start;
   $vars = Array ("action" => "query",
     "list" => "allpages",
     "format" => "xml",
