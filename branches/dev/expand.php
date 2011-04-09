@@ -208,7 +208,7 @@ function expand_text ($original_code,
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) {//Number of brackets in cite arXiv regexp + 1
       $started_citation_at = time();
-        $p = parameters_from_citation($citation[$cit_i + 1]);
+      $p = parameters_from_citation($citation[$cit_i + 1]);
             
       //Make a note of how things started so we can give an intelligent edit summary
       foreach ($p as $param => $value)	{
@@ -216,8 +216,8 @@ function expand_text ($original_code,
           $pStart[$param] = $value[0];
         }
       }
+      print_r($p);
       // See if we can use any of the parameters lacking equals signs:
-      $freeDat = explode("|", trim($p["unused_data"][0]));
       useUnusedData();
       if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
         unset($p["unused_data"]);

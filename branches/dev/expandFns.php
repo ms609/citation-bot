@@ -222,7 +222,7 @@ function parameters_from_citation($c) {
           && strpos($parts[0],"[[") === FALSE
           && strpos($parts[0], "{{") === FALSE
       ) {
-    set("unused_data", substr($parts[0], strpos($parts[0], "|") + 1));
+    $p["unused_data"][0] = substr($parts[0], strpos($parts[0], "|") + 1);
   }
   for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
     $value = $parts[$partsI + 3];
@@ -230,6 +230,7 @@ function parameters_from_citation($c) {
     if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
       // There are two "parameters" on one line.  One must be missing an equals.
       $p["unused_data"][0] .= " " . substr($value, $pipePos);
+      print "\n----" . substr($value, $pipePos);
       $value = substr($value, 0, $pipePos);
     }
     // Load each line into $p[param][0123]
