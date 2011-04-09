@@ -664,7 +664,8 @@ function combine_duplicate_references($page_code) {
   $original_page_code = $page_code;
   preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
     // match 1 = ref names
-  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>(([^<]|<(?![Rr]ef))*?)</ref>~i", $page_code, $refs)) {
+  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
+          . "(([^<]|<(?![Rr]ef))+?)</ref>~i", $page_code, $refs)) {
     // match 0 = full ref; 1 = redundant; 2= used in regexp for backreference;
     // 3 = ref name; 4 = ref content; 5 = redundant
     foreach ($refs[4] as $ref) {
@@ -687,7 +688,8 @@ function combine_duplicate_references($page_code) {
   $duplicate_content = null;
   $standardized_ref = null;
 
-  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>(([^<]|<(?!ref))*?)</ref>~i", $page_code, $refs)) {
+  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
+          . "(([^<]|<(?!ref))+?)</ref>~i", $page_code, $refs)) {
 
     $standardized_ref = $refs[4]; // They were standardized above.
 
@@ -713,9 +715,9 @@ function combine_duplicate_references($page_code) {
           . ( $name_for[$duplicate_content[$i]] ?  $name_for[$duplicate_content[$i]] : "Autogenerating." ); // . " (original: $full_original[$i])";
           $replacement_template_name = $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]]
                                        : get_name_for_reference($duplicate_content[$i], $page_code);
-          // First replace any <ref name=Blah content=none /> with the new name
+          // First replace any <ref name=Blah content=none /> or <ref name=Blah></ref> with the new name
           $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
-                                    . "(?P=quote)(\s*/>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
+                                    . "(?P=quote)(\s*/>|\s*>\s*</\s*ref>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
                               $page_code);
           if ($name_of_original[$i]) {
             // Don't replace the original template!
@@ -818,7 +820,6 @@ function rename_references($page_code) {
 function get_name_for_reference($text, $page_code) {
  if (strpos($text, "://")) {
     if (preg_match("~\w+://(?:www\.)([^/]+?)(?:\.\w{2,3}\b)+~i", $text, $match)) {
-      print_r($match);
       $replacement_template_name = $match[1];
     } else {
       $replacement_template_name = "bare_url"; // just in case there's some bizarre way that the URL doesn't match the regexp

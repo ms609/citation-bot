@@ -216,7 +216,6 @@ function expand_text ($original_code,
           $pStart[$param] = $value[0];
         }
       }
-      print_r($p);
       // See if we can use any of the parameters lacking equals signs:
       useUnusedData();
       if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {

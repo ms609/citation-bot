@@ -52,9 +52,15 @@ $ON = $argument["on"];
 ###########
 /**/
 die (expand_text("
-: {{cite web |http://mobile.salon.com/env/feature/2008/09/17/population_control/index1.html |publisher=Salon.com 
-|title=Do we need population control? 
-|author=Katharine Mieszkowski |date=17 Sep 2008 }}
+: 1<ref name=Test>Test</ref>
+2<ref name=Example>Example</ref>
+2<ref name=Example2>Example</ref>
+3<ref name=Example2></ref>
+4<ref name=Test></ref>
+1<ref>Test</ref>
+
+{{reflist}}
+
 ") );
 
 // For version 3:
