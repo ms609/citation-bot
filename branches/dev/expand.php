@@ -193,14 +193,20 @@ function expand_text ($original_code,
        $citation_template_dominant = false;
     }
   }
+  echo "\n Bare references:";    
+  $new_code = preg_replace_callback("~(?P<open><ref[^>]*>)\[?(?P<url>http://(?:[^\s\]<]|<(?!ref))+) ?\]?\s*(?P<close></\s*ref>)~",
+          create_function('$matches',
+                  'return $matches["open"] . url2template($matches["url"], $citation_template_dominant) . $matches["close"];'
+                  ),
+          $original_code);
+  
   echo "\n Reference tags:";
-  $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc"))));
+  $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc"))));
   if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
     $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
     $modifications["dashes"] = true;
     echo "Converted dashes in all page parameters to en-dashes.";
   }
-
 ###################################  Cite web ######################################
   // Convert Cite webs to Cite arXivs, etc, if necessary
   if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
@@ -248,7 +254,7 @@ function expand_text ($original_code,
       tidy_citation();
 
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
-      $change_to_journal = is('journal');
+      $change_to_journal = is('journal') || is('bibcode');
       $change_to_arxiv = is('arxiv');
       if (($change_to_arxiv || $change_to_journal) && is('eprint')) {
         rename_parameter('eprint', 'arxiv');
@@ -858,7 +864,7 @@ echo "
 
           
           // Try AdsAbs
-          if ($slow_mode) {
+          if ($slow_mode || is('bibcode')) {
             echo "\n - Checking AdsAbs database";
             get_data_from_adsabs();
           } else {

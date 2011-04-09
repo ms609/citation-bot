@@ -53,6 +53,22 @@ define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
 define("to_en_dash", "-|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
 define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
+define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array (
+          "http://(?:\w+.)?adsabs.harvard.edu",
+          "http://ads.ari.uni-heidelberg.de",
+          "http://ads.inasan.ru",
+          "http://ads.mao.kiev.ua",
+          "http://ads.astro.puc.cl",
+          "http://ads.on.br",
+          "http://ads.nao.ac.jp",
+          "http://ads.bao.ac.cn",
+          "http://ads.iucaa.ernet.in",
+          "http://ads.lipi.go.id",
+          "http://cdsads.u-strasbg.fr",
+          "http://esoads.eso.org",
+          "http://ukads.nottingham.ac.uk",
+          "http://www.ads.lipi.go.id",
+        )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~");
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
 #define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DO I is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 
@@ -562,24 +578,7 @@ function get_identifiers_from_url() {
       rename_parameter("url", "jstor", $match[0]);
     }
   } else {
-    // BIBCODE
-    $bibcode_regexp = "~^(?:" . str_replace(".", "\.", implode("|", Array (
-          "http://(?:\w+.)?adsabs.harvard.edu",
-          "http://ads.ari.uni-heidelberg.de",
-          "http://ads.inasan.ru",
-          "http://ads.mao.kiev.ua",
-          "http://ads.astro.puc.cl",
-          "http://ads.on.br",
-          "http://ads.nao.ac.jp",
-          "http://ads.bao.ac.cn",
-          "http://ads.iucaa.ernet.in",
-          "http://ads.lipi.go.id",
-          "http://cdsads.u-strasbg.fr",
-          "http://esoads.eso.org",
-          "http://ukads.nottingham.ac.uk",
-          "http://www.ads.lipi.go.id",
-        )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
-    if (preg_match($bibcode_regexp, urldecode($url), $bibcode)) {
+    if (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
       rename_parameter("url", "bibcode", urldecode($bibcode[1]));
     } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
             . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
@@ -603,6 +602,33 @@ function get_identifiers_from_url() {
   }
 }
 
+
+function url2template($url, $citation) {
+  print "\n - $url";
+  if (preg_match("~jstor\.org/.*[/=](\d+)~", $url, $match)) {
+    print ": CITE J";
+    return "{{Cite doi | 10.2307/$match[1] }}";
+  } else if (preg_match("~//dx\.doi\.org/(.+)$~", $url, $match)) {
+    print ": CITE D";
+    return "{{Cite doi | $match[1] }}";
+  } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url , $match)) {
+    return ($match['domain'] == ".com")
+      ? "{{ASIN | {$match['id']} }}"
+      : " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
+  } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+          . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
+    return "{{Cite pmc | {$match[1]} }}";
+  } elseif (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
+    return "{{Cite journal | bibcode = " .  urldecode($bibcode[1]) . "}}";
+  } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
+    return "{{Cite pmid | {$match[1]} }}";
+  } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
+    return "{{Cite arxiv | eprint={$match[1]} }}";
+  } else {
+    return $url;
+  }
+}
+  
 function tidy_citation() {
   global $p, $pStart, $modifications;
   if (!trim($pStart["title"]) && isset($p["title"][0])) {

@@ -23,12 +23,11 @@ foreach ($argv as $arg) {
 
 error_reporting(E_ALL^E_NOTICE);
 $slowMode = $argument["slow"] || $argument["slowmode"] || $argument["thorough"];
-$accountSuffix = '_1'; // Keep this before including expandFns
+$accountSuffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
-
 #die (findISBN(""));
 
 function nextPage($page){
@@ -50,14 +49,14 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-/**/
+/*/
 die (expand_text("
-: 1<ref name=Test>Test</ref>
-2<ref name=Example>Example</ref>
-2<ref name=Example2>Example</ref>
-3<ref name=Example2></ref>
-4<ref name=Test></ref>
-1<ref>Test</ref>
+<ref>http://arxiv.org/abs/0710.4523</ref>
+<ref name=Arxiv2>[http://arxiv.org/abs/0710.4523]</ref> 
+<ref>http://www.amazon.com/dp/0123456789</ref>
+<ref>http://articles.adsabs.harvard.edu/full/1998MNRAS.301..787L</ref>
+<ref>http://www.jstor.org/stable/1424736</ref>
+<ref>http://dx.doi.org/10.1038/nature09068</ref>
 
 {{reflist}}
 
