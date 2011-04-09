@@ -33,7 +33,7 @@ function getCiteList($page) {
 	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmid);
 	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmc);
   $category = "[[Category:Articles citing non-functional identifiers]]";
-	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($page, $category)) {
+	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($raw, $category)) {
     global $editInitiator;
     write($page, $raw . "\n$category", "$editInitiator Page contains malformed 'Cite xxx' templates; please fix!");
   }
@@ -120,7 +120,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         } else {
           print "No DOI found; using PMID instead";
           if ($pmid_from_pmc){
-            if (create_page("pmid", $pmid_from_pmc, array("pmc", $oPmc))) {
+            if (create_page("pmid", $pmid_from_pmc, array("pmc" => $oPmc))) {
             print "\n  > Redirecting PMC $oPmc to PMID $pmid_from_pmc";
             print write($pmc_page, "#REDIRECT[[Template:Cite pmid/$pmid_from_pmc]]", "Redirecting to PMID citation [citewatch.php]")
                 ? " : Done."
@@ -188,7 +188,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           // redirect to a Cite Doi page, to avoid duplication
           $encoded_doi = str_replace($dotDecode, $dotEncode, $doi_from_pmid);
           print "Creating new page at DOI $doi_from_pmid";
-          if (create_page("doi", $doi_from_pmid, array("pmid", $oPmid))) {
+          if (create_page("doi", $doi_from_pmid, array("pmid" => $oPmid))) {
             print "\n    Created. \n  > Redirecting PMID $oPmid to $encoded_doi";
             print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation")
                 ? " : Done."
@@ -253,8 +253,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
       print ".";
     } else {
       echo "\n   > Creating new page at $oDoi: ";
-      $p["doi"][0] = $oDoi; // Required for expand_from_doi
-      if (expand_from_doi($crossRef, true, true)) {
+      if (get_data_from_doi($oDoi, true, true)) {
         echo create_page("doi", $oDoi) ? "Done. " : "Failed. )-: ";
       } else {
         echo "Invalid DOI. Aborted operation.\n  > Marking DOI as broken:";

@@ -8,7 +8,7 @@
       $accountSuffix = '_1'; // Keep this before including expandFns
       $html_output = -1;
       include("expandFns.php");
-      $editInitiator = '[txt' . revisionID() . '&beta;]';
+      $editInitiator = '[txt' . revisionID() . ']';
 
       $postvars = $_POST;
       echo htmlentities(expand_text($postvars["wpTextbox1"]));
