@@ -170,6 +170,7 @@ function expand_text ($original_code,
     ob_start();
   } 
   
+  
   // Which template family is dominant?
   if (!$editing_cite_doi_template) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $original_code, $cite_x);
@@ -193,6 +194,7 @@ function expand_text ($original_code,
        $citation_template_dominant = false;
     }
   }
+  // Start by fixing any sloppy wikicode:
   echo "\n Bare references:";    
   $new_code = preg_replace_callback("~(?P<open><ref[^>]*>)\[?(?P<url>http://(?:[^\s\]<]|<(?!ref))+) ?\]?\s*(?P<close></\s*ref>)~",
           create_function('$matches',
@@ -200,6 +202,12 @@ function expand_text ($original_code,
                   ),
           $original_code);
   
+  // Check for baggage in a "Cite doi" template:
+  $cite_doi_baggage_regexp = "~({{[cC]ite doi\s*\|\s*)d?o?i?\s*[:.,;>]?\s*~";
+  if (preg_match($cite_doi_baggage_regexp, $new_code)) {
+    echo "\n Correcting broken Cite doi template";
+    $new_code = preg_replace($cite_doi_baggage_regexp, "$1", $new_code);
+  }
   echo "\n Reference tags:";
   $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc"))));
   if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
