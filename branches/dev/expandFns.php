@@ -480,6 +480,7 @@ function id_to_parameters() {
     $id = str_replace($match[0], "", $id);
   }
   preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
+  print_r($match);
   foreach ($match["content"] as $i => $content) {
     $content = explode(pipePlaceholder, $content);
     unset($parameters);

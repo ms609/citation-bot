@@ -234,7 +234,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   }
   
   while ($doi_todo && (false !== ($oDoi = @array_pop($doi_todo)))) {
-    if (preg_match("~^[doi:\s]+(.+)~", $oDoi, $match)) {
+    if (preg_match("~^\s*d?o?i?[:.,>\s]+(.+)~", $oDoi, $match)) {
       $oDoi = $match[1];
       $this_page_wikitext = getRawWikiText($article_in_progress);
       if ($this_page_wikitext && $ON) {

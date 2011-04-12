@@ -413,6 +413,7 @@ function expand_text ($original_code,
       }
 
       useUnusedData();
+      id_to_parameters();
 
       if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
         unset($p["unused_data"]);
