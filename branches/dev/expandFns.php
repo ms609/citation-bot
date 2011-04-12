@@ -479,18 +479,18 @@ function id_to_parameters() {
     $id = str_replace($match[0], "", $id);
   }
   preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
- 
   foreach ($match["content"] as $i => $content) {
     $content = explode(pipePlaceholder, $content);
     unset($parameters);
-    foreach($content as $fragment) {
+    $j = 0;
+    foreach ($content as $fragment) {
       $content[$j++] = $fragment;
       $para = explode("=", $fragment);
       if (trim($para[1])) {
         $parameters[trim($para[0])] = trim($para[1]);
       }
     }
-    switch(strtolower(trim($content[0]))) {
+    switch (strtolower(trim($content[0]))) {
       case "arxiv":
         array_shift($content);
         if ($parameters["id"]) {
@@ -606,11 +606,9 @@ function get_identifiers_from_url() {
 function url2template($url, $citation) {
   print "\n - $url";
   if (preg_match("~jstor\.org/.*[/=](\d+)~", $url, $match)) {
-    print ": CITE J";
     return "{{Cite doi | 10.2307/$match[1] }}";
   } else if (preg_match("~//dx\.doi\.org/(.+)$~", $url, $match)) {
-    print ": CITE D";
-    return "{{Cite doi | $match[1] }}";
+    return "{{Cite doi | " . urldecode($match[1]) . " }}";
   } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url , $match)) {
     return ($match['domain'] == ".com")
       ? "{{ASIN | {$match['id']} }}"

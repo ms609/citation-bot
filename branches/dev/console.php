@@ -49,14 +49,19 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-/*/
+/**/
 die (expand_text("
-<ref>http://arxiv.org/abs/0710.4523</ref>
-<ref name=Arxiv2>[http://arxiv.org/abs/0710.4523]</ref> 
-<ref>http://www.amazon.com/dp/0123456789</ref>
-<ref>http://articles.adsabs.harvard.edu/full/1998MNRAS.301..787L</ref>
-<ref>http://www.jstor.org/stable/1424736</ref>
-<ref>http://dx.doi.org/10.1038/nature09068</ref>
+{{cite journal
+ |last1=Trimble |first1=V.
+ |last2=Aschwanden |first2=M. J.
+ |last3=Hansen |first3=C. J.
+ |year=2007
+ |title=Astrophysics in 2006
+ |journal=[[Space Science Reviews]]
+ |volume=132 |issue=1 |pages=1
+ |doi=10.1007/s11214-007-9224-0
+ |id={{arxiv|0705.1730}}
+}}
 
 {{reflist}}
 
