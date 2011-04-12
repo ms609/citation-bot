@@ -163,7 +163,7 @@ function logIn($username, $password) {
     $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
     return true;
   } else {
-    die( "\nCould not log in to Wikipedia servers.  Edits will not be committed.\n"); // Will not display to user
+    exit ( "\nCould not log in to Wikipedia servers.  Edits will not be committed.\n"); // Will not display to user
     global $ON; $ON = false;
     return false;
   }
@@ -250,7 +250,8 @@ function parameters_from_citation($c) {
       $value = substr($value, 0, $pipePos);
     }
     // Load each line into $p[param][0123]
-    $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
+    $weight += 32;
+    $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2], "weight" => $weight); // Param = value, pipe, equals
   }
   return $p;
 }
@@ -315,7 +316,7 @@ function mark_broken_doi_template($article_in_progress, $oDoi) {
       , "$editInitiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
     );
   } else {
-    die ("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
+    exit ("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
   }
 }
 

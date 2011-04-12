@@ -49,34 +49,7 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-/**/
-die (expand_text("
-{{cite journal
- |last1=Trimble |first1=V.
- |last2=Aschwanden |first2=M. J.
- |last3=Hansen |first3=C. J.
- |year=2007
- |title=Astrophysics in 2006
- |journal=[[Space Science Reviews]]
- |volume=132 |issue=1 |pages=1
- |doi=10.1007/s11214-007-9224-0
- |id={{arxiv|0705.1730}}
-}}
-
-{{reflist}}
-
-") );
-
-// For version 3:
-die (expand_text("
-
-{{cite journal | author = Ridzon R, Gallagher K, Ciesielski C ''et al.'' | year = 1997 | title = Simultaneous transmission of human immunodeficiency virus and hepatitis C virus from a needle-stick injury | url = | journal = N Engl J Med | volume = 336 | issue = | pages = 919–22 }}. (full stop to innards)<
-<ref>http://www.ncbi.nlm.nih.gov/pubmed/15361495</ref>
-", false));
- /* */
-
-
-#die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
+/*/
 /*
 foreach ($argument["pages"] as $page) {
   $input[] = array("{{automatic taxobox$paras}}", $page);
@@ -107,6 +80,31 @@ if ($argument["pages"]) {
     echo "\n Fetching first page from backlog ... ";
     $page = nextPage($page);
     echo " done. ";
+  } else {
+    
+die (expand_text("
+{{cite journal
+ |last1=Trimble |first1=V.
+ |last2=Aschwanden |first2=M. J.
+ |last3=Hansen |first3=C. J.
+ |year=2007
+ |title=Astrophysics in 2006
+ |journal=[[Space Science Reviews]]
+ |volume=132 |issue=1 |pages=1
+ |doi=10.1007/s11214-007-9224-0
+ |id={{arxiv|0705.1730}}
+}}
+        
+"));
+
+/*/
+// For version 3:
+die (expand_text("
+
+{{cite journal | author = Ridzon R, Gallagher K, Ciesielski C ''et al.'' | year = 1997 | title = Simultaneous transmission of human immunodeficiency virus and hepatitis C virus from a needle-stick injury | url = | journal = N Engl J Med | volume = 336 | issue = | pages = 919–22 }}. (full stop to innards)<
+<ref>http://www.ncbi.nlm.nih.gov/pubmed/15361495</ref>
+", false));
+/**/
   }
   /*$start_code = getRawWikiText($page, false, false);*/
   $slow_mode = true;
