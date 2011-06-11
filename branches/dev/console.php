@@ -81,13 +81,10 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
-    print "\n " . mb_substr('machl;ean', 3, 1) . "\n";
-    die (formatSurname('machlean'));
     
 die (expand_text("
   
-{{Cite journal
-| doi:10.1007/978-94-007-0680-4_11
+{{citation|title=Max-linear Systems: Theory and Algorithms|first=Peter|last=Butkovi?|series=Springer Monographs in Mathematics|doi=10.1007/978-1-84996-299-5|publisher=Springer-Verlag|year=2010}}
 
         }}"));
     

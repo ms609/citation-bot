@@ -222,7 +222,7 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
   }
 
   if ($crossRef) {
-    echo "\n - Checking CrossRef for more details [DOItools.php/expand_from_doi]";
+    echo "\n - Checking CrossRef for more details [DOItools.php/expand_from_crossref]";
     if ($editing_cite_doi_template) {
       $doiCrossRef = $crossRef;
     }
@@ -262,7 +262,9 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
       $jstor_redirect_target = $crossRef->doi;
     }
     if_null_set("journal", $crossRef->journal_title);
-    if_null_set("volume", $crossRef->volume);
+    if ($crossRef->volume > 0) {
+      if_null_set("volume", $crossRef->volume);
+    }
     if ((integer) $crossRef->issue > 1) {
     // "1" may refer to a journal without issue numbers,
     //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
