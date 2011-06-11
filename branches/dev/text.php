@@ -11,7 +11,8 @@
       $editInitiator = '[txt' . revisionID() . ']';
 
       $postvars = $_POST;
-      echo htmlentities(expand_text($postvars["wpTextbox1"]));
+      echo htmlentities(expand_text(
+              mb_convert_encoding($postvars["wpTextbox1"], "ISO-8859-1")));
     ?></textarea>
       <?php
 unset ($postvars["wpTextbox1"]);
