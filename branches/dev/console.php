@@ -81,7 +81,8 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
-    
+    print "\n " . mb_substr('machl;ean', 3, 1) . "\n";
+    die (formatSurname('machlean'));
     
 die (expand_text("
   
