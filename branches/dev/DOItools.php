@@ -1989,9 +1989,12 @@ function citeDoiOutputFormat() {
        unset($au);
     }
     if ($au[1]) {
-      if (trim(mb_strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
+      if (trim(mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
         // Don't try to modify if we don't need to change
-        set("first$i", mb_strtoupper(preg_replace("~(\w)\w*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
+        set("first$i", mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1.", trim($au[1])))); // Replace names with initials; beware hyphenated names!
+      }
+      if (is("first$i")) {
+        $p["first$i"][0] = preg_replace("~([A-Z])(?!\.) *~", "$1.", $p["first$i"][0]);
       }
       if (strpos($p["first$i"][1], "\n") !== false || (!$p["first$i"][1] && $p["first$i"][0])) {
         $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space

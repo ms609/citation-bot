@@ -84,9 +84,9 @@ if ($argument["pages"]) {
     
 die (expand_text("
   
-{{cite web | title = Entrez Gene: MCHR2 melanin-concentrating hormone receptor 2| url = http://www.ncbi.nlm.nih.gov/sites/entrez?Db=gene&Cmd=ShowDetailView&TermToSearch=84539| accessdate = }}
+{{cite journal | first = A B | last = Creasey }}
 
-        }}"));
+        }}", 0, 1));
     
 die (expand_text("
 {{cite journal
