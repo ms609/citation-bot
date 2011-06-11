@@ -391,7 +391,7 @@ function expand_text ($original_code,
         $countComments = count($comments[0]);
         for ($j = 0; $j < $countComments; $j++) {
           $citation[$cit_i+1] = str_replace($comments[0][$j]
-                                    , "<!-- Citation bot : comment placeholder b$j -->"
+                                    , sprintf(comment_placeholder, "b$j")
                                     , $citation[$cit_i+1]);
         }
       } else $countComments = null;
@@ -542,7 +542,7 @@ function expand_text ($original_code,
       }
       // Restore comments we hid earlier
       for ($j = 0; $j < $countComments; $j++) {
-        $cText = str_replace("<!-- Citation bot : comment placeholder b$j -->"
+        $cText = str_replace(sprintf(comment_placeholder, "b$j")
                                       , $comments[0][$j]
                                       , $cText);
       }
@@ -565,7 +565,7 @@ function expand_text ($original_code,
         $countComments = count($comments[0]);
         for ($j = 0; $j < $countComments; $j++) {
           $citation[$cit_i+1] = str_replace($comments[0][$j]
-                                    , "<!-- Citation bot : comment placeholder c$j -->"
+                                    , sprintf(comment_placeholder, "c$j")
                                     , $citation[$cit_i+1]);
         }
       } else {
@@ -1148,11 +1148,11 @@ print $p["title"][0];
 
       // Restore comments we hid earlier
       for ($j = 0; $j < $countComments; $j++) {
-        $cText = str_replace(array("<!-- Citation bot : comment placeholder c$j -->",
-                                   str_replace($dotEncode, $dotDecode, "<!-- Citation bot : comment placeholder c$j -->"),
+        $cText = str_replace(array(sprintf(comment_placeholder, "c$j"),
+                                   str_replace($dotEncode, $dotDecode, sprintf(comment_placeholder, "c$j")),
                                    str_replace($pcEncode, $pcDecode,
                                                str_replace(' ', '+',
-                                                 trim(urldecode("<!-- Citation bot : comment placeholder c$j -->")))),
+                                                 trim(urldecode(sprintf(comment_placeholder, "c$j"))))),
 
                                   )
                                       , $comments[0][$j]

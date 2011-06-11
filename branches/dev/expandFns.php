@@ -50,6 +50,7 @@ mb_internal_encoding( 'UTF-8' ); // Avoid ??s
 
 define("editinterval", 10);
 define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
+define("comment_placeholder", "### Citation bot : comment placeholder %s ###"); #4 when online...
 define("to_en_dash", "-|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
 define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
