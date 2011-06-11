@@ -84,7 +84,7 @@ if ($argument["pages"]) {
     
 die (expand_text("
   
-{{citation|title=Max-linear Systems: Theory and Algorithms|first=Peter|last=Butkovi?|series=Springer Monographs in Mathematics|doi=10.1007/978-1-84996-299-5|publisher=Springer-Verlag|year=2010}}
+{{cite web | title = Entrez Gene: MCHR2 melanin-concentrating hormone receptor 2| url = http://www.ncbi.nlm.nih.gov/sites/entrez?Db=gene&Cmd=ShowDetailView&TermToSearch=84539| accessdate = }}
 
         }}"));
     
