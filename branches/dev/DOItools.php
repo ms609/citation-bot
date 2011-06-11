@@ -226,7 +226,16 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
     if ($editing_cite_doi_template) {
       $doiCrossRef = $crossRef;
     }
-    if_null_set("title", $crossRef->article_title);
+    if ($crossRef->volume_title) {
+      if_null_set("chapter", $crossRef->article_title);
+      if ($p["title"][0] == $crossRef->article_title) {
+        unset($p['title'][0]);
+      }
+      if_null_set('title', $crossRef->volume_title);
+    } else {
+      if_null_set("title", $crossRef->article_title);
+    }
+    if_null_set('series', $crossRef->series_title);
     if_null_set("year", $crossRef->year);
     if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
         && $crossRef->contributors->contributor) {
@@ -247,6 +256,7 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
       }
     }
     if_null_set("doi", $crossRef->doi);
+    if_null_set("isbn", $crossRef->isbn);
     if ($jstor_redirect) {
       global $jstor_redirect_target;
       $jstor_redirect_target = $crossRef->doi;

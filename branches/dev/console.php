@@ -82,6 +82,14 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
     
+    
+die (expand_text("
+  
+{{Cite journal
+| doi:10.1007/978-94-007-0680-4_11
+
+        }}"));
+    
 die (expand_text("
 {{cite journal
  |last1=Trimble |first1=V.
