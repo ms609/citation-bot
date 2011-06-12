@@ -84,7 +84,7 @@ if ($argument["pages"]) {
        
 die (expand_text("
 
-{{Cite journal | Vol. 3 No. 5 pp. 1-20}}
+{{Cite journal | Smith & Jones (2000), A book, Vol. 3, No. 5; pp. 1-20}}
         
 "));
 die (expand_text("

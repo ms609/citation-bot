@@ -1037,9 +1037,8 @@ function useUnusedData()
           }
 
         }
-        if (preg_match_all("~(\w+)\.?\s*(\S+)[;.,]?~", $dat, $match)) {
+        if (preg_match_all("~(\w+)\.?\s*([^\s;,.]+)[;.,]*~", $dat, $match)) {
           foreach ($match[0] as $i=>$oMatch) {
-            $dat = trim(str_replace($oMatch, "", $dat));
             switch (strtolower($match[1][$i])) {
               case "vol": case "v": case 'volume':
                 $matched_parameter = "volume";
@@ -1056,7 +1055,15 @@ function useUnusedData()
               default: 
                 $matched_parameter = null;
             }
-            if_null_set($matched_parameter, $match[2][$i]);
+            if ($matched_parameter) { 
+              $dat = trim(str_replace($oMatch, "", $dat));
+              if_null_set($matched_parameter, $match[2][$i]);
+            }
+          }
+        }
+        if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) {
+          if (if_null_set('year', $match[1])) {
+            $dat = trim(str_replace($match[0], '', $dat));
           }
         }
 
