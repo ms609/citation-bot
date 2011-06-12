@@ -690,9 +690,9 @@ function combine_duplicate_references($page_code) {
 
   $original_page_code = $page_code;
   preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
-    // match 1 = ref names
+  // match 1 = ref names
   if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
-          . "(([^<]|<(?![Rr]ef))+?)</ref>~i", $page_code, $refs)) {
+          . "(([^<]|<(?![Rr]ef))+?)</ref>~i", $page_code, $refs)) {    
     // match 0 = full ref; 1 = redundant; 2= used in regexp for backreference;
     // 3 = ref name; 4 = ref content; 5 = redundant
     foreach ($refs[4] as $ref) {
@@ -707,6 +707,10 @@ function combine_duplicate_references($page_code) {
       }
       $page_code = str_replace($duplicate_content, $full_original, $page_code);
     }
+  } else {
+    // no matches, return input
+    print "\n - No references found.";
+    return $page_code; 
   }
 
   // Now all references that need merging will have identical content.  Proceed to do the replacements...
@@ -717,11 +721,10 @@ function combine_duplicate_references($page_code) {
 
   if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
           . "(([^<]|<(?!ref))+?)</ref>~i", $page_code, $refs)) {
-
     $standardized_ref = $refs[4]; // They were standardized above.
 
     foreach ($refs[4] as $i => $content) {
-      if (false !== ($key = array_search(standardize_reference($refs[4][$i]), $standardized_ref))
+      if (false !== ($key = array_search($refs[4][$i], $standardized_ref))
               && $key != $i) {
         $full_original[] = $refs[0][$key];
         $full_duplicate[] = $refs[0][$i];
@@ -735,6 +738,7 @@ function combine_duplicate_references($page_code) {
     }
     $already_replaced = Array(); // so that we can use FALSE and not NULL in the check...
     if ($full_duplicate) {
+      print_r($full_duplicate);
       foreach ($full_duplicate as $i => $this_duplicate) {
         if (FALSE === array_search($this_duplicate, $already_replaced)) {
           $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once

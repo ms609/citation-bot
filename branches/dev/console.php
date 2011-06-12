@@ -81,13 +81,7 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
-    
-die (expand_text("
-  
-{{cite journal | first = A B | last = Creasey }}
-
-        }}", 0, 1));
-    
+       
 die (expand_text("
 {{cite journal
  |last1=Trimble |first1=V.
