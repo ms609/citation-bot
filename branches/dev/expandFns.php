@@ -481,7 +481,6 @@ function id_to_parameters() {
     $id = str_replace($match[0], "", $id);
   }
   preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
-  print_r($match);
   foreach ($match["content"] as $i => $content) {
     $content = explode(pipePlaceholder, $content);
     unset($parameters);
@@ -738,7 +737,6 @@ function combine_duplicate_references($page_code) {
     }
     $already_replaced = Array(); // so that we can use FALSE and not NULL in the check...
     if ($full_duplicate) {
-      print_r($full_duplicate);
       foreach ($full_duplicate as $i => $this_duplicate) {
         if (FALSE === array_search($this_duplicate, $already_replaced)) {
           $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once

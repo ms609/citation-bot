@@ -228,7 +228,7 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
     }
     if ($crossRef->volume_title) {
       if_null_set("chapter", $crossRef->article_title);
-      if ($p["title"][0] == $crossRef->article_title) {
+      if (strtolower($p["title"][0]) == strtolower($crossRef->article_title)) {
         unset($p['title'][0]);
       }
       if_null_set('title', $crossRef->volume_title);
@@ -1036,6 +1036,28 @@ function useUnusedData()
             }
           }
 
+        }
+        if (preg_match_all("~(\w+)\.?\s*(\S+)[;.,]?~", $dat, $match)) {
+          foreach ($match[0] as $i=>$oMatch) {
+            $dat = trim(str_replace($oMatch, "", $dat));
+            switch (strtolower($match[1][$i])) {
+              case "vol": case "v": case 'volume':
+                $matched_parameter = "volume";
+                break;
+              case "no": case "number": case 'issue': case 'n':
+                $matched_parameter = "issue";
+                break;
+              case 'pages': case 'pp': case 'pg': case 'pgs': case 'pag':
+                $matched_parameter = "pages";
+                break;
+              case 'p':
+                $matched_parameter = "page";
+                break;
+              default: 
+                $matched_parameter = null;
+            }
+            if_null_set($matched_parameter, $match[2][$i]);
+          }
         }
 
         // Load list of parameters used in citation templates.

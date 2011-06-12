@@ -83,6 +83,11 @@ if ($argument["pages"]) {
   } else {
        
 die (expand_text("
+
+{{Cite journal | Vol. 3 No. 5 pp. 1-20}}
+        
+"));
+die (expand_text("
 {{cite journal
  |last1=Trimble |first1=V.
  |last2=Aschwanden |first2=M. J.
