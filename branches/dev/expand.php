@@ -254,7 +254,6 @@ function expand_text ($original_code,
         unset($p["first$au_i"]);
         unset($p["author$au_i"]);
       }
-      
       // Get identifiers from URL
       get_identifiers_from_url();
 

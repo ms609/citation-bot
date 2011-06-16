@@ -174,13 +174,18 @@ function nothingMissing($journal){
   );
 }
 
-
-function get_data_from_pubmed() {
+function get_data_from_pubmed($identifier = "pmid") {
   global $p;
-  echo "\n - Checking PMID {$p['pmid'][0]} for more details [DOItools.php/get_data_from_pubmed]";
-  $details = pmArticleDetails($p['pmid'][0]);
+  echo "\n - Checking " . strtoupper($identifier) . ' ' . $p[$identifier][0] . ' for more details [DOItools.php/get_data_from_pubmed]';
+  $details = pmArticleDetails($p[$identifier][0], $identifier);
   foreach ($details as $key => $value) {
-    if_null_set($key, $value);
+    if (if_null_set($key, $value) && $key == 'pmid') {
+      // PMC search is limited but will at least return a PMID.
+      get_data_from_pubmed('pmid');
+    } else if ($identifier == 'pmc' && $key == 'title') {
+      set ('title', $value); // Sometimes necessary in cite webs
+      // this will only be called with $identifier=pmc if a PMC id has just been discovered in a fragmentary citation.
+    }
   }
   if (false && !is("url")) { // TODO:  BUGGY - CHECK PMID DATABASES, and see other occurrence above
     if (!is('pmc')) {
@@ -367,7 +372,7 @@ function get_data_from_adsabs() {
   }
 }
 
-function expand_from_doi($a, $b, $c = false) {
+function expand_from_doi($a, $b, $c = false, $DEPRECATED = TRUE) {
   print "\n\n !! ==== \n\n USING DUD FN DOI! \n\n";
   expand_from_crossref($a, $b, $c);
 }
@@ -377,17 +382,17 @@ function get_data_from_doi() {
   return expand_from_crossref(crossRefData($doi), $editing_cite_doi_template);
 }
 
-function getDataFromArxiv($a) {
+function getDataFromArxiv($a, $DEPRECATED = TRUE) {
   print "\n\n !! ==== \n\n USING DUD FN ARXIV! \n\n";
   return get_data_from_arxiv($a);
 }
 
-function expand_from_pubmed() {
+function expand_from_pubmed($DEPRECATED = TRUE) {
   print "\n\n !! ==== \n\n USING DUD FN PMID! \n\n";
   return get_data_from_pubmed();
 }
 
-function getInfoFromISBN() {
+function getInfoFromISBN($DEPRECATED = TRUE) {
   print "\n\n !! ==== \n\n USING DUD FN ISBN! \n\n";
   return get_data_from_isbn($a);
 }

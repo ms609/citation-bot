@@ -83,11 +83,12 @@ if ($argument["pages"]) {
   } else {
        
 die (expand_text("
-
-{{Cite journal | Smith & Jones (2000), A book, Vol. 3, No. 5; pp. 1-20}}
-        
+  {{cite web |title =Journal of Anatomy |url=http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=1256598}}
+       
 "));
 die (expand_text("
+Rheumatoid nodule  
+
 {{cite journal
  |last1=Trimble |first1=V.
  |last2=Aschwanden |first2=M. J.

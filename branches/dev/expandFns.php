@@ -567,7 +567,6 @@ function get_identifiers_from_url() {
   // Convert URLs to article identifiers:
   global $p;
   $url = $p["url"][0];
-  
   // JSTOR
   if (strpos($url, "jstor.org") !== FALSE) {
     if (strpos($url, "sici")) {
@@ -584,14 +583,18 @@ function get_identifiers_from_url() {
       rename_parameter("url", "bibcode", urldecode($bibcode[1]));
     } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
             . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-      rename_paramter("url", "pmc", $match[1]);
+      rename_parameter("url", "pmc", $match[1]);
+      get_data_from_pubmed('pmc');
     } else if (preg_match("~^http://dx\.doi\.org/(.*)", $url, $match)) {
-      rename_paramter("url", "doi", urldecode($match[1]));
+      rename_parameter("url", "doi", urldecode($match[1]));
+      get_data_from_doi();
     } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
       //ARXIV
         rename_parameter("url", "arxiv", $match[1]);
+        get_data_from_arxiv();
     } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
       rename_parameter('url', 'pmid', $match[1]);
+      get_data_from_pubmed('pmid');
     } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url , $match)) {
       if ($match['domain'] == ".com") {
         rename_parameter('url', 'asin', $match['id']);
