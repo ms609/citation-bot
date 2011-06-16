@@ -83,11 +83,18 @@ if ($argument["pages"]) {
   } else {
        
 die (expand_text("
-  {{cite web |title =Journal of Anatomy |url=http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=1256598}}
-       
-"));
+ {{cite journal
+| last1 = Sharp | first1 = FE
+| last2 = Sharp | first2 = AG
+| last3 = Sharp | first3 = A
+| last4 = Smith | first4 = Adam G.
+
+}}
+
+", null, true));
+
 die (expand_text("
-Rheumatoid nodule  
+ 
 
 {{cite journal
  |last1=Trimble |first1=V.

@@ -273,7 +273,7 @@ function expand_text ($original_code,
       //And we're done!
       $endtime = time();
       $timetaken = $endtime - $started_citation_at;
-      echo "* Citation assessed in $timetaken secs. "
+      echo "\n* Citation assessed in $timetaken secs. "
           . ($change_to_journal
               ?"Changing to Cite Journal. "
               :($change_to_arxiv

@@ -583,7 +583,7 @@ function get_identifiers_from_url() {
       rename_parameter("url", "bibcode", urldecode($bibcode[1]));
     } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
             . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-      rename_parameter("url", "pmc", $match[1]);
+      rename_parameter("url", "pmc", $match[1] . $match[2]);
       get_data_from_pubmed('pmc');
     } else if (preg_match("~^http://dx\.doi\.org/(.*)", $url, $match)) {
       rename_parameter("url", "doi", urldecode($match[1]));
@@ -936,8 +936,8 @@ function authorify ($author) {
 }
 
 
-function ifNullSet($a, $b) {
-  print "\n\n Redundant function ifNullSet in expandFns.php";
+function ifNullSet($a, $b, $DEPRECATED = TRUE) {
+  print "\n\n Call to deprecated function ifNullSet in expandFns.php";
   if_null_set($a, $b);
 }
 
@@ -1023,7 +1023,12 @@ function if_null_set($param, $value) {
       }
 			break;
     case "page": case "pages":
-			if (trim($p["pages"][0]) == "" && trim($p["page"][0]) == "" && trim($value) != "") {
+			if (  
+          ( trim($p["pages"][0]) == ""
+            && trim($p["page"][0]) == ""
+            && trim($value) != ""
+          ) || strpos(strtolower($p["pages"][0] . $p['page'][0]), 'no') !== FALSE
+         ) {
         set ($param, $value);
         return true;
       }

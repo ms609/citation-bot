@@ -2022,13 +2022,15 @@ function citeDoiOutputFormat() {
     } else {
        unset($au);
     }
+    print "\n\n --- " . $au[1];
     if ($au[1]) {
-      if (trim(mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1])))) != trim($p["first$i"][0])) {
-        // Don't try to modify if we don't need to change
-        set("first$i", mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1.", trim($au[1])))); // Replace names with initials; beware hyphenated names!
+      if ($au[1] == mb_strtoupper($au[1]) && mb_strlen($au[1]) < 4) {
+        $au[1] = preg_replace("~[A-Z]~u", "$0. ", $au[1]);
       }
-      if (is("first$i")) {
-        $p["first$i"][0] = preg_replace("~([A-Z])(?!\.) *~", "$1.", $p["first$i"][0]);
+      if (trim(mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1]))))
+              != trim($p["first$i"][0])) {
+        // Don't try to modify if we don't need to change
+        set("first$i", mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
       }
       if (strpos($p["first$i"][1], "\n") !== false || (!$p["first$i"][1] && $p["first$i"][0])) {
         $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
