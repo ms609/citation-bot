@@ -950,12 +950,15 @@ function useUnusedData()
               case "V":
                 $endnote_parameter = "volume";
                 break;
-              case "@": // ISSN
+              case "@": // ISSN / ISBN
                 if (preg_match("~@\s*[\d\-]{10,}~", $endnote_line)) {
                   $endnote_parameter = "isbn";
                   break;
+                } else if (preg_match("~@\s*\d{4}\-?\d{4}~", $endnote_line)) {
+                  $endnote_parameter = "issn";
+                  break;
                 } else {
-                  die($endnote_line . "\n");
+                  $endnote_parameter = false;
                 }
               case "R": // Resource identifier... *may* be DOI but probably isn't always.
               case "8": // Date
@@ -2016,16 +2019,16 @@ function citeDoiOutputFormat() {
       // $au is an array with two parameters: the surname [0] and forename [1].
       $au = explode(', ', $p["author$i"][0]);
       unset($p["author$i"]);
-      set("author$i", $au[0]); // i.e. drop the forename; this is safe in $au[1]
+      set("author$i", formatSurname($au[0])); // i.e. drop the forename; this is safe in $au[1]
     } else if (is("first$i")) {
       $au[1] = $p["first$i"][0];
     } else {
        unset($au);
     }
-    print "\n\n --- " . $au[1];
     if ($au[1]) {
       if ($au[1] == mb_strtoupper($au[1]) && mb_strlen($au[1]) < 4) {
-        $au[1] = preg_replace("~[A-Z]~u", "$0. ", $au[1]);
+        // Try to separate Smith, LE for Smith, Le.
+        $au[1] = preg_replace("~([A-Z])[\s\.]*~u", "$1. ", $au[1]);
       }
       if (trim(mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1]))))
               != trim($p["first$i"][0])) {

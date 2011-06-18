@@ -83,12 +83,16 @@ if ($argument["pages"]) {
   } else {
        
 die (expand_text("
- {{cite journal
-| last1 = Sharp | first1 = FE
-| last2 = Sharp | first2 = AG
-| last3 = Sharp | first3 = A
-| last4 = Smith | first4 = Adam G.
-
+{{cite journal | %0 Journal Article
+%T Molluscan diets
+%A GRAHAM, A.
+%J Journal of Molluscan Studies
+%V 31
+%N 3-4
+%P 144
+%@ 026a0-1230
+%D 1955
+%I Malacological Soc London
 }}
 
 ", null, true));

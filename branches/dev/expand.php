@@ -1018,7 +1018,6 @@ echo "
           citeDoiOutputFormat();
         }
 
-print $p["title"][0];
         // Check that the URL functions, and mark as dead if not.
         /*  Disable; to re-enable, we should log possible 404s and check back later.
          * Also, dead-link notifications should be placed ''after'', not within, the template.
