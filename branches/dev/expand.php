@@ -1070,7 +1070,6 @@ echo "
         ELSE if (!$brokenDoi) unset($p["doi_brokendate"]); unset($p["doi_inactivedate"]);
         echo $brokenDoi?" It isn't.":" It is.", "</p>";
       }
-print $p["title"][0];
 
       // Clean up after errors in publishers' databases
       if (0 === strpos(trim($p["journal"][0]), "BMC ") && $p["pages"][0]) {

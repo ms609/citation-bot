@@ -1992,13 +1992,24 @@ function formatTitle($title) {
               ? mb_substr($title, 0, -6)
               : $title
             );
-  $iIn = array("<i>","</i>",
+  $iIn = array("<i>","</i>", 
 							"From the Cover: ");
 	$iOut = array("''","''",
 								"");
 	$in = array("&lt;", "&gt;"	);
 	$out = array("<",		">"			);
+  // Use 'straight quotes' per WP:MOS
+  // $title = straighten_quotes($title);
   return str_ireplace($iIn, $iOut, str_ireplace($in, $out, niceTitle($title))); // order IS important!
+}
+
+function straighten_quotes($str) {
+  $str = preg_replace('~&#821[679];|[\x{2039}\x{203A}\x{2018}-\x{201B}]|&[rl]s?[ab]?quo;~u', "'", $str);
+  $str = preg_replace(array('~&#822[013];~',
+      '~[\x{00AB}\x{00BB}\x{201C}-\x{201F}]~u',
+      '~&([rlb][ad]?quo;~'), '"', $str);
+  print "\n $str \n";
+  return $str;
 }
 
 /** Format authors according to author = Surname; first= N.E.
@@ -2028,7 +2039,7 @@ function citeDoiOutputFormat() {
     if ($au[1]) {
       if ($au[1] == mb_strtoupper($au[1]) && mb_strlen($au[1]) < 4) {
         // Try to separate Smith, LE for Smith, Le.
-        $au[1] = preg_replace("~([A-Z])[\s\.]*~u", "$1. ", $au[1]);
+        $au[1] = preg_replace("~([A-Z])[\s\.]*~u", "$1.", $au[1]);
       }
       if (trim(mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1]))))
               != trim($p["first$i"][0])) {

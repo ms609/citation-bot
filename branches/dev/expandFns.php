@@ -691,9 +691,9 @@ function standardize_reference($reference) {
 function combine_duplicate_references($page_code) {
 
   $original_page_code = $page_code;
-  preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
+  preg_match_all("~<ref\s*name\s*=\s*[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
   // match 1 = ref names
-  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
+  if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
           . "(([^<]|<(?![Rr]ef))+?)</ref>~i", $page_code, $refs)) {    
     // match 0 = full ref; 1 = redundant; 2= used in regexp for backreference;
     // 3 = ref name; 4 = ref content; 5 = redundant
@@ -721,7 +721,7 @@ function combine_duplicate_references($page_code) {
   $duplicate_content = null;
   $standardized_ref = null;
 
-  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
+  if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
           . "(([^<]|<(?!ref))+?)</ref>~i", $page_code, $refs)) {
     $standardized_ref = $refs[4]; // They were standardized above.
 
@@ -748,7 +748,7 @@ function combine_duplicate_references($page_code) {
           $replacement_template_name = $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]]
                                        : get_name_for_reference($duplicate_content[$i], $page_code);
           // First replace any <ref name=Blah content=none /> or <ref name=Blah></ref> with the new name
-          $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
+          $ready_to_replace = preg_replace("~<ref\s*name\s*=\s*(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
                                     . "(?P=quote)(\s*/>|\s*>\s*</\s*ref>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
                               $page_code);
           if ($name_of_original[$i]) {
@@ -772,7 +772,7 @@ function combine_duplicate_references($page_code) {
             // We need add a name to the original template, and not to replace it
             $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]);
             $code_upto_original_ref = substr($ready_to_replace, 0, $original_ref_end_pos) // Sneak this in to "first_duplicate"
-                             . preg_replace("~<ref(\s+name=(?P<quote>[\"']?)" . preg_quote($name_of_original[$i])
+                             . preg_replace("~<ref(\s+name\s*=\s*(?P<quote>[\"']?)" . preg_quote($name_of_original[$i])
                                      . "(?P=quote)\s*)?>~i", "<ref name=\"$replacement_template_name\">", $full_original[$i]);
             $original_ref_end_pos += strlen($full_original[$i]);
           }

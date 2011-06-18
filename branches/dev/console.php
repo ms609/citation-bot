@@ -1,5 +1,5 @@
 #!/usr/bin/php
-<?
+<?      
 // $Id$
 
 #$abort_mysql_connection = true; // Whilst there's a problem with login
@@ -81,21 +81,13 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
-       
-die (expand_text("
-{{cite journal | %0 Journal Article
-%T Molluscan diets
-%A GRAHAM, A.
-%J Journal of Molluscan Studies
-%V 31
-%N 3-4
-%P 144
-%@ 026a0-1230
-%D 1955
-%I Malacological Soc London
-}}
-
-", null, true));
+ die(
+        
+        expand_text('<ref name= "Playfair90">Playfair, p. 90.</ref>
+ <ref name="Playfair90"/>
+ <ref name="Playfair90" >Playfair, p. 90.</ref>
+ 
+', null, true));
 
 die (expand_text("
  
