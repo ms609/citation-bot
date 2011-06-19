@@ -1134,7 +1134,14 @@ function if_null_set($param, $value) {
         return true;
       }
       break;
-    default: if (trim($p[$param][0]) == "" && trim($value) != "") {
+    case 'title': 
+      if (trim($p[$param][0]) == "" && trim($value) != "") {
+        set($param, formatTitle($value));
+        return true;
+      }
+      break;
+    default: 
+      if (trim($p[$param][0]) == "" && trim($value) != "") {
         set($param, $value);
         return true;
       }

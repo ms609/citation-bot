@@ -238,7 +238,7 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
       }
       if_null_set('title', $crossRef->volume_title);
     } else {
-      if_null_set("title", $crossRef->article_title);
+      if_null_set('title', $crossRef->article_title);
     }
     if_null_set('series', $crossRef->series_title);
     if_null_set("year", $crossRef->year);
@@ -2017,6 +2017,9 @@ function formatTitle($title) {
               ? mb_substr($title, 0, -6)
               : $title
             );
+  $title = preg_replace_callback('~(?P<taxon>\p{L}+\s+\p{L}+)\s+(?P<nova>(?:(?:gen. ?no?v?|sp. ?no?v?|no?v?. ?sp|no?v?. ?gen)\.?,?)+)~ui', create_function('$matches',
+          'return "\'\'{$matches[\'taxon\']}\'\' " . strtolower($matches["nova"]);'), $title);
+  die("\n$title\n");
   $iIn = array("<i>","</i>", 
 							"From the Cover: ");
 	$iOut = array("''","''",

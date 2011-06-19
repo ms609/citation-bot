@@ -88,7 +88,7 @@ die (expand_text("
 
 Unused data:
 {{cite journal
-| pages = 1&ndash;2
+| doi = 10.1099/ijs.0.65587-0
 }}
 
 
