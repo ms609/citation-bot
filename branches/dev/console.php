@@ -86,7 +86,9 @@ die (expand_text("
 
 Et al handling [coauthors]:
 
-{{Cite journal|last=Calafell |first=Francesc |coauthors=''et al.'' |title=Evolutionary dynamics of the human ''ABO'' gene |url=http://www.springerlink.com/content/yv4072vu67mv1166/fulltext.html |journal=Human Genetics |year=2008 |month=September |volume=124 |issue=2 |pages=123–135 |doi=10.1007/s00439-008-0530-8 |pmid=18629539 |accessdate=2008-09-24}}
+
+{{cite journal| last=Greeley| first=R.| coauthors=Klemaszewski, J.E.;Wagner L.; et al.| title=Galileo views of the geology of Callisto|journal=Planetary and Space Science| year=2000| volume=48| pages=829–853| doi=10.1016/S0032-0633(00)00050-7| bibcode=2000P&SS...48..829G}}
+
 "));
     
 die (expand_text("

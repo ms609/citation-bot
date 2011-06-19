@@ -964,31 +964,37 @@ function handle_et_al() {
         $authors_missing = true;
         $oParam = preg_replace("~,?\s*'*et al['.]*~", '', $p[$param][0]);
         if ($i == 1) {
-          if (strpos($param, 'co') === FALSE) {
-            // then there's scope for "Smith, AB; Peters, Q.R. et al"
-            if (strpos($oParam, ';')) {
-              $authors = explode(';', $oParam);
-            } else if (substr_count($oParam, ',') > 1
-                    || substr_count($oParam, ',') < substr_count(trim($oParam), ' ')) {
-              // then we (probably) have a list of authors joined by commas in our first parameter
-              $authors = explode(',', $oParam);
-            }
+          // then there's scope for "Smith, AB; Peters, Q.R. et al"
+          $coauthor_parameter = strpos($param, 'co') === FALSE ? 0 : 1;
+          if (strpos($oParam, ';')) {
+            $authors = explode(';', $oParam);
+          } else if (substr_count($oParam, ',') > 1
+                  || substr_count($oParam, ',') < substr_count(trim($oParam), ' ')) {
+            // then we (probably) have a list of authors joined by commas in our first parameter
+            $authors = explode(',', $oParam);
+            if_null_set('author-separator', ',');
           }
+          
           if ($authors) {
             foreach ($authors as $au) {
               if ($i == 1) {
-                set($param, $au);
+                if ($coauthor_parameter) {
+                  unset($p[$param]);
+                  set('author2', $au);
+                } else {
+                  set($param, $au);
+                }
                 $i = 2;
               }
               else {
-                if_null_set('author' . $i++, $au);
+                if_null_set('author' . ($i++ + $coauthor_parameter), $au);
               }
             }
             $i--;
           } else {
             set($param, $oParam);
           }
-        } 
+        }
         if (trim($oParam) == "") {
           unset($p[$param]);
         } 
