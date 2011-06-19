@@ -83,11 +83,16 @@ if ($argument["pages"]) {
   } else {
  die(
         
-        expand_text('<ref name= "Playfair90">Playfair, p. 90.</ref>
+        expand_text('<!--<ref name= "Playfair90">Playfair, p. 90.</ref>-->
+          
+<!--<ref name= "Playfair90">Playfair, p. 90.</ref>-->
+<!--jagk<ref name= "Playfair90">Playfair, p. 90.</ref>agjkb-->
+
  <ref name="Playfair90"/>
  <ref name="Playfair90" >Playfair, p. 90.</ref>
+ <ref name=Playfair90>Playfair, p. 90.</ref>
  
-', null, true));
+', null));
 
 die (expand_text("
  

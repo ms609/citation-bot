@@ -687,10 +687,26 @@ function standardize_reference($reference) {
   return str_replace($whitespace, "", $reference);
 }
 
+// $comments should be an array, with the original comment content.
+// $placeholder will be prepended to the comment number in the sprintf to comment_placeholder's %s.
+function replace_comments($text, $comments, $placeholder = "") {
+  foreach ($comments as $i=>$comment) {
+    $text = str_replace(sprintf(comment_placeholder, $placeholder. $i),
+            $comment, $text);
+  }
+  return $text;
+}
+
 // This function may need to be called twice; the second pass will combine <ref name="Name" /> with <ref name=Name />.
 function combine_duplicate_references($page_code) {
 
   $original_page_code = $page_code;
+  if (preg_match_all("~<!--[\s\S]*?-->~", $page_code, $match)) {
+    $removed_comments = $match[0];
+    foreach ($removed_comments as $i=>$content) {
+      $page_code = str_replace($content, sprintf(comment_placeholder, "sr$i"), $page_code);
+    }
+  }
   preg_match_all("~<ref\s*name\s*=\s*[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
   // match 1 = ref names
   if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
@@ -712,7 +728,7 @@ function combine_duplicate_references($page_code) {
   } else {
     // no matches, return input
     print "\n - No references found.";
-    return $page_code; 
+    return replace_comments($page_code, $removed_comments, 'sr'); 
   }
 
   // Now all references that need merging will have identical content.  Proceed to do the replacements...
@@ -786,6 +802,8 @@ function combine_duplicate_references($page_code) {
       }
     }
   }
+  
+  $page_code = replace_comments($page_code, $removed_comments, 'sr'); 
   echo ($original_page_code == $page_code)
     ? "\n - No duplicate references to combine"
     : "\n - Combined duplicate references (if any exist).";
