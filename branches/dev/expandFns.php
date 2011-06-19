@@ -52,6 +52,7 @@ define("editinterval", 10);
 define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
 define("comment_placeholder", "### Citation bot : comment placeholder %s ###"); #4 when online...
 define("to_en_dash", "-|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
+define("blank_ref", "<ref name=\"%s\" />");
 define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array (
@@ -763,10 +764,12 @@ function combine_duplicate_references($page_code) {
           . ( $name_for[$duplicate_content[$i]] ?  $name_for[$duplicate_content[$i]] : "Autogenerating." ); // . " (original: $full_original[$i])";
           $replacement_template_name = $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]]
                                        : get_name_for_reference($duplicate_content[$i], $page_code);
-          // First replace any <ref name=Blah content=none /> or <ref name=Blah></ref> with the new name
-          $ready_to_replace = preg_replace("~<ref\s*name\s*=\s*(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
-                                    . "(?P=quote)(\s*/>|\s*>\s*</\s*ref>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
-                              $page_code);
+          // First replace any empty <ref name=Blah content=none /> or <ref name=Blah></ref> with the new name
+          $ready_to_replace = preg_replace("~<ref\s*name\s*=\s*(?P<quote>[\"']?)" 
+                    . preg_quote($name_of_duplicate[$i])
+                    . "(?P=quote)(\s*/>|\s*>\s*</\s*ref>)~"
+                  , "<ref name=\"" . $replacement_template_name . "\"$2"
+                  , $page_code);
           if ($name_of_original[$i]) {
             // Don't replace the original template!
             $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]) + strlen($full_original[$i]);
@@ -778,12 +781,6 @@ function combine_duplicate_references($page_code) {
             $code_upto_original_ref = "";
             $already_replaced[] = $full_original[$i];
             $this_duplicate = $full_original[$i];
-            /*
-            $original_ref_end_pos = strpos($ready_to_replace, $full_duplicate[$i]) + strlen($full_duplicate[$i]);
-            $code_upto_original_ref = str_replace($full_original[$i]
-                    , "<ref name=\"$replacement_template_name\" />"
-                    , substr($ready_to_replace, 0, $original_ref_end_pos));
-            print ("\n88\n\n" . $full_original[$i] . "\n\n" . substr($ready_to_replace, 0, $original_ref_end_pos) . "\n88\n");*/
           } else {
             // We need add a name to the original template, and not to replace it
             $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]);
@@ -794,10 +791,22 @@ function combine_duplicate_references($page_code) {
           }
           // Then check that the first occurrence won't be replaced
           $page_code = $code_upto_original_ref . str_replace($this_duplicate,
-                    "<ref name=\"$replacement_template_name\" />", substr($ready_to_replace, $original_ref_end_pos));
+                    sprintf(blank_ref, $replacement_template_name), substr($ready_to_replace, $original_ref_end_pos));
+            // If references are specified in a {{reflist}} then we need to leave the full text there.
+          print "\n Current PAGECODE: $page_code\n";
+          $check_no_empty_ref_in_list = '~(\{\{\s*reflist(?:[^\}]|\}[^\}]|\{\{(?:[^\}]|\{\{[^\}]\}\})*\}\})*)'
+            . sprintf(blank_ref, preg_quote($replacement_template_name)) . '~';
+          print "\n \n Searching for: " . $check_no_empty_ref_in_list . "\n";
+          if (preg_match($check_no_empty_ref_in_list, $page_code)) {
+            // replace our full reference with an empty one where it's defined in the text...
+            $page_code = str_replace($full_original[$i],
+                    sprintf(blank_ref, $replacement_template_name), 
+                    $page_code);
+            // ... then put the text in the reflist section
+            $page_code = preg_replace($check_no_empty_ref_in_list, "$1" . $this_duplicate, $page_code);            
+          }
           global $modifications;
           $modifications["combine_references"] = true;
-          #print "with  \"<ref name=\"$replacement_template_name\" />\"\n";
         }
       }
     }

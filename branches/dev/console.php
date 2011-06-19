@@ -83,14 +83,20 @@ if ($argument["pages"]) {
   } else {
  die(
         
-        expand_text('<!--<ref name= "Playfair90">Playfair, p. 90.</ref>-->
-          
-<!--<ref name= "Playfair90">Playfair, p. 90.</ref>-->
-<!--jagk<ref name= "Playfair90">Playfair, p. 90.</ref>agjkb-->
+        expand_text('<ref name="WWE-2004">{{cite web
+| url = http://www.worldswithoutend.com/books_year_index.asp?year=2004 
+| title = 2004 Award Winners & Nominees
+| work = Worlds Without End
+| accessdate=2009-07-16
+}}</ref>
+<ref name="WWE-2004"/>
 
- <ref name="Playfair90"/>
- <ref name="Playfair90" >Playfair, p. 90.</ref>
- <ref name=Playfair90>Playfair, p. 90.</ref>
+{{reflist|refs=
+<ref name="nyt040414">{{cite news |first=Lawrence |last=Van Gelder |work=The New York Times |title=Arts Briefing: Sci-Fi Nominees |url=http://www.nytimes.com/2004/04/14/arts/14ARTS.html |date=April 14, 2004 |accessdate=March 30, 2010}}</ref>
+<ref name="WWE-2004">{{cite web | url = http://www.worldswithoutend.com/books_year_index.asp?year=2004 | title = 2004 Award Winners & Nominees | work = Worlds Without End | accessdate=2009-07-16}}</ref>
+<ref name="norea">{{cite web |url=http://www.noreascon.org/hugos/nominees.html |title=Hugo and Retro Hugo Nominations |accessdate=2008-02-22}}</ref>
+}}
+
  
 ', null));
 
