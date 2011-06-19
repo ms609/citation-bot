@@ -1820,7 +1820,6 @@ function findMoreAuthors($doi, $a1, $pages) {
 
 function formatSurname($surname) {
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
-  
   if (mb_substr($surname, 0, 2) == "o'") return "O'" . fmtSurname2(mb_substr($surname, 2));
 	else if (mb_substr($surname, 0, 2) == "mc") return "Mc" . fmtSurname2(mb_substr($surname, 2));
 	else if (mb_substr($surname, 0, 3) == "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) != "h") return "Mac" . fmtSurname2(mb_substr($surname, 3));
@@ -1829,13 +1828,17 @@ function formatSurname($surname) {
 }
 
 function fmtSurname2($surname) {
-  return mb_ereg_replace(" - ", "-", mb_convert_case($surname, MB_CASE_TITLE));
+  return preg_replace_callback("~(\p{L})(\p{L}+)~u", 
+          create_function('$matches',
+                  'return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);'
+          ),
+          mb_ereg_replace(" - ", "-", $surname));
 }
 
 function formatForename($forename){
-	return str_replace(array(" ."), "", trim(preg_replace_callback("~\w{4,}~",  create_function(
+	return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  create_function(
             '$matches',
-            'return ucfirst(mb_strtolower($matches[0]));'
+            'return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]));'
         ), $forename)));
 }
 

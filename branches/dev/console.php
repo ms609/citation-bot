@@ -84,7 +84,8 @@ if ($argument["pages"]) {
 
 die (expand_text("
 
-
+// Author caps w/ diacritic
+{{cite journal | doi = 10.1111/j.1463-6409.2010.00436.x }}
 
 
 "));

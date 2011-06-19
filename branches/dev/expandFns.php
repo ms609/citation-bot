@@ -1001,8 +1001,8 @@ function if_null_set($param, $value) {
       ) {
         if (strpos($value, ',')) {
           $au = explode(',', $value);
-          set($param, $au[0]);
-          set('first' . (substr($param, 1) ? 1 : ''), $trim($au[1]));
+          set($param, formatSurname($au[0]));
+          set('first' . (substr($param, 1) ? 1 : ''), formatForename($trim($au[1])));
         }
         set($param, $value);
         return true;
@@ -1032,8 +1032,8 @@ function if_null_set($param, $value) {
                 $value);      
       if (strpos($value, ',')) {
             $au = explode(',', $value);
-            set('last' . substr($param, -1), $au[0]);
-            if_null_set('first' . substr($param, -1), trim($au[1]));
+            set('last' . substr($param, -1), formatSurname($au[0]));
+            if_null_set('first' . substr($param, -1), formatForename(trim($au[1])));
       }
       if (trim($p["last" . substr($param, -1)][0]) == "" && trim($p["author" . substr($param, -1)][0]) == ""
               && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
