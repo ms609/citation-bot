@@ -83,12 +83,10 @@ if ($argument["pages"]) {
   } else {
 
 die (expand_text("
- 
-{{Cite journal|author=Kirthi V, Derry S, Moore RA, McQuay HJ |title=Aspirin“” with or without an antiemetic for acute migraine headaches in adults |journal=Cochrane Database Syst Rev |volume=4 |issue= 4|pages=CD008041 |year=2010 |pmid=20393963 |doi=10.1002/14651858.CD008041.pub2 |editor1-last=Moore|editor1-first=Maura}}
-        
-"));
- die(straighten_quotes('&rsquo;test&lsquo;[`‘’][“”]'));
-
+// et al.  
+{{cite journal|first=|last=AMI Consortium: Scaife A. M. M. et al.|coauthors=|title=An excess of emission in the dark cloud LDN1111 with the Arcminute Microkelvin Imager|journal=Monthly Notices of the Royal Astronomical Society
+|volume=394|pages=L46&ndash;L50|date=2009|bibcode=2009MNRAS.394L..46A|id=}}"));
+    
 /*/
 // For version 3:
 die (expand_text("

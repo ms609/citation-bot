@@ -376,7 +376,7 @@ function expand_text ($original_code,
     $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
   }
 
-###################################  START ASSESSING BOOKS ######################################
+###################################  START ASSESSING BOOKS ({{cite book}} ######################################
 
   if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
@@ -410,7 +410,8 @@ function expand_text ($original_code,
         set('title', $match[2]);
         set('doi', $match[1]);
       }
-
+      
+      handle_et_al();
       useUnusedData();
       id_to_parameters();
 
@@ -585,7 +586,7 @@ function expand_text ($original_code,
       if (is("inventor") ||
           is("inventor-last") ||
           is("patent-number")) {
-        echo "<p>Citation bot does not handle patent citations.</p>";
+        echo "\n xxx Citation bot does not handle patent citations.";
       } else {
       //Check for the doi-inline template in the title
       if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~"
@@ -614,6 +615,8 @@ echo "
 //  * Tidying up existing parameters (and we'll do more tidying here too)
 //
 ###########################
+
+        handle_et_al();
 
         $journal = is("periodical") ? "periodical" : "journal";
         // See if we can use any of the parameters lacking equals signs:
