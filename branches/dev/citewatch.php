@@ -28,10 +28,10 @@ function getCiteList($page) {
 	global $bot;
 	$bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
 	$raw = $bot->results;
-	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]doi[\s\n]*\|[\s\n]*([^ \}]+)[\s\n]*(\||\}\})~i", $raw, $doi);
-	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]jstor[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $jstorid);
-	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmid);
-	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmc);
+	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]doi[\s\n]*\|[\s\n]*([^ \}\|]+)[^ \}]*[\s\n]*(\||\}\})~i", $raw, $doi);
+	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]jstor[\n\s]*\|[\n\s]*(\d+)(?:\|[^ \}]*)?[\n\s]*(\||\}\})~i", $raw, $jstorid);
+	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmid[\n\s]*\|[\n\s]*(\d+)(?:\|[^ \}]*)?[\n\s]*(\||\}\})~i", $raw, $pmid);
+	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmc[\n\s]*\|[\n\s]*(\d+)(?:\|[^ \}]*)?[\n\s]*(\||\}\})~i", $raw, $pmc);
   $category = "[[Category:Articles citing non-functional identifiers]]";
 	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($raw, $category)) {
     global $editInitiator;
@@ -235,14 +235,15 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   
   while ($doi_todo && (false !== ($oDoi = @array_pop($doi_todo)))) {
     if (preg_match("~^[\s,\.:;>]*(?:d?o?i?[:.,>\s]+|(?:http://)?dx\.doi\.org/)(?P<doi>.+)~i", $oDoi, $match)
+      || preg_match('~^0?(?P<end>\.\d{4}/.+)~', $oDoi, $match)
             ) {
-      $oDoi = $match['doi'];
+      $oDoi = $match['doi'] ? $match['doi'] : '10' . $match['end'];
       $this_page_wikitext = getRawWikiText($article_in_progress);
       if ($this_page_wikitext) {
-        echo "\n   > Removing errant prefix from {{cite doi}} templates in [[$article_in_progress]]: ";
+        echo "\n   > Fixing prefixes in {{cite doi}} templates, in [[$article_in_progress]]: ";
         if ($ON) 
           echo write ($article_in_progress,
-                str_replace($match[0], $match['doi'], $this_page_wikitext),
+                str_replace("1$oDoi", $oDoi, str_replace($match[0], $oDoi, $this_page_wikitext)),
                 "$editInitiator Corrected syntax in Cite doi-type template.") ? '.' : 'failed.';
         else
           echo ' [$ON = false; won\'t write]';
