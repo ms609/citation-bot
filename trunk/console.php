@@ -1,5 +1,5 @@
 #!/usr/bin/php
-<?
+<?      
 // $Id$
 
 #$abort_mysql_connection = true; // Whilst there's a problem with login
@@ -23,12 +23,11 @@ foreach ($argv as $arg) {
 
 error_reporting(E_ALL^E_NOTICE);
 $slowMode = $argument["slow"] || $argument["slowmode"] || $argument["thorough"];
-$accountSuffix = '_1'; // Keep this before including expandFns
+$accountSuffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
-
 #die (findISBN(""));
 
 function nextPage($page){
@@ -50,29 +49,7 @@ function nextPage($page){
 }
 $ON = $argument["on"];
 ###########
-/**/
-die (expand_text("
-: 1<ref name=Test>Test</ref>
-2<ref name=Example>Example</ref>
-2<ref name=Example2>Example</ref>
-3<ref name=Example2></ref>
-4<ref name=Test></ref>
-1<ref>Test</ref>
-
-{{reflist}}
-
-") );
-
-// For version 3:
-die (expand_text("
-
-{{cite journal | author = Ridzon R, Gallagher K, Ciesielski C ''et al.'' | year = 1997 | title = Simultaneous transmission of human immunodeficiency virus and hepatitis C virus from a needle-stick injury | url = | journal = N Engl J Med | volume = 336 | issue = | pages = 919–22 }}. (full stop to innards)<
-<ref>http://www.ncbi.nlm.nih.gov/pubmed/15361495</ref>
-", false));
- /* */
-
-
-#die (expand_text("{{Cite journal | doi = 10.1126/science.284.5423.2129. }}") );
+/*/
 /*
 foreach ($argument["pages"] as $page) {
   $input[] = array("{{automatic taxobox$paras}}", $page);
@@ -103,6 +80,23 @@ if ($argument["pages"]) {
     echo "\n Fetching first page from backlog ... ";
     $page = nextPage($page);
     echo " done. ";
+  } else {
+
+die (expand_text("
+ 
+{{Cite journal|author=Kirthi V, Derry S, Moore RA, McQuay HJ |title=Aspirin“” with or without an antiemetic for acute migraine headaches in adults |journal=Cochrane Database Syst Rev |volume=4 |issue= 4|pages=CD008041 |year=2010 |pmid=20393963 |doi=10.1002/14651858.CD008041.pub2 |editor1-last=Moore|editor1-first=Maura}}
+        
+"));
+ die(straighten_quotes('&rsquo;test&lsquo;[`‘’][“”]'));
+
+/*/
+// For version 3:
+die (expand_text("
+
+{{cite journal | author = Ridzon R, Gallagher K, Ciesielski C ''et al.'' | year = 1997 | title = Simultaneous transmission of human immunodeficiency virus and hepatitis C virus from a needle-stick injury | url = | journal = N Engl J Med | volume = 336 | issue = | pages = 919–22 }}. (full stop to innards)<
+<ref>http://www.ncbi.nlm.nih.gov/pubmed/15361495</ref>
+", false));
+/**/
   }
   /*$start_code = getRawWikiText($page, false, false);*/
   $slow_mode = true;

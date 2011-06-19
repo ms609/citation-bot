@@ -61,7 +61,7 @@ function expand($page, // Title of WP page
 
   ##### Generate edit summary #####
   if ($modifications["additions"]) {
-    $auto_summary = "+: ";
+    $auto_summary = "Add: ";
     foreach ($modifications["additions"] as $param=>$v)	{
       $auto_summary .= "$param, ";
       unset($modifications["additions"][$param]);
@@ -73,9 +73,9 @@ function expand($page, // Title of WP page
     $auto_summary .= "Removed accessdate with no specified URL. ";
     unset($modifications["additions"]["accessdate"]);
   }
-  if ($modifications["additions"]) {
-    $auto_summary .= "Tweaked: ";
-    foreach ($modifications["additions"] as $param=>$v)	$auto_summary .= 				"$param, ";
+  if ($modifications["changes"]) {
+    $auto_summary .= "Tweak: ";
+    foreach ($modifications["changes"] as $param=>$v)	$auto_summary .= "$param, ";
     $auto_summary = substr($auto_summary,0, strlen($auto_summary)-2);
     $auto_summary.=". ";
   }
@@ -170,6 +170,7 @@ function expand_text ($original_code,
     ob_start();
   } 
   
+  
   // Which template family is dominant?
   if (!$editing_cite_doi_template) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $original_code, $cite_x);
@@ -193,14 +194,27 @@ function expand_text ($original_code,
        $citation_template_dominant = false;
     }
   }
-  echo "\n Reference tags:";
-  $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($original_code, "doi"), "pmid"), "jstor"), "pmc"))));
+  // Start by fixing any sloppy wikicode:
+  echo "\n * Looking for bare references... ";
+  $new_code = preg_replace_callback("~(?P<open><ref[^>]*>)\[?(?P<url>http://(?:[^\s\]<]|<(?!ref))+) ?\]?\s*(?P<close></\s*ref>)~",
+          create_function('$matches',
+                  'return $matches["open"] . url2template($matches["url"], $citation_template_dominant) . $matches["close"];'
+                  ),
+          $original_code);
+  
+  // Check for baggage in a "Cite doi" template:
+  $cite_doi_baggage_regexp = "~({{[cC]ite doi\s*\|\s*)d?o?i?\s*[:.,;>]?\s*~";
+  if (preg_match($cite_doi_baggage_regexp, $new_code)) {
+    echo "\n Correcting broken Cite doi template";
+    $new_code = preg_replace($cite_doi_baggage_regexp, "$1", $new_code);
+  }
+  echo "\n * Tidying reference tags... ";
+  $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc"))));
   if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
     $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
     $modifications["dashes"] = true;
-    echo "Converted dashes in all page parameters to en-dashes.";
+    echo "\n - Converted dashes in all page parameters to en-dashes.";
   }
-
 ###################################  Cite web ######################################
   // Convert Cite webs to Cite arXivs, etc, if necessary
   if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
@@ -240,7 +254,6 @@ function expand_text ($original_code,
         unset($p["first$au_i"]);
         unset($p["author$au_i"]);
       }
-      
       // Get identifiers from URL
       get_identifiers_from_url();
 
@@ -248,7 +261,7 @@ function expand_text ($original_code,
       tidy_citation();
 
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
-      $change_to_journal = is('journal');
+      $change_to_journal = is('journal') || is('bibcode');
       $change_to_arxiv = is('arxiv');
       if (($change_to_arxiv || $change_to_journal) && is('eprint')) {
         rename_parameter('eprint', 'arxiv');
@@ -260,14 +273,14 @@ function expand_text ($original_code,
       //And we're done!
       $endtime = time();
       $timetaken = $endtime - $started_citation_at;
-      echo "* Citation assessed in $timetaken secs. "
+      echo "\n* Citation assessed in $timetaken secs. "
           . ($change_to_journal
               ?"Changing to Cite Journal. "
               :($change_to_arxiv
                 ?"Changing to Arxiv. "
                 :"Keeping as cite web. ")
               ) . "\n";
-      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["additions"]
+      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["changes"], if 'set' hasn't got them already
       $last_p = $p;
       $p = null;
       
@@ -377,7 +390,7 @@ function expand_text ($original_code,
         $countComments = count($comments[0]);
         for ($j = 0; $j < $countComments; $j++) {
           $citation[$cit_i+1] = str_replace($comments[0][$j]
-                                    , "<!-- Citation bot : comment placeholder b$j -->"
+                                    , sprintf(comment_placeholder, "b$j")
                                     , $citation[$cit_i+1]);
         }
       } else $countComments = null;
@@ -399,6 +412,7 @@ function expand_text ($original_code,
       }
 
       useUnusedData();
+      id_to_parameters();
 
       if (trim(str_replace("|", "", $p["unused_data"][0])) == "") {
         unset($p["unused_data"]);
@@ -527,7 +541,7 @@ function expand_text ($original_code,
       }
       // Restore comments we hid earlier
       for ($j = 0; $j < $countComments; $j++) {
-        $cText = str_replace("<!-- Citation bot : comment placeholder b$j -->"
+        $cText = str_replace(sprintf(comment_placeholder, "b$j")
                                       , $comments[0][$j]
                                       , $cText);
       }
@@ -550,7 +564,7 @@ function expand_text ($original_code,
         $countComments = count($comments[0]);
         for ($j = 0; $j < $countComments; $j++) {
           $citation[$cit_i+1] = str_replace($comments[0][$j]
-                                    , "<!-- Citation bot : comment placeholder c$j -->"
+                                    , sprintf(comment_placeholder, "c$j")
                                     , $citation[$cit_i+1]);
         }
       } else {
@@ -858,7 +872,7 @@ echo "
 
           
           // Try AdsAbs
-          if ($slow_mode) {
+          if ($slow_mode || is('bibcode')) {
             echo "\n - Checking AdsAbs database";
             get_data_from_adsabs();
           } else {
@@ -1004,7 +1018,6 @@ echo "
           citeDoiOutputFormat();
         }
 
-print $p["title"][0];
         // Check that the URL functions, and mark as dead if not.
         /*  Disable; to re-enable, we should log possible 404s and check back later.
          * Also, dead-link notifications should be placed ''after'', not within, the template.
@@ -1057,7 +1070,6 @@ print $p["title"][0];
         ELSE if (!$brokenDoi) unset($p["doi_brokendate"]); unset($p["doi_inactivedate"]);
         echo $brokenDoi?" It isn't.":" It is.", "</p>";
       }
-print $p["title"][0];
 
       // Clean up after errors in publishers' databases
       if (0 === strpos(trim($p["journal"][0]), "BMC ") && $p["pages"][0]) {
@@ -1133,11 +1145,11 @@ print $p["title"][0];
 
       // Restore comments we hid earlier
       for ($j = 0; $j < $countComments; $j++) {
-        $cText = str_replace(array("<!-- Citation bot : comment placeholder c$j -->",
-                                   str_replace($dotEncode, $dotDecode, "<!-- Citation bot : comment placeholder c$j -->"),
+        $cText = str_replace(array(sprintf(comment_placeholder, "c$j"),
+                                   str_replace($dotEncode, $dotDecode, sprintf(comment_placeholder, "c$j")),
                                    str_replace($pcEncode, $pcDecode,
                                                str_replace(' ', '+',
-                                                 trim(urldecode("<!-- Citation bot : comment placeholder c$j -->")))),
+                                                 trim(urldecode(sprintf(comment_placeholder, "c$j"))))),
 
                                   )
                                       , $comments[0][$j]
@@ -1179,7 +1191,7 @@ print $p["title"][0];
                 . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n [p = "
                 . print_r($p,1)
                 . "] \n[pagecode =$new_code]\n\n[freshcode =$cite_doi_start_code]\n\n> Error message generated by expand.php.");
-          die ("$new_code"); // make the next if an elseif if you remove this, and think of some way of the above line not skipping the elseif
+          exit ("$new_code"); // make the next if an elseif if you remove this, and think of some way of the above line not skipping the elseif
         }
       }
       if ($commit_edits) {
