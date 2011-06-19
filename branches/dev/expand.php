@@ -195,7 +195,7 @@ function expand_text ($original_code,
     }
   }
   // Start by fixing any sloppy wikicode:
-  echo "\n Bare references:";    
+  echo "\n * Looking for bare references... ";
   $new_code = preg_replace_callback("~(?P<open><ref[^>]*>)\[?(?P<url>http://(?:[^\s\]<]|<(?!ref))+) ?\]?\s*(?P<close></\s*ref>)~",
           create_function('$matches',
                   'return $matches["open"] . url2template($matches["url"], $citation_template_dominant) . $matches["close"];'
@@ -208,12 +208,12 @@ function expand_text ($original_code,
     echo "\n Correcting broken Cite doi template";
     $new_code = preg_replace($cite_doi_baggage_regexp, "$1", $new_code);
   }
-  echo "\n Reference tags:";
+  echo "\n * Tidying reference tags... ";
   $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc"))));
   if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
     $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
     $modifications["dashes"] = true;
-    echo "Converted dashes in all page parameters to en-dashes.";
+    echo "\n - Converted dashes in all page parameters to en-dashes.";
   }
 ###################################  Cite web ######################################
   // Convert Cite webs to Cite arXivs, etc, if necessary
@@ -964,7 +964,6 @@ echo "
 // We have now recovered all possible information from CrossRef.
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
         echo "\n5: Formatting and other tweaks";
-        print_r($modifications);
         if ($editing_cite_doi_template || preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
           echo "\n   First: Cite Doi formatting";
           // Get the surname of the first author. (We [apparently] found this earlier, but it might have changed since then)

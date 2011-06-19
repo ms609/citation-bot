@@ -635,8 +635,6 @@ function url2template($url, $citation) {
   
 function tidy_citation() {
   global $p, $pStart, $modifications;
-  print "\n\n -- TIDUING DIATUIOIN\n\n";
-  print_r($modifications);
   if (!trim($pStart["title"]) && isset($p["title"][0])) {
     $p["title"][0] = formatTitle($p["title"][0]);
   } else if ($modifications && is("title")) {
@@ -1072,8 +1070,7 @@ function if_null_set($param, $value) {
 }
 
 function set($key, $value) {
-	global $p;
-  // Dud DOI in PMID database
+	// Dud DOI in PMID database
   if ($key == "doi") {
     if ($value == "10.1267/science.040579197") {return false;}
     else {
@@ -1083,9 +1080,9 @@ function set($key, $value) {
 
   $parameter_order = list_parameters();
   if (trim($value) != "") {
-    $modifications[$p[$key][0] ? 'changes' : 'additions'] = $key;
+    global $p, $modifications;
+    $modifications[$p[$key][0] ? 'changes' : 'additions'][$key] = true;
     $p[$key][0] = (string) $value;
-    global $modifications;
     echo "\n    + $key: $value";
     if (!$p[$key]["weight"]) {
       // Calculate the appropriate weight:
