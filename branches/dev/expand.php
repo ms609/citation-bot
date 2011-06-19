@@ -746,7 +746,7 @@ echo "
         
 if (is('doi')) {
 if (!nothingMissing($journal)) {
-  expand_from_crossref($crossRef, $editing_cite_doi_template);
+  expand_from_crossref($crossRef);
 }
 echo "
 2: DOI already present";
