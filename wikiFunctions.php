@@ -350,7 +350,7 @@ function touch_page($page) {
   $text = getRawWikiText($page);
   if ($text) {
     global $editInitiator;
-    write ($page, $text, $editInitiator . " Touching page to update categories.  This edit should not affect the page content.");
+    write ($page, $text, $editInitiator . " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
     return true;
   } else {
     return false;

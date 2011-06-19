@@ -50,9 +50,27 @@ mb_internal_encoding( 'UTF-8' ); // Avoid ??s
 
 define("editinterval", 10);
 define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
+define("comment_placeholder", "### Citation bot : comment placeholder %s ###"); #4 when online...
 define("to_en_dash", "-|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
+define("blank_ref", "<ref name=\"%s\" />");
 define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
+define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array (
+          "http://(?:\w+.)?adsabs.harvard.edu",
+          "http://ads.ari.uni-heidelberg.de",
+          "http://ads.inasan.ru",
+          "http://ads.mao.kiev.ua",
+          "http://ads.astro.puc.cl",
+          "http://ads.on.br",
+          "http://ads.nao.ac.jp",
+          "http://ads.bao.ac.cn",
+          "http://ads.iucaa.ernet.in",
+          "http://ads.lipi.go.id",
+          "http://cdsads.u-strasbg.fr",
+          "http://esoads.eso.org",
+          "http://ukads.nottingham.ac.uk",
+          "http://www.ads.lipi.go.id",
+        )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~");
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
 #define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DO I is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 
@@ -147,7 +165,7 @@ function logIn($username, $password) {
     $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
     return true;
   } else {
-    die( "\nCould not log in to Wikipedia servers.  Edits will not be committed.\n"); // Will not display to user
+    exit ( "\nCould not log in to Wikipedia servers.  Edits will not be committed.\n"); // Will not display to user
     global $ON; $ON = false;
     return false;
   }
@@ -234,7 +252,8 @@ function parameters_from_citation($c) {
       $value = substr($value, 0, $pipePos);
     }
     // Load each line into $p[param][0123]
-    $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2]); // Param = value, pipe, equals
+    $weight += 32;
+    $p[strtolower($parts[$partsI+1])] = Array($value, $parts[$partsI], $parts[$partsI+2], "weight" => $weight); // Param = value, pipe, equals
   }
   return $p;
 }
@@ -283,7 +302,7 @@ function reassemble_citation ($p, $sort = false) {
       if (!$pStart[$param]) {
         $modifications["additions"][$param] = true;
       } elseif ($pStart[$param] != $value) {
-        $modifications["additions"][$param] = true;
+        $modifications["changes"][$param] = true;
       }
     }
   }
@@ -299,7 +318,7 @@ function mark_broken_doi_template($article_in_progress, $oDoi) {
       , "$editInitiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
     );
   } else {
-    die ("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
+    exit ("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
   }
 }
 
@@ -463,18 +482,18 @@ function id_to_parameters() {
     $id = str_replace($match[0], "", $id);
   }
   preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
- 
   foreach ($match["content"] as $i => $content) {
     $content = explode(pipePlaceholder, $content);
     unset($parameters);
-    foreach($content as $fragment) {
+    $j = 0;
+    foreach ($content as $fragment) {
       $content[$j++] = $fragment;
       $para = explode("=", $fragment);
       if (trim($para[1])) {
         $parameters[trim($para[0])] = trim($para[1]);
       }
     }
-    switch(strtolower(trim($content[0]))) {
+    switch (strtolower(trim($content[0]))) {
       case "arxiv":
         array_shift($content);
         if ($parameters["id"]) {
@@ -549,7 +568,6 @@ function get_identifiers_from_url() {
   // Convert URLs to article identifiers:
   global $p;
   $url = $p["url"][0];
-  
   // JSTOR
   if (strpos($url, "jstor.org") !== FALSE) {
     if (strpos($url, "sici")) {
@@ -562,35 +580,22 @@ function get_identifiers_from_url() {
       rename_parameter("url", "jstor", $match[0]);
     }
   } else {
-    // BIBCODE
-    $bibcode_regexp = "~^(?:" . str_replace(".", "\.", implode("|", Array (
-          "http://(?:\w+.)?adsabs.harvard.edu",
-          "http://ads.ari.uni-heidelberg.de",
-          "http://ads.inasan.ru",
-          "http://ads.mao.kiev.ua",
-          "http://ads.astro.puc.cl",
-          "http://ads.on.br",
-          "http://ads.nao.ac.jp",
-          "http://ads.bao.ac.cn",
-          "http://ads.iucaa.ernet.in",
-          "http://ads.lipi.go.id",
-          "http://cdsads.u-strasbg.fr",
-          "http://esoads.eso.org",
-          "http://ukads.nottingham.ac.uk",
-          "http://www.ads.lipi.go.id",
-        )))  . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
-    if (preg_match($bibcode_regexp, urldecode($url), $bibcode)) {
+    if (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
       rename_parameter("url", "bibcode", urldecode($bibcode[1]));
     } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
             . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-      rename_paramter("url", "pmc", $match[1]);
+      rename_parameter("url", "pmc", $match[1] . $match[2]);
+      get_data_from_pubmed('pmc');
     } else if (preg_match("~^http://dx\.doi\.org/(.*)", $url, $match)) {
-      rename_paramter("url", "doi", urldecode($match[1]));
+      rename_parameter("url", "doi", urldecode($match[1]));
+      get_data_from_doi();
     } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
       //ARXIV
         rename_parameter("url", "arxiv", $match[1]);
+        get_data_from_arxiv();
     } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
       rename_parameter('url', 'pmid', $match[1]);
+      get_data_from_pubmed('pmid');
     } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url , $match)) {
       if ($match['domain'] == ".com") {
         rename_parameter('url', 'asin', $match['id']);
@@ -603,6 +608,31 @@ function get_identifiers_from_url() {
   }
 }
 
+
+function url2template($url, $citation) {
+  print "\n - $url";
+  if (preg_match("~jstor\.org/.*[/=](\d+)~", $url, $match)) {
+    return "{{Cite doi | 10.2307/$match[1] }}";
+  } else if (preg_match("~//dx\.doi\.org/(.+)$~", $url, $match)) {
+    return "{{Cite doi | " . urldecode($match[1]) . " }}";
+  } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url , $match)) {
+    return ($match['domain'] == ".com")
+      ? "{{ASIN | {$match['id']} }}"
+      : " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
+  } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+          . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
+    return "{{Cite pmc | {$match[1]} }}";
+  } elseif (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
+    return "{{Cite journal | bibcode = " .  urldecode($bibcode[1]) . "}}";
+  } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
+    return "{{Cite pmid | {$match[1]} }}";
+  } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
+    return "{{Cite arxiv | eprint={$match[1]} }}";
+  } else {
+    return $url;
+  }
+}
+  
 function tidy_citation() {
   global $p, $pStart, $modifications;
   if (!trim($pStart["title"]) && isset($p["title"][0])) {
@@ -611,6 +641,7 @@ function tidy_citation() {
     $p["title"][0] = (mb_substr($p["title"][0], -1) == ".")
             ? mb_substr($p["title"][0], 0, -1)
             : $p["title"][0];
+    $p['title'][0] = straighten_quotes($p['title'][0]);
   }
   foreach (array("pages", "page", "issue", "year") as $oParameter) {
     if (is($oParameter)) {
@@ -658,14 +689,30 @@ function standardize_reference($reference) {
   return str_replace($whitespace, "", $reference);
 }
 
+// $comments should be an array, with the original comment content.
+// $placeholder will be prepended to the comment number in the sprintf to comment_placeholder's %s.
+function replace_comments($text, $comments, $placeholder = "") {
+  foreach ($comments as $i=>$comment) {
+    $text = str_replace(sprintf(comment_placeholder, $placeholder. $i),
+            $comment, $text);
+  }
+  return $text;
+}
+
 // This function may need to be called twice; the second pass will combine <ref name="Name" /> with <ref name=Name />.
 function combine_duplicate_references($page_code) {
 
   $original_page_code = $page_code;
-  preg_match_all("~<ref\s*name=[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
-    // match 1 = ref names
-  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
-          . "(([^<]|<(?![Rr]ef))+?)</ref>~i", $page_code, $refs)) {
+  if (preg_match_all("~<!--[\s\S]*?-->~", $page_code, $match)) {
+    $removed_comments = $match[0];
+    foreach ($removed_comments as $i=>$content) {
+      $page_code = str_replace($content, sprintf(comment_placeholder, "sr$i"), $page_code);
+    }
+  }
+  preg_match_all("~<ref\s*name\s*=\s*[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
+  // match 1 = ref names
+  if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
+          . "(([^<]|<(?![Rr]ef))+?)</ref>~i", $page_code, $refs)) {    
     // match 0 = full ref; 1 = redundant; 2= used in regexp for backreference;
     // 3 = ref name; 4 = ref content; 5 = redundant
     foreach ($refs[4] as $ref) {
@@ -680,6 +727,10 @@ function combine_duplicate_references($page_code) {
       }
       $page_code = str_replace($duplicate_content, $full_original, $page_code);
     }
+  } else {
+    // no matches, return input
+    print "\n - No references found.";
+    return replace_comments($page_code, $removed_comments, 'sr'); 
   }
 
   // Now all references that need merging will have identical content.  Proceed to do the replacements...
@@ -688,13 +739,12 @@ function combine_duplicate_references($page_code) {
   $duplicate_content = null;
   $standardized_ref = null;
 
-  if (preg_match_all("~<ref(\s*name=(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
+  if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
           . "(([^<]|<(?!ref))+?)</ref>~i", $page_code, $refs)) {
-
     $standardized_ref = $refs[4]; // They were standardized above.
 
     foreach ($refs[4] as $i => $content) {
-      if (false !== ($key = array_search(standardize_reference($refs[4][$i]), $standardized_ref))
+      if (false !== ($key = array_search($refs[4][$i], $standardized_ref))
               && $key != $i) {
         $full_original[] = $refs[0][$key];
         $full_duplicate[] = $refs[0][$i];
@@ -715,10 +765,12 @@ function combine_duplicate_references($page_code) {
           . ( $name_for[$duplicate_content[$i]] ?  $name_for[$duplicate_content[$i]] : "Autogenerating." ); // . " (original: $full_original[$i])";
           $replacement_template_name = $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]]
                                        : get_name_for_reference($duplicate_content[$i], $page_code);
-          // First replace any <ref name=Blah content=none /> or <ref name=Blah></ref> with the new name
-          $ready_to_replace = preg_replace("~<ref\s*name=(?P<quote>[\"']?)" . preg_quote($name_of_duplicate[$i])
-                                    . "(?P=quote)(\s*/>|\s*>\s*</\s*ref>)~", "<ref name=\"" . $replacement_template_name . "\"$2",
-                              $page_code);
+          // First replace any empty <ref name=Blah content=none /> or <ref name=Blah></ref> with the new name
+          $ready_to_replace = preg_replace("~<ref\s*name\s*=\s*(?P<quote>[\"']?)" 
+                    . preg_quote($name_of_duplicate[$i])
+                    . "(?P=quote)(\s*/>|\s*>\s*</\s*ref>)~"
+                  , "<ref name=\"" . $replacement_template_name . "\"$2"
+                  , $page_code);
           if ($name_of_original[$i]) {
             // Don't replace the original template!
             $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]) + strlen($full_original[$i]);
@@ -730,30 +782,38 @@ function combine_duplicate_references($page_code) {
             $code_upto_original_ref = "";
             $already_replaced[] = $full_original[$i];
             $this_duplicate = $full_original[$i];
-            /*
-            $original_ref_end_pos = strpos($ready_to_replace, $full_duplicate[$i]) + strlen($full_duplicate[$i]);
-            $code_upto_original_ref = str_replace($full_original[$i]
-                    , "<ref name=\"$replacement_template_name\" />"
-                    , substr($ready_to_replace, 0, $original_ref_end_pos));
-            print ("\n88\n\n" . $full_original[$i] . "\n\n" . substr($ready_to_replace, 0, $original_ref_end_pos) . "\n88\n");*/
           } else {
             // We need add a name to the original template, and not to replace it
             $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]);
             $code_upto_original_ref = substr($ready_to_replace, 0, $original_ref_end_pos) // Sneak this in to "first_duplicate"
-                             . preg_replace("~<ref(\s+name=(?P<quote>[\"']?)" . preg_quote($name_of_original[$i])
+                             . preg_replace("~<ref(\s+name\s*=\s*(?P<quote>[\"']?)" . preg_quote($name_of_original[$i])
                                      . "(?P=quote)\s*)?>~i", "<ref name=\"$replacement_template_name\">", $full_original[$i]);
             $original_ref_end_pos += strlen($full_original[$i]);
           }
           // Then check that the first occurrence won't be replaced
           $page_code = $code_upto_original_ref . str_replace($this_duplicate,
-                    "<ref name=\"$replacement_template_name\" />", substr($ready_to_replace, $original_ref_end_pos));
+                    sprintf(blank_ref, $replacement_template_name), substr($ready_to_replace, $original_ref_end_pos));
+            // If references are specified in a {{reflist}} then we need to leave the full text there.
+          print "\n Current PAGECODE: $page_code\n";
+          $check_no_empty_ref_in_list = '~(\{\{\s*reflist(?:[^\}]|\}[^\}]|\{\{(?:[^\}]|\{\{[^\}]\}\})*\}\})*)'
+            . sprintf(blank_ref, preg_quote($replacement_template_name)) . '~';
+          print "\n \n Searching for: " . $check_no_empty_ref_in_list . "\n";
+          if (preg_match($check_no_empty_ref_in_list, $page_code)) {
+            // replace our full reference with an empty one where it's defined in the text...
+            $page_code = str_replace($full_original[$i],
+                    sprintf(blank_ref, $replacement_template_name), 
+                    $page_code);
+            // ... then put the text in the reflist section
+            $page_code = preg_replace($check_no_empty_ref_in_list, "$1" . $this_duplicate, $page_code);            
+          }
           global $modifications;
           $modifications["combine_references"] = true;
-          #print "with  \"<ref name=\"$replacement_template_name\" />\"\n";
         }
       }
     }
   }
+  
+  $page_code = replace_comments($page_code, $removed_comments, 'sr'); 
   echo ($original_page_code == $page_code)
     ? "\n - No duplicate references to combine"
     : "\n - Combined duplicate references (if any exist).";
@@ -904,8 +964,8 @@ function authorify ($author) {
 }
 
 
-function ifNullSet($a, $b) {
-  print "\n\n Redundant function ifNullSet in expandFns.php";
+function ifNullSet($a, $b, $DEPRECATED = TRUE) {
+  print "\n\n Call to deprecated function ifNullSet in expandFns.php";
   if_null_set($a, $b);
 }
 
@@ -991,7 +1051,12 @@ function if_null_set($param, $value) {
       }
 			break;
     case "page": case "pages":
-			if (trim($p["pages"][0]) == "" && trim($p["page"][0]) == "" && trim($value) != "") {
+			if (  
+          ( trim($p["pages"][0]) == ""
+            && trim($p["page"][0]) == ""
+            && trim($value) != ""
+          ) || strpos(strtolower($p["pages"][0] . $p['page'][0]), 'no') !== FALSE
+         ) {
         set ($param, $value);
         return true;
       }
@@ -1005,8 +1070,7 @@ function if_null_set($param, $value) {
 }
 
 function set($key, $value) {
-	global $p;
-  // Dud DOI in PMID database
+	// Dud DOI in PMID database
   if ($key == "doi") {
     if ($value == "10.1267/science.040579197") {return false;}
     else {
@@ -1016,6 +1080,8 @@ function set($key, $value) {
 
   $parameter_order = list_parameters();
   if (trim($value) != "") {
+    global $p, $modifications;
+    $modifications[$p[$key][0] ? 'changes' : 'additions'][$key] = true;
     $p[$key][0] = (string) $value;
     echo "\n    + $key: $value";
     if (!$p[$key]["weight"]) {

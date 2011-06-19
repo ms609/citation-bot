@@ -11,13 +11,14 @@
       $editInitiator = '[txt' . revisionID() . ']';
 
       $postvars = $_POST;
-      echo htmlentities(expand_text($postvars["wpTextbox1"]));
+      echo htmlentities(expand_text(
+              mb_convert_encoding($postvars["wpTextbox1"], "ISO-8859-1")));
     ?></textarea>
       <?php
 unset ($postvars["wpTextbox1"]);
 $postvars["wpSummary"] .= stripos($postvars["wpSummary"], "citation bot")
         ? ""
-        : " | [[WP:UCB|Assisted by Citation bot]]";
+        : " | [[WP:UCB|Assisted by Citation bot r" . revisionID() . ']]';
 foreach ($postvars as $key => $value) {
   echo "\n\t<input type=\"hidden\" name=\"$key\" value=\"" . str_replace('"', '&#34;', $value) . "\" />";
 }
