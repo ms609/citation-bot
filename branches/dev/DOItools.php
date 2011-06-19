@@ -1836,9 +1836,9 @@ function fmtSurname2($surname) {
 }
 
 function formatForename($forename){
-	return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  create_function(
+  return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  create_function(
             '$matches',
-            'return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]));'
+            'return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);'
         ), $forename)));
 }
 

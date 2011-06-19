@@ -956,8 +956,8 @@ function handle_et_al() {
      array('first9', 'last9', 'author9'),
    );
       
-  foreach ($parameter_group as $group) {
-    foreach ($group as $i=>$param) {
+  foreach ($parameter_group as $i=>$group) {
+    foreach ($group as $param) {
       if (strpos($p[$param][0], 'et al')) {
         if_null_set('display-authors', $i + 1);
         $p[$param][0] = preg_replace("~\s*'*et al['.]*~", '', $p[$param][0]);
@@ -1005,9 +1005,10 @@ function if_null_set($param, $value) {
         if (strpos($value, ',')) {
           $au = explode(',', $value);
           set($param, formatSurname($au[0]));
-          set('first' . (substr($param, 1) ? 1 : ''), formatForename($trim($au[1])));
+          set('first' . (substr($param, -1) == '1' ? '1' : ''), formatForename(trim($au[1])));
+        } else {
+          set($param, $value);
         }
-        set($param, $value);
         return true;
       }
       break;

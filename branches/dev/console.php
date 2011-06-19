@@ -82,10 +82,12 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
 
+    
 die (expand_text("
 
-// Author caps w/ diacritic
-{{cite journal | accessdate=2000-00-00 |oops=taho }}
+Convert to to Cite Journal...
+<ref>http://arxiv.org/abs/0710.4523</ref> or <ref>[http://arxiv.org/abs/0710.4523]</ref> should be converted to <ref>{{cite arxiv|eprint=0710.4523}}</ref>
+}}
 
 
 "));
