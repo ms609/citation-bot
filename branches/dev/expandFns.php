@@ -943,24 +943,53 @@ function remove_accents($input) {
 }
 
 function handle_et_al() {
-  global $p;
+  global $p, $authors_missing;
   $parameter_group = array(
-     array('last', 'author', 'first', 'coauthors', 'coauthor', 'authors', 'first1', 'last1', 'author1'),
-     array('first2', 'last2', 'author2'),
-     array('first3', 'last3', 'author3'),
-     array('first4', 'last4', 'author4'),
-     array('first5', 'last5', 'author5'),
-     array('first6', 'last6', 'author6'),
-     array('first7', 'last7', 'author7'),
-     array('first8', 'last8', 'author8'),
-     array('first9', 'last9', 'author9'),
-   );
-      
-  foreach ($parameter_group as $i=>$group) {
+      1 => array('last', 'author', 'first', 'coauthors', 'coauthor', 'authors', 'first1', 'last1', 'author1'),
+      2 => array('first2', 'last2', 'author2'),
+      3 => array('first3', 'last3', 'author3'),
+      4 => array('first4', 'last4', 'author4'),
+      5 => array('first5', 'last5', 'author5'),
+      6 => array('first6', 'last6', 'author6'),
+      7 => array('first7', 'last7', 'author7'),
+      8 => array('first8', 'last8', 'author8'),
+      9 => array('first9', 'last9', 'author9'),
+  );
+
+  foreach ($parameter_group as $i => $group) {
     foreach ($group as $param) {
       if (strpos($p[$param][0], 'et al')) {
-        if_null_set('display-authors', $i + 1);
-        $p[$param][0] = preg_replace("~\s*'*et al['.]*~", '', $p[$param][0]);
+        $authors_missing = true;
+        $oParam = preg_replace("~,?\s*'*et al['.]*~", '', $p[$param][0]);
+        if ($i == 1) {
+          // then there's scope for "Smith, AB; Peters, Q.R. et al"
+          if (strpos($oParam, ';')) {
+            $authors = explode(';', $oParam);
+          } else if (substr_count($oParam, ',') > 1
+                  || substr_count($oParam, ',') < substr_count(trim($oParam), ' ')) {
+            // then we (probably) have a list of authors joined by commas in our first parameter
+            $authors = explode(',', $oParam);
+          }
+          if ($authors) {
+            foreach ($authors as $au) {
+              print "\n $i : $au";
+              if ($i == 1) {
+                set($param, $au);
+                $i = 2;
+              }
+              else {
+                if_null_set('author' . $i++, $au);
+              }
+            }
+            $i--;
+          } else {
+            set($param, $oParam);
+          }
+          if_null_set('display-authors', $i);
+        }
+        if (!trim($param)) {
+          unset($p[$param]);
+        }
       }
     }
   }
@@ -1031,13 +1060,11 @@ function if_null_set($param, $value) {
       break;
     case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
     case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9":
-      $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"),
-                array(";", ";", " ", ";", " ", "", ""),
-                $value);      
+      $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
       if (strpos($value, ',')) {
-            $au = explode(',', $value);
-            set('last' . substr($param, -1), formatSurname($au[0]));
-            if_null_set('first' . substr($param, -1), formatForename(trim($au[1])));
+        $au = explode(',', $value);
+        set('last' . substr($param, -1), formatSurname($au[0]));
+        if_null_set('first' . substr($param, -1), formatForename(trim($au[1])));
       }
       if (trim($p["last" . substr($param, -1)][0]) == "" && trim($p["author" . substr($param, -1)][0]) == ""
               && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
@@ -1076,10 +1103,10 @@ function if_null_set($param, $value) {
     case "page": case "pages":
       if (( trim($p["pages"][0]) == ""
               && trim($p["page"][0]) == ""
-              && trim($value) != "" ) 
-          || strpos(strtolower($p["pages"][0] . $p['page'][0]), 'no') !== FALSE
-          || (strpos($value, en_dash) || (strpos($value, '-'))
-                  && !strpos($p['pages'][0], en_dash) && !strpos($p['pages'][0], '-'))
+              && trim($value) != "" )
+              || strpos(strtolower($p["pages"][0] . $p['page'][0]), 'no') !== FALSE
+              || (strpos($value, en_dash) || (strpos($value, '-'))
+              && !strpos($p['pages'][0], en_dash) && !strpos($p['pages'][0], '-'))
       ) {
         set($param, $value);
         return true;

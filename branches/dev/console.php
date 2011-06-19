@@ -81,15 +81,27 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
+die (expand_text("
+  
 
+Et al handling:
+
+<ref>{{cite journal |author=Foucault C, Ranque S, Badiaga S, ''et al.'' |title=Oral ivermectin in the treatment of body lice |journal=[[Journal of Infectious Diseases]] |volume=193 |issue=3 |pages=474–476 |doi=10.1086/499279 |year=2006 |pmid=16388498}}</ref>
+
+"));
     
 die (expand_text("
 
-Convert to to Cite Journal...
-<ref>http://arxiv.org/abs/0710.4523</ref> or <ref>[http://arxiv.org/abs/0710.4523]</ref> should be converted to <ref>{{cite arxiv|eprint=0710.4523}}</ref>
+unused data to use: 
+
+{{Cite journal 
+ {{cite journal | unused_data = Sep;2(3):285-99. | author = Lindequist, U. |coauthors = Niedermeyer, T.H.J. ; Jülich, W.D. | year = 2005
+|title = The pharmacological potential of mushrooms.| journal = Evid Based Complement Alternat Med. | doi = 10.1093/ecam/neh107 | url=http://ecam.oxfordjournals.org/cgi/content/full/2/3/285 
+| pmid = 16136207 | volume = 2 | issue = 3 | pages = 285–99 | pmc = 1193547}}
 }}
 
-
+Pipe in URL: 
+{{Cite web | url=http://historicalportraits.com/Gallery.asp?Page=Item&ItemID=1281&Desc=Ann-Davis,-Lady-Lee-|-John-Michael-Wright}}
 "));
     
 /*/

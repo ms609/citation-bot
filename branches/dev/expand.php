@@ -164,7 +164,9 @@ function expand_text ($original_code,
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy, $edit_summary_end,  $slowMode, $html_output;
+  global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy,
+          $authors_missing,
+          $edit_summary_end,  $slowMode, $html_output;
 
   if ($html_output === -1) {
     ob_start();
@@ -719,35 +721,7 @@ echo "
         }
 
         $authors_missing = false; // reset
-        // The phrase 'et al' should not be included in the authors parameter.
-        // It is discouraged and may be mistaken for an author by the bot.
-        // If it is present, we will search for more authors when we get the chance - set $authors_missing = true
-/*
-        if (is('author')) {
-          // Analyse the author parameter.  If there's an 'et al', can we remove it?
-          if (preg_match("~([,.; ]+)'*et al['.]*(?!\w)$~", $p['author'][0], $match)) {
-            $chars = count_chars($p['author'][0]);
-            // Try splitting at semi-colons
-            if ($chars[ord(";")] > 0) {
-              $truncate_after = $chars[ord(";")];
-              if (strpos($match[0], ';') === false) {
-                $truncate_after++;
-              }
-              // No luck? Try splitting on commas?
-            } elseif ($chars[ord(",")] > 0) {
-              $truncate_after = $chars[ord(",")];
-              if (strpos($match[0], ',') === false) {
-                $truncate_after++;
-              }
-            }
-            // Observe an 'et al', and remove it.
-            $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)$~", "", $p['author'][0]);
-            echo " - $truncate_after authors then <i>et al</i>. Will grow list later.";
-            $authors_missing = true;
-            //if_null_set('display-authors', $truncate_after);
-          }
-        }
-*/
+
 
         $author_param = trim($p['author'][0]);
         //print "\n" . $author_param;

@@ -170,7 +170,7 @@ function nothingMissing($journal){
         && is("title")
         && (is("date") || is("year"))
         && (is("author2") || is("author2"))
-        && (!$authors_missing &&  (is("author") || is("author1")))
+        && (!$authors_missing && (is("author") || is("author1")))
   );
 }
 
@@ -886,7 +886,7 @@ function get_data_from_isbn() {
 	if (is("location")) unset ($params["location"]);
 	foreach ($params as $null) $missingInfo = true;
 	if ($missingInfo) $xml = simplexml_load_file("http://xisbn.worldcat.org/webservices/xid/isbn/" . str_replace(array("-", " "), "", $p["isbn"][0]) . "?method=getMetadata&fl=*&format=xml");#&ai=Wikipedia_doibot");
-	if ($xml["stat"]=="ok") {
+	if ($xml["stat"] == "ok") {
 		foreach ($params as $key => $value)	{
 			if (preg_match("~[^\[\]<>]+~", $xml->isbn[$value], $match)) {
         if_null_set($key, $match[0]);
