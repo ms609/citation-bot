@@ -688,6 +688,9 @@ function tidy_citation() {
       echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
     }
   }
+  if (is('accessdate') && !is('url')) {
+    unset($p['accessdate']);
+  }
 }
 
 function standardize_reference($reference) {
