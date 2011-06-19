@@ -972,7 +972,6 @@ function handle_et_al() {
           }
           if ($authors) {
             foreach ($authors as $au) {
-              print "\n $i : $au";
               if ($i == 1) {
                 set($param, $au);
                 $i = 2;
