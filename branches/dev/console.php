@@ -83,9 +83,11 @@ if ($argument["pages"]) {
   } else {
 
 die (expand_text("
-// et al.  
-{{cite journal|first=|last=AMI Consortium: Scaife A. M. M. et al.|coauthors=|title=An excess of emission in the dark cloud LDN1111 with the Arcminute Microkelvin Imager|journal=Monthly Notices of the Royal Astronomical Society
-|volume=394|pages=L46&ndash;L50|date=2009|bibcode=2009MNRAS.394L..46A|id=}}"));
+
+
+
+
+"));
     
 /*/
 // For version 3:

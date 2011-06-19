@@ -1070,11 +1070,12 @@ function if_null_set($param, $value) {
       }
       break;
     case "page": case "pages":
-      if (
-              ( trim($p["pages"][0]) == ""
+      if (( trim($p["pages"][0]) == ""
               && trim($p["page"][0]) == ""
-              && trim($value) != ""
-              ) || strpos(strtolower($p["pages"][0] . $p['page'][0]), 'no') !== FALSE
+              && trim($value) != "" ) 
+          || strpos(strtolower($p["pages"][0] . $p['page'][0]), 'no') !== FALSE
+          || (strpos($value, en_dash) || (strpos($value, '-'))
+                  && !strpos($p['pages'][0], en_dash) && !strpos($p['pages'][0], '-'))
       ) {
         set($param, $value);
         return true;
