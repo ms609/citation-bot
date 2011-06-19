@@ -68,7 +68,7 @@ die();
 */
 ###########
 
-
+print_r($argument);
 if ($argument["pages"]) {
   foreach ($argument["pages"] as $page) {
     expand($page, $ON);
@@ -81,28 +81,25 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
+    
+    
 die (expand_text("
   
 
-Et al handling [coauthors]:
+Pipe needs encoding: 
+
+{{Cite web 
+| url=http://historicalportraits.com/?Desc=Ann-Davis,-Lady-Lee-|-John-Michael-Wright
+| title = Ministry of Defence | About Defence | Corporate Publications | Policy Strategy and Planning | Strategic Defence Review 
+}}
 
 
-{{cite journal| last=Greeley| first=R.| coauthors=Klemaszewski, J.E.;Wagner L.; et al.| title=Galileo views of the geology of Callisto|journal=Planetary and Space Science| year=2000| volume=48| pages=829–853| doi=10.1016/S0032-0633(00)00050-7| bibcode=2000P&SS...48..829G}}
 
 "));
     
 die (expand_text("
 
-unused data to use: 
 
-{{Cite journal 
- {{cite journal | unused_data = Sep;2(3):285-99. | author = Lindequist, U. |coauthors = Niedermeyer, T.H.J. ; Jülich, W.D. | year = 2005
-|title = The pharmacological potential of mushrooms.| journal = Evid Based Complement Alternat Med. | doi = 10.1093/ecam/neh107 | url=http://ecam.oxfordjournals.org/cgi/content/full/2/3/285 
-| pmid = 16136207 | volume = 2 | issue = 3 | pages = 285–99 | pmc = 1193547}}
-}}
-
-Pipe in URL: 
-{{Cite web | url=http://historicalportraits.com/Gallery.asp?Page=Item&ItemID=1281&Desc=Ann-Davis,-Lady-Lee-|-John-Michael-Wright}}
 "));
     
 /*/

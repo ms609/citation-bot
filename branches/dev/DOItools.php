@@ -1080,6 +1080,12 @@ function useUnusedData()
             }
           }
         }
+        if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) {
+          if_null_set('volume', $match[1]);
+          if_null_set('issue', $match[2]);
+          if_null_set('pages', $match[3]);
+          $dat = trim(str_replace($match[0], '', $dat));
+        }
         if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) {
           if (if_null_set('year', $match[1])) {
             $dat = trim(str_replace($match[0], '', $dat));

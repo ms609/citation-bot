@@ -254,9 +254,18 @@ function parameters_from_citation($c) {
     $pipePos = strpos($value, "|");
     if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
       // There are two "parameters" on one line.  One must be missing an equals.
-      $p["unused_data"][0] .= " " . substr($value, $pipePos);
-      print "\n----" . substr($value, $pipePos);
-      $value = substr($value, 0, $pipePos);
+      print_r($parts);
+      switch (strtolower($parts[$partsI + 1])) {
+        case 'title': 
+          $value = str_replace('|', '&#124;', $value);
+          break;
+        case 'url':
+          $value = str_replace('|', '%7C', $value);
+          break;
+        default:
+        $p["unused_data"][0] .= " " . substr($value, $pipePos);
+        $value = substr($value, 0, $pipePos);
+      }
     }
     // Load each line into $p[param][0123]
     $weight += 32;
@@ -667,6 +676,9 @@ function tidy_citation() {
     unset($p["publisher"]);
   }
 
+  if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
+    $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
+  }
 
   // If we have any unused data, check to see if any is redundant!
   if (is("unused_data")) {
@@ -1114,8 +1126,8 @@ function if_null_set($param, $value) {
               && trim($p["page"][0]) == ""
               && trim($value) != "" )
               || strpos(strtolower($p["pages"][0] . $p['page'][0]), 'no') !== FALSE
-              || (strpos($value, en_dash) || (strpos($value, '-'))
-              && !strpos($p['pages'][0], en_dash) && !strpos($p['pages'][0], '-'))
+              || (strpos($value, chr(2013)) || (strpos($value, '-'))
+              && !strpos($p['pages'][0], chr(2013)) && !strpos($p['pages'][0], '-'))
       ) {
         set($param, $value);
         return true;
