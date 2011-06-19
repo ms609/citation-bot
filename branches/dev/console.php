@@ -81,41 +81,13 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
- die(
-        
-        expand_text('<ref name="WWE-2004">{{cite web
-| url = http://www.worldswithoutend.com/books_year_index.asp?year=2004 
-| title = 2004 Award Winners & Nominees
-| work = Worlds Without End
-| accessdate=2009-07-16
-}}</ref>
-<ref name="WWE-2004"/>
-
-{{reflist|refs=
-<ref name="nyt040414">{{cite news |first=Lawrence |last=Van Gelder |work=The New York Times |title=Arts Briefing: Sci-Fi Nominees |url=http://www.nytimes.com/2004/04/14/arts/14ARTS.html |date=April 14, 2004 |accessdate=March 30, 2010}}</ref>
-<ref name="WWE-2004">{{cite web | url = http://www.worldswithoutend.com/books_year_index.asp?year=2004 | title = 2004 Award Winners & Nominees | work = Worlds Without End | accessdate=2009-07-16}}</ref>
-<ref name="norea">{{cite web |url=http://www.noreascon.org/hugos/nominees.html |title=Hugo and Retro Hugo Nominations |accessdate=2008-02-22}}</ref>
-}}
-
- 
-', null));
 
 die (expand_text("
  
-
-{{cite journal
- |last1=Trimble |first1=V.
- |last2=Aschwanden |first2=M. J.
- |last3=Hansen |first3=C. J.
- |year=2007
- |title=Astrophysics in 2006
- |journal=[[Space Science Reviews]]
- |volume=132 |issue=1 |pages=1
- |doi=10.1007/s11214-007-9224-0
- |id={{arxiv|0705.1730}}
-}}
+{{Cite journal|author=Kirthi V, Derry S, Moore RA, McQuay HJ |title=Aspirin“” with or without an antiemetic for acute migraine headaches in adults |journal=Cochrane Database Syst Rev |volume=4 |issue= 4|pages=CD008041 |year=2010 |pmid=20393963 |doi=10.1002/14651858.CD008041.pub2 |editor1-last=Moore|editor1-first=Maura}}
         
 "));
+ die(straighten_quotes('&rsquo;test&lsquo;[`‘’][“”]'));
 
 /*/
 // For version 3:

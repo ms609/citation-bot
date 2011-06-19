@@ -302,7 +302,7 @@ function reassemble_citation ($p, $sort = false) {
       if (!$pStart[$param]) {
         $modifications["additions"][$param] = true;
       } elseif ($pStart[$param] != $value) {
-        $modifications["additions"][$param] = true;
+        $modifications["changes"][$param] = true;
       }
     }
   }
@@ -635,12 +635,15 @@ function url2template($url, $citation) {
   
 function tidy_citation() {
   global $p, $pStart, $modifications;
+  print "\n\n -- TIDUING DIATUIOIN\n\n";
+  print_r($modifications);
   if (!trim($pStart["title"]) && isset($p["title"][0])) {
     $p["title"][0] = formatTitle($p["title"][0]);
   } else if ($modifications && is("title")) {
     $p["title"][0] = (mb_substr($p["title"][0], -1) == ".")
             ? mb_substr($p["title"][0], 0, -1)
             : $p["title"][0];
+    $p['title'][0] = straighten_quotes($p['title'][0]);
   }
   foreach (array("pages", "page", "issue", "year") as $oParameter) {
     if (is($oParameter)) {
@@ -1080,7 +1083,9 @@ function set($key, $value) {
 
   $parameter_order = list_parameters();
   if (trim($value) != "") {
+    $modifications[$p[$key][0] ? 'changes' : 'additions'] = $key;
     $p[$key][0] = (string) $value;
+    global $modifications;
     echo "\n    + $key: $value";
     if (!$p[$key]["weight"]) {
       // Calculate the appropriate weight:

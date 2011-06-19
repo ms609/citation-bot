@@ -203,91 +203,97 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
   if ($silence) {
     ob_start();
   }
-  global $p, $doiCrossRef, $jstor_redirect;
-  if (substr($p["doi"][0], 3, 4) == "2307") {
-    echo "\n - Populating from JSTOR database: ";
-    if (get_data_from_jstor($p["doi"][0])) {
-      $crossRef = crossRefData($p["doi"][0]);
-      if (!$crossRef) {
-        // JSTOR's UID is not registered as a DOI, meaning that there is another (correct - DOIs should be unique) DOI, issued by the publisher.
-        if ($editing_cite_doi_template) {
-          $jstor_redirect = $p["doi"][0];
-          }
-        unset ($p["doi"][0]);
-        preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
-        $crossRef = crossRefDoi($p["title"][0], $p["journal"][0], is("author1")?$p["author1"][0]:$p["author"][0]
-                               , $p["year"][0], $p["volume"][0], $pagenos[1], $pagenos[3], $p["issn"][0], null);
-      }
-    } else {
-      echo "not found in JSTOR?";
-    }
+  global $p, $doiCrossRef, $jstor_redirect, $priorP;
+  if ($p == $priorP['crossref']) {
+    echo "\n - No changes since last CrossRef search.";
+    return $crossRef;
   } else {
-    // Not a JSTOR doi, use CrossRef
-    $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
-  }
-
-  if ($crossRef) {
-    echo "\n - Checking CrossRef for more details [DOItools.php/expand_from_crossref]";
-    if ($editing_cite_doi_template) {
-      $doiCrossRef = $crossRef;
-    }
-    if ($crossRef->volume_title) {
-      if_null_set("chapter", $crossRef->article_title);
-      if (strtolower($p["title"][0]) == strtolower($crossRef->article_title)) {
-        unset($p['title'][0]);
+    if (substr($p["doi"][0], 3, 4) == "2307") {
+      echo "\n - Populating from JSTOR database: ";
+      if (get_data_from_jstor($p["doi"][0])) {
+        $crossRef = crossRefData($p["doi"][0]);
+        if (!$crossRef) {
+          // JSTOR's UID is not registered as a DOI, meaning that there is another (correct - DOIs should be unique) DOI, issued by the publisher.
+          if ($editing_cite_doi_template) {
+            $jstor_redirect = $p["doi"][0];
+            }
+          unset ($p["doi"][0]);
+          preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
+          $crossRef = crossRefDoi($p["title"][0], $p["journal"][0], is("author1")?$p["author1"][0]:$p["author"][0]
+                                 , $p["year"][0], $p["volume"][0], $pagenos[1], $pagenos[3], $p["issn"][0], null);
+        }
+      } else {
+        echo "not found in JSTOR?";
       }
-      if_null_set('title', $crossRef->volume_title);
     } else {
-      if_null_set("title", $crossRef->article_title);
+      // Not a JSTOR doi, use CrossRef
+      $crossRef = $crossRef?$crossRef:crossRefData(urlencode(trim($p["doi"][0])));
     }
-    if_null_set('series', $crossRef->series_title);
-    if_null_set("year", $crossRef->year);
-    if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
-        && $crossRef->contributors->contributor) {
-      foreach ($crossRef->contributors->contributor as $author) {
-        if ($author["contributor_role"] == "editor") {
-          ++$ed_i;
-          if ($ed_i < 5) {
-            if_null_set("editor$ed_i-last", formatSurname($author->surname));
-            if_null_set("editor$ed_i-first", formatForename($author->given_name));
-          }
-        } else {
-          ++$au_i;
-          if ($au_i < 10) {
-            if_null_set("last$au_i", formatSurname($author->surname));
-            if_null_set("first$au_i", formatForename($author->given_name));
+
+    if ($crossRef) {
+      echo "\n - Checking CrossRef for more details [DOItools.php/expand_from_crossref]";
+      if ($editing_cite_doi_template) {
+        $doiCrossRef = $crossRef;
+      }
+      if ($crossRef->volume_title && !is('journal')) {
+        if_null_set("chapter", $crossRef->article_title);
+        if (strtolower($p["title"][0]) == strtolower($crossRef->article_title)) {
+          unset($p['title'][0]);
+        }
+        if_null_set('title', $crossRef->volume_title);
+      } else {
+        if_null_set("title", $crossRef->article_title);
+      }
+      if_null_set('series', $crossRef->series_title);
+      if_null_set("year", $crossRef->year);
+      if (!is("editor") && !is("editor1") && !is("editor-last") && !is("editor1-last")
+          && $crossRef->contributors->contributor) {
+        foreach ($crossRef->contributors->contributor as $author) {
+          if ($author["contributor_role"] == "editor") {
+            ++$ed_i;
+            if ($ed_i < 5) {
+              if_null_set("editor$ed_i-last", formatSurname($author->surname));
+              if_null_set("editor$ed_i-first", formatForename($author->given_name));
+            }
+          } else {
+            ++$au_i;
+            if ($au_i < 10) {
+              if_null_set("last$au_i", formatSurname($author->surname));
+              if_null_set("first$au_i", formatForename($author->given_name));
+            }
           }
         }
       }
+      if_null_set("doi", $crossRef->doi);
+      if_null_set("isbn", $crossRef->isbn);
+      if ($jstor_redirect) {
+        global $jstor_redirect_target;
+        $jstor_redirect_target = $crossRef->doi;
+      }
+      if_null_set("journal", $crossRef->journal_title);
+      if ($crossRef->volume > 0) {
+        if_null_set("volume", $crossRef->volume);
+      }
+      if ((integer) $crossRef->issue > 1) {
+      // "1" may refer to a journal without issue numbers,
+      //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
+        if_null_set("issue", $crossRef->issue);
+      }
+      if (!is("page")) if_null_set("pages", $crossRef->first_page
+                . ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)
+                ? "-" . $crossRef->last_page //replaced by an endash later in script
+                : "") );
+      echo " (ok)";
+      searchForPmid();
+    } else {
+      echo "\n - No CrossRef record found :-(";
     }
-    if_null_set("doi", $crossRef->doi);
-    if_null_set("isbn", $crossRef->isbn);
-    if ($jstor_redirect) {
-      global $jstor_redirect_target;
-      $jstor_redirect_target = $crossRef->doi;
+    if ($silence) {
+      ob_end_clean();
     }
-    if_null_set("journal", $crossRef->journal_title);
-    if ($crossRef->volume > 0) {
-      if_null_set("volume", $crossRef->volume);
-    }
-    if ((integer) $crossRef->issue > 1) {
-    // "1" may refer to a journal without issue numbers,
-    //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
-      if_null_set("issue", $crossRef->issue);
-    }
-    if (!is("page")) if_null_set("pages", $crossRef->first_page
-              . ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)
-              ? "-" . $crossRef->last_page //replaced by an endash later in script
-              : "") );
-    echo " (ok)";
-    searchForPmid();
-  } else {
-    echo "\n - No CrossRef record found :-(";
+    $priorP['crossref'] = $p;
+    return $crossRef;
   }
-  if ($silence) {
-    ob_end_clean();
-  }
-  return $crossRef;
 }
 
 // text must be text that contains  a SICI.  It could be an entire citation.
@@ -646,46 +652,51 @@ function pmSearchResults($p){
 }
 
 function searchForPmid() {
-  global $p;
-  echo "\n - Searching PubMed... ";
-  $results = (pmSearchResults($p));
-  if ($results[1] == 1) {
-    if_null_set('pmid', $results[0]);
-    $details = pmArticleDetails($results[0]);
-    echo " 1 result found; updating citation";
-    foreach ($details as $key=>$value) {
-      if_null_set ($key, $value);
-    }
-    if (!is('doi')) {
-      // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
-      echo "\n - Looking for DOI in CrossRef database with new information ... ";
-      $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
-                              trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
-                              $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
-      if ($crossRef) {
-        $p["doi"][0] = $crossRef->doi;
-        echo "Match found: " . $p["doi"][0];
-      } else {
-        echo "no match.";
-      }
-    }
+  global $p, $priorP;
+  if ($p == $priorP['pmid']) {
+    echo "\n - No changes since last PubMed search.";
+    return false;
   } else {
-    echo " nothing found.";
-    if (mb_strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && !is("journal")) {
-      // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
-      echo "\n - Checking for ISBN";
-      $isbnToStartWith = isset($p["isbn"]);
-      if (!isset($p["isbn"][0]) && is("title")) set("isbn", findISBN( $p["title"][0], $p["author"][0] . " " . $p["last"][0] . $p["last1"][0]));
-      else echo "\n  Already has an ISBN. ";
-      if (!$isbnToStartWith && !$p["isbn"][0]) {
-          unset($p["isbn"]);
-      } else {
-        // getInfoFromISBN(); // Too buggy. Disabled.
+    echo "\n - Searching PubMed... ";
+    $results = (pmSearchResults($p));
+    if ($results[1] == 1) {
+      if_null_set('pmid', $results[0]);
+      $details = pmArticleDetails($results[0]);
+      echo " 1 result found; updating citation";
+      foreach ($details as $key=>$value) {
+        if_null_set ($key, $value);
+      }
+      if (!is('doi')) {
+        // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
+        echo "\n - Looking for DOI in CrossRef database with new information ... ";
+        $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
+                                trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
+                                $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+        if ($crossRef) {
+          $p["doi"][0] = $crossRef->doi;
+          echo "Match found: " . $p["doi"][0];
+        } else {
+          echo "no match.";
+        }
+      }
+    } else {
+      echo " nothing found.";
+      if (mb_strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && !is("journal")) {
+        // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
+        echo "\n - Checking for ISBN";
+        $isbnToStartWith = isset($p["isbn"]);
+        if (!isset($p["isbn"][0]) && is("title")) set("isbn", findISBN( $p["title"][0], $p["author"][0] . " " . $p["last"][0] . $p["last1"][0]));
+        else echo "\n  Already has an ISBN. ";
+        if (!$isbnToStartWith && !$p["isbn"][0]) {
+            unset($p["isbn"]);
+        } else {
+          // getInfoFromISBN(); // Too buggy. Disabled.
+        }
       }
     }
   }
+  $priorP['pmid'] = $p;
 }
-
 function pmArticleDetails($pmid, $id = "pmid"){
 	$result = Array();
 	$xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($id == "pmid")?"pubmed":"pmc") . "&id=$pmid");
@@ -1711,6 +1722,9 @@ function niceTitle($in, $sents = true){
 	            'return mb_strtolower($matches[0]);'
 	        ), trim(($captIn))));
 	}
+  
+  // Use 'straight quotes' per WP:MOS
+  $newcase = straighten_quotes($newcase);
   if (in_array(" " . trim($newcase) . " ", $unCapped)) {
     // Keep "z/Journal" with lcfirst
     return $newcase;
@@ -1998,17 +2012,13 @@ function formatTitle($title) {
 								"");
 	$in = array("&lt;", "&gt;"	);
 	$out = array("<",		">"			);
-  // Use 'straight quotes' per WP:MOS
-  // $title = straighten_quotes($title);
   return str_ireplace($iIn, $iOut, str_ireplace($in, $out, niceTitle($title))); // order IS important!
 }
 
 function straighten_quotes($str) {
-  $str = preg_replace('~&#821[679];|[\x{2039}\x{203A}\x{2018}-\x{201B}]|&[rl]s?[ab]?quo;~u', "'", $str);
-  $str = preg_replace(array('~&#822[013];~',
-      '~[\x{00AB}\x{00BB}\x{201C}-\x{201F}]~u',
-      '~&([rlb][ad]?quo;~'), '"', $str);
-  print "\n $str \n";
+  $str = preg_replace('~&#821[679];|[\x{2039}\x{203A}\x{2018}-\x{201B}`]|&[rl]s?[ab]?quo;~u', "'", $str);
+  $str = preg_replace('~&#822[013];|[\x{00AB}\x{00BB}\x{201C}-\x{201F}]|&[rlb][ad]?quo;~u', '"', $str);
+  print "\n STRAIGHTENED QUOTES: $str \n";
   return $str;
 }
 

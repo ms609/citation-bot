@@ -61,7 +61,7 @@ function expand($page, // Title of WP page
 
   ##### Generate edit summary #####
   if ($modifications["additions"]) {
-    $auto_summary = "+: ";
+    $auto_summary = "Add: ";
     foreach ($modifications["additions"] as $param=>$v)	{
       $auto_summary .= "$param, ";
       unset($modifications["additions"][$param]);
@@ -73,9 +73,9 @@ function expand($page, // Title of WP page
     $auto_summary .= "Removed accessdate with no specified URL. ";
     unset($modifications["additions"]["accessdate"]);
   }
-  if ($modifications["additions"]) {
-    $auto_summary .= "Tweaked: ";
-    foreach ($modifications["additions"] as $param=>$v)	$auto_summary .= 				"$param, ";
+  if ($modifications["changes"]) {
+    $auto_summary .= "Tweak: ";
+    foreach ($modifications["changes"] as $param=>$v)	$auto_summary .= "$param, ";
     $auto_summary = substr($auto_summary,0, strlen($auto_summary)-2);
     $auto_summary.=". ";
   }
@@ -280,7 +280,7 @@ function expand_text ($original_code,
                 ?"Changing to Arxiv. "
                 :"Keeping as cite web. ")
               ) . "\n";
-      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["additions"]
+      $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["changes"], if 'set' hasn't got them already
       $last_p = $p;
       $p = null;
       
@@ -964,6 +964,7 @@ echo "
 // We have now recovered all possible information from CrossRef.
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
         echo "\n5: Formatting and other tweaks";
+        print_r($modifications);
         if ($editing_cite_doi_template || preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
           echo "\n   First: Cite Doi formatting";
           // Get the surname of the first author. (We [apparently] found this earlier, but it might have changed since then)
