@@ -767,7 +767,7 @@ echo "
              echo "\n - Skipping AdsAbs database: not in slow mode.";
           }
           
-          if (!isset($p["doi"][0])) {
+          if (!$p["doi"][0]) {
             //Try CrossRef
             echo "\n - Checking CrossRef database... ";
             $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),

@@ -1730,7 +1730,8 @@ function niceTitle($in, $sents = true){
 	            'return mb_strtolower($matches[0]);'
 	        ), trim(($captIn))));
 	}
-  
+  $newcase = preg_replace_callback("~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen. ?no?v?|sp. ?no?v?|no?v?. ?sp|no?v?. ?gen)[\.,\s]*)+)~ui", create_function('$matches',
+          'return "\'\'{$matches[\'taxon\']}\'\' " . strtolower($matches["nova"]);'), $newcase);
   // Use 'straight quotes' per WP:MOS
   $newcase = straighten_quotes($newcase);
   if (in_array(" " . trim($newcase) . " ", $unCapped)) {
@@ -1739,7 +1740,7 @@ function niceTitle($in, $sents = true){
   } else {
     // Catch "the Journal" --> "The Journal"
     $newcase = mb_convert_case(mb_substr($newcase, 0, 1), MB_CASE_TITLE, "UTF-8") . mb_substr($newcase, 1);
-    return $newcase;
+     return $newcase;
   }
 }
 
@@ -2017,9 +2018,6 @@ function formatTitle($title) {
               ? mb_substr($title, 0, -6)
               : $title
             );
-  $title = preg_replace_callback('~(?P<taxon>\p{L}+\s+\p{L}+)\s+(?P<nova>(?:(?:gen. ?no?v?|sp. ?no?v?|no?v?. ?sp|no?v?. ?gen)\.?,?)+)~ui', create_function('$matches',
-          'return "\'\'{$matches[\'taxon\']}\'\' " . strtolower($matches["nova"]);'), $title);
-  die("\n$title\n");
   $iIn = array("<i>","</i>", 
 							"From the Cover: ");
 	$iOut = array("''","''",

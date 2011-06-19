@@ -68,7 +68,6 @@ die();
 */
 ###########
 
-print_r($argument);
 if ($argument["pages"]) {
   foreach ($argument["pages"] as $page) {
     expand($page, $ON);
@@ -85,16 +84,26 @@ if ($argument["pages"]) {
     
 die (expand_text("
   
-
-Unused data:
-{{cite journal
-| doi = 10.1099/ijs.0.65587-0
-}}
+{{Cite journal
+ | last1 = Hwang | first1 = C. Y.
+ | last2 = Cho | first2 = B. C.
+ | journal = International Journal of Systematic and Evolutionary Microbiology
+ | volume = 58
+ | issue = 7
+ | pages = 1591–1597
+ | year = 2008
+ | doi = 
+}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>
 
 
 "));
     
 die (expand_text("
+
+I'm Done with this. Delete it.
+{{cite journal
+| doi = 10.1099/ijs.0.65587-0
+}}
 
 
 "));
