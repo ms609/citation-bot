@@ -69,9 +69,9 @@ function expand($page, // Title of WP page
     $auto_summary = substr($auto_summary, 0, strlen($auto_summary)-2);
     $auto_summary .= ". ";
   }
-  if ($modifications["additions"]["accessdate"]) {
+  if ($modifications["removed"]["accessdate"]) {
     $auto_summary .= "Removed accessdate with no specified URL. ";
-    unset($modifications["additions"]["accessdate"]);
+    unset($modifications["removed"]["accessdate"]);
   }
   if ($modifications["changes"]) {
     $auto_summary .= "Tweak: ";

@@ -439,7 +439,9 @@ function rename_parameter($old_name, $new_name, $new_value = null) {
     }
     unset($p[$old_name]);
     if ($old_name == "url") {
+      global $modifications;
       unset($p["accessdate"]);
+      $modifications['removed']['accessdate'];
     }
     return true;
   }
@@ -962,13 +964,15 @@ function handle_et_al() {
         $authors_missing = true;
         $oParam = preg_replace("~,?\s*'*et al['.]*~", '', $p[$param][0]);
         if ($i == 1) {
-          // then there's scope for "Smith, AB; Peters, Q.R. et al"
-          if (strpos($oParam, ';')) {
-            $authors = explode(';', $oParam);
-          } else if (substr_count($oParam, ',') > 1
-                  || substr_count($oParam, ',') < substr_count(trim($oParam), ' ')) {
-            // then we (probably) have a list of authors joined by commas in our first parameter
-            $authors = explode(',', $oParam);
+          if (strpos($param, 'co') === FALSE) {
+            // then there's scope for "Smith, AB; Peters, Q.R. et al"
+            if (strpos($oParam, ';')) {
+              $authors = explode(';', $oParam);
+            } else if (substr_count($oParam, ',') > 1
+                    || substr_count($oParam, ',') < substr_count(trim($oParam), ' ')) {
+              // then we (probably) have a list of authors joined by commas in our first parameter
+              $authors = explode(',', $oParam);
+            }
           }
           if ($authors) {
             foreach ($authors as $au) {
@@ -984,11 +988,11 @@ function handle_et_al() {
           } else {
             set($param, $oParam);
           }
-          if_null_set('display-authors', $i);
-        }
-        if (!trim($param)) {
+        } 
+        if (trim($oParam) == "") {
           unset($p[$param]);
-        }
+        } 
+        if_null_set('display-authors', $i);
       }
     }
   }

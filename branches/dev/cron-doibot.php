@@ -5,7 +5,7 @@
 error_reporting(E_ALL^E_NOTICE);
 $slowMode = false;
 $fastMode = false;
-$accountSuffix = '_4'; // Keep this before including expandFns
+$accountSuffix = '_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
