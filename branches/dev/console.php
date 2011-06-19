@@ -86,13 +86,10 @@ if ($argument["pages"]) {
 die (expand_text("
   
 
-Pipe needs encoding: 
-
-{{Cite web 
-| url=http://historicalportraits.com/?Desc=Ann-Davis,-Lady-Lee-|-John-Michael-Wright
-| title = Ministry of Defence | About Defence | Corporate Publications | Policy Strategy and Planning | Strategic Defence Review 
+Unused data:
+{{cite journal
+| pages = 1&ndash;2
 }}
-
 
 
 "));

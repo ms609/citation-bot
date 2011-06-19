@@ -254,7 +254,6 @@ function parameters_from_citation($c) {
     $pipePos = strpos($value, "|");
     if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
       // There are two "parameters" on one line.  One must be missing an equals.
-      print_r($parts);
       switch (strtolower($parts[$partsI + 1])) {
         case 'title': 
           $value = str_replace('|', '&#124;', $value);
@@ -1127,7 +1126,9 @@ function if_null_set($param, $value) {
               && trim($value) != "" )
               || strpos(strtolower($p["pages"][0] . $p['page'][0]), 'no') !== FALSE
               || (strpos($value, chr(2013)) || (strpos($value, '-'))
-              && !strpos($p['pages'][0], chr(2013)) && !strpos($p['pages'][0], '-'))
+              && !strpos($p['pages'][0], chr(2013))
+                      && !strpos($p['pages'][0], '-')
+                      && !strpos($p['pages'][0], '&ndash;'))
       ) {
         set($param, $value);
         return true;

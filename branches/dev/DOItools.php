@@ -1100,7 +1100,7 @@ function useUnusedData()
         foreach ($parameter_list as $parameter)
         {
           $para_len = strlen($parameter);
-          if (substr($dat, 0, $para_len) == $parameter) {
+          if (substr(strtolower($dat), 0, $para_len) == $parameter) {
             $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
             $parameter_value = ($character_after_parameter == "-")?substr(trim(substr($dat, $para_len)), 1):substr($dat, $para_len);
             if_null_set($parameter, $parameter_value);
