@@ -326,10 +326,11 @@ function reassemble_citation($p, $sort = false) {
 }
 
 function mark_broken_doi_template($article_in_progress, $oDoi) {
-  if (getRawWikiText($article_in_progress)) {
+  $page_code = getRawWikiText($article_in_progress);
+  if ($page_code) {
     global $editInitiator;
     return write($article_in_progress
-            , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i", "{{broken doi|$oDoi}}", getRawWikiText($article_in_progress))
+            , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i", "{{broken doi|$oDoi}}", $page_code)
             , "$editInitiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
     );
   } else {

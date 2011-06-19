@@ -379,7 +379,12 @@ function expand_from_doi($a, $b, $c = false, $DEPRECATED = TRUE) {
 
 function get_data_from_doi($doi, $silence) {
   global $editing_cite_doi_template;
-  return expand_from_crossref(crossRefData($doi), $editing_cite_doi_template, $silence);
+  $crossRef = crossRefData($doi);
+  if ($crossRef) 
+    return expand_from_crossref($crossRef, $editing_cite_doi_template, $silence);
+  else if (substr(trim($doi), 0, 8) == '10.2307/')
+    return get_data_from_jstor(substr(trim($doi), 8));
+  else return false;
 }
 
 function getDataFromArxiv($a, $DEPRECATED = TRUE) {
