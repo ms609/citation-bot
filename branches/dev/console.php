@@ -80,8 +80,14 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
-    
-    
+die (expand_text("
+page range
+{{cite journal
+| doi=10.1126/science.1191455
+}}
+
+
+"));
 die (expand_text("
   
 {{Cite journal
@@ -98,15 +104,7 @@ die (expand_text("
 
 "));
     
-die (expand_text("
 
-I'm Done with this. Delete it.
-{{cite journal
-| doi = 10.1099/ijs.0.65587-0
-}}
-
-
-"));
     
 /*/
 // For version 3:

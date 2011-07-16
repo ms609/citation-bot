@@ -276,7 +276,7 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
       if_null_set("issue", $crossRef->issue);
     }
     if (!is("page")) if_null_set("pages", $crossRef->first_page
-              . ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)
+              . ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)
               ? "-" . $crossRef->last_page //replaced by an endash later in script
               : "") );
     echo " (ok)";
@@ -1109,7 +1109,8 @@ function useUnusedData()
           $para_len = strlen($parameter);
           if (substr(strtolower($dat), 0, $para_len) == $parameter) {
             $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
-            $parameter_value = ($character_after_parameter == "-")?substr(trim(substr($dat, $para_len)), 1):substr($dat, $para_len);
+            $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
+              ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
             if_null_set($parameter, $parameter_value);
             break;
           }
