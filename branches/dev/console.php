@@ -81,11 +81,9 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
 die (expand_text("
-page range
-{{cite journal
-| doi=10.1126/science.1191455
-}}
-
+  Incorrect expansion
+  
+<ref>http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2695286/</ref>
 
 "));
 die (expand_text("

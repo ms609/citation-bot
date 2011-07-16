@@ -637,7 +637,7 @@ function url2template($url, $citation) {
     return ($match['domain'] == ".com") ? "{{ASIN | {$match['id']} }}" : " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
   } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                   . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-    return "{{Cite pmc | {$match[1]} }}";
+    return "{{Cite pmc | {$match[1]}{$match[2]} }}";
   } elseif (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
     return "{{Cite journal | bibcode = " . urldecode($bibcode[1]) . "}}";
   } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
