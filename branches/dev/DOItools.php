@@ -163,10 +163,14 @@ function jrTest($name) {
 
 function nothingMissing($journal){
   global $authors_missing;
+  if (!(is("pages") || is("page"))
+      || (preg_match('~no.+no|n/a|in press|none~', $p['pages'][0] . $p['page'][0]))) {
+    return false;
+  }
   return ( is($journal)
         && is("volume")
         && is("issue")
-        && (is("pages") || is("page"))
+        && $noPagesMissing
         && is("title")
         && (is("date") || is("year"))
         && (is("author2") || is("author2"))

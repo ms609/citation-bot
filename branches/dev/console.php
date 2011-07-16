@@ -80,12 +80,14 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
-die (expand_text("
-  Incorrect expansion
-  
-<ref>http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2695286/</ref>
+die (expand_text('
+  pages NA
+    {{cite journal | doi = 10.1038/nature09068 | title = Primitive soft-bodied cephalopods from the Cambrian | year = 2010 | last1 = Smith | first1 = Martin R. | last2 = Caron | first2 = Jean-Bernard | journal = Nature | volume = 465 | issue = 7297 | pages = no-no | pmid = 20505727}}
 
-"));
+
+    
+
+'));
 die (expand_text("
   
 {{Cite journal

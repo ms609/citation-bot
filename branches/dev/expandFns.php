@@ -705,6 +705,11 @@ function tidy_citation() {
   if (is('accessdate') && !is('url')) {
     unset($p['accessdate']);
   }
+  
+  if ($modifications['additions']['display-authors']) {
+    if_null_set('author' . ($p['display-authors'][0] + 1), '<Please add first missing authors to populate metadata.>');
+  }
+  
 }
 
 function standardize_reference($reference) {
