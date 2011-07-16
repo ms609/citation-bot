@@ -81,18 +81,25 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
 die (expand_text('
-  pages NA
-    {{cite journal | 
-title = Test
-| pages = 100-010
-| Volume- 12
-| Issue : 46
-}}
+  Parameter re-organization
+    {{Cite journal 
+| last1 = Steneck | first1 = R. S. 
+| title = Escalating Herbivory and Resulting Adaptive Trends in Calcareous Algal Crusts 
+| journal = Paleobiology 
+| volume = 9 
+| issue = 1 
+| pages = 44–61 
+| doi =  
+| year = 1983 
+| pmid =  
+| pmc = 
+}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
+
 
 
     
 
-'));
+', 0, 1));
 die (expand_text("
   
 {{Cite journal

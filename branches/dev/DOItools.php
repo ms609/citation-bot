@@ -1102,7 +1102,6 @@ function useUnusedData()
             $dat = trim(str_replace($match[0], '', $dat));
           }
         }
-print "\n Data here is $dat";
         // Load list of parameters used in citation templates.
         //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
         global $parameter_list;
@@ -1811,23 +1810,6 @@ function findMoreAuthors($doi, $a1, $pages) {
         // Check dc.contributor, which isn't correctly handled by get_meta_tags
         if (preg_match_all("~\<meta name=\"dc.Contributor\" +content=\"([^\"]+)\"\>~U", $source, $authors)){
           $return['authors']=$authors[1];
-        } else if (true) {
-          print "\n  - Text search for surname not yet robustly coded: Skipped.";
-          // Delete this clause when we get a robust scraping algorithm.
-        } elseif ($a1) {
-          print "\n Searching $url for $a1 \n\n";
-          $spaceAuth = "[^ ]* ?[^ ]* ?" . preg_quote($a1) . "[^\(:\n]*";
-
-          if (preg_match("~<td[^>]*>($spaceAuth)</td~Ui", $source, $authorLine)) {
-            print 'table cell:'; print_r($authorLine);
-            $return['authors'] = formatAuthors(strip_tags($authorLine[1]), true);
-          } elseif (preg_match("~$spaceAuth~i", strip_tags($source), $authorLine)) {
-            print 'wholeline:' ; print_r($authorLine);
-            $return['authors'] = formatAuthors($authorLine[0], true);
-          } else {
-            echo "\nAuthor $a1 could not be identified.<hr>\n";
-            print $source; exit;
-          }
         } else {
           echo "\nNo author specified";
         }

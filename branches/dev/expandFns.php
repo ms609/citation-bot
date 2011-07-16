@@ -214,9 +214,9 @@ function write($page, $data, $edit_summary = "Bot edit") {
       "summary" => $edit_summary,
       "minor" => "1",
       "bot" => "1",
-      #"basetimestamp" => $my_page->touched,
-      #"starttimestamp" => $my_page->starttimestamp,
-      #"md5"       => md5($data),
+      "basetimestamp" => $my_page->touched,
+      "starttimestamp" => $my_page->starttimestamp,
+      "md5"       => md5($data),
       "watchlist" => "nochange",
       "format" => "json",
   );
@@ -676,6 +676,9 @@ function tidy_citation() {
     unset($p["publisher"]);
   }
 
+  if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
+    $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
+  }
   if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
     $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
   }
