@@ -1067,8 +1067,8 @@ function useUnusedData()
           }
 
         }
-        if (preg_match_all("~(\w+)\.?\s*([^\s;,.]+)[;.,]*~", $dat, $match)) {
-          foreach ($match[0] as $i=>$oMatch) {
+        if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) {
+          foreach ($match[0] as $i => $oMatch) {
             switch (strtolower($match[1][$i])) {
               case "vol": case "v": case 'volume':
                 $matched_parameter = "volume";
@@ -1102,7 +1102,7 @@ function useUnusedData()
             $dat = trim(str_replace($match[0], '', $dat));
           }
         }
-
+print "\n Data here is $dat";
         // Load list of parameters used in citation templates.
         //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
         global $parameter_list;

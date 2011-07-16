@@ -82,7 +82,12 @@ if ($argument["pages"]) {
   } else {
 die (expand_text('
   pages NA
-    {{cite journal | doi = 10.1038/nature09068 | title = Primitive soft-bodied cephalopods from the Cambrian | year = 2010 | last1 = Smith | first1 = Martin R. | last2 = Caron | first2 = Jean-Bernard | journal = Nature | volume = 465 | issue = 7297 | pages = no-no | pmid = 20505727}}
+    {{cite journal | 
+title = Test
+| pages = 100-010
+| Volume- 12
+| Issue : 46
+}}
 
 
     
