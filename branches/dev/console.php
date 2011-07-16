@@ -81,25 +81,20 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
 die (expand_text('
-  Parameter re-organization
-    {{Cite journal 
-| last1 = Steneck | first1 = R. S. 
-| title = Escalating Herbivory and Resulting Adaptive Trends in Calcareous Algal Crusts 
-| journal = Paleobiology 
-| volume = 9 
-| issue = 1 
-| pages = 44–61 
-| doi =  
-| year = 1983 
-| pmid =  
-| pmc = 
-}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
+  Ref names in reflist
+  <ref name=Holland>Netherlands</ref><ref name="England">St. George</ref><ref name=Wales />
+
+{{Reflist|colwidth=30em|refs=
+<ref name="Holland" />
+<ref name=England>St. George</ref>
+<ref name=\'Wales\'>Jimmy</ref>
+}}
 
 
 
     
 
-', 0, 1));
+'));
 die (expand_text("
   
 {{Cite journal

@@ -789,7 +789,7 @@ function combine_duplicate_references($page_code) {
       foreach ($full_duplicate as $i => $this_duplicate) {
         if (FALSE === array_search($this_duplicate, $already_replaced)) {
           $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once
-          echo "\n - Replacing duplicate reference $this_duplicate. \n - * Reference name: "
+          echo "\n   - Replacing duplicate reference $this_duplicate. \n     Reference name: "
           . ( $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]] : "Autogenerating." ); // . " (original: $full_original[$i])";
           $replacement_template_name = $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]] : get_name_for_reference($duplicate_content[$i], $page_code);
           // First replace any empty <ref name=Blah content=none /> or <ref name=Blah></ref> with the new name
@@ -818,18 +818,8 @@ function combine_duplicate_references($page_code) {
             $original_ref_end_pos += strlen($full_original[$i]);
           }
           // Then check that the first occurrence won't be replaced
-          $page_code = $code_upto_original_ref . str_replace($this_duplicate, sprintf(blank_ref, $replacement_template_name), substr($ready_to_replace, $original_ref_end_pos));
-          // If references are specified in a {{reflist}} then we need to leave the full text there.
-          print "\n Current PAGECODE: $page_code\n";
-          $check_no_empty_ref_in_list = '~(\{\{\s*reflist(?:[^\}]|\}[^\}]|\{\{(?:[^\}]|\{\{[^\}]\}\})*\}\})*)'
-                  . sprintf(blank_ref, preg_quote($replacement_template_name)) . '~';
-          print "\n \n Searching for: " . $check_no_empty_ref_in_list . "\n";
-          if (preg_match($check_no_empty_ref_in_list, $page_code)) {
-            // replace our full reference with an empty one where it's defined in the text...
-            $page_code = str_replace($full_original[$i], sprintf(blank_ref, $replacement_template_name), $page_code);
-            // ... then put the text in the reflist section
-            $page_code = preg_replace($check_no_empty_ref_in_list, "$1" . $this_duplicate, $page_code);
-          }
+          $page_code = $code_upto_original_ref . str_replace($this_duplicate,
+                    sprintf(blank_ref, $replacement_template_name), substr($ready_to_replace, $original_ref_end_pos));
           global $modifications;
           $modifications["combine_references"] = true;
         }
@@ -838,7 +828,30 @@ function combine_duplicate_references($page_code) {
   }
 
   $page_code = replace_comments($page_code, $removed_comments, 'sr');
-  echo ($original_page_code == $page_code) ? "\n - No duplicate references to combine" : "\n - Combined duplicate references (if any exist).";
+  echo ($original_page_code == $page_code) ? "\n   - No duplicate references to combine." : "\n - Combined duplicate references (if any exist).";
+  return $page_code;
+}
+
+// If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
+// which ought to exist earlier in the page.
+function named_refs_in_reflist($page_code) {
+  if (preg_match('~{{[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~', $page_code, $match)) {
+    if (preg_match_all('~<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
+      $temp_reflist = $match[1];
+      foreach ($empty_refs['name'] as $i => $ref_name) {
+        echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
+            ."\n     Reference #$i name: $ref_name";
+        if (preg_match('~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
+                . '(?P=quote)\s*>[\s\S]+?<\s*/\s*ref>~', $page_code, $full_ref)) {
+          // Remove all full-text references from the page code.  We'll add an updated reflist later.
+          $page_code = str_replace($full_ref[0], $empty_refs[0][$i], $page_code);
+          $temp_reflist = str_replace($empty_refs[0][$i], $full_ref[0], $temp_reflist);
+        }
+      }
+      // Add the updated reflist, which should now contain no empty references.
+      $page_code = str_replace($match[1], $temp_reflist, $page_code);
+    }
+  }
   return $page_code;
 }
 

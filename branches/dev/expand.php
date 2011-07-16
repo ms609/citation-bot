@@ -211,7 +211,7 @@ function expand_text ($original_code,
     $new_code = preg_replace($cite_doi_baggage_regexp, "$1", $new_code);
   }
   echo "\n * Tidying reference tags... ";
-  $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc"))));
+  $new_code = rename_references(named_refs_in_reflist(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc")))));
   if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
     $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
     $modifications["dashes"] = true;
