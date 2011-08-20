@@ -1153,6 +1153,7 @@ function if_null_set($param, $value) {
               || (strpos($value, chr(2013)) || (strpos($value, '-'))
                 && !strpos($p['pages'][0], chr(2013))
                 && !strpos($p['pages'][0], chr(150)) // Also en-dash
+                && !strpos($p['pages'][0], chr(226)) // Also en-dash
                 && !strpos($p['pages'][0], '-')
                 && !strpos($p['pages'][0], '&ndash;'))
       ) {
