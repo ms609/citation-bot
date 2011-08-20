@@ -81,22 +81,15 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
     die (expand_text("
-      # In press now printed
-      {{Cite journal |author=B. Kröger, J. Vinther & D. Fuchs |year=in press |title=Cephalopod origin and evolution: A congruent picture emerging from fossils, development and molecules |journal=[[BioEssays]] |doi=10.1002/bies.201100001 }}
-      "));
-    die (expand_text("
-  # At this point: page range should ''not'' be abbreviated.
-{{Cite journal
- | last1 = Hwang | first1 = C. Y.
- | last2 = Cho | first2 = B. C.
- | journal = International Journal of Systematic and Evolutionary Microbiology
- | volume = 58
- | issue = 7
- | pages = 1591–1597
- | year = 2008
- | doi = 
-}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>
-
+  # page range should ''not'' be abbreviated.
+{{Citation
+|author=Kazimierz Fajans
+|date=1966 May
+|title=Kasimir Fajans
+|journal = Journal of Nuclear Medicine
+|volume=7 |issue=5 |pages=402–404
+|pmid = 5328478
+}}
 
 "));
     
