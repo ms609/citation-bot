@@ -58,6 +58,7 @@ define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
 define("comment_placeholder", "### Citation bot : comment placeholder %s ###"); #4 when online...
 define("to_en_dash", "-|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
 define("blank_ref", "<ref name=\"%s\" />");
+define("reflist_regexp", "~{{\s*[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~u");
 define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
@@ -628,7 +629,6 @@ function get_identifiers_from_url() {
 }
 
 function url2template($url, $citation) {
-  print "\n - $url";
   if (preg_match("~jstor\.org/.*[/=](\d+)~", $url, $match)) {
     return "{{Cite doi | 10.2307/$match[1] }}";
   } else if (preg_match("~//dx\.doi\.org/(.+)$~", $url, $match)) {
@@ -731,14 +731,33 @@ function replace_comments($text, $comments, $placeholder = "") {
 
 // This function may need to be called twice; the second pass will combine <ref name="Name" /> with <ref name=Name />.
 function combine_duplicate_references($page_code) {
-
   $original_page_code = $page_code;
+  $original_encoding = mb_detect_encoding($page_code);
+  $page_code = mb_convert_encoding($page_code, "UTF-8");
+  
   if (preg_match_all("~<!--[\s\S]*?-->~", $page_code, $match)) {
     $removed_comments = $match[0];
     foreach ($removed_comments as $i => $content) {
       $page_code = str_replace($content, sprintf(comment_placeholder, "sr$i"), $page_code);
     }
   }
+  // Before we start with the page code, remove duplicate references from reflist section if they have the same name.
+  if (preg_match(reflist_regexp, $page_code, $match)) {
+    if (preg_match_all('~(?P<ref1><ref\s+name\s*=\s*(?P<quote1>["\']?)(?P<name>[^>]+)(?P=quote1)(?:\s[^>]+)?\s*>[\p{L}\P{L}]+</\s*ref>)'
+            . '[\p{L}\P{L}]+(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?)(?P=name)(?P=quote2)[\p{L}\P{L}]+</\s*ref>)~iuU', $match[1], $duplicates)) {
+      foreach ($duplicates['ref2'] as $i => $to_delete) {
+        if ($to_delete == $duplicates['ref1'][$i]) {
+          $mb_start = mb_strpos($page_code, $to_delete) + mb_strlen($to_delete);
+          $page_code = mb_substr($page_code, 0, $mb_start)
+                  . str_replace($to_delete, '', mb_substr($page_code, $mb_start));
+        } else {
+          $page_code = str_replace($to_delete, '', $page_code);
+        }
+      }
+    }
+  }
+  
+  // Now look at the rest of the page:
   preg_match_all("~<ref\s*name\s*=\s*[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
   // match 1 = ref names
   if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
@@ -760,7 +779,7 @@ function combine_duplicate_references($page_code) {
   } else {
     // no matches, return input
     print "\n - No references found.";
-    return replace_comments($page_code, $removed_comments, 'sr');
+    return mb_convert_encoding(replace_comments($page_code, $removed_comments, 'sr'), $original_encoding);
   }
 
   // Now all references that need merging will have identical content.  Proceed to do the replacements...
@@ -835,7 +854,7 @@ function combine_duplicate_references($page_code) {
 // If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
 // which ought to exist earlier in the page.
 function named_refs_in_reflist($page_code) {
-  if (preg_match('~{{[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~', $page_code, $match)) {
+  if (preg_match(reflist_regexp, $page_code, $match)) {
     if (preg_match_all('~<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
       $temp_reflist = $match[1];
       foreach ($empty_refs['name'] as $i => $ref_name) {
