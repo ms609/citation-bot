@@ -41,11 +41,20 @@ function getCiteList($page) {
 }
 
 function create_page ($type, $id, $bonus_ids) {
+  $template = 'Cite ' . $type;
   $type = strtolower($type);
   global $ON, $dotDecode, $dotEncode;
   switch ($type) {
     case "doi":
-      $encoded_id = str_replace($dotDecode, $dotEncode, $id);
+      if (!get_data_from_doi($id, true) && substr($id, 0, 8) == "10.2307/") {
+        // Invalid DOI generated from 10.2307/JSTORID.  Just use JSTOR parameter
+        $encoded_id = str_replace($dotDecode, $dotEncode, $id);
+        $type = 'jstor';
+        $template = 'Cite doi';
+        $id = substr($id, 8);
+      } else {
+        $encoded_id = str_replace($dotDecode, $dotEncode, $id);
+      }
     break;
     default:
       $encoded_id = $id;
@@ -57,7 +66,8 @@ function create_page ($type, $id, $bonus_ids) {
   foreach ($bonus_ids as $key => $value) {
     $bonus .= " | $key = $value\n";
   }
-  return expand("Template:Cite $type/$encoded_id", $ON, true,
+  print "{{Cite journal\n | $type = $id\n$bonus}}\n\n";
+  return expand("Template:$template/$encoded_id", $ON, true,
                   "{{Cite journal\n | $type = $id\n$bonus}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>", -1);
 }
 /*
@@ -246,7 +256,6 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         exit ("That's odd. This hasn't worked.  our PMID: $oPmid; citation_is_redirect: " . citation_is_redirect("pmid", $oPmid));
     }
   }
-  
   while ($doi_todo && (false !== ($oDoi = @array_pop($doi_todo)))) {
     if (preg_match("~^[\s,\.:;>]*(?:d?o?i?[:.,>\s]+|(?:http://)?dx\.doi\.org/)(?P<doi>.+)~i", $oDoi, $match)
       || preg_match('~^0?(?P<end>\.\d{4}/.+)~', $oDoi, $match)
@@ -268,15 +277,11 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
       if ($doi_citation_exists > 1) {
         log_citation("doi", $oDoi);
       }
-      print ".";
+      echo ".";
     } else {
       echo "\n   > Creating new page at DOI $oDoi: ";
-      if (get_data_from_doi($oDoi, true)) {
+      if (get_data_from_doi($oDoi, true) || substr(trim($oDoi), 0, 8) == '10.2307/') {
         echo create_page("doi", $oDoi) ? "Done. " : "Failed. )-: ";
-      } else if (substr(trim($oDoi), 0, 8) == '10.2307/') {
-        echo "\n   > Invalid DOI. Switching to {{Cite jstor|" . substr(trim($oDoi), 8) . '}}: ';
-        //echo swap_doi_for_jstor($article_in_progress, $oDoi) ? ' done. ' : ' write operation failed. ';
-        print "Disabled for now, to avoid edit-warring with myself.";
       } else {
         echo "\n   > Invalid DOI. Aborted operation.\n  > Marking DOI as broken: ";
         echo mark_broken_doi_template($article_in_progress, $oDoi) ? " done. " : " write operation failed. ";
