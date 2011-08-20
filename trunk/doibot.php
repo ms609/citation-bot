@@ -47,9 +47,9 @@ $editInitiator = "[" . revisionID() . "]";
 
 if (is_valid_user($user)) {
   print "Activated by $user\n";
-  $editSummaryEnd = "[[User:$user|$user]]";
+  $edit_summary_end = " | [[User:$user|$user]]";
 } else {
-  $editSummaryEnd = "User-activated.";
+  $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
 $doi_input = $_GET["doi"];

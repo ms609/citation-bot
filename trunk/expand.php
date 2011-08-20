@@ -7,7 +7,7 @@ function expand($page, // Title of WP page
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $bot, $editInitiator, $html_output, $modifications;
+  global $bot, $editInitiator, $html_output, $modifications, $edit_summary_end;
   if ($html_output === -1) {
     ob_start();
   }
@@ -69,9 +69,9 @@ function expand($page, // Title of WP page
     $auto_summary = substr($auto_summary, 0, strlen($auto_summary)-2);
     $auto_summary .= ". ";
   }
-  if ($modifications["additions"]["accessdate"]) {
+  if ($modifications["removed"]["accessdate"]) {
     $auto_summary .= "Removed accessdate with no specified URL. ";
-    unset($modifications["additions"]["accessdate"]);
+    unset($modifications["removed"]["accessdate"]);
   }
   if ($modifications["changes"]) {
     $auto_summary .= "Tweak: ";
@@ -164,7 +164,9 @@ function expand_text ($original_code,
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy, $edit_summary_end,  $slowMode, $html_output;
+  global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy,
+          $authors_missing,
+          $edit_summary_end,  $slowMode, $html_output;
 
   if ($html_output === -1) {
     ob_start();
@@ -209,7 +211,7 @@ function expand_text ($original_code,
     $new_code = preg_replace($cite_doi_baggage_regexp, "$1", $new_code);
   }
   echo "\n * Tidying reference tags... ";
-  $new_code = rename_references(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc"))));
+  $new_code = rename_references(named_refs_in_reflist(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc")))));
   if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
     $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
     $modifications["dashes"] = true;
@@ -376,7 +378,7 @@ function expand_text ($original_code,
     $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
   }
 
-###################################  START ASSESSING BOOKS ######################################
+###################################  START ASSESSING BOOKS ({{cite book}} ######################################
 
   if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
@@ -410,7 +412,8 @@ function expand_text ($original_code,
         set('title', $match[2]);
         set('doi', $match[1]);
       }
-
+      
+      handle_et_al();
       useUnusedData();
       id_to_parameters();
 
@@ -572,6 +575,7 @@ function expand_text ($original_code,
         $countComments = null;
       }
       $p = parameters_from_citation($citation[$cit_i+1]); 
+      $authors_missing = false; // reset    
       
       if ($p["doix"]) {
         $p["doi"][0] = str_replace($dotEncode, $dotDecode, $p["doix"][0]);
@@ -585,7 +589,7 @@ function expand_text ($original_code,
       if (is("inventor") ||
           is("inventor-last") ||
           is("patent-number")) {
-        echo "<p>Citation bot does not handle patent citations.</p>";
+        echo "\n xxx Citation bot does not handle patent citations.";
       } else {
       //Check for the doi-inline template in the title
       if (preg_match("~\{\{\s*doi-inline\s*\|\s*(10\.\d{4}/[^\|]+)\s*\|\s*([^}]+)}}~"
@@ -614,6 +618,8 @@ echo "
 //  * Tidying up existing parameters (and we'll do more tidying here too)
 //
 ###########################
+
+        handle_et_al();
 
         $journal = is("periodical") ? "periodical" : "journal";
         // See if we can use any of the parameters lacking equals signs:
@@ -715,69 +721,8 @@ echo "
           }
         }
 
-        $authors_missing = false; // reset
-        // The phrase 'et al' should not be included in the authors parameter.
-        // It is discouraged and may be mistaken for an author by the bot.
-        // If it is present, we will search for more authors when we get the chance - set $authors_missing = true
-/*
-        if (is('author')) {
-          // Analyse the author parameter.  If there's an 'et al', can we remove it?
-          if (preg_match("~([,.; ]+)'*et al['.]*(?!\w)$~", $p['author'][0], $match)) {
-            $chars = count_chars($p['author'][0]);
-            // Try splitting at semi-colons
-            if ($chars[ord(";")] > 0) {
-              $truncate_after = $chars[ord(";")];
-              if (strpos($match[0], ';') === false) {
-                $truncate_after++;
-              }
-              // No luck? Try splitting on commas?
-            } elseif ($chars[ord(",")] > 0) {
-              $truncate_after = $chars[ord(",")];
-              if (strpos($match[0], ',') === false) {
-                $truncate_after++;
-              }
-            }
-            // Observe an 'et al', and remove it.
-            $p['author'][0] = preg_replace("~[,.; ]+'*et al['.]*(?!\w)$~", "", $p['author'][0]);
-            echo " - $truncate_after authors then <i>et al</i>. Will grow list later.";
-            $authors_missing = true;
-            //if_null_set('display-authors', $truncate_after);
-          }
-        }
-*/
-
         $author_param = trim($p['author'][0]);
-        //print "\n" . $author_param;
-        /*  REMOVED THIS SECTION IN R61
-        // Replace 'and' with an appropriate punctuation 'signpost'
-        if (preg_match("~ ([Aa]nd|\&) ([\w\W]+)$~U", $author_param, $match)){
-          if (strpos($author_param, ';')  // Already includes a ;
-            || !strpos($author_param, ',') // No commas - can't hurt to divide with ;
-            || strpos($match[2], ',') // Commas after the and - commas can't be used to divide authors
-          ) {
-            $author_param = str_replace(" " . $match[1], ";", $author_param);
-          } else {
-            $author_param = str_replace(" " . $match[1], ",", $author_param);
-          }
-        }
-        */
-/* REMOVED THIS IN R70 - Coauthors not restored because author_param is not used.
-        // Check to see if there is a translator in the authors list
-        if (is('coauthors') || is('coauthor')) {
-          $coauthor_param = $p['coauthors'][0]?'coauthors':'coauthor';
-          $coauthor_value = $p[$coauthor_param];
-          $coauth = $coauthor_value[0];
-          if (strpos($coauth, ';') || strpos($author_param, ',')) {
-            $author_param .= "; " . $coauth;
-          } else {
-            $author_param .= ", " . $coauth;
-          }
-          unset($p['coauthors']);
-          unset($p['coauthor']);
-        } else {
-          $coauth = null;
-        }
-*/
+     
         // Check for translator in author_param and remove if necessary.
         $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
         if (preg_match($translator_regexp, $author_param, $match)) {
@@ -790,63 +735,6 @@ echo "
           $author_param = preg_replace($translator_regexp, "", $author_param);
           $p['author'][0] = $author_param;
         }
-
-        /* REMOVED IN REVISION 61
-        // Split author list into individual authors using semi-colon.
-        if (strpos($author_param, ';') && !is('author2') && !is('last2')) {
-          $auths = explode(';', $author_param);
-          unset($p['author']);
-          foreach ($auths as $au_i => $auth) {
-            if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $auth, $match)) {
-              if_null_set("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
-              $auth = $match[3];
-            }
-            $jr_test = jrTest($auth);
-            $auth = $jr_test[0];
-            if (strpos($auth, ',')) {
-              $au_bits = explode(',', $auth);
-              set('last' . ($au_i+1), $au_bits[0] . $jr_test[1]);
-              set('first' . ($au_i+1), $au_bits[1]);
-            } else {
-              set('author' . ($au_i+1), $auth . $jr_test[1]);
-            }
-          }
-        }
-        // Try using commas to split authors
-        elseif (preg_match_all("~([\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+),~u", $author_param, $matches)) {
-          // \p{L} matches any letter, including special characters.  \p{M} matches diacritical marks, etc.  Remember the u flag at the end of the expression!
-          $last_author = preg_replace("~[\w\p{L}\p{M}\-. ]+\s+[\w\p{L}\p{M}. ]+,~u", "", $author_param);
-          $matches[1][] = $last_author;
-          unset($p['author']);
-          $au_i = 0;
-          foreach ($matches[1] as $author) {
-            $au_i++;
-            set ("author" . $au_i, $author);
-          }
-          set('author-separator', ',');
-          if (is('last2')) {
-            $p['author-name-separator'][0] = "";
-          }
-        }
-        // Detect first author.
-        preg_match("~[^.,;\s]{2,}~", $author_param, $firstauthor);
-        if (!$firstauthor[0]) {
-          preg_match("~[^.,;\s]{2,}~", $p["author1"][0], $firstauthor);
-        }
-        if (!$firstauthor[0]) {
-          preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
-        }
-        if (!$firstauthor[0]) {
-          preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
-        }
-
-        // If we had no luck extracting authors from the coauthors parameter, we'd better restore it.
-        if ($coauth && !is('author2') && !is('last2')) {
-          $p[$coauthor_param] = $coauthor_value;
-        }
-
-/* END OF AUTHOR SEPARATION
-*/
         // Is there already a date parameter?
         $dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0])) ;
 
@@ -858,7 +746,7 @@ echo "
         
 if (is('doi')) {
 if (!nothingMissing($journal)) {
-  expand_from_crossref($crossRef, $editing_cite_doi_template);
+  expand_from_crossref($crossRef);
 }
 echo "
 2: DOI already present";
@@ -879,7 +767,7 @@ echo "
              echo "\n - Skipping AdsAbs database: not in slow mode.";
           }
           
-          if (!isset($p["doi"][0])) {
+          if (!$p["doi"][0]) {
             //Try CrossRef
             echo "\n - Checking CrossRef database... ";
             $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),

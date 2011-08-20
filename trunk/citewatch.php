@@ -3,10 +3,9 @@
 // $Id$
 $ON = true;
 
-
-$accountSuffix = '_2'; // Was 2. Before expandfunctions
+$accountSuffix = '_2'; // Should use account _2. Include this line before expandfunctions
 require_once("expandFns.php"); // includes login
-require_once("citewatchFns.php"); // inadvertently removed from wikiFunctions.php in r192
+require_once("citewatchFns.php");
 
 $editInitiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
@@ -17,6 +16,7 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
 echo "\n Retrieving category members: ";
 $toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
 #$toDo = array("User:DOI bot/Zandbox");
+
 shuffle($toDo);
 $space = (array_keys($toDo, " "));
 if ($space) {
@@ -28,10 +28,10 @@ function getCiteList($page) {
 	global $bot;
 	$bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
 	$raw = $bot->results;
-	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]doi[\s\n]*\|[\s\n]*([^ \}]+)[\s\n]*(\||\}\})~i", $raw, $doi);
-	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]jstor[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $jstorid);
-	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmid[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmid);
-	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmc[\n\s]*\|[\n\s]*(\d+)[\n\s]*(\||\}\})~i", $raw, $pmc);
+	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]doi[\s\n]*\|[\s\n]*([^ \}\|]+)[^ \}]*[\s\n]*(\||\}\})~i", $raw, $doi);
+	preg_match_all ("~\{\{[\s\n]*(?:cite|ref)[ _]jstor[\n\s]*\|[\n\s]*(\d+)(?:\|[^ \}]*)?[\n\s]*(\||\}\})~i", $raw, $jstorid);
+	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmid[\n\s]*\|[\n\s]*(\d+)(?:\|[^ \}]*)?[\n\s]*(\||\}\})~i", $raw, $pmid);
+	preg_match_all ("~\{\{[\s\n]*(?:ref|cite)[ _]pmc[\n\s]*\|[\n\s]*(\d+)(?:\|[^ \}]*)?[\n\s]*(\||\}\})~i", $raw, $pmc);
   $category = "[[Category:Articles citing non-functional identifiers]]";
 	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($raw, $category)) {
     global $editInitiator;
@@ -60,6 +60,20 @@ function create_page ($type, $id, $bonus_ids) {
   return expand("Template:Cite $type/$encoded_id", $ON, true,
                   "{{Cite journal\n | $type = $id\n$bonus}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>", -1);
 }
+/*
+function swap_doi_for_jstor ($page, $doi) {
+  $page_code = getRawWikiText($page);
+  if ($page_code) {
+    global $editInitiator;
+    return write($page
+            , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($doi) . "\s*\}\}~i",
+                    '{{cite jstor|' . substr($doi, 8) . '}}', $page_code)
+            , "$editInitiator JSTOR parameter substituted for broken [[doi:$doi]]"
+    );
+  } else {
+    return false;
+  }
+}*/
 
 while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in list */)) {
 
@@ -234,30 +248,38 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   }
   
   while ($doi_todo && (false !== ($oDoi = @array_pop($doi_todo)))) {
-    if (preg_match("~^\s*d?o?i?[:.,>\s]+(.+)~", $oDoi, $match)) {
-      $oDoi = $match[1];
+    if (preg_match("~^[\s,\.:;>]*(?:d?o?i?[:.,>\s]+|(?:http://)?dx\.doi\.org/)(?P<doi>.+)~i", $oDoi, $match)
+      || preg_match('~^0?(?P<end>\.\d{4}/.+)~', $oDoi, $match)
+            ) {
+      $oDoi = $match['doi'] ? $match['doi'] : '10' . $match['end'];
       $this_page_wikitext = getRawWikiText($article_in_progress);
-      if ($this_page_wikitext && $ON) {
-        print "\n   > Removing the string 'doi:' from templates in [[$article_in_progress]]";
-        write ($article_in_progress,
-                str_replace($match[0], $match[1], $this_page_wikitext),
-                "$editInitiator Corrected syntax in Cite doi-type template.");
+      if ($this_page_wikitext) {
+        echo "\n   > Fixing prefixes in {{cite doi}} templates, in [[$article_in_progress]]: ";
+        if ($ON) 
+          echo write ($article_in_progress,
+                str_replace("1$oDoi", $oDoi, str_replace($match[0], $oDoi, $this_page_wikitext)),
+                "$editInitiator Corrected syntax in Cite doi-type template.") ? '.' : 'failed.';
+        else
+          echo ' [$ON = false; won\'t write]';
       }
     }
     $doi_citation_exists = doi_citation_exists($oDoi);
     if ($doi_citation_exists) {
-      //print "\n   > DOI $oDoi already exists.";
       if ($doi_citation_exists > 1) {
         log_citation("doi", $oDoi);
       }
       print ".";
     } else {
-      echo "\n   > Creating new page at $oDoi: ";
-      if (get_data_from_doi($oDoi, true, true)) {
+      echo "\n   > Creating new page at DOI $oDoi: ";
+      if (get_data_from_doi($oDoi, true)) {
         echo create_page("doi", $oDoi) ? "Done. " : "Failed. )-: ";
+      } else if (substr(trim($oDoi), 0, 8) == '10.2307/') {
+        echo "\n   > Invalid DOI. Switching to {{Cite jstor|" . substr(trim($oDoi), 8) . '}}: ';
+        //echo swap_doi_for_jstor($article_in_progress, $oDoi) ? ' done. ' : ' write operation failed. ';
+        print "Disabled for now, to avoid edit-warring with myself.";
       } else {
-        echo "Invalid DOI. Aborted operation.\n  > Marking DOI as broken:";
-        # Disabled.  print mark_broken_doi_template($article_in_progress, $oDoi) ? " done. " : " write operation failed. ";
+        echo "\n   > Invalid DOI. Aborted operation.\n  > Marking DOI as broken: ";
+        echo mark_broken_doi_template($article_in_progress, $oDoi) ? " done. " : " write operation failed. ";
       }
       unset ($p["doi"]);
     }

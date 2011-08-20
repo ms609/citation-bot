@@ -1,8 +1,5 @@
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-  </head>
-  <body onload="form.wpDiff.click()">
+  <body onload="//form.wpDiff.click()">
     <h1>Citation bot is running...</h1>
     <h3>Wait a moment whilst the bot runs.  You'll be returned to Wikipedia when it's done.</h3>
     <form id="form" method="post" accept-charset="UTF-8"

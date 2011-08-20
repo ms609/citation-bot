@@ -68,7 +68,6 @@ die();
 */
 ###########
 
-
 if ($argument["pages"]) {
   foreach ($argument["pages"] as $page) {
     expand($page, $ON);
@@ -81,14 +80,19 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
+    
+die (expand_text('
+  [Insert text here]
 
-die (expand_text("
- 
-{{Cite journal|author=Kirthi V, Derry S, Moore RA, McQuay HJ |title=Aspirin“” with or without an antiemetic for acute migraine headaches in adults |journal=Cochrane Database Syst Rev |volume=4 |issue= 4|pages=CD008041 |year=2010 |pmid=20393963 |doi=10.1002/14651858.CD008041.pub2 |editor1-last=Moore|editor1-first=Maura}}
-        
-"));
- die(straighten_quotes('&rsquo;test&lsquo;[`‘’][“”]'));
 
+
+
+    
+
+'));
+    
+
+    
 /*/
 // For version 3:
 die (expand_text("
