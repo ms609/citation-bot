@@ -312,9 +312,9 @@ function get_data_from_adsabs() {
   global $p;
   $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
   if (is("bibcode")) {
-    $xml = simplexml_load_file($url_root . "bibcode=" . $p["bibcode"][0]);
+    $xml = simplexml_load_file($url_root . "bibcode=" . urlencode($p["bibcode"][0]));
   } elseif (is("doi")) {
-    $xml = simplexml_load_file($url_root . "doi=" . $p["doi"][0]);
+    $xml = simplexml_load_file($url_root . "doi=" . urlencode($p["doi"][0]));
   } elseif (is("title")) {
     $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $p["title"][0] . '"'));
     $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($xml->record->title)));

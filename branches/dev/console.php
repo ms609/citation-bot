@@ -80,8 +80,11 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
+    
+    die(expand_text('{{cite journal |bibcode=1997A&A...322..709K}}'));
+    
 die (expand_text('
-  Ref names in reflist
+  Ref names in reflist.  May not be working, still [aug 2011, r388]
   <ref name=Holland>Netherlands</ref><ref name="England">St. George</ref><ref name=Wales />
 
 {{Reflist|colwidth=30em|refs=
