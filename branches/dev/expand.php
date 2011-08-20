@@ -7,7 +7,7 @@ function expand($page, // Title of WP page
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
         $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
         ) {
-  global $bot, $editInitiator, $html_output, $modifications;
+  global $bot, $editInitiator, $html_output, $modifications, $edit_summary_end;
   if ($html_output === -1) {
     ob_start();
   }
