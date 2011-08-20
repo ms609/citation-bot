@@ -591,13 +591,9 @@ function get_identifiers_from_url() {
   // JSTOR
   if (strpos($url, "jstor.org") !== FALSE) {
     if (strpos($url, "sici")) {
-      #print get_final_url($url);
-      #print_r(get_headers($url));
-      #print_r(get_meta_tags($url));
-      #TODO!! get redirect destination of sici URL
-      #die();
-    } elseif (preg_match("~(\d{6,})$|(\d{6,})[^\d%\-]~", $url, $match)) {
-      rename_parameter("url", "jstor", $match[0]);
+      #Skip.  We can't do anything more with the SICI, unfortunately.
+    } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
+      rename_parameter("url", "jstor", $match[1]);
     }
   } else {
     if (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {

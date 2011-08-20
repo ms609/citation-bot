@@ -81,8 +81,9 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
     
+    
 die (expand_text('
-  AOK.
+ OK
 
 
 
