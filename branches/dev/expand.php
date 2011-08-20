@@ -246,10 +246,6 @@ function expand_text ($original_code,
       // Fix typos in parameter names
       //Authors
       if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
-      preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
-
       // Delete any parameters >10, which won't be displayed anyway
       for ($au_i = 10; isset($p["last$au_i"]) || isset($p["author$au_i"]); $au_i++) {
         unset($p["last$au_i"]);
@@ -322,9 +318,6 @@ function expand_text ($original_code,
       // Fix typos in parameter names
       //Authors
       if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
-      preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
 
       // Delete any parameters >10, which won't be displayed anyway
       for ($au_i = 10; isset($p["last$au_i"]) || isset($p["author$au_i"]); $au_i++) {
@@ -444,18 +437,11 @@ function expand_text ($original_code,
         unset ($p["doi"]);
       }
 
-      //page nos
-      preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
-
       //Authors
       if (isset($p["authors"]) && !isset($p["author"][0])) {
         $p["author"] = $p["authors"];
         unset($p["authors"]);
       }
-      preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
-
       // Is there already a date parameter?
       $dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0]));
 
@@ -703,9 +689,6 @@ echo "
           unset($p["pmpmid"]);
         }
 
-        //pages
-        preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
-
         //Authors
         // Move authors -> author
         if (isset($p["authors"]) && !isset($p["author"][0])) {
@@ -743,36 +726,46 @@ echo "
 
 #####################################
 //
+     
         
 if (is('doi')) {
-if (!nothingMissing($journal)) {
-  expand_from_crossref($crossRef);
-}
-echo "
-2: DOI already present";
-// TODO: Use DOI to expand citation
+  if (!nothingMissing($journal)) {
+    expand_from_crossref($crossRef);
+  }
+  echo "
+  2: DOI already present";
+  // TODO: Use DOI to expand citation
 } else {
 echo "
 2: Find DOI";
 //  Now we have got the citation ship-shape, let's try to find a DOI.
 //
 #####################################
-
-          
+      
+          // First, expand citation by any available means.
           // Try AdsAbs
           if ($slow_mode || is('bibcode')) {
-            echo "\n - Checking AdsAbs database";
+            echo "\n - Checking AdsAbs database [expand/expand_text]";
             get_data_from_adsabs();
           } else {
              echo "\n - Skipping AdsAbs database: not in slow mode.";
           }
           
+          // Expand from JSTOR
+          if (!isset($p["doi"][0])) {
+            if (is("jstor")) {
+              echo "\n - Checking JSTOR database [expand/expand_text]";
+              get_data_from_jstor("10.2307/" . $p["jstor"][0]);
+            }
+          }
+          
+          // We should now have enough information to find a DOI through CrossRef
           if (!$p["doi"][0]) {
-            //Try CrossRef
+            //Ask CrossRef for a DOI
             echo "\n - Checking CrossRef database... ";
             $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
-                                    trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
-                                    $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+                                    get_first_author($p), trim($p["year"][0]), trim($p["volume"][0]),
+                                    get_first_page($p), get_last_page($p), trim($p["issn"][0]), trim($p["url"][0]));
             if ($crossRef) {
               $p["doi"][0] = $crossRef->doi;
               echo "Match found: " . $p["doi"][0];
@@ -780,44 +773,29 @@ echo "
               echo "no match.";
             }
           }
-
-
-          //Try URL param
+          
+          // If that didn't work, we can try scraping a DOI from the URL.  Meta tags are usually our best bet here, see findDoi().
           if (!isset($p["doi"][0])) {
-            if (is("jstor")) {
-              echo "\n - Checking JSTOR database";
-              if (get_data_from_jstor("10.2307/" . $p["jstor"][0])) {
+            if (strpos($p["url"][0], "http://") !== false) {
+              if (substr(preg_replace("~<!--.*-->~", "", $p["url"][0]), -4) == ".pdf") {
                 echo $html_output
-                      ? "\n - Got data from JSTOR.<br />"
-                      : "\n - Got data from JSTOR.";
+                      ? ("\n - Avoiding <a href=\"" . $p["url"][0] . "\">PDF URL</a>. <br>")
+                      : "\n - Avoiding PDF URL {$p["url"][0]}";
+              } else {
+                //Try using URL parameter
+                echo $html_output
+                      ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
+                      : "\n - Trying URL {$p["url"][0]}";
+                $doi = findDoi(preg_replace("~<!--.*-->~", "", $p["url"][0]));
+                if ($doi) {
+                  echo " found doi $doi";
+                  $p["doi"][0] = $doi;
+                } else {
+                  echo " no doi found.";
+                }
               }
             } else {
-              if (strpos($p["url"][0], "http://") !== false) {
-                if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)) {
-                  echo $html_output
-                        ? ("\n - Getting data from <a href=\"" . $p["url"][0] . "\">JSTOR record</a>.")
-                        : "\n - Querying JSTOR record from URL " . $jid[0];
-                  get_data_from_jstor("10.2307/$jid[1]");
-                } elseif (substr(preg_replace("~<!--.*-->~", "", $p["url"][0]), -4) == ".pdf") {
-                  echo $html_output
-                        ? ("\n - Avoiding <a href=\"" . $p["url"][0] . "\">PDF URL</a>. <br>")
-                        : "\n - Avoiding PDF URL {$p["url"][0]}";
-                } else {
-                  //Try using URL parameter
-                  echo $html_output
-                        ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
-                        : "\n - Trying URL {$p["url"][0]}";
-                  $doi = findDoi(preg_replace("~<!--.*-->~", "", $p["url"][0]));
-                  if ($doi) {
-                    echo " found doi $doi";
-                    $p["doi"][0] = $doi;
-                  } else {
-                    echo " no doi found.";
-                  }
-                }
-              } else {
-                echo "No valid URL specified.  ";
-              }
+              echo "No valid URL specified.  ";
             }
           }
         }
@@ -854,17 +832,6 @@ echo "
         echo "\n5: Formatting and other tweaks";
         if ($editing_cite_doi_template || preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
           echo "\n   First: Cite Doi formatting";
-          // Get the surname of the first author. (We [apparently] found this earlier, but it might have changed since then)
-          preg_match("~[^.,;\s]{2,}~u", $p["author"][0], $firstauthor);
-          if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~u", $p["author1"][0], $firstauthor);
-          }
-          if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~u", $p["last"][0], $firstauthor);
-          }
-          if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~u", $p["last1"][0], $firstauthor);
-          }
 
           // If we only have the first author, look for more!
           if (!is('coauthors')
@@ -873,7 +840,7 @@ echo "
                && is('doi')
             ) {
             echo "\n - Looking for co-authors & page numbers...";
-            $moreAuthors = findMoreAuthors($p['doi'][0], $firstauthor[0], $p['pages'][0]);
+            $moreAuthors = findMoreAuthors($p['doi'][0], get_first_author($p), $p['pages'][0]);
             $count_new_authors = count($moreAuthors['authors']);
             if ($count_new_authors) {
               echo " Found more authors! ";

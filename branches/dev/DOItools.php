@@ -114,7 +114,7 @@ function is($key){
 
 function dbg($array, $key = false) {
 if(myIP())
-	echo "<pre>" . str_replace("<", "&lt;", $key?print_r(array($key=>$array),1):print_r($array,1)), "</pre>";
+	echo "<pre>" . str_replace("<", "&lt;", $key ? print_r(array($key=>$array),1) : print_r($array,1)), "</pre>";
 else echo "<p>Debug mode active</p>";
 }
 
@@ -218,9 +218,8 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
           $jstor_redirect = $p["doi"][0];
           }
         unset ($p["doi"][0]);
-        preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
         $crossRef = crossRefDoi($p["title"][0], $p["journal"][0], is("author1")?$p["author1"][0]:$p["author"][0]
-                               , $p["year"][0], $p["volume"][0], $pagenos[1], $pagenos[3], $p["issn"][0], null);
+                               , $p["year"][0], $p["volume"][0], get_first_page($p), get_last_page($p), $p["issn"][0], null);
       }
     } else {
       echo "not found in JSTOR?";
@@ -540,22 +539,27 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
   global $priorP;
   $input = array($title, $journal, $author, $year, $volume, $startpage, $endpage, $issn, $url1);
   if ($input == $priorP['crossref']) {
-    echo "\n - Data not changed since last CrossRef search.";
+    echo "\n   * Data not changed since last CrossRef search.";
     return false;
   } else {
     $priorP['crossref'] = $input;
     global $crossRefId;
     if ($journal || $issn) {
-      $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
-      if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
-      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
-      if ($author) $url .= "&auauthor=" . urlencode($author);
-      if ($year) $url .= "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year));
-      if ($volume) $url .= "&volume=" . urlencode($volume);
-      if ($startpage) $url .= "&spage=" . urlencode($startpage);
-      if ($endpage > $startpage) $url .= "&epage=" . urlencode($endpage);
-      if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef. ";
-      if ($result["status"] == "resolved") {
+      $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
+           . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
+           . ($author ? "&auauthor=" . urlencode($author) : '')
+           . ($startpage ? "&spage=" . urlencode($startpage) : '')
+           . ($endpage > $startpage ? "&epage=" . urlencode($endpage) : '')
+           . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')
+           . ($volume ? "&volume=" . urlencode($volume) : '')
+           . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(deWikify($journal)) : ''));
+      if (!($result = @simplexml_load_file($url)->query_result->body->query)){
+        echo "\n   * Error loading simpleXML file from CrossRef.";
+      }
+      else if ($result['status'] == 'malformed') {
+        echo "\n   * Cannot search CrossRef: " . $result->msg;
+      }
+      else if ($result["status"] == "resolved") {
         return $result;
       }
     }
@@ -576,8 +580,15 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
     if ($year) $url .= "&date=" . urlencode($year);
     if ($volume) $url .= "&volume=" . urlencode($volume);
     if ($startpage) $url .= "&spage=" . urlencode($startpage);
-    if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef.";
-    if ($result["status"]=="resolved") {echo " Successful! - $url; -"; return $result;}
+    if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
+      echo "\n   * Error loading simpleXML file from CrossRef.";
+    }
+    else if ($result['status'] == 'malformed') {
+      echo "\n   * Cannot search CrossRef: " . $result->msg;
+    } else if ($result["status"]=="resolved") {
+      echo " Successful!"; 
+      return $result;
+    }
   }
 }
 
@@ -681,8 +692,8 @@ function searchForPmid() {
         // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
         echo "\n - Looking for DOI in CrossRef database with new information ... ";
         $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
-                                trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
-                                $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+                                get_first_author($p), trim($p["year"][0]), trim($p["volume"][0]),
+                                get_first_page($p), get_last_page($p), trim($p["issn"][0]), trim($p["url"][0]));
         if ($crossRef) {
           $p["doi"][0] = $crossRef->doi;
           echo "Match found: " . $p["doi"][0];
