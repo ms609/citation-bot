@@ -1131,7 +1131,10 @@ function if_null_set($param, $value) {
       }
     // Don't break here; we want to go straight in to year;
     case "year":
-      if (trim($p["date"][0]) == "" && trim($p["year"][0]) == "" && trim($value) != "") {
+      if (trim($value) != "" 
+          && (trim($p["date"][0]) == "" || trim(strtolower($p['date'][0])) == "in press")
+          && (trim($p["year"][0]) == "" || trim(strtolower($p['year'][0])) == "in press") 
+        ) {
         set($param, $value);
         return true;
       }
