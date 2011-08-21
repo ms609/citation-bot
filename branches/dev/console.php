@@ -83,7 +83,8 @@ if ($argument["pages"]) {
     
     
 die (expand_text('
- OK
+ Convert to cite journal with jstor=
+ {{cite news|url= http://www.jstor.org/stable/716108?&Search=yes&term=canham&term=society&term=royal&term=africa&list=hide&searchUri=/action/doBasicSearch%3FQuery%3Droyal%2Bafrica%2Bsociety%2Ba%2Bcanham%26x%3D0%26y%3D0%26wc%3Don&item=9&ttl=306&returnArticleService=showArticle |title=Journal of the Royal African Society, Vol. 14, No. 55 (April 1915), p 308|accessdate=2010-06-24}}<
 
 
 

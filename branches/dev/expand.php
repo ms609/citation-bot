@@ -219,7 +219,7 @@ function expand_text ($original_code,
   }
 ###################################  Cite web ######################################
   // Convert Cite webs to Cite arXivs, etc, if necessary
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?(?:[Nn]ews|[wW]eb)(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) {//Number of brackets in cite arXiv regexp + 1
@@ -241,7 +241,7 @@ function expand_text ($original_code,
         $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
       }
 
-      echo "\n* Cite web: {$p["title"][0]}";
+      echo "\n* Cite web / news: {$p["title"][0]}";
 
       // Fix typos in parameter names
       //Authors
@@ -259,7 +259,7 @@ function expand_text ($original_code,
       tidy_citation();
 
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
-      $change_to_journal = is('journal') || is('bibcode');
+      $change_to_journal = is('journal') || is('bibcode') || is('jstor');
       $change_to_arxiv = is('arxiv');
       if (($change_to_arxiv || $change_to_journal) && is('eprint')) {
         rename_parameter('eprint', 'arxiv');
@@ -276,7 +276,7 @@ function expand_text ($original_code,
               ?"Changing to Cite Journal. "
               :($change_to_arxiv
                 ?"Changing to Arxiv. "
-                :"Keeping as cite web. ")
+                :"Not changint citation template. ")
               ) . "\n";
       $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["changes"], if 'set' hasn't got them already
       $last_p = $p;
