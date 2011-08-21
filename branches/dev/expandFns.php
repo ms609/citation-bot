@@ -737,7 +737,7 @@ function combine_duplicate_references($page_code) {
       $page_code = str_replace($content, sprintf(comment_placeholder, "sr$i"), $page_code);
     }
   }
-  // Before we start with the page code, remove duplicate references from reflist section if they have the same name.
+  // Before we start with the page code, find and combine references in the reflist section that have the same name
   if (preg_match(reflist_regexp, $page_code, $match)) {
     if (preg_match_all('~(?P<ref1><ref\s+name\s*=\s*(?P<quote1>["\']?)(?P<name>[^>]+)(?P=quote1)(?:\s[^>]+)?\s*>[\p{L}\P{L}]+</\s*ref>)'
             . '[\p{L}\P{L}]+(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?)(?P=name)(?P=quote2)[\p{L}\P{L}]+</\s*ref>)~iuU', $match[1], $duplicates)) {
@@ -778,12 +778,12 @@ function combine_duplicate_references($page_code) {
     return mb_convert_encoding(replace_comments($page_code, $removed_comments, 'sr'), $original_encoding);
   }
 
-  // Now all references that need merging will have identical content.  Proceed to do the replacements...
   // Reset
   $full_original = null;
   $duplicate_content = null;
   $standardized_ref = null;
 
+  // Now all references that need merging will have identical content.  Proceed to do the replacements...
   if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
                   . "(([^<]|<(?!ref))+?)</ref>~i", $page_code, $refs)) {
     $standardized_ref = $refs[4]; // They were standardized above.
@@ -815,8 +815,8 @@ function combine_duplicate_references($page_code) {
                   , $page_code);
           if ($name_of_original[$i]) {
             // Don't replace the original template!
-            $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]) + strlen($full_original[$i]);
-            $code_upto_original_ref = substr($ready_to_replace, 0, $original_ref_end_pos);
+            $original_ref_end_pos = mb_strpos($ready_to_replace, $full_original[$i]) + mb_strlen($full_original[$i]);
+            $code_upto_original_ref = mb_substr($ready_to_replace, 0, $original_ref_end_pos);
           } elseif ($name_of_duplicate[$i]) {
             // This is an odd case; in a fashion the simplest.
             // In effect, we switch the original and duplicate over,..
@@ -826,15 +826,15 @@ function combine_duplicate_references($page_code) {
             $this_duplicate = $full_original[$i];
           } else {
             // We need add a name to the original template, and not to replace it
-            $original_ref_end_pos = strpos($ready_to_replace, $full_original[$i]);
-            $code_upto_original_ref = substr($ready_to_replace, 0, $original_ref_end_pos) // Sneak this in to "first_duplicate"
+            $original_ref_end_pos = mb_strpos($ready_to_replace, $full_original[$i]);
+            $code_upto_original_ref = mb_substr($ready_to_replace, 0, $original_ref_end_pos) // Sneak this in to "first_duplicate"
                     . preg_replace("~<ref(\s+name\s*=\s*(?P<quote>[\"']?)" . preg_quote($name_of_original[$i])
                             . "(?P=quote)\s*)?>~i", "<ref name=\"$replacement_template_name\">", $full_original[$i]);
-            $original_ref_end_pos += strlen($full_original[$i]);
+            $original_ref_end_pos += mb_strlen($full_original[$i]);
           }
           // Then check that the first occurrence won't be replaced
           $page_code = $code_upto_original_ref . str_replace($this_duplicate,
-                    sprintf(blank_ref, $replacement_template_name), substr($ready_to_replace, $original_ref_end_pos));
+                    sprintf(blank_ref, $replacement_template_name), mb_substr($ready_to_replace, $original_ref_end_pos));
           global $modifications;
           $modifications["combine_references"] = true;
         }
@@ -848,16 +848,20 @@ function combine_duplicate_references($page_code) {
 }
 
 // If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
-// which ought to exist earlier in the page.
+// which ought to exist earlier in the page.  It's important to check that this doesn't exist elsewhere in the reflist, though.
 function named_refs_in_reflist($page_code) {
   if (preg_match(reflist_regexp, $page_code, $match)) {
-    if (preg_match_all('~<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
+    if (preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
       $temp_reflist = $match[1];
       foreach ($empty_refs['name'] as $i => $ref_name) {
         echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
             ."\n     Reference #$i name: $ref_name";
-        if (preg_match('~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
-                . '(?P=quote)\s*>[\s\S]+?<\s*/\s*ref>~', $page_code, $full_ref)) {
+        $this_regexp = '~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
+                . '(?P=quote)\s*>[\s\S]+?<\s*/\s*ref>~';
+        if (preg_match($this_regexp, $temp_reflist, $full_ref)) {
+          // A full-text reference exists elsewhere in the reflist.  The duplicate can be safely deleted from the reflist.
+          $temp_reflist = str_replace($empty_refs[0][$i], '', $temp_reflist);
+        } elseif (preg_match($this_regexp, $page_code, $full_ref)) {
           // Remove all full-text references from the page code.  We'll add an updated reflist later.
           $page_code = str_replace($full_ref[0], $empty_refs[0][$i], $page_code);
           $temp_reflist = str_replace($empty_refs[0][$i], $full_ref[0], $temp_reflist);

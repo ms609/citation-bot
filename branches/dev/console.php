@@ -82,16 +82,23 @@ if ($argument["pages"]) {
   } else {
     
     
-die (expand_text('
- Convert to cite journal with jstor=
- {{cite news|url= http://www.jstor.org/stable/716108?&Search=yes&term=canham&term=society&term=royal&term=africa&list=hide&searchUri=/action/doBasicSearch%3FQuery%3Droyal%2Bafrica%2Bsociety%2Ba%2Bcanham%26x%3D0%26y%3D0%26wc%3Don&item=9&ttl=306&returnArticleService=showArticle |title=Journal of the Royal African Society, Vol. 14, No. 55 (April 1915), p 308|accessdate=2010-06-24}}<
+die (expand_text("
+ Invalid deletion of ref content
+ <ref name=\"Constitutions2\"/>
+ <ref name=\"Constitutions2\"/>
+ <ref name=\"Constitutions8\"/>
+{{reflist | refs = 
+*<ref name=\"Constitutions2\">{{cite book|author=Joseph Kasparek-Obst|title=The constitutions of Poland and of the United States: kinships and genealogy|url=http://books.google.com/books?id=nu-CQgAACAAJ|accessdate=6 July 2011|date=1 June 1980|publisher=American Institute of Polish Culture|isbn=9781881284093|page=42}}</ref>
+*<ref name=\"Constitutions2\">{{cite book|au=Joseph Kasparek-Obst|title=The constitutions of Poland and of the United States: kinships and genealogy|url=http://books.google.com/books?id=nu-CQgAACAAJ|accessdate=6 July 2011|date=1 June 1980|publisher=American Institute of Polish Culture|isbn=9781881284093|page=42}}</ref>
 
-
+*<ref name=\"Constitutions8\">{{cite book|author=Joseph Kasparek-Obst|title=The constitutions of Poland and of the United States: kinships and genealogy|url=http://books.google.com/books?id=nu-CQgAACAAJ|accessdate=6 July 2011|date=1 June 1980|publisher=American Institute of Polish Culture|isbn=9781881284093|page=42}}</ref>
+  
+}}
 
 
     
 
-'));
+"));
     
 
     
