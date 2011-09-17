@@ -81,11 +81,9 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
 
-    die (expand_text("Reference naming.
+    die (expand_text("No expansion?
       
-<ref>http://books.google.com/?id=4AIDlLSuWtcC&printsec=frontcover#v=onepage&q&f=false</ref>
-<ref>http://books.google.com/?id=4AIDlLSuWtcC&printsec=frontcover#v=onepage&q&f=false</ref>
-
+{{cite journal|pmc=2272232}}
 
 "));
     

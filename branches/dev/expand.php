@@ -813,6 +813,9 @@ echo "
         if (!nothingMissing($journal) && is('pmid')) {
           get_data_from_pubmed();
         }
+        if (!nothingMissing($journal) && is('pmc')) {
+          get_data_from_pubmed('pmc');
+        }
 
 #####################################
         if (nothingMissing($journal)) {
