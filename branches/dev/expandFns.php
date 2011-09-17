@@ -635,6 +635,8 @@ function url2template($url, $citation) {
     return "{{Cite doi | " . urldecode($match[1]) . " }}";
   } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url, $match)) {
     return ($match['domain'] == ".com") ? "{{ASIN | {$match['id']} }}" : " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
+  } else if (preg_match("~^http://books\.google(?:\.\w{2,3}\b)+/~", $url, $match)) {
+    return "{{" . ($citation ? 'Cite book' : 'Cite journal') . ' | url = ' . $url . '}}'; 
   } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                   . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
     return "{{Cite pmc | {$match[1]}{$match[2]} }}";
@@ -934,34 +936,37 @@ function rename_references($page_code) {
 }
 
 function get_name_for_reference($text, $page_code) {
+  if (stripos($text, "{{harv") !== FALSE && preg_match("~\|([\s\w\-]+)\|\s*([12]\d{3})\D~", $text, $match)) {
+    $author = $match[1];
+    $date = $match[2];
+  } else {
+    $parsed = parse_wikitext(strip_tags($text));
+    $parsed_plaintext = strip_tags($parsed);
+    $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date) ? $date[1] : "" );
+    $author = preg_match("~rft\.aulast=([^&]+)~", $parsed, $author) 
+            ? urldecode($author[1])
+            : preg_match("~rft\.au=([^&]+)~", $parsed, $author) ? urldecode($author[1]) : "ref_";
+    $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle) ? urldecode($btitle[1]) : "";
+  }
+  print "\n - $author / $btitle / \n";
+  if ($author != "ref_") {
+    preg_match("~\w+~", authorify($author), $author);
+  } else if ($btitle) {
+    preg_match("~\w+\s?\w+~", authorify($btitle), $author);
+  } else if ($parsed_plaintext) {
+    print $parsed_plaintext;
+    if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
+      preg_match("~\w+~", authorify($parsed_plaintext), $author);
+    }
+  }
   if (strpos($text, "://")) {
-    if (preg_match("~\w+://(?:www\.)([^/]+?)(?:\.\w{2,3}\b)+~i", $text, $match)) {
+    if (preg_match("~\w+://(?:www\.)?([^/]+?)(?:\.\w{2,3}\b)+~i", $text, $match)) {
       $replacement_template_name = $match[1];
     } else {
       $replacement_template_name = "bare_url"; // just in case there's some bizarre way that the URL doesn't match the regexp
     }
   } else {
-    if (stripos($text, "{{harv") !== FALSE && preg_match("~\|([\s\w\-]+)\|\s*([12]\d{3})\D~", $text, $match)) {
-      $author = $match[1];
-      $date = $match[2];
-    } else {
-      $parsed = parse_wikitext(strip_tags($text));
-      $parsed_plaintext = strip_tags($parsed);
-      $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date) ? $date[1] : "" );
-      $author = preg_match("~rft\.aulast=([^&]+)~", $parsed, $author) ? $author[1] : preg_match("~rft\.au=([^&]+)~", $parsed, $author) ? $author[1] : "ref_";
-      $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle) ? $btitle[1] : "";
-    }
-    if ($author != "ref_") {
-      preg_match("~\w+~", authorify($author), $author);
-    } else if ($btitle) {
-      preg_match("~\w+\s?\w+~", authorify($btitle), $author);
-    } else if ($parsed_plaintext) {
-      if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
-        preg_match("~\w+~", authorify($parsed_plaintext), $author);
-      }
-    }
     $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
-    #print "\n Replacement name: $replacement_template_name\n\n";
   }
   return generate_template_name($replacement_template_name, $page_code);
 }
@@ -1060,8 +1065,9 @@ function handle_et_al() {
   }
 }
 
+// returns the surname of the authors.
 function authorify($author) {
-  $author = preg_replace("~[^\s\w]|\b\w\b|[\d\-]~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
+  $author = preg_replace("~[^\s\w]|\b\w\b|[\d\-]|\band\s+~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
   $author = preg_match("~[a-z]~", $author) ? preg_replace("~\b[A-Z]+\b~", "", $author) : strtolower($author);
   return $author;
 }

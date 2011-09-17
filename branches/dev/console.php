@@ -81,11 +81,11 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
 
-    die (expand_text("IOtalics?
+    die (expand_text("Reference naming.
       
-{{cite journal |author=Lafforgue P 
-|title=A case of Maria Maria N. Sp. in Toronto, Ontario
-|journal=Joint Bone Spine |volume=73 |issue=5 |pages=500–8
+<ref>http://books.google.com/?id=4AIDlLSuWtcC&printsec=frontcover#v=onepage&q&f=false</ref>
+<ref>http://books.google.com/?id=4AIDlLSuWtcC&printsec=frontcover#v=onepage&q&f=false</ref>
+
 
 "));
     
