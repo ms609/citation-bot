@@ -745,8 +745,8 @@ function combine_duplicate_references($page_code) {
   }
   // Before we start with the page code, find and combine references in the reflist section that have the same name
   if (preg_match(reflist_regexp, $page_code, $match)) {
-    if (preg_match_all('~(?P<ref1><ref\s+name\s*=\s*(?P<quote1>["\']?)(?P<name>[^>]+)(?P=quote1)(?:\s[^>]+)?\s*>[\p{L}\P{L}]+</\s*ref>)'
-            . '[\p{L}\P{L}]+(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?)(?P=name)(?P=quote2)[\p{L}\P{L}]+</\s*ref>)~iuU', $match[1], $duplicates)) {
+    if (preg_match_all('~(?P<ref1><ref\s+name\s*=\s*(?<quote1>["\']?+)(?P<name>[^>]+)(?P=quote1)(?:\s[^>]+)?\s*>[\p{L}\P{L}]+</\s*ref>)'
+            . '[\p{L}\P{L}]+(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?+)(?P=name)(?P=quote2)[\p{L}\P{L}]+</\s*ref>)~iuU', $match[1], $duplicates)) {
       foreach ($duplicates['ref2'] as $i => $to_delete) {
         if ($to_delete == $duplicates['ref1'][$i]) {
           $mb_start = mb_strpos($page_code, $to_delete) + mb_strlen($to_delete);
@@ -793,7 +793,7 @@ function combine_duplicate_references($page_code) {
   if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
                   . "(([^<]|<(?!ref))+?)</ref>~i", $page_code, $refs)) {
     $standardized_ref = $refs[4]; // They were standardized above.
-
+    
     foreach ($refs[4] as $i => $content) {
       if (false !== ($key = array_search($refs[4][$i], $standardized_ref))
               && $key != $i) {
@@ -849,15 +849,15 @@ function combine_duplicate_references($page_code) {
   }
 
   $page_code = replace_comments($page_code, $removed_comments, 'sr');
-  echo ($original_page_code == $page_code) ? "\n   - No duplicate references to combine." : "\n - Combined duplicate references (if any exist).";
+  echo ($already_replaced) ? "\n - Combined duplicate references." : "\n   - No duplicate references to combine." ;
   return $page_code;
 }
 
 // If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
 // which ought to exist earlier in the page.  It's important to check that this doesn't exist elsewhere in the reflist, though.
 function named_refs_in_reflist($page_code) {
-  if (preg_match(reflist_regexp, $page_code, $match)) {
-    if (preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
+  if (preg_match(reflist_regexp, $page_code, $match) &&
+      preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
       $temp_reflist = $match[1];
       foreach ($empty_refs['name'] as $i => $ref_name) {
         echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
@@ -875,7 +875,7 @@ function named_refs_in_reflist($page_code) {
       }
       // Add the updated reflist, which should now contain no empty references.
       $page_code = str_replace($match[1], $temp_reflist, $page_code);
-    }
+    
   }
   return $page_code;
 }

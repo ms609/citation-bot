@@ -68,6 +68,7 @@ die();
 */
 ###########
 
+
 if ($argument["pages"]) {
   foreach ($argument["pages"] as $page) {
     expand($page, $ON);
@@ -81,18 +82,20 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
 
-    die (expand_text("Don't add ISSN, please
-      
-{{cite journal|title=A Summary of the Physical Properties of Cirrus Clouds
-|journal=Journal of Applied Meteorology|year=1990|month=September|volume=29
-|issue=9|doi=10.1175/1520-0450(1990)029<0970:ASOTPP>2.0.CO;2 |first1=David R.
-|last1=Dowling|first2=Lawrence F.|last2=Radke|bibcode=1990JApMe..29..970D
-|oclc=4643887498|ref=CITEREFDowlingRadke1990}} 
+    
+    
+    
+die (expand_text(" Removes references that it shouldn't.
+  
+
+
+    
 
 "));
     
+    
 die (expand_text("
-  Does not expand
+  Does not expand.  This appears to be a (long-term) problem with the JSTOR API.
 {{Cite journal | jstor = 4494763}}
 
 
