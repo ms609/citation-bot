@@ -18,6 +18,10 @@ function includeIfNew($file) {
   return true;
 }
 
+function expandFnsRevId() {
+  return substr('$Id$', 19, 3);
+}
+
 function quiet_echo($text) {
   global $html_output;
   if ($html_output >= 0)

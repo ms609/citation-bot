@@ -98,7 +98,7 @@ function revisionID() {
     $svnid = '$Rev$';
     $scid = substr($svnid, 6);
     $thisRevId = intval(substr($scid, 0, strlen($scid) - 2));
-    return $thisRevId;
+    return expandFnsRevId() > $thisRefId ? expandFnsRevId() : $thisRevId;
     $repos_handle = svn_repos_open('~/citation-bot');
     return svn_fs_youngest_rev($repos_handle);
 }
@@ -1727,7 +1727,7 @@ function truncatePublisher($p){
   *		If not, it will assume it is a journal abbreviation and won't capitalise after periods.
  */
 
-function niceTitle($in, $sents = true){
+function niceTitle($in, $sents = true) {
 	global $dontCap, $unCapped;
 	if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
 		$in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
@@ -1735,7 +1735,7 @@ function niceTitle($in, $sents = true){
   $in = str_ireplace(" (New York, N.Y.)", "", $in); // Pubmed likes to include this after "Science", for some reason
   $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
 	if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
-		$newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
+    $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
 					preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
 	            '$matches',
 	            'return mb_strtolower($matches[0]);'
@@ -1750,8 +1750,8 @@ function niceTitle($in, $sents = true){
 	            'return mb_strtolower($matches[0]);'
 	        ), trim(($captIn))));
 	}
-  $newcase = preg_replace_callback("~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen. ?no?v?|sp. ?no?v?|no?v?. ?sp|no?v?. ?gen)[\.,\s]*)+)~ui", create_function('$matches',
-          'return "\'\'{$matches[\'taxon\']}\'\' " . strtolower($matches["nova"]);'), $newcase);
+  $newcase = preg_replace_callback("~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui", create_function('$matches',
+          'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'), $newcase);
   // Use 'straight quotes' per WP:MOS
   $newcase = straighten_quotes($newcase);
   if (in_array(" " . trim($newcase) . " ", $unCapped)) {

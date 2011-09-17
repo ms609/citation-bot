@@ -80,20 +80,18 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
-    
+
+    die (expand_text("IOtalics?
+      
+{{cite journal |author=Lafforgue P 
+|title=A case of Maria Maria N. Sp. in Toronto, Ontario
+|journal=Joint Bone Spine |volume=73 |issue=5 |pages=500–8
+
+"));
     
 die (expand_text("
- Invalid deletion of ref content
- <ref name=\"Constitutions2\"/>
- <ref name=\"Constitutions2\"/>
- <ref name=\"Constitutions8\"/>
-{{reflist | refs = 
-*<ref name=\"Constitutions2\">{{cite book|author=Joseph Kasparek-Obst|title=The constitutions of Poland and of the United States: kinships and genealogy|url=http://books.google.com/books?id=nu-CQgAACAAJ|accessdate=6 July 2011|date=1 June 1980|publisher=American Institute of Polish Culture|isbn=9781881284093|page=42}}</ref>
-*<ref name=\"Constitutions2\">{{cite book|au=Joseph Kasparek-Obst|title=The constitutions of Poland and of the United States: kinships and genealogy|url=http://books.google.com/books?id=nu-CQgAACAAJ|accessdate=6 July 2011|date=1 June 1980|publisher=American Institute of Polish Culture|isbn=9781881284093|page=42}}</ref>
-
-*<ref name=\"Constitutions8\">{{cite book|author=Joseph Kasparek-Obst|title=The constitutions of Poland and of the United States: kinships and genealogy|url=http://books.google.com/books?id=nu-CQgAACAAJ|accessdate=6 July 2011|date=1 June 1980|publisher=American Institute of Polish Culture|isbn=9781881284093|page=42}}</ref>
-  
-}}
+  Does not expand
+{{Cite journal | jstor = 4494763}}
 
 
     

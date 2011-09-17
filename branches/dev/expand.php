@@ -830,6 +830,7 @@ echo "
 // We have now recovered all possible information from CrossRef.
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
         echo "\n5: Formatting and other tweaks";
+        print "Journal in: {$p['journal'][0]}";
         if ($editing_cite_doi_template || preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
           echo "\n   First: Cite Doi formatting";
 
