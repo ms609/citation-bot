@@ -673,10 +673,10 @@ function tidy_citation() {
     $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
   }
 
+  // Don't add ISSN if there's a journal name
+  if (is('journal') && !isset($pStart['issn'][0])) unset($p['issn']);
   // Remove publisher if [cite journal/doc] warrants it
-  if (is($p["journal"]) && (is("doi") || is("issn"))) {
-    unset($p["publisher"]);
-  }
+  if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
 
   if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
     $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
