@@ -1453,7 +1453,7 @@ function file_size($url, $redirects = 0){
 }
 
 function deWikify($string){
-	return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
+	return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
 function findDoi($url){
