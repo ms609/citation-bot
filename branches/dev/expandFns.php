@@ -1192,6 +1192,12 @@ function if_null_set($param, $value) {
         return true;
       }
       break;
+    case 'chapter': case 'contribution':
+      if (trim($p["chapter"][0]) == "" && trim($p["contribution"][0]) == "" && trim($value) != "") {
+        set($param, $value);
+        return true;
+      }
+      break;
     case "page": case "pages":
       if (( trim($p["pages"][0]) == ""
               && trim($p["page"][0]) == ""

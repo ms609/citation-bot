@@ -1,9 +1,7 @@
 #!/usr/bin/php
 <?      
 // $Id$
-
 #$abort_mysql_connection = true; // Whilst there's a problem with login
-
 
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
@@ -83,15 +81,6 @@ if ($argument["pages"]) {
   } else {
 
     
-    
-    
-die (expand_text(" Removes references that it shouldn't.
-  
-
-
-    
-
-"));
     
     
 die (expand_text("
