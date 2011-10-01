@@ -172,7 +172,8 @@ function expand_text ($original_code,
     ob_start();
   } 
   
-  
+  // Are multiple authors suppressed by 'display_authors'?
+  $display_authors = preg_match('~\|\s*display_authors\s*=~', $original_code);
   // Which template family is dominant?
   if (!$editing_cite_doi_template) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $original_code, $cite_x);
@@ -406,7 +407,7 @@ function expand_text ($original_code,
         set('doi', $match[1]);
       }
       
-      handle_et_al();
+      if ($display_authors) handle_et_al();
       useUnusedData();
       id_to_parameters();
 
@@ -605,7 +606,7 @@ echo "
 //
 ###########################
 
-        handle_et_al();
+        if ($display_authors) handle_et_al();
 
         $journal = is("periodical") ? "periodical" : "journal";
         // See if we can use any of the parameters lacking equals signs:
