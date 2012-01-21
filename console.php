@@ -1,9 +1,7 @@
 #!/usr/bin/php
 <?      
 // $Id$
-
 #$abort_mysql_connection = true; // Whilst there's a problem with login
-
 
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
@@ -22,7 +20,7 @@ foreach ($argv as $arg) {
 }
 
 error_reporting(E_ALL^E_NOTICE);
-$slowMode = $argument["slow"] || $argument["slowmode"] || $argument["thorough"];
+$slow_mode = ($argument["slow"] || $argument["slowmode"] || $argument["thorough"]) ? true : false;
 $accountSuffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
@@ -68,6 +66,7 @@ die();
 */
 ###########
 
+
 if ($argument["pages"]) {
   foreach ($argument["pages"] as $page) {
     expand($page, $ON);
@@ -80,18 +79,34 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
+   
+
+die(expand_text("
+  More title tampering
+{cite journal |author=Fazilleau et al. |title=Follicular helper T cells: lineage and location |journal=Immunity |volume=30 |issue=3 |pages=324–35 |year=2009 |month=March |pmid=19303387 |doi=10.1016/j.immuni.2009.03.003 
+|last2=Mark |first2=L |last3=McHeyzer-Williams |first3=LJ |last4=McHeyzer-Williams |first4=MG |pmc=2731675}}</ref>.
+"));
+
+die(expand_text("
+
+  Does not expand.  This appears to be a (long-term) problem with the JSTOR API.
+{{Cite journal | jstor = 4494763}}
+
+
+    
+
+"));
     
 die (expand_text('
-  [Insert text here]
 
+Reference renaming:
 
+{{ref doi|10.1016/S0016-6995(97)80056-3}}
 
+.<ref name="Wilby1997">{{cite doi|10.1016/S0016-6995(97)80056-3 }}</ref>
 
-    
 
 '));
-    
-
     
 /*/
 // For version 3:
