@@ -166,8 +166,7 @@ function expand_text ($original_code,
         ) {
   global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy,
           $authors_missing,
-          $edit_summary_end,  $slowMode, $html_output;
-
+          $edit_summary_end, $slow_mode, $html_output;
   if ($html_output === -1) {
     ob_start();
   } 
@@ -919,9 +918,9 @@ echo "
       }
 
       // Check that the DOI functions.
-      if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slowMode) {
+      if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slow_mode) {
         echo "\nChecking that DOI {$p["doi"][0]} is operational...";
-        $brokenDoi = isDoiBroken($p["doi"][0], $p, $slowMode);
+        $brokenDoi = isDoiBroken($p["doi"][0], $p, $slow_mode);
         if ($brokenDoi && !is("doi_brokendate") && !is("doi_inactivedate")) {
           set("doi_inactivedate", date("Y-m-d"));
           echo "\n\n $doi \n\n";

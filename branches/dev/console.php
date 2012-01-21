@@ -20,7 +20,7 @@ foreach ($argv as $arg) {
 }
 
 error_reporting(E_ALL^E_NOTICE);
-$slowMode = $argument["slow"] || $argument["slowmode"] || $argument["thorough"];
+$slow_mode = ($argument["slow"] || $argument["slowmode"] || $argument["thorough"]) ? true : false;
 $accountSuffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
@@ -79,28 +79,25 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
-      
-    die (expand_text("
-        
+      $slow_mode = true;
+    die (expand_text('
+Odd metadata from AdsAbs      
 
-Refs being deleted:
-
-Ref 1<ref name=Greenwood/>
-
-==Structure==
-Ref 2 <ref name=str/>
-Refb.<ref name=str2/>
-
-==References==
-{{reflist|refs=
-<ref name=Greenwood>Content of greenwood</ref>
-
-<ref name=str>content of str1</ref>
-
-<ref name=str2>Content of deleted ref</ref>
-}}
-
-"));
+      {{Citation
+       | url = http://adsabs.harvard.edu/abs/1941QB68.M6........
+ | year = 1940
+ | last1 = Moore
+ | first1 = Joseph Haines;
+ | authorlink1 = Joseph Haines Moore
+ | last2 = Mayall
+ | first2 = Nicholas U.
+ | last3 = Chappell
+ | first3 = James F.
+ | authorlink3 = James F. Chappell
+ | title = Astronomical Photographs Taken at the Lick Observatory
+ | location = Mount Hamilton: Lick Observatory
+ }}
+'));
 die(expand_text("
   Does not expand.  This appears to be a (long-term) problem with the JSTOR API.
 {{Cite journal | jstor = 4494763}}

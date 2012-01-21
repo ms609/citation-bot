@@ -86,7 +86,7 @@ $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 ini_set("memory_limit", "256M");
 
 $fastMode = $_REQUEST["fast"];
-$slowMode = $_REQUEST["slow"];
+$slow_mode = $_REQUEST["slow"];
 $user = $_REQUEST["user"];
 $bugFix = $_REQUEST["bugfix"];
 $crossRefOnly = $_REQUEST["crossrefonly"] ? true : $_REQUEST["turbo"];
@@ -721,7 +721,7 @@ function replace_comments($text, $comments, $placeholder = "") {
 
 // This function may need to be called twice; the second pass will combine <ref name="Name" /> with <ref name=Name />.
 function combine_duplicate_references($page_code) {
-  $original_page_code = $page_code;
+  
   $original_encoding = mb_detect_encoding($page_code);
   $page_code = mb_convert_encoding($page_code, "UTF-8");
   
@@ -735,7 +735,6 @@ function combine_duplicate_references($page_code) {
   if (preg_match(reflist_regexp, $page_code, $match)) {
     if (preg_match_all('~(?P<ref1><ref\s+name\s*=\s*(?<quote1>["\']?+)(?P<name>[^>]+)(?P=quote1)(?:\s[^>]+)?\s*>[\p{L}\P{L}]+</\s*ref>)'
             . '[\p{L}\P{L}]+(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?+)(?P=name)\b(?P=quote2)[\p{L}\P{L}]+</\s*ref>)~iuU', $match[1], $duplicates)) {
-      print_r($duplicates); die("\n --. \n");
       foreach ($duplicates['ref2'] as $i => $to_delete) {
         if ($to_delete == $duplicates['ref1'][$i]) {
           $mb_start = mb_strpos($page_code, $to_delete) + mb_strlen($to_delete);
@@ -749,7 +748,7 @@ function combine_duplicate_references($page_code) {
   }
   
   // Now look at the rest of the page:
-  preg_match_all("~<ref\s*name\s*=\s*[\"']?([^\"'>]+)[\"']?\s*/>~", $page_code, $empty_refs);
+  preg_match_all("~<ref\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*/>~", $page_code, $empty_refs);
   // match 1 = ref names
   if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
                   . "(([^<]|<(?![Rr]ef))+?)</ref>~i", $page_code, $refs)) {
@@ -765,11 +764,12 @@ function combine_duplicate_references($page_code) {
         $full_original[] = ">" . $refs[4][$key] . "<"; // be careful; I hope that this is specific enough.
         $duplicate_content[] = ">" . $this_ref . "<";
       }
+      print_r($duplicate_content); print_r($full_original);
       $page_code = str_replace($duplicate_content, $full_original, $page_code);
     }
   } else {
     // no matches, return input
-    print "\n - No references found.";
+    echo "\n - No references found.";
     return mb_convert_encoding(replace_comments($page_code, $removed_comments, 'sr'), $original_encoding);
   }
 
@@ -1175,7 +1175,7 @@ function if_null_set($param, $value) {
       }
       break;
     case "date":
-      if (preg_match("~^\d{4}$~", trim($value))) {
+      if (preg_match("~^\d{4}$~", sanitize_string($value))) {
         // Not adding any date data beyond the year, so 'year' parameter is more suitable
         $param = "year";
       }
@@ -1191,7 +1191,7 @@ function if_null_set($param, $value) {
       break;
     case "periodical": case "journal":
       if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($value) != "") {
-        set($param, $value);
+        set($param, sanitize_string($value));
         return true;
       }
       break;
@@ -1213,23 +1213,30 @@ function if_null_set($param, $value) {
                 && !strpos($p['pages'][0], '-')
                 && !strpos($p['pages'][0], '&ndash;'))
       ) {
-        set($param, $value);
+        set($param, sanitize_string($value));
         return true;
       }
       break;
     case 'title': 
       if (trim($p[$param][0]) == "" && trim($value) != "") {
-        set($param, formatTitle($value));
+        set($param, formatTitle(sanitize_string($value)));
         return true;
       }
       break;
     default: 
       if (trim($p[$param][0]) == "" && trim($value) != "") {
-        set($param, $value);
+        set($param, sanitize_string($value));
         return true;
       }
   }
   return false;
+}
+
+function sanitize_string($str) {
+  // ought only be applied to newly-found data.
+  $dirty = array ('[', ']');
+  $clean = array ('&#92;', '&#93;');
+  return trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
 }
 
 function set($key, $value) {
