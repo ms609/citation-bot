@@ -734,7 +734,8 @@ function combine_duplicate_references($page_code) {
   // Before we start with the page code, find and combine references in the reflist section that have the same name
   if (preg_match(reflist_regexp, $page_code, $match)) {
     if (preg_match_all('~(?P<ref1><ref\s+name\s*=\s*(?<quote1>["\']?+)(?P<name>[^>]+)(?P=quote1)(?:\s[^>]+)?\s*>[\p{L}\P{L}]+</\s*ref>)'
-            . '[\p{L}\P{L}]+(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?+)(?P=name)(?P=quote2)[\p{L}\P{L}]+</\s*ref>)~iuU', $match[1], $duplicates)) {
+            . '[\p{L}\P{L}]+(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?+)(?P=name)\b(?P=quote2)[\p{L}\P{L}]+</\s*ref>)~iuU', $match[1], $duplicates)) {
+      print_r($duplicates); die("\n --. \n");
       foreach ($duplicates['ref2'] as $i => $to_delete) {
         if ($to_delete == $duplicates['ref1'][$i]) {
           $mb_start = mb_strpos($page_code, $to_delete) + mb_strlen($to_delete);

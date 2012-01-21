@@ -101,7 +101,7 @@ Refb.<ref name=str2/>
 }}
 
 "));
-die(("
+die(expand_text("
   Does not expand.  This appears to be a (long-term) problem with the JSTOR API.
 {{Cite journal | jstor = 4494763}}
 
