@@ -103,7 +103,7 @@ function expand($page, // Title of WP page
   $edit_summary = $editInitiator . $auto_summary . $edit_summary_end;
   
   if ($commit_edits) {
-    if (strpos($page, "andbox") > 1) {
+    if (false /*todo remove false */ && strpos($page, "andbox") > 1) {
        echo $html_output?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title="
            . urlencode($page) . "\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title="
            . urlencode($page) . "&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
