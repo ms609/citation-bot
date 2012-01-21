@@ -38,6 +38,10 @@ function wikititle_encode($in) {
   return str_replace($dotDecode, $dotEncode, $in);
 }
 
+function anchorencode($in) {
+  return wikititle_encode(preg_replace('~<[^>]*>~', '', $in));
+}
+
 function getLastRev($page){
   $xml = load_xml_via_bot(Array(
       "action" => "query",

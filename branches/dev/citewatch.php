@@ -11,11 +11,11 @@ $editInitiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
 
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");
-$dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")", "_");
+$dotDecode = array("/"  , "["  , "{"  , "}"  , "]"  , "<"  , ">"  , ";"  , "("  , ")"  , "_");
 
 echo "\n Retrieving category members: ";
-$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
-#$toDo = array("User:DOI bot/Zandbox");
+#$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+$toDo = array("User:DOI bot/Zandbox");
 
 shuffle($toDo);
 $space = (array_keys($toDo, " "));
@@ -48,19 +48,22 @@ function create_page ($type, $id, $bonus_ids) {
     case "doi":
       if (!get_data_from_doi($id, true) && substr($id, 0, 8) == "10.2307/") {
         // Invalid DOI generated from 10.2307/JSTORID.  Just use JSTOR parameter
-        $encoded_id = str_replace($dotDecode, $dotEncode, $id);
+        $encoded_id = anchorencode($id);
         $type = 'jstor';
         $template = 'Cite doi';
         $id = substr($id, 8);
       } else {
-        $encoded_id = str_replace($dotDecode, $dotEncode, $id);
+        $encoded_id = anchorencode($id);
       }
     break;
     default:
       $encoded_id = $id;
   }
 
+  
   // Don't go creating a page that already exists.
+  print "\nTemplate:Cite $type/$encoded_id\n";
+  print (getArticleId("Template:Cite $type/$encoded_id"));
   if (getArticleId("Template:Cite $type/$encoded_id")) return false;
 
   foreach ($bonus_ids as $key => $value) {
@@ -127,7 +130,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         $pmid_page = "Template:Cite pmid/$pmid_from_pmc";
         if ($doi_from_pmc) {
           // redirect to a Cite Doi page, to avoid duplication
-          $encoded_doi = str_replace($dotDecode, $dotEncode, $doi_from_pmc);
+          $encoded_doi = anchorencode($doi_from_pmc);
           print "\n  > Creating page at Template:Cite doi/$encoded_doi...";
           if (create_page("doi", $doi_from_pmc, array ("pmid" => $pmid_from_pmc, "pmc" => $oPmc))) {
             print "\n  > Now redirecting PMC $oPmc to $encoded_doi";
@@ -173,7 +176,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         if (preg_match("~/(10\..*)]]~", str_replace($dotEncode, $dotDecode, $pmc_page_text), $redirect_target_doi)) {
           print "Redirects to ";
           // Check that destination page exists
-          if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, trim($redirect_target_doi[1])))) {
+          if (getArticleId("Template:Cite doi/" . anchorencode(trim($redirect_target_doi[1])))) {
          -   log_citation("pmc", $oPmc, $redirect_target_doi[1]);
             print $redirect_target_doi[1] . ".";
           } else {
@@ -210,7 +213,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
         $doi_from_pmid = $pubmed_result["doi"];
         if ($doi_from_pmid) {
           // redirect to a Cite Doi page, to avoid duplication
-          $encoded_doi = str_replace($dotDecode, $dotEncode, $doi_from_pmid);
+          $encoded_doi = anchorencode($doi_from_pmid);
           print "Creating new page at DOI $doi_from_pmid";
           if (create_page("doi", $doi_from_pmid, array("pmid" => $oPmid))) {
             print "\n    Created. \n  > Redirecting PMID $oPmid to $encoded_doi";
@@ -218,7 +221,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
                 ? " : Done."
                 : " : ERROR\n\n > Write failed!\n";
           } else {
-            print "\n Could not create doi target page.  Hmmph.";
+            print "\n Could not create doi target page.";
           }
         } else {
           print "No DOI found!";
@@ -240,7 +243,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
               str_replace($dotEncode, $dotDecode, getRawWikiText($pmid_page)), $redirect_target_doi)) {
           print "Redirects to ";
           // Check that destination page exists
-          if (getArticleId("Template:Cite doi/" . str_replace($dotDecode, $dotEncode, trim($redirect_target_doi[1])))) {
+          if (getArticleId("Template:Cite doi/" . anchorencode(trim($redirect_target_doi[1])))) {
             log_citation("pmid", $oPmid, $redirect_target_doi[1]);
             print $redirect_target_doi[1] . ".";
           } else {
@@ -272,12 +275,13 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
           echo ' [$ON = false; won\'t write]';
       }
     }
-    $doi_citation_exists = doi_citation_exists($oDoi);
-    if ($doi_citation_exists) {
+    $doi_citation_exists = doi_citation_exists($oDoi); // Checks in our database
+    if (false && $doi_citation_exists) {
       if ($doi_citation_exists > 1) {
         log_citation("doi", $oDoi);
       }
       echo ".";
+      print $oDoi;
     } else {
       echo "\n   > Creating new page at DOI $oDoi: ";
       if (get_data_from_doi($oDoi, true) || substr(trim($oDoi), 0, 8) == '10.2307/') {
