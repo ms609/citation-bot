@@ -4,7 +4,7 @@ define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 define("api", "http://en.wikipedia.org/w/api.php");
 if ($linkto2) echo "\n// included DOItools2 & initialised \$bot\n";
 define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
-define("timelimit", $fastMode?4:($slowMode?15:10));
+define("timelimit", $fastMode?4:($slow_mode?15:10));
 define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
 define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
 
@@ -98,7 +98,7 @@ function revisionID() {
     $svnid = '$Rev$';
     $scid = substr($svnid, 6);
     $thisRevId = intval(substr($scid, 0, strlen($scid) - 2));
-    return $thisRevId;
+    return expandFnsRevId() > $thisRefId ? expandFnsRevId() : $thisRevId;
     $repos_handle = svn_repos_open('~/citation-bot');
     return svn_fs_youngest_rev($repos_handle);
 }
@@ -114,7 +114,7 @@ function is($key){
 
 function dbg($array, $key = false) {
 if(myIP())
-	echo "<pre>" . str_replace("<", "&lt;", $key?print_r(array($key=>$array),1):print_r($array,1)), "</pre>";
+	echo "<pre>" . str_replace("<", "&lt;", $key ? print_r(array($key=>$array),1) : print_r($array,1)), "</pre>";
 else echo "<p>Debug mode active</p>";
 }
 
@@ -187,8 +187,8 @@ function get_data_from_pubmed($identifier = "pmid") {
       // PMC search is limited but will at least return a PMID.
       get_data_from_pubmed('pmid');
     } else if ($identifier == 'pmc' && $key == 'title') {
-      set ('title', $value); // Sometimes necessary in cite webs
       // this will only be called with $identifier=pmc if a PMC id has just been discovered in a fragmentary citation.
+      if_null_set ('title', $value); // According to a previous comment, it may sometimes be necessary to forcedly set the title in cite webs.  I've not implemented this; I'll wait to see whether it causes problems.
     }
   }
   if (false && !is("url")) { // TODO:  BUGGY - CHECK PMID DATABASES, and see other occurrence above
@@ -218,9 +218,8 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
           $jstor_redirect = $p["doi"][0];
           }
         unset ($p["doi"][0]);
-        preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
         $crossRef = crossRefDoi($p["title"][0], $p["journal"][0], is("author1")?$p["author1"][0]:$p["author"][0]
-                               , $p["year"][0], $p["volume"][0], $pagenos[1], $pagenos[3], $p["issn"][0], null);
+                               , $p["year"][0], $p["volume"][0], get_first_page($p), get_last_page($p), $p["issn"][0], null);
       }
     } else {
       echo "not found in JSTOR?";
@@ -540,22 +539,27 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
   global $priorP;
   $input = array($title, $journal, $author, $year, $volume, $startpage, $endpage, $issn, $url1);
   if ($input == $priorP['crossref']) {
-    echo "\n - Data not changed since last CrossRef search.";
+    echo "\n   * Data not changed since last CrossRef search.";
     return false;
   } else {
     $priorP['crossref'] = $input;
     global $crossRefId;
     if ($journal || $issn) {
-      $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
-      if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
-      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
-      if ($author) $url .= "&auauthor=" . urlencode($author);
-      if ($year) $url .= "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year));
-      if ($volume) $url .= "&volume=" . urlencode($volume);
-      if ($startpage) $url .= "&spage=" . urlencode($startpage);
-      if ($endpage > $startpage) $url .= "&epage=" . urlencode($endpage);
-      if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef. ";
-      if ($result["status"] == "resolved") {
+      $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
+           . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
+           . ($author ? "&aulast=" . urlencode($author) : '')
+           . ($startpage ? "&spage=" . urlencode($startpage) : '')
+           . ($endpage > $startpage ? "&epage=" . urlencode($endpage) : '')
+           . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')
+           . ($volume ? "&volume=" . urlencode($volume) : '')
+           . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(deWikify($journal)) : ''));
+      if (!($result = @simplexml_load_file($url)->query_result->body->query)){
+        echo "\n   * Error loading simpleXML file from CrossRef.";
+      }
+      else if ($result['status'] == 'malformed') {
+        echo "\n   * Cannot search CrossRef: " . $result->msg;
+      }
+      else if ($result["status"] == "resolved") {
         return $result;
       }
     }
@@ -576,8 +580,15 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
     if ($year) $url .= "&date=" . urlencode($year);
     if ($volume) $url .= "&volume=" . urlencode($volume);
     if ($startpage) $url .= "&spage=" . urlencode($startpage);
-    if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef.";
-    if ($result["status"]=="resolved") {echo " Successful! - $url; -"; return $result;}
+    if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
+      echo "\n   * Error loading simpleXML file from CrossRef.";
+    }
+    else if ($result['status'] == 'malformed') {
+      echo "\n   * Cannot search CrossRef: " . $result->msg;
+    } else if ($result["status"]=="resolved") {
+      echo " Successful!"; 
+      return $result;
+    }
   }
 }
 
@@ -681,8 +692,8 @@ function searchForPmid() {
         // PMID search succeeded but didn't throw up a new DOI.  Try CrossRef again.
         echo "\n - Looking for DOI in CrossRef database with new information ... ";
         $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
-                                trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
-                                $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+                                get_first_author($p), trim($p["year"][0]), trim($p["volume"][0]),
+                                get_first_page($p), get_last_page($p), trim($p["issn"][0]), trim($p["url"][0]));
         if ($crossRef) {
           $p["doi"][0] = $crossRef->doi;
           echo "Match found: " . $p["doi"][0];
@@ -1442,7 +1453,7 @@ function file_size($url, $redirects = 0){
 }
 
 function deWikify($string){
-	return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
+	return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
 function findDoi($url){
@@ -1716,7 +1727,7 @@ function truncatePublisher($p){
   *		If not, it will assume it is a journal abbreviation and won't capitalise after periods.
  */
 
-function niceTitle($in, $sents = true){
+function niceTitle($in, $sents = true) {
 	global $dontCap, $unCapped;
 	if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
 		$in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
@@ -1724,7 +1735,7 @@ function niceTitle($in, $sents = true){
   $in = str_ireplace(" (New York, N.Y.)", "", $in); // Pubmed likes to include this after "Science", for some reason
   $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
 	if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
-		$newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
+    $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
 					preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
 	            '$matches',
 	            'return mb_strtolower($matches[0]);'
@@ -1739,8 +1750,8 @@ function niceTitle($in, $sents = true){
 	            'return mb_strtolower($matches[0]);'
 	        ), trim(($captIn))));
 	}
-  $newcase = preg_replace_callback("~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen. ?no?v?|sp. ?no?v?|no?v?. ?sp|no?v?. ?gen)[\.,\s]*)+)~ui", create_function('$matches',
-          'return "\'\'{$matches[\'taxon\']}\'\' " . strtolower($matches["nova"]);'), $newcase);
+  $newcase = preg_replace_callback("~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui", create_function('$matches',
+          'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'), $newcase);
   // Use 'straight quotes' per WP:MOS
   $newcase = straighten_quotes($newcase);
   if (in_array(" " . trim($newcase) . " ", $unCapped)) {

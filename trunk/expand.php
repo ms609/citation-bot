@@ -22,7 +22,7 @@ function expand($page, // Title of WP page
   }
   echo "\nRevision #$last_revision_id";
 
-  echo $html_output > 0 ? ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/$page' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($page)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=".urlencode($page)."&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s"));
+  echo $html_output > 0 ? ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/' " . addslashes($page) . "' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". addslashes(urlencode($page))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . addslashes(urlencode($page)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($page)) ."'\";</script>"):("\n\n\n*** Processing page '$page' : " . date("H:i:s"));
 
   $bot->fetch(wikiroot . "title=" . urlencode($page) . "&action=raw");
   $original_code = $bot->results;
@@ -103,7 +103,7 @@ function expand($page, // Title of WP page
   $edit_summary = $editInitiator . $auto_summary . $edit_summary_end;
   
   if ($commit_edits) {
-    if (strpos($page, "andbox") > 1) {
+    if (false /*todo remove false */ && strpos($page, "andbox") > 1) {
        echo $html_output?"<br><i style='color:red'>Writing to <a href=\"http://en.wikipedia.org/w/index.php?title="
            . urlencode($page) . "\">$page</a> <small><a href=http://en.wikipedia.org/w/index.php?title="
            . urlencode($page) . "&action=history>history</a></small></i>\n\n</br><br>":"\n*** Writing to $page";
@@ -166,13 +166,13 @@ function expand_text ($original_code,
         ) {
   global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy,
           $authors_missing,
-          $edit_summary_end,  $slowMode, $html_output;
-
+          $edit_summary_end, $slow_mode, $html_output;
   if ($html_output === -1) {
     ob_start();
   } 
   
-  
+  // Are multiple authors suppressed by 'display_authors'?
+  $display_authors = preg_match('~\|\s*display_authors\s*=~', $original_code);
   // Which template family is dominant?
   if (!$editing_cite_doi_template) {
     preg_match_all("~\{\{\s*[Cc]ite[ _](\w+)~", $original_code, $cite_x);
@@ -219,7 +219,7 @@ function expand_text ($original_code,
   }
 ###################################  Cite web ######################################
   // Convert Cite webs to Cite arXivs, etc, if necessary
-  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[wW]eb(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+  if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?(?:[Nn]ews|[wW]eb)(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) {//Number of brackets in cite arXiv regexp + 1
@@ -241,15 +241,11 @@ function expand_text ($original_code,
         $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
       }
 
-      echo "\n* Cite web: {$p["title"][0]}";
+      echo "\n* Cite web / news: {$p["title"][0]}";
 
       // Fix typos in parameter names
       //Authors
       if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
-      preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
-
       // Delete any parameters >10, which won't be displayed anyway
       for ($au_i = 10; isset($p["last$au_i"]) || isset($p["author$au_i"]); $au_i++) {
         unset($p["last$au_i"]);
@@ -263,7 +259,7 @@ function expand_text ($original_code,
       tidy_citation();
 
       // Now: Citation bot task 5.  If there's a journal parameter switch the citation to 'cite journal'.
-      $change_to_journal = is('journal') || is('bibcode');
+      $change_to_journal = is('journal') || is('bibcode') || is('jstor');
       $change_to_arxiv = is('arxiv');
       if (($change_to_arxiv || $change_to_journal) && is('eprint')) {
         rename_parameter('eprint', 'arxiv');
@@ -280,7 +276,7 @@ function expand_text ($original_code,
               ?"Changing to Cite Journal. "
               :($change_to_arxiv
                 ?"Changing to Arxiv. "
-                :"Keeping as cite web. ")
+                :"Not changint citation template. ")
               ) . "\n";
       $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["changes"], if 'set' hasn't got them already
       $last_p = $p;
@@ -322,9 +318,6 @@ function expand_text ($original_code,
       // Fix typos in parameter names
       //Authors
       if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
-      preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
 
       // Delete any parameters >10, which won't be displayed anyway
       for ($au_i = 10; isset($p["last$au_i"]) || isset($p["author$au_i"]); $au_i++) {
@@ -413,7 +406,7 @@ function expand_text ($original_code,
         set('doi', $match[1]);
       }
       
-      handle_et_al();
+      if ($display_authors) handle_et_al();
       useUnusedData();
       id_to_parameters();
 
@@ -444,18 +437,11 @@ function expand_text ($original_code,
         unset ($p["doi"]);
       }
 
-      //page nos
-      preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
-
       //Authors
       if (isset($p["authors"]) && !isset($p["author"][0])) {
         $p["author"] = $p["authors"];
         unset($p["authors"]);
       }
-      preg_match("~[^.,;\s]{2,}~", $p["author"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last"][0], $firstauthor);
-      if (!$firstauthor[0]) preg_match("~[^.,;\s]{2,}~", $p["last1"][0], $firstauthor);
-
       // Is there already a date parameter?
       $dateToStartWith = (isset($p["date"][0]) && !isset($p["year"][0]));
 
@@ -619,7 +605,7 @@ echo "
 //
 ###########################
 
-        handle_et_al();
+        if ($display_authors) handle_et_al();
 
         $journal = is("periodical") ? "periodical" : "journal";
         // See if we can use any of the parameters lacking equals signs:
@@ -703,9 +689,6 @@ echo "
           unset($p["pmpmid"]);
         }
 
-        //pages
-        preg_match("~(\w?\w?\d+\w?\w?)(\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
-
         //Authors
         // Move authors -> author
         if (isset($p["authors"]) && !isset($p["author"][0])) {
@@ -743,36 +726,46 @@ echo "
 
 #####################################
 //
+     
         
 if (is('doi')) {
-if (!nothingMissing($journal)) {
-  expand_from_crossref($crossRef);
-}
-echo "
-2: DOI already present";
-// TODO: Use DOI to expand citation
+  if (!nothingMissing($journal)) {
+    expand_from_crossref($crossRef);
+  }
+  echo "
+  2: DOI already present";
+  // TODO: Use DOI to expand citation
 } else {
 echo "
 2: Find DOI";
 //  Now we have got the citation ship-shape, let's try to find a DOI.
 //
 #####################################
-
-          
+      
+          // First, expand citation by any available means.
           // Try AdsAbs
           if ($slow_mode || is('bibcode')) {
-            echo "\n - Checking AdsAbs database";
+            echo "\n - Checking AdsAbs database [expand/expand_text]";
             get_data_from_adsabs();
           } else {
              echo "\n - Skipping AdsAbs database: not in slow mode.";
           }
           
+          // Expand from JSTOR
+          if (!isset($p["doi"][0])) {
+            if (is("jstor")) {
+              echo "\n - Checking JSTOR database [expand/expand_text]";
+              get_data_from_jstor("10.2307/" . $p["jstor"][0]);
+            }
+          }
+          
+          // We should now have enough information to find a DOI through CrossRef
           if (!$p["doi"][0]) {
-            //Try CrossRef
+            //Ask CrossRef for a DOI
             echo "\n - Checking CrossRef database... ";
             $crossRef = crossRefDoi(trim($p["title"][0]), trim($p[$journal][0]),
-                                    trim($firstauthor[0]), trim($p["year"][0]), trim($p["volume"][0]),
-                                    $pagenos[1], $pagenos[3], trim($p["issn"][0]), trim($p["url"][0]));
+                                    get_first_author($p), trim($p["year"][0]), trim($p["volume"][0]),
+                                    get_first_page($p), get_last_page($p), trim($p["issn"][0]), trim($p["url"][0]));
             if ($crossRef) {
               $p["doi"][0] = $crossRef->doi;
               echo "Match found: " . $p["doi"][0];
@@ -780,44 +773,29 @@ echo "
               echo "no match.";
             }
           }
-
-
-          //Try URL param
+          
+          // If that didn't work, we can try scraping a DOI from the URL.  Meta tags are usually our best bet here, see findDoi().
           if (!isset($p["doi"][0])) {
-            if (is("jstor")) {
-              echo "\n - Checking JSTOR database";
-              if (get_data_from_jstor("10.2307/" . $p["jstor"][0])) {
+            if (strpos($p["url"][0], "http://") !== false) {
+              if (substr(preg_replace("~<!--.*-->~", "", $p["url"][0]), -4) == ".pdf") {
                 echo $html_output
-                      ? "\n - Got data from JSTOR.<br />"
-                      : "\n - Got data from JSTOR.";
+                      ? ("\n - Avoiding <a href=\"" . $p["url"][0] . "\">PDF URL</a>. <br>")
+                      : "\n - Avoiding PDF URL {$p["url"][0]}";
+              } else {
+                //Try using URL parameter
+                echo $html_output
+                      ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
+                      : "\n - Trying URL {$p["url"][0]}";
+                $doi = findDoi(preg_replace("~<!--.*-->~", "", $p["url"][0]));
+                if ($doi) {
+                  echo " found doi $doi";
+                  $p["doi"][0] = $doi;
+                } else {
+                  echo " no doi found.";
+                }
               }
             } else {
-              if (strpos($p["url"][0], "http://") !== false) {
-                if (preg_match("~jstor\D+(\d+)\D*$~i", $p['url'][0], $jid)) {
-                  echo $html_output
-                        ? ("\n - Getting data from <a href=\"" . $p["url"][0] . "\">JSTOR record</a>.")
-                        : "\n - Querying JSTOR record from URL " . $jid[0];
-                  get_data_from_jstor("10.2307/$jid[1]");
-                } elseif (substr(preg_replace("~<!--.*-->~", "", $p["url"][0]), -4) == ".pdf") {
-                  echo $html_output
-                        ? ("\n - Avoiding <a href=\"" . $p["url"][0] . "\">PDF URL</a>. <br>")
-                        : "\n - Avoiding PDF URL {$p["url"][0]}";
-                } else {
-                  //Try using URL parameter
-                  echo $html_output
-                        ? ("\n - Trying <a href=\"" . $p["url"][0] . "\">URL</a>. <br>")
-                        : "\n - Trying URL {$p["url"][0]}";
-                  $doi = findDoi(preg_replace("~<!--.*-->~", "", $p["url"][0]));
-                  if ($doi) {
-                    echo " found doi $doi";
-                    $p["doi"][0] = $doi;
-                  } else {
-                    echo " no doi found.";
-                  }
-                }
-              } else {
-                echo "No valid URL specified.  ";
-              }
+              echo "No valid URL specified.  ";
             }
           }
         }
@@ -834,6 +812,9 @@ echo "
         }
         if (!nothingMissing($journal) && is('pmid')) {
           get_data_from_pubmed();
+        }
+        if (!nothingMissing($journal) && is('pmc')) {
+          get_data_from_pubmed('pmc');
         }
 
 #####################################
@@ -854,17 +835,6 @@ echo "
         echo "\n5: Formatting and other tweaks";
         if ($editing_cite_doi_template || preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
           echo "\n   First: Cite Doi formatting";
-          // Get the surname of the first author. (We [apparently] found this earlier, but it might have changed since then)
-          preg_match("~[^.,;\s]{2,}~u", $p["author"][0], $firstauthor);
-          if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~u", $p["author1"][0], $firstauthor);
-          }
-          if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~u", $p["last"][0], $firstauthor);
-          }
-          if (!$firstauthor[0]) {
-            preg_match("~[^.,;\s]{2,}~u", $p["last1"][0], $firstauthor);
-          }
 
           // If we only have the first author, look for more!
           if (!is('coauthors')
@@ -873,7 +843,7 @@ echo "
                && is('doi')
             ) {
             echo "\n - Looking for co-authors & page numbers...";
-            $moreAuthors = findMoreAuthors($p['doi'][0], $firstauthor[0], $p['pages'][0]);
+            $moreAuthors = findMoreAuthors($p['doi'][0], get_first_author($p), $p['pages'][0]);
             $count_new_authors = count($moreAuthors['authors']);
             if ($count_new_authors) {
               echo " Found more authors! ";
@@ -948,9 +918,9 @@ echo "
       }
 
       // Check that the DOI functions.
-      if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slowMode) {
+      if (trim($p["doi"][0]) != "" && trim($p["doi"][0]) != "|" && $slow_mode) {
         echo "\nChecking that DOI {$p["doi"][0]} is operational...";
-        $brokenDoi = isDoiBroken($p["doi"][0], $p, $slowMode);
+        $brokenDoi = isDoiBroken($p["doi"][0], $p, $slow_mode);
         if ($brokenDoi && !is("doi_brokendate") && !is("doi_inactivedate")) {
           set("doi_inactivedate", date("Y-m-d"));
           echo "\n\n $doi \n\n";
@@ -1067,19 +1037,19 @@ echo "
       . ($html_output ? htmlentities(mb_convert_encoding($new_code, "UTF-8")) : $new_code)
       . "</textarea><!--DONE!-->\n\n\n<p><b>Bot switched off</b> &rArr; no edit made to"
               . " $page.<br><b>Changes:</b> <i>$auto_summary</i></p>";
-      if ($editing_cite_doi_template && strtolower(substr(trim($new_code), 0, 5)) != "{{cit") {
+      if ($editing_cite_doi_template && strtolower(substr(trim($new_code), 0, 2)) != "{{") {
         if (substr($new_code, 0, 15) == "HTTP/1.0 200 OK") {
           echo "Headers included in pagecode; removing...\n";
           $new_code = preg_replace("~$[\s\S]+\{\{~", "{{", $new_code);
         } else {
           mail ("MartinS+citewatch@gmail.com"
                 , "Citewatch ERROR"
-                , "Output does not begin with {{Cit, but [" . strtolower(substr(trim($new_code), 0, 5)) . "]
+                , "Output does not begin with {{, but [" . strtolower(substr(trim($new_code), 0, 25)) . "]
                 . \n\n[Page = $page]\n[SmartSum = $auto_summary ]\n[\$citation = ". print_r($citation, 1)
                 . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n [p = "
                 . print_r($p,1)
                 . "] \n[pagecode =$new_code]\n\n[freshcode =$cite_doi_start_code]\n\n> Error message generated by expand.php.");
-          exit ("$new_code"); // make the next if an elseif if you remove this, and think of some way of the above line not skipping the elseif
+          return false; // This might cause errors; I previously just exited here.
         }
       }
       if ($commit_edits) {
