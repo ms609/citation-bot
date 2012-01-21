@@ -276,7 +276,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
       }
     }
     $doi_citation_exists = doi_citation_exists($oDoi); // Checks in our database
-    if (false && $doi_citation_exists) {
+    if ($doi_citation_exists) {
       if ($doi_citation_exists > 1) {
         log_citation("doi", $oDoi);
       }

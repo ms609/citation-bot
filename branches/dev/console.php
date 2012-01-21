@@ -79,26 +79,16 @@ if ($argument["pages"]) {
     $page = nextPage($page);
     echo " done. ";
   } else {
-      $slow_mode = true;
-    die (expand_text('
-Odd metadata from AdsAbs      
+   
 
-      {{Citation
-       | url = http://adsabs.harvard.edu/abs/1941QB68.M6........
- | year = 1940
- | last1 = Moore
- | first1 = Joseph Haines;
- | authorlink1 = Joseph Haines Moore
- | last2 = Mayall
- | first2 = Nicholas U.
- | last3 = Chappell
- | first3 = James F.
- | authorlink3 = James F. Chappell
- | title = Astronomical Photographs Taken at the Lick Observatory
- | location = Mount Hamilton: Lick Observatory
- }}
-'));
 die(expand_text("
+  More title tampering
+{cite journal |author=Fazilleau et al. |title=Follicular helper T cells: lineage and location |journal=Immunity |volume=30 |issue=3 |pages=324–35 |year=2009 |month=March |pmid=19303387 |doi=10.1016/j.immuni.2009.03.003 
+|last2=Mark |first2=L |last3=McHeyzer-Williams |first3=LJ |last4=McHeyzer-Williams |first4=MG |pmc=2731675}}</ref>.
+"));
+
+die(expand_text("
+
   Does not expand.  This appears to be a (long-term) problem with the JSTOR API.
 {{Cite journal | jstor = 4494763}}
 
@@ -107,7 +97,16 @@ die(expand_text("
 
 "));
     
+die (expand_text('
 
+Reference renaming:
+
+{{ref doi|10.1016/S0016-6995(97)80056-3}}
+
+.<ref name="Wilby1997">{{cite doi|10.1016/S0016-6995(97)80056-3 }}</ref>
+
+
+'));
     
 /*/
 // For version 3:

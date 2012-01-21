@@ -187,8 +187,8 @@ function get_data_from_pubmed($identifier = "pmid") {
       // PMC search is limited but will at least return a PMID.
       get_data_from_pubmed('pmid');
     } else if ($identifier == 'pmc' && $key == 'title') {
-      set ('title', $value); // Sometimes necessary in cite webs
       // this will only be called with $identifier=pmc if a PMC id has just been discovered in a fragmentary citation.
+      if_null_set ('title', $value); // According to a previous comment, it may sometimes be necessary to forcedly set the title in cite webs.  I've not implemented this; I'll wait to see whether it causes problems.
     }
   }
   if (false && !is("url")) { // TODO:  BUGGY - CHECK PMID DATABASES, and see other occurrence above
