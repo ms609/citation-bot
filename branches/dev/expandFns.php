@@ -873,7 +873,8 @@ function ref_templates($page_code, $type) {
     echo "  Converted {{ref $type}}.";
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
-
+    $trimmed_id = trim_identifier($ref_id);
+    
     if (!getArticleId("Template:cite $type/" . wikititle_encode($ref_id))) {
       $citation_code = create_cite_template($type, $ref_id);
       $template = extract_parameters(extract_template($citation_code, "cite journal"));
@@ -886,9 +887,20 @@ function ref_templates($page_code, $type) {
     $ref_content = "<ref name=\"$replacement_template_name\">"
             . $ref_template
             . "</ref>";
-    $page_code = str_replace($ref_template, str_ireplace("ref $type", "cite $type", $ref_content), $page_code);
+    $page_code = str_replace($ref_template,
+                    str_ireplace("ref $type", "cite $type",
+                        str_replace($ref_id, $trimmed_id, $ref_content)
+                    ), $page_code);
   }
   return $page_code;
+}
+
+function trim_identifier($id) {
+    $cruft = "[\.,;:><\s]*";
+    print $id;
+    preg_match("~^$cruft(?:d?o?i?:)?\s*(.*?)$cruft$~", $id, $match);
+    print_r($match);
+    return $match[1];
 }
 
 function name_references($page_code) {
