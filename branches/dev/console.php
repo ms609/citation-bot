@@ -84,6 +84,9 @@ if ($argument["pages"]) {
     
     
 die (expand_text("
+    
+{{cite journal | url = http://links.jstor.org/sici?sici=0008-4239(197412)7%3A4%3C738%3ASELRAT%3E2.0.CO%3B2-7 }}
+
   Does not expand.  This appears to be a (long-term) problem with the JSTOR API.
 {{Cite journal | jstor = 4494763}}
 

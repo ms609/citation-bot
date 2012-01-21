@@ -28,29 +28,17 @@ function quiet_echo($text) {
     echo $text;
 }
 
-quiet_echo(" \n Getting login details ... ");
 require_once("/home/verisimilus/public_html/Bot/DOI_bot/doiBot$linkto2.login");
-quiet_echo(" done.");
 # Snoopy should be set so the host name is en.wikipedia.org.
 includeIfNew('Snoopy.class');
 includeIfNew("wikiFunctions");
 includeIfNew("DOItools");
 require_once("expand.php");
-#includeIfNew("expand_it");
 if (!$abort_mysql_connection) {
-  quiet_echo("\n Initializing MYSQL database ... ");
   require_once("/home/verisimilus/public_html/res/mysql_connect.php");
   //$db = udbconnect("yarrow");
-  quiet_echo(" loaded connect script.  Will connect when necessary.");
 }
-if (!true && !myIP()) {
-  echo "Sorry, the Citation bot is temporarily unavilable while bugs are fixed.  Please try back later.";
-  exit;
-}
-
-quiet_echo("\n Initializing ...  ");
 require_once("/home/verisimilus/public_html/crossref.login");
-quiet_echo("...");
 $crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
 $bot = new Snoopy();
@@ -629,7 +617,7 @@ function get_identifiers_from_url() {
 }
 
 function url2template($url, $citation) {
-  if (preg_match("~jstor\.org/.*[/=](\d+)~", $url, $match)) {
+  if (preg_match("~jstor\.org/(?!sici).*[/=](\d+)~", $url, $match)) {
     return "{{Cite doi | 10.2307/$match[1] }}";
   } else if (preg_match("~//dx\.doi\.org/(.+)$~", $url, $match)) {
     return "{{Cite doi | " . urldecode($match[1]) . " }}";
