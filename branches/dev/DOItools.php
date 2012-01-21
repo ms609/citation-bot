@@ -547,7 +547,7 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
     if ($journal || $issn) {
       $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
            . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
-           . ($author ? "&auauthor=" . urlencode($author) : '')
+           . ($author ? "&aulast=" . urlencode($author) : '')
            . ($startpage ? "&spage=" . urlencode($startpage) : '')
            . ($endpage > $startpage ? "&epage=" . urlencode($endpage) : '')
            . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')

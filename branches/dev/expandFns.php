@@ -1073,27 +1073,29 @@ function authorify($author) {
 }
 
 function get_first_author($p) {
-  // Get the surname of the first author. (We [apparently] found this earlier, but it might have changed since then)
+  // Fetch the surname of the first author only
   preg_match("~[^.,;\s]{2,}~u", implode(' ', 
           array($p["author"][0], $p["author1"][0], $p["last"][0], $p["last1"][0]))
           , $first_author);
   return $first_author[0];
 }
 
-function get_first_page ($p) {
-  preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
+function get_first_page ($p) { //i.e. start page
+  $page_parameter = $p["pages"][0] ? $p["pages"][0] : $p["page"][0];
+  preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $page_parameter, $pagenos);
   return $pagenos[1];
 }
 
 function get_last_page ($p) {
-  preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $p["pages"][0], $pagenos);
+  $page_parameter = $p["pages"][0] ? $p["pages"][0] : $p["page"][0];
+  preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $page_parameter, $pagenos);
   return $pagenos[2];  
 }
 
-function ifNullSet($a, $b, $DEPRECATED = TRUE) {
+/*function ifNullSet($a, $b, $DEPRECATED = TRUE) {
   print "\n\n Call to deprecated function ifNullSet in expandFns.php";
   if_null_set($a, $b);
-}
+}*/
 
 function if_null_set($param, $value) {
   global $p;

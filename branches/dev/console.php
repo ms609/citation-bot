@@ -81,6 +81,14 @@ if ($argument["pages"]) {
   } else {
       
     die (expand_text("
+        
+
+:Also: this citation should be expanded with a DOI: 
+{{cite journal | last1=Kroger|first1=B.
+|year= 2007|title=Early orthoceratoid cephalopods from the Argentine
+Precordillera| journal=Journal of Palaeontology
+| volume=81 | issue=6 | page=1266-1283}}
+
 
   Does not expand.  This appears to be a (long-term) problem with the JSTOR API.
 {{Cite journal | jstor = 4494763}}
