@@ -83,13 +83,25 @@ if ($argument["pages"]) {
     die (expand_text("
         
 
-:Also: this citation should be expanded with a DOI: 
-{{cite journal | last1=Kroger|first1=B.
-|year= 2007|title=Early orthoceratoid cephalopods from the Argentine
-Precordillera| journal=Journal of Palaeontology
-| volume=81 | issue=6 | page=1266-1283}}
+Refs being deleted:
 
+Ref 1<ref name=Greenwood/>
 
+==Structure==
+Ref 2 <ref name=str/>
+Refb.<ref name=str2/>
+
+==References==
+{{reflist|refs=
+<ref name=Greenwood>Content of greenwood</ref>
+
+<ref name=str>content of str1</ref>
+
+<ref name=str2>Content of deleted ref</ref>
+}}
+
+"));
+die(("
   Does not expand.  This appears to be a (long-term) problem with the JSTOR API.
 {{Cite journal | jstor = 4494763}}
 
