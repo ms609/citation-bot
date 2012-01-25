@@ -605,7 +605,7 @@ function get_identifiers_from_url() {
     } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
       rename_parameter('url', 'pmid', $match[1]);
       get_data_from_pubmed('pmid');
-    } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url, $match)) {
+    } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+X?)~", $url, $match)) {
       if ($match['domain'] == ".com") {
         rename_parameter('url', 'asin', $match['id']);
       } else {
@@ -622,7 +622,7 @@ function url2template($url, $citation) {
     return "{{Cite doi | 10.2307/$match[1] }}";
   } else if (preg_match("~//dx\.doi\.org/(.+)$~", $url, $match)) {
     return "{{Cite doi | " . urldecode($match[1]) . " }}";
-  } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+)~", $url, $match)) {
+  } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+X?)~", $url, $match)) {
     return ($match['domain'] == ".com") ? "{{ASIN | {$match['id']} }}" : " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
   } else if (preg_match("~^http://books\.google(?:\.\w{2,3}\b)+/~", $url, $match)) {
     return "{{" . ($citation ? 'Cite book' : 'Cite journal') . ' | url = ' . $url . '}}'; 
