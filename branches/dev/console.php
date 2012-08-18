@@ -83,8 +83,10 @@ if ($argument["pages"]) {
     
     die (expand_text("
       
-{{cite arxiv|eprint=0912.3202|title=The HARPS search for southern extra-solar planets? XX. Planets around the active star BD -08 2823
-|author=Hebrard ''et al.''|journal=[[Astronomy & Astrophysics]]|year=2009}}
+{{cite journal | volume = test | pages = C-12}}
+{{cite journal | volume = test | pages = 9-12}}
+{{cite journal | volume = test | pages = 9a-12b}}
+{{cite journal | volume = test | pages = e9-e12}}
 
 "));
 // die (expand_text("JSTOR lookup failure: {{Cite journal | jstor = 1303024}}")); - JSTOR API down
