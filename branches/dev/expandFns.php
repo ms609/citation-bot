@@ -650,7 +650,7 @@ function tidy_citation() {
   }
   foreach (array("pages", "page", "issue", "year") as $oParameter) {
     if (is($oParameter)) {
-      if (!preg_match("~^\w*\-~", $p[$oParameter][0]) 
+      if (!preg_match("~^[A-Za-z ]+\-~", $p[$oParameter][0]) 
               && mb_ereg(to_en_dash, $p[$oParameter][0])) {
         $modifications["dashes"] = true;
         echo ( "\n - Upgrading to en-dash in $oParameter");

@@ -86,7 +86,7 @@ if ($argument["pages"]) {
 {{cite journal | volume = test | pages = C-12}}
 {{cite journal | volume = test | pages = 9-12}}
 {{cite journal | volume = test | pages = 9a-12b}}
-{{cite journal | volume = test | pages = e9-e12}}
+{{cite journal | volume = test | pages = e9-e12b}}
 
 "));
 // die (expand_text("JSTOR lookup failure: {{Cite journal | jstor = 1303024}}")); - JSTOR API down
