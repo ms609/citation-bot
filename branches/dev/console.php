@@ -80,7 +80,15 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
    
+    
+    die (expand_text("
+      
+{{cite arxiv|eprint=0912.3202|title=The HARPS search for southern extra-solar planets? XX. Planets around the active star BD -08 2823
+|author=Hebrard ''et al.''|journal=[[Astronomy & Astrophysics]]|year=2009}}
 
+"));
+// die (expand_text("JSTOR lookup failure: {{Cite journal | jstor = 1303024}}")); - JSTOR API down
+    
 die(expand_text("
   More title tampering
 {cite journal |author=Fazilleau et al. |title=Follicular helper T cells: lineage and location |journal=Immunity |volume=30 |issue=3 |pages=324–35 |year=2009 |month=March |pmid=19303387 |doi=10.1016/j.immuni.2009.03.003 

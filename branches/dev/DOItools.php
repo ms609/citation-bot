@@ -134,6 +134,7 @@ function myIP() {
   * Return true if 0 or 1 author in $author; false otherwise
  */
 function underTwoAuthors($author) {
+  $author = str_replace(array (" '", "et al"), "", $author);
   $chars = count_chars(trim($author));
   if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 2 || $chars[ord(",")] > 1) {
     return false;
@@ -415,8 +416,8 @@ function get_data_from_arxiv($a) {
 			$i++;
       if ($i < 10) {
         $name = $auth->name;
-        if (preg_match("~(.+\.)(.+?)$~", $name, $names)){
-          if_null_set("author$i", $names[2]);
+        if (preg_match("~(.+\.)(.+?)$~", $name, $names)) {
+          if_null_set("last$i", $names[2]); // I previously had "author$i", which prevented "first$i" from being null-set
           if_null_set("first$i", $names[1]);
           // If there's a newline before the forename,, remove it so it displays alongside the surname.
           if (strpos($p["first$i"], "\n" !== false)) {
