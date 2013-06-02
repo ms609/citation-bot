@@ -1,4 +1,4 @@
-<?
+f<?
 $bot = new Snoopy();
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 define("api", "http://en.wikipedia.org/w/api.php");
@@ -20,6 +20,96 @@ function list_parameters () { // Lists the parameters in order.
      "author7", "last7", "first7", "authorlink7", "author7-link",
      "author8", "last8", "first8", "authorlink8", "author8-link",
      "author9", "last9", "first9", "authorlink9", "author9-link",
+     "author10", "last10", "first10", "authorlink10", "author10-link",
+     "author11", "last11", "first11", "authorlink11", "author11-link",
+     "author12", "last12", "first12", "authorlink12", "author12-link",
+     "author13", "last13", "first13", "authorlink13", "author13-link",
+     "author14", "last14", "first14", "authorlink14", "author14-link",
+     "author15", "last15", "first15", "authorlink15", "author15-link",
+     "author16", "last16", "first16", "authorlink16", "author16-link",
+     "author17", "last17", "first17", "authorlink17", "author17-link",
+     "author18", "last18", "first18", "authorlink18", "author18-link",
+     "author19", "last19", "first19", "authorlink19", "author19-link",
+     "author20", "last20", "first20", "authorlink20", "author20-link",
+     "author21", "last21", "first21", "authorlink21", "author21-link",
+     "author22", "last22", "first22", "authorlink22", "author22-link",
+     "author23", "last23", "first23", "authorlink23", "author23-link",
+     "author24", "last24", "first24", "authorlink24", "author24-link",
+     "author25", "last25", "first25", "authorlink25", "author25-link",
+     "author26", "last26", "first26", "authorlink26", "author26-link",
+     "author27", "last27", "first27", "authorlink27", "author27-link",
+     "author28", "last28", "first28", "authorlink28", "author28-link",
+     "author29", "last29", "first29", "authorlink29", "author29-link",
+     "author30", "last30", "first30", "authorlink30", "author30-link",
+     "author31", "last31", "first31", "authorlink31", "author31-link",
+     "author32", "last32", "first32", "authorlink32", "author32-link",
+     "author33", "last33", "first33", "authorlink33", "author33-link",
+     "author34", "last34", "first34", "authorlink34", "author34-link",
+     "author35", "last35", "first35", "authorlink35", "author35-link",
+     "author36", "last36", "first36", "authorlink36", "author36-link",
+     "author37", "last37", "first37", "authorlink37", "author37-link",
+     "author38", "last38", "first38", "authorlink38", "author38-link",
+     "author39", "last39", "first39", "authorlink39", "author39-link",
+     "author40", "last40", "first40", "authorlink40", "author40-link",
+     "author41", "last41", "first41", "authorlink41", "author41-link",
+     "author42", "last42", "first42", "authorlink42", "author42-link",
+     "author43", "last43", "first43", "authorlink43", "author43-link",
+     "author44", "last44", "first44", "authorlink44", "author44-link",
+     "author45", "last45", "first45", "authorlink45", "author45-link",
+     "author46", "last46", "first46", "authorlink46", "author46-link",
+     "author47", "last47", "first47", "authorlink47", "author47-link",
+     "author48", "last48", "first48", "authorlink48", "author48-link",
+     "author49", "last49", "first49", "authorlink49", "author49-link",
+     "author50", "last50", "first50", "authorlink50", "author50-link",
+     "author51", "last51", "first51", "authorlink51", "author51-link",
+     "author52", "last52", "first52", "authorlink52", "author52-link",
+     "author53", "last53", "first53", "authorlink53", "author53-link",
+     "author54", "last54", "first54", "authorlink54", "author54-link",
+     "author55", "last55", "first55", "authorlink55", "author55-link",
+     "author56", "last56", "first56", "authorlink56", "author56-link",
+     "author57", "last57", "first57", "authorlink57", "author57-link",
+     "author58", "last58", "first58", "authorlink58", "author58-link",
+     "author59", "last59", "first59", "authorlink59", "author59-link",
+     "author60", "last60", "first60", "authorlink60", "author60-link",
+     "author61", "last61", "first61", "authorlink61", "author61-link",
+     "author62", "last62", "first62", "authorlink62", "author62-link",
+     "author63", "last63", "first63", "authorlink63", "author63-link",
+     "author64", "last64", "first64", "authorlink64", "author64-link",
+     "author65", "last65", "first65", "authorlink65", "author65-link",
+     "author66", "last66", "first66", "authorlink66", "author66-link",
+     "author67", "last67", "first67", "authorlink67", "author67-link",
+     "author68", "last68", "first68", "authorlink68", "author68-link",
+     "author69", "last69", "first69", "authorlink69", "author69-link",
+     "author70", "last70", "first70", "authorlink70", "author70-link",
+     "author71", "last71", "first71", "authorlink71", "author71-link",
+     "author72", "last72", "first72", "authorlink72", "author72-link",
+     "author73", "last73", "first73", "authorlink73", "author73-link",
+     "author74", "last74", "first74", "authorlink74", "author74-link",
+     "author75", "last75", "first75", "authorlink75", "author75-link",
+     "author76", "last76", "first76", "authorlink76", "author76-link",
+     "author77", "last77", "first77", "authorlink77", "author77-link",
+     "author78", "last78", "first78", "authorlink78", "author78-link",
+     "author79", "last79", "first79", "authorlink79", "author79-link",
+     "author80", "last80", "first80", "authorlink80", "author80-link",
+     "author81", "last81", "first81", "authorlink81", "author81-link",
+     "author82", "last82", "first82", "authorlink82", "author82-link",
+     "author83", "last83", "first83", "authorlink83", "author83-link",
+     "author84", "last84", "first84", "authorlink84", "author84-link",
+     "author85", "last85", "first85", "authorlink85", "author85-link",
+     "author86", "last86", "first86", "authorlink86", "author86-link",
+     "author87", "last87", "first87", "authorlink87", "author87-link",
+     "author88", "last88", "first88", "authorlink88", "author88-link",
+     "author89", "last89", "first89", "authorlink89", "author89-link",
+     "author90", "last90", "first90", "authorlink90", "author90-link",
+     "author91", "last91", "first91", "authorlink91", "author91-link",
+     "author92", "last92", "first92", "authorlink92", "author92-link",
+     "author93", "last93", "first93", "authorlink93", "author93-link",
+     "author94", "last94", "first94", "authorlink94", "author94-link",
+     "author95", "last95", "first95", "authorlink95", "author95-link",
+     "author96", "last96", "first96", "authorlink96", "author96-link",
+     "author97", "last97", "first97", "authorlink97", "author97-link",
+     "author98", "last98", "first98", "authorlink98", "author98-link",
+     "author99", "last99", "first99", "authorlink99", "author99-link",
      "editor", "editor1",
      "editor-last", "editor1-last",
      "editor-first", "editor1-first",
@@ -134,6 +224,7 @@ function myIP() {
   * Return true if 0 or 1 author in $author; false otherwise
  */
 function underTwoAuthors($author) {
+  $author = str_replace(array (" '", "et al"), "", $author);
   $chars = count_chars(trim($author));
   if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 2 || $chars[ord(",")] > 1) {
     return false;
@@ -256,10 +347,8 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
           }
         } else {
           ++$au_i;
-          if ($au_i < 10) {
-            if_null_set("last$au_i", formatSurname($author->surname));
-            if_null_set("first$au_i", formatForename($author->given_name));
-          }
+          if_null_set("last$au_i", formatSurname($author->surname));
+          if_null_set("first$au_i", formatForename($author->given_name));
         }
       }
     }
@@ -413,20 +502,19 @@ function get_data_from_arxiv($a) {
 		global $p;
 		foreach ($xml->entry->author as $auth) {
 			$i++;
-      if ($i < 10) {
-        $name = $auth->name;
-        if (preg_match("~(.+\.)(.+?)$~", $name, $names)){
-          if_null_set("author$i", $names[2]);
-          if_null_set("first$i", $names[1]);
-          // If there's a newline before the forename,, remove it so it displays alongside the surname.
-          if (strpos($p["first$i"], "\n" !== false)) {
-            $p["first$i"][1] = " | ";
-          }
-        }
-        elseif (trim($p['author'][0]) == "") {
-            if_null_set("author$i", $name);
+      $name = $auth->name;
+      if (preg_match("~(.+\.)(.+?)$~", $name, $names)) {
+        if_null_set("last$i", $names[2]); // I previously had "author$i", which prevented "first$i" from being null-set
+        if_null_set("first$i", $names[1]);
+        // If there's a newline before the forename,, remove it so it displays alongside the surname.
+        if (strpos($p["first$i"], "\n" !== false)) {
+          $p["first$i"][1] = " | ";
         }
       }
+      elseif (trim($p['author'][0]) == "") {
+          if_null_set("author$i", $name);
+      }
+      
 		}
     if_null_set("title", (string)$xml->entry->title);
 		if_null_set("class", (string)$xml->entry->category["term"]);
@@ -2049,7 +2137,7 @@ function citeDoiOutputFormat() {
   }
 
   // Cycle through authors
-  for ($i = null; $i < 10; $i++) {
+  for ($i = null; $i < 100; $i++) {
     if (strpos($p["author$i"][0], ', ')) {
       // $au is an array with two parameters: the surname [0] and forename [1].
       $au = explode(', ', $p["author$i"][0]);
