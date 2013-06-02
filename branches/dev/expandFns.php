@@ -1234,6 +1234,16 @@ function if_null_set($param, $value) {
       break;
     case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
     case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9":
+    case "author10": case "author20": case "author30": case "author40": case "author50": case "author60": case "author70": case "author80": case "author90":
+    case "author11": case "author21": case "author31": case "author41": case "author51": case "author61": case "author71": case "author81": case "author91": 
+    case "author12": case "author22": case "author32": case "author42": case "author52": case "author62": case "author72": case "author82": case "author92": 
+    case "author13": case "author23": case "author33": case "author43": case "author53": case "author63": case "author73": case "author83": case "author93": 
+    case "author14": case "author24": case "author34": case "author44": case "author54": case "author64": case "author74": case "author84": case "author94": 
+    case "author15": case "author25": case "author35": case "author45": case "author55": case "author65": case "author75": case "author85": case "author95": 
+    case "author16": case "author26": case "author36": case "author46": case "author56": case "author66": case "author76": case "author86": case "author96": 
+    case "author17": case "author27": case "author37": case "author47": case "author57": case "author67": case "author77": case "author87": case "author97": 
+    case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98": 
+    case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99": 
       $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
       if (strpos($value, ',')) {
         $au = explode(',', $value);
