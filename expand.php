@@ -212,8 +212,9 @@ function expand_text ($original_code,
   }
   echo "\n * Tidying reference tags... ";
   $new_code = rename_references(named_refs_in_reflist(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc")))));
-  if (mb_ereg("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", $new_code)) {
-    $new_code = mb_ereg_replace("p(p|ages)([\t ]*=[\t ]*[0-9A-Z]+)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])", "p\\1\\2" . en_dash . "\\4", $new_code);
+  $pageDash_ereg = "p(p|ages)([\t ]*=[\t ]*[0-9a-Z]*[0-9][a-Z]*)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])";
+  if (mb_ereg($pageDash_ereg, $new_code)) {
+    $new_code = mb_ereg_replace($pageDash_ereg, "p\\1\\2" . en_dash . "\\4", $new_code);
     $modifications["dashes"] = true;
     echo "\n - Converted dashes in all page parameters to en-dashes.";
   }
@@ -726,7 +727,6 @@ echo "
 
 #####################################
 //
-     
         
 if (is('doi')) {
   if (!nothingMissing($journal)) {
@@ -866,7 +866,7 @@ echo "
               echo " Completed page range! (" . $p['pages'][0]  . ')';
             }
           }
-          for ($i = 1; $i < 9; $i ++) {
+          for ($i = 1; $i < 100; $i ++) {
             foreach (array("author", "last", "first") as $param) {
               if (trim($p[$param . $i][0]) == "") {
                 unset ($p[$param . $i]);
@@ -902,19 +902,12 @@ echo "
       }
 
       // Check each author for embedded author links
-      for ($au_i = 1; $au_i < 10; $au_i++) {
+      for ($au_i = 1; $au_i < 100; $au_i++) {
         if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p["author$au_i"][0], $match)) {
           if_null_set("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
           set("author$au_i", $match[3]); // Replace author with unlinked version
           echo "Dissecting authorlink";
         }
-      }
-
-      // Unset authors above 'author9' - the template won't render them.
-      for ($au_i = 10; is("author$au_i") || is("last$au_i"); $au_i++){
-        unset($p["author$au_i"]);
-        unset($p["first$au_i"]);
-        unset($p["last$au_i"]);
       }
 
       // Check that the DOI functions.
