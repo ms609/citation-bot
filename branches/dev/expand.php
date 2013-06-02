@@ -727,7 +727,6 @@ echo "
 
 #####################################
 //
-     
         
 if (is('doi')) {
   if (!nothingMissing($journal)) {
@@ -867,7 +866,7 @@ echo "
               echo " Completed page range! (" . $p['pages'][0]  . ')';
             }
           }
-          for ($i = 1; $i < 9; $i ++) {
+          for ($i = 1; $i < 100; $i ++) {
             foreach (array("author", "last", "first") as $param) {
               if (trim($p[$param . $i][0]) == "") {
                 unset ($p[$param . $i]);
@@ -903,19 +902,12 @@ echo "
       }
 
       // Check each author for embedded author links
-      for ($au_i = 1; $au_i < 10; $au_i++) {
+      for ($au_i = 1; $au_i < 100; $au_i++) {
         if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p["author$au_i"][0], $match)) {
           if_null_set("authorlink$au_i", ucfirst($match[2]?$match[2]:$match[3]));
           set("author$au_i", $match[3]); // Replace author with unlinked version
           echo "Dissecting authorlink";
         }
-      }
-
-      // Unset authors above 'author9' - the template won't render them.
-      for ($au_i = 10; is("author$au_i") || is("last$au_i"); $au_i++){
-        unset($p["author$au_i"]);
-        unset($p["first$au_i"]);
-        unset($p["last$au_i"]);
       }
 
       // Check that the DOI functions.

@@ -347,10 +347,8 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
           }
         } else {
           ++$au_i;
-          if ($au_i < 10) {
-            if_null_set("last$au_i", formatSurname($author->surname));
-            if_null_set("first$au_i", formatForename($author->given_name));
-          }
+          if_null_set("last$au_i", formatSurname($author->surname));
+          if_null_set("first$au_i", formatForename($author->given_name));
         }
       }
     }
@@ -504,20 +502,19 @@ function get_data_from_arxiv($a) {
 		global $p;
 		foreach ($xml->entry->author as $auth) {
 			$i++;
-      if ($i < 10) {
-        $name = $auth->name;
-        if (preg_match("~(.+\.)(.+?)$~", $name, $names)) {
-          if_null_set("last$i", $names[2]); // I previously had "author$i", which prevented "first$i" from being null-set
-          if_null_set("first$i", $names[1]);
-          // If there's a newline before the forename,, remove it so it displays alongside the surname.
-          if (strpos($p["first$i"], "\n" !== false)) {
-            $p["first$i"][1] = " | ";
-          }
-        }
-        elseif (trim($p['author'][0]) == "") {
-            if_null_set("author$i", $name);
+      $name = $auth->name;
+      if (preg_match("~(.+\.)(.+?)$~", $name, $names)) {
+        if_null_set("last$i", $names[2]); // I previously had "author$i", which prevented "first$i" from being null-set
+        if_null_set("first$i", $names[1]);
+        // If there's a newline before the forename,, remove it so it displays alongside the surname.
+        if (strpos($p["first$i"], "\n" !== false)) {
+          $p["first$i"][1] = " | ";
         }
       }
+      elseif (trim($p['author'][0]) == "") {
+          if_null_set("author$i", $name);
+      }
+      
 		}
     if_null_set("title", (string)$xml->entry->title);
 		if_null_set("class", (string)$xml->entry->category["term"]);
@@ -2140,7 +2137,7 @@ function citeDoiOutputFormat() {
   }
 
   // Cycle through authors
-  for ($i = null; $i < 10; $i++) {
+  for ($i = null; $i < 100; $i++) {
     if (strpos($p["author$i"][0], ', ')) {
       // $au is an array with two parameters: the surname [0] and forename [1].
       $au = explode(', ', $p["author$i"][0]);
