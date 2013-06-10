@@ -277,7 +277,7 @@ function expand_text ($original_code,
               ?"Changing to Cite Journal. "
               :($change_to_arxiv
                 ?"Changing to Arxiv. "
-                :"Not changint citation template. ")
+                :"Not changing citation template. ")
               ) . "\n";
       $cText .= reassemble_citation($p); // This also populates $modifications["additions"] and $modifications["changes"], if 'set' hasn't got them already
       $last_p = $p;

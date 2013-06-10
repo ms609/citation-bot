@@ -1,4 +1,4 @@
-f<?
+<?
 $bot = new Snoopy();
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
 define("api", "http://en.wikipedia.org/w/api.php");
