@@ -84,18 +84,12 @@ if ($argument["pages"]) {
     */
 $problem_text =             <<<problemtxt
 
-{{Cite journal 
-| last1 = Needham | first1 = R. M. 
-| authorlink = Roger Needham
-| doi = 10.1098/rsbm.2002.0006 
-| title = [[Donald Davies|Donald Watts Davies]], C.B.E. 7 June 1924 - 28 May 2000 
-| journal = [[Biographical Memoirs of Fellows of the Royal Society]] 
-| volume = 48 
-| pages = 87 
-| year = 2002 
-| pmid =  
-| pmc = 
-}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
+<ref name="first look">{{cite news| url= http://www.comingsoon.net/news/movienews.php?id=53393 |
+ title=First Look at Angelina Jolie in Salt | work = ComingSoon.net | publisher= [[CraveOnline]] | 
+ date=March 3, 2009 | accessdate=January 27, 2010 | <!--| archiveurl=http://www.webcitation.org/5nospLAte | archivedate=February 25, 2010-->}}</ref>
+
+
+*
 
 
 problemtxt;

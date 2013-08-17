@@ -231,6 +231,14 @@ function write($page, $data, $edit_summary = "Bot edit") {
 }
 
 function parameters_from_citation($c) {
+  // Comments
+  global $comments, $comment_placeholders;
+  $i = 0;
+  while(preg_match("~<!--.*?-->~", $c, $match)) {
+    $comments[] = $match[0];
+    $comment_placeholders[] = sprintf(comment_placeholder, $i);
+    $c = str_replace($match[0], $comment_placeholders[$i++], $c);
+  }
   while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
     $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
   }
@@ -268,6 +276,7 @@ function parameters_from_citation($c) {
 }
 
 function reassemble_citation($p, $sort = false) {
+  global $comments, $comment_placeholders, $pStart, $modifications;
   // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
   foreach ($p as $oP) {
     $pipe = $oP[1] ? $oP[1] : null;
@@ -275,20 +284,18 @@ function reassemble_citation($p, $sort = false) {
     if ($pipe)
       break;
   }
-  if (!$pipe) {
-    $pipe = "\n | ";
-  }
-  if (!$equals) {
-    $equals = " = ";
-  }
-#  var_dump($pipe); var_dump($equals); var_dump(preg_replace("~[\r\n]+$~", "", $equals)); die();
+  if (!$pipe) $pipe = "\n | ";
+  if (!$equals) $equals = " = ";
   if ($sort) {
     echo "\n (sorting parameters)";
     uasort($p, "bubble_p");
   }
 
   foreach ($p as $param => $v) {
-    if ($param) {
+    $val = trim(str_replace($comment_placeholders, $comments, $v[0]));
+    if ($param == 'unused_data') {
+      $cText .= ($v[1] ? $v[1] : $pipe) . $val;
+    } elseif ($param) {
       $this_equals = ($v[2] ? $v[2] : $equals);
       if (trim($v[0]) && preg_match("~[\r\n]~", $this_equals)) {
         $this_equals = preg_replace("~[\r\n]+\s*$~", "", $this_equals);
@@ -299,14 +306,13 @@ function reassemble_citation($p, $sort = false) {
       $cText .= ( $v[1] ? $v[1] : $pipe)
               . $param
               . $this_equals
-              . str_replace(array(pipePlaceholder, "\r", "\n"), array("|", "", " "), trim($v[0]))
+              . str_replace(array(pipePlaceholder, "\r", "\n"), array("|", "", " "), $val)
               . $nline;
     }
     if (is($param)) {
       $pEnd[$param] = $v[0];
     }
   }
-  global $pStart, $modifications;
   if ($pEnd) {
     foreach ($pEnd as $param => $value) {
       if (!$pStart[$param]) {
@@ -694,7 +700,6 @@ function tidy_citation() {
     else {
       if (substr(trim($p["unused_data"][0]), 0, 1) == "|")
         $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-      echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
     }
   }
   if (is('accessdate') && !is('url')) {

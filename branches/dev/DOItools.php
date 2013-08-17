@@ -1865,15 +1865,15 @@ function findMoreAuthors($doi, $a1, $pages) {
 
   $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
 	$url = "http://dx.doi.org/$doi";
-	echo "\n -*Looking for more authors @ $url:";
-  echo "\n  - Using meta tags...";
+	echo "\n  * Looking for more authors @ $url:";
+  echo "\n   - Using meta tags...";
 
   $meta_tags = get_meta_tags($url);
   if ($meta_tags["citation_authors"]) {
     $return['authors'] = formatAuthors($meta_tags["citation_authors"], true);
   }
   if (!$return['pages'] && !$return['authors']) {
-    echo "\n  - Now scraping web-page.";
+    echo "\n   - Now scraping web-page.";
     //Initiate cURL resource
     $ch = curl_init();
     curlSetup($ch, $url);
@@ -1911,7 +1911,7 @@ function findMoreAuthors($doi, $a1, $pages) {
           $return['authors']=$authors[1];
         }
       }
-    } else echo "\n  x File size was too large. Abandoned.";
+    } else echo "\n   x File size was too large. Abandoned.";
   }
 	return $return;
 }
