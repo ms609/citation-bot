@@ -345,7 +345,7 @@ function expand_from_crossref ($crossRef, $editing_cite_doi_template, $silence =
             if_null_set("editor$ed_i-last", formatSurname($author->surname));
             if_null_set("editor$ed_i-first", formatForename($author->given_name));
           }
-        } else {
+        } elseif ($author['contributor_role'] == 'author') {
           ++$au_i;
           if_null_set("last$au_i", formatSurname($author->surname));
           if_null_set("first$au_i", formatForename($author->given_name));
@@ -1865,15 +1865,15 @@ function findMoreAuthors($doi, $a1, $pages) {
 
   $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
 	$url = "http://dx.doi.org/$doi";
-	echo "\n -*Looking for more authors @ $url:";
-  echo "\n  - Using meta tags...";
+	echo "\n  * Looking for more authors @ $url:";
+  echo "\n   - Using meta tags...";
 
   $meta_tags = get_meta_tags($url);
   if ($meta_tags["citation_authors"]) {
     $return['authors'] = formatAuthors($meta_tags["citation_authors"], true);
   }
   if (!$return['pages'] && !$return['authors']) {
-    echo "\n  - Now scraping web-page.";
+    echo "\n   - Now scraping web-page.";
     //Initiate cURL resource
     $ch = curl_init();
     curlSetup($ch, $url);
@@ -1897,11 +1897,11 @@ function findMoreAuthors($doi, $a1, $pages) {
       if (!$return['pages'] && preg_match("~^[\d\w]+$~", trim($pages), $page)) {
         // find an end page number first
         $firstPageForm = preg_replace('~d\?([^?]*)$~U', "d$1", preg_replace('~\d~', '\d?', preg_replace('~[a-z]~i', '[a-zA-Z]?', $page[0])));
-        echo "\n Searching for page number with form $firstPageForm:";
-        if (preg_match("~{$page[0]}\D{0,13}?($firstPageForm)~", trim($source), $pages)) { // 13 leaves enough to catch &nbsp;
+        #echo "\n Searching for page number with form $firstPageForm:";
+        if (preg_match("~{$page[0]}[^\d\w\.]{1,5}?(\d?$firstPageForm)~", trim($source), $pages)) { // 13 leaves enough to catch &nbsp;
           $return['pages'] = $page[0] . '-' . $pages[1];
-          echo "found range $page[0] to $pages[1]";
-        } else echo "not found.";
+         # echo " found range [$page[0] to $pages[1]]";
+        } #else echo " not found.";
       }
 
       // Authors
@@ -1909,11 +1909,9 @@ function findMoreAuthors($doi, $a1, $pages) {
         // Check dc.contributor, which isn't correctly handled by get_meta_tags
         if (preg_match_all("~\<meta name=\"dc.Contributor\" +content=\"([^\"]+)\"\>~U", $source, $authors)){
           $return['authors']=$authors[1];
-        } else {
-          echo "\nNo author specified";
         }
       }
-    } else echo "\nFile size was too large. Abandoned.";
+    } else echo "\n   x File size was too large. Abandoned.";
   }
 	return $return;
 }
@@ -2128,7 +2126,7 @@ function straighten_quotes($str) {
  * Requires the global $p
 **/
 function citeDoiOutputFormat() {
-  global $p;
+  global $p, $dotEncode, $dotDecode;
   unset ($p['']);
 
   // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
