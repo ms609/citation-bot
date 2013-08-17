@@ -1189,7 +1189,7 @@ function if_null_set($param, $value) {
   global $p;
   if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
     // The parameter is of 'first101' or 'last2000' format and adds nothing but clutter.
-    // My sense is that the automatic adding of >30 authors is likely to annoy editors!
+    // My sense is that the automatic adding of >30 authors is likely to annoy editors!  
     return false;
   }
   switch ($param) {
@@ -1263,10 +1263,10 @@ function if_null_set($param, $value) {
       $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
       if (strpos($value, ',')) {
         $au = explode(',', $value);
-        set('last' . substr($param, -1), formatSurname($au[0]));
-        if_null_set('first' . substr($param, -1), formatForename(trim($au[1])));
+        set('last' . $auNo, formatSurname($au[0]));
+        if_null_set('first' . $auNo, formatForename(trim($au[1])));
       }
-      if (trim($p["last" . substr($param, -1)][0]) == "" && trim($p["author" . substr($param, -1)][0]) == ""
+      if (trim($p["last$auNo"][0]) == "" && trim($p["author$auNo"][0]) == ""
               && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
               && underTwoAuthors($p['author'][0])) {
         set($param, $value);
