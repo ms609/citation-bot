@@ -889,9 +889,10 @@ function ref_templates($page_code, $type) {
     } else {
       $template = cite_template_contents($type, $ref_id);
     }
+    print_r($template);
+    $last = trim($template["last1"][0] . $template["last"][0]);
     $replacement_template_name = generate_template_name(
-            (trim($template["last1"][0]) != "")
-            ? trim($template["last1"][0]) . trim($template["year"][0]) : "ref_"
+            ($last != "") ? $last . trim($template["year"][0]) : "ref_"
             , $page_code);
     $ref_content = "<ref name=\"$replacement_template_name\">"
             . $ref_template
@@ -926,10 +927,9 @@ function name_references($page_code) {
 }
 
 function rename_references($page_code) {
-  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-Z])?(?P=quote)\s*>)"
+  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-zA-Z])?(?P=quote)\s*>)"
                   . "[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
     $countRefs = count($refs[0]);
-    print_r($refs);
     for ($i = 0; $i < $countRefs; ++$i) {
       $ref_name = get_name_for_reference($refs[0][$i], $page_code);
       if (substr($ref_name, 0, 4) != "ref_") {
@@ -940,6 +940,7 @@ function rename_references($page_code) {
       echo ".";
     }
   }
+  print "\n----\n";
   return $page_code;
 }
 
