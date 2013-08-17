@@ -26,7 +26,6 @@ include("expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
-#die (findISBN(""));
 
 function nextPage($page){
   // touch last page
@@ -46,25 +45,6 @@ function nextPage($page){
 	return $result[0];
 }
 $ON = $argument["on"];
-###########
-/*/
-/*
-foreach ($argument["pages"] as $page) {
-  $input[] = array("{{automatic taxobox$paras}}", $page);
-  $input[] = array("{{automatic taxobox/sandbox$paras}}", $page);
-};
-//$paras = "|fossil range = Cretaceous";
-
-foreach ($input as $code) {
-  $output = explode("NewPP limit report", parse_wikitext($code[0], $code[1]));
-  print "$code[0] @ $code[1] \n " . $output[1];
-}
-// Fossil range adds about 10,000 / 30,000 /. 10,000 to counts if it's set. "Cretaceous";
-// The fossil range template itself adds 8311 / 11600 / 1552
-
-die();
-*/
-###########
 
 
 if ($argument["pages"]) {

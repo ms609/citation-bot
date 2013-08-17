@@ -2128,7 +2128,7 @@ function straighten_quotes($str) {
  * Requires the global $p
 **/
 function citeDoiOutputFormat() {
-  global $p;
+  global $p, $dotEncode, $dotDecode;
   unset ($p['']);
 
   // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.

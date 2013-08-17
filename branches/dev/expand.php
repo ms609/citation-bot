@@ -157,6 +157,15 @@ function expand($page, // Title of WP page
   return $new_code;
 }
 
+
+
+
+
+
+
+
+
+
 // This function, given $original_code, returns the $text with any citation templates expanded as far as possible.
 
 function expand_text ($original_code,
@@ -166,6 +175,7 @@ function expand_text ($original_code,
         ) {
   global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy,
           $authors_missing,
+          $dotEncode, $dotDecode, $pcEncode, $pcDecode, 
           $edit_summary_end, $slow_mode, $html_output;
   if ($html_output === -1) {
     ob_start();
