@@ -84,23 +84,11 @@ if ($argument["pages"]) {
     */
 $problem_text =             <<<problemtxt
 
-{{Cite journal
-| last1 = Bartlett |first1 = J. K.
-| title = Analysis for nitrite by evolution of nitrogen: A general chemistry laboratory experiment 
-| doi = 10.1021/ed044p475 
-| journal = Journal of Chemical Education 
-| volume = 44 
-| issue = 8 
-| pages = 475 
-| year = 1967 
-| pmid =  
-| pmc = 
-| bibcode = 1967JChEd..44..475B
-}}
-
+ e been excluded up to 500 GeV.<ref>{{cite journal|title=Search for Supersymmetry at the LHC 
+ |author=CMS Collaboration|journal=Physical Review Letters|month=November|year=2011|
+ doi=10.1103/PhysRevLett.107.221804|last2=Khachatryan|first2=V.|last3=Sirunyan|first3=A.|last4=Tumasyan|first4=A.|last5=Adam|first5=W.|last6=Bergauer|first6=T.|last7=Dragicevic|first7=M.|last8=Erö|first8=J.|last9=Fabjan|first9=C.|volume=107|issue=22}}</ref> Searches are only applic
  
 problemtxt;
-
     
     die (expand_text(
             $problem_text, false, true
