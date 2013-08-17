@@ -41,28 +41,14 @@
           <div id="laden">
 						<form action="doibot.php" method=post>
 						<h3>Welcome to the Citation bot.</h3>
-						Enter the name of a page to fill in missing DOIs, and to complete other empty fields in {{cite journal}} templates.
+						Enter the name of a page to fill in missing DOIs, and to complete other empty fields in {{cite journal}} family templates.
 						<br><input name=page value=""><br>
-						<!--<br><input type=checkbox name=google>Use Google Search (Experimental)-->
-						<!--br><input type=checkbox name=yahoo checked>Use Yahoo! (Powered by Yahoo!): Search -->
-						<!--br><input type=checkbox name=scholar>Use Google Scholar (use sparingly)-->
-						<!--select name=depth>
-							<option value=1>1</option>
-							<option value=2>2</option>
-							<option value=3 selected>3</option>
-							<option value=4>4</option>
-							<option value=5>5</option>
-							<option value=6>6</option>
-						</select> results for DOIs.-->
 						<br><input type=checkbox name=slow checked>Thorough mode - a slower, but more exhaustive, search. Finds PMID parameters and flags "broken" DOIs.
-						<br><input type=checkbox name=fast >Fast mode - cuts a few corners, so may miss a few DOIs.
-						<br><input type=checkbox name=crossrefonly >Turbo mode.  Only checks the CrossRef database.
 						<br><input type=checkbox name=edit checked>Commit edits.  Leave blank to check Wikicode.
 						<br><br>Please enter your Wikipedia username below before submitting your query.<br><input name=user value=""> 
 						<br><br><input type=submit>
 						<br>
 						<br>Maintained by <a href="http://en.wikipedia.org/wiki/User:Smith609">Martin Smith</a>.
-						<br>Supported by <a href="http://www.geological-supplies.com">GeoLogic</a>.
 						</form>
 					</div>
 				</div>

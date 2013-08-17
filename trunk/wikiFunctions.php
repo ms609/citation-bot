@@ -166,7 +166,7 @@ function articleID($page, $namespace = 0) {
 
 function getRawWikiText($page, $wait = false, $verbose = false, $use_daniel = true) {
   $encode_page = urlencode($page);
-  print $verbose ? "\n scraping... " : "";
+  echo $verbose ? "\n scraping... " : "";
     // Get the text by scraping edit page
     $url = wikiroot . "title=" . $encode_page . "&action=raw";
     $contents = (string) @file_get_contents($url);
@@ -187,7 +187,7 @@ function getRawWikiText($page, $wait = false, $verbose = false, $use_daniel = tr
     }
     if (!$contents && $wait) {
       // If still no response, wait & retry
-      print $verbose ? "\n ..... " : "";
+      echo $verbose ? "\n ..... " : "";
       sleep(3);
       $contents = (string) @file_get_contents($url);
     }
@@ -264,12 +264,11 @@ function extract_parameters($template) {
 
   // Remove whitespace and braces from template
   $template = trim($template);
-  $template = substr($template, 2, strlen($template) - 4);
+  $template = substr($template, 2, -2);
   if (preg_match ("~\s*$~", $template, $space_before_the_brace)) {
     $template = preg_replace("~\s*$~", "", $template);
     $parameters[BRACESPACE] = $space_before_the_brace;
   }
-
   // Replace pipes with placeholders in comments and links
   $template = preg_replace($wikilink_regexp, "$1$pipe_placeholder$2", $template);
   while (preg_match($comment_regexp, $template)) {
@@ -286,7 +285,6 @@ function extract_parameters($template) {
     $template = str_replace($subtemplate[$i], sprintf($template_placeholder, $i), $template);
   }
   $splits = preg_split("~(\s*\|\s*)~", $template, -1, PREG_SPLIT_DELIM_CAPTURE);
-
   // The first line doesn't contain a parameter; it's the template name
   $i = 0;
   foreach ($splits as $split) {
@@ -298,8 +296,8 @@ function extract_parameters($template) {
     }
   }
   unset($lines[0]);
-
   $unnamed_parameter_count = 0;
+
   foreach ($lines as $i => $line) {
     preg_match("~^([^=]*)\b(\s*=\s*)?([\s\S]*)$~", $line, $match);
     if ($match[2]) {
@@ -307,7 +305,7 @@ function extract_parameters($template) {
       $value = $match[3];
       $parameter_name = $match[1];
     } else {
-      $value = $match[1];
+      $value = $match[1] . $match[3];
       $parameter_name = "unnamed_parameter_" . ++$unnamed_parameter_count;
     }
     // Restore templates that were replaced with placeholders

@@ -464,11 +464,6 @@ function get_data_from_adsabs() {
   }
 }
 
-function expand_from_doi($a, $b, $c = false, $DEPRECATED = TRUE) {
-  print "\n\n !! ==== \n\n USING DUD FN DOI! \n\n";
-  expand_from_crossref($a, $b, $c);
-}
-
 function get_data_from_doi($doi, $silence) {
   global $editing_cite_doi_template;
   $crossRef = crossRefData($doi);
@@ -477,21 +472,6 @@ function get_data_from_doi($doi, $silence) {
   else if (substr(trim($doi), 0, 8) == '10.2307/')
     return get_data_from_jstor(substr(trim($doi), 8));
   else return false;
-}
-
-function getDataFromArxiv($a, $DEPRECATED = TRUE) {
-  print "\n\n !! ==== \n\n USING DUD FN ARXIV! \n\n";
-  return get_data_from_arxiv($a);
-}
-
-function expand_from_pubmed($DEPRECATED = TRUE) {
-  print "\n\n !! ==== \n\n USING DUD FN PMID! \n\n";
-  return get_data_from_pubmed();
-}
-
-function getInfoFromISBN($DEPRECATED = TRUE) {
-  print "\n\n !! ==== \n\n USING DUD FN ISBN! \n\n";
-  return get_data_from_isbn($a);
 }
 
 function get_data_from_arxiv($a) {

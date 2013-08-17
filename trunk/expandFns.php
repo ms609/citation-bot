@@ -533,17 +533,17 @@ function id_to_parameters() {
         $identifier_parameter = "rfc";
       case "asin":
         if ($parameters["country"]) {
-          print "\n    - {{ASIN}} country parameter not supported: can't convert.";
+          echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
           break;
         }
       case "oclc":
         if ($content[2]) {
-          print "\n    - {{OCLC}} has multiple parameters: can't convert.";
+          echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
           break;
         }
       case "ol":
         if ($parameters["author"]) {
-          print "\n    - {{OL}} author parameter not supported: can't convert.";
+          echo "\n    - {{OL}} author parameter not supported: can't convert.";
           break;
         }
       case "bibcode":
@@ -553,7 +553,7 @@ function id_to_parameters() {
       case "jfm":
       case "jstor":
         if ($parameters["sici"] || $parameters["issn"]) {
-          print "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
+          echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
           break;
         }
       case "mr":
@@ -573,7 +573,7 @@ function id_to_parameters() {
         $id = str_replace($match[0][$i], "", $id);
         break;
       default:
-        print "\n    - No match found for $content[0].";
+        echo "\n    - No match found for $content[0].";
     }
   }
   if (trim($id)) {
@@ -878,7 +878,7 @@ function named_refs_in_reflist($page_code) {
 
 function ref_templates($page_code, $type) {
   while (false !== ($ref_template = extract_template($page_code, "ref $type"))) {
-    echo "  Converted {{ref $type}}.";
+    echo "\n   - Converted {{ref $type}}.";
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
     $trimmed_id = trim_identifier($ref_id);
@@ -889,8 +889,10 @@ function ref_templates($page_code, $type) {
     } else {
       $template = cite_template_contents($type, $ref_id);
     }
+    print_r($template);
+    $last = trim($template["last1"][0] . $template["last"][0]);
     $replacement_template_name = generate_template_name(
-            (trim($template["last1"][0]) != "" && trim($template["year"][0]) != "") ? trim($template["last1"][0]) . trim($template["year"][0]) : "ref_"
+            ($last != "") ? $last . trim($template["year"][0]) : "ref_"
             , $page_code);
     $ref_content = "<ref name=\"$replacement_template_name\">"
             . $ref_template
@@ -904,11 +906,9 @@ function ref_templates($page_code, $type) {
 }
 
 function trim_identifier($id) {
-    $cruft = "[\.,;:><\s]*";
-    print $id;
-    preg_match("~^$cruft(?:d?o?i?:)?\s*(.*?)$cruft$~", $id, $match);
-    print_r($match);
-    return $match[1];
+  $cruft = "[\.,;:><\s]*";
+  preg_match("~^$cruft(?:d?o?i?:)?\s*(.*?)$cruft$~", $id, $match);
+  return $match[1];
 }
 
 function name_references($page_code) {
@@ -927,7 +927,7 @@ function name_references($page_code) {
 }
 
 function rename_references($page_code) {
-  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-Z])?(?P=quote)\s*>)"
+  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-zA-Z])?(?P=quote)\s*>)"
                   . "[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
     $countRefs = count($refs[0]);
     for ($i = 0; $i < $countRefs; ++$i) {
@@ -940,6 +940,7 @@ function rename_references($page_code) {
       echo ".";
     }
   }
+  print "\n----\n";
   return $page_code;
 }
 
@@ -956,13 +957,11 @@ function get_name_for_reference($text, $page_code) {
             : preg_match("~rft\.au=([^&]+)~", $parsed, $author) ? urldecode($author[1]) : "ref_";
     $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle) ? urldecode($btitle[1]) : "";
   }
-  print "\n - $author / $btitle / \n";
   if ($author != "ref_") {
     preg_match("~\w+~", authorify($author), $author);
   } else if ($btitle) {
     preg_match("~\w+\s?\w+~", authorify($btitle), $author);
   } else if ($parsed_plaintext) {
-    print $parsed_plaintext;
     if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
       preg_match("~\w+~", authorify($parsed_plaintext), $author);
     }
@@ -1189,7 +1188,7 @@ function if_null_set($param, $value) {
   global $p;
   if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
     // The parameter is of 'first101' or 'last2000' format and adds nothing but clutter.
-    // My sense is that the automatic adding of >30 authors is likely to annoy editors!
+    // My sense is that the automatic adding of >30 authors is likely to annoy editors!  
     return false;
   }
   switch ($param) {
@@ -1263,10 +1262,10 @@ function if_null_set($param, $value) {
       $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
       if (strpos($value, ',')) {
         $au = explode(',', $value);
-        set('last' . substr($param, -1), formatSurname($au[0]));
-        if_null_set('first' . substr($param, -1), formatForename(trim($au[1])));
+        set('last' . $auNo, formatSurname($au[0]));
+        if_null_set('first' . $auNo, formatForename(trim($au[1])));
       }
-      if (trim($p["last" . substr($param, -1)][0]) == "" && trim($p["author" . substr($param, -1)][0]) == ""
+      if (trim($p["last$auNo"][0]) == "" && trim($p["author$auNo"][0]) == ""
               && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
               && underTwoAuthors($p['author'][0])) {
         set($param, $value);
