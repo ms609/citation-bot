@@ -231,6 +231,14 @@ function write($page, $data, $edit_summary = "Bot edit") {
 }
 
 function parameters_from_citation($c) {
+  // Comments
+  global $comments, $comment_placeholders;
+  $i = 0;
+  while(preg_match("~<!--.*?-->~", $c, $match)) {
+    $comments[] = $match[0];
+    $comment_placeholders[] = sprintf(comment_placeholder, $i);
+    $c = str_replace($match[0], $comment_placeholders[$i++], $c);
+  }
   while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
     $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
   }
@@ -268,6 +276,7 @@ function parameters_from_citation($c) {
 }
 
 function reassemble_citation($p, $sort = false) {
+  global $comments, $comment_placeholders, $pStart, $modifications;
   // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
   foreach ($p as $oP) {
     $pipe = $oP[1] ? $oP[1] : null;
@@ -275,20 +284,18 @@ function reassemble_citation($p, $sort = false) {
     if ($pipe)
       break;
   }
-  if (!$pipe) {
-    $pipe = "\n | ";
-  }
-  if (!$equals) {
-    $equals = " = ";
-  }
-#  var_dump($pipe); var_dump($equals); var_dump(preg_replace("~[\r\n]+$~", "", $equals)); die();
+  if (!$pipe) $pipe = "\n | ";
+  if (!$equals) $equals = " = ";
   if ($sort) {
     echo "\n (sorting parameters)";
     uasort($p, "bubble_p");
   }
 
   foreach ($p as $param => $v) {
-    if ($param) {
+    $val = trim(str_replace($comment_placeholders, $comments, $v[0]));
+    if ($param == 'unused_data') {
+      $cText .= ($v[1] ? $v[1] : $pipe) . $val;
+    } elseif ($param) {
       $this_equals = ($v[2] ? $v[2] : $equals);
       if (trim($v[0]) && preg_match("~[\r\n]~", $this_equals)) {
         $this_equals = preg_replace("~[\r\n]+\s*$~", "", $this_equals);
@@ -299,14 +306,13 @@ function reassemble_citation($p, $sort = false) {
       $cText .= ( $v[1] ? $v[1] : $pipe)
               . $param
               . $this_equals
-              . str_replace(array(pipePlaceholder, "\r", "\n"), array("|", "", " "), trim($v[0]))
+              . str_replace(array(pipePlaceholder, "\r", "\n"), array("|", "", " "), $val)
               . $nline;
     }
     if (is($param)) {
       $pEnd[$param] = $v[0];
     }
   }
-  global $pStart, $modifications;
   if ($pEnd) {
     foreach ($pEnd as $param => $value) {
       if (!$pStart[$param]) {
@@ -694,7 +700,6 @@ function tidy_citation() {
     else {
       if (substr(trim($p["unused_data"][0]), 0, 1) == "|")
         $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-      echo "\nXXX Unused data in following citation: {$p["unused_data"][0]}";
     }
   }
   if (is('accessdate') && !is('url')) {
@@ -1182,8 +1187,9 @@ function get_last_page ($p) {
 
 function if_null_set($param, $value) {
   global $p;
-  if (substr($param, strlen($param) - 3, 1) > 0 || substr($param, strlen($param) - 2) > 9) {
-    // The parameter is of 'first101' or 'last10' format and adds nothing but clutter
+  if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
+    // The parameter is of 'first101' or 'last2000' format and adds nothing but clutter.
+    // My sense is that the automatic adding of >30 authors is likely to annoy editors!
     return false;
   }
   switch ($param) {
@@ -1267,7 +1273,16 @@ function if_null_set($param, $value) {
         return true;
       }
       break;
-    case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": case "first10":
+    case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": 
+    case "first10": case "first11": case "first12": case "first13": case "first14": case "first15": case "first16": case "first17": case "first18": case "first19":
+    case "first20": case "first21": case "first22": case "first23": case "first24": case "first25": case "first26": case "first27": case "first28": case "first29":
+    case "first30": case "first31": case "first32": case "first33": case "first34": case "first35": case "first36": case "first37": case "first38": case "first39":
+    case "first40": case "first41": case "first42": case "first43": case "first44": case "first45": case "first46": case "first47": case "first48": case "first49":
+    case "first50": case "first51": case "first52": case "first53": case "first54": case "first55": case "first56": case "first57": case "first58": case "first59":
+    case "first60": case "first61": case "first62": case "first63": case "first64": case "first65": case "first66": case "first67": case "first68": case "first69":
+    case "first70": case "first71": case "first72": case "first73": case "first74": case "first75": case "first76": case "first77": case "first78": case "first79":
+    case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
+    case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
       if (trim($p[$param][0]) == ""
               && underTwoAuthors($p['author'][0]) && trim($p["author" . substr($param, strlen($param) - 1)][0]) == ""
               && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
@@ -1292,7 +1307,7 @@ function if_null_set($param, $value) {
       }
       break;
     case "periodical": case "journal":
-      if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($value) != "") {
+      if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($p["work"][0]) == "" && trim($value) != "") {
         set($param, sanitize_string($value));
         return true;
       }

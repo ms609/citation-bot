@@ -157,6 +157,15 @@ function expand($page, // Title of WP page
   return $new_code;
 }
 
+
+
+
+
+
+
+
+
+
 // This function, given $original_code, returns the $text with any citation templates expanded as far as possible.
 
 function expand_text ($original_code,
@@ -166,6 +175,7 @@ function expand_text ($original_code,
         ) {
   global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy,
           $authors_missing,
+          $dotEncode, $dotDecode, $pcEncode, $pcDecode, 
           $edit_summary_end, $slow_mode, $html_output;
   if ($html_output === -1) {
     ob_start();
@@ -834,7 +844,7 @@ echo "
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
         echo "\n5: Formatting and other tweaks";
         if ($editing_cite_doi_template || preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
-          echo "\n   First: Cite Doi formatting";
+          echo "\n   First: Cite Doi formatting [expand.php/expand_text]";
 
           // If we only have the first author, look for more!
           if (!is('coauthors')
@@ -844,9 +854,8 @@ echo "
             ) {
             echo "\n - Looking for co-authors & page numbers...";
             $moreAuthors = findMoreAuthors($p['doi'][0], get_first_author($p), $p['pages'][0]);
-            $count_new_authors = count($moreAuthors['authors']);
+            $count_new_authors = count($moreAuthors['authors']) - 1;
             if ($count_new_authors) {
-              echo " Found more authors! ";
               for ($j = 0; $j < $count_new_authors; $j++) {
                 $au = explode(', ', $moreAuthors['authors'][$j]);
                 if ($au[1]) {
@@ -863,7 +872,7 @@ echo "
             }
             if ($moreAuthors['pages']) {
               set('pages', $moreAuthors['pages']);
-              echo " Completed page range! (" . $p['pages'][0]  . ')';
+              echo " [completed page range]";
             }
           }
           for ($i = 1; $i < 100; $i ++) {
