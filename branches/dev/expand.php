@@ -844,7 +844,7 @@ echo "
 //If we're using a Cite Doi subpage and there's a doi present, check for a second author. Only do this on first visit (i.e. when citedoi = true)
         echo "\n5: Formatting and other tweaks";
         if ($editing_cite_doi_template || preg_match("~[cC]ite[ _](?:doi|pmid|jstor|pmc)~", $page)) {
-          echo "\n   First: Cite Doi formatting";
+          echo "\n   First: Cite Doi formatting [expand.php/expand_text]";
 
           // If we only have the first author, look for more!
           if (!is('coauthors')
@@ -854,7 +854,7 @@ echo "
             ) {
             echo "\n - Looking for co-authors & page numbers...";
             $moreAuthors = findMoreAuthors($p['doi'][0], get_first_author($p), $p['pages'][0]);
-            $count_new_authors = count($moreAuthors['authors']);
+            $count_new_authors = count($moreAuthors['authors']) - 1;
             if ($count_new_authors) {
               echo " Found more authors! ";
               for ($j = 0; $j < $count_new_authors; $j++) {
