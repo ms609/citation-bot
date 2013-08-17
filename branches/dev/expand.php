@@ -44,7 +44,7 @@ function expand($page, // Title of WP page
     $commit_edits = false;
   }
   $new_code = expand_text($original_code, $commit_edits, $editing_cite_doi_template,
-          $cite_doi_start_code);
+          $cite_doi_start_code, $page);
 
 
   if (strtolower($new_code) == strtolower($original_code)) {
@@ -171,7 +171,8 @@ function expand($page, // Title of WP page
 function expand_text ($original_code,
         $commit_edits = false,
         $editing_cite_doi_template = false, //If $editing_cite_doi_template = true, certain formatting changes will be applied for consistency.
-        $cite_doi_start_code = null // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
+        $cite_doi_start_code = null, // $cite_doi_start_code is wikicode specified if creating a cite doi template.  (Possibly redundant now?)
+        $page_title = 'unspecified'
         ) {
   global $p, $pStart, $editInitiator, $edit_summaryStart, $initiatedBy,
           $authors_missing,
@@ -222,6 +223,7 @@ function expand_text ($original_code,
   }
   echo "\n * Tidying reference tags... ";
   $new_code = rename_references(named_refs_in_reflist(combine_duplicate_references(combine_duplicate_references(ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc")))));
+
   $pageDash_ereg = "p(p|ages)([\t ]*=[\t ]*[0-9a-Z]*[0-9][a-Z]*)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])";
   if (mb_ereg($pageDash_ereg, $new_code)) {
     $new_code = mb_ereg_replace($pageDash_ereg, "p\\1\\2" . en_dash . "\\4", $new_code);
@@ -302,8 +304,6 @@ function expand_text ($original_code,
     $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
   }
 
-
-
 ###################################  Cite arXiv ######################################
   // Makes sense to do this first as it might add DOIs, changing the citation type.
   if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[aA]r[xX]iv(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
@@ -383,7 +383,6 @@ function expand_text ($original_code,
   }
 
 ###################################  START ASSESSING BOOKS ({{cite book}} ######################################
-
   if (false !== ($citation = preg_split("~{{((\s*[Cc]ite[_ ]?[bB]ook(?=\s*\|))([^{}]|{{.*}})*)([\n\s]*)}}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation)-1);
@@ -438,15 +437,9 @@ function expand_text ($original_code,
       // Having expanded all that we can expand, tidy things up.
 
       // edition -- remove 'edition' from parameter value
-      if (is("edition"))
-      {
-        $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
-      }
+      if (is("edition")) $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
 
-      if ($p["doi"][0] == "10.1267/science.040579197") {
-        // This is a bogus DOI from the PMID example file
-        unset ($p["doi"]);
-      }
+      if ($p["doi"][0] == "10.1267/science.040579197") unset ($p["doi"]); // This is a bogus DOI from the PMID example file
 
       //Authors
       if (isset($p["authors"]) && !isset($p["author"][0])) {
@@ -467,29 +460,10 @@ function expand_text ($original_code,
       }
       if (!$isbnToStartWith && !$p["isbn"][0]) unset($p["isbn"]);
 
-      /*  ISBN lookup disabled -- too buggy.
-      if (	(is("pages") || is("page"))
-            && is("title")
-            && is("publisher")
-            && (is("date") || is("year"))
-            && (
-                is("author") || is("coauthors") || is("others")
-                || is("author1")
-                || is("author1-last")
-                || is("last") || is("last1")
-                || is("editor1-first") || is("editor1-last") || is("editor1")
-                || is("editor") || is("editors")
-              )
-          )
-       echo "All details present - no need to look up ISBN. ";
-      else {
-        if (is("isbn")) getInfoFromISBN();
-      }
-      */
-
-      ##############################
-      # Finished with citation and retrieved ISBN data #
-      #############################
+     
+      ##########################
+      # Finished with citation #
+      ##########################
 
       // Now wikify some common formatting errors - i.e. tidy up!
       if (isset($p["title"][0]) && !trim($pStart["title"])) $p["title"][0] = niceTitle($p["title"][0]);
@@ -499,8 +473,6 @@ function expand_text ($original_code,
         $p["pages"][0] = mb_ereg_replace("([0-9A-Z])[\t ]*(-|\&mdash;|\xe2\x80\x94|\?\?\?)[\t ]*([0-9A-Z])", "\\1\xe2\x80\x93\\3", $p["pages"][0]);
         $modifications["dashes"] = true;
       }
-      #if (isset($p["year"][0]) && trim($p["year"][0]) == trim($p["origyear"][0])) unset($p['origyear']);
-      #if (isset($p["publisher"][0])) $p["publisher"][0] = truncatePublisher($p["publisher"][0]);
 
       if ($dateToStartWith) unset($p["year"]); // If there was a date parameter to start with, don't add a year too!
 
@@ -551,9 +523,11 @@ function expand_text ($original_code,
     }
     $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
   }
-###################################  START ASSESSING JOURNAL/OTHER CITATIONS ######################################
 
-    if (false !== ($citation = preg_split("~\{\{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[dD]ocument(?=\s*\|)|\s*[Cc]ite[_ ]?[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^\{\}]|\{\{.*\}\})*)([\n\s]*)\}\}~U", $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
+###################################  START ASSESSING JOURNAL/OTHER CITATIONS ######################################
+  $cite_other_split = "~\{\{((\s*[Cc]ite[_ ]?[jJ]ournal(?=\s*\|)|\s*[Cc]ite[_ ]?[dD]ocument(?=\s*\|)|\s*[Cc]ite[_ ]?"
+  . "[Ee]ncyclopa?edia(?=\s*\|)|[cCite[ _]web(?=\s*\|)|\s*[cC]itation(?=\s*\|))([^\{\}]|\{\{.*\}\})*)([\n\s]*)\}\}~U";
+  if (false !== ($citation = preg_split($cite_other_split, $new_code, -1, PREG_SPLIT_DELIM_CAPTURE))) {
     $new_code = null;
     $iLimit = (count($citation) - 1);
     for ($cit_i = 0; $cit_i < $iLimit; $cit_i += 5) { //Number of brackets in cite journal regexp + 1
@@ -1025,14 +999,9 @@ echo "
     $new_code .= $citation[$cit_i]; // Adds any text that comes after the last citation
   }
 
-  /*
-    if ($unify_citation_templates && $citation_template_dominant) {
-    $new_code = preg_replace("~\b[cC]ite[ _](web|conference|encyclopedia|news)~", "Citation", $new_code);
-  }  */
 
   ############################### Finished with all citations ##############################
-  #########################  code is now complete and ready for prcessing.   #######################
-
+  #########################  code is now complete and ready for processing.   #######################
   if (trim($new_code)) {
       $edit_summary = $edit_summaryStart . $editInitiator . $auto_summary . $initiatedBy . $edit_summary_end;
       $outputText = "\n\n\n<h5>Output</h5>\n\n\n<!--New code:--><textarea rows=50>" 
@@ -1044,13 +1013,15 @@ echo "
           echo "Headers included in pagecode; removing...\n";
           $new_code = preg_replace("~$[\s\S]+\{\{~", "{{", $new_code);
         } else {
-          mail ("MartinS+citewatch@gmail.com"
+          /*mail ("MartinS+citewatch@gmail.com"
                 , "Citewatch ERROR"
                 , "Output does not begin with {{, but [" . strtolower(substr(trim($new_code), 0, 25)) . "]
                 . \n\n[Page = $page]\n[SmartSum = $auto_summary ]\n[\$citation = ". print_r($citation, 1)
                 . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n [p = "
                 . print_r($p,1)
-                . "] \n[pagecode =$new_code]\n\n[freshcode =$cite_doi_start_code]\n\n> Error message generated by expand.php.");
+                . "] \n[pagecode =$new_code]\n\n[freshcode =$cite_doi_start_code]\n\n> Error message generated by expand.php.");*/
+          echo "Error - formatting doesn't match that expected of a cite doi template.  No edit made.  Output was:\n";
+          print $new_code;
           return false; // This might cause errors; I previously just exited here.
         }
       }
@@ -1122,7 +1093,7 @@ echo "
       return false;
     } else {
       echo "<b>Error:</b> Blank page produced. This bug has been reported. Page content: $original_code";
-      mail ("MartinS+doibot@gmail.com", "DOI BOT ERROR", "Blank page produced.\n[Page = $page]\n[SmartSum = $auto_summary ]\n[\$citation = ". print_r($citation, 1) . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n\nError message generated by expand.php.");
+      // mail ("MartinS+doibot@gmail.com", "DOI BOT ERROR", "Blank page produced.\n[Page = $page]\n[SmartSum = $auto_summary ]\n[\$citation = ". print_r($citation, 1) . "]\n[Request variables = ".print_r($_REQUEST, 1) . "]\n\nError message generated by expand.php.");
       exit;
     }
   }

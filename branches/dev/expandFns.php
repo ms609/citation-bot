@@ -878,7 +878,7 @@ function named_refs_in_reflist($page_code) {
 
 function ref_templates($page_code, $type) {
   while (false !== ($ref_template = extract_template($page_code, "ref $type"))) {
-    echo "  Converted {{ref $type}}.";
+    echo "\n   - Converted {{ref $type}}.";
     $ref_parameters = extract_parameters($ref_template);
     $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
     $trimmed_id = trim_identifier($ref_id);
@@ -890,7 +890,8 @@ function ref_templates($page_code, $type) {
       $template = cite_template_contents($type, $ref_id);
     }
     $replacement_template_name = generate_template_name(
-            (trim($template["last1"][0]) != "" && trim($template["year"][0]) != "") ? trim($template["last1"][0]) . trim($template["year"][0]) : "ref_"
+            (trim($template["last1"][0]) != "")
+            ? trim($template["last1"][0]) . trim($template["year"][0]) : "ref_"
             , $page_code);
     $ref_content = "<ref name=\"$replacement_template_name\">"
             . $ref_template
@@ -904,11 +905,9 @@ function ref_templates($page_code, $type) {
 }
 
 function trim_identifier($id) {
-    $cruft = "[\.,;:><\s]*";
-    print $id;
-    preg_match("~^$cruft(?:d?o?i?:)?\s*(.*?)$cruft$~", $id, $match);
-    print_r($match);
-    return $match[1];
+  $cruft = "[\.,;:><\s]*";
+  preg_match("~^$cruft(?:d?o?i?:)?\s*(.*?)$cruft$~", $id, $match);
+  return $match[1];
 }
 
 function name_references($page_code) {
