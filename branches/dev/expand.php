@@ -856,7 +856,6 @@ echo "
             $moreAuthors = findMoreAuthors($p['doi'][0], get_first_author($p), $p['pages'][0]);
             $count_new_authors = count($moreAuthors['authors']) - 1;
             if ($count_new_authors) {
-              echo " Found more authors! ";
               for ($j = 0; $j < $count_new_authors; $j++) {
                 $au = explode(', ', $moreAuthors['authors'][$j]);
                 if ($au[1]) {
@@ -873,7 +872,7 @@ echo "
             }
             if ($moreAuthors['pages']) {
               set('pages', $moreAuthors['pages']);
-              echo " Completed page range! (" . $p['pages'][0]  . ')';
+              echo " [completed page range]";
             }
           }
           for ($i = 1; $i < 100; $i ++) {

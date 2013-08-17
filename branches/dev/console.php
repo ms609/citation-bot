@@ -84,10 +84,20 @@ if ($argument["pages"]) {
     */
 $problem_text =             <<<problemtxt
 
- e been excluded up to 500 GeV.<ref>{{cite journal|title=Search for Supersymmetry at the LHC 
- |author=CMS Collaboration|journal=Physical Review Letters|month=November|year=2011|
- doi=10.1103/PhysRevLett.107.221804|last2=Khachatryan|first2=V.|last3=Sirunyan|first3=A.|last4=Tumasyan|first4=A.|last5=Adam|first5=W.|last6=Bergauer|first6=T.|last7=Dragicevic|first7=M.|last8=Erö|first8=J.|last9=Fabjan|first9=C.|volume=107|issue=22}}</ref> Searches are only applic
- 
+{{Cite journal 
+| last1 = Needham | first1 = R. M. 
+| authorlink = Roger Needham
+| doi = 10.1098/rsbm.2002.0006 
+| title = [[Donald Davies|Donald Watts Davies]], C.B.E. 7 June 1924 - 28 May 2000 
+| journal = [[Biographical Memoirs of Fellows of the Royal Society]] 
+| volume = 48 
+| pages = 87 
+| year = 2002 
+| pmid =  
+| pmc = 
+}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
+
+
 problemtxt;
     
     die (expand_text(

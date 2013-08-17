@@ -1302,7 +1302,7 @@ function if_null_set($param, $value) {
       }
       break;
     case "periodical": case "journal":
-      if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($value) != "") {
+      if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($p["work"][0]) == "" && trim($value) != "") {
         set($param, sanitize_string($value));
         return true;
       }
