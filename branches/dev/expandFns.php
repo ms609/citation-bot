@@ -533,17 +533,17 @@ function id_to_parameters() {
         $identifier_parameter = "rfc";
       case "asin":
         if ($parameters["country"]) {
-          print "\n    - {{ASIN}} country parameter not supported: can't convert.";
+          echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
           break;
         }
       case "oclc":
         if ($content[2]) {
-          print "\n    - {{OCLC}} has multiple parameters: can't convert.";
+          echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
           break;
         }
       case "ol":
         if ($parameters["author"]) {
-          print "\n    - {{OL}} author parameter not supported: can't convert.";
+          echo "\n    - {{OL}} author parameter not supported: can't convert.";
           break;
         }
       case "bibcode":
@@ -553,7 +553,7 @@ function id_to_parameters() {
       case "jfm":
       case "jstor":
         if ($parameters["sici"] || $parameters["issn"]) {
-          print "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
+          echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
           break;
         }
       case "mr":
@@ -573,7 +573,7 @@ function id_to_parameters() {
         $id = str_replace($match[0][$i], "", $id);
         break;
       default:
-        print "\n    - No match found for $content[0].";
+        echo "\n    - No match found for $content[0].";
     }
   }
   if (trim($id)) {
@@ -929,6 +929,7 @@ function rename_references($page_code) {
   if (preg_match_all("~(<ref name=(?P<quote>[\"']?)[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-Z])?(?P=quote)\s*>)"
                   . "[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
     $countRefs = count($refs[0]);
+    print_r($refs);
     for ($i = 0; $i < $countRefs; ++$i) {
       $ref_name = get_name_for_reference($refs[0][$i], $page_code);
       if (substr($ref_name, 0, 4) != "ref_") {
@@ -955,13 +956,11 @@ function get_name_for_reference($text, $page_code) {
             : preg_match("~rft\.au=([^&]+)~", $parsed, $author) ? urldecode($author[1]) : "ref_";
     $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle) ? urldecode($btitle[1]) : "";
   }
-  print "\n - $author / $btitle / \n";
   if ($author != "ref_") {
     preg_match("~\w+~", authorify($author), $author);
   } else if ($btitle) {
     preg_match("~\w+\s?\w+~", authorify($btitle), $author);
   } else if ($parsed_plaintext) {
-    print $parsed_plaintext;
     if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
       preg_match("~\w+~", authorify($parsed_plaintext), $author);
     }

@@ -85,9 +85,10 @@ if ($argument["pages"]) {
 $problem_text =             <<<problemtxt
 
 
-<ref name="ref_a">{{cite doi|10.1098.2Frspb.2012.1577}}</ref>
+{{Ref doi|10.1098/rspb.2012.1577}}
 
-*
+
+
 
 
 problemtxt;

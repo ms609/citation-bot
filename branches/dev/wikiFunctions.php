@@ -166,7 +166,7 @@ function articleID($page, $namespace = 0) {
 
 function getRawWikiText($page, $wait = false, $verbose = false, $use_daniel = true) {
   $encode_page = urlencode($page);
-  print $verbose ? "\n scraping... " : "";
+  echo $verbose ? "\n scraping... " : "";
     // Get the text by scraping edit page
     $url = wikiroot . "title=" . $encode_page . "&action=raw";
     $contents = (string) @file_get_contents($url);
@@ -187,7 +187,7 @@ function getRawWikiText($page, $wait = false, $verbose = false, $use_daniel = tr
     }
     if (!$contents && $wait) {
       // If still no response, wait & retry
-      print $verbose ? "\n ..... " : "";
+      echo $verbose ? "\n ..... " : "";
       sleep(3);
       $contents = (string) @file_get_contents($url);
     }
