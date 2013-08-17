@@ -84,18 +84,14 @@ if ($argument["pages"]) {
     */
 $problem_text =             <<<problemtxt
 
-<ref name="first look">{{cite news| url= http://www.comingsoon.net/news/movienews.php?id=53393 |
- title=First Look at Angelina Jolie in Salt | work = ComingSoon.net | publisher= [[CraveOnline]] | 
- date=March 3, 2009 | accessdate=January 27, 2010 | <!--| archiveurl=http://www.webcitation.org/5nospLAte | archivedate=February 25, 2010-->}}</ref>
 
-
-*
-
+<ref name="ref_">{{cite doi|10.1098/rspb.2012.1577}}</ref>
 
 problemtxt;
     
+    
     die (expand_text(
-            $problem_text, false, true
+            $problem_text, false, false
 ));
     
 die(expand_text("
@@ -104,16 +100,6 @@ die(expand_text("
 |last2=Mark |first2=L |last3=McHeyzer-Williams |first3=LJ |last4=McHeyzer-Williams |first4=MG |pmc=2731675}}</ref>.
 "));
 
-die(expand_text("
-
-  Does not expand.  This appears to be a (long-term) problem with the JSTOR API.
-{{Cite journal | jstor = 4494763}}
-
-
-    
-
-"));
-    
 die (expand_text('
 
 Reference renaming:

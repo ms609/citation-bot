@@ -34,11 +34,8 @@
 	<div id="content">
 <h1 class="firstHeading">Welcome to Citation Bot</h1>
 <div id="bodyContent">
-	<h3 id="siteSub"><? echo restrictedDuties?"Thanks for using this bot. Please be aware that there are one or two tiny bugs that are yet to be fixed,
-		so the bot will run in 'manual mode' only.  Do carefully check that any edits it makes do not cause unintended consequences!
-		The bot has begun, so p":"P";?>lease wait patiently while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a>
-		<small>(<a href="http://en.wikipedia.org/wiki/Special:Contributions/Citation_bot">contribs</a>)</small> works on the citations you requested.
-		You can follow its progress below...</h3>
+	<h3 id="siteSub">Please wait while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a>
+		processes the page you requested.</h3>
 <pre><?
 
 ## Set up - including dotDecode array
