@@ -3,14 +3,14 @@
 // $Id$
 #$abort_mysql_connection = true; // Whilst there's a problem with login
 
-
+ini_set('display_errors', '1');
 include('objects.php');
 
 $problem_text =  <<<problemtxt
 
 {{tempalte}}
 {{template | gah = 8}}
-{{nested | te = {{template | gah = 8}} | <!--comment | comment --> }}
+{{nested | te = {{template | gah = 8 = two-equals}} | <!--comment | comment --> }}
 <ref name="SGP review">{{cite journal | class = test }}</ref>
 <ref name="SGP review"/>
 
@@ -29,9 +29,9 @@ problemtxt;
     $templates = extract_object($text, Template);
       $text = $templates[0]; $templates = $templates[1];
     
-    print $text;
-    print_r($comments);
-    print_r($templates);
+    $templates[3]->add_param('new', 'NEW VALYUE!');
+    //print_r($comments);
+    //print $templates[2]->parsed_text();
     
     die("\n# # # \n");
     
