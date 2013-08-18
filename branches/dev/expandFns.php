@@ -33,6 +33,7 @@ require_once("/home/verisimilus/public_html/Bot/DOI_bot/doiBot$linkto2.login");
 includeIfNew('Snoopy.class');
 includeIfNew("wikiFunctions");
 includeIfNew("DOItools");
+includeIfNew("objects");
 require_once("expand.php");
 if (!$abort_mysql_connection) {
   require_once("/home/verisimilus/public_html/res/mysql_connect.php");
@@ -94,7 +95,7 @@ $crossRefOnly = $_REQUEST["crossrefonly"] ? true : $_REQUEST["turbo"];
 if ($_REQUEST["edit"] || $_GET["doi"] || $_GET["pmid"])
   $ON = true;
 
-$editSummaryStart = ($bugFix ? "Double-checking that a [[User:DOI_bot/bugs|bug]] has been fixed. " : "Citations: ");
+$editSummaryStart = ($bugFix ? "Double-checking that a [[User talk:Citation bot|bug]] has been fixed. " : "Citations: ");
 
 ob_end_flush();
 
@@ -740,9 +741,14 @@ function combine_duplicate_references($page_code) {
   }
   // Before we start with the page code, find and combine references in the reflist section that have the same name
   if (preg_match(reflist_regexp, $page_code, $match)) {
-    if (preg_match_all('~(?P<ref1><ref\s+name\s*=\s*(?<quote1>["\']?+)(?P<name>[^>]+)(?P=quote1)(?:\s[^>]+)?\s*>[\p{L}\P{L}]+</\s*ref>)'
-            . '[\p{L}\P{L}]+(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?+)(?P=name)\b(?P=quote2)[\p{L}\P{L}]+</\s*ref>)~iuU', $match[1], $duplicates)) {
+    if (preg_match_all('~(?P<ref1><ref\s+name\s*=\s*'
+            . '(?<quote1>["\']?+)(?P<name>[^/>]+)(?P=quote1)'
+            . '(?:\s[^/>]+)?\s*>[\p{L}\P{L}]+</\s*ref>)'
+            . '[\p{L}\P{L}]+'
+            . '(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?+)(?P=name)\b(?P=quote2)(?:\s[^/>]+)?\s*>'
+              . '.+</\s*ref>)~isuU', $match[1], $duplicates)) {
       foreach ($duplicates['ref2'] as $i => $to_delete) {
+        print "\n\n$to_delete\n\n===";
         if ($to_delete == $duplicates['ref1'][$i]) {
           $mb_start = mb_strpos($page_code, $to_delete) + mb_strlen($to_delete);
           $page_code = mb_substr($page_code, 0, $mb_start)
@@ -750,10 +756,10 @@ function combine_duplicate_references($page_code) {
         } else {
           $page_code = str_replace($to_delete, '', $page_code);
         }
+        echo "\n  * deleted duplicate reference: $to_delete";
       }
-    }
+    } 
   }
-  
   // Now look at the rest of the page:
   preg_match_all("~<ref\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*/>~", $page_code, $empty_refs);
   // match 1 = ref names
@@ -854,6 +860,7 @@ function combine_duplicate_references($page_code) {
 function named_refs_in_reflist($page_code) {
   if (preg_match(reflist_regexp, $page_code, $match) &&
       preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
+      print_r($match[1]);die('--');
       $temp_reflist = $match[1];
       foreach ($empty_refs['name'] as $i => $ref_name) {
         echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
@@ -889,7 +896,6 @@ function ref_templates($page_code, $type) {
     } else {
       $template = cite_template_contents($type, $ref_id);
     }
-    print_r($template);
     $last = trim($template["last1"][0] . $template["last"][0]);
     $replacement_template_name = generate_template_name(
             ($last != "") ? $last . trim($template["year"][0]) : "ref_"
@@ -940,7 +946,6 @@ function rename_references($page_code) {
       echo ".";
     }
   }
-  print "\n----\n";
   return $page_code;
 }
 

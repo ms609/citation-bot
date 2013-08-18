@@ -3,6 +3,43 @@
 // $Id$
 #$abort_mysql_connection = true; // Whilst there's a problem with login
 
+
+include('objects.php');
+
+$problem_text =  <<<problemtxt
+
+{{tempalte}}
+{{template | gah = 8}}
+{{nested | te = {{template | gah = 8}} | <!--comment | comment --> }}
+<ref name="SGP review">{{cite journal | class = test }}</ref>
+<ref name="SGP review"/>
+
+==References==
+{{Reflist|2|refs=
+<ref name="gamefanPS">Ref1</ref>
+<ref name="gamespot">Ref2012</ref>
+}}
+
+
+problemtxt;
+    print "begin";
+    $text = $problem_text;
+    #$comments = extract_object($text, Comment); 
+    #  $text = $comments[0]; $comments = $comments[1];
+    $templates = extract_object($text, Template);
+      $text = $templates[0]; $templates = $templates[1];
+    
+    print $text;
+    print_r($comments);
+    print_r($templates);
+    
+    die("\n# # # \n");
+    
+
+
+
+
+
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
@@ -60,36 +97,18 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
    
-    
-    /*  die (expand_text("DELETION OF REF ARana 
-         <ref name=ARanard/><ref name=MinNaing/> 
-          <ref name=ARana/>, 
-          
-{{reflist|1|refs=
-<ref name=Ranard>{{harv|Ranard|2009|pp=47–64}}</ref>
-<ref name=ARanard>{{harv|Ranard|2009|pp=6, 18, 222, Endnote 15}}</ref>
-<ref name=AR>{{harv|Ranard|2009|p=60, Fig. 62}}</ref>
-<ref name=Ran>{{harv|Ranard|2009|pp=71–89}}</ref>
-<ref name=R>{{harv|Ranard|2009|p=117}}</ref>
-<ref name=Naing>{{harv|Naing|1974}}</ref>
-<ref name=MinNaing>{{harv|Naing|1975|pp=2–25}}</ref>
-<ref name=Shein>{{harv|Shein|1998|p=61–67}}</ref>
-<ref name=GHlaMaung>{{harv|Maung|1968|p=81–85}}</ref>
-<ref name=GHMaung>{{harv|Maung|1968|p=95–97}}</ref>
-<ref name=ARana>{{harv|Ranard|2009|p=58, Fig. 60}}</ref>
-<ref name=Hudson>{{harv|Hudson|1975|pp=60–72, 84, 124–128}}</ref>
-}}
-
-"));
-    */
-$problem_text =             <<<problemtxt
-
-
-<ref name="ref_">{{cite doi|10.1098/rspb.2012.1577}}</ref>
-
-problemtxt;
-    
-    
+/* Outline 
+/  PLAINTEXT
+/  - Comments
+  /  - Templates
+  /  o Templates
+  /  + Templates
+  /  - References
+  /  o References
+  /  + References
+/  + Comments
+*/   
+      $slow_mode = true;
     die (expand_text(
             $problem_text, false, false
 ));

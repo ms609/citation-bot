@@ -226,8 +226,7 @@ function expand_text ($original_code,
     combine_duplicate_references(combine_duplicate_references(
     ref_templates(ref_templates(ref_templates(ref_templates($new_code, "doi"), "pmid"), "jstor"), "pmc")
   ))));
-  print_r(named_refs_in_reflist($new_code));
-
+  
   $pageDash_ereg = "p(p|ages)([\t ]*=[\t ]*[0-9a-Z]*[0-9][a-Z]*)[\t ]*(" . to_en_dash . ")[\t ]*([0-9A-Z])";
   if (mb_ereg($pageDash_ereg, $new_code)) {
     $new_code = mb_ereg_replace($pageDash_ereg, "p\\1\\2" . en_dash . "\\4", $new_code);
@@ -637,7 +636,7 @@ echo "
 
         // Load missing parameters from SICI, if we found one...
         get_data_from_sici($citation[$cit_i+1]);
-        
+
         // Fix typos in parameter names
         $p = correct_parameter_spelling($p);
         // DOI - urldecode
@@ -692,7 +691,6 @@ echo "
             $p["volume"][0] = trim(mb_substr($p["volume"][0], mb_strlen($match[1])));
           }
         }
-
         $author_param = trim($p['author'][0]);
      
         // Check for translator in author_param and remove if necessary.
@@ -1030,6 +1028,7 @@ echo "
         }
       }
       if ($commit_edits) {
+        global $jstor_redirect;
         if ($jstor_redirect && $jstor_redirect_target) {
           $page = "Template:Cite doi/" . wikititle_encode($jstor_redirect_target);
           write ("Template:Cite doi/" . wikititle_encode($jstor_redirect), "#REDIRECT [[$page]]"

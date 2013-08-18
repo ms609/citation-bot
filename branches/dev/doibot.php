@@ -28,7 +28,7 @@
 @import "http://en.wikipedia.org/w/index.php?title=User:Smith609/monobook.css&action=raw&ctype=text/css";
 /*]]>*/</style>
 	</head>
-<body class="mediawiki ns-2 ltr page-User_DOI_bot_5andbox">
+<body class="mediawiki ns-2 ltr">
 	<div id="globalWrapper">
 		<div id="column-content">
 	<div id="content">
@@ -124,10 +124,10 @@ End of output
 
 		<div class="pBody">
 			<ul>
-					 <li id="ca-nstab-user" class="selected"><a href="http://en.wikipedia.org/wiki/User:DOI_bot" title="View the user page [c]" accesskey="c">User page</a></li>
-					 <li id="ca-talk" class="new"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:DOI_bot&amp;action=edit" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
-					 <li id="ca-edit"><a href="http://en.wikipedia.org/w/index.php?title=User:DOI_bot/bugs" title="Click here to report an error [e]" accesskey="e">Report error</a></li>
-					 <li id="ca-history"><a href="http://en.wikipedia.org/wiki/Special:Contributions/DOI_bot" title="This bot's contributions [x]" accesskey="x">Contributions</a></li>
+					 <li id="ca-nstab-user" class="selected"><a href="http://en.wikipedia.org/wiki/User:Citation_bot" title="View the user page [c]" accesskey="c">User page</a></li>
+					 <li id="ca-talk" class="new"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:Citation_bot" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
+					 <li id="ca-edit"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:Citation_bot" title="Click here to report an error [e]" accesskey="e">Report error</a></li>
+					 <li id="ca-history"><a href="http://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" title="This bot's contributions [x]" accesskey="x">Contributions</a></li>
 				</ul>
 		</div>
 	</div>

@@ -631,13 +631,6 @@ function crossRefDoi($title, $journal, $author, $year, $volume, $startpage, $end
         return $result;
       }
     }
-    if ($url1) {
-      $url = "http://www.crossref.org/openurl/?url_ver=Z39.88-2004&req_dat=$crossRefId&rft_id=info:http://" . urlencode(str_replace(Array("http://", "&noredirect=true"), Array("", ""), urldecode($url1)));
-      if (!($result = @simplexml_load_file($url)->query_result->body->query)) echo "\n xxx Error loading simpleXML file from CrossRef via URL. ";
-      if ($debug) echo $url . "<BR>";
-      if ($result["status"]=="resolved") return $result;
-      echo "URL search failed.  Trying other parameters... ";
-    }
     global $fastMode;
     if ($fastMode || !$author || !($journal || $issn) ) return;
     // If fail, try again with fewer constraints...
@@ -1444,6 +1437,7 @@ function correct_parameter_spelling($p) {
 function verify_doi ($doi) {
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
+      case "": return ($doi);
       case ".":
         // Missing a terminal 'x'?
         $trial[] = $doi . "x";
