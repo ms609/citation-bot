@@ -23,12 +23,75 @@ class Comment extends Item {
   } 
 }
 
+class Short_Reference extends Item {
+  const placeholder_text = '# # # Citation bot : short ref placeholder %s # # #';
+  const regexp = '~<ref\s[^>]+?/>~s';
+  
+  public $start, $end, $attr;
+  protected $rawtext;
+  
+  public function parse_text($text) {
+    preg_match('~(<ref\s+)(.*)(\s*/>)~', $text, $bits);
+    $this->start = $bits[1];
+    $this->end = $bits[3];
+    $bits = explode('=', $bits[2]);
+    $next_attr = array_shift($bits);
+    $last_attr = array_pop($bits);
+    foreach ($bits as $bit) {
+      preg_match('~(.*\s)(\S+)$~', $bit, $parts);
+      $this->attr[$next_attr] = $parts[1];
+      $next_attr = $parts[2];
+    }
+    $this->attr[$next_attr] = $last_attr;
+  }
+  
+  public function parsed_text() {
+    foreach ($this->attr as $key => $value) {
+      $middle .= $key . '=' . $value;
+    }
+    return $this->start . $middle . $this->end;
+  } 
+}
+
+class Long_Reference extends Item {
+  const placeholder_text = '# # # Citation bot : long ref placeholder %s # # #';
+  const regexp = '~<ref\s[^/>]+?>.*?<\s*/\s*ref\s*>~s';
+  
+  protected $open_start, $open_attr, $open_end, $content, $close;
+  protected $rawtext;
+  
+  public function parse_text($text) {
+    preg_match('~(<ref\s+)(.*)(\s*>)(.*?)(<\s*/\s*ref\s*>)~s', $text, $bits);
+    $this->rawtext = $text;
+    $this->open_start = $bits[1];
+    $this->open_end = $bits[3];
+    $this->content = $bits[4];
+    $this->close = $bits[5];
+    $bits = explode('=', $bits[2]);
+    $next_attr = array_shift($bits);
+    $last_attr = array_pop($bits);
+    foreach ($bits as $bit) {
+      preg_match('~(.*\s)(\S+)$~', $bit, $parts);
+      $this->attr[$next_attr] = $parts[1];
+      $next_attr = $parts[2];
+    }
+    $this->attr[$next_attr] = $last_attr;
+  }
+  
+  public function parsed_text() {
+    foreach ($this->attr as $key => $value) {
+      $middle .= $key . '=' . $value;
+    }
+    return $this->open_start . $middle . $this->open_end . $this->content . $this -> close;
+  }
+  
+}
+  
 class Template extends Item {
   const placeholder_text = '# # # Citation bot : template placeholder %s # # #';
   const regexp = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   
-  protected $name;
-  protected $parameters;
+  protected $name, $param;
   
   public function parse_text($text) {
     $this->rawtext = $text;
@@ -43,7 +106,7 @@ class Template extends Item {
   }
   
   protected function join_params() {
-    foreach($this->param as $p) {
+    if ($this->param) foreach($this->param as $p) {
       $ret .= '|' . $p->parsed_text();
     }
     return $ret;
@@ -58,14 +121,15 @@ class Template extends Item {
     }
   }
   
-  public function add_param($param, $val) {
+  public function add_param($par, $val) {
     if ($this->param[0]) {
-      $p = $this->param[0];
+      $p = new Parameter;
+      $p->parse_text($this->param[0]->parsed_text());
     } else {
       $p = new Parameter;
       $p->parse_text('| param = val');
     }
-    $p->param = $param;
+    $p->param = $par;
     $p->val = $val;
     $this->param[] = $p;
   }
@@ -107,7 +171,6 @@ function extract_object ($text, $class) {
   $regexp = $class::regexp;
   $placeholder_text = $class::placeholder_text;
   while(preg_match($regexp, $text, $match)) {
-  print_r($match);
     $obj = new $class();
     $obj->parse_text($match[0]);
     $objects[] = $obj;
@@ -116,3 +179,12 @@ function extract_object ($text, $class) {
   }
   return array($text, $objects);
 }
+
+function replace_object ($text, $objects) {
+  $i = count($objects);
+  foreach (array_reverse($objects) as $obj) {
+    $placeholder_format = $obj::placeholder_text;
+    $text = str_replace(sprintf($placeholder_format, --$i), $obj->parsed_text(), $text);
+  }
+  return $text;
+} 

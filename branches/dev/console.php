@@ -11,8 +11,12 @@ $problem_text =  <<<problemtxt
 {{tempalte}}
 {{template | gah = 8}}
 {{nested | te = {{template | gah = 8 = two-equals}} | <!--comment | comment --> }}
-<ref name="SGP review">{{cite journal | class = test }}</ref>
-<ref name="SGP review"/>
+<ref name="SGP review" group="tester">
+{{cite journal 
+| class = test }}
+</ref>
+<ref name="SGP review" />
+<ref name="SGP review" group='Test gr"oup'/>
 
 ==References==
 {{Reflist|2|refs=
@@ -22,17 +26,39 @@ $problem_text =  <<<problemtxt
 
 
 problemtxt;
+
+/* Outline 
+*  PLAINTEXT 
+*  - Comments
+  *  - Templates
+  []  o Templates
+  /  + Templates
+  /  - Refs
+  /  - References
+  /  o References
+  /  + References
+/  + Comments
+*/   
     print "begin";
     $text = $problem_text;
-    #$comments = extract_object($text, Comment); 
-    #  $text = $comments[0]; $comments = $comments[1];
+    $comments = extract_object($text, Comment); 
+      $text = $comments[0]; $comments = $comments[1];
     $templates = extract_object($text, Template);
       $text = $templates[0]; $templates = $templates[1];
+      
+      
+    $text = replace_object($text, $templates);
     
-    $templates[3]->add_param('new', 'NEW VALYUE!');
-    //print_r($comments);
-    //print $templates[2]->parsed_text();
+    $short_refs = extract_object($text, Short_Reference);
+      $text = $short_refs[0]; $short_refs = $short_refs[1];
+    $long_refs = extract_object($text, Long_Reference);
+      $text = $long_refs[0]; $long_refs = $long_refs[1];
     
+    $text = replace_object($text, $long_refs);
+    $text = replace_object($text, $short_refs);
+    $text = replace_object($text, $comments);
+    print $text;
+
     die("\n# # # \n");
     
 
@@ -97,17 +123,7 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
    
-/* Outline 
-/  PLAINTEXT
-/  - Comments
-  /  - Templates
-  /  o Templates
-  /  + Templates
-  /  - References
-  /  o References
-  /  + References
-/  + Comments
-*/   
+
       $slow_mode = true;
     die (expand_text(
             $problem_text, false, false
