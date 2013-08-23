@@ -9,7 +9,7 @@ include('objects.php');
 $problem_text =  <<<problemtxt
 
 {{tempalte}}
-{{template | gah = 8}}
+{{template | para1 = 8 | para2 = 1rhnoa"-<.}}
 {{nested | te = {{template | gah = 8 = two-equals}} | <!--comment | comment --> }}
 <ref name="SGP review" group="tester">
 {{cite journal 
@@ -46,8 +46,8 @@ problemtxt;
     $templates = extract_object($text, Template);
       $text = $templates[0]; $templates = $templates[1];
       
-      
     $text = replace_object($text, $templates);
+    die("\n$text\n");  
     
     $short_refs = extract_object($text, Short_Reference);
       $text = $short_refs[0]; $short_refs = $short_refs[1];
