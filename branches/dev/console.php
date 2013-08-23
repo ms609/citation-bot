@@ -4,12 +4,14 @@
 #$abort_mysql_connection = true; // Whilst there's a problem with login
 
 ini_set('display_errors', '1');
-include('objects.php');
+include('object_expandFns.php');
 
 $problem_text =  <<<problemtxt
 
-{{tempalte}}
-{{template | para1 = 8 | para2 = 1rhnoa"-<.}}
+{{tempalte}}}
+{{cite doi|: 10.1111/ahgao ,}}
+{{cite doi|doi: 10.1111/ahgao }}
+{{template | para1 = 8 | pages = 1&mdash;2}}
 {{nested | te = {{template | gah = 8 = two-equals}} | <!--comment | comment --> }}
 <ref name="SGP review" group="tester">
 {{cite journal 
@@ -38,14 +40,19 @@ problemtxt;
   /  o References
   /  + References
 /  + Comments
-*/   
+*/  
+
     print "begin";
     $text = $problem_text;
-    $comments = extract_object($text, Comment); 
+    $comments = extract_object($text, Comment);
       $text = $comments[0]; $comments = $comments[1];
     $templates = extract_object($text, Template);
       $text = $templates[0]; $templates = $templates[1];
       
+    foreach ($templates as $t) {
+      
+    }
+     
     $text = replace_object($text, $templates);
     die("\n$text\n");  
     

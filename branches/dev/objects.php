@@ -20,7 +20,7 @@ class Comment extends Item {
   
   public function parsed_text() {
     return $this->rawtext;
-  } 
+  }
 }
 
 class Short_Reference extends Item {
@@ -111,9 +111,15 @@ class Template extends Item {
     }
     return $ret;
   }
-    
+  
+  protected function wikiname() {
+    return strtolower(str_replace('_', ' ', $this->name));
+  }
+  
   protected function split_params($text) {
     # | [pre] [param] [eq] [value] [post]
+    if ($this->wikiname() == 'cite doi')
+      $text = preg_replace('~d?o?i?\s*[:.,;>]*\s*(10\.\S+).*?(\s*)$~', "$1$2", $text);
     $params = explode('|', $text);
     foreach ($params as $i => $text) {
       $this->param[$i] = new Parameter();
@@ -121,6 +127,18 @@ class Template extends Item {
     }
   }
   
+  public function get_param_position ($needle) {
+    foreach ($this->param as $i => $p) {
+      if ($p->param == $needle) return $i;
+    }
+  }
+  
+  public function par($name) {
+    foreach ($this->param as $p) {
+      if ($p->param == $name) return $p->value;
+    }
+  }
+   
   public function add_param($par, $val) {
     if ($this->param[0]) {
       $p = new Parameter;
@@ -152,7 +170,7 @@ class Parameter {
       $this->pre = $pre[0];
       $this->param = trim($split[0]);
       $this->eq = $pre_eq[0] . '=' . $post_eq[0];
-      $this->val = trim($split[1]);
+      $this->parse_val(trim($split[1]));
       $this->post= $post[0];
     } else {
       $this->pre = $pre[0];
@@ -160,6 +178,16 @@ class Parameter {
       $this->post = $pre_eq[0];
     }
   }
+  
+  protected function parse_val($value) {
+    switch ($this->param) {
+      case 'pages':
+        $this->val = mb_ereg_replace(to_en_dash, en_dash, $value);
+      break;
+      default: $this->val = $value;
+    }
+  }
+  
   
   public function parsed_text() {
     return $this->pre . $this->param . $this->eq . $this->val . $this->post;

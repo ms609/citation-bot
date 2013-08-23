@@ -49,7 +49,7 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 define("editinterval", 10);
 define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
 define("comment_placeholder", "### Citation bot : comment placeholder %s ###"); #4 when online...
-define("to_en_dash", "-|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
+define("to_en_dash", "--?|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
 define("blank_ref", "<ref name=\"%s\" />");
 define("reflist_regexp", "~{{\s*[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~u");
 define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
@@ -71,7 +71,7 @@ define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
                     "http://www.ads.lipi.go.id",
                 ))) . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~");
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
-#define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DO I is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
+#define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 //Common replacements
 $doiIn = array("[", "]", "<", ">", "&#60;!", "-&#62;", "%2F");
 $doiOut = array("&#x5B;", "&#x5D;", "&#60;", "&#62;", "<!", "->", "/");
