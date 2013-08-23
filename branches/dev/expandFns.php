@@ -1196,6 +1196,7 @@ function if_null_set($param, $value) {
     // My sense is that the automatic adding of >30 authors is likely to annoy editors!  
     return false;
   }
+  preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
   switch ($param) {
     case "editor": case "editor-last": case "editor-first":
       $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
@@ -1288,7 +1289,7 @@ function if_null_set($param, $value) {
     case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
     case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
       if (trim($p[$param][0]) == ""
-              && underTwoAuthors($p['author'][0]) && trim($p["author" . substr($param, strlen($param) - 1)][0]) == ""
+              && underTwoAuthors($p['author'][0]) && trim($p["author" . $auNo][0]) == ""
               && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
               && trim($value) != "") {
         set($param, $value);
