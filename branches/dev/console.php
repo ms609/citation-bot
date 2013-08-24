@@ -1,12 +1,15 @@
 #!/usr/bin/php
-<?      
+<?
 // $Id$
 #$abort_mysql_connection = true; // Whilst there's a problem with login
 
 ini_set('display_errors', '1');
 include('object_expandFns.php');
 
+$bot_exclusion_compliant = TRUE;
+
 $problem_text =  <<<problemtxt
+
 
 {{tempalte}}}
 {{cite doi|: 10.1111/ahgao ,}}
@@ -29,6 +32,13 @@ $problem_text =  <<<problemtxt
 
 problemtxt;
 
+$problem_text = <<<testcase
+
+# use unused data
+{{Cite web | http://google.com | title I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}
+
+testcase;
+
 /* Outline 
 *  PLAINTEXT 
 *  - Comments
@@ -39,20 +49,22 @@ problemtxt;
   /  - References
   /  o References
   /  + References
-/  + Comments
-*/  
+/  + Comments*/
 
     print "begin";
     $text = $problem_text;
     $comments = extract_object($text, Comment);
       $text = $comments[0]; $comments = $comments[1];
+    if ($bot_exclusion_compliant && !allowBots($text)) {
+      echo "\n ! Page marked with {{nobots}} template.  Skipping.";
+      die('\n#Todo: NEXT PAGE!');
+    }
     $templates = extract_object($text, Template);
       $text = $templates[0]; $templates = $templates[1];
-      
-    foreach ($templates as $t) {
-      
-    }
-     
+      $start_templates = $templates;
+      for ($i = 0; $i < count($templates); $i++) {
+        $templates[$i]->process();
+      }     
     $text = replace_object($text, $templates);
     die("\n$text\n");  
     
@@ -92,7 +104,7 @@ foreach ($argv as $arg) {
 error_reporting(E_ALL^E_NOTICE);
 $slow_mode = ($argument["slow"] || $argument["slowmode"] || $argument["thorough"]) ? true : false;
 $accountSuffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
-include("expandFns.php");
+include("object_expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
