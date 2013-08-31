@@ -121,8 +121,8 @@ class Template extends Item {
   
   public function addIfnew($param, $value) {
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
-      // The parameter is of 'first101' or 'last2000' format and adds nothing but clutter.
-      // My sense is that the automatic adding of >30 authors is likely to annoy editors!  
+      // Stop at 30 authors - or page codes will become cluttered! 
+      $this->addIfNew('displayauthors', 30);
       return false;
     }
     preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
