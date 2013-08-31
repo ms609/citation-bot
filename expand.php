@@ -263,12 +263,6 @@ function expand_text ($original_code,
       // Fix typos in parameter names
       //Authors
       if (isset($p["authors"]) && !isset($p["author"][0])) {$p["author"] = $p["authors"]; unset($p["authors"]);}
-      // Delete any parameters >10, which won't be displayed anyway
-      for ($au_i = 10; isset($p["last$au_i"]) || isset($p["author$au_i"]); $au_i++) {
-        unset($p["last$au_i"]);
-        unset($p["first$au_i"]);
-        unset($p["author$au_i"]);
-      }
       // Get identifiers from URL
       get_identifiers_from_url();
 
