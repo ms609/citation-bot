@@ -35,7 +35,7 @@ problemtxt;
 $problem_text = <<<testcase
 
 # use unused data
-{{Cite web | http://google.com | title I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}
+{{Cite web | http://google.com | editor1link=test | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}
 
 testcase;
 

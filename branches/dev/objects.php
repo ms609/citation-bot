@@ -110,19 +110,20 @@ class Template extends Item {
   public function process() {
     switch ($this->wikiname()) {
       case 'cite web': 
-        $this->useUnnamedParams();
+        $this->use_unnamed_params();
       break;
     }
+    $this->correct_param_spelling();
   }
   
   public function blank($param) {
     return trim($this->get($param)) == false;
   }
   
-  public function addIfnew($param, $value) {
+  public function add_if_new($param, $value) {
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      $this->addIfNew('displayauthors', 30);
+      $this->add_if_new('displayauthors', 30);
       return false;
     }
     preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
@@ -180,7 +181,7 @@ class Template extends Item {
         if (strpos($value, ',')) {
           $au = explode(',', $value);
           $this->set('last' . $auNo, formatSurname($au[0]));
-          return $this->addIfNew('first' . $auNo, formatForename(trim($au[1])));
+          return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
         }
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
                 && $this->blank("coauthor") && $this->blank("coauthors")
@@ -251,7 +252,7 @@ class Template extends Item {
     }
   }
   
-  protected function useUnnamedParams() {
+  protected function use_unnamed_params() {
     for ($E = 0; $E < count($this->param); $E++) {
       if (!empty($this->param->par)) continue;
       $dat = trim($this->param[$E]->val);
@@ -288,7 +289,7 @@ class Template extends Item {
             default:
               $endnote_parameter = false;
           }
-          if ($endnote_parameter && $this->addIfNew($endnote_parameter, substr($endnote_line, 1))) {
+          if ($endnote_parameter && $this->add_if_new($endnote_parameter, substr($endnote_line, 1))) {
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
         }
@@ -380,7 +381,7 @@ class Template extends Item {
           }
           if ($matched_parameter) { 
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i) $this->addIfNew($matched_parameter, $match[2][$i]);
+            if ($i) $this->add_if_new($matched_parameter, $match[2][$i]);
             else {
               $this->param[$E]->param = $matched_parameter;
               $this->param[$E]->val = $match[2][0];
@@ -462,7 +463,7 @@ class Template extends Item {
           // remove leading spaces or hyphens (which may have been typoed for an equals)
           if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match))
           {
-            $this->addIfNew($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+            $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
           }
       } elseif (substr(trim($dat), 0, 7) == 'http://' && $this->blank('url')) {
         // Is the data a URL, and is the URL parameter blank?
@@ -471,7 +472,7 @@ class Template extends Item {
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match))
       {
         // Is it a number formatted like an ISBN?
-        $this->addIfNew("isbn", $match[1]);
+        $this->add_if_new("isbn", $match[1]);
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -519,6 +520,126 @@ class Template extends Item {
   
   }
   
+  protected function correct_param_spelling() {
+  // check each parameter name against the list of accepted names (loaded in expand.php).
+  // It will correct any that appear to be mistyped.
+  global $parameter_list;
+  // Common mistakes that aren't picked up by the levenshtein approach
+  $common_mistakes = array
+  (
+    "author1-last"  =>  "last",
+    "author2-last"  =>  "last2",
+    "author3-last"  =>  "last3",
+    "author4-last"  =>  "last4",
+    "author5-last"  =>  "last5",
+    "author6-last"  =>  "last6",
+    "author7-last"  =>  "last7",
+    "author8-last"  =>  "last8",
+    "author1-first" =>  "first",
+    "author2-first" =>  "first2",
+    "author3-first" =>  "first3",
+    "author4-first" =>  "first4",
+    "author5-first" =>  "first5",
+    "author6-first" =>  "first6",
+    "author7-first" =>  "first7",
+    "author8-first" =>  "first8",
+    "authorurl"     =>  "authorlink",
+    "authorn"       =>  "author2",
+    "authors"       =>  "author",
+    "ed"            =>  "editor",
+    "ed2"           =>  "editor2",
+    "ed3"           =>  "editor3",
+    "editorlink1"   =>  "editor1-link",
+    "editorlink2"   =>  "editor2-link",
+    "editorlink3"   =>  "editor3-link",
+    "editorlink4"   =>  "editor4-link",
+    "editor1link"   =>  "editor1-link",
+    "editor2link"   =>  "editor2-link",
+    "editor3link"   =>  "editor3-link",
+    "editor4link"   =>  "editor4-link",
+    "editorn"       =>  "editor2",
+    "editorn-link"  =>  "editor2-link",
+    "editorn-last"  =>  "editor2-last",
+    "editorn-first" =>  "editor2-first",
+    "firstn"        =>  "first2",
+    "ibsn"          =>  "isbn",
+    "lastn"         =>  "last2",
+    "number"        =>  "issue",
+    "no"            =>  "issue",
+    "No"            =>  "issue",
+    "No."           =>  "issue",
+    "origmonth"     =>  "month",
+    "pp"            =>  "pages",
+    "p"             =>  "page",
+    "p."            =>  "page",
+    "pp."           =>  "pages",
+    "translator"    =>  "others",
+    "translators"   =>  "others",
+    "vol"           =>  "volume",
+    "Vol"           =>  "volume",
+    "Vol."          =>  "volume",
+  );
+  $mistake_corrections = array_values($common_mistakes);
+  $mistake_keys = array_keys($common_mistakes);
+  foreach ($this->param as $p) {
+    $parameters_used[] = $p->param;
+  }
+  $unused_parameters = array_diff($parameter_list, $parameters_used);
+  
+  $i = 0;
+  foreach ($this->param as $p) {
+    ++$i;
+    if (!in_array($p->param, $parameter_list)) {
+      echo "\n  *  Unrecognised parameter {$p->param} ";
+      $mistake_id = array_search($p->param, $mistake_keys);
+      if ($mistake_id) {
+        // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
+        $p->param =  $mistake_corrections[$mistake_id];
+        echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
+        continue;
+      } 
+
+      // Check the parameter list to find a likely replacement
+      $shortest = -1;
+      foreach ($unused_parameters as $parameter)
+      {
+        $lev = levenshtein($p->param, $parameter, 5, 4, 6);
+        // Strict inequality as we want to favour the longest match possible
+        if ($lev < $shortest || $shortest < 0) {
+          $comp = $closest;
+          $closest = $parameter;
+          $shortish = $shortest;
+          $shortest = $lev;
+        }
+        // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
+        else if ($lev < $shortish) {
+          $shortish = $lev;
+          $comp = $parameter;
+        }
+      }
+      $str_len = strlen($p->param);
+
+      // Account for short words...
+      if ($str_len < 4) {
+        $shortest *= ($str_len / similar_text($p->param, $closest));
+        $shortish *= ($str_len / similar_text($p->param, $comp));
+      }
+      if ($shortest < 12 && $shortest < $shortish) {
+        $p->param = $closest;
+        echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+      } else {
+        $similarity = similar_text($p->param, $closest) / strlen($p->param);
+        if ($similarity > 0.6) {
+          $p->param = $closest;
+          echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+        } else {
+          echo "could not be replaced with confidence.  Please check the citation yourself.";
+        }
+      }
+    }
+  }
+}
+
   protected function join_params() {
     if ($this->param) foreach($this->param as $p) {
       $ret .= '|' . $p->parsed_text();
