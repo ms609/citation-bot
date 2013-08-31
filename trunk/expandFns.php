@@ -1188,7 +1188,8 @@ function if_null_set($param, $value) {
   global $p;
   if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
     // The parameter is of 'first101' or 'last2000' format and adds nothing but clutter.
-    // My sense is that the automatic adding of >30 authors is likely to annoy editors!  
+    // My sense is that the automatic adding of >30 authors is likely to annoy editors!
+    $p['display_authors'] = 30;
     return false;
   }
   switch ($param) {
