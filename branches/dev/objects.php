@@ -111,9 +111,14 @@ class Template extends Item {
     switch ($this->wikiname()) {
       case 'cite web': 
         $this->use_unnamed_params();
+        $this->get_identifiers_from_url();
+        $citation_template = TRUE;
       break;
     }
-    $this->correct_param_spelling();
+    if ($citation_tempate) {
+      if (!$this->blank('authors') && $this->blank('author')) $this->rename('authors', 'author');
+      $this->correct_param_spelling();
+    }
   }
   
   public function blank($param) {
@@ -246,16 +251,65 @@ class Template extends Item {
           return $this->set($param, formatTitle(sanitize_string($value)));
         }
         return false;
-      default: 
+      default:
         if ($this->blank($param) && trim($value) != false) 
           return $this->set($param, sanitize_string($value));
     }
   }
   
+  protected function get_identifiers_from_url() {
+    $url = $this->get('url');
+    // JSTOR
+    if (strpos($url, "jstor.org") !== FALSE) {
+      if (strpos($url, "sici")) {
+        #Skip.  We can't do anything more with the SICI, unfortunately.
+      } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
+        $this->rename("url", "jstor", $match[1]);
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+      }
+    } else {
+      if (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
+        $this->rename("url", "bibcode", urldecode($bibcode[1]));
+      } else if (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+                      . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
+        $this->rename("url", "pmc", $match[1] . $match[2]);
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+      } else if (preg_match("~^https?://d?x?\.?doi\.org/(.*)~", $url, $match)) {
+        $this->rename("url", "doi", urldecode($match[1]));
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+      } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
+        //ARXIV
+        $this->rename("url", "arxiv", $match[1]);
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+      } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
+        $this->rename('url', 'pmid', $match[1]);
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+      } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
+        if ($match['domain'] == ".com") {
+          $this->rename('url', 'asin', $match['id']);
+        } else {
+          $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
+          $this->forget('url');
+          $this->forget('accessdate');
+        }
+        if (strpos($this->name, 'web')) $this->name = 'Cite book';
+      }
+    }
+  }
+  
   protected function use_unnamed_params() {
-    for ($E = 0; $E < count($this->param); $E++) {
-      if (!empty($this->param->par)) continue;
-      $dat = trim($this->param[$E]->val);
+    // Load list of parameters used in citation templates.
+    //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
+    global $parameter_list;
+    foreach ($this->param as $p) {
+      if (!empty($p->param)) {
+        if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
+          $p->val = $p->param . '=' . $p->val;
+          $p->param = 'url';
+        }
+        continue;
+      }
+      $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if ($endnote_test[1]) {
         foreach ($endnote_test as $endnote_line) {
@@ -289,13 +343,13 @@ class Template extends Item {
             default:
               $endnote_parameter = false;
           }
-          if ($endnote_parameter && $this->add_if_new($endnote_parameter, substr($endnote_line, 1))) {
+          if ($endnote_parameter && $this->blank($endnote_parameter)) {
+            $to_add[$endnote_parameter] = substr($endnote_line, 1);
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
         }
       }
-      if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) {
-        // RIS formatted data:
+      if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
         $ris = explode("\n", $dat);
         foreach ($ris as $ris_line) {
           $ris_part = explode(" - ", $ris_line . " ");
@@ -361,7 +415,7 @@ class Template extends Item {
         }
 
       }
-      if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) {
+      if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
         foreach ($match[0] as $i => $oMatch) {
           switch (strtolower($match[1][$i])) {
             case "vol": case "v": case 'volume':
@@ -381,28 +435,30 @@ class Template extends Item {
           }
           if ($matched_parameter) { 
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i) $this->add_if_new($matched_parameter, $match[2][$i]);
+            if ($i) $to_add[$matched_parameter] = $match[2][$i];
             else {
-              $this->param[$E]->param = $matched_parameter;
-              $this->param[$E]->val = $match[2][0];
+              $p->param = $matched_parameter;
+              $p->val = $match[2][0];
             }
           }
         }
       }
-      if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) {
-        if_null_set('volume', $match[1]);
-        if_null_set('issue', $match[2]);
-        if_null_set('pages', $match[3]);
+      if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) { //Vol(is):pp
+        $to_add['volume'] = $match[1];
+        $to_add['issue' ] = $match[2];
+        $to_add['pages' ] = $match[3];
         $dat = trim(str_replace($match[0], '', $dat));
       }
-      if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) {
-        if (if_null_set('year', $match[1])) {
+      if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
+        if ($this->blank('year')) {
+          $to_add['year'] = $match[1];
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      // Load list of parameters used in citation templates.
-      //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
-      global $parameter_list;
+      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) {
+       $to_add['url'] = $match[0];
+       $dat = str_replace($match[0], '', $dat);
+      }
 
       $shortest = -1;
       foreach ($parameter_list as $parameter) {
@@ -411,66 +467,50 @@ class Template extends Item {
           $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->para = $parameter;
+          $this->param = $parameter;
           $this->val = $parameter_value;
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
                     preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
-        if ($para_len < 3)
-        {
-          break; // minimum length to avoid false positives
-        }
-
-        if (preg_match("~\d~", $parameter))
-        {
+        if ($para_len < 3) break; // minimum length to avoid false positives
+        if (preg_match("~\d~", $parameter)) {
           $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
           $para_len++;
-        }
-        else
-        {
+        } else {
           $lev = levenshtein($test_dat, $parameter);
         }
-        if ($lev == 0)
-        {
+        if ($lev == 0) {
           $closest = $parameter;
           $shortest = 0;
           break;
         }
         // Strict inequality as we want to favour the longest match possible
-        if ($lev < $shortest || $shortest < 0)
-        {
+        if ($lev < $shortest || $shortest < 0) {
           $comp = $closest;
           $closest = $parameter;
           $shortish = $shortest;
           $shortest = $lev;
-        }
-        // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
-        else if ($lev < $shortish)
-        {
+        } elseif ($lev < $shortish) {
+          // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
           $shortish = $lev;
           $comp = $parameter;
         }
       }
 
-      if ($shortest < 3
-         && (similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4)
-         &&  ($shortest + 1 < $shortish  // No close competitor
+      if (  $shortest < 3
+         && strlen($test_dat > 0)
+         && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
+         && ($shortest + 1 < $shortish  // No close competitor
              || $shortest / $shortish <= 2/3
              || strlen($closest) > strlen($comp)
-             )
+            )
       ) {
-          // remove leading spaces or hyphens (which may have been typoed for an equals)
-          if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match))
-          {
-            $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
-          }
-      } elseif (substr(trim($dat), 0, 7) == 'http://' && $this->blank('url')) {
-        // Is the data a URL, and is the URL parameter blank?
-        $this->param[$E]->param = 'url';
-        $this->param[$E]->val = $dat;
-      } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match))
-      {
+        // remove leading spaces or hyphens (which may have been typoed for an equals)
+        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
+          $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+        }
+      } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
         $this->add_if_new("isbn", $match[1]);
         $pAll = "";
@@ -493,31 +533,30 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$E]->param = $p1;
-            $this->param[$E]->val = implode(" ", $pAll);
+            $p->param = $p1;
+            $p->val = implode(" ", $pAll);
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$E]->param = 'issue';
-            $this->param[$E]->val = implode(" ", $pAll);
+            $p->param = 'issue';
+            $p->val = implode(" ", $pAll);
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$E]->param = 'accessdate';
-            $this->param[$E]->val = implode(" ", $pAll);
+            $p->param = 'accessdate';
+            $p->val = implode(" ", $pAll);
           }
           break;
-          default:
-            // No good; we'll have to return it to the unused data parameter
-            $i++;
         }
       }
     }
-  
+    foreach ($to_add as $key => $value) {
+      $this->add_if_new($key, $value);
+    }
   }
   
   protected function correct_param_spelling() {
@@ -668,9 +707,18 @@ class Template extends Item {
     }
   }
   
+  public function rename($old, $new, $new_value = FALSE) {
+    foreach ($this->param as $p) {
+      if ($p->param == $old) {
+        $p->param = $new;
+        if ($new_value) $p->val = $new_value;
+      }
+    }
+  }
+  
   public function get($name) {
     foreach ($this->param as $p) {
-      if ($p->param == $name) return $p->value;
+      if ($p->param == $name) return $p->val;
     }
   }
   
@@ -687,6 +735,10 @@ class Template extends Item {
     $p->val = $val;
     $this->param[] = $p;
     return true;
+  }
+  
+  public function forget ($par) {
+    unset($this->param[get_param_position($par)]);
   }
   
   public function parsed_text() {
