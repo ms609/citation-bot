@@ -93,7 +93,7 @@ class Template extends Item {
   const placeholder_text = '# # # Citation bot : template placeholder %s # # #';
   const regexp = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   
-  protected $name, $param;
+  protected $name, $param, $citation_template;
   
   public function parse_text($text) {
     $this->rawtext = $text;
@@ -112,10 +112,16 @@ class Template extends Item {
       case 'cite web': 
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
-        $citation_template = TRUE;
+        $this->tidy_citation();
+        if ($this->get('journal') || $this->get('bibcode') || $this->get('jstor') || $this->get('arxiv')) {
+          if ($this->get('arxiv') && $this->blank('class') $this->rename('arxiv', 'eprint'); #TODO test arXiv handling
+          $this->name = 'Cite journal';
+          $this->process();
+        }
+        $this->citation_template = TRUE;
       break;
     }
-    if ($citation_tempate) {
+    if ($this->citation_tempate) {
       if (!$this->blank('authors') && $this->blank('author')) $this->rename('authors', 'author');
       $this->correct_param_spelling();
     }
@@ -679,6 +685,72 @@ class Template extends Item {
   }
 }
 
+  protected function tidy_citation() {
+    if (!trim($pStart["title"]) && isset($p["title"][0])) {
+      $p["title"][0] = formatTitle($p["title"][0]);
+    } else if ($modifications && is("title")) {
+      $p["title"][0] = (mb_substr($p["title"][0], -1) == ".") ? mb_substr($p["title"][0], 0, -1) : $p["title"][0];
+      $p['title'][0] = straighten_quotes($p['title'][0]);
+    }
+    foreach (array("pages", "page", "issue", "year") as $oParameter) {
+      if (is($oParameter)) {
+        if (!preg_match("~^[A-Za-z ]+\-~", $p[$oParameter][0]) 
+                && mb_ereg(to_en_dash, $p[$oParameter][0])) {
+          $modifications["dashes"] = true;
+          echo ( "\n - Upgrading to en-dash in $oParameter");
+          $p[$oParameter][0] = mb_ereg_replace(to_en_dash, en_dash, $p[$oParameter][0]);
+        }
+      }
+    }
+    //Edition - don't want 'Edition ed.'
+    if (is("edition")) {
+      $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
+    }
+
+    // Don't add ISSN if there's a journal name
+    if (is('journal') && !isset($pStart['issn'][0])) unset($p['issn']);
+    // Remove publisher if [cite journal/doc] warrants it
+    if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
+
+    if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
+      $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
+    }
+    if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
+      $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
+    }
+
+    // If we have any unused data, check to see if any is redundant!
+    if (is("unused_data")) {
+      $freeDat = explode("|", trim($p["unused_data"][0]));
+      unset($p["unused_data"]);
+      foreach ($freeDat as $dat) {
+        $eraseThis = false;
+        foreach ($p as $oP) {
+          similar_text(mb_strtolower($oP[0]), mb_strtolower($dat), $percentSim);
+          if ($percentSim >= 85)
+            $eraseThis = true;
+        }
+        if (!$eraseThis)
+          $p["unused_data"][0] .= "|" . $dat;
+      }
+      if (trim(str_replace("|", "", $p["unused_data"][0])) == "")
+        unset($p["unused_data"]);
+      else {
+        if (substr(trim($p["unused_data"][0]), 0, 1) == "|")
+          $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
+      }
+    }
+    if (is('accessdate') && !is('url')) {
+      unset($p['accessdate']);
+    }
+    
+    if ($modifications['additions']['display-authors']) {
+      if_null_set('author' . ($p['display-authors'][0] + 1), '<Please add first missing authors to populate metadata.>');
+    }
+    
+  }
+
+
   protected function join_params() {
     if ($this->param) foreach($this->param as $p) {
       $ret .= '|' . $p->parsed_text();
@@ -720,6 +792,7 @@ class Template extends Item {
     foreach ($this->param as $p) {
       if ($p->param == $name) return $p->val;
     }
+    return false;
   }
   
   public function set($par, $val) {return $this->add_param($par, $val);} 
