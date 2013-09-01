@@ -2,6 +2,11 @@
 /*$Id$*/
 /* Treats comments, templates and references as objects */
 
+/* 
+# TODO # 
+ - Associate initials with surnames: don't put them on a new line
+*/
+
 include('temp_parameter_list.php'); // #TODO DELETE
 
 define ('ref_regexp', '~<ref.*</ref>~u');
@@ -119,7 +124,15 @@ class Template extends Item {
           if ($this->has('arxiv') && $this->blank('class')) $this->rename('arxiv', 'eprint'); #TODO test arXiv handling
           $this->name = 'Cite journal';
           $this->process();
+        } elseif ($this->has('eprint')) {
+          $this->name = 'Cite arxiv';
+          $this->process();
         }
+        $this->citation_template = TRUE;
+      break;
+      case 'cite arxiv':
+        $this->use_unnamed_params();
+        $this->expand_by_arxiv();
         $this->citation_template = TRUE;
       break;
     }
@@ -134,6 +147,8 @@ class Template extends Item {
   }
   
   public function add_if_new($param, $value) {
+    if (trim($value) == "") return false;
+    echo "\n . + Adding (if new) $param: $value";
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
       $this->add_if_new('displayauthors', 30);
@@ -143,12 +158,12 @@ class Template extends Item {
     switch ($param) {
       case "editor": case "editor-last": case "editor-first":
         $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-        if ($this->blank('editor') && $this->blank("editor-last") && $this->blank("editor-first") && trim($value) != false)
+        if ($this->blank('editor') && $this->blank("editor-last") && $this->blank("editor-first"))
           return $this->add($param, $value); 
         else return false;
       case "author": case "author1": case "last1": case "last": case "authors": // "authors" is automatically corrected by the bot to "author"; include to avoid a false positive.
         $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-        if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first") && trim($value) != false) {
+        if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
             $this->add($param, formatSurname($au[0]));
@@ -164,7 +179,7 @@ class Template extends Item {
       return false;
       case "coauthor": case "coauthors":
         $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-        if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author") && trim($value) != "")
+        if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
           return $this->add($param, $value);
           // Note; we shouldn't be using this parameter ever....
       return false;
@@ -214,8 +229,7 @@ class Template extends Item {
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
         if ($this->blank($param)
                 && underTwoAuthors($p['author'][0]) && $this->blank("author" . $auNo)
-                && $this->blank("coauthor") && $this->blank("coauthors")
-                && trim($value) != "") {
+                && $this->blank("coauthor") && $this->blank("coauthors")) {
           return $this->add($param, $value);
         }
         return false;
@@ -226,25 +240,24 @@ class Template extends Item {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
-        if (trim($value) != "" 
-            && ($this->blank("date") || trim(strtolower($p['date'][0])) == "in press")
+        if (   ($this->blank("date") || trim(strtolower($p['date'][0])) == "in press")
             && ($this->blank("year") || trim(strtolower($p['year'][0])) == "in press") 
           ) {
           return $this->add($param, $value);
         }
         return false;
       case "periodical": case "journal":
-        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work") && trim($value) != "") {
+        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           return $this->add($param, sanitize_string($value));
         }
         return false;
       case 'chapter': case 'contribution':
-        if ($this->blank("chapter") && $this->blank("contribution") && trim($value) != "") {
+        if ($this->blank("chapter") && $this->blank("contribution")) {
           return $this->add($param, $value);
         }
         return false;
       case "page": case "pages":
-        if (( $this->blank("pages") && $this->blank("page") && trim($value) != "")
+        if (( $this->blank("pages") && $this->blank("page"))
                 || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
                 || (strpos($value, chr(2013)) || (strpos($value, '-'))
                   && !strpos($this->get('pages'), chr(2013))
@@ -255,12 +268,24 @@ class Template extends Item {
         ) return $this->add($param, sanitize_string($value));
         return false;
       case 'title': 
-        if ($this->blank($param) && trim($value) != "") {
+        if ($this->blank($param)) {
           return $this->format_title(sanitize_string($value));
         }
         return false;
+      case 'class':
+        if ($this->blank($param) && strpos($this->get('eprint'), '/') === FALSE ) {        
+          return $this->add($param, sanitize_string($value));
+        }
+        return false;
+      case 'doi':
+        if ($this->blank($param) &&  preg_match('~(10\..+)$~', $value, $match)) { 
+          $this->add('doi', $match[0]);
+          $this->expand_by_doi();
+          return true;
+        }
+        return false;
       default:
-        if ($this->blank($param) && trim($value) != false) {        
+        if ($this->blank($param)) {        
           return $this->add($param, sanitize_string($value));
         }
     }
@@ -285,11 +310,12 @@ class Template extends Item {
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/(.*)~", $url, $match)) {
         $this->rename("url", "doi", urldecode($match[1]));
+        $this->expand_by_doi();
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
         //ARXIV
-        $this->rename("url", "arxiv", $match[1]);
-        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        $this->rename("url", "eprint", $match[1]);
+        if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
         $this->rename('url', 'pmid', $match[1]);
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
@@ -304,6 +330,72 @@ class Template extends Item {
         if (strpos($this->name, 'web')) $this->name = 'Cite book';
       }
     }
+  }
+ 
+  ### Obtain data from external database
+  protected function expand_by_arxiv() {
+    if ($this->wikiname() == 'cite arxiv') {
+      $arxiv_param = 'eprint';
+      $this->rename('arxiv', 'eprint');
+    } else { 
+      $arxiv_param = 'arxiv';
+      $this->rename('eprint', 'arxiv'); 
+    }
+    $class = $this->get('class');
+    $eprint = str_ireplace("arXiv:", "", $this->get('eprint') . $this->get('arxiv'));
+    if ($class && substr($eprint, 0, strlen($class) + 1) == $class . '/')
+      $eprint = substr($eprint, strlen($class) + 1);
+    $this->set($arxiv_param, $eprint);
+    
+    if ($eprint) {
+      echo "\n * Getting data from arXiv " . $eprint;
+      $xml = simplexml_load_string(
+        preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint"))
+      );
+    }
+    if ($xml) {
+      foreach ($xml->entry->author as $auth) {
+        $i++;
+        $name = $auth->name;
+        if (preg_match("~(.+\.)(.+?)$~", $name, $names)) {
+          $this->add_if_new("last$i", $names[2]); 
+          $this->add_if_new("first$i", $names[1]);
+        } else {
+          $this->add_if_new("author$i", $name);
+        }
+      }
+      $this->add_if_new("title", (string) $xml->entry->title);
+      $this->add_if_new("class", (string) $xml->entry->category["term"]);
+      $this->add_if_new("author", substr($authors, 2));
+      $this->add_if_new("doi", (string) $xml->entry->arxivdoi);
+        
+      if ($xml->entry->arxivjournal_ref) {
+        $journal_data = (string) $xml->entry->arxivjournal_ref;
+        if (preg_match("~(\(?([12]\d{3})\)?).*?$~", $journal_data, $match)) {
+          $journal_data = str_replace($match[1], "", $journal_data);
+          $this->add_if_new("year", $match[2]);
+        }
+        if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
+          $journal_data = str_replace($match[0], "", $journal_data);
+          $this->add_if_new("pages", str_replace("--", en_dash, $match[0]));
+        }
+        if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
+          $this->add_if_new("volume", $match[1]);
+          $this->add_if_new("issue", $match[2]);
+          $journal_data = preg_replace("~[\s:,;]*$~", "", 
+                  str_replace(array($match[1], $match[2]), "", $journal_data));
+        }
+        $this->add_if_new("journal", $journal_data);
+      } else {
+        $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
+      } 
+      return true;
+    }
+    return false;
+  }
+  
+  protected function expand_by_doi() {
+    #TODO;
   }
  
   ### parameter processing
