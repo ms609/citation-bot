@@ -147,6 +147,9 @@ class Template extends Item {
         $this->handle_et_al();
         $this->use_unnamed_params();
         $this->id_to_param();
+        echo "\n* " . $this->get('title');
+        $this->correct_param_spelling();
+        if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
       break;
     }
     if ($this->citation_tempate) {
@@ -411,6 +414,68 @@ class Template extends Item {
     #TODO;
   }
  
+  protected function expand_by_google_books() {
+    $url = $this->get('url');
+    if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
+      if (strpos($url, "#")) {
+        $url_parts = explode("#", $url);
+        $url = $url_parts[0];
+        $hash = "#" . $url_parts[1];
+      }
+      $url_parts = explode("&", str_replace("?", "&", $url));
+      $url = "http://books.google.com/?id=" . $gid[1];
+      foreach ($url_parts as $part) {
+        $part_start = explode("=", $part);
+        switch ($part_start[0]) {
+          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq":
+            $url .= "&" . $part;
+          // TODO: vq takes precedence over dq > q.  Only use one of the above.
+          case "id":
+            break; // Don't "remove redundant"
+          case "as": case "useragent": case "as_brr": case "source":  case "hl":
+          case "ei": case "ots": case "sig": case "source": case "lr":
+          case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
+          default:
+            echo "\n - $part";
+            $removed_redundant++;
+        }
+      }
+      if ($removed_redundant > 1) { // http:// is counted as 1 parameter
+        $this->set('url', $url . $hash);
+      }
+      $this->google_book_details($gid[1]);
+      return true;
+    }
+    return false;
+  }
+
+  protected function google_book_details ($gid) {
+    $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
+    $simplified_xml = str_replace(":", "___", file_get_contents($google_book_url));
+    $xml = simplexml_load_string($simplified_xml);
+    if ($xml->dc___title[1]) {
+      $this->add_if_new("title", str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]));
+    } else {
+      $this->add_if_new("title", str_replace("___", ":", $xml->title));
+    }
+    // Possibly contains dud information on occasion
+    // $this->add_if_new("publisher", str_replace("___", ":", $xml->dc___publisher)); 
+    foreach ($xml->dc___identifier as $ident) {
+      if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
+        $isbn = $match[1];
+      }
+    }
+    $this->add_if_new("isbn", $isbn);
+    // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
+    $i = null;
+    if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
+      foreach ($xml->dc___creator as $author) {
+        $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
+      }
+    }
+    $this->add_if_new("date", $xml->dc___date);
+  }
+ 
   ### parameter processing
   protected function use_unnamed_params() {
     // Load list of parameters used in citation templates.
@@ -421,6 +486,10 @@ class Template extends Item {
         if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
           $this->param[$iP]->val = $p->param . '=' . $p->val;
           $this->param[$iP]->param = 'url';
+          if (stripos($p->val, 'books.google.') !== FALSE) {
+            $this->name = 'Cite book';
+            $this->process();
+          }
         }
         continue;
       }
@@ -672,7 +741,6 @@ class Template extends Item {
     }
   }
   
-  
   protected function id_to_param() {
     $id = $this->get('id');
     if (trim($id)) {
@@ -761,7 +829,6 @@ class Template extends Item {
     }
     if (trim($id)) $this->set('id', $id); else $this->forget('id');
   }
-
   
   protected function correct_param_spelling() {
   // check each parameter name against the list of accepted names (loaded in expand.php).

@@ -35,9 +35,8 @@ problemtxt;
 $problem_text = <<<testcase
 
 {nobots}}
-
-{{Cite book | id = isbn 10348-81958-1}}
-
+# Google book expansion
+{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}
 
 
 testcase;
