@@ -150,6 +150,8 @@ class Template extends Item {
         echo "\n* " . $this->get('title');
         $this->correct_param_spelling();
         if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
+        $this->tidy();
+        if ($this->find_isbn()) echo "\n * Found ISBN " . $this->get('isbn');
       break;
     }
     if ($this->citation_tempate) {
@@ -476,6 +478,23 @@ class Template extends Item {
     $this->add_if_new("date", $xml->dc___date);
   }
  
+  protected function find_isbn() {
+    return FALSE; #TODO restore this service.
+    if ($this->blank('isbn') && $this->has('title')) {
+      $title = trim($this->get('title'));
+      $auth = trim($this->get('author') . $this->get('author1') . ' ' . $this->get('last') . $this->get('last1'));
+      global $isbnKey, $over_isbn_limit;
+      // TODO: implement over_isbn_limit based on &results=keystats in API
+      if ($title && !$over_isbn_limit) {
+        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth));
+        print "\n\nhttp://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
+        if ($xml->BookList["total_results"] == 1) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
+        if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
+        else return false;
+      }
+    }
+  }
+  
   ### parameter processing
   protected function use_unnamed_params() {
     // Load list of parameters used in citation templates.
@@ -993,9 +1012,13 @@ class Template extends Item {
     if ($this->has('edition')) {
       $this->set('edition', preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get('edition')));
     }
-
+    
+    if ($this->has('authors') && $this->blank('author')) $this->rename('authors', 'author');
+    if ($this->blank('date') && $this->blank('year') && $this->has('origyear')) $this->rename('origyear', 'year');
+       
     // Don't add ISSN if there's a journal name
     if ($this->added('journal') || $this->get('journal') && $this->added('issn')) $this->forget('issn');
+       
     
     // Remove publisher if [cite journal/doc] warrants it
     if ($this->has('journal') && ($this->has('doi') || $this->has('issn'))) $this->forget('publisher');
@@ -1006,6 +1029,8 @@ class Template extends Item {
       if ($new_issue) $this->set('issue', $new_issue);
       else $this->forget('issue');
     }
+    
+    if ($this->get('doi') == "10.1267/science.040579197") $this->forget('doi'); // This is a bogus DOI from the PMID example file
     
     /*/ If we have any unused data, check to see if any is redundant!
     if (is("unused_data")) {
@@ -1030,7 +1055,7 @@ class Template extends Item {
     }*/
     if ($this->has('accessdate') && $this->lacks('url')) $this->forget('accessdate');
   }
-
+  
   protected function format_title($title=FALSE) {
     if (!$title) $title = $this->get('title');
     $title = html_entity_decode($title, null, "UTF-8");
@@ -1122,7 +1147,7 @@ class Template extends Item {
     if ($this->param) foreach ($this->param as $p) {
       if ($p->param == $name) return $p->val;
     }
-    return false;
+    return NULL;
   }
   
   public function has($par) {return (bool) strlen($this->get($par));}
@@ -1259,7 +1284,6 @@ function allowBots( $text ) {
     return false;
   return true;
 }
-
 
 
 global $author_parameters;

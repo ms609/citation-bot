@@ -35,8 +35,9 @@ problemtxt;
 $problem_text = <<<testcase
 
 {nobots}}
-# Google book expansion
-{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}
+
+#ISBN 
+{{Cite book| title=Wonderful Life: The Burgess Shale and the Nature of History| author1=Gould| first1=Stephen Jay| year=1990}}
 
 
 testcase;
