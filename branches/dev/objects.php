@@ -146,6 +146,7 @@ class Template extends Item {
         $this->citation_template = TRUE;
         $this->handle_et_al();
         $this->use_unnamed_params();
+        $this->id_to_param();
       break;
     }
     if ($this->citation_tempate) {
@@ -670,6 +671,97 @@ class Template extends Item {
       if (!trim($dat)) unset($this->param[$iP]);
     }
   }
+  
+  
+  protected function id_to_param() {
+    $id = $this->get('id');
+    if (trim($id)) {
+      echo ("\n - Trying to convert ID parameter to parameterized identifiers.");
+    } else {
+      return false;
+    }
+    if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARVIV|LCCN)[\s:]*(\d[^\s\}\{\|]*)~iu", $id, $match)) {
+      $this->add_if_new(strtolower($match[1]), $match[2]);
+      $id = str_replace($match[0], '', $id);
+    }
+    preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
+    foreach ($match["content"] as $i => $content) {
+      $content = explode(pipePlaceholder, $content);
+      unset($parameters);
+      $j = 0;
+      foreach ($content as $fragment) {
+        $content[$j++] = $fragment;
+        $para = explode("=", $fragment);
+        if (trim($para[1])) {
+          $parameters[trim($para[0])] = trim($para[1]);
+        }
+      }
+      switch (strtolower(trim($content[0]))) {
+        case "arxiv":
+          array_shift($content);
+          if ($parameters["id"]) {
+            $this->add_if_new("arxiv", ($parameters["archive"] ? trim($parameters["archive"]) . "/" : "") . trim($parameters["id"]));
+          } else if ($content[1]) {
+            $this->add_if_new("arxiv", trim($content[0]) . "/" . trim($content[1]));
+          } else {
+            $this->add_if_new("arxiv", implode(pipePlaceholder, $content));
+          }
+          $id = str_replace($match[0][$i], "", $id);
+          break;
+        case "lccn":
+          $this->add_if_new("lccn", trim($content[1]) . $content[3]);
+          $id = str_replace($match[0][$i], "", $id);
+          break;
+        case "rfcurl":
+          $identifier_parameter = "rfc";
+        case "asin":
+          if ($parameters["country"]) {
+            echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
+            break;
+          }
+        case "oclc":
+          if ($content[2]) {
+            echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
+            break;
+          }
+        case "ol":
+          if ($parameters["author"]) {
+            echo "\n    - {{OL}} author parameter not supported: can't convert.";
+            break;
+          }
+        case "bibcode":
+        case "doi":
+        case "isbn":
+        case "issn":
+        case "jfm":
+        case "jstor":
+          if ($parameters["sici"] || $parameters["issn"]) {
+            echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
+            break;
+          }
+        case "mr":
+        case "osti":
+        case "pmid":
+        case "pmc":
+        case "ssrn":
+        case "zbl":
+          if ($identifier_parameter) {
+            array_shift($content);
+          }
+          if (!$this->add_if_new($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))), $parameters["id"] ? $parameters["id"] : $content[0]
+          )) {
+            $modifications["removed"] = true;
+          }
+          $identifier_parameter = null;
+          $id = str_replace($match[0][$i], "", $id);
+          break;
+        default:
+          echo "\n    - No match found for $content[0].";
+      }
+    }
+    if (trim($id)) $this->set('id', $id); else $this->forget('id');
+  }
+
   
   protected function correct_param_spelling() {
   // check each parameter name against the list of accepted names (loaded in expand.php).

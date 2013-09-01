@@ -36,7 +36,7 @@ $problem_text = <<<testcase
 
 {nobots}}
 
-{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}
+{{Cite book | id = isbn 10348-81958-1}}
 
 
 
