@@ -35,12 +35,8 @@ problemtxt;
 $problem_text = <<<testcase
 
 {nobots}}
-# Get identifiers from URL
-# arXiv {{Cite web | http://uk.arxiv.org/abs/0806.0013}}
-# arXiv {{Cite arxiv | eprint=gr-qc/0610068}}
-# arXiv {{Cite arxiv | eprint=0707.0835 |class=math.CT }}
-# arXiv {{Cite arxiv | eprint=math.CT/0707.0835 |class=math.CT }}
-# journa; {{cite journal | arxiv=0704.0001 }}
+
+{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}
 
 
 

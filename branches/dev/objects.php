@@ -119,7 +119,7 @@ class Template extends Item {
       case 'cite web': 
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
-        $this->tidy_citation();
+        $this->tidy();
         if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
           if ($this->has('arxiv') && $this->blank('class')) $this->rename('arxiv', 'eprint'); #TODO test arXiv handling
           $this->name = 'Cite journal';
@@ -131,9 +131,21 @@ class Template extends Item {
         $this->citation_template = TRUE;
       break;
       case 'cite arxiv':
+        $this->citation_template = TRUE;
         $this->use_unnamed_params();
         $this->expand_by_arxiv();
+        $this->expand_by_doi();
+        $this->tidy();
+        if ($this->has('journal')) {
+          $this->name = 'Cite journal';
+          $this->rename('eprint', 'arxiv');
+          $this->forget('class');
+        }
+      break;
+      case 'cite book':
         $this->citation_template = TRUE;
+        $this->handle_et_al();
+        $this->use_unnamed_params();
       break;
     }
     if ($this->citation_tempate) {
@@ -778,7 +790,7 @@ class Template extends Item {
     }
   }
 }
-   ### Stuff with params
+  
   protected function join_params() {
     if ($this->param) foreach($this->param as $p) {
       $ret .= '|' . $p->parsed_text();
@@ -802,7 +814,7 @@ class Template extends Item {
   }
   
   ### Tidying and formatting
-  protected function tidy_citation() {
+  protected function tidy() {
     if ($this->added('title')) {
       $this->format_title();
     } else if ($this->is_modified() && $this->get('title')) {
@@ -879,6 +891,58 @@ class Template extends Item {
     $this->set('title', str_ireplace($iIn, $iOut, str_ireplace($in, $out, niceTitle($title)))); // order IS important!
   }
 
+  protected function handle_et_al() {
+    global $author_parameters;
+    foreach ($author_parameters as $i => $group) {
+      foreach ($group as $param) {
+        if (strpos($this->get($param), 'et al')) {
+          $authors_missing = true;
+          $val_base = preg_replace("~,?\s*'*et al['.]*~", '', $this->get($param));
+          if ($i == 1) {
+            // then there's scope for "Smith, AB; Peters, Q.R. et al"
+            $coauthor_parameter = strpos($param, 'co') === FALSE ? 0 : 1;
+            if (strpos($val_base, ';')) {
+              $authors = explode(';', $val_base);
+            } else if (substr_count($val_base, ',') > 1
+                    || substr_count($val_base, ',') < substr_count(trim($val_base), ' ')) {
+              // then we (probably) have a list of authors joined by commas in our first parameter
+              $authors = explode(',', $val_base);
+              $this->add_if_new('author-separator', ',');
+            }
+            
+            if ($authors) {
+              foreach ($authors as $au) {
+                if ($i == 1) {
+                  if ($coauthor_parameter) {
+                    $this->forget($param);
+                    $this->set('author2', $au);
+                  } elseif ($param == 'authors') {
+                    $this->add_if_new('last1', $au); // add_if_new will separate initials into first1
+                    $this->forget('authors');
+                  } else {
+                    $this->set($param, $au);
+                  }
+                  $i = 2;
+                }
+                else {
+                  $this->add_if_new('author' . ($i++ + $coauthor_parameter), $au);
+                }
+              }
+              $i--;
+            } else {
+              $this->set($param, $val_base);
+            }
+          }
+          if (trim($val_base) == "") {
+            $this->forget($param);
+          }
+          $this->add_if_new('author' . ($i + 1), 'and others');
+          $this->add_if_new('displayauthors', $i);
+        }
+      }
+    }
+  }
+  
   protected function get_param_position ($needle) {
     foreach ($this->param as $i => $p) {
       if ($p->param == $needle) return $i;
@@ -1036,3 +1100,98 @@ function allowBots( $text ) {
     return false;
   return true;
 }
+
+
+
+global $author_parameters;
+$author_parameters = array(
+    1 => array('last', 'author', 'first', 'coauthors', 'coauthor', 'authors', 'first1', 'last1', 'author1'),
+    2 => array('first2', 'last2', 'author2'),
+    3 => array('first3', 'last3', 'author3'),
+    4 => array('first4', 'last4', 'author4'),
+    5 => array('first5', 'last5', 'author5'),
+    6 => array('first6', 'last6', 'author6'),
+    7 => array('first7', 'last7', 'author7'),
+    8 => array('first8', 'last8', 'author8'),
+    9 => array('first9', 'last9', 'author9'),
+    10 => array('first10', 'last10', 'author10'),
+    11 => array('first11', 'last11', 'author11'),
+    12 => array('first12', 'last12', 'author12'),
+    13 => array('first13', 'last13', 'author13'),
+    14 => array('first14', 'last14', 'author14'),
+    15 => array('first15', 'last15', 'author15'),
+    16 => array('first16', 'last16', 'author16'),
+    17 => array('first17', 'last17', 'author17'),
+    18 => array('first18', 'last18', 'author18'),
+    19 => array('first19', 'last19', 'author19'),
+    20 => array('first20', 'last20', 'author20'),
+    21 => array('first21', 'last21', 'author21'),
+    22 => array('first22', 'last22', 'author22'),
+    23 => array('first23', 'last23', 'author23'),
+    24 => array('first24', 'last24', 'author24'),
+    25 => array('first25', 'last25', 'author25'),
+    26 => array('first26', 'last26', 'author26'),
+    27 => array('first27', 'last27', 'author27'),
+    28 => array('first28', 'last28', 'author28'),
+    29 => array('first29', 'last29', 'author29'),
+    30 => array('first30', 'last30', 'author30'),
+    31 => array('first31', 'last31', 'author31'),
+    32 => array('first32', 'last32', 'author32'),
+    33 => array('first33', 'last33', 'author33'),
+    34 => array('first34', 'last34', 'author34'),
+    35 => array('first35', 'last35', 'author35'),
+    36 => array('first36', 'last36', 'author36'),
+    37 => array('first37', 'last37', 'author37'),
+    38 => array('first38', 'last38', 'author38'),
+    39 => array('first39', 'last39', 'author39'),
+    40 => array('first40', 'last40', 'author40'),
+    41 => array('first41', 'last41', 'author41'),
+    42 => array('first42', 'last42', 'author42'),
+    43 => array('first43', 'last43', 'author43'),
+    44 => array('first44', 'last44', 'author44'),
+    45 => array('first45', 'last45', 'author45'),
+    46 => array('first46', 'last46', 'author46'),
+    47 => array('first47', 'last47', 'author47'),
+    48 => array('first48', 'last48', 'author48'),
+    49 => array('first49', 'last49', 'author49'),
+    50 => array('first50', 'last50', 'author50'),
+    51 => array('first51', 'last51', 'author51'),
+    52 => array('first52', 'last52', 'author52'),
+    53 => array('first53', 'last53', 'author53'),
+    54 => array('first54', 'last54', 'author54'),
+    55 => array('first55', 'last55', 'author55'),
+    56 => array('first56', 'last56', 'author56'),
+    57 => array('first57', 'last57', 'author57'),
+    58 => array('first58', 'last58', 'author58'),
+    59 => array('first59', 'last59', 'author59'),
+    60 => array('first60', 'last60', 'author60'),
+    61 => array('first61', 'last61', 'author61'),
+    62 => array('first62', 'last62', 'author62'),
+    63 => array('first63', 'last63', 'author63'),
+    64 => array('first64', 'last64', 'author64'),
+    65 => array('first65', 'last65', 'author65'),
+    66 => array('first66', 'last66', 'author66'),
+    67 => array('first67', 'last67', 'author67'),
+    68 => array('first68', 'last68', 'author68'),
+    69 => array('first69', 'last69', 'author69'),
+    70 => array('first70', 'last70', 'author70'),
+    71 => array('first71', 'last71', 'author71'),
+    72 => array('first72', 'last72', 'author72'),
+    73 => array('first73', 'last73', 'author73'),
+    74 => array('first74', 'last74', 'author74'),
+    75 => array('first75', 'last75', 'author75'),
+    76 => array('first76', 'last76', 'author76'),
+    77 => array('first77', 'last77', 'author77'),
+    78 => array('first78', 'last78', 'author78'),
+    79 => array('first79', 'last79', 'author79'),
+    80 => array('first80', 'last80', 'author80'),
+    81 => array('first81', 'last81', 'author81'),
+    82 => array('first82', 'last82', 'author82'),
+    83 => array('first83', 'last83', 'author83'),
+    84 => array('first84', 'last84', 'author84'),
+    85 => array('first85', 'last85', 'author85'),
+    86 => array('first86', 'last86', 'author86'),
+    87 => array('first87', 'last87', 'author87'),
+    88 => array('first88', 'last88', 'author88'),
+    89 => array('first89', 'last89', 'author89'),
+);
