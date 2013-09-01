@@ -143,12 +143,11 @@ class Template extends Item {
   }
   
   public function blank($param) {
-    return trim($this->get($param)) === FALSE;
+    return $this->has($param) ? trim($this->get($param)) === FALSE : TRUE;
   }
   
   public function add_if_new($param, $value) {
     if (trim($value) == "") return false;
-    echo "\n . + Adding (if new) $param: $value";
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
       $this->add_if_new('displayauthors', 30);
@@ -357,7 +356,7 @@ class Template extends Item {
       foreach ($xml->entry->author as $auth) {
         $i++;
         $name = $auth->name;
-        if (preg_match("~(.+\.)(.+?)$~", $name, $names)) {
+        if (preg_match("~(.+\.)(.+?)$~", $name, $names) || preg_match('~^\s*(\S+) (\S+)\s*$~', $name, $names)) {
           $this->add_if_new("last$i", $names[2]); 
           $this->add_if_new("first$i", $names[1]);
         } else {
