@@ -113,8 +113,8 @@ class Template extends Item {
     switch ($this->wikiname()) {
       case 'cite web': 
         $this->use_unnamed_params();
-       # $this->get_identifiers_from_url();
-       # $this->tidy_citation();
+        $this->get_identifiers_from_url();
+        $this->tidy_citation();
         if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
           if ($this->has('arxiv') && $this->blank('class')) $this->rename('arxiv', 'eprint'); #TODO test arXiv handling
           $this->name = 'Cite journal';
@@ -130,7 +130,7 @@ class Template extends Item {
   }
   
   public function blank($param) {
-    return trim($this->get($param)) == false;
+    return trim($this->get($param)) === FALSE;
   }
   
   public function add_if_new($param, $value) {
@@ -245,7 +245,7 @@ class Template extends Item {
         return false;
       case "page": case "pages":
         if (( $this->blank("pages") && $this->blank("page") && trim($value) != "")
-                || strpos(strtolower($this->get('pages') . $this->get('page'), 'no')) !== FALSE
+                || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
                 || (strpos($value, chr(2013)) || (strpos($value, '-'))
                   && !strpos($this->get('pages'), chr(2013))
                   && !strpos($this->get('pages'), chr(150)) // Also en-dash
@@ -311,11 +311,11 @@ class Template extends Item {
     // Load list of parameters used in citation templates.
     //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
     global $parameter_list;
-    foreach ($this->param as $p) {
+    foreach ($this->param as $iP => $p) {
       if (!empty($p->param)) {
         if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-          $p->val = $p->param . '=' . $p->val;
-          $p->param = 'url';
+          $this->param[$iP]->val = $p->param . '=' . $p->val;
+          $this->param[$iP]->param = 'url';
         }
         continue;
       }
@@ -445,28 +445,28 @@ class Template extends Item {
           }
           if ($matched_parameter) { 
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i) $to_add[$matched_parameter] = $match[2][$i];
+            if ($i) $this->add_if_new($matched_parameter, $match[2][$i]);
             else {
-              $p->param = $matched_parameter;
-              $p->val = $match[2][0];
+              $this->param[$i]->param = $matched_parameter;
+              $this->param[$i]->val = $match[2][0];
             }
           }
         }
       }
       if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) { //Vol(is):pp
-        $to_add['volume'] = $match[1];
-        $to_add['issue' ] = $match[2];
-        $to_add['pages' ] = $match[3];
+        $this->add_if_new('volume', $match[1]);
+        $this->add_if_new('issue' , $match[2]);
+        $this->add_if_new('pages' , $match[3]);
         $dat = trim(str_replace($match[0], '', $dat));
       }
       if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
         if ($this->blank('year')) {
-          $to_add['year'] = $match[1];
+          $this->set('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) {
-        $to_add['url'] = $match[0];
+        $this->set('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
 
@@ -477,8 +477,8 @@ class Template extends Item {
           $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->param = $parameter;
-          $this->val = $parameter_value;
+          $this->param[$iP]->param = $parameter;
+          $this->param[$iP]->val = $parameter_value;
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
@@ -518,11 +518,11 @@ class Template extends Item {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-          $to_add[$closest] = $match[1]/* . " [$shortest / $comp = $shortish]"*/;
+          $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $to_add['isbn'] = $match[1];
+        $this->add('isbn', $match[1]);
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -543,29 +543,27 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $p->param = $p1;
-            $p->val = implode(" ", $pAll);
+            $this->param[$iP]->param = $p1;
+            $this->param[$iP]->val = implode(" ", $pAll);
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $p->param = 'issue';
-            $p->val = implode(" ", $pAll);
+            $this->param[$iP]->param = 'issue';
+            $this->param[$iP]->val = implode(" ", $pAll);
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $p->param = 'accessdate';
-            $p->val = implode(" ", $pAll);
+            $this->param[$iP]->param = 'accessdate';
+            $this->param[$iP]->val = implode(" ", $pAll);
           }
           break;
         }
       }
-    }
-    if (count($to_add)) foreach ($to_add as $key => $value) {
-      $this->add_if_new($key, $value);
+      if (!trim($dat)) unset($this->param[$iP]);
     }
   }
   
@@ -740,7 +738,11 @@ class Template extends Item {
     if ($this->has('journal') && ($this->has('doi') || $this->has('issn'))) $this->forget('publisher');
     
     // Remove leading zeroes
-    if ($this->has('issue')) $this->set('issue', preg_replace('~^0+~', '', $this->get('issue')));
+    if (!$this->blank('issue')) {
+      $new_issue =  preg_replace('~^0+~', '', $this->get('issue'));
+      if ($new_issue) $this->set('issue', $new_issue);
+      else $this->forget('issue');
+    }
     
     /*/ If we have any unused data, check to see if any is redundant!
     if (is("unused_data")) {
@@ -808,11 +810,12 @@ class Template extends Item {
     return false;
   }
   
-  public function has($par) {return (bool) $this->get($par);}
+  public function has($par) {return (bool) strlen($this->get($par));}
   public function lacks($par) {return !$this->has($par);}
   
   public function add($par, $val) {    return $this->set($par, $val);  }
   public function set($par, $val) {
+    if ($this->has($par)) return $this->param[$this->get_param_position($par)]->val = $val;
     if ($this->param[0]) {
       $p = new Parameter;
       $p->parse_text($this->param[0]->parsed_text());
@@ -827,7 +830,7 @@ class Template extends Item {
   }    
   
   public function forget ($par) {
-    unset($this->param[get_param_position($par)]);
+    unset($this->param[$this->get_param_position($par)]);
   }
   
   ### Record modifications
@@ -843,11 +846,18 @@ class Template extends Item {
   protected function added($param) {return $this->modified($param, '+');}
   
   protected function modifications ($type='all') {
-    foreach ($this->param as $p) $new[$p->param] = $p->val;
-    foreach ($this->initial_param as $p) $old[$p->param] = $p->val;
-    $ret['modifications'] = array_keys(array_diff_assoc ($new, $old));
-    $ret['additions'] = array_diff(array_keys($new), array_keys($old));
-    $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
+    if ($this->param) foreach ($this->param as $p) $new[$p->param] = $p->val; else $new = array();
+    if ($this->initial_param) foreach ($this->initial_param as $p) $old[$p->param] = $p->val; else $old = array();
+    if ($new) {
+      if ($old) {
+        $ret['modifications'] = array_keys(array_diff_assoc ($new, $old));
+        $ret['additions'] = array_diff(array_keys($new), array_keys($old));
+        $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
+      } else {
+        $ret['additions'] = array_keys($new);
+        $ret['modifications'] = array_keys($new);
+      }
+    }
     $ret['dashes'] = $this->mod_dashes;
     if (array_search($type, array_keys($ret))) return $ret[$type];
     return $ret;

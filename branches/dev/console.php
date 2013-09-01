@@ -38,9 +38,10 @@ $problem_text = <<<testcase
 # Get identifiers from URL
 # JSTOR {{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true}}
 # PMID {{Cite web | http://www.ncbi.nlm.nih.gov/pubmed/1941451?dopt=AbstractPlus}}
-# PMC {{Cite web | http://www.ncbi.nlm.nih.gov/pmc/articles/PMC154623/}}
-# arXiv {{Cite web | http://uk.arxiv.org/abs/0806.0013}}
-# Amaxon {{Cite web | http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20}}
+# PMC {{Cite web | http://www.ncbi.nlm.nih.gov/pmc/articles/PMC154623/ dat}}
+# arXiv {{Cite web | http://uk.arxiv.org/abs/0806.0013| 2000}}
+# Amaxon {{Cite web | http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 | 23(8):19-92}}
+* {{Cite web | pages=10-11| edition = 3rd ed. | journal=My Journal | issn=1234-4321 | publisher=Unwarranted | issue=0 | accessdate=2013-01-01}}
 
 
 testcase;
