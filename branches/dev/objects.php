@@ -366,13 +366,14 @@ class Template extends Item {
       $this->add_if_new("title", (string) $xml->entry->title);
       $this->add_if_new("class", (string) $xml->entry->category["term"]);
       $this->add_if_new("author", substr($authors, 2));
+      $this->add_if_new("year", substr($xml->entry->published, 0, 4));
       $this->add_if_new("doi", (string) $xml->entry->arxivdoi);
         
       if ($xml->entry->arxivjournal_ref) {
         $journal_data = (string) $xml->entry->arxivjournal_ref;
-        if (preg_match("~(\(?([12]\d{3})\)?).*?$~", $journal_data, $match)) {
+        if (preg_match("~,(\(?([12]\d{3})\)?).*?$~u", $journal_data, $match)) {
           $journal_data = str_replace($match[1], "", $journal_data);
-          $this->add_if_new("year", $match[2]);
+          $this->add_if_new("year", $match[1]);
         }
         if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
           $journal_data = str_replace($match[0], "", $journal_data);
