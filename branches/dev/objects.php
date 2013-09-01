@@ -88,12 +88,13 @@ class Long_Reference extends Item {
   }
   
 }
-  
+ 
+# TEMPLATE #
 class Template extends Item {
   const placeholder_text = '# # # Citation bot : template placeholder %s # # #';
   const regexp = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   
-  protected $name, $param, $citation_template;
+  protected $name, $param, $initial_param, $citation_template, $mod_dashes;
   
   public function parse_text($text) {
     $this->rawtext = $text;
@@ -105,16 +106,17 @@ class Template extends Item {
       $this->name = substr($text, 2, -2);
       $this->param = NULL;
     }
+    $this->initial_param = $this->param;
   }
   
   public function process() {
     switch ($this->wikiname()) {
       case 'cite web': 
         $this->use_unnamed_params();
-        $this->get_identifiers_from_url();
-        $this->tidy_citation();
-        if ($this->get('journal') || $this->get('bibcode') || $this->get('jstor') || $this->get('arxiv')) {
-          if ($this->get('arxiv') && $this->blank('class') $this->rename('arxiv', 'eprint'); #TODO test arXiv handling
+       # $this->get_identifiers_from_url();
+       # $this->tidy_citation();
+        if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
+          if ($this->has('arxiv') && $this->blank('class')) $this->rename('arxiv', 'eprint'); #TODO test arXiv handling
           $this->name = 'Cite journal';
           $this->process();
         }
@@ -142,28 +144,28 @@ class Template extends Item {
       case "editor": case "editor-last": case "editor-first":
         $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
         if ($this->blank('editor') && $this->blank("editor-last") && $this->blank("editor-first") && trim($value) != false)
-          return $this->set($param, $value); 
+          return $this->add($param, $value); 
         else return false;
       case "author": case "author1": case "last1": case "last": case "authors": // "authors" is automatically corrected by the bot to "author"; include to avoid a false positive.
         $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first") && trim($value) != false) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
-            $this->set($param, formatSurname($au[0]));
-            return $this->set('first' . (substr($param, -1) == '1' ? '1' : ''), formatForename(trim($au[1])));
+            $this->add($param, formatSurname($au[0]));
+            return $this->add('first' . (substr($param, -1) == '1' ? '1' : ''), formatForename(trim($au[1])));
           } else {
-            return $this->set($param, $value);
+            return $this->add($param, $value);
           }
         }
       return false;
       case "first": case "first1":
         if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
-          return $this->set($param, $value);
+          return $this->add($param, $value);
       return false;
       case "coauthor": case "coauthors":
         $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author") && trim($value) != "")
-          return $this->set($param, $value);
+          return $this->add($param, $value);
           // Note; we shouldn't be using this parameter ever....
       return false;
       case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
@@ -191,13 +193,13 @@ class Template extends Item {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         if (strpos($value, ',')) {
           $au = explode(',', $value);
-          $this->set('last' . $auNo, formatSurname($au[0]));
+          $this->add('last' . $auNo, formatSurname($au[0]));
           return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
         }
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
                 && $this->blank("coauthor") && $this->blank("coauthors")
                 && underTwoAuthors($p['author'][0])) {
-          return $this->set($param, $value);
+          return $this->add($param, $value);
         }
         return false;
       case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": 
@@ -214,7 +216,7 @@ class Template extends Item {
                 && underTwoAuthors($p['author'][0]) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")
                 && trim($value) != "") {
-          return $this->set($param, $value);
+          return $this->add($param, $value);
         }
         return false;
       case "date":
@@ -228,17 +230,17 @@ class Template extends Item {
             && ($this->blank("date") || trim(strtolower($p['date'][0])) == "in press")
             && ($this->blank("year") || trim(strtolower($p['year'][0])) == "in press") 
           ) {
-          return $this->set($param, $value);
+          return $this->add($param, $value);
         }
         return false;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work") && trim($value) != "") {
-          return $this->set($param, sanitize_string($value));
+          return $this->add($param, sanitize_string($value));
         }
         return false;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution") && trim($value) != "") {
-          return $this->set($param, $value);
+          return $this->add($param, $value);
         }
         return false;
       case "page": case "pages":
@@ -250,16 +252,17 @@ class Template extends Item {
                   && !strpos($this->get('pages'), chr(226)) // Also en-dash
                   && !strpos($this->get('pages'), '-')
                   && !strpos($this->get('pages'), '&ndash;'))
-        ) return $this->set($param, sanitize_string($value));
+        ) return $this->add($param, sanitize_string($value));
         return false;
       case 'title': 
         if ($this->blank($param) && trim($value) != "") {
-          return $this->set($param, formatTitle(sanitize_string($value)));
+          return $this->format_title(sanitize_string($value));
         }
         return false;
       default:
-        if ($this->blank($param) && trim($value) != false) 
-          return $this->set($param, sanitize_string($value));
+        if ($this->blank($param) && trim($value) != false) {        
+          return $this->add($param, sanitize_string($value));
+        }
     }
   }
   
@@ -302,7 +305,8 @@ class Template extends Item {
       }
     }
   }
-  
+ 
+  ### parameter processing
   protected function use_unnamed_params() {
     // Load list of parameters used in citation templates.
     //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
@@ -462,8 +466,8 @@ class Template extends Item {
         }
       }
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) {
-       $to_add['url'] = $match[0];
-       $dat = str_replace($match[0], '', $dat);
+        $to_add['url'] = $match[0];
+        $dat = str_replace($match[0], '', $dat);
       }
 
       $shortest = -1;
@@ -514,11 +518,11 @@ class Template extends Item {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-          $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          $to_add[$closest] = $match[1]/* . " [$shortest / $comp = $shortish]"*/;
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $this->add_if_new("isbn", $match[1]);
+        $to_add['isbn'] = $match[1];
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -560,7 +564,7 @@ class Template extends Item {
         }
       }
     }
-    foreach ($to_add as $key => $value) {
+    if (count($to_add)) foreach ($to_add as $key => $value) {
       $this->add_if_new($key, $value);
     }
   }
@@ -684,73 +688,7 @@ class Template extends Item {
     }
   }
 }
-
-  protected function tidy_citation() {
-    if (!trim($pStart["title"]) && isset($p["title"][0])) {
-      $p["title"][0] = formatTitle($p["title"][0]);
-    } else if ($modifications && is("title")) {
-      $p["title"][0] = (mb_substr($p["title"][0], -1) == ".") ? mb_substr($p["title"][0], 0, -1) : $p["title"][0];
-      $p['title'][0] = straighten_quotes($p['title'][0]);
-    }
-    foreach (array("pages", "page", "issue", "year") as $oParameter) {
-      if (is($oParameter)) {
-        if (!preg_match("~^[A-Za-z ]+\-~", $p[$oParameter][0]) 
-                && mb_ereg(to_en_dash, $p[$oParameter][0])) {
-          $modifications["dashes"] = true;
-          echo ( "\n - Upgrading to en-dash in $oParameter");
-          $p[$oParameter][0] = mb_ereg_replace(to_en_dash, en_dash, $p[$oParameter][0]);
-        }
-      }
-    }
-    //Edition - don't want 'Edition ed.'
-    if (is("edition")) {
-      $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
-    }
-
-    // Don't add ISSN if there's a journal name
-    if (is('journal') && !isset($pStart['issn'][0])) unset($p['issn']);
-    // Remove publisher if [cite journal/doc] warrants it
-    if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
-
-    if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
-      $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
-    }
-    if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
-      $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
-    }
-
-    // If we have any unused data, check to see if any is redundant!
-    if (is("unused_data")) {
-      $freeDat = explode("|", trim($p["unused_data"][0]));
-      unset($p["unused_data"]);
-      foreach ($freeDat as $dat) {
-        $eraseThis = false;
-        foreach ($p as $oP) {
-          similar_text(mb_strtolower($oP[0]), mb_strtolower($dat), $percentSim);
-          if ($percentSim >= 85)
-            $eraseThis = true;
-        }
-        if (!$eraseThis)
-          $p["unused_data"][0] .= "|" . $dat;
-      }
-      if (trim(str_replace("|", "", $p["unused_data"][0])) == "")
-        unset($p["unused_data"]);
-      else {
-        if (substr(trim($p["unused_data"][0]), 0, 1) == "|")
-          $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-      }
-    }
-    if (is('accessdate') && !is('url')) {
-      unset($p['accessdate']);
-    }
-    
-    if ($modifications['additions']['display-authors']) {
-      if_null_set('author' . ($p['display-authors'][0] + 1), '<Please add first missing authors to populate metadata.>');
-    }
-    
-  }
-
-
+   ### Stuff with params
   protected function join_params() {
     if ($this->param) foreach($this->param as $p) {
       $ret .= '|' . $p->parsed_text();
@@ -773,12 +711,87 @@ class Template extends Item {
     }
   }
   
-  public function get_param_position ($needle) {
+  ### Tidying and formatting
+  protected function tidy_citation() {
+    if ($this->added('title')) {
+      $this->format_title();
+    } else if ($this->is_modified() && $this->get('title')) {
+      $this->set('title', straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')));
+    }
+    foreach (array("pages", "page", "issue", "year") as $oParameter) {
+      if ($this->get($oParameter)) {
+        if (!preg_match("~^[A-Za-z ]+\-~", $p[$oParameter][0]) 
+                && mb_ereg(to_en_dash, $p[$oParameter][0])) {
+          $this->mod_dashes = TRUE;
+          echo ( "\n - Upgrading to en-dash in $oParameter");
+          $this->set($oParameter, mb_ereg_replace(to_en_dash, en_dash, $this->get($oParameter)));
+        }
+      }
+    }
+    //Edition - don't want 'Edition ed.'
+    if ($this->has('edition')) {
+      $this->set('edition', preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get('edition')));
+    }
+
+    // Don't add ISSN if there's a journal name
+    if ($this->added('journal') || $this->get('journal') && $this->added('issn')) $this->forget('issn');
+    
+    // Remove publisher if [cite journal/doc] warrants it
+    if ($this->has('journal') && ($this->has('doi') || $this->has('issn'))) $this->forget('publisher');
+    
+    // Remove leading zeroes
+    if ($this->has('issue')) $this->set('issue', preg_replace('~^0+~', '', $this->get('issue')));
+    
+    /*/ If we have any unused data, check to see if any is redundant!
+    if (is("unused_data")) {
+      $freeDat = explode("|", trim($this->get('unused_data')));
+      unset($this->get('unused_data');
+      foreach ($freeDat as $dat) {
+        $eraseThis = false;
+        foreach ($p as $oP) {
+          similar_text(mb_strtolower($oP[0]), mb_strtolower($dat), $percentSim);
+          if ($percentSim >= 85)
+            $eraseThis = true;
+        }
+        if (!$eraseThis)
+          $this->!et('unused_data') .= "|" . $dat;
+      }
+      if (trim(str_replace("|", "", $this->!et('unused_data'))) == "")
+        unset($this->!et('unused_data');
+      else {
+        if (substr(trim($this->!et('unused_data')), 0, 1) == "|")
+          $this->!et('unused_data') = substr(trim($this->!et('unused_data')), 1);
+      }
+    }*/
+    if ($this->has('accessdate') && $this->lacks('url')) $this->forget('accessdate');
+  }
+
+  protected function format_title($title=FALSE) {
+    if (!$title) $title = $this->get('title');
+    $title = html_entity_decode($title, null, "UTF-8");
+    $title = (mb_substr($title, -1) == ".")
+              ? mb_substr($title, 0, -1)
+              :(
+                (mb_substr($title, -6) == "&nbsp;")
+                ? mb_substr($title, 0, -6)
+                : $title
+              );
+    $iIn = array("<i>","</i>", 
+                "From the Cover: ");
+    $iOut = array("''","''",
+                  "");
+    $in = array("&lt;", "&gt;"	);
+    $out = array("<",		">"			);
+    $this->set('title', str_ireplace($iIn, $iOut, str_ireplace($in, $out, niceTitle($title)))); // order IS important!
+  }
+
+  protected function get_param_position ($needle) {
     foreach ($this->param as $i => $p) {
       if ($p->param == $needle) return $i;
     }
   }
   
+  #### Amend parameters
   public function rename($old, $new, $new_value = FALSE) {
     foreach ($this->param as $p) {
       if ($p->param == $old) {
@@ -789,14 +802,17 @@ class Template extends Item {
   }
   
   public function get($name) {
-    foreach ($this->param as $p) {
+    if ($this->param) foreach ($this->param as $p) {
       if ($p->param == $name) return $p->val;
     }
     return false;
   }
   
-  public function set($par, $val) {return $this->add_param($par, $val);} 
-  public function add_param($par, $val) {
+  public function has($par) {return (bool) $this->get($par);}
+  public function lacks($par) {return !$this->has($par);}
+  
+  public function add($par, $val) {    return $this->set($par, $val);  }
+  public function set($par, $val) {
     if ($this->param[0]) {
       $p = new Parameter;
       $p->parse_text($this->param[0]->parsed_text());
@@ -808,17 +824,44 @@ class Template extends Item {
     $p->val = $val;
     $this->param[] = $p;
     return true;
-  }
+  }    
   
   public function forget ($par) {
     unset($this->param[get_param_position($par)]);
   }
   
+  ### Record modifications
+  protected function modified ($param, $type='modifications') {
+    switch ($type) {
+      case '+': $type='additions'; break;
+      case '-': $type='deletions'; break;
+      case '~': $type='changeonly'; break;
+      default: $type='modifications';
+    }
+    return array_search($param, $this->modifications($type));
+  }
+  protected function added($param) {return $this->modified($param, '+');}
+  
+  protected function modifications ($type='all') {
+    foreach ($this->param as $p) $new[$p->param] = $p->val;
+    foreach ($this->initial_param as $p) $old[$p->param] = $p->val;
+    $ret['modifications'] = array_keys(array_diff_assoc ($new, $old));
+    $ret['additions'] = array_diff(array_keys($new), array_keys($old));
+    $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
+    $ret['dashes'] = $this->mod_dashes;
+    if (array_search($type, array_keys($ret))) return $ret[$type];
+    return $ret;
+  }
+  
+  public function is_modified () {
+    return (bool) count($this->modifications('modifications'));
+  } 
+  
+  ### Parse initial text
   public function parsed_text() {
     return '{{' . $this->name . $this->join_params() . '}}';
   }
 }
-
 
 # PARAMETERS #
 class Parameter {
