@@ -146,12 +146,32 @@ class Template extends Item {
         $this->citation_template = TRUE;
         $this->handle_et_al();
         $this->use_unnamed_params();
+        $this->get_identifiers_from_url();
         $this->id_to_param();
         echo "\n* " . $this->get('title');
         $this->correct_param_spelling();
         if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
         $this->tidy();
         if ($this->find_isbn()) echo "\n * Found ISBN " . $this->get('isbn');
+      break;
+      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
+        $this->citation_template = TRUE;
+        $this->use_unnamed_params();
+        $this->get_identifiers_from_url();
+        $this->id_to_param();
+        $this->get_doi_from_text();
+        // TODO: Check for the doi-inline template in the title
+        $this->handle_et_al();
+        $this->correct_param_spelling();
+        echo "\n* Expand citation: " . $this->get('title');
+        $journal_type = $this->has("periodical") ? "periodical" : "journal";
+        if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
+        $this->sanitize_doi();
+        $this->verify_doi();
+        $this->tidy(); // Do now to maximize quality of metadata for DOI searches, etc
+        
+        
+        $this->tidy();
       break;
     }
     if ($this->citation_tempate) {
@@ -160,8 +180,27 @@ class Template extends Item {
     }
   }
   
+  protected function incomplete() {
+    if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
+      return TRUE;
+    }
+    if ($this->displayauthors() >= $this->authorcount()) return TRUE;
+    return (!(
+             ($this->has('journal') || $this->has('periodical'))
+          &&  $this->has("volume")
+          &&  $this->has("issue")
+          &&  $this->has("title")
+          && ($this->has("date") || $this->has("year"))
+          && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
+    ));
+  }
+  
   public function blank($param) {
-    return $this->has($param) ? trim($this->get($param)) === FALSE : TRUE;
+    if (!is_array($param)) $param = array($param);
+    foreach ($this->param as $p) {
+      if (array_search($this->param, $param) && trim($p->val) != '') return FALSE;
+    }
+    return TRUE;
   }
   
   public function add_if_new($param, $value) {
@@ -327,9 +366,12 @@ class Template extends Item {
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/(.*)~", $url, $match)) {
         $this->rename("url", "doi", urldecode($match[1]));
-        $this->expand_by_doi();
+        $this->expand_by_doi(1);
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
+      } elseif (preg_match("~10\.\d{4}/[^&\s\|]*~", $url, $match)) {
+        $this->rename('url', 'doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
+        $this->expand_by_doi(1);
+      } elseif (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
         //ARXIV
         $this->rename("url", "eprint", $match[1]);
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
@@ -347,6 +389,13 @@ class Template extends Item {
         if (strpos($this->name, 'web')) $this->name = 'Cite book';
       }
     }
+  }
+ 
+  protected function get_doi_from_text() {
+    if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|]*~', urldecode($this->parsed_text()), $match))
+      // Search the entire citation text for anything in a DOI format.
+      // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
+      $this->add_if_new('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
   }
  
   ### Obtain data from external database
@@ -413,8 +462,70 @@ class Template extends Item {
   }
   
   protected function expand_by_doi() {
-    #TODO;
+    global $editing_cite_doi_template;
+    $doi = $this->get('doi');
+    if ($doi && $this->incomplete()) {
+      $crossRef = $this->query_crossref();
+      if ($crossRef) {
+        echo "\n - Expanding from crossRef record.";
+        if ($crossRef->volume_title && $this->blank('journal')) {
+          $this->add_if_new('chapter', $crossRef->article_title);
+          if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
+            $this->forget('title');
+          }
+          $this->add_if_new('title', $crossRef->volume_title);
+        } else {
+          $this->add_if_new('title', $crossRef->article_title);
+        }
+        $this->add_if_new('series', $crossRef->series_title);
+        $this->add_if_new("year", $crossRef->year);
+        if ($this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) && $crossRef->contributors->contributor) {
+          foreach ($crossRef->contributors->contributor as $author) {
+            if ($author["contributor_role"] == 'editor') {
+              ++$ed_i;
+              if ($ed_i < 5) {
+                $this->add_if_new("editor$ed_i-last", formatSurname($author->surname));
+                $this->add_if_new("editor$ed_i-first", formatForename($author->given_name));
+              }
+            } elseif ($author['contributor_role'] == 'author') {
+              ++$au_i;
+              $this->add_if_new("last$au_i", formatSurname($author->surname));
+              $this->add_if_new("first$au_i", formatForename($author->given_name));
+            }
+          }
+        }
+        $this->add_if_new('doi', $crossRef->doi);
+        $this->add_if_new('isbn', $crossRef->isbn);
+        $this->add_if_new('journal', $crossRef->journal_title);
+        if ($crossRef->volume > 0) $this->add_if_new('volume', $crossRef->volume);
+        if ((integer) $crossRef->issue > 1) {
+        // "1" may refer to a journal without issue numbers,
+        //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
+          $this->add_if_new('issue', $crossRef->issue);
+        }
+        if ($this->blank("page")) $this->add_if_new("pages", $crossRef->first_page
+                  . ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)
+                  ? "-" . $crossRef->last_page //replaced by an endash later in script
+                  : "") );
+        echo " (ok)";
+      } else {
+        echo "\n - No CrossRef record found :-(";
+      }
+    }
   }
+ 
+  protected function query_crossref($doi) {
+	global $crossRefId;
+  $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
+  $xml = @simplexml_load_file($url);
+  if ($xml) {
+    $result = $xml->query_result->body->query;
+    return ($result["status"]=="resolved")?$result:false;
+  } else {
+     echo "\n   ! Error loading CrossRef file from DOI $doi!";
+     return false;
+  }
+}
  
   protected function expand_by_google_books() {
     $url = $this->get('url');
@@ -509,6 +620,10 @@ class Template extends Item {
             $this->name = 'Cite book';
             $this->process();
           }
+        } elseif ($p->param == 'doix') {
+          global $dotEncode, $dotDecode;
+          $this->param[$iP]->param = 'doi';
+          $this->param[$iP]->val = str_replace($dotEncode, $dotDecode, $p->val);
         }
         continue;
       }
@@ -852,61 +967,52 @@ class Template extends Item {
   protected function correct_param_spelling() {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
+  // TODO replace coauthors with author2, author3, etc.
   global $parameter_list;
   // Common mistakes that aren't picked up by the levenshtein approach
   $common_mistakes = array
   (
-    "author1-last"  =>  "last",
-    "author2-last"  =>  "last2",
-    "author3-last"  =>  "last3",
-    "author4-last"  =>  "last4",
-    "author5-last"  =>  "last5",
-    "author6-last"  =>  "last6",
-    "author7-last"  =>  "last7",
-    "author8-last"  =>  "last8",
-    "author1-first" =>  "first",
-    "author2-first" =>  "first2",
-    "author3-first" =>  "first3",
-    "author4-first" =>  "first4",
-    "author5-first" =>  "first5",
-    "author6-first" =>  "first6",
-    "author7-first" =>  "first7",
-    "author8-first" =>  "first8",
-    "authorurl"     =>  "authorlink",
-    "authorn"       =>  "author2",
-    "authors"       =>  "author",
-    "ed"            =>  "editor",
-    "ed2"           =>  "editor2",
-    "ed3"           =>  "editor3",
-    "editorlink1"   =>  "editor1-link",
-    "editorlink2"   =>  "editor2-link",
-    "editorlink3"   =>  "editor3-link",
-    "editorlink4"   =>  "editor4-link",
-    "editor1link"   =>  "editor1-link",
-    "editor2link"   =>  "editor2-link",
-    "editor3link"   =>  "editor3-link",
-    "editor4link"   =>  "editor4-link",
-    "editorn"       =>  "editor2",
-    "editorn-link"  =>  "editor2-link",
-    "editorn-last"  =>  "editor2-last",
-    "editorn-first" =>  "editor2-first",
-    "firstn"        =>  "first2",
-    "ibsn"          =>  "isbn",
-    "lastn"         =>  "last2",
-    "number"        =>  "issue",
-    "no"            =>  "issue",
-    "No"            =>  "issue",
-    "No."           =>  "issue",
-    "origmonth"     =>  "month",
-    "pp"            =>  "pages",
-    "p"             =>  "page",
-    "p."            =>  "page",
-    "pp."           =>  "pages",
-    "translator"    =>  "others",
-    "translators"   =>  "others",
-    "vol"           =>  "volume",
-    "Vol"           =>  "volume",
-    "Vol."          =>  "volume",
+    "authorurl"       =>  "authorlink",
+    "authorn"         =>  "author2",
+    "authors"         =>  "author",
+    "co-author"       =>  "author2",
+    "co-authors"      =>  "coauthors",
+    "coauthor"        =>  "author2",
+    "display-authors" =>  "displayauthors",
+    "display_authors" =>  "displayauthors",
+    "ed"              =>  "editor",
+    "ed2"             =>  "editor2",
+    "ed3"             =>  "editor3",
+    "editorlink1"     =>  "editor1-link",
+    "editorlink2"     =>  "editor2-link",
+    "editorlink3"     =>  "editor3-link",
+    "editorlink4"     =>  "editor4-link",
+    "editor1link"     =>  "editor1-link",
+    "editor2link"     =>  "editor2-link",
+    "editor3link"     =>  "editor3-link",
+    "editor4link"     =>  "editor4-link",
+    "editorn"         =>  "editor2",
+    "editorn-link"    =>  "editor2-link",
+    "editorn-last"    =>  "editor2-last",
+    "editorn-first"   =>  "editor2-first",
+    "firstn"          =>  "first2",
+    "ibsn"            =>  "isbn",
+    "lastn"           =>  "last2",
+    "number"          =>  "issue",
+    "no"              =>  "issue",
+    "No"              =>  "issue",
+    "No."             =>  "issue",
+    "origmonth"       =>  "month",
+    "p"               =>  "page",
+    "p."              =>  "page",
+    "pmpmid"          =>  "pmid",
+    "pp"              =>  "pages",
+    "pp."             =>  "pages",
+    "translator"      =>  "others",
+    "translators"     =>  "others",
+    "vol"             =>  "volume",
+    "Vol"             =>  "volume",
+    "Vol."            =>  "volume",
   );
   $mistake_corrections = array_values($common_mistakes);
   $mistake_keys = array_keys($common_mistakes);
@@ -923,11 +1029,14 @@ class Template extends Item {
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
         // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
-        $p->param =  $mistake_corrections[$mistake_id];
+        $p->param = $mistake_corrections[$mistake_id];
         echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
         continue;
-      } 
-
+      }
+      $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
+      $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
+      $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
+      
       // Check the parameter list to find a likely replacement
       $shortest = -1;
       foreach ($unused_parameters as $parameter)
@@ -1013,15 +1122,29 @@ class Template extends Item {
       $this->set('edition', preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get('edition')));
     }
     
-    if ($this->has('authors') && $this->blank('author')) $this->rename('authors', 'author');
-    if ($this->blank('date') && $this->blank('year') && $this->has('origyear')) $this->rename('origyear', 'year');
+    if ($this->blank(array('date', 'year')) && $this->has('origyear')) $this->rename('origyear', 'year');
+    $author = trim($this->get('author'));
+    $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+    if (preg_match($translator_regexp, $author, $match)) {
+      if ($this->has('others')) $this->set('others', $this->get('others') . "; {$match[1]} {$match[5]}");
+      else $this->set("others", "{$match[1]} {$match[5]}");
+      // Remove translator from both author_parm and $p
+      $this->set('author', preg_replace($translator_regexp, "", $author));
+    }
        
-    // Don't add ISSN if there's a journal name
-    if ($this->added('journal') || $this->get('journal') && $this->added('issn')) $this->forget('issn');
-       
-    
-    // Remove publisher if [cite journal/doc] warrants it
-    if ($this->has('journal') && ($this->has('doi') || $this->has('issn'))) $this->forget('publisher');
+    if ($this->has('periodical')) $this->set('periodical', capitalize_title($this->get('periodical'), FALSE));
+    $journal = capitalize_title($this->get('journal'), FALSE);
+    if ($this->added('journal') || $journal && $this->added('issn')) $this->forget('issn');    
+    if ($journal) {
+      $volume = $this->get('volume');
+      if (($this->has('doi') || $this->has('issn'))) $this->forget('publisher');
+      // Replace "volume = B 120" with "series=VB, volume = 120
+      if (preg_match("~^([A-J])(?!\w)\d*\d+~u", $volume, $match) && mb_substr(trim($journal), -2) != " $match[1]") {
+        $journal .= " $match[1]";
+        $this->set('volume', trim(mb_substr($volume, mb_strlen($match[1]))));
+      }
+      $this->set('journal', $journal);
+    }
     
     // Remove leading zeroes
     if (!$this->blank('issue')) {
@@ -1029,7 +1152,10 @@ class Template extends Item {
       if ($new_issue) $this->set('issue', $new_issue);
       else $this->forget('issue');
     }
-    
+    switch(strtolower(trim($this->get('quotes')))) {
+      case 'yes': case 'y': case 'true': case 'no': case 'n': case 'false': $this->forget('quotes');
+    }
+
     if ($this->get('doi') == "10.1267/science.040579197") $this->forget('doi'); // This is a bogus DOI from the PMID example file
     
     /*/ If we have any unused data, check to see if any is redundant!
@@ -1058,6 +1184,7 @@ class Template extends Item {
   
   protected function format_title($title=FALSE) {
     if (!$title) $title = $this->get('title');
+    $title = capitalize_title($title, TRUE);
     $title = html_entity_decode($title, null, "UTF-8");
     $title = (mb_substr($title, -1) == ".")
               ? mb_substr($title, 0, -1)
@@ -1075,6 +1202,47 @@ class Template extends Item {
     $this->set('title', str_ireplace($iIn, $iOut, str_ireplace($in, $out, niceTitle($title)))); // order IS important!
   }
 
+  protected function sanitize_doi($doi = FALSE) {
+    if (!$doi) {
+      $doi = $this->get('doi');
+      if (!$doi) return false;
+    }
+    global $pcEncode, $pcDecode;
+    $this->set('doi', str_replace($pcEncode, $pcDecode, str_replace(' ', '+', trim(urldecode($doi)))));
+    return true;
+  }
+  
+  protected function verify_doi () {
+    $doi = $this->get('doi');
+    if (!$doi) return NULL;
+    // DOI not correctly formatted
+    switch (substr($doi, -1)) {
+      case ".":
+        // Missing a terminal 'x'?
+        $trial[] = $doi . "x";
+      case ",": case ";":
+        // Or is this extra punctuation copied in?
+        $trial[] = substr($doi, 0, -1);
+    }
+    if (substr($doi, 0, 3) != "10.") $trial[] = $doi;
+    if (preg_match("~^(.+)(10\.\d{4}/.+)~", trim($doi), $match)) {
+      $trial[] = $match[1];
+      $trial[] = $match[2];
+    }
+    
+    $replacements = array (
+      "&lt;" => "<",
+      "&gt;" => ">",
+    );
+    if (preg_match("~&[lg]t;~", $doi)) $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
+    if ($trial) foreach ($trial as $try) {
+      // Check that it begins with 10.
+      if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
+      if ($this->expand_by_doi($try)) {$this->set('doi', $try); return TRUE;}
+    }
+    return FALSE;
+  }
+  
   protected function handle_et_al() {
     global $author_parameters;
     foreach ($author_parameters as $i => $group) {
@@ -1133,6 +1301,22 @@ class Template extends Item {
     }
   }
   
+  ### Retrieve parameters 
+  public function displayauthors($newval = FALSE) {
+    if ($newval && is_int($newval)) $this->set('display-authors', $newval);
+    $da = $this->get('displayauthors');
+    return is_int($da) ? $da : FALSE;
+  }
+  
+  public function authorcount() {
+    $max = 0;
+    foreach ($this->param as $p) {
+      if (preg_match('~(?:author|last|first|forename|initials|surname)(\d+)~', $p->param, $matches))
+        $max = max($matches[1], $max);
+    }
+    return $max;
+  }
+  
   #### Amend parameters
   public function rename($old, $new, $new_value = FALSE) {
     foreach ($this->param as $p) {
@@ -1170,6 +1354,7 @@ class Template extends Item {
   }    
   
   public function forget ($par) {
+    echo "\n . - Dropping redundant parameter $par";
     unset($this->param[$this->get_param_position($par)]);
   }
   
@@ -1285,96 +1470,150 @@ function allowBots( $text ) {
   return true;
 }
 
+/** Returns a properly capitalsied title.
+ *  	If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and capitalises the letter after any period.
+  *		If not, it will assume it is a journal abbreviation and won't capitalise after periods.
+ */
+function capitalize_title($in, $sents = true) {
+	global $dontCap, $unCapped;
+	if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
+		$in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
+	}
+  $in = str_ireplace(" (New York, N.Y.)", "", $in); // Pubmed likes to include this after "Science", for some reason
+  $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
+	if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
+    $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
+					preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
+	            '$matches',
+	            'return mb_strtolower($matches[0]);'
+	        ), preg_replace_callback("~[?.:!]\s+[a-z]~u" /*Capitalise after punctuation*/, create_function(
+	            '$matches',
+	            'return mb_strtoupper($matches[0]);'
+	        ), trim($captIn))));
+	} else {
+		$newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
+					preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
+	            '$matches',
+	            'return mb_strtolower($matches[0]);'
+	        ), trim(($captIn))));
+	}
+  $newcase = preg_replace_callback("~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui", create_function('$matches',
+          'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'), $newcase);
+  // Use 'straight quotes' per WP:MOS
+  $newcase = straighten_quotes($newcase);
+  if (in_array(" " . trim($newcase) . " ", $unCapped)) {
+    // Keep "z/Journal" with lcfirst
+    return $newcase;
+  } else {
+    // Catch "the Journal" --> "The Journal"
+    $newcase = mb_convert_case(mb_substr($newcase, 0, 1), MB_CASE_TITLE, "UTF-8") . mb_substr($newcase, 1);
+     return $newcase;
+  }
+}
+
+
 
 global $author_parameters;
 $author_parameters = array(
-    1 => array('last', 'author', 'first', 'coauthors', 'coauthor', 'authors', 'first1', 'last1', 'author1'),
-    2 => array('first2', 'last2', 'author2'),
-    3 => array('first3', 'last3', 'author3'),
-    4 => array('first4', 'last4', 'author4'),
-    5 => array('first5', 'last5', 'author5'),
-    6 => array('first6', 'last6', 'author6'),
-    7 => array('first7', 'last7', 'author7'),
-    8 => array('first8', 'last8', 'author8'),
-    9 => array('first9', 'last9', 'author9'),
-    10 => array('first10', 'last10', 'author10'),
-    11 => array('first11', 'last11', 'author11'),
-    12 => array('first12', 'last12', 'author12'),
-    13 => array('first13', 'last13', 'author13'),
-    14 => array('first14', 'last14', 'author14'),
-    15 => array('first15', 'last15', 'author15'),
-    16 => array('first16', 'last16', 'author16'),
-    17 => array('first17', 'last17', 'author17'),
-    18 => array('first18', 'last18', 'author18'),
-    19 => array('first19', 'last19', 'author19'),
-    20 => array('first20', 'last20', 'author20'),
-    21 => array('first21', 'last21', 'author21'),
-    22 => array('first22', 'last22', 'author22'),
-    23 => array('first23', 'last23', 'author23'),
-    24 => array('first24', 'last24', 'author24'),
-    25 => array('first25', 'last25', 'author25'),
-    26 => array('first26', 'last26', 'author26'),
-    27 => array('first27', 'last27', 'author27'),
-    28 => array('first28', 'last28', 'author28'),
-    29 => array('first29', 'last29', 'author29'),
-    30 => array('first30', 'last30', 'author30'),
-    31 => array('first31', 'last31', 'author31'),
-    32 => array('first32', 'last32', 'author32'),
-    33 => array('first33', 'last33', 'author33'),
-    34 => array('first34', 'last34', 'author34'),
-    35 => array('first35', 'last35', 'author35'),
-    36 => array('first36', 'last36', 'author36'),
-    37 => array('first37', 'last37', 'author37'),
-    38 => array('first38', 'last38', 'author38'),
-    39 => array('first39', 'last39', 'author39'),
-    40 => array('first40', 'last40', 'author40'),
-    41 => array('first41', 'last41', 'author41'),
-    42 => array('first42', 'last42', 'author42'),
-    43 => array('first43', 'last43', 'author43'),
-    44 => array('first44', 'last44', 'author44'),
-    45 => array('first45', 'last45', 'author45'),
-    46 => array('first46', 'last46', 'author46'),
-    47 => array('first47', 'last47', 'author47'),
-    48 => array('first48', 'last48', 'author48'),
-    49 => array('first49', 'last49', 'author49'),
-    50 => array('first50', 'last50', 'author50'),
-    51 => array('first51', 'last51', 'author51'),
-    52 => array('first52', 'last52', 'author52'),
-    53 => array('first53', 'last53', 'author53'),
-    54 => array('first54', 'last54', 'author54'),
-    55 => array('first55', 'last55', 'author55'),
-    56 => array('first56', 'last56', 'author56'),
-    57 => array('first57', 'last57', 'author57'),
-    58 => array('first58', 'last58', 'author58'),
-    59 => array('first59', 'last59', 'author59'),
-    60 => array('first60', 'last60', 'author60'),
-    61 => array('first61', 'last61', 'author61'),
-    62 => array('first62', 'last62', 'author62'),
-    63 => array('first63', 'last63', 'author63'),
-    64 => array('first64', 'last64', 'author64'),
-    65 => array('first65', 'last65', 'author65'),
-    66 => array('first66', 'last66', 'author66'),
-    67 => array('first67', 'last67', 'author67'),
-    68 => array('first68', 'last68', 'author68'),
-    69 => array('first69', 'last69', 'author69'),
-    70 => array('first70', 'last70', 'author70'),
-    71 => array('first71', 'last71', 'author71'),
-    72 => array('first72', 'last72', 'author72'),
-    73 => array('first73', 'last73', 'author73'),
-    74 => array('first74', 'last74', 'author74'),
-    75 => array('first75', 'last75', 'author75'),
-    76 => array('first76', 'last76', 'author76'),
-    77 => array('first77', 'last77', 'author77'),
-    78 => array('first78', 'last78', 'author78'),
-    79 => array('first79', 'last79', 'author79'),
-    80 => array('first80', 'last80', 'author80'),
-    81 => array('first81', 'last81', 'author81'),
-    82 => array('first82', 'last82', 'author82'),
-    83 => array('first83', 'last83', 'author83'),
-    84 => array('first84', 'last84', 'author84'),
-    85 => array('first85', 'last85', 'author85'),
-    86 => array('first86', 'last86', 'author86'),
-    87 => array('first87', 'last87', 'author87'),
-    88 => array('first88', 'last88', 'author88'),
-    89 => array('first89', 'last89', 'author89'),
+    1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author', 
+                'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1', 'authors'),
+    2  => array('surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'coauthors', 'coauthor'),
+    3  => array('surname3' , 'forename3' , 'initials3' , 'first3' , 'last3' , 'author3' ),
+    4  => array('surname4' , 'forename4' , 'initials4' , 'first4' , 'last4' , 'author4' ),
+    5  => array('surname5' , 'forename5' , 'initials5' , 'first5' , 'last5' , 'author5' ),
+    6  => array('surname6' , 'forename6' , 'initials6' , 'first6' , 'last6' , 'author6' ),
+    7  => array('surname7' , 'forename7' , 'initials7' , 'first7' , 'last7' , 'author7' ),
+    8  => array('surname8' , 'forename8' , 'initials8' , 'first8' , 'last8' , 'author8' ),
+    9  => array('surname9' , 'forename9' , 'initials9' , 'first9' , 'last9' , 'author9' ),
+    10 => array('surname10', 'forename10', 'initials10', 'first10', 'last10', 'author10'),
+    11 => array('surname11', 'forename11', 'initials11', 'first11', 'last11', 'author11'),
+    12 => array('surname12', 'forename12', 'initials12', 'first12', 'last12', 'author12'),
+    13 => array('surname13', 'forename13', 'initials13', 'first13', 'last13', 'author13'),
+    14 => array('surname14', 'forename14', 'initials14', 'first14', 'last14', 'author14'),
+    15 => array('surname15', 'forename15', 'initials15', 'first15', 'last15', 'author15'),
+    16 => array('surname16', 'forename16', 'initials16', 'first16', 'last16', 'author16'),
+    17 => array('surname17', 'forename17', 'initials17', 'first17', 'last17', 'author17'),
+    18 => array('surname18', 'forename18', 'initials18', 'first18', 'last18', 'author18'),
+    19 => array('surname19', 'forename19', 'initials19', 'first19', 'last19', 'author19'),
+    20 => array('surname20', 'forename20', 'initials20', 'first20', 'last20', 'author20'),
+    21 => array('surname21', 'forename21', 'initials21', 'first21', 'last21', 'author21'),
+    22 => array('surname22', 'forename22', 'initials22', 'first22', 'last22', 'author22'),
+    23 => array('surname23', 'forename23', 'initials23', 'first23', 'last23', 'author23'),
+    24 => array('surname24', 'forename24', 'initials24', 'first24', 'last24', 'author24'),
+    25 => array('surname25', 'forename25', 'initials25', 'first25', 'last25', 'author25'),
+    26 => array('surname26', 'forename26', 'initials26', 'first26', 'last26', 'author26'),
+    27 => array('surname27', 'forename27', 'initials27', 'first27', 'last27', 'author27'),
+    28 => array('surname28', 'forename28', 'initials28', 'first28', 'last28', 'author28'),
+    29 => array('surname29', 'forename29', 'initials29', 'first29', 'last29', 'author29'),
+    30 => array('surname30', 'forename30', 'initials30', 'first30', 'last30', 'author30'),
+    31 => array('surname31', 'forename31', 'initials31', 'first31', 'last31', 'author31'),
+    32 => array('surname32', 'forename32', 'initials32', 'first32', 'last32', 'author32'),
+    33 => array('surname33', 'forename33', 'initials33', 'first33', 'last33', 'author33'),
+    34 => array('surname34', 'forename34', 'initials34', 'first34', 'last34', 'author34'),
+    35 => array('surname35', 'forename35', 'initials35', 'first35', 'last35', 'author35'),
+    36 => array('surname36', 'forename36', 'initials36', 'first36', 'last36', 'author36'),
+    37 => array('surname37', 'forename37', 'initials37', 'first37', 'last37', 'author37'),
+    38 => array('surname38', 'forename38', 'initials38', 'first38', 'last38', 'author38'),
+    39 => array('surname39', 'forename39', 'initials39', 'first39', 'last39', 'author39'),
+    40 => array('surname40', 'forename40', 'initials40', 'first40', 'last40', 'author40'),
+    41 => array('surname41', 'forename41', 'initials41', 'first41', 'last41', 'author41'),
+    42 => array('surname42', 'forename42', 'initials42', 'first42', 'last42', 'author42'),
+    43 => array('surname43', 'forename43', 'initials43', 'first43', 'last43', 'author43'),
+    44 => array('surname44', 'forename44', 'initials44', 'first44', 'last44', 'author44'),
+    45 => array('surname45', 'forename45', 'initials45', 'first45', 'last45', 'author45'),
+    46 => array('surname46', 'forename46', 'initials46', 'first46', 'last46', 'author46'),
+    47 => array('surname47', 'forename47', 'initials47', 'first47', 'last47', 'author47'),
+    48 => array('surname48', 'forename48', 'initials48', 'first48', 'last48', 'author48'),
+    49 => array('surname49', 'forename49', 'initials49', 'first49', 'last49', 'author49'),
+    50 => array('surname50', 'forename50', 'initials50', 'first50', 'last50', 'author50'),
+    51 => array('surname51', 'forename51', 'initials51', 'first51', 'last51', 'author51'),
+    52 => array('surname52', 'forename52', 'initials52', 'first52', 'last52', 'author52'),
+    53 => array('surname53', 'forename53', 'initials53', 'first53', 'last53', 'author53'),
+    54 => array('surname54', 'forename54', 'initials54', 'first54', 'last54', 'author54'),
+    55 => array('surname55', 'forename55', 'initials55', 'first55', 'last55', 'author55'),
+    56 => array('surname56', 'forename56', 'initials56', 'first56', 'last56', 'author56'),
+    57 => array('surname57', 'forename57', 'initials57', 'first57', 'last57', 'author57'),
+    58 => array('surname58', 'forename58', 'initials58', 'first58', 'last58', 'author58'),
+    59 => array('surname59', 'forename59', 'initials59', 'first59', 'last59', 'author59'),
+    60 => array('surname60', 'forename60', 'initials60', 'first60', 'last60', 'author60'),
+    61 => array('surname61', 'forename61', 'initials61', 'first61', 'last61', 'author61'),
+    62 => array('surname62', 'forename62', 'initials62', 'first62', 'last62', 'author62'),
+    63 => array('surname63', 'forename63', 'initials63', 'first63', 'last63', 'author63'),
+    64 => array('surname64', 'forename64', 'initials64', 'first64', 'last64', 'author64'),
+    65 => array('surname65', 'forename65', 'initials65', 'first65', 'last65', 'author65'),
+    66 => array('surname66', 'forename66', 'initials66', 'first66', 'last66', 'author66'),
+    67 => array('surname67', 'forename67', 'initials67', 'first67', 'last67', 'author67'),
+    68 => array('surname68', 'forename68', 'initials68', 'first68', 'last68', 'author68'),
+    69 => array('surname69', 'forename69', 'initials69', 'first69', 'last69', 'author69'),
+    70 => array('surname70', 'forename70', 'initials70', 'first70', 'last70', 'author70'),
+    71 => array('surname71', 'forename71', 'initials71', 'first71', 'last71', 'author71'),
+    72 => array('surname72', 'forename72', 'initials72', 'first72', 'last72', 'author72'),
+    73 => array('surname73', 'forename73', 'initials73', 'first73', 'last73', 'author73'),
+    74 => array('surname74', 'forename74', 'initials74', 'first74', 'last74', 'author74'),
+    75 => array('surname75', 'forename75', 'initials75', 'first75', 'last75', 'author75'),
+    76 => array('surname76', 'forename76', 'initials76', 'first76', 'last76', 'author76'),
+    77 => array('surname77', 'forename77', 'initials77', 'first77', 'last77', 'author77'),
+    78 => array('surname78', 'forename78', 'initials78', 'first78', 'last78', 'author78'),
+    79 => array('surname79', 'forename79', 'initials79', 'first79', 'last79', 'author79'),
+    80 => array('surname80', 'forename80', 'initials80', 'first80', 'last80', 'author80'),
+    81 => array('surname81', 'forename81', 'initials81', 'first81', 'last81', 'author81'),
+    82 => array('surname82', 'forename82', 'initials82', 'first82', 'last82', 'author82'),
+    83 => array('surname83', 'forename83', 'initials83', 'first83', 'last83', 'author83'),
+    84 => array('surname84', 'forename84', 'initials84', 'first84', 'last84', 'author84'),
+    85 => array('surname85', 'forename85', 'initials85', 'first85', 'last85', 'author85'),
+    86 => array('surname86', 'forename86', 'initials86', 'first86', 'last86', 'author86'),
+    87 => array('surname87', 'forename87', 'initials87', 'first87', 'last87', 'author87'),
+    88 => array('surname88', 'forename88', 'initials88', 'first88', 'last88', 'author88'),
+    89 => array('surname89', 'forename89', 'initials89', 'first89', 'last89', 'author89'),
+    90 => array('surname80', 'forename80', 'initials80', 'first80', 'last80', 'author80'),
+    91 => array('surname81', 'forename81', 'initials81', 'first81', 'last81', 'author81'),
+    92 => array('surname82', 'forename82', 'initials82', 'first82', 'last82', 'author82'),
+    93 => array('surname83', 'forename83', 'initials83', 'first83', 'last83', 'author83'),
+    94 => array('surname84', 'forename84', 'initials84', 'first84', 'last84', 'author84'),
+    95 => array('surname85', 'forename85', 'initials85', 'first85', 'last85', 'author85'),
+    96 => array('surname86', 'forename86', 'initials86', 'first86', 'last86', 'author86'),
+    97 => array('surname87', 'forename87', 'initials87', 'first87', 'last87', 'author87'),
+    98 => array('surname88', 'forename88', 'initials88', 'first88', 'last88', 'author88'),
+    99 => array('surname89', 'forename89', 'initials89', 'first89', 'last89', 'author89'),
 );
+

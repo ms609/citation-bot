@@ -35,10 +35,8 @@ problemtxt;
 $problem_text = <<<testcase
 
 {nobots}}
-
-#ISBN 
-{{Cite book| title=Wonderful Life: The Burgess Shale and the Nature of History| author1=Gould| first1=Stephen Jay| year=1990}}
-
+{{Cite journal | doix = 10.1038.2Fnature09068}}
+{{cite journal | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}
 
 testcase;
 
