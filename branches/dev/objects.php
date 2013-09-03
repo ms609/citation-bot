@@ -198,7 +198,7 @@ class Template extends Item {
   public function blank($param) {
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
-      if (array_search($this->param, $param) && trim($p->val) != '') return FALSE;
+      if (array_search($p->param, $param) && trim($p->val) != '') return FALSE;
     }
     return TRUE;
   }
@@ -392,7 +392,7 @@ class Template extends Item {
   }
  
   protected function get_doi_from_text() {
-    if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|]*~', urldecode($this->parsed_text()), $match))
+    if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match))
       // Search the entire citation text for anything in a DOI format.
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
       $this->add_if_new('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
@@ -465,9 +465,9 @@ class Template extends Item {
     global $editing_cite_doi_template;
     $doi = $this->get('doi');
     if ($doi && $this->incomplete()) {
-      $crossRef = $this->query_crossref();
+      $crossRef = $this->query_crossref($doi);
       if ($crossRef) {
-        echo "\n - Expanding from crossRef record.";
+        echo "\n - Expanding from crossRef record" . tag();
         if ($crossRef->volume_title && $this->blank('journal')) {
           $this->add_if_new('chapter', $crossRef->article_title);
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
@@ -494,7 +494,6 @@ class Template extends Item {
             }
           }
         }
-        $this->add_if_new('doi', $crossRef->doi);
         $this->add_if_new('isbn', $crossRef->isbn);
         $this->add_if_new('journal', $crossRef->journal_title);
         if ($crossRef->volume > 0) $this->add_if_new('volume', $crossRef->volume);
@@ -509,13 +508,15 @@ class Template extends Item {
                   : "") );
         echo " (ok)";
       } else {
-        echo "\n - No CrossRef record found :-(";
+        echo "\n - No CrossRef record found for doi '$doi'";
       }
     }
   }
  
-  protected function query_crossref($doi) {
+  protected function query_crossref($doi = FALSE) {
 	global $crossRefId;
+  if (!$doi) $doi = $this->get('doi');
+  if (!$doi) warn('#TODO: crossref lookup with no doi');
   $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
   $xml = @simplexml_load_file($url);
   if ($xml) {
@@ -733,6 +734,10 @@ class Template extends Item {
         }
 
       }
+      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { #Takes priority over more tenative matches
+        $this->set('url', $match[0]);
+        $dat = str_replace($match[0], '', $dat);
+      }
       if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
         foreach ($match[0] as $i => $oMatch) {
           switch (strtolower($match[1][$i])) {
@@ -772,10 +777,6 @@ class Template extends Item {
           $this->set('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
-      }
-      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) {
-        $this->set('url', $match[0]);
-        $dat = str_replace($match[0], '', $dat);
       }
 
       $shortest = -1;
@@ -1133,11 +1134,11 @@ class Template extends Item {
     }
        
     if ($this->has('periodical')) $this->set('periodical', capitalize_title($this->get('periodical'), FALSE));
-    $journal = capitalize_title($this->get('journal'), FALSE);
+    if ($this->has('journal')) $journal = capitalize_title($this->get('journal'), FALSE);
     if ($this->added('journal') || $journal && $this->added('issn')) $this->forget('issn');    
     if ($journal) {
       $volume = $this->get('volume');
-      if (($this->has('doi') || $this->has('issn'))) $this->forget('publisher');
+      if (($this->has('doi') || $this->has('issn'))) $this->forget('publisher', 'tidy');
       // Replace "volume = B 120" with "series=VB, volume = 120
       if (preg_match("~^([A-J])(?!\w)\d*\d+~u", $volume, $match) && mb_substr(trim($journal), -2) != " $match[1]") {
         $journal .= " $match[1]";
@@ -1199,7 +1200,7 @@ class Template extends Item {
                   "");
     $in = array("&lt;", "&gt;"	);
     $out = array("<",		">"			);
-    $this->set('title', str_ireplace($iIn, $iOut, str_ireplace($in, $out, niceTitle($title)))); // order IS important!
+    $this->set('title', str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
   }
 
   protected function sanitize_doi($doi = FALSE) {
@@ -1337,7 +1338,10 @@ class Template extends Item {
   public function has($par) {return (bool) strlen($this->get($par));}
   public function lacks($par) {return !$this->has($par);}
   
-  public function add($par, $val) {    return $this->set($par, $val);  }
+  public function add($par, $val) {
+    echo "\n   + Adding $par" .tag();
+    return $this->set($par, $val); 
+  }
   public function set($par, $val) {
     if ($this->has($par)) return $this->param[$this->get_param_position($par)]->val = $val;
     if ($this->param[0]) {
@@ -1354,8 +1358,11 @@ class Template extends Item {
   }    
   
   public function forget ($par) {
-    echo "\n . - Dropping redundant parameter $par";
-    unset($this->param[$this->get_param_position($par)]);
+    $pos = $this->get_param_position($par);
+    if ($pos) {
+      echo "\n   - Dropping redundant parameter $par" . tag();
+      unset($this->param[$pos]);
+    }
   }
   
   ### Record modifications
@@ -1480,6 +1487,7 @@ function capitalize_title($in, $sents = true) {
 		$in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
 	}
   $in = str_ireplace(" (New York, N.Y.)", "", $in); // Pubmed likes to include this after "Science", for some reason
+  $in = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $in); // <em> tags often go missing around species namesin CrossRef
   $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
 	if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
     $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
@@ -1511,7 +1519,16 @@ function capitalize_title($in, $sents = true) {
   }
 }
 
-
+function tag() {
+  $dbg = array_reverse(debug_backtrace());
+  echo ' [..';
+  #print_r($dbg); die;#
+  array_pop($dbg); array_shift($dbg);
+  foreach ($dbg as $d) {
+    echo '> ' . $d['function'];  
+  }
+  echo ']';
+}
 
 global $author_parameters;
 $author_parameters = array(
@@ -1616,4 +1633,3 @@ $author_parameters = array(
     98 => array('surname88', 'forename88', 'initials88', 'first88', 'last88', 'author88'),
     99 => array('surname89', 'forename89', 'initials89', 'first89', 'last89', 'author89'),
 );
-
