@@ -158,6 +158,7 @@ class Template extends Item {
         $this->citation_template = TRUE;
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
+        if ($this->use_sici()) echo "\n * Found and used SICI";
         $this->id_to_param();
         $this->get_doi_from_text();
         // TODO: Check for the doi-inline template in the title
@@ -169,8 +170,8 @@ class Template extends Item {
         $this->sanitize_doi();
         $this->verify_doi();
         $this->tidy(); // Do now to maximize quality of metadata for DOI searches, etc
-        
-        
+        $this->expand_by_adsabs(); //Primarily to try to find DOI
+        $this->get_doi_from_crossref();
         $this->tidy();
       break;
     }
@@ -397,6 +398,116 @@ class Template extends Item {
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
       $this->add_if_new('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
   }
+  
+  protected function get_doi_from_crossref() {
+    if ($doi = $this->get('doi')) return $doi;
+    echo "\n - Checking CrossRef database... " . tag();
+    $crossRef = $this->query_crossref_by_data();
+    if ($crossRef) {
+      $p["doi"][0] = $crossRef->doi;
+      echo "Match found: " . $p["doi"][0];
+    } else {
+      echo "no match.";
+    }
+  }
+ 
+  protected function get_doi_from_webpage() {
+    if ($doi = $this->has('doi')) return $doi;
+    if ($url = trim($this->get('url')) && (strpos($url, "http://") !== false || strpos($url, "https://") !== false) {
+      $url = explode(" ", trim($url));
+      $url = $url[0];
+      $url = preg_replace("~\.full(\.pdf)?$~", ".abstract", $url);
+      $url = preg_replace("~<!--.*-->~", '', $url);
+      if (substr($url, -4) == ".pdf") {
+        global $html_output;
+        echo $html_output
+              ? ("\n - Avoiding <a href=\"$url\">PDF URL</a>. <br>")
+              : "\n - Avoiding PDF URL $url";
+      } else {
+        //Try using URL parameter
+        global $urlsTried, $slow_mode;
+        echo $html_output
+              ? ("\n - Trying <a href=\"$url\">URL</a>. <br>")
+              : "\n - Trying URL $url";
+        // Metas might be hidden if we don't have access the the page, so try the abstract:
+
+        if (@array_search($url, $urlsTried)) {
+          echo "URL has been scraped already - and scrapped.<br>";
+          return null;
+        }
+        //Check that it's not in the URL to start with
+        if (preg_match("|/(10\.\d{4}/[^?]*)|i", urldecode($url), $doi)) {
+          echo "Found DOI in URL." . tag();
+          return $this->set('doi', $doi[1]);
+        }
+
+        //Try meta tags first.
+        $meta = @get_meta_tags($url);
+        if ($meta) {
+          $this->add_if_new("pmid", $meta["citation_pmid"]);
+          foreach ($meta as $oTag) if (preg_match("~^\s*10\.\d{4}/\S*\s*~", $oTag)) {
+              echo "Found DOI in meta tags" . tag();
+              return $this->set('doi', $oTag);
+          }
+        }
+        if (!$slow_mode) {
+          echo "\n -- Aborted: not running in 'slow_mode'!";
+        } else if ($size[1] > 0 &&  $size[1] < 100000) { // TODO. The bot seems to keep crashing here; let's evaluate whether it's worth doing.  For now, restrict to slow mode.
+          echo "\n -- Querying URL with reported file size of ", $size[1], "b...", $htmlOutput?"<br>":"\n";
+          //Initiate cURL resource
+          $ch = curl_init();
+          curlSetup($ch, $url);
+          $source = curl_exec($ch);
+          if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
+            echo " -- 404 returned from URL.", $htmlOutput?"<br>":"\n";
+            // Try anyway.  There may still be metas.
+          } else if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {
+            echo " -- 501 returned from URL.", $htmlOutput?"<br>":"\n";
+            return false;
+          }
+          curl_close($ch);
+          if (strlen($source) < 100000) {
+            $doi = getDoiFromText($source, true);
+            if (!$doi) {
+              checkTextForMetas($source);
+            }
+          } else {
+            echo "\n -- File size was too large. Abandoned.";
+          }
+        } else {
+          echo $htmlOutput
+               ? ("\n\n ** ERROR: PDF may have been too large to open.  File size: ". $size[1]. "b<br>")
+               : "\n -- PDF too large ({$size[1]}b)";
+        }
+        if ($doi){
+          if (!preg_match("/>\d\.\d\.\w\w;\d/", $doi))
+          { //If the DOI contains a tag but doesn't conform to the usual syntax with square brackes, it's probably picked up an HTML entity.
+            echo " -- DOI may have picked up some tags. ";
+            $content = strip_tags(str_replace("<", " <", $source)); // if doi is superceded by a <tag>, any ensuing text would run into it when we removed tags unless we added a space before it!
+            preg_match("~" . doiRegexp . "~Ui", $content, $dois); // What comes after doi, then any nonword, but before whitespace
+            if ($dois[1]) {$doi = trim($dois[1]); echo " Removing them.<br>";} else {
+              echo "More probably, the DOI was itself in a tag. CHECK it's right!<br>";
+              //If we can't find it when tags have been removed, it might be in a <a> tag, for example.  Use it "neat"...
+            }
+          }
+          $urlsTried[] = $url;
+          $this->set('doi', urldecode($doi));
+        } else {
+          $urlsTried[] = $url;
+          return false;
+        }
+        if ($doi) {
+          echo " found doi $doi";
+          $this->set('doi', $doi);
+        } else {
+          $urlsTried[] = $url; //Log barren urls so we don't search them again. 
+          echo " no doi found.";
+        }
+      }
+    } else {
+      echo "No valid URL specified.  ";
+    }
+  }
  
   ### Obtain data from external database
   protected function expand_by_arxiv() {
@@ -460,7 +571,81 @@ class Template extends Item {
     }
     return false;
   }
-  
+ 
+  protected function expand_by_adsabs() {
+    global $slow_mode;
+    if ($slow_mode || $this->has('bibcode')) {
+      echo "\n - Checking AdsAbs database";
+      $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
+      if ($bibcode = $this->get("bibcode")) {
+        $xml = simplexml_load_file($url_root . "bibcode=" . urlencode($bibcode));
+      } elseif ($doi = $this->get('doi')) {
+        $xml = simplexml_load_file($url_root . "doi=" . urlencode($doi));
+      } elseif ($title = $this->get("title")) {
+        $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $title . '"'));
+        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($xml->record->title)));
+        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($title)));
+        if (
+             (strlen($inTitle) > 254 || strlen(dbTitle) > 254) 
+                ? strlen($inTitle) != strlen($dbTitle) || similar_text($inTitle, $dbTitle)/strlen($inTitle) < 0.98
+                : levenshtein($inTitle, $dbTitle) > 3
+            ) {
+          echo "\n   Similar title not found in database";
+          return false;
+        }
+      }
+      if ($xml["retrieved"] != 1 && $journal = $this->get('journal')) {
+        // try partial search using bibcode components:
+        $xml = simplexml_load_file($url_root
+                . "year=" . $this->get('year')
+                . "&volume=" . $this->get('volume')
+                . "&page=" . ($pages = $this->get('pages') ? $pages : $this->get('page'))
+                );
+        $journal_string = explode(",", (string) $xml->record->journal);
+        $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
+        if (strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
+                mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))) === FALSE) {
+          echo "\n   Match for pagination but database journal \"{$journal_string[0]}\" didn't match \"journal = $journal\"." . tag();
+          return false;
+        }
+      }
+      if ($xml["retrieved"] == 1) {
+        echo tag();
+        $this->add_if_new("bibcode", (string) $xml->record->bibcode);
+        $this->add_if_new("title", (string) $xml->record->title);
+        foreach ($xml->record->author as $author) {
+          $this->add_if_new("author" . ++$i, $author);
+        }
+        $journal_string = explode(",", (string) $xml->record->journal);
+        $journal_start = mb_strtolower($journal_string[0]);
+        $this->add_if_new("volume", (string) $xml->record->volume);
+        $this->add_if_new("issue", (string) $xml->record->issue);
+        $this->add_if_new("year", preg_replace("~\D~", "", (string) $xml->record->pubdate));
+        $this->add_if_new("pages", (string) $xml->record->page);
+        if (preg_match("~\bthesis\b~ui", $journal_start)) {}
+        elseif (substr($journal_start, 0, 6) == "eprint") {
+          if (substr($journal_start, 7, 6) == "arxiv:") {
+            if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
+          } else {
+            $this->appendto('id', ' ' . substr($journal_start, 13));
+          }
+        } else {
+          $this->add_if_new('journal', $journal_string[0]);
+        }
+        if ($this->add_if_new('doi', (string) $xml->record->DOI)) {
+          $this->expand_by_doi(1);
+        }
+        return true;
+      } else {
+        echo ": no record retrieved." . tag();
+        return false;
+      }
+    } else {
+       echo "\n - Skipping AdsAbs database: not in slow mode" . tag();
+       return false;
+    }
+  }
+    
   protected function expand_by_doi() {
     global $editing_cite_doi_template;
     $doi = $this->get('doi');
@@ -513,6 +698,19 @@ class Template extends Item {
     }
   }
  
+  protected function use_sici() {
+    if (preg_match(siciRegExp, urldecode($this->parsed_text()), $sici)) {
+      if ($this->blank($journal, "issn")) $this->set("issn", $sici[1]);
+      //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
+      if ($this->blank("year")) $this->set("year", $sici[2]);
+      //if ($this->blank("day") && is("month") && $sici[4]) set ("day", $sici[4]);
+      if ($this->blank("volume")) $this->set("volume", 1*$sici[5]);
+      if ($this->blank("issue") && $sici[6]) $this->set("issue", 1*$sici[6]);
+      if ($this->blank("pages", "page")) $this->set("pages", 1*$sici[7]);
+      return true;
+    } else return false;
+  }
+ 
   protected function query_crossref($doi = FALSE) {
 	global $crossRefId;
   if (!$doi) $doi = $this->get('doi');
@@ -527,6 +725,66 @@ class Template extends Item {
      return false;
   }
 }
+ 
+  protected function query_crossref_by_data() {
+    $title = $this->get('title');
+    $journal = $this->get('journal');
+    $author = $this->first_author();
+    $year = $this->get('year');
+    $volume = $this->get('volume');
+    $page_range = $this->page_range();
+    $start_page = $page_range[1];
+    $end_page = $page_range[2];
+    $issn = $this->get('issn');
+    $url1 = trim($this->get('url'));
+    $input = array($title, $journal, $author, $year, $volume, $start_page, $end_page, $issn, $url1);
+    global $priopP;
+    if ($input == $priorP['crossref']) {
+      echo "\n   * Data not changed since last CrossRef search.";
+      return false;
+    } else {
+      $priorP['crossref'] = $input;
+      global $crossRefId;
+      if ($journal || $issn) {
+        $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
+             . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
+             . ($author ? "&aulast=" . urlencode($author) : '')
+             . ($start_page ? "&spage=" . urlencode($start_page) : '')
+             . ($end_page > $start_page ? "&epage=" . urlencode($end_page) : '')
+             . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')
+             . ($volume ? "&volume=" . urlencode($volume) : '')
+             . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(deWikify($journal)) : ''));
+        if (!($result = @simplexml_load_file($url)->query_result->body->query)){
+          echo "\n   * Error loading simpleXML file from CrossRef.";
+        }s
+        else if ($result['status'] == 'malformed') {
+          echo "\n   * Cannot search CrossRef: " . $result->msg;
+        }
+        else if ($result["status"] == "resolved") {
+          return $result;
+        }
+      }
+      global $fastMode;
+      if ($fastMode || !$author || !($journal || $issn) ) return;
+      // If fail, try again with fewer constraints...
+      echo "Full search failed. Dropping author & end_page... ";
+      $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
+      if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
+      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
+      if ($year) $url .= "&date=" . urlencode($year);
+      if ($volume) $url .= "&volume=" . urlencode($volume);
+      if ($start_page) $url .= "&spage=" . urlencode($start_page);
+      if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
+        echo "\n   * Error loading simpleXML file from CrossRef.";
+      }
+      else if ($result['status'] == 'malformed') {
+        echo "\n   * Cannot search CrossRef: " . $result->msg;
+      } else if ($result["status"]=="resolved") {
+        echo " Successful!"; 
+        return $result;
+      }
+    }
+  }
  
   protected function expand_by_google_books() {
     $url = $this->get('url');
@@ -1296,12 +1554,6 @@ class Template extends Item {
     }
   }
   
-  protected function get_param_position ($needle) {
-    foreach ($this->param as $i => $p) {
-      if ($p->param == $needle) return $i;
-    }
-  }
-  
   ### Retrieve parameters 
   public function displayauthors($newval = FALSE) {
     if ($newval && is_int($newval)) $this->set('display-authors', $newval);
@@ -1316,6 +1568,21 @@ class Template extends Item {
         $max = max($matches[1], $max);
     }
     return $max;
+  }
+  
+  public function first_author() {
+    // Fetch the surname of the first author only
+    preg_match("~[^.,;\s]{2,}~u", implode(' ', 
+            array($this->get('author'), $this->get('author1'), $this->get('last'), $this->get('last1'))
+            , $first_author);
+    return $first_author[0];
+  }
+
+  public function page() {return ($page = $this->get('pages') ? $page : $this->get('page'));}
+  
+  public function page_range() {
+    preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
+    return $pagenos;
   }
   
   #### Amend parameters
@@ -1335,6 +1602,12 @@ class Template extends Item {
     return NULL;
   }
   
+  protected function get_param_position ($needle) {
+    foreach ($this->param as $i => $p) {
+      if ($p->param == $needle) return $i;
+    }
+  }
+  
   public function has($par) {return (bool) strlen($this->get($par));}
   public function lacks($par) {return !$this->has($par);}
   
@@ -1343,7 +1616,7 @@ class Template extends Item {
     return $this->set($par, $val); 
   }
   public function set($par, $val) {
-    if ($this->has($par)) return $this->param[$this->get_param_position($par)]->val = $val;
+    if ($pos = $this->get_param_position($par)) return $this->param[$pos]->val = $val;
     if ($this->param[0]) {
       $p = new Parameter;
       $p->parse_text($this->param[0]->parsed_text());
@@ -1355,7 +1628,12 @@ class Template extends Item {
     $p->val = $val;
     $this->param[] = $p;
     return true;
-  }    
+  }
+  
+  public function appendto($par, $val) {
+    if ($pos=$this->get_param_position($par)) return $this->param[$pos]->val = $this->param[$pos]->val . $val;
+    else return $this->set($par, $val);
+  } 
   
   public function forget ($par) {
     $pos = $this->get_param_position($par);
@@ -1525,7 +1803,7 @@ function tag() {
   #print_r($dbg); die;#
   array_pop($dbg); array_shift($dbg);
   foreach ($dbg as $d) {
-    echo '> ' . $d['function'];  
+    echo '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);  
   }
   echo ']';
 }

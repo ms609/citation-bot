@@ -35,9 +35,7 @@ problemtxt;
 $problem_text = <<<testcase
 
 {nobots}}
-{{Cite journal | doix = 10.1038.2Fnature09068}}
-{{cite journal | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}
-
+{{Cite journal | http://adsabs.harvard.edu/abs/2013ESRv..123..133L}}
 testcase;
 
 /* Outline 
