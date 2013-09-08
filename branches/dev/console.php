@@ -35,7 +35,7 @@ problemtxt;
 $problem_text = <<<testcase
 
 {nobots}}
-{{Cite journal | http://adsabs.harvard.edu/abs/2013ESRv..123..133L}}
+{{Cite journal | jorunal=J Heart Lung Transplant|year= 1992|pp=375-6|volume=11}}
 testcase;
 
 /* Outline 

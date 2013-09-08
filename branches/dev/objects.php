@@ -172,6 +172,7 @@ class Template extends Item {
         $this->tidy(); // Do now to maximize quality of metadata for DOI searches, etc
         $this->expand_by_adsabs(); //Primarily to try to find DOI
         $this->get_doi_from_crossref();
+        $this->find_pmid();
         $this->tidy();
       break;
     }
@@ -199,7 +200,7 @@ class Template extends Item {
   public function blank($param) {
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
-      if (array_search($p->param, $param) && trim($p->val) != '') return FALSE;
+      if (in_array($p->param, $param) && trim($p->val) != '') return FALSE;
     }
     return TRUE;
   }
@@ -341,6 +342,13 @@ class Template extends Item {
           return true;
         }
         return false;
+      case 'pmid':
+        if ($this->blank($param)) {        
+          $this->add($param, sanitize_string($value));
+          $this->expand_by_pubmed();
+          if ($this->blank('doi')) $this->query_crossref_by_data();
+          return true;
+        }
       default:
         if ($this->blank($param)) {        
           return $this->add($param, sanitize_string($value));
@@ -399,7 +407,7 @@ class Template extends Item {
       $this->add_if_new('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
   }
   
-  protected function get_doi_from_crossref() {
+  protected function get_doi_from_crossref() { #TODO test
     if ($doi = $this->get('doi')) return $doi;
     echo "\n - Checking CrossRef database... " . tag();
     $crossRef = $this->query_crossref_by_data();
@@ -411,9 +419,9 @@ class Template extends Item {
     }
   }
  
-  protected function get_doi_from_webpage() {
+  protected function get_doi_from_webpage() { #TODO test 
     if ($doi = $this->has('doi')) return $doi;
-    if ($url = trim($this->get('url')) && (strpos($url, "http://") !== false || strpos($url, "https://") !== false) {
+    if ($url = trim($this->get('url')) && (strpos($url, "http://") !== false || strpos($url, "https://") !== false)) {
       $url = explode(" ", trim($url));
       $url = $url[0];
       $url = preg_replace("~\.full(\.pdf)?$~", ".abstract", $url);
@@ -431,7 +439,7 @@ class Template extends Item {
               : "\n - Trying URL $url";
         // Metas might be hidden if we don't have access the the page, so try the abstract:
 
-        if (@array_search($url, $urlsTried)) {
+        if (@in_array($url, $urlsTried)) {
           echo "URL has been scraped already - and scrapped.<br>";
           return null;
         }
@@ -509,6 +517,98 @@ class Template extends Item {
     }
   }
  
+  protected function find_pmid() {  
+    echo "\n - Searching PubMed... " . tag();
+    $results = ($this->query_pubmed());
+    if ($results[1] == 1) {
+      $this->add_if_new('pmid', $results[0]);
+    } else {
+      echo " nothing found.";
+      if (mb_strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && $this->blank('journal')) {
+        // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
+        echo "\n - Checking for ISBN";
+        if ($this->blank('isbn') && $title = $this->get("title")) $this->set("isbn", findISBN( $title, $this->first_author()));
+        else echo "\n  Already has an ISBN. ";
+      }
+    }
+  }
+  
+  protected function query_pubmed() {
+/* 
+ *
+ * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
+ * Returns an array:
+ *   [0] => PMID of first matching result
+ *   [1] => total number of results
+ *
+ */
+    if ($doi = $this->get('doi')) {
+      $results = $this->do_pumbed_query(array("doi"), true);
+      if ($results[1] == 1) return $results;
+    }
+    // If we've got this far, the DOI was unproductive or there was no DOI.
+
+    if ($this->has("journal") && $this->has("volume") && $this->has("pages")) {
+      $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages"));
+      if ($results[1] == 1) return $results;
+    }
+    if ($this->has("title") && ($this->has("author") || $this->has("author") || $this->has("author1") || $this->has("author1"))) {
+      $results = $this->do_pumbed_query(array("title", "author", "author", "author1", "author1"));
+      if ($results[1] == 1) return $results;
+      if ($results[1] > 1) {
+        $results = $this->do_pumbed_query(array("title", "author", "author", "author1", "author1", "year", "date"));
+        if ($results[1] == 1) return $results;
+        if ($results[1] > 1) {
+          $results = $this->do_pumbed_query(array("title", "author", "author", "author1", "author1", "year", "date", "volume", "issue"));
+          if ($results[1] == 1) return $results;
+        }
+      }
+    }
+  }
+  
+  protected function do_pumbed_query($terms, $check_for_errors = false) {
+  /* do_query
+   *
+   * Searches pubmed based on terms provided in an array.
+   * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
+   * return the results as array (first result, # of results)
+   * If $check_for_errors is true, it will return 'fasle' on errors returned by pubmed
+   */
+    foreach ($terms as $term) {
+      $key_index = array(
+        'doi' =>  'AID',
+        'author1' =>  'Author',
+        'author' =>  'Author',
+        'issue' =>  'Issue',
+        'journal' =>  'Journal',
+        'pages' =>  'Pagination',
+        'page' =>  'Pagination',
+        'date' =>  'Publication Date',
+        'year' =>  'Publication Date',
+        'title' =>  'Title',
+        'pmid' =>  'PMID',
+        'volume' =>  'Volume',
+        ##Text Words [TW] , Title/Abstract [TIAB]
+          ## Formatting: YYY/MM/DD Publication Date [DP]
+      );
+      $key = $key_index[mb_strtolower($term)];
+      if ($key && $term && $val = $this->get($term)) {
+        $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+      }
+    }
+    $query = substr($query, 5);
+    $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
+    $xml = simplexml_load_file($url);
+    if ($check_for_errors && $xml->ErrorList) {
+      echo $xml->ErrorList->PhraseNotFound
+              ? " no results."
+              : "\n - Errors detected in PMID search (" . print_r($xml->ErrorList, 1) . "); abandoned.";
+      return array(null, 0);
+    }
+
+    return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(null, 0);// first results; number of results
+  }
+    
   ### Obtain data from external database
   protected function expand_by_arxiv() {
     if ($this->wikiname() == 'cite arxiv') {
@@ -698,6 +798,67 @@ class Template extends Item {
     }
   }
  
+  protected function expand_by_pubmed() {
+    if (!$this->incomplete()) return;
+    if ($pm = $this->get('pmid')) $identifier = 'pmid';
+    else if ($pm = $this->get('pmc')) $identifier = 'pmc';
+    else return false;
+    
+    echo "\n - Checking " . strtoupper($identifier) . ' ' . $pm . ' for more details' . tag();
+    $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=$pm");
+    // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
+    foreach($xml->DocSum->Item as $item) {
+      if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $this->add_if_new('doi', $match[0]);
+      switch ($item["Name"]) {
+                case "Title":   $this->add_if_new('title', str_replace(array("[", "]"), "",(string) $item));
+        break; 	case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
+                                $this->add_if_new('year', (string) $match[1]);
+        break; 	case "FullJournalName": $this->add_if_new('journal', (string) $item);
+        break; 	case "Volume":  $this->add_if_new('volume', (string) $item);
+        break; 	case "Issue":   $this->add_if_new('issue', (string) $item);
+        break; 	case "Pages":   $this->add_if_new('pages', (string) $item);
+        break; 	case "PmId":    $this->add_if_new('pmid', (string) $item);
+        break; 	case "AuthorList":
+          $i = 0;
+          foreach ($item->Item as $subItem) {
+            $i++;
+            if (authorIsHuman((string) $subItem)) {
+              $jr_test = jrTest($subItem);
+              $subItem = $jr_test[0];
+              $junior = $jr_test[1];
+              if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
+                $this->add_if_new("author$i", $names[1] . $junior . ',' . $names[2]);
+              }
+            } else {
+              // We probably have a committee or similar.  Just use 'author$i'.
+              $this->add_if_new("author$i", (string) $subItem);
+            }
+          }
+        break; case "LangList": case 'ISSN':
+        break; case "ArticleIds":
+          foreach ($item->Item as $subItem) {
+            switch ($subItem["Name"]) {
+              case "pubmed":
+                  preg_match("~\d+~", (string) $subItem, $match);
+                  if ($this->add_if_new("pmid", $match[0])) $this->expand_by_pubmed();
+                  break; ### TODO PLACEHOLDER YOU ARE HERE CONTINUATION POINT ###
+              case "pmc":
+                preg_match("~\d+~", (string) $subItem, $match);
+                $this->add_if_new('pmc', $match[0]);
+                break;
+              case "doi": case "pii":
+              default:
+                if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
+                  if ($this->add_if_new('doi', $match[0])) $this->expand_by_doi();
+                }
+                break;
+            }
+          }
+        break;
+      }
+    }
+  }
+ 
   protected function use_sici() {
     if (preg_match(siciRegExp, urldecode($this->parsed_text()), $sici)) {
       if ($this->blank($journal, "issn")) $this->set("issn", $sici[1]);
@@ -738,9 +899,9 @@ class Template extends Item {
     $issn = $this->get('issn');
     $url1 = trim($this->get('url'));
     $input = array($title, $journal, $author, $year, $volume, $start_page, $end_page, $issn, $url1);
-    global $priopP;
+    global $priorP;
     if ($input == $priorP['crossref']) {
-      echo "\n   * Data not changed since last CrossRef search.";
+      echo "\n   * Data not changed since last CrossRef search." . tag();
       return false;
     } else {
       $priorP['crossref'] = $input;
@@ -756,7 +917,7 @@ class Template extends Item {
              . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(deWikify($journal)) : ''));
         if (!($result = @simplexml_load_file($url)->query_result->body->query)){
           echo "\n   * Error loading simpleXML file from CrossRef.";
-        }s
+        }
         else if ($result['status'] == 'malformed') {
           echo "\n   * Cannot search CrossRef: " . $result->msg;
         }
@@ -765,9 +926,9 @@ class Template extends Item {
         }
       }
       global $fastMode;
-      if ($fastMode || !$author || !($journal || $issn) ) return;
+      if ($fastMode || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
-      echo "Full search failed. Dropping author & end_page... ";
+      echo "\n   x Full search failed. Dropping author & end_page... ";
       $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
       if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
       if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
@@ -775,7 +936,7 @@ class Template extends Item {
       if ($volume) $url .= "&volume=" . urlencode($volume);
       if ($start_page) $url .= "&spage=" . urlencode($start_page);
       if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
-        echo "\n   * Error loading simpleXML file from CrossRef.";
+        echo "\n   * Error loading simpleXML file from CrossRef." . tag();
       }
       else if ($result['status'] == 'malformed') {
         echo "\n   * Cannot search CrossRef: " . $result->msg;
@@ -1573,7 +1734,7 @@ class Template extends Item {
   public function first_author() {
     // Fetch the surname of the first author only
     preg_match("~[^.,;\s]{2,}~u", implode(' ', 
-            array($this->get('author'), $this->get('author1'), $this->get('last'), $this->get('last1'))
+            array($this->get('author'), $this->get('author1'), $this->get('last'), $this->get('last1')))
             , $first_author);
     return $first_author[0];
   }
@@ -1651,7 +1812,7 @@ class Template extends Item {
       case '~': $type='changeonly'; break;
       default: $type='modifications';
     }
-    return array_search($param, $this->modifications($type));
+    return in_array($param, $this->modifications($type));
   }
   protected function added($param) {return $this->modified($param, '+');}
   
@@ -1669,7 +1830,7 @@ class Template extends Item {
       }
     }
     $ret['dashes'] = $this->mod_dashes;
-    if (array_search($type, array_keys($ret))) return $ret[$type];
+    if (in_array($type, array_keys($ret))) return $ret[$type];
     return $ret;
   }
   
