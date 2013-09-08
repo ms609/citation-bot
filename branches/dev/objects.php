@@ -179,6 +179,7 @@ class Template extends Item {
     if ($this->citation_tempate) {
       if (!$this->blank('authors') && $this->blank('author')) $this->rename('authors', 'author');
       $this->correct_param_spelling();
+      $this->check_url();
     }
   }
   
@@ -1738,6 +1739,25 @@ class Template extends Item {
       if ($this->expand_by_doi($try)) {$this->set('doi', $try); return TRUE;}
     }
     return FALSE;
+  }
+  
+  public function check_url() {
+    // Check that the URL functions, and mark as dead if not.
+    /*  Disable; to re-enable, we should log possible 404s and check back later.
+     * Also, dead-link notifications should be placed ''after'', not within, the template.
+
+     if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
+    {
+      echo "\n - Checking that URL is live...";
+      $formatSet = isset($p["format"]);
+      $p["format"][0] = assessUrl($p["url"][0]);
+      if (!$formatSet && trim($p["format"][0]) == "") {
+        unset($p["format"]);
+      }
+      echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
+    }*/
+
+
   }
   
   protected function handle_et_al() {
