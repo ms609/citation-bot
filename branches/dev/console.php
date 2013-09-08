@@ -63,6 +63,7 @@ testcase;
       $start_templates = $templates;
       for ($i = 0; $i < count($templates); $i++) {
         $templates[$i]->process();
+        $templates[$i]->cite_doi_format();
       }     
     $text = replace_object($text, $templates);
     die("\n$text\n");  

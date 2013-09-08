@@ -346,7 +346,7 @@ class Template extends Item {
         if ($this->blank($param)) {        
           $this->add($param, sanitize_string($value));
           $this->expand_by_pubmed();
-          if ($this->blank('doi')) $this->query_crossref_by_data();
+          if ($this->blank('doi')) $this->get_doi_from_crossref();
           return true;
         }
       default:
@@ -409,13 +409,63 @@ class Template extends Item {
   
   protected function get_doi_from_crossref() { #TODO test
     if ($doi = $this->get('doi')) return $doi;
-    echo "\n - Checking CrossRef database... " . tag();
-    $crossRef = $this->query_crossref_by_data();
-    if ($crossRef) {
-      $p["doi"][0] = $crossRef->doi;
-      echo "Match found: " . $p["doi"][0];
+    echo "\n - Checking CrossRef database for doi. " . tag();
+    $title = $this->get('title');
+    $journal = $this->get('journal');
+    $author = $this->first_author();
+    $year = $this->get('year');
+    $volume = $this->get('volume');
+    $page_range = $this->page_range();
+    $start_page = $page_range[1];
+    $end_page = $page_range[2];
+    $issn = $this->get('issn');
+    $url1 = trim($this->get('url'));
+    $input = array($title, $journal, $author, $year, $volume, $start_page, $end_page, $issn, $url1);
+    global $priorP;
+    if ($input == $priorP['crossref']) {
+      echo "\n   * Data not changed since last CrossRef search." . tag();
+      return false;
     } else {
-      echo "no match.";
+      $priorP['crossref'] = $input;
+      global $crossRefId;
+      if ($journal || $issn) {
+        $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
+             . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
+             . ($author ? "&aulast=" . urlencode($author) : '')
+             . ($start_page ? "&spage=" . urlencode($start_page) : '')
+             . ($end_page > $start_page ? "&epage=" . urlencode($end_page) : '')
+             . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')
+             . ($volume ? "&volume=" . urlencode($volume) : '')
+             . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(deWikify($journal)) : ''));
+        if (!($result = @simplexml_load_file($url)->query_result->body->query)){
+          echo "\n   * Error loading simpleXML file from CrossRef.";
+        }
+        else if ($result['status'] == 'malformed') {
+          echo "\n   * Cannot search CrossRef: " . $result->msg;
+        }
+        else if ($result["status"] == "resolved") {
+          return $result;
+        }
+      }
+      global $fastMode;
+      if ($fastMode || !$author || !($journal || $issn) || !$start_page ) return;
+      // If fail, try again with fewer constraints...
+      echo "\n   x Full search failed. Dropping author & end_page... ";
+      $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
+      if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
+      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
+      if ($year) $url .= "&date=" . urlencode($year);
+      if ($volume) $url .= "&volume=" . urlencode($volume);
+      if ($start_page) $url .= "&spage=" . urlencode($start_page);
+      if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
+        echo "\n   * Error loading simpleXML file from CrossRef." . tag();
+      }
+      else if ($result['status'] == 'malformed') {
+        echo "\n   * Cannot search CrossRef: " . $result->msg;
+      } else if ($result["status"]=="resolved") {
+        echo " Successful!"; 
+        return $result;
+      }
     }
   }
  
@@ -432,7 +482,7 @@ class Template extends Item {
               ? ("\n - Avoiding <a href=\"$url\">PDF URL</a>. <br>")
               : "\n - Avoiding PDF URL $url";
       } else {
-        //Try using URL parameter
+        // Try using URL parameter
         global $urlsTried, $slow_mode;
         echo $html_output
               ? ("\n - Trying <a href=\"$url\">URL</a>. <br>")
@@ -827,7 +877,9 @@ class Template extends Item {
               $subItem = $jr_test[0];
               $junior = $jr_test[1];
               if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-                $this->add_if_new("author$i", $names[1] . $junior . ',' . $names[2]);
+                $first = trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
+                if (strpos($first, '.') && substr($first, -1) != '.') $first = $first . '.';
+                $this->add_if_new("author$i", $names[1] . $junior . ',' . $first);
               }
             } else {
               // We probably have a committee or similar.  Just use 'author$i'.
@@ -857,6 +909,7 @@ class Template extends Item {
         break;
       }
     }
+    if ($xml && $this->blank('doi')) $this->get_doi_from_crossref();
   }
  
   protected function use_sici() {
@@ -885,68 +938,8 @@ class Template extends Item {
      echo "\n   ! Error loading CrossRef file from DOI $doi!";
      return false;
   }
-}
- 
-  protected function query_crossref_by_data() {
-    $title = $this->get('title');
-    $journal = $this->get('journal');
-    $author = $this->first_author();
-    $year = $this->get('year');
-    $volume = $this->get('volume');
-    $page_range = $this->page_range();
-    $start_page = $page_range[1];
-    $end_page = $page_range[2];
-    $issn = $this->get('issn');
-    $url1 = trim($this->get('url'));
-    $input = array($title, $journal, $author, $year, $volume, $start_page, $end_page, $issn, $url1);
-    global $priorP;
-    if ($input == $priorP['crossref']) {
-      echo "\n   * Data not changed since last CrossRef search." . tag();
-      return false;
-    } else {
-      $priorP['crossref'] = $input;
-      global $crossRefId;
-      if ($journal || $issn) {
-        $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
-             . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
-             . ($author ? "&aulast=" . urlencode($author) : '')
-             . ($start_page ? "&spage=" . urlencode($start_page) : '')
-             . ($end_page > $start_page ? "&epage=" . urlencode($end_page) : '')
-             . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')
-             . ($volume ? "&volume=" . urlencode($volume) : '')
-             . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(deWikify($journal)) : ''));
-        if (!($result = @simplexml_load_file($url)->query_result->body->query)){
-          echo "\n   * Error loading simpleXML file from CrossRef.";
-        }
-        else if ($result['status'] == 'malformed') {
-          echo "\n   * Cannot search CrossRef: " . $result->msg;
-        }
-        else if ($result["status"] == "resolved") {
-          return $result;
-        }
-      }
-      global $fastMode;
-      if ($fastMode || !$author || !($journal || $issn) || !$start_page ) return;
-      // If fail, try again with fewer constraints...
-      echo "\n   x Full search failed. Dropping author & end_page... ";
-      $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
-      if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
-      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
-      if ($year) $url .= "&date=" . urlencode($year);
-      if ($volume) $url .= "&volume=" . urlencode($volume);
-      if ($start_page) $url .= "&spage=" . urlencode($start_page);
-      if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
-        echo "\n   * Error loading simpleXML file from CrossRef." . tag();
-      }
-      else if ($result['status'] == 'malformed') {
-        echo "\n   * Cannot search CrossRef: " . $result->msg;
-      } else if ($result["status"]=="resolved") {
-        echo " Successful!"; 
-        return $result;
-      }
-    }
-  }
- 
+} 
+  
   protected function expand_by_google_books() {
     $url = $this->get('url');
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
@@ -1025,6 +1018,90 @@ class Template extends Item {
       }
     }
   }
+  
+  protected function find_more_authors() {
+  /** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
+   *   Send the URL and the first author's SURNAME ONLY as $a1
+   *  The function will return an array of authors in the form $new_authors[3] = Author, The Third
+   */
+    $pages = $this->page_range();
+    $pages = $pages[0];
+    if (preg_match("~\d\D+\d", $pages)) $new_pages = $pages;
+    $doi = $this->get('doi');
+    
+    $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
+    $url = "http://dx.doi.org/$doi";
+    echo "\n  * Looking for more authors @ $url:";
+    echo "\n   - Using meta tags...";
+    $meta_tags = get_meta_tags($url);
+    if ($meta_tags["citation_authors"]) $new_authors = formatAuthors($meta_tags["citation_authors"], true);
+    global $slow_mode;
+    if ($slow_mode && !$new_pages && !$new_authors) {
+      echo "\n   - Now scraping web-page.";
+      //Initiate cURL resource
+      $ch = curl_init();
+      curlSetup($ch, $url);
+      curl_setopt($ch, CURLOPT_MAXREDIRS, 7);  //This means we can't get stuck.
+      if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) echo "404 returned from URL.<br>";
+      elseif (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) echo "501 returned from URL.<br>";
+      else {
+        $source = str_ireplace(
+                    array('&nbsp;', '<p ',          '<DIV '),
+                    array(' ',     "\r\n    <p ", "\r\n    <DIV "),
+                    curl_exec($ch)
+                   ); // Spaces before '<p ' fix cases like 'Title' <p>authors</p> - otherwise 'Title' gets picked up as an author's initial.
+        $source = preg_replace(
+                    "~<sup>.*</sup>~U",
+                    "",
+                    str_replace("\n", "\n  ", $source)
+                  );
+        curl_close($ch);
+        if (strlen($source)<1280000) {
+
+          // Pages - only check if we don't already have a range
+          if (!$new_pages && preg_match("~^[\d\w]+$~", trim($pages), $page)) {
+            // find an end page number first
+            $firstPageForm = preg_replace('~d\?([^?]*)$~U', "d$1", preg_replace('~\d~', '\d?', preg_replace('~[a-z]~i', '[a-zA-Z]?', $page[0])));
+            #echo "\n Searching for page number with form $firstPageForm:";
+            if (preg_match("~{$page[0]}[^\d\w\.]{1,5}?(\d?$firstPageForm)~", trim($source), $pages)) { // 13 leaves enough to catch &nbsp;
+              $new_pages = $page[0] . '-' . $pages[1];
+             # echo " found range [$page[0] to $pages[1]]";
+            } #else echo " not found.";
+          }
+
+          // Authors
+          if (true || !$new_authors) {
+            // Check dc.contributor, which isn't correctly handled by get_meta_tags
+            if (preg_match_all("~\<meta name=\"dc.Contributor\" +content=\"([^\"]+)\"\>~U", $source, $authors)){
+              $new_authors=$authors[1];
+            }
+          }
+        } else echo "\n   x File size was too large. Abandoned.";
+      }
+    }
+    
+    $count_new_authors = count($new_authors) - 1;
+    if ($count_new_authors) {
+      for ($j = 0; $j < $count_new_authors; ++$j) {
+        $au = explode(', ', $new_authors[$j - 1]);
+        if ($au[1]) {
+          $this->set ('last' . $j, $au[0]);
+          $this->set ('first' . $j, preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", $au[1]));
+          $this->forget('author' . $j);
+        } else {
+          if ($au[0]) {
+            $this->set ("author$j", $au[0]);
+          }
+        }
+      }
+      $this->forget('author');
+    }
+    if ($new_pages) {
+      $this->set('pages', $new_pages);
+      echo " [completed page range]";
+    }
+  }
+
   
   ### parameter processing
   protected function use_unnamed_params() {
@@ -1713,6 +1790,28 @@ class Template extends Item {
         }
       }
     }
+  }
+  
+  public function cite_doi_format() {
+    echo "\n   * Cite Doi formatting" . tag();
+
+    // If we only have the first author, look for more!
+    if ($this->blank('coauthors')
+       && $this->blank('author2')
+       && $this->blank('last2')
+         && $doi = $this->get('doi')
+      ) {
+      echo "\n     - Looking for co-authors & page numbers...";
+      $this->find_more_authors();
+    }
+    for ($i = 1; $i < 100; $i ++) {
+      foreach (array("author", "last", "first") as $param) {
+        if (trim($p[$param . $i][0]) == "") {
+          unset ($p[$param . $i]);
+        }
+      }
+    }
+    citeDoiOutputFormat();
   }
   
   ### Retrieve parameters 
