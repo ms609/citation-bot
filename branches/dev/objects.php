@@ -12,6 +12,56 @@ include('temp_parameter_list.php'); // #TODO DELETE
 define ('ref_regexp', '~<ref.*</ref>~u');
 define ('refref_regexp', '~<ref.*/>~u');
 
+function expand_text($text) {
+  global $html_output;
+  if ($html_output === -1) ob_start();   
+  // COMMENTS //
+  $comments = extract_object($text, Comment);
+    $text = $comments[0]; $comments = $comments[1];
+  if ($bot_exclusion_compliant && !allowBots($text)) {
+    echo "\n ! Page marked with {{nobots}} template.  Skipping.";
+    die('\n#Todo: NEXT PAGE!');
+  }
+  // TEMPLATES //
+  $templates = extract_object($text, Template);
+  $text = $templates[0]; $templates = $templates[1];
+  $start_templates = $templates;
+  $citation_templates = 0; $cite_templates = 0;
+  if ($templates) foreach ($templates as $template) {
+    if ($template->wikiname() == 'citation') $citation_templates++;
+    elseif (preg_match("~[cC]ite[ _]\w+~", $template->wikiname())) $cite_templates++;
+    elseif (stripos($template->wikiname(), 'harv') === 0) $harvard_templates++;
+  }
+  $citation_template_dominant = $citation_templates > $cite_templates;
+  echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.  Using dominant template {{" . ($citation_template_dominant?'Citation':'Cite XXX') . '}}.';
+  for ($i = 0; $i < count($templates); $i++) {
+    $templates[$i]->process();
+    $templates[$i]->cite_doi_format();
+    $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
+  }
+  $text = replace_object($text, $templates);
+  // REFERENCE TAGS //
+  $short_refs = extract_object($text, Short_Reference);
+    $text = $short_refs[0]; $short_refs = $short_refs[1];
+  $long_refs = extract_object($text, Long_Reference);
+    $text = $long_refs[0]; $long_refs = $long_refs[1];
+  for ($i = 0; $i < count($long_refs); $i++) {
+    print "\n\n" . $long_refs[$i]->parsed_text();
+    $long_refs[$i]->process($citation_template_dominant);
+  }
+  foreach ($long_refs as $ref) {
+    
+  }
+  
+  
+  $text = replace_object($text, $long_refs);
+  $text = replace_object($text, $short_refs);
+  $text = replace_object($text, $comments);
+  
+  if ($html_output === -1) ob_end_clean();
+  return $text;
+}
+
 class Item {
   protected $rawtext;
   public $occurrences;
@@ -62,13 +112,23 @@ class Short_Reference extends Item {
 
 class Long_Reference extends Item {
   const placeholder_text = '# # # Citation bot : long ref placeholder %s # # #';
-  const regexp = '~<ref\s[^/>]+?>.*?<\s*/\s*ref\s*>~s';
+  const regexp = '~<ref\s?[^/>]*?>.*?<\s*/\s*ref\s*>~s';
   
   protected $open_start, $open_attr, $open_end, $content, $close;
   protected $rawtext;
   
+  public function process($use_citation_template = FALSE) {
+    $this->content = preg_replace_callback('~https?://\S+~',
+      function ($matches) {
+      print "...";
+      print_r($matches);
+        return url2template($matches[0], $use_citation_template);
+      }, $this->content
+    );
+  }
+  
   public function parse_text($text) {
-    preg_match('~(<ref\s+)(.*)(\s*>)(.*?)(<\s*/\s*ref\s*>)~s', $text, $bits);
+    preg_match('~(<ref\s?)(.*)(\s*>)(.*?)(<\s*/\s*ref\s*>)~s', $text, $bits);
     $this->rawtext = $text;
     $this->open_start = $bits[1];
     $this->open_end = $bits[3];
@@ -86,8 +146,8 @@ class Long_Reference extends Item {
   }
   
   public function parsed_text() {
-    foreach ($this->attr as $key => $value) {
-      $middle .= $key . '=' . $value;
+    if ($this->attr) foreach ($this->attr as $key => $value) {
+      $middle .= $key . ($key && $value ? '=' : '') . $value;
     }
     return $this->open_start . $middle . $this->open_end . $this->content . $this -> close;
   }
@@ -2129,7 +2189,7 @@ function extract_object ($text, $class) {
 
 function replace_object ($text, $objects) {
   $i = count($objects);
-  foreach (array_reverse($objects) as $obj) {
+  if ($objects) foreach (array_reverse($objects) as $obj) {
     $placeholder_format = $obj::placeholder_text;
     $text = str_replace(sprintf($placeholder_format, --$i), $obj->parsed_text(), $text);
   }
@@ -2201,7 +2261,61 @@ function tag() {
   echo ']';
 }
 
+///////////////////////
+function leave_broken_doi_message($id, $page, $doi) { #todo
+  echo "\n\n* Non-functional identifier $id found in article [[$page]]";
+  if (getNamespace($page) == 0) {
+    $talkPage = "Talk:$page";
+    $talkMessage = "== Reference to broken DOI ==\n"
+                 . "A reference was recently added to this article using the [[Template:Cite doi|Cite DOI template]]. "
+                 . "The [[User:Citation bot|citation bot]] tried to expand the citation, but could not access the specified DOI. "
+                 . "Please check that the [[Digital object identifier|DOI]] [[doi:$doi]] has been correctly entered.  If the DOI is correct, it is possible that it "
+                 . "has not yet been entered into the [[CrossRef]] database.  Please  "
+                 . "[http://en.wikipedia.org/w/index.php?title=" . urlencode($id)
+                 . "&preload=Template:Cite_doi/preload/nodoi&action=edit complete the reference by hand here]. "
+                 . "\nThe script that left this message was unable to track down the user who added the citation; "
+                 . "it may be prudent to alert them to this message.  Thanks, ";
+    $talkId = articleId($page, 1);
 
+    if ($talkId) {
+      $text = getRawWikiText($talkPage);
+      echo "\nTALK PAGE EXISTS " . strlen($text) . "\n\n";
+    } else {
+      $text = '';
+      echo "\nTALK PAGE DOES NOT EXIST\n\n";
+    }
+    if (strpos($text, "|DOI]] [[doi:" . $doi) || strpos($text, "d/nodoi&a")) {
+      echo "\n - Message already on talk page.  Zzz.\n";
+    } else if ($text && $talkId || !$text && !$talkId) {
+      echo "\n * Writing message on talk page..." . $talkPage . "\n\n";
+      echo "\n\n Talk page $talkPage has ID $talkId; text was: [$text].  Our page was $id and " .
+              "the article in progress was $page.\n";
+      write($talkPage,
+              ($text . "\n" . $talkMessage . "~~~~"),
+              "Reference to broken [[doi:$doi]] using [[Template:Cite doi]]: please fix!");
+      echo " Message left.\n";
+    } else {
+      echo "\n *  Talk page exists, but no text could be attributed to it. \n ?????????????????????????";
+    }
+    mark_broken_doi_template($page, $doi);
+  } else {
+    echo "\n * Article in question is not in article space.  Switched to use 'Template:Broken DOI'." ;
+    mark_broken_doi_template($page, $doi);
+  }
+}
+
+function mark_broken_doi_template($article_in_progress, $oDoi) {#TODO use class architecture
+  $page_code = getRawWikiText($article_in_progress);
+  if ($page_code) {
+    global $editInitiator;
+    return write($article_in_progress
+            , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i", "{{broken doi|$oDoi}}", $page_code)
+            , "$editInitiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
+    );
+  } else {
+    exit("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
+  }
+}
 
 global $author_parameters;
 $author_parameters = array(
@@ -2306,3 +2420,26 @@ $author_parameters = array(
     98 => array('surname88', 'forename88', 'initials88', 'first88', 'last88', 'author88'),
     99 => array('surname89', 'forename89', 'initials89', 'first89', 'last89', 'author89'),
 );
+
+function url2template($url, $citation) {
+  if (preg_match("~jstor\.org/(?!sici).*[/=](\d+)~", $url, $match)) {
+    return "{{Cite doi | 10.2307/$match[1] }}";
+  } else if (preg_match("~//dx\.doi\.org/(.+)$~", $url, $match)) {
+    return "{{Cite doi | " . urldecode($match[1]) . " }}";
+  } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+X?)~", $url, $match)) {
+    return ($match['domain'] == ".com") ? "{{ASIN | {$match['id']} }}" : " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
+  } else if (preg_match("~^https?://books\.google(?:\.\w{2,3}\b)+/~", $url, $match)) {
+    return "{{" . ($citation ? 'Cite book' : 'Cite journal') . ' | url = ' . $url . '}}'; 
+  } else if (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+                  . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
+    return "{{Cite pmc | {$match[1]}{$match[2]} }}";
+  } elseif (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
+    return "{{Cite journal | bibcode = " . urldecode($bibcode[1]) . "}}";
+  } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
+    return "{{Cite pmid | {$match[1]} }}";
+  } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
+    return "{{Cite arxiv | eprint={$match[1]} }}";
+  } else {
+    return $url;
+  }
+}

@@ -35,8 +35,12 @@ problemtxt;
 $problem_text = <<<testcase
 
 {nobots}}
-{{Citation | jorunal=J Heart Lung Transplant|year= 1992|pp=375-6|volume=11}}
-{{Cite mate|pal=Pay}} | {{Cite boy|title=Cit2}} {{harv}}
+<ref name=ref1>one</ref>
+<ref>one</ref>
+<ref>two</ref>
+<ref name=web>http://jstor.org/pss/23418</ref>
+
+
 testcase;
 
 /* Outline 
@@ -51,44 +55,12 @@ testcase;
   /  + References
 /  + Comments*/
 
-    print "begin";
-    $text = $problem_text;
-    $comments = extract_object($text, Comment);
-      $text = $comments[0]; $comments = $comments[1];
-    if ($bot_exclusion_compliant && !allowBots($text)) {
-      echo "\n ! Page marked with {{nobots}} template.  Skipping.";
-      die('\n#Todo: NEXT PAGE!');
-    }
-    $templates = extract_object($text, Template);
-      $text = $templates[0]; $templates = $templates[1];
-      $start_templates = $templates;
-      $citation_templates = 0; $cite_templates = 0;
-      foreach ($templates as $template) {
-        if ($template->wikiname() == 'citation') $citation_templates++;
-        elseif (preg_match("~[cC]ite[ _]\w+~", $template->wikiname())) $cite_templates++;
-        elseif (stripos($template->wikiname(), 'harv') === 0) $harvard_templates++;
-      }
-      $citation_template_dominant = $citation_templates > $cite_templates;
-      echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.  Using dominant template {{" . ($citation_template_dominant?'Citation':'Cite XXX') . '}}.';
-      for ($i = 0; $i < count($templates); $i++) {
-        $templates[$i]->process();
-        $templates[$i]->cite_doi_format();
-        $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
-      }
-
-    $text = replace_object($text, $templates);
-    die("\n$text\n");  
+print "begin";
+die(expand_text($problem_text));
     
-    $short_refs = extract_object($text, Short_Reference);
-      $text = $short_refs[0]; $short_refs = $short_refs[1];
-    $long_refs = extract_object($text, Long_Reference);
-      $text = $long_refs[0]; $long_refs = $long_refs[1];
     
-    $text = replace_object($text, $long_refs);
-    $text = replace_object($text, $short_refs);
-    $text = replace_object($text, $comments);
-    print $text;
-
+    
+    
     die("\n# # # \n");
     
 
