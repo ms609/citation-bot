@@ -164,7 +164,7 @@ class Template extends Item {
         // TODO: Check for the doi-inline template in the title
         $this->handle_et_al();
         $this->correct_param_spelling();
-        echo "\n* Expand citation: " . $this->get('title');
+        echo "\n\n* Expand citation: " . $this->get('title');
         $journal_type = $this->has("periodical") ? "periodical" : "journal";
         if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
         $this->sanitize_doi();
@@ -199,6 +199,8 @@ class Template extends Item {
   }
   
   public function blank($param) {
+    if (!$param) return ;
+    if (empty($this->param)) return true;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
       if (in_array($p->param, $param) && trim($p->val) != '') return FALSE;
@@ -1110,7 +1112,7 @@ class Template extends Item {
     // Load list of parameters used in citation templates.
     //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
     global $parameter_list;
-    foreach ($this->param as $iP => $p) {
+    if ($this->param) foreach ($this->param as $iP => $p) {
       if (!empty($p->param)) {
         if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
           $this->param[$iP]->val = $p->param . '=' . $p->val;
@@ -1515,10 +1517,10 @@ class Template extends Item {
   );
   $mistake_corrections = array_values($common_mistakes);
   $mistake_keys = array_keys($common_mistakes);
-  foreach ($this->param as $p) {
+  if ($this->param) foreach ($this->param as $p) {
     $parameters_used[] = $p->param;
   }
-  $unused_parameters = array_diff($parameter_list, $parameters_used);
+  $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
   
   $i = 0;
   foreach ($this->param as $p) {
@@ -1609,7 +1611,7 @@ class Template extends Item {
        
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) $this->rename('origyear', 'year');
     
-    foreach ($this->param as $p) {
+    if ($this->param) foreach ($this->param as $p) {
       preg_match('~(\w+)(\d*)~', $p->param, $pmatch);
       switch ($pmatch[1]) {
         case 'author': case 'authors': case 'last': case 'surname':
@@ -1908,7 +1910,7 @@ class Template extends Item {
   }
   
   public function citation2cite ($harvard_style = false) {
-    if ($this->wikiname != 'citation') return ;
+    if ($this->wikiname() != 'citation') return ;
     if ($harvard_style) $this->add_if_new("ref", "harv");
     $this->add_if_new("postscript", "<!-- Bot inserted parameter. Either remove it; or change its value to \".\" for the cite to end in a \".\", as necessary. -->{{inconsistent citations}}");
   
@@ -1922,7 +1924,7 @@ class Template extends Item {
     // Straightforward cases now out of the way... now for the trickier ones
     elseif ($this->has('chapter') || $this->has('editor') || $this->has('editor-last') || $this->has('editor1') || $this->has('editor1-last')) $this->name = "Cite book";
      // Books usually catalogued by year; no month expected
-    elseif ($this->blank('date', 'month') && ($this->has('isbn') || $this->has('oclc') || $this->has('series')))) $this->name = "Cite book";
+    elseif ($this->blank('date', 'month') && ($this->has('isbn') || $this->has('oclc') || $this->has('series'))) $this->name = "Cite book";
     elseif ($this->has('publisher')) {
       // This should be after we've checked for a journal parameter
       if (preg_match("~\w\.\w\w~", $this->get('publisher'))) {
@@ -1934,14 +1936,14 @@ class Template extends Item {
     }
     elseif ($this->has('url')) $this->name = "Cite web"; // fall back to this if URL
     else $this->name = "Cite document"; // If no URL, cite journal ought to handle it okay
-    echo "\n    Converting to dominant citation template (Cite XXX)";
+    echo "\n    Converting to dominant {{Cite XXX}} template";
   }
   
   public function cite2citation() {
-    if (!preg_match("~[cC]ite[ _]\w+~", $this->wikiname)) return ;
+    if (!preg_match("~[cC]ite[ _]\w+~", $this->wikiname())) return ;
     $this->add_if_new("postscript", ".");
     $this->name = 'Citation';
-    echo "\n    Converting to dominant citation template (Citation)";
+    echo "\n    Converting to dominant {{Citation}} template";
   }
   
   
