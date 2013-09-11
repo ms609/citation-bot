@@ -61,10 +61,25 @@ testcase;
     $templates = extract_object($text, Template);
       $text = $templates[0]; $templates = $templates[1];
       $start_templates = $templates;
+      $citation_templates = 0; $cite_templates = 0;
+      foreach ($templates as $template) {
+        if ($this->wikiname == 'citation') $citation_templates++;
+        elseif (preg_match("~[cC]ite[ _]\w+~", $this->wikiname)) $cite_templates++;
+      }
+      echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.";
+      $citation_template_dominant = $citation_templates > $cite_templates
       for ($i = 0; $i < count($templates); $i++) {
         $templates[$i]->process();
         $templates[$i]->cite_doi_format();
-      }     
+        $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite();
+      }
+      if ($citation_template_dominant) {
+        // Switching FROM cite xx TO citation; cite xx has a trailing period by default
+        $TEMPLATE->cite2citation();     
+      } else {
+        $TEMPLATE->citation2cite($harv_template_present);
+      }
+
     $text = replace_object($text, $templates);
     die("\n$text\n");  
     

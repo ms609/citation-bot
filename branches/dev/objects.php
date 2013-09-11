@@ -339,6 +339,7 @@ class Template extends Item {
       case 'doi':
         if ($this->blank($param) &&  preg_match('~(10\..+)$~', $value, $match)) { 
           $this->add('doi', $match[0]);
+          $this->verify_doi();
           $this->expand_by_doi();
           return true;
         }
@@ -1605,34 +1606,46 @@ class Template extends Item {
     } else if ($this->is_modified() && $this->get('title')) {
       $this->set('title', straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')));
     }
-    foreach (array("pages", "page", "issue", "year") as $oParameter) {
-      if ($this->get($oParameter)) {
-        if (!preg_match("~^[A-Za-z ]+\-~", $p[$oParameter][0]) 
-                && mb_ereg(to_en_dash, $p[$oParameter][0])) {
-          $this->mod_dashes = TRUE;
-          echo ( "\n - Upgrading to en-dash in $oParameter");
-          $this->set($oParameter, mb_ereg_replace(to_en_dash, en_dash, $this->get($oParameter)));
-        }
+       
+    if ($this->blank(array('date', 'year')) && $this->has('origyear')) $this->rename('origyear', 'year');
+    
+    foreach ($this->param as $p) {
+      preg_match('~(\w+)(\d*)~', $p->param, $pmatch);
+      switch ($pmatch[1]) {
+        case 'author': case 'authors': case 'last': case 'surname':
+          if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
+            $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
+            $p->val = $match[3];
+            echo "\n    ~ Dissecting authorlink" .tag();
+          }
+          $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+          if (preg_match($translator_regexp, trim($p->val), $match)) {
+            $others = "{$match[1]} {$match[5]}";
+            $p->val = preg_replace($translator_regexp, "", $p->val);
+          }
+          break;
+        case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE); break;
+        case 'edition': $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);break; // Don't want 'Edition ed.'
+        case 'pages': case 'page': case 'issue': case 'year': 
+          if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val)) {
+            $this->mod_dashes = TRUE;
+            echo ( "\n   ~ Upgrading to en-dash in" . $p->param . tag());
+            $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
+          }
+          break;
       }
     }
-    //Edition - don't want 'Edition ed.'
-    if ($this->has('edition')) {
-      $this->set('edition', preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get('edition')));
+    if ($to_add) foreach ($to_add as $key => $val) {
+      $this->add_if_new($key, $val);
     }
     
-    if ($this->blank(array('date', 'year')) && $this->has('origyear')) $this->rename('origyear', 'year');
-    $author = trim($this->get('author'));
-    $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
-    if (preg_match($translator_regexp, $author, $match)) {
-      if ($this->has('others')) $this->set('others', $this->get('others') . "; {$match[1]} {$match[5]}");
-      else $this->set("others", "{$match[1]} {$match[5]}");
-      // Remove translator from both author_parm and $p
-      $this->set('author', preg_replace($translator_regexp, "", $author));
+    if ($others) {
+      if ($this->has('others')) $this->appendto('others', '; ' . $others);
+      else $this->set('others', $others);
     }
-       
-    if ($this->has('periodical')) $this->set('periodical', capitalize_title($this->get('periodical'), FALSE));
-    if ($this->has('journal')) $journal = capitalize_title($this->get('journal'), FALSE);
+    
     if ($this->added('journal') || $journal && $this->added('issn')) $this->forget('issn');    
+    
     if ($journal) {
       $volume = $this->get('volume');
       if (($this->has('doi') || $this->has('issn'))) $this->forget('publisher', 'tidy');
@@ -1642,6 +1655,11 @@ class Template extends Item {
         $this->set('volume', trim(mb_substr($volume, mb_strlen($match[1]))));
       }
       $this->set('journal', $journal);
+        // Clean up after errors in publishers' databases
+      if (0 === strpos(trim($journal), "BMC ") && $this->page_range()) {
+        $this->forget('issue');
+        echo "\n   - dropping issue number (BMC journals only have page numbers)";
+      }
     }
     
     // Remove leading zeroes
@@ -1712,7 +1730,7 @@ class Template extends Item {
   
   protected function verify_doi () {
     $doi = $this->get('doi');
-    if (!$doi) return NULL;
+    if (!$doi) return;
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
       case ".":
@@ -1736,9 +1754,64 @@ class Template extends Item {
     if ($trial) foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
-      if ($this->expand_by_doi($try)) {$this->set('doi', $try); return TRUE;}
+      if ($this->expand_by_doi($try)) {$this->set('doi', $try); $doi = $try;}
+    }    
+    echo "\n   . Checking that DOI $doi is operational..." . tag();
+    if ($this->is_doi_working()) {
+      $this->set("doi_inactivedate", date("Y-m-d"));
+      echo "\n   ! Broken doi: $doi";
+    } else {
+      $this->forget('doi_brokendate');
+      $this->forget('doi_inactivedate');
+      echo ' DOI ok.';
+    } 
+  }
+  
+  protected function is_doi_working() {
+    if (crossRefData($doi = $this->get('doi'))) {
+      global $slow_mode;
+      if ($slow_mode) {
+        quiet_echo("\"");
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_NOBODY, 1);
+        curl_setopt($ch, CURLOPT_URL, "http://dx.doi.org/$doi");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);  //This means we can't get stuck.
+        curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        preg_match("~\d{3}~", $result, $code);
+        switch ($code[0]) {
+          case false:
+            $parsed = parse_url("http://dx.doi.org/$doi");
+            $host = $parsed["host"];
+            $fp = @fsockopen($host, 80, $errno, $errstr, 20);
+            if ($fp) {
+              return true; // Page exists, but had timed out when we first tried.
+            } else {
+              return 404; // DOI is correct but points to a dead page
+            }
+          case 302: // Moved temporarily
+          case 303: // See other
+            return true;
+          case 200:
+            if ($this->get('url')) {
+              $ch = curl_init();
+              curlSetup($ch, $this->get('url'));
+              $content = curl_exec($ch);
+              if (!preg_match("~\Wwiki(\W|pedia)~", $content) && preg_match("~" . preg_quote(urlencode($doi)) . "~", urlencode($content))) {
+                return 200; // DOI is present in page, so probably correct
+              } else
+                return 999; // DOI could not be found in URL - or URL is a wiki mirror
+            } else
+              return 100; // No URL to check for DOI
+        }
+      } return true;
     }
-    return FALSE;
+    return false;
   }
   
   public function check_url() {
@@ -1833,6 +1906,44 @@ class Template extends Item {
     }
     citeDoiOutputFormat();
   }
+  
+  public function citation2cite ($harvard_style = false) {
+    if ($this->wikiname != 'citation') return ;
+    if ($harvard_style) $this->add_if_new("ref", "harv");
+    $this->add_if_new("postscript", "<!-- Bot inserted parameter. Either remove it; or change its value to \".\" for the cite to end in a \".\", as necessary. -->{{inconsistent citations}}");
+  
+    if ($this->has('inventor-last') || $this->has('inventor-surname') || $this->has('inventor1-surname')
+            || $this->has('inventor1-last') || is ('inventor')) $this->name = "Cite patent";
+    elseif ($this->has('journal')) $this->name = "Cite journal";
+    elseif ($this->has('agency') || $this->has('newspaper') || $this->has('magazine') || $this->has('periodical')) $this->name = "Cite news";
+    elseif ($this->has('encyclopedia')) $this->name = "Cite encyclopedia";
+    elseif ($this->has('conference') || $this->has('conferenceurl')) $this->name = "Cite conference";
+
+    // Straightforward cases now out of the way... now for the trickier ones
+    elseif ($this->has('chapter') || $this->has('editor') || $this->has('editor-last') || $this->has('editor1') || $this->has('editor1-last')) $this->name = "Cite book";
+     // Books usually catalogued by year; no month expected
+    elseif ($this->blank('date', 'month') && ($this->has('isbn') || $this->has('oclc') || $this->has('series')))) $this->name = "Cite book";
+    elseif ($this->has('publisher')) {
+      // This should be after we've checked for a journal parameter
+      if (preg_match("~\w\.\w\w~", $this->get('publisher'))) {
+       // it's a fair bet the publisher is a web address
+        $this->name = "Cite web";
+      } else {
+        $this->name = "Cite document";
+      }
+    }
+    elseif ($this->has('url')) $this->name = "Cite web"; // fall back to this if URL
+    else $this->name = "Cite document"; // If no URL, cite journal ought to handle it okay
+    echo "\n    Converting to dominant citation template (Cite XXX)";
+  }
+  
+  public function cite2citation() {
+    if (!preg_match("~[cC]ite[ _]\w+~", $this->wikiname)) return ;
+    $this->add_if_new("postscript", ".");
+    $this->name = 'Citation';
+    echo "\n    Converting to dominant citation template (Citation)";
+  }
+  
   
   ### Retrieve parameters 
   public function displayauthors($newval = FALSE) {
@@ -2087,6 +2198,8 @@ function tag() {
   }
   echo ']';
 }
+
+
 
 global $author_parameters;
 $author_parameters = array(
