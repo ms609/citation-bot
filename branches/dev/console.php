@@ -35,8 +35,8 @@ problemtxt;
 $problem_text = <<<testcase
 
 {nobots}}
-{{Cite journal | jorunal=J Heart Lung Transplant|year= 1992|pp=375-6|volume=11}}
-{{Citation|}} | {{Citation|title=Cit2}}
+{{Citation | jorunal=J Heart Lung Transplant|year= 1992|pp=375-6|volume=11}}
+{{Cite mate|pal=Pay}} | {{Cite boy|title=Cit2}} {{harv}}
 testcase;
 
 /* Outline 
@@ -66,13 +66,14 @@ testcase;
       foreach ($templates as $template) {
         if ($template->wikiname() == 'citation') $citation_templates++;
         elseif (preg_match("~[cC]ite[ _]\w+~", $template->wikiname())) $cite_templates++;
+        elseif (stripos($template->wikiname(), 'harv') === 0) $harvard_templates++;
       }
       $citation_template_dominant = $citation_templates > $cite_templates;
       echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.  Using dominant template {{" . ($citation_template_dominant?'Citation':'Cite XXX') . '}}.';
       for ($i = 0; $i < count($templates); $i++) {
         $templates[$i]->process();
         $templates[$i]->cite_doi_format();
-        $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite();
+        $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
       }
 
     $text = replace_object($text, $templates);
