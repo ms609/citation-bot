@@ -8,58 +8,186 @@
 */
 
 include('temp_parameter_list.php'); // #TODO DELETE
+define ('ref_regexp', '~<ref.*</ref>~u'); // #TODO DELETE
+define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
 
-define ('ref_regexp', '~<ref.*</ref>~u');
-define ('refref_regexp', '~<ref.*/>~u');
+function expand_page ($page) {
+  print "\n - #TODO Expand page $page" . tag();
+}
 
-function expand_text($text) {
-  global $html_output;
-  if ($html_output === -1) ob_start();   
-  // COMMENTS //
-  $comments = extract_object($text, Comment);
-    $text = $comments[0]; $comments = $comments[1];
-  if ($bot_exclusion_compliant && !allowBots($text)) {
-    echo "\n ! Page marked with {{nobots}} template.  Skipping.";
-    die('\n#Todo: NEXT PAGE!');
-  }
-  // TEMPLATES //
-  $templates = extract_object($text, Template);
-  $text = $templates[0]; $templates = $templates[1];
-  $start_templates = $templates;
-  $citation_templates = 0; $cite_templates = 0;
-  if ($templates) foreach ($templates as $template) {
-    if ($template->wikiname() == 'citation') $citation_templates++;
-    elseif (preg_match("~[cC]ite[ _]\w+~", $template->wikiname())) $cite_templates++;
-    elseif (stripos($template->wikiname(), 'harv') === 0) $harvard_templates++;
-  }
-  $citation_template_dominant = $citation_templates > $cite_templates;
-  echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.  Using dominant template {{" . ($citation_template_dominant?'Citation':'Cite XXX') . '}}.';
-  for ($i = 0; $i < count($templates); $i++) {
-    $templates[$i]->process();
-    $templates[$i]->cite_doi_format();
-    $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
-  }
-  $text = replace_object($text, $templates);
-  // REFERENCE TAGS //
-  $short_refs = extract_object($text, Short_Reference);
+class Page {
+
+  public $text;
+  protected $ref_names; #TODO (I'm here.)
+  
+  public function expand_text() {
+    $text = $this->text;
+    global $html_output;
+    if ($html_output === -1) ob_start();   
+    // COMMENTS //
+    $comments = extract_object($text, Comment);
+      $text = $comments[0]; $comments = $comments[1];
+    if ($bot_exclusion_compliant && !$this->allow_bots()) {
+      echo "\n ! Page marked with {{nobots}} template.  Skipping.";
+    }
+    // TEMPLATES //
+    $templates = extract_object($text, Template);
+    $text = $templates[0]; $templates = $templates[1];
+    $start_templates = $templates;
+    $citation_templates = 0; $cite_templates = 0;
+    if ($templates) foreach ($templates as $template) {
+      if ($template->wikiname() == 'citation') $citation_templates++;
+      elseif (preg_match("~[cC]ite[ _]\w+~", $template->wikiname())) $cite_templates++;
+      elseif (stripos($template->wikiname(), 'harv') === 0) $harvard_templates++;
+    }
+    $citation_template_dominant = $citation_templates > $cite_templates;
+    echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.  Using dominant template {{" . ($citation_template_dominant?'Citation':'Cite XXX') . '}}.';
+    for ($i = 0; $i < count($templates); $i++) {
+      $templates[$i]->process();
+      $templates[$i]->cite_doi_format();
+      $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
+    }
+    $text = replace_object($text, $templates);
+    // REFERENCE TAGS //
+    $short_refs = extract_object($text, Short_Reference);
     $text = $short_refs[0]; $short_refs = $short_refs[1];
-  $long_refs = extract_object($text, Long_Reference);
+    $long_refs = extract_object($text, Long_Reference);
     $text = $long_refs[0]; $long_refs = $long_refs[1];
-  for ($i = 0; $i < count($long_refs); $i++) {
-    print "\n\n" . $long_refs[$i]->parsed_text();
-    $long_refs[$i]->process($citation_template_dominant);
-  }
-  foreach ($long_refs as $ref) {
+    for ($i = 0; $i < count($long_refs); $i++) {
+      $long_refs[$i]->process($citation_template_dominant);
+    }
+    foreach ($long_refs as $i=>$ref) {
+      $ref_contents[$i] = str_replace(' ', '', $ref->content);
+    }
+    $duplicate_refs = array();
+    natcasesort($ref_contents);
+    reset($ref_contents);
+    $old_key = NULL; $old_val = NULL;
+    foreach ($ref_contents as $key => $val) {
+      if ($val === NULL) continue;
+      if (strcasecmp($old_val, $val) === 0) {
+        $duplicate_refs[$val][] = $old_key;
+        $duplicate_refs[$val][] = $key;
+      }
+      $old_val = $val; $old_key = $key;
+    }
+    foreach ($duplicate_refs as $dup) {
+      $dup_name = NULL;
+      $name_giver = NULL;
+      natsort($dup);
+      foreach ($dup as $instance) {
+        if ($this_name = $long_refs[$instance]->attr['name']) {
+          $dup_name = $this_name;
+          $name_giver = $instance;
+        }
+      }
+      foreach ($dup as $instance) {
+        if ($name_giver === NULL) $name_giver = $instance;
+        if (!$dup_name) $dup_name = get_name_for_reference($long_refs[$name_giver]);
+        if ($instance != $name_giver) $long_refs[$instance]->shorten($dup_name);
+      }
+    }
     
+    
+    
+    $text = replace_object($text, $long_refs);
+    $text = replace_object($text, $short_refs);
+    $text = replace_object($text, $comments);
+    
+    #TODO - once all refs are done, swap short refs in reflists with their long equivalents elsewhere.
+    if (preg_match(reflist_regexp, $page_code, $match) &&
+      preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
+      // If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
+      // which ought to exist earlier in the page.  It's important to check that this doesn't exist elsewhere in the reflist, though.
+
+      print_r($match[1]);die('--');
+      $temp_reflist = $match[1];
+      foreach ($empty_refs['name'] as $i => $ref_name) {
+        echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
+            ."\n     Reference #$i name: $ref_name";
+        $this_regexp = '~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
+                . '(?P=quote)\s*>[\s\S]+?<\s*/\s*ref>~';
+        if (preg_match($this_regexp, $temp_reflist, $full_ref)) {
+          // A full-text reference exists elsewhere in the reflist.  The duplicate can be safely deleted from the reflist.
+          $temp_reflist = str_replace($empty_refs[0][$i], '', $temp_reflist);
+        } elseif (preg_match($this_regexp, $page_code, $full_ref)) {
+          // Remove all full-text references from the page code.  We'll add an updated reflist later.
+          $page_code = str_replace($full_ref[0], $empty_refs[0][$i], $page_code);
+          $temp_reflist = str_replace($empty_refs[0][$i], $full_ref[0], $temp_reflist);
+        }
+      }
+      // Add the updated reflist, which should now contain no empty references.
+      $page_code = str_replace($match[1], $temp_reflist, $page_code);
+    }
+    
+    if ($html_output === -1) ob_end_clean();
+    $this->text = $text;
+  } 
+    
+  protected function extract_object ($class) {
+    $i = 0;
+    $text = $this->text;
+    $regexp = $class::regexp;
+    $placeholder_text = $class::placeholder_text;
+    while(preg_match($regexp, $text, $match)) {
+      $obj = new $class();
+      $obj->parse_text($match[0]);
+      $objects[] = $obj;
+      $text = str_replace($match[0], sprintf($placeholder_text, $i++), $text, $matches);
+      $obj->occurrences = $matches;
+    }
+    return array($text, $objects);
   }
-  
-  
-  $text = replace_object($text, $long_refs);
-  $text = replace_object($text, $short_refs);
-  $text = replace_object($text, $comments);
-  
-  if ($html_output === -1) ob_end_clean();
-  return $text;
+
+  protected function replace_object ($objects) {
+    $text = $this->text;
+    $i = count($objects);
+    if ($objects) foreach (array_reverse($objects) as $obj) {
+      $placeholder_format = $obj::placeholder_text;
+      $text = str_replace(sprintf($placeholder_format, --$i), $obj->parsed_text(), $text);
+    }
+    return $text;
+  } 
+
+  public function allow_bots() {
+    // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
+    $user = '(?:Citation|DOI)[ _]bot';
+    if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$user.'.*?)\}\}/iS',$this->text))
+      return false;
+    if (preg_match('/\{\{(bots\|allow=all|bots\|allow=.*?'.$user.'.*?)\}\}/iS', $this->text))
+      return true;
+    if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $this->text))
+      return false;
+    return true;
+  }
+    
+  public function generate_template_name($replacement_template_name) {
+    // Strips special characters from reference name,
+    // then does a check against the current page code to generate a unique name for the reference
+    // (by suffixing _a, etc, as necessary)
+    $replacement_template_name = remove_accents($replacement_template_name);
+    if (!trim(preg_replace("~\d~", "", $replacement_template_name))) {
+      $replacement_template_name = "ref" . $replacement_template_name;
+    }
+    global $alphabet;
+    $die_length = count($alphabet);
+    $underscore = (preg_match("~[\d_]$~", $replacement_template_name) ? "" : "_");
+    while (preg_match("~<ref name=(?P<quote>['\"]?)"
+            . preg_quote($replacement_template_name) . "_?" . $alphabet[$i++]
+            . "(?P=quote)[/\s]*>~i", $page_code, $match)) {
+      if ($i >= $die_length) {
+        $replacement_template_name .= $underscore . $alphabet[++$j];
+        $underscore = "";
+        $i = 0;
+      }
+    }
+    if ($i < 2) {
+      $underscore = "";
+    }
+    return $replacement_template_name
+    . $underscore
+    . $alphabet[--$i];
+  }
 }
 
 class Item {
@@ -110,21 +238,66 @@ class Short_Reference extends Item {
   } 
 }
 
+# LONG REFERENECE #
 class Long_Reference extends Item {
   const placeholder_text = '# # # Citation bot : long ref placeholder %s # # #';
   const regexp = '~<ref\s?[^/>]*?>.*?<\s*/\s*ref\s*>~s';
   
-  protected $open_start, $open_attr, $open_end, $content, $close;
+  protected $open_start, $open_attr, $open_end, $close;
+  public $content;
   protected $rawtext;
   
   public function process($use_citation_template = FALSE) {
     $this->content = preg_replace_callback('~https?://\S+~',
       function ($matches) {
-      print "...";
-      print_r($matches);
         return url2template($matches[0], $use_citation_template);
       }, $this->content
     );
+    if (!$this->attr['name'] || preg_match('~[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-zA-Z])?~', $this->attr['name'])) $this->generate_name();
+  }
+  
+  public function generate_name() {
+    $text = $this->content;
+    if (stripos($text, '{{harv') !== FALSE && preg_match("~\|([\s\w\-]+)\|\s*([12]\d{3})\D~", $text, $match)) {
+      $author = $match[1];
+      $date = $match[2];
+    } else {
+      $parsed = parse_wikitext(strip_tags($text));
+      $parsed_plaintext = strip_tags($parsed);
+      $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date) ? $date[1] : "" );
+      $author = preg_match("~rft\.aulast=([^&]+)~", $parsed, $author) 
+              ? urldecode($author[1])
+              : preg_match("~rft\.au=([^&]+)~", $parsed, $author) ? urldecode($author[1]) : "ref_";
+      $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle) ? urldecode($btitle[1]) : "";
+    }
+    if ($author != "ref_") {
+      preg_match("~\w+~", authorify($author), $author);
+    } else if ($btitle) {
+      preg_match("~\w+\s?\w+~", authorify($btitle), $author);
+    } else if ($parsed_plaintext) {
+      if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
+        preg_match("~\w+~", authorify($parsed_plaintext), $author);
+      }
+    }
+    if (strpos($text, "://")) {
+      if (preg_match("~\w+://(?:www\.)?([^/]+?)(?:\.\w{2,3}\b)+~i", $text, $match)) {
+        $replacement_template_name = $match[1];
+      } else {
+        $replacement_template_name = "bare_url"; // just in case there's some bizarre way that the URL doesn't match the regexp
+      }
+    } else {
+      $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
+    }
+    $this->attr['name'] = $this->page->generate_template_name($replacement_template_name);
+    return $this->attr['name'];
+  }
+  
+  public function shorten($name) {
+    $this->attr['name'] = $name;
+    $this->open_start = trim($this->open_start) . ' ';
+    $this->open_end = '';
+    $this->content = '';
+    $this->close = ' />';
   }
   
   public function parse_text($text) {
@@ -235,6 +408,15 @@ class Template extends Item {
         $this->find_pmid();
         $this->tidy();
       break;
+      case 'ref doi': case 'ref pmid': case 'ref jstor': case 'ref pmc':
+        $this->add_ref_tags = TRUE;
+        echo "\n * Added ref tags to {{{$this->name}}}" . tag();
+        $this->name = 'Cite ' . substr($this->wikiname(), 4);
+      case 'cite doi': case 'cite pmid': case 'cite jstor': case 'cite pmc':
+        $type = substr($this->wikiname(), 5);
+        $id = trim_identifier($this->param[0]->val);
+        $linked_page = "Template:cite $type/" . wikititle_encode($id);
+        if (!getArticleId($linked_page)) expand_page($linked_page);
     }
     if ($this->citation_tempate) {
       if (!$this->blank('authors') && $this->blank('author')) $this->rename('authors', 'author');
@@ -2132,7 +2314,7 @@ class Template extends Item {
   
   ### Parse initial text
   public function parsed_text() {
-    return '{{' . $this->name . $this->join_params() . '}}';
+    return ($this->add_ref_tags ? '<ref>' : '') . '{{' . $this->name . $this->join_params() . '}}' . ($this->add_ref_tags ? '</ref>' : '');
   }
 }
 
@@ -2171,41 +2353,6 @@ class Parameter {
   public function parsed_text() {
     return $this->pre . $this->param . (($this->param && empty($this->eq))?' = ':$this->eq) . $this->val . $this->post;
   }
-}
-
-function extract_object ($text, $class) {
-  $i = 0;
-  $regexp = $class::regexp;
-  $placeholder_text = $class::placeholder_text;
-  while(preg_match($regexp, $text, $match)) {
-    $obj = new $class();
-    $obj->parse_text($match[0]);
-    $objects[] = $obj;
-    $text = str_replace($match[0], sprintf($placeholder_text, $i++), $text, $matches);
-    $obj->occurrences = $matches;
-  }
-  return array($text, $objects);
-}
-
-function replace_object ($text, $objects) {
-  $i = count($objects);
-  if ($objects) foreach (array_reverse($objects) as $obj) {
-    $placeholder_format = $obj::placeholder_text;
-    $text = str_replace(sprintf($placeholder_format, --$i), $obj->parsed_text(), $text);
-  }
-  return $text;
-} 
-
-function allowBots( $text ) {
-  // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
-  $user = '(?:Citation|DOI)[ _]bot';
-  if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$user.'.*?)\}\}/iS',$text))
-    return false;
-  if (preg_match('/\{\{(bots\|allow=all|bots\|allow=.*?'.$user.'.*?)\}\}/iS', $text))
-    return true;
-  if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $text))
-    return false;
-  return true;
 }
 
 /** Returns a properly capitalsied title.
