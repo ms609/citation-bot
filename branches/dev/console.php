@@ -38,7 +38,9 @@ $page->text = <<<testcase
 {nobots}}
 <ref name=dudName>one</ref>
 <ref name=ref1>one</ref>
-<ref>two</ref>
+<ref name=ref2_rly>two - identical content</ref>
+<ref name=ref2_rly>two - identical content</ref>
+<ref name=ref2_rly>Two - Different content!</ref>
 <ref name=web>http://jstor.org/pss/23418</ref>
 {{Ref doi|10.2307/23418}}
 

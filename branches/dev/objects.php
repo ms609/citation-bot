@@ -18,21 +18,19 @@ function expand_page ($page) {
 class Page {
 
   public $text;
-  protected $ref_names; #TODO (I'm here.)
+  protected $ref_names;
   
   public function expand_text() {
     $text = $this->text;
     global $html_output;
     if ($html_output === -1) ob_start();   
     // COMMENTS //
-    $comments = extract_object($text, Comment);
-      $text = $comments[0]; $comments = $comments[1];
+    $comments = $this->extract_object(Comment);
     if ($bot_exclusion_compliant && !$this->allow_bots()) {
       echo "\n ! Page marked with {{nobots}} template.  Skipping.";
     }
     // TEMPLATES //
-    $templates = extract_object($text, Template);
-    $text = $templates[0]; $templates = $templates[1];
+    $templates = $this->extract_object(Template);
     $start_templates = $templates;
     $citation_templates = 0; $cite_templates = 0;
     if ($templates) foreach ($templates as $template) {
@@ -47,18 +45,31 @@ class Page {
       $templates[$i]->cite_doi_format();
       $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
     }
-    $text = replace_object($text, $templates);
+    $text = $this->replace_object($templates);
     // REFERENCE TAGS //
-    $short_refs = extract_object($text, Short_Reference);
-    $text = $short_refs[0]; $short_refs = $short_refs[1];
-    $long_refs = extract_object($text, Long_Reference);
-    $text = $long_refs[0]; $long_refs = $long_refs[1];
+    $short_refs = $this->extract_object(Short_Reference);
+    $long_refs = $this->extract_object(Long_Reference);
     for ($i = 0; $i < count($long_refs); $i++) {
       $long_refs[$i]->process($citation_template_dominant);
     }
     foreach ($long_refs as $i=>$ref) {
       $ref_contents[$i] = str_replace(' ', '', $ref->content);
+      $this->ref_names[$i] = $ref->attr['name'];
     }
+    $duplicate_names = array();
+    natcasesort($this->ref_names); reset($this->ref_names);
+    $old_name = NULL;
+    foreach ($this->ref_names as $key => $name) {
+      if ($name === NULL) continue;
+      if (strcasecmp($name, $old_name) === 0) $to_rename[] = $key;
+      $old_name = $name;
+    }
+    if ($to_rename) foreach ($to_rename as $ref) {
+      $new_name = $this->generate_template_name($this->ref_names[$ref]);
+      $this->ref_names[$ref] = $new_name;
+      $long_refs[$i]->attr['name'] = $new_name;
+    }
+    
     $duplicate_refs = array();
     natcasesort($ref_contents);
     reset($ref_contents);
@@ -90,9 +101,9 @@ class Page {
     
     
     
-    $text = replace_object($text, $long_refs);
-    $text = replace_object($text, $short_refs);
-    $text = replace_object($text, $comments);
+    $this->replace_object($long_refs);
+    $this->replace_object($short_refs);
+    $this->replace_object($comments);
     
     #TODO - once all refs are done, swap short refs in reflists with their long equivalents elsewhere.
     if (preg_match(reflist_regexp, $page_code, $match) &&
@@ -121,8 +132,8 @@ class Page {
     }
     
     if ($html_output === -1) ob_end_clean();
-    $this->text = $text;
-  } 
+    return $this->text;
+  }
     
   protected function extract_object ($class) {
     $i = 0;
@@ -135,19 +146,19 @@ class Page {
       $objects[] = $obj;
       $text = str_replace($match[0], sprintf($placeholder_text, $i++), $text, $matches);
       $obj->occurrences = $matches;
+      $obj->page = $this;
     }
-    return array($text, $objects);
+    $this->text = $text;
+    return $objects;
   }
 
   protected function replace_object ($objects) {
-    $text = $this->text;
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj) {
       $placeholder_format = $obj::placeholder_text;
-      $text = str_replace(sprintf($placeholder_format, --$i), $obj->parsed_text(), $text);
+      $this->text = str_replace(sprintf($placeholder_format, --$i), $obj->parsed_text(), $this->text);
     }
-    return $text;
-  } 
+  }
 
   public function allow_bots() {
     // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
@@ -163,7 +174,7 @@ class Page {
     
   public function generate_template_name($replacement_template_name) {
     // Strips special characters from reference name,
-    // then does a check against the current page code to generate a unique name for the reference
+    // then does a check against $this->ref_names to generate a unique name for the reference
     // (by suffixing _a, etc, as necessary)
     $replacement_template_name = remove_accents($replacement_template_name);
     if (!trim(preg_replace("~\d~", "", $replacement_template_name))) {
@@ -172,27 +183,27 @@ class Page {
     global $alphabet;
     $die_length = count($alphabet);
     $underscore = (preg_match("~[\d_]$~", $replacement_template_name) ? "" : "_");
-    while (preg_match("~<ref name=(?P<quote>['\"]?)"
-            . preg_quote($replacement_template_name) . "_?" . $alphabet[$i++]
-            . "(?P=quote)[/\s]*>~i", $page_code, $match)) {
+    while ($this->ref_names && 
+          (in_array($replacement_template_name . "_" . $alphabet[$i], $this->ref_names)
+        || in_array($replacement_template_name .  '' . $alphabet[$i++], $this->ref_names))) {
       if ($i >= $die_length) {
-        $replacement_template_name .= $underscore . $alphabet[++$j];
-        $underscore = "";
+        if ($j) {
+          $replacement_template_name = substr($replacement_template_name, -1) . $alphabet[++$j];
+          if ($j == $die_length) $j = 0;
+        } else {
+          $replacement_template_name .= $underscore . $alphabet[++$j];
+          $underscore = "";
+        }
         $i = 0;
       }
     }
-    if ($i < 2) {
-      $underscore = "";
-    }
-    return $replacement_template_name
-    . $underscore
-    . $alphabet[--$i];
+    return $replacement_template_name . ($i <= 1 ? '' : $underscore) . $alphabet[--$i];
   }
 }
 
 class Item {
   protected $rawtext;
-  public $occurrences;
+  public $occurrences, $page;
 }
 
 class Comment extends Item {
@@ -253,7 +264,10 @@ class Long_Reference extends Item {
         return url2template($matches[0], $use_citation_template);
       }, $this->content
     );
-    if (!$this->attr['name'] || preg_match('~[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-zA-Z])?~', $this->attr['name'])) $this->generate_name();
+    if (!$this->attr['name']
+    || preg_match('~ref_?[ab]?(?:..?|utogenerated|erence[a-zA-Z]*)?~i', $this->attr['name'])
+    ) echo "\n * Generating name for anonymous reference [" . $this->attr['name'] . ']: ' . $this->generate_name();
+    else print "\n * No name for ". $this->attr['name'];
   }
   
   public function generate_name() {
