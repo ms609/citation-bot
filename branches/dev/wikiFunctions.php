@@ -342,10 +342,10 @@ function geo_range_ok ($template) {
 }
 
 function load_xml_via_bot($vars) {
-  $bot = new Snoopy();
-  $bot->httpmethod = "POST";
-  $bot->submit(api, $vars);
-  return simplexml_load_string($bot->results);
+  $snoopy = new Snoopy();
+  $snoopy->httpmethod = "POST";
+  $snoopy->submit(api, $vars);
+  return simplexml_load_string($snoopy->results);
 }
 
 function touch_page($page) {

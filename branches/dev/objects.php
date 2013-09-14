@@ -7,27 +7,68 @@
  - Associate initials with surnames: don't put them on a new line
 */
 
-include('temp_parameter_list.php'); // #TODO DELETE
-define ('ref_regexp', '~<ref.*</ref>~u'); // #TODO DELETE
-define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
-
-function expand_page ($page) {
-  print "\n - #TODO page->expand $page" . tag();
+#include('temp_parameter_list.php'); // #TODO DELETE
+#define ('ref_regexp', '~<ref.*</ref>~u'); // #TODO DELETE
+#define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
+$file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision: 448 $');
+$doitools_revision_id = revisionID();
+if ($file_revision_id < $doitools_revision_id) {
+  $last_revision_id = $doitools_revision_id;
+} else {
+  $editInitiator = str_replace($doitools_revision_id, $file_revision_id, $editInitiator);
+  $last_revision_id = $file_revision_id;
 }
+global $last_revision_id, $edit_initiator;
+echo "\nRevision #$last_revision_id";
+$edit_initiator = "[&beta;$last_revision_id]";
+
 
 class Page {
 
-  public $text;
+  public $text, $title;
   protected $ref_names;
   
+  public function lookup($title) {
+    global $bot;
+    $bot->fetchtext(wikiroot . "title=" . urlencode($title) . "&action=raw");
+    print_r($bot);
+    $this->text = $bot->results;
+    $this->start_text = $this->text;
+    
+    $bot->fetch(api . "?action=query&prop=info&format=json&titles=" . urlencode($this->title));
+    $details = json_decode($bot->results);
+    print_r($details);
+    $details = (array) $details->query->pages;
+    print_r($details);
+    $details = $details[0];
+    print_r($details);
+    $this->title = $details->title;
+    print_r($details);
+    $this->namespace = $details->ns;
+    $this->timestamp = $details->timestamp;
+    $this->lastrevid = $details->lastrevid;
+    if (stripos($this->text, '#redirect') !== FALSE) {
+      echo "Page is a redirect.";
+      updateBacklog($title);
+      return FALSE;
+    }
+    if (strpos($title, "Template:Cite") !== FALSE) $this->cite_template = TRUE;
+    if ($this->cite_template && !$this->text) $this->text = $cite_doi_start_code;
+    if ($this->text) return TRUE;
+  }
+  
   public function expand_text() {
-    $text = $this->text;
     global $html_output;
+    echo $html_output > 0 ? ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>"):("\n\n\n*** Processing page '{$this->title}' : " . date("H:i:s") . "\n");
+    $text = $this->text;
+    if (!$text) {echo "\n\n  ! No text retrieved.\n"; return false;}
     if ($html_output === -1) ob_start();   
     // COMMENTS //
     $comments = $this->extract_object(Comment);
     if ($bot_exclusion_compliant && !$this->allow_bots()) {
       echo "\n ! Page marked with {{nobots}} template.  Skipping.";
+      updateBacklog($this->title);
+      return FALSE;
     }
     // TEMPLATES //
     $templates = $this->extract_object(Template);
@@ -47,62 +88,66 @@ class Page {
     }
     $text = $this->replace_object($templates);
     // REFERENCE TAGS //
-    $short_refs = $this->extract_object(Short_Reference);
-    $long_refs = $this->extract_object(Long_Reference);
-    for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {}
-    foreach ($long_refs as $i=>$ref) {
-      $ref_contents[$i] = str_replace(' ', '', $ref->content);
-      $this->ref_names[$i] = $ref->attr['name'];
-    }
-    $duplicate_names = array();
-    natcasesort($this->ref_names); reset($this->ref_names);
-    $old_name = NULL;
-    foreach ($this->ref_names as $key => $name) {
-      if ($name === NULL) continue;
-      if (strcasecmp($name, $old_name) === 0) $to_rename[] = $key;
-      $old_name = $name;
-    }
-    if ($to_rename) foreach ($to_rename as $ref) {
-      $new_name = $this->generate_template_name($this->ref_names[$ref]);
-      $this->ref_names[$ref] = $new_name;
-      $long_refs[$ref]->name($new_name);
-    }
-    
-    $duplicate_refs = array();
-    natcasesort($ref_contents);
-    reset($ref_contents);
-    $old_key = NULL; $old_val = NULL;
-    foreach ($ref_contents as $key => $val) {
-      if ($val === NULL) continue;
-      if (strcasecmp($old_val, $val) === 0) {
-        $duplicate_refs[$val][] = $old_key;
-        $duplicate_refs[$val][] = $key;
+    if ($this->has_reflist) {
+      # TODO! Handle reflists.
+      print "\n ! Not addressing reference tags: unsupported template {{reflist}} present.";
+    } else {
+      $short_refs = $this->extract_object(Short_Reference);
+      $long_refs = $this->extract_object(Long_Reference);
+      for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {}
+      foreach ($long_refs as $i=>$ref) {
+        $ref_contents[$i] = str_replace(' ', '', $ref->content);
+        $this->ref_names[$i] = $ref->attr['name'];
       }
-      $old_val = $val; $old_key = $key;
-    }
-    foreach ($duplicate_refs as $dup) {
-      $dup_name = NULL;
-      $name_giver = NULL;
-      natsort($dup);
-      foreach ($dup as $instance) {
-        if ($this_name = $long_refs[$instance]->attr['name']) {
-          $dup_name = $this_name;
-          $name_giver = $instance;
+      $duplicate_names = array();
+      natcasesort($this->ref_names); reset($this->ref_names);
+      $old_name = NULL;
+      foreach ($this->ref_names as $key => $name) {
+        if ($name === NULL) continue;
+        if (strcasecmp($name, $old_name) === 0) $to_rename[] = $key;
+        $old_name = $name;
+      }
+      if ($to_rename) foreach ($to_rename as $ref) {
+        $new_name = $this->generate_template_name($this->ref_names[$ref]);
+        $this->ref_names[$ref] = $new_name;
+        $long_refs[$ref]->name($new_name);
+      }
+      
+      $duplicate_refs = array();
+      natcasesort($ref_contents);
+      reset($ref_contents);
+      $old_key = NULL; $old_val = NULL;
+      foreach ($ref_contents as $key => $val) {
+        if ($val === NULL) continue;
+        if (strcasecmp($old_val, $val) === 0) {
+          $duplicate_refs[$val][] = $old_key;
+          $duplicate_refs[$val][] = $key;
+        }
+        $old_val = $val; $old_key = $key;
+      }
+      foreach ($duplicate_refs as $dup) {
+        $dup_name = NULL;
+        $name_giver = NULL;
+        natsort($dup);
+        foreach ($dup as $instance) {
+          if ($this_name = $long_refs[$instance]->attr['name']) {
+            $dup_name = $this_name;
+            $name_giver = $instance;
+          }
+        }
+        foreach ($dup as $instance) {
+          if ($name_giver === NULL) $name_giver = $instance;
+          if (!$dup_name) $dup_name = get_name_for_reference($long_refs[$name_giver]);
+          if ($instance != $name_giver) $long_refs[$instance]->shorten($dup_name);
         }
       }
-      foreach ($dup as $instance) {
-        if ($name_giver === NULL) $name_giver = $instance;
-        if (!$dup_name) $dup_name = get_name_for_reference($long_refs[$name_giver]);
-        if ($instance != $name_giver) $long_refs[$instance]->shorten($dup_name);
-      }
+      
+      
+      
+      $this->replace_object($long_refs);
+      $this->replace_object($short_refs);
+      $this->replace_object($comments);
     }
-    
-    
-    
-    $this->replace_object($long_refs);
-    $this->replace_object($short_refs);
-    $this->replace_object($comments);
-    
     #TODO - once all refs are done, swap short refs in reflists with their long equivalents elsewhere.
     if (preg_match(reflist_regexp, $page_code, $match) &&
       preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
@@ -130,9 +175,106 @@ class Page {
     }
     
     if ($html_output === -1) ob_end_clean();
-    return $this->text;
+    if (strcasecmp($this->text, $this->start_text) == 0) return FALSE;
+    else return TRUE;
   }
     
+  public function edit_summary() {
+    if ($this->modifications["additions"]) {
+      $auto_summary = "Add: ";
+      foreach ($this->modifications["additions"] as $param=>$v)	{
+        $auto_summary .= "$param, ";
+        unset($this->modifications["additions"][$param]);
+      }
+      $auto_summary = substr($auto_summary, 0, strlen($auto_summary)-2);
+      $auto_summary .= ". ";
+    }
+    if ($this->modifications["removed"]["accessdate"]) {
+      $auto_summary .= "Removed accessdate with no specified URL. ";
+      unset($this->modifications["removed"]["accessdate"]);
+    }
+    if ($this->modifications["changes"]) {
+      $auto_summary .= "Tweak: ";
+      foreach ($this->modifications["changes"] as $param=>$v)	$auto_summary .= "$param, ";
+      $auto_summary = substr($auto_summary, 0, -2);
+      $auto_summary.=". ";
+    }
+    $auto_summary .= (($this->modifications["removed"])
+      ? "Removed redundant parameters. "
+      : ""
+      ) . (($this->modifications["cite_type"] || $unify_citation_templates)
+      ? "Unified citation types. "
+      : ""
+      ) . (($this->modifications["combine_references"])
+      ? "Combined duplicate references. "
+      : ""
+      ) . (($this->modifications["dashes"])
+      ? "Formatted [[WP:ENDASH|dashes]]. "
+      : ""
+      ) . (($this->modifications["arxiv_upgrade"])
+      ? "Updated published arXiv refs. "
+      : ""
+    );
+    if ($this->modifications['ref_names']) $auto_summary .= 'Named references. ';
+    if (!$auto_summary) $auto_summary = "Misc citation tidying. ";
+    echo $auto_summary;
+    global $edit_initiator;
+    return $edit_initiator . $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
+  }
+  
+  public function write() {
+    if ($this->allow_bots()) {
+      global $bot;
+      // Check that bot is logged in:
+      $bot->fetch(api . "?action=query&prop=info&meta=userinfo&format=json");
+      $result = json_decode($bot->results);
+      if ($result->query->userinfo->id == 0) {
+        echo "\n ! LOGGED OUT:  The bot has been logged out from Wikipedia servers";
+        return FALSE;
+      }
+      print " logged in! ... ";
+      $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
+      $result = json_decode($bot->results);
+      foreach ($result->query->pages as $i_page) $my_page = $i_page;
+      if ($i_page['lastrevid'] != $this->lastrevid) {
+        echo "\n ! Possible edit conflict detected. Aborting.";
+        return FALSE;
+      }
+      $submit_vars = array(
+          "action" => "edit",
+          "title" => $my_page->title,
+          "text" => $this->text,
+          "token" => $my_page->edittoken,
+          "summary" => $this->edit_summary,
+          "minor" => "1",
+          "bot" => "1",
+          "basetimestamp" => $my_page->touched,
+          "starttimestamp" => $my_page->starttimestamp,
+          #"md5"       => hash('md5', $data), // removed because I can't figure out how to make the hash of the UTF-8 encoded string that I send match that generated by the server.
+          "watchlist" => "nochange",
+          "format" => "json",
+      );
+
+      $bot->submit(api, $submit_vars);
+      $result = json_decode($bot->results);
+      if ($result->edit->result == "Success") {
+        // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
+        return "Success";
+      } else if ($result->edit->result) {
+        return $result->edit->result;
+      } else if ($result->error->code) {
+        // Return error code
+        return strtoupper($result->error->code) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), $result->error->info);
+      } else {
+        return "Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
+      }
+      updateBacklog($page);
+    } else {
+      echo "\n - Can't write to " . $this->title . " - prohibited by {{bots]} template.";
+      updateBacklog($page);
+    }
+  }
+  
   protected function extract_object ($class) {
     $i = 0;
     $text = $this->text;
@@ -311,6 +453,7 @@ class Long_Reference extends Item {
       $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
     }
     $this->name($this->page->generate_template_name($replacement_template_name));
+    $this->page->modifications['ref_names'] = TRUE;
     return $this->name();
   }
   
@@ -372,6 +515,7 @@ class Template extends Item {
   
   public function process() {
     switch ($this->wikiname()) {
+      case 'reflist': $this->page->has_reflist = TRUE; break;
       case 'cite web': 
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
@@ -438,13 +582,14 @@ class Template extends Item {
       case 'cite doi': case 'cite pmid': case 'cite jstor': case 'cite pmc':
         $type = substr($this->wikiname(), 5);
         $id = trim_identifier($this->param[0]->val);
-        $linked_page = "Template:cite $type/" . wikititle_encode($id);
-        if (!getArticleId($linked_page)) expand_page($linked_page);
+        $linked_page = "Template:Cite $type/" . wikititle_encode($id);
+        if (!getArticleId($linked_page)) expand_cite_page($linked_page);
     }
     if ($this->citation_tempate) {
       if (!$this->blank('authors') && $this->blank('author')) $this->rename('authors', 'author');
       $this->correct_param_spelling();
       $this->check_url();
+      print_r($this->modifications); die("\n". 'unmodified?');
     }
   }
   
@@ -1718,7 +1863,7 @@ class Template extends Item {
           }
           if (!$this->add_if_new($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))), $parameters["id"] ? $parameters["id"] : $content[0]
           )) {
-            $modifications["removed"] = true;
+            $this->modifications["removed"] = true;
           }
           $identifier_parameter = null;
           $id = str_replace($match[0][$i], "", $id);
@@ -2423,7 +2568,6 @@ function capitalize_title($in, $sents = true) {
 function tag() {
   $dbg = array_reverse(debug_backtrace());
   echo ' [..';
-  #print_r($dbg); die;#
   array_pop($dbg); array_shift($dbg);
   foreach ($dbg as $d) {
     echo '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);  
@@ -2612,4 +2756,18 @@ function url2template($url, $citation) {
   } else {
     return $url;
   }
+}
+
+function expand_cite_page ($title) {
+  $page = new Page();
+  if ($page->lookup($title) && $page->expand_text()) {
+    echo "\n # Writing to " . $page->title;
+    while (!$page->write() && $attempts < 3) $attempts++;
+    if (!articleID($page) && !$doiCrossRef && $oDoi) { #TODO!
+      leave_broken_doi_message($page, $article_in_progress, $oDoi);
+    }
+  } else {
+    echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
+    updateBacklog($page->title);
+  }    
 }
