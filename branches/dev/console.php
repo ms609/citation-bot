@@ -31,7 +31,6 @@ $problem_text =  <<<problemtxt
 
 
 problemtxt;
-
 $page = new Page();
 $page->text = <<<testcase
 
@@ -43,7 +42,7 @@ $page->text = <<<testcase
 <ref name=ref2_rly>Two - Different content!</ref>
 <ref name=web>http://jstor.org/pss/23418</ref>
 {{Ref doi|10.2307/23418}}
-
+ # # #
 
 testcase;
 

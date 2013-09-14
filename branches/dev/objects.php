@@ -12,7 +12,7 @@ define ('ref_regexp', '~<ref.*</ref>~u'); // #TODO DELETE
 define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
 
 function expand_page ($page) {
-  print "\n - #TODO Expand page $page" . tag();
+  print "\n - #TODO page->expand $page" . tag();
 }
 
 class Page {
@@ -49,9 +49,7 @@ class Page {
     // REFERENCE TAGS //
     $short_refs = $this->extract_object(Short_Reference);
     $long_refs = $this->extract_object(Long_Reference);
-    for ($i = 0; $i < count($long_refs); $i++) {
-      $long_refs[$i]->process($citation_template_dominant);
-    }
+    for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {}
     foreach ($long_refs as $i=>$ref) {
       $ref_contents[$i] = str_replace(' ', '', $ref->content);
       $this->ref_names[$i] = $ref->attr['name'];
@@ -67,7 +65,7 @@ class Page {
     if ($to_rename) foreach ($to_rename as $ref) {
       $new_name = $this->generate_template_name($this->ref_names[$ref]);
       $this->ref_names[$ref] = $new_name;
-      $long_refs[$i]->attr['name'] = $new_name;
+      $long_refs[$ref]->name($new_name);
     }
     
     $duplicate_refs = array();
@@ -140,12 +138,14 @@ class Page {
     $text = $this->text;
     $regexp = $class::regexp;
     $placeholder_text = $class::placeholder_text;
+    $treat_identical_separately = $class::treat_identical_separately;
     while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
       $objects[] = $obj;
-      $text = str_replace($match[0], sprintf($placeholder_text, $i++), $text, $matches);
-      $obj->occurrences = $matches;
+      $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
+      $text = implode(sprintf($placeholder_text, $i++), $exploded);
+      $obj->occurrences = count($exploded) - 1;
       $obj->page = $this;
     }
     $this->text = $text;
@@ -172,32 +172,30 @@ class Page {
     return true;
   }
     
-  public function generate_template_name($replacement_template_name) {
+  public function generate_template_name($replacement_name) {
     // Strips special characters from reference name,
     // then does a check against $this->ref_names to generate a unique name for the reference
     // (by suffixing _a, etc, as necessary)
-    $replacement_template_name = remove_accents($replacement_template_name);
-    if (!trim(preg_replace("~\d~", "", $replacement_template_name))) {
-      $replacement_template_name = "ref" . $replacement_template_name;
-    }
+    $replacement_name = remove_accents($replacement_name);
+    if (preg_match("~^[\d\s]*$~", $replacement_name)) $replacement_name = "ref" . $replacement_name;
+    if (!$this->ref_names || !in_array($replacement_name, $this->ref_names)) return $replacement_name;
     global $alphabet;
     $die_length = count($alphabet);
-    $underscore = (preg_match("~[\d_]$~", $replacement_template_name) ? "" : "_");
-    while ($this->ref_names && 
-          (in_array($replacement_template_name . "_" . $alphabet[$i], $this->ref_names)
-        || in_array($replacement_template_name .  '' . $alphabet[$i++], $this->ref_names))) {
-      if ($i >= $die_length) {
+    $underscore = (preg_match("~[\d_]$~", $replacement_name) ? "" : "_");
+    $i = 1;
+    while (in_array($replacement_name . $underscore . $alphabet[$i], $this->ref_names)) {
+      if (++$i >= $die_length) {
         if ($j) {
-          $replacement_template_name = substr($replacement_template_name, -1) . $alphabet[++$j];
+          $replacement_name = substr($replacement_name, -1) . $alphabet[++$j];
           if ($j == $die_length) $j = 0;
         } else {
-          $replacement_template_name .= $underscore . $alphabet[++$j];
+          $replacement_name .= $underscore . $alphabet[++$j];
           $underscore = "";
         }
-        $i = 0;
+        $i = 1;
       }
     }
-    return $replacement_template_name . ($i <= 1 ? '' : $underscore) . $alphabet[--$i];
+    return $replacement_name . ($i < 1 ? '' : $underscore) . $alphabet[$i];
   }
 }
 
@@ -209,6 +207,7 @@ class Item {
 class Comment extends Item {
   const placeholder_text = '# # # Citation bot : comment placeholder %s # # #';
   const regexp = '~<!--.*-->~us';
+  const treat_identical_separately = FALSE;
   
   public function parse_text($text) {
     $this->rawtext = $text;
@@ -222,6 +221,7 @@ class Comment extends Item {
 class Short_Reference extends Item {
   const placeholder_text = '# # # Citation bot : short ref placeholder %s # # #';
   const regexp = '~<ref\s[^>]+?/>~s';
+  const treat_identical_separately = FALSE;
   
   public $start, $end, $attr;
   protected $rawtext;
@@ -253,10 +253,18 @@ class Short_Reference extends Item {
 class Long_Reference extends Item {
   const placeholder_text = '# # # Citation bot : long ref placeholder %s # # #';
   const regexp = '~<ref\s?[^/>]*?>.*?<\s*/\s*ref\s*>~s';
+  const treat_identical_separately = TRUE;
   
   protected $open_start, $open_attr, $open_end, $close;
   public $content;
   protected $rawtext;
+  
+  public function name($new_name = FALSE) {
+    if (!$new_name) return $this->attr['name'];
+    $this->attr['name'] = $new_name;
+    if (substr($this->open_start, -1) != ' ') $this->open_start .= ' ';
+    return $new_name;
+  }
   
   public function process($use_citation_template = FALSE) {
     $this->content = preg_replace_callback('~https?://\S+~',
@@ -302,8 +310,8 @@ class Long_Reference extends Item {
     } else {
       $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
     }
-    $this->attr['name'] = $this->page->generate_template_name($replacement_template_name);
-    return $this->attr['name'];
+    $this->name($this->page->generate_template_name($replacement_template_name));
+    return $this->name();
   }
   
   public function shorten($name) {
@@ -345,6 +353,7 @@ class Long_Reference extends Item {
 class Template extends Item {
   const placeholder_text = '# # # Citation bot : template placeholder %s # # #';
   const regexp = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
+  const treat_identical_separately = FALSE;
   
   protected $name, $param, $initial_param, $citation_template, $mod_dashes;
   
