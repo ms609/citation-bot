@@ -34,24 +34,16 @@ $problem_text =  <<<problemtxt
 problemtxt;
 
 
-$title = 'User:Smith609/sandbox';
-$title = 'Google';
-$snoo_url = wikiroot . "title=" . urlencode($title) . "&action=raw";
-$bot->fetch($snoo_url);
-print "\nresponse code: ".$bot->response_code;
-print_r($bot);
-print_r($bot->result);
-die(';;;;');
 $page = new Page();
 if ($page->lookup('User:Smith609/sandbox') && $page->expand_text()) {
-  echo "\n # Writing to " . $page->title;
-  while (!$page->write() && $attempts < 3) echo "\n ! Failed to write; repeat #" . ++$attempts;
+  echo "\n # Writing to " . $page->title . '... ';
+  while (!$page->write() && $attempts <= 3) ++$attempts;
   if ($attempts < 3 ) echo $html_output ?
        " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
        . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
        . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
        : ".";
-  else echo " Failed.";
+  else echo "\n # Failed. \n" . $page->text;
 } else {
   echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
   updateBacklog($page->title);

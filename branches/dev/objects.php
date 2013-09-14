@@ -31,21 +31,16 @@ class Page {
   public function lookup($title) {
     global $bot;
     $bot->fetchtext(wikiroot . "title=" . urlencode($title) . "&action=raw");
-    print_r($bot);
     $this->text = $bot->results;
     $this->start_text = $this->text;
     
-    $bot->fetch(api . "?action=query&prop=info&format=json&titles=" . urlencode($this->title));
+    $bot->fetch(api . "?action=query&prop=info&format=json&titles=" . urlencode($title));
     $details = json_decode($bot->results);
-    print_r($details);
-    $details = (array) $details->query->pages;
-    print_r($details);
-    $details = $details[0];
-    print_r($details);
+    foreach ($details->query->pages as $p) $my_details = $p;
+    $details = $my_details;
     $this->title = $details->title;
-    print_r($details);
     $this->namespace = $details->ns;
-    $this->timestamp = $details->timestamp;
+    $this->touched = $details->touched;
     $this->lastrevid = $details->lastrevid;
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
@@ -90,6 +85,31 @@ class Page {
     // REFERENCE TAGS //
     if ($this->has_reflist) {
       # TODO! Handle reflists.
+      /*TODO - once all refs are done, swap short refs in reflists with their long equivalents elsewhere.
+      if (preg_match(reflist_regexp, $page_code, $match) &&
+        preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*!!!dontstopthecomment!!!/\s*>~i', $match[1], $empty_refs)) {
+        // If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
+        // which ought to exist earlier in the page.  It's important to check that this doesn't exist elsewhere in the reflist, though.
+
+        print_r($match[1]);die('--');
+        $temp_reflist = $match[1];
+        foreach ($empty_refs['name'] as $i => $ref_name) {
+          echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
+              ."\n     Reference #$i name: $ref_name";
+          $this_regexp = '~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
+                  . '(?P=quote)\s*>[\s\S]+?<\s*!!dontstopthecomment!!/\s*ref>~';
+          if (preg_match($this_regexp, $temp_reflist, $full_ref)) {
+            // A full-text reference exists elsewhere in the reflist.  The duplicate can be safely deleted from the reflist.
+            $temp_reflist = str_replace($empty_refs[0][$i], '', $temp_reflist);
+          } elseif (preg_match($this_regexp, $page_code, $full_ref)) {
+            // Remove all full-text references from the page code.  We'll add an updated reflist later.
+            $page_code = str_replace($full_ref[0], $empty_refs[0][$i], $page_code);
+            $temp_reflist = str_replace($empty_refs[0][$i], $full_ref[0], $temp_reflist);
+          }
+        }
+        // Add the updated reflist, which should now contain no empty references.
+        $page_code = str_replace($match[1], $temp_reflist, $page_code);
+      }*/
       print "\n ! Not addressing reference tags: unsupported template {{reflist}} present.";
     } else {
       $short_refs = $this->extract_object(Short_Reference);
@@ -141,39 +161,10 @@ class Page {
           if ($instance != $name_giver) $long_refs[$instance]->shorten($dup_name);
         }
       }
-      
-      
-      
       $this->replace_object($long_refs);
       $this->replace_object($short_refs);
-      $this->replace_object($comments);
     }
-    #TODO - once all refs are done, swap short refs in reflists with their long equivalents elsewhere.
-    if (preg_match(reflist_regexp, $page_code, $match) &&
-      preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
-      // If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
-      // which ought to exist earlier in the page.  It's important to check that this doesn't exist elsewhere in the reflist, though.
-
-      print_r($match[1]);die('--');
-      $temp_reflist = $match[1];
-      foreach ($empty_refs['name'] as $i => $ref_name) {
-        echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
-            ."\n     Reference #$i name: $ref_name";
-        $this_regexp = '~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
-                . '(?P=quote)\s*>[\s\S]+?<\s*/\s*ref>~';
-        if (preg_match($this_regexp, $temp_reflist, $full_ref)) {
-          // A full-text reference exists elsewhere in the reflist.  The duplicate can be safely deleted from the reflist.
-          $temp_reflist = str_replace($empty_refs[0][$i], '', $temp_reflist);
-        } elseif (preg_match($this_regexp, $page_code, $full_ref)) {
-          // Remove all full-text references from the page code.  We'll add an updated reflist later.
-          $page_code = str_replace($full_ref[0], $empty_refs[0][$i], $page_code);
-          $temp_reflist = str_replace($empty_refs[0][$i], $full_ref[0], $temp_reflist);
-        }
-      }
-      // Add the updated reflist, which should now contain no empty references.
-      $page_code = str_replace($match[1], $temp_reflist, $page_code);
-    }
-    
+    $this->replace_object($comments);
     if ($html_output === -1) ob_end_clean();
     if (strcasecmp($this->text, $this->start_text) == 0) return FALSE;
     else return TRUE;
@@ -217,7 +208,6 @@ class Page {
     );
     if ($this->modifications['ref_names']) $auto_summary .= 'Named references. ';
     if (!$auto_summary) $auto_summary = "Misc citation tidying. ";
-    echo $auto_summary;
     global $edit_initiator;
     return $edit_initiator . $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
@@ -232,11 +222,10 @@ class Page {
         echo "\n ! LOGGED OUT:  The bot has been logged out from Wikipedia servers";
         return FALSE;
       }
-      print " logged in! ... ";
       $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
-      if ($i_page['lastrevid'] != $this->lastrevid) {
+      if ($my_page->lastrevid != $this->lastrevid) {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
@@ -245,7 +234,7 @@ class Page {
           "title" => $my_page->title,
           "text" => $this->text,
           "token" => $my_page->edittoken,
-          "summary" => $this->edit_summary,
+          "summary" => $this->edit_summary(),
           "minor" => "1",
           "bot" => "1",
           "basetimestamp" => $my_page->touched,
@@ -254,19 +243,22 @@ class Page {
           "watchlist" => "nochange",
           "format" => "json",
       );
-
       $bot->submit(api, $submit_vars);
       $result = json_decode($bot->results);
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        return "Success";
+        echo "Success";
+        return TRUE;
       } else if ($result->edit->result) {
-        return $result->edit->result;
+        echo $result->edit->result;
+        return TRUE;
       } else if ($result->error->code) {
         // Return error code
-        return strtoupper($result->error->code) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), $result->error->info);
+        echo "\n ! " . strtoupper($result->error->code) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), $result->error->info);
+        return FALSE;
       } else {
-        return "Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
+        echo "\n ! Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
+        return FALSE;
       }
       updateBacklog($page);
     } else {
@@ -296,10 +288,8 @@ class Page {
 
   protected function replace_object ($objects) {
     $i = count($objects);
-    if ($objects) foreach (array_reverse($objects) as $obj) {
-      $placeholder_format = $obj::placeholder_text;
-      $this->text = str_replace(sprintf($placeholder_format, --$i), $obj->parsed_text(), $this->text);
-    }
+    if ($objects) foreach (array_reverse($objects) as $obj) 
+      $this->text = str_replace(sprintf($obj::placeholder_text, --$i), $obj->parsed_text(), $this->text);
   }
 
   public function allow_bots() {
