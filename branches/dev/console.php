@@ -33,11 +33,26 @@ $problem_text =  <<<problemtxt
 
 problemtxt;
 
-
 $page = new Page();
+$page->text =  <<<problemtxt
+
+<ref name=dudName>one</ref>
+<ref name=ref1>one</ref>
+<ref name=ref2_rly>two - identical content</ref>
+<ref name=ref2_rly>two - identical content</ref>
+<ref name=ref2_rly>Two - Different content!</ref>
+<ref name=web>http://jstor.org/pss/23418</ref>
+{{Ref doi|10.2307/23418}}
+<!-- End of page -->
+
+
+problemtxt;
+#$page->expand_text();
+#die($page->text());
+
 if ($page->lookup('User:Smith609/sandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . '... ';
-  while (!$page->write() && $attempts <= 3) ++$attempts;
+  while (!$page->write() && $attempts < 2) ++$attempts;
   if ($attempts < 3 ) echo $html_output ?
        " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
        . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="

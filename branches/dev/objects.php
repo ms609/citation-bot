@@ -30,7 +30,7 @@ class Page {
   
   public function lookup($title) {
     global $bot;
-    $bot->fetchtext(wikiroot . "title=" . urlencode($title) . "&action=raw");
+    $bot->fetch(wikiroot . "title=" . urlencode($title) . "&action=raw");
     $this->text = $bot->results;
     $this->start_text = $this->text;
     
@@ -444,6 +444,7 @@ class Long_Reference extends Item {
     }
     $this->name($this->page->generate_template_name($replacement_template_name));
     $this->page->modifications['ref_names'] = TRUE;
+    $this->page->ref_names[$this->name] = TRUE;
     return $this->name();
   }
   
