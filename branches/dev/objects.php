@@ -1436,7 +1436,7 @@ class Template extends Item {
    */
     $pages = $this->page_range();
     $pages = $pages[0];
-    if (preg_match("~\d\D+\d", $pages)) $new_pages = $pages;
+    if (preg_match("~\d\D+\d~", $pages)) $new_pages = $pages;
     $doi = $this->get('doi');
     
     $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
@@ -1532,7 +1532,7 @@ class Template extends Item {
       $n_dup_params = count($duplicated_parameters);
       for ($i = 0; $i < $n_dup_params; $i++) {
         if ($duplicate_identical[$i]) {
-          echo "\n * Deleting identical duplicate of parameter: {$duplicated_parameters[$i]->param}\n";
+          echo "\n * Deleting identical duplicate of parameter: {$this->param[$duplicated_parameters[$i]]->param}\n";
           unset($this->param[$duplicated_parameters[$i]]);
         }
         else {
@@ -2377,6 +2377,7 @@ class Template extends Item {
     foreach ($this->param as $i => $p) {
       if ($p->param == $needle) return $i;
     }
+    return NULL;
   }
   
   public function has($par) {return (bool) strlen($this->get($par));}
@@ -2387,7 +2388,7 @@ class Template extends Item {
     return $this->set($par, $val); 
   }
   public function set($par, $val) {
-    if ($pos = $this->get_param_position($par)) return $this->param[$pos]->val = $val;
+    if (($pos = $this->get_param_position($par)) !== NULL) return $this->param[$pos]->val = $val;
     if ($this->param[0]) {
       $p = new Parameter;
       $p->parse_text($this->param[0]->parsed_text());

@@ -12,44 +12,18 @@ $bot_exclusion_compliant = TRUE;
 
 $problem_text =  <<<problemtxt
 
-
-{{tempalte}}}
-{{cite doi|: 10.1111/ahgao ,}}
-{{cite doi|doi: 10.1111/ahgao }}
-{{template | para1 = 8 | pages = 1&mdash;2}}
-{{nested | te = {{template | gah = 8 = two-equals}} | <!--comment | comment --> }}
-<ref name="SGP review" group="tester">
-{{cite journal 
-| class = test }}
-</ref>
-<ref name="SGP review" />
-<ref name="SGP review" group='Test gr"oup'/>
-
-==References==
-{{Reflist|2|refs=
-<ref name="gamefanPS">Ref1</ref>
-<ref name="gamespot">Ref2012</ref>
-}}
-
+<ref>{{cite journal |doi=10.1159/000056992 |title=Comparative cytogenetics of the African elephant ''(Loxodonta africana)'' and Asiatic elephant ''(Elephas maximus)'' |year=2001 |last1=Houck |first1=M.L. |last2=Kumamoto |first2=A.T. |last3=Gallagher |first3=D.S. |last4=Benirschke |first4=K. |journal=Cytogenetic and Genome Research |volume=93 |issue=3–4 |pages=249–52 |pmid=11528120}}</ref> || 5
 
 problemtxt;
 
 $page = new Page();
 $page->text =  <<<problemtxt
-
-<ref name=dudName>one</ref>
-<ref name=ref1>one</ref>
-<ref name=ref2_rly>two - identical content</ref>
-<ref name=ref2_rly>two - identical content</ref>
-<ref name=ref2_rly>Two - Different content!</ref>
-<ref name=web>http://jstor.org/pss/23418</ref>
-{{Ref doi|10.2307/23418}}
-<!-- End of page -->
+<ref>{{cite journal |doi=10.1159/000056992 |title=Comparative cytogenetics of the African elephant ''(Loxodonta africana)'' and Asiatic elephant ''(Elephas maximus)'' |year=2001 |last1=Houck |first1=M.L. |last2=Kumamoto |first2=A.T. |last3=Gallagher |first3=D.S. |last4=Benirschke |first4=K. |journal=Cytogenetic and Genome Research |volume=93 |issue=3–4 |pages=249–52 |pmid=11528120}}</ref> || 5
 
 
 problemtxt;
 #$page->expand_text();
-#die($page->text());
+#die($page->text);
 
 if ($page->lookup('User:Smith609/sandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . '... ';
