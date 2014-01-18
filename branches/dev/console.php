@@ -18,12 +18,21 @@ problemtxt;
 
 $page = new Page();
 $page->text =  <<<problemtxt
-<ref>{{cite journal |doi=10.1159/000056992 |title=Comparative cytogenetics of the African elephant ''(Loxodonta africana)'' and Asiatic elephant ''(Elephas maximus)'' |year=2001 |last1=Houck |first1=M.L. |last2=Kumamoto |first2=A.T. |last3=Gallagher |first3=D.S. |last4=Benirschke |first4=K. |journal=Cytogenetic and Genome Research |volume=93 |issue=3–4 |pages=249–52 |pmid=11528120}}</ref> || 5
-
+{{Cite journal 
+| doi = 10.1007/s00441-003-0756-7 
+| title = Fibroblast growth factors and their receptors in the central nervous system 
+| journal = Cell and Tissue Research 
+| volume = 313 
+| issue = 2 
+| pages = 139–157 
+| year = 2003 
+| pmid = 12845521 
+| pmc = 
+}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
 
 problemtxt;
-#$page->expand_text();
-#die($page->text);
+$page->expand_text();
+die($page->text);
 
 if ($page->lookup('User:Smith609/sandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . '... ';
