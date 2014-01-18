@@ -1217,6 +1217,7 @@ class Template extends Item {
       $crossRef = $this->query_crossref($doi);
       if ($crossRef) {
         echo "\n - Expanding from crossRef record" . tag();
+        
         if ($crossRef->volume_title && $this->blank('journal')) {
           $this->add_if_new('chapter', $crossRef->article_title);
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
@@ -1232,7 +1233,7 @@ class Template extends Item {
           foreach ($crossRef->contributors->contributor as $author) {
             if ($author["contributor_role"] == 'editor') {
               ++$ed_i;
-              if ($ed_i < 5) {
+              if ($ed_i < 31 && $crossRef->journal_title === NULL) {
                 $this->add_if_new("editor$ed_i-last", formatSurname($author->surname));
                 $this->add_if_new("editor$ed_i-first", formatForename($author->given_name));
               }
