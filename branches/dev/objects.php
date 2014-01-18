@@ -25,7 +25,7 @@ $edit_initiator = "[&beta;$last_revision_id]";
 
 class Page {
 
-  public $text, $title;
+  public $text, $title, $modifications;
   protected $ref_names;
   
   public function lookup($title) {
@@ -83,86 +83,91 @@ class Page {
     }
     $text = $this->replace_object($templates);
     // REFERENCE TAGS //
-    if ($this->has_reflist) {
-      # TODO! Handle reflists.
-      /*TODO - once all refs are done, swap short refs in reflists with their long equivalents elsewhere.
-      if (preg_match(reflist_regexp, $page_code, $match) &&
-        preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*!!!dontstopthecomment!!!/\s*>~i', $match[1], $empty_refs)) {
-        // If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
-        // which ought to exist earlier in the page.  It's important to check that this doesn't exist elsewhere in the reflist, though.
+    if (FALSE && $reference_support_debugged) { #todo
+      if ($this->has_reflist) {
+        # TODO! Handle reflists.
+        /*TODO - once all refs are done, swap short refs in reflists with their long equivalents elsewhere.
+        if (preg_match(reflist_regexp, $page_code, $match) &&
+          preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*!!!dontstopthecomment!!!/\s*>~i', $match[1], $empty_refs)) {
+          // If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
+          // which ought to exist earlier in the page.  It's important to check that this doesn't exist elsewhere in the reflist, though.
 
-        print_r($match[1]);die('--');
-        $temp_reflist = $match[1];
-        foreach ($empty_refs['name'] as $i => $ref_name) {
-          echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
-              ."\n     Reference #$i name: $ref_name";
-          $this_regexp = '~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
-                  . '(?P=quote)\s*>[\s\S]+?<\s*!!dontstopthecomment!!/\s*ref>~';
-          if (preg_match($this_regexp, $temp_reflist, $full_ref)) {
-            // A full-text reference exists elsewhere in the reflist.  The duplicate can be safely deleted from the reflist.
-            $temp_reflist = str_replace($empty_refs[0][$i], '', $temp_reflist);
-          } elseif (preg_match($this_regexp, $page_code, $full_ref)) {
-            // Remove all full-text references from the page code.  We'll add an updated reflist later.
-            $page_code = str_replace($full_ref[0], $empty_refs[0][$i], $page_code);
-            $temp_reflist = str_replace($empty_refs[0][$i], $full_ref[0], $temp_reflist);
+          print_r($match[1]);die('--');
+          $temp_reflist = $match[1];
+          foreach ($empty_refs['name'] as $i => $ref_name) {
+            echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
+                ."\n     Reference #$i name: $ref_name";
+            $this_regexp = '~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
+                    . '(?P=quote)\s*>[\s\S]+?<\s*!!dontstopthecomment!!/\s*ref>~';
+            if (preg_match($this_regexp, $temp_reflist, $full_ref)) {
+              // A full-text reference exists elsewhere in the reflist.  The duplicate can be safely deleted from the reflist.
+              $temp_reflist = str_replace($empty_refs[0][$i], '', $temp_reflist);
+            } elseif (preg_match($this_regexp, $page_code, $full_ref)) {
+              // Remove all full-text references from the page code.  We'll add an updated reflist later.
+              $page_code = str_replace($full_ref[0], $empty_refs[0][$i], $page_code);
+              $temp_reflist = str_replace($empty_refs[0][$i], $full_ref[0], $temp_reflist);
+            }
+          }
+          // Add the updated reflist, which should now contain no empty references.
+          $page_code = str_replace($match[1], $temp_reflist, $page_code);
+        }*/
+        print "\n ! Not addressing reference tags: unsupported template {{reflist}} present.";
+      } else {
+        $short_refs = $this->extract_object(Short_Reference);
+        $long_refs = $this->extract_object(Long_Reference);
+        for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {}
+        foreach ($long_refs as $i=>$ref) {
+          $ref_contents[$i] = str_replace(' ', '', $ref->content);
+          $this->ref_names[$i] = $ref->attr['name'];
+        }
+        $duplicate_names = array();
+        if ($this->ref_names) {
+          natcasesort($this->ref_names);
+          reset($this->ref_names);
+        }
+        $old_name = NULL;
+        foreach ($this->ref_names as $key => $name) {
+          if ($name === NULL) continue;
+          if (strcasecmp($name, $old_name) === 0) $to_rename[] = $key;
+          $old_name = $name;
+        }
+        if ($to_rename) foreach ($to_rename as $ref) {
+          $new_name = $this->generate_template_name($this->ref_names[$ref]);
+          $this->ref_names[$ref] = $new_name;
+          $long_refs[$ref]->name($new_name);
+        }
+        
+        $duplicate_refs = array();
+        natcasesort($ref_contents);
+        reset($ref_contents);
+        $old_key = NULL; $old_val = NULL;
+        foreach ($ref_contents as $key => $val) {
+          if ($val === NULL) continue;
+          if (strcasecmp($old_val, $val) === 0) {
+            $duplicate_refs[$val][] = $old_key;
+            $duplicate_refs[$val][] = $key;
+          }
+          $old_val = $val; $old_key = $key;
+        }
+        foreach ($duplicate_refs as $dup) {
+          $dup_name = NULL;
+          $name_giver = NULL;
+          natsort($dup);
+          foreach ($dup as $instance) {
+            if ($this_name = $long_refs[$instance]->attr['name']) {
+              $dup_name = $this_name;
+              $name_giver = $instance;
+            }
+          }
+          foreach ($dup as $instance) {
+            if ($name_giver === NULL) $name_giver = $instance;
+            if (!$dup_name) $dup_name = get_name_for_reference($long_refs[$name_giver]);
+            if ($instance != $name_giver) $long_refs[$instance]->shorten($dup_name);
           }
         }
-        // Add the updated reflist, which should now contain no empty references.
-        $page_code = str_replace($match[1], $temp_reflist, $page_code);
-      }*/
-      print "\n ! Not addressing reference tags: unsupported template {{reflist}} present.";
-    } else {
-      $short_refs = $this->extract_object(Short_Reference);
-      $long_refs = $this->extract_object(Long_Reference);
-      for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {}
-      foreach ($long_refs as $i=>$ref) {
-        $ref_contents[$i] = str_replace(' ', '', $ref->content);
-        $this->ref_names[$i] = $ref->attr['name'];
+        $this->replace_object($long_refs);
+        $this->replace_object($short_refs);
       }
-      $duplicate_names = array();
-      natcasesort($this->ref_names); reset($this->ref_names);
-      $old_name = NULL;
-      foreach ($this->ref_names as $key => $name) {
-        if ($name === NULL) continue;
-        if (strcasecmp($name, $old_name) === 0) $to_rename[] = $key;
-        $old_name = $name;
-      }
-      if ($to_rename) foreach ($to_rename as $ref) {
-        $new_name = $this->generate_template_name($this->ref_names[$ref]);
-        $this->ref_names[$ref] = $new_name;
-        $long_refs[$ref]->name($new_name);
-      }
-      
-      $duplicate_refs = array();
-      natcasesort($ref_contents);
-      reset($ref_contents);
-      $old_key = NULL; $old_val = NULL;
-      foreach ($ref_contents as $key => $val) {
-        if ($val === NULL) continue;
-        if (strcasecmp($old_val, $val) === 0) {
-          $duplicate_refs[$val][] = $old_key;
-          $duplicate_refs[$val][] = $key;
-        }
-        $old_val = $val; $old_key = $key;
-      }
-      foreach ($duplicate_refs as $dup) {
-        $dup_name = NULL;
-        $name_giver = NULL;
-        natsort($dup);
-        foreach ($dup as $instance) {
-          if ($this_name = $long_refs[$instance]->attr['name']) {
-            $dup_name = $this_name;
-            $name_giver = $instance;
-          }
-        }
-        foreach ($dup as $instance) {
-          if ($name_giver === NULL) $name_giver = $instance;
-          if (!$dup_name) $dup_name = get_name_for_reference($long_refs[$name_giver]);
-          if ($instance != $name_giver) $long_refs[$instance]->shorten($dup_name);
-        }
-      }
-      $this->replace_object($long_refs);
-      $this->replace_object($short_refs);
     }
     $this->replace_object($comments);
     if ($html_output === -1) ob_end_clean();
@@ -1188,7 +1193,7 @@ class Template extends Item {
           $this->add_if_new('journal', $journal_string[0]);
         }
         if ($this->add_if_new('doi', (string) $xml->record->DOI)) {
-          $this->expand_by_doi(1);
+          $this->expand_by_doi();
         }
         return true;
       } else {
@@ -1513,267 +1518,290 @@ class Template extends Item {
     // Load list of parameters used in citation templates.
     //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
     global $parameter_list;
-    if ($this->param) foreach ($this->param as $iP => $p) {
-      if (!empty($p->param)) {
-        if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-          $this->param[$iP]->val = $p->param . '=' . $p->val;
-          $this->param[$iP]->param = 'url';
-          if (stripos($p->val, 'books.google.') !== FALSE) {
-            $this->name = 'Cite book';
-            $this->process();
-          }
-        } elseif ($p->param == 'doix') {
-          global $dotEncode, $dotDecode;
-          $this->param[$iP]->param = 'doi';
-          $this->param[$iP]->val = str_replace($dotEncode, $dotDecode, $p->val);
+    if ($this->param) {
+      $param_occurrences = array();
+      $duplicated_parameters = array();
+      $duplicate_identical = array();
+      foreach ($this->param as $pointer => $par) {
+        if (($duplicate_pos = $param_occurrences[$par->param]) !== NULL) {
+          array_unshift($duplicated_parameters, $duplicate_pos);
+          array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
         }
-        continue;
+        $param_occurrences[$par->param] = $pointer;
       }
-      $dat = $p->val;
-      $endnote_test = explode("\n%", "\n" . $dat);
-      if ($endnote_test[1]) {
-        foreach ($endnote_test as $endnote_line) {
-          switch ($endnote_line[0]) {
-            case "A": $endnote_authors++; $endnote_parameter = "author$endnote_authors";        break;
-            case "D": $endnote_parameter = "date";       break;
-            case "I": $endnote_parameter = "publisher";  break;
-            case "C": $endnote_parameter = "location";   break;
-            case "J": $endnote_parameter = "journal";    break;
-            case "N": $endnote_parameter = "issue";      break;
-            case "P": $endnote_parameter = "pages";      break;
-            case "T": $endnote_parameter = "title";      break;
-            case "U": $endnote_parameter = "url";        break;
-            case "V": $endnote_parameter = "volume";     break;
-            case "@": // ISSN / ISBN
-              if (preg_match("~@\s*[\d\-]{10,}~", $endnote_line)) {
-                $endnote_parameter = "isbn";
-                break;
-              } else if (preg_match("~@\s*\d{4}\-?\d{4}~", $endnote_line)) {
-                $endnote_parameter = "issn";
-                break;
-              } else {
+      $n_dup_params = count($duplicated_parameters);
+      for ($i = 0; $i < $n_dup_params; $i++) {
+        if ($duplicate_identical[$i]) {
+          echo "\n * Deleting identical duplicate of parameter: {$duplicated_parameters[$i]->param}\n";
+          unset($this->param[$duplicated_parameters[$i]]);
+        }
+        else {
+          $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
+          echo "\n * Marking duplicate parameter: {$duplicated_parameters[$i]->param}\n";
+        }
+      }
+      foreach ($this->param as $iP => $p) {
+        if (!empty($p->param)) {
+          if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
+            $this->param[$iP]->val = $p->param . '=' . $p->val;
+            $this->param[$iP]->param = 'url';
+            if (stripos($p->val, 'books.google.') !== FALSE) {
+              $this->name = 'Cite book';
+              $this->process();
+            }
+          } elseif ($p->param == 'doix') {
+            global $dotEncode, $dotDecode;
+            $this->param[$iP]->param = 'doi';
+            $this->param[$iP]->val = str_replace($dotEncode, $dotDecode, $p->val);
+          }
+          continue;
+        }
+        $dat = $p->val;
+        $endnote_test = explode("\n%", "\n" . $dat);
+        if ($endnote_test[1]) {
+          foreach ($endnote_test as $endnote_line) {
+            switch ($endnote_line[0]) {
+              case "A": $endnote_authors++; $endnote_parameter = "author$endnote_authors";        break;
+              case "D": $endnote_parameter = "date";       break;
+              case "I": $endnote_parameter = "publisher";  break;
+              case "C": $endnote_parameter = "location";   break;
+              case "J": $endnote_parameter = "journal";    break;
+              case "N": $endnote_parameter = "issue";      break;
+              case "P": $endnote_parameter = "pages";      break;
+              case "T": $endnote_parameter = "title";      break;
+              case "U": $endnote_parameter = "url";        break;
+              case "V": $endnote_parameter = "volume";     break;
+              case "@": // ISSN / ISBN
+                if (preg_match("~@\s*[\d\-]{10,}~", $endnote_line)) {
+                  $endnote_parameter = "isbn";
+                  break;
+                } else if (preg_match("~@\s*\d{4}\-?\d{4}~", $endnote_line)) {
+                  $endnote_parameter = "issn";
+                  break;
+                } else {
+                  $endnote_parameter = false;
+                }
+              case "R": // Resource identifier... *may* be DOI but probably isn't always.
+              case "8": // Date
+              case "0":// Citation type
+              case "X": // Abstract
+              case "M": // Object identifier
+                $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
+              default:
                 $endnote_parameter = false;
+            }
+            if ($endnote_parameter && $this->blank($endnote_parameter)) {
+              $to_add[$endnote_parameter] = substr($endnote_line, 1);
+              $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
+            }
+          }
+        }
+        if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
+          $ris = explode("\n", $dat);
+          foreach ($ris as $ris_line) {
+            $ris_part = explode(" - ", $ris_line . " ");
+            switch (trim($ris_part[0])) {
+              case "T1":
+              case "TI":
+                $ris_parameter = "title";
+                break;
+              case "AU":
+                $ris_authors++;
+                $ris_parameter = "author$ris_authors";
+                $ris_part[1] = formatAuthor($ris_part[1]);
+                break;
+              case "Y1":
+                $ris_parameter = "date";
+                break;
+              case "SP":
+                $start_page = trim($ris_part[1]);
+                $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+                break;
+              case "EP":
+                $end_page = trim($ris_part[1]);
+                $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+                if_null_set("pages", $start_page . "-" . $end_page);
+                break;
+              case "DO":
+                $ris_parameter = "doi";
+                break;
+              case "JO":
+              case "JF":
+                $ris_parameter = "journal";
+                break;
+              case "VL":
+                $ris_parameter = "volume";
+                break;
+              case "IS":
+                $ris_parameter = "issue";
+                break;
+              case "SN":
+                $ris_parameter = "issn";
+                break;
+              case "UR":
+                $ris_parameter = "url";
+                break;
+              case "PB":
+                $ris_parameter = "publisher";
+                break;
+              case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
+                $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              default:
+                $ris_parameter = false;
+            }
+            unset($ris_part[0]);
+            if ($ris_parameter
+                    && if_null_set($ris_parameter, trim(implode($ris_part)))
+                ) {
+              global $auto_summary;
+              if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
+                $auto_summary .= "Converted RIS citation to WP format. ";
               }
-            case "R": // Resource identifier... *may* be DOI but probably isn't always.
-            case "8": // Date
-            case "0":// Citation type
-            case "X": // Abstract
-            case "M": // Object identifier
-              $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
-            default:
-              $endnote_parameter = false;
-          }
-          if ($endnote_parameter && $this->blank($endnote_parameter)) {
-            $to_add[$endnote_parameter] = substr($endnote_line, 1);
-            $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
-          }
-        }
-      }
-      if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
-        $ris = explode("\n", $dat);
-        foreach ($ris as $ris_line) {
-          $ris_part = explode(" - ", $ris_line . " ");
-          switch (trim($ris_part[0])) {
-            case "T1":
-            case "TI":
-              $ris_parameter = "title";
-              break;
-            case "AU":
-              $ris_authors++;
-              $ris_parameter = "author$ris_authors";
-              $ris_part[1] = formatAuthor($ris_part[1]);
-              break;
-            case "Y1":
-              $ris_parameter = "date";
-              break;
-            case "SP":
-              $start_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              break;
-            case "EP":
-              $end_page = trim($ris_part[1]);
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              if_null_set("pages", $start_page . "-" . $end_page);
-              break;
-            case "DO":
-              $ris_parameter = "doi";
-              break;
-            case "JO":
-            case "JF":
-              $ris_parameter = "journal";
-              break;
-            case "VL":
-              $ris_parameter = "volume";
-              break;
-            case "IS":
-              $ris_parameter = "issue";
-              break;
-            case "SN":
-              $ris_parameter = "issn";
-              break;
-            case "UR":
-              $ris_parameter = "url";
-              break;
-            case "PB":
-              $ris_parameter = "publisher";
-              break;
-            case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-            default:
-              $ris_parameter = false;
-          }
-          unset($ris_part[0]);
-          if ($ris_parameter
-                  && if_null_set($ris_parameter, trim(implode($ris_part)))
-              ) {
-            global $auto_summary;
-            if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
-              $auto_summary .= "Converted RIS citation to WP format. ";
             }
-            $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
           }
-        }
 
-      }
-      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { #Takes priority over more tenative matches
-        $this->set('url', $match[0]);
-        $dat = str_replace($match[0], '', $dat);
-      }
-      if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
-        foreach ($match[0] as $i => $oMatch) {
-          switch (strtolower($match[1][$i])) {
-            case "vol": case "v": case 'volume':
-              $matched_parameter = "volume";
-              break;
-            case "no": case "number": case 'issue': case 'n':
-              $matched_parameter = "issue";
-              break;
-            case 'pages': case 'pp': case 'pg': case 'pgs': case 'pag':
-              $matched_parameter = "pages";
-              break;
-            case 'p':
-              $matched_parameter = "page";
-              break;
-            default: 
-              $matched_parameter = null;
-          }
-          if ($matched_parameter) { 
-            $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i) $this->add_if_new($matched_parameter, $match[2][$i]);
-            else {
-              $this->param[$i]->param = $matched_parameter;
-              $this->param[$i]->val = $match[2][0];
+        }
+        if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { #Takes priority over more tenative matches
+          $this->set('url', $match[0]);
+          $dat = str_replace($match[0], '', $dat);
+        }
+        if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
+          foreach ($match[0] as $i => $oMatch) {
+            switch (strtolower($match[1][$i])) {
+              case "vol": case "v": case 'volume':
+                $matched_parameter = "volume";
+                break;
+              case "no": case "number": case 'issue': case 'n':
+                $matched_parameter = "issue";
+                break;
+              case 'pages': case 'pp': case 'pg': case 'pgs': case 'pag':
+                $matched_parameter = "pages";
+                break;
+              case 'p':
+                $matched_parameter = "page";
+                break;
+              default: 
+                $matched_parameter = null;
+            }
+            if ($matched_parameter) { 
+              $dat = trim(str_replace($oMatch, "", $dat));
+              if ($i) $this->add_if_new($matched_parameter, $match[2][$i]);
+              else {
+                $this->param[$i]->param = $matched_parameter;
+                $this->param[$i]->val = $match[2][0];
+              }
             }
           }
         }
-      }
-      if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) { //Vol(is):pp
-        $this->add_if_new('volume', $match[1]);
-        $this->add_if_new('issue' , $match[2]);
-        $this->add_if_new('pages' , $match[3]);
-        $dat = trim(str_replace($match[0], '', $dat));
-      }
-      if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
-        if ($this->blank('year')) {
-          $this->set('year', $match[1]);
+        if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) { //Vol(is):pp
+          $this->add_if_new('volume', $match[1]);
+          $this->add_if_new('issue' , $match[2]);
+          $this->add_if_new('pages' , $match[3]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
-      }
-
-      $shortest = -1;
-      foreach ($parameter_list as $parameter) {
-        $para_len = strlen($parameter);
-        if (substr(strtolower($dat), 0, $para_len) == $parameter) {
-          $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
-          $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
-            ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->param[$iP]->param = $parameter;
-          $this->param[$iP]->val = $parameter_value;
-          break;
+        if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
+          if ($this->blank('year')) {
+            $this->set('year', $match[1]);
+            $dat = trim(str_replace($match[0], '', $dat));
+          }
         }
-        $test_dat = preg_replace("~\d~", "_$0",
-                    preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
-        if ($para_len < 3) break; // minimum length to avoid false positives
-        if (preg_match("~\d~", $parameter)) {
-          $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
-          $para_len++;
+
+        $shortest = -1;
+        foreach ($parameter_list as $parameter) {
+          $para_len = strlen($parameter);
+          if (substr(strtolower($dat), 0, $para_len) == $parameter) {
+            $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
+            $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
+              ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
+            $this->param[$iP]->param = $parameter;
+            $this->param[$iP]->val = $parameter_value;
+            break;
+          }
+          $test_dat = preg_replace("~\d~", "_$0",
+                      preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
+          if ($para_len < 3) break; // minimum length to avoid false positives
+          if (preg_match("~\d~", $parameter)) {
+            $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
+            $para_len++;
+          } else {
+            $lev = levenshtein($test_dat, $parameter);
+          }
+          if ($lev == 0) {
+            $closest = $parameter;
+            $shortest = 0;
+            break;
+          }
+          // Strict inequality as we want to favour the longest match possible
+          if ($lev < $shortest || $shortest < 0) {
+            $comp = $closest;
+            $closest = $parameter;
+            $shortish = $shortest;
+            $shortest = $lev;
+          } elseif ($lev < $shortish) {
+            // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
+            $shortish = $lev;
+            $comp = $parameter;
+          }
+        }
+
+        if (  $shortest < 3
+           && strlen($test_dat > 0)
+           && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
+           && ($shortest + 1 < $shortish  // No close competitor
+               || $shortest / $shortish <= 2/3
+               || strlen($closest) > strlen($comp)
+              )
+        ) {
+          // remove leading spaces or hyphens (which may have been typoed for an equals)
+          if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
+            $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          }
+        } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+          // Is it a number formatted like an ISBN?
+          $this->add('isbn', $match[1]);
+          $pAll = "";
         } else {
-          $lev = levenshtein($test_dat, $parameter);
+          // Extract whatever appears before the first space, and compare it to common parameters
+          $pAll = explode(" ", trim($dat));
+          $p1 = mb_strtolower($pAll[0]);
+          switch ($p1) {
+            case "volume": case "vol":
+            case "pages": case "page":
+            case "year": case "date":
+            case "title":
+            case "authors": case "author":
+            case "issue":
+            case "journal":
+            case "accessdate":
+            case "archiveurl":
+            case "archivedate":
+            case "format":
+            case "url":
+            if ($this->blank($p1)) {
+              unset($pAll[0]);
+              $this->param[$iP]->param = $p1;
+              $this->param[$iP]->val = implode(" ", $pAll);
+            }
+            break;
+            case "issues":
+            if ($this->blank($p1)) {
+              unset($pAll[0]);
+              $this->param[$iP]->param = 'issue';
+              $this->param[$iP]->val = implode(" ", $pAll);
+            }
+            break;
+            case "access date":
+            if ($this->blank($p1)) {
+              unset($pAll[0]);
+              $this->param[$iP]->param = 'accessdate';
+              $this->param[$iP]->val = implode(" ", $pAll);
+            }
+            break;
+          }
         }
-        if ($lev == 0) {
-          $closest = $parameter;
-          $shortest = 0;
-          break;
-        }
-        // Strict inequality as we want to favour the longest match possible
-        if ($lev < $shortest || $shortest < 0) {
-          $comp = $closest;
-          $closest = $parameter;
-          $shortish = $shortest;
-          $shortest = $lev;
-        } elseif ($lev < $shortish) {
-          // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
-          $shortish = $lev;
-          $comp = $parameter;
-        }
+        if (!trim($dat)) unset($this->param[$iP]);
       }
-
-      if (  $shortest < 3
-         && strlen($test_dat > 0)
-         && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
-         && ($shortest + 1 < $shortish  // No close competitor
-             || $shortest / $shortish <= 2/3
-             || strlen($closest) > strlen($comp)
-            )
-      ) {
-        // remove leading spaces or hyphens (which may have been typoed for an equals)
-        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-          $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
-        }
-      } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
-        // Is it a number formatted like an ISBN?
-        $this->add('isbn', $match[1]);
-        $pAll = "";
-      } else {
-        // Extract whatever appears before the first space, and compare it to common parameters
-        $pAll = explode(" ", trim($dat));
-        $p1 = mb_strtolower($pAll[0]);
-        switch ($p1) {
-          case "volume": case "vol":
-          case "pages": case "page":
-          case "year": case "date":
-          case "title":
-          case "authors": case "author":
-          case "issue":
-          case "journal":
-          case "accessdate":
-          case "archiveurl":
-          case "archivedate":
-          case "format":
-          case "url":
-          if ($this->blank($p1)) {
-            unset($pAll[0]);
-            $this->param[$iP]->param = $p1;
-            $this->param[$iP]->val = implode(" ", $pAll);
-          }
-          break;
-          case "issues":
-          if ($this->blank($p1)) {
-            unset($pAll[0]);
-            $this->param[$iP]->param = 'issue';
-            $this->param[$iP]->val = implode(" ", $pAll);
-          }
-          break;
-          case "access date":
-          if ($this->blank($p1)) {
-            unset($pAll[0]);
-            $this->param[$iP]->param = 'accessdate';
-            $this->param[$iP]->val = implode(" ", $pAll);
-          }
-          break;
-        }
-      }
-      if (!trim($dat)) unset($this->param[$iP]);
     }
   }
   
@@ -2148,11 +2176,7 @@ class Template extends Item {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
-    
-    $replacements = array (
-      "&lt;" => "<",
-      "&gt;" => ">",
-    );
+    $replacements = array (      "&lt;" => "<",      "&gt;" => ">",    );
     if (preg_match("~&[lg]t;~", $doi)) $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     if ($trial) foreach ($trial as $try) {
       // Check that it begins with 10.
@@ -2160,7 +2184,7 @@ class Template extends Item {
       if ($this->expand_by_doi($try)) {$this->set('doi', $try); $doi = $try;}
     }    
     echo "\n   . Checking that DOI $doi is operational..." . tag();
-    if ($this->is_doi_working()) {
+    if ($this->query_crossref() === FALSE) {
       $this->set("doi_inactivedate", date("Y-m-d"));
       echo "\n   ! Broken doi: $doi";
     } else {
@@ -2168,53 +2192,6 @@ class Template extends Item {
       $this->forget('doi_inactivedate');
       echo ' DOI ok.';
     } 
-  }
-  
-  protected function is_doi_working() {
-    if (crossRefData($doi = $this->get('doi'))) {
-      global $slow_mode;
-      if ($slow_mode) {
-        quiet_echo("\"");
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_NOBODY, 1);
-        curl_setopt($ch, CURLOPT_URL, "http://dx.doi.org/$doi");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);  //This means we can't get stuck.
-        curl_setopt($ch, CURLOPT_TIMEOUT, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        preg_match("~\d{3}~", $result, $code);
-        switch ($code[0]) {
-          case false:
-            $parsed = parse_url("http://dx.doi.org/$doi");
-            $host = $parsed["host"];
-            $fp = @fsockopen($host, 80, $errno, $errstr, 20);
-            if ($fp) {
-              return true; // Page exists, but had timed out when we first tried.
-            } else {
-              return 404; // DOI is correct but points to a dead page
-            }
-          case 302: // Moved temporarily
-          case 303: // See other
-            return true;
-          case 200:
-            if ($this->get('url')) {
-              $ch = curl_init();
-              curlSetup($ch, $this->get('url'));
-              $content = curl_exec($ch);
-              if (!preg_match("~\Wwiki(\W|pedia)~", $content) && preg_match("~" . preg_quote(urlencode($doi)) . "~", urlencode($content))) {
-                return 200; // DOI is present in page, so probably correct
-              } else
-                return 999; // DOI could not be found in URL - or URL is a wiki mirror
-            } else
-              return 100; // No URL to check for DOI
-        }
-      } return true;
-    }
-    return false;
   }
   
   public function check_url() {
@@ -2751,6 +2728,7 @@ function url2template($url, $citation) {
 
 function expand_cite_page ($title) {
   $page = new Page();
+  $attempts = 0;
   if ($page->lookup($title) && $page->expand_text()) {
     echo "\n # Writing to " . $page->title;
     while (!$page->write() && $attempts < 3) $attempts++;

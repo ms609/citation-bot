@@ -4,7 +4,8 @@
 #$abort_mysql_connection = true; // Whilst there's a problem with login
 
 $accountSuffix = '_4'; // Keep this before including expandFns
-ini_set('display_errors', '1');
+error_reporting(E_ALL^E_NOTICE);
+$slow_mode = 1;
 include('object_expandFns.php');
 
 $bot_exclusion_compliant = TRUE;
@@ -89,7 +90,6 @@ foreach ($argv as $arg) {
   }
 }
 
-error_reporting(E_ALL^E_NOTICE);
 $slow_mode = ($argument["slow"] || $argument["slowmode"] || $argument["thorough"]) ? true : false;
 $accountSuffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
 include("object_expandFns.php");
