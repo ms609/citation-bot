@@ -67,7 +67,7 @@ if ($pmc_input) {
       $pmid_input = $article_details["pmid"];
       write($page, "#REDIRECT[[Template:Cite pmid/$pmid_input]]", "Redirecting to PMID for consistency");
       print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite pmid/$pmid_input'>Template:Cite pmid/$pmid_input</a></p>";
-      $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
+      $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{Documentation|Template:cite_pmid/subpage}}</noinclude>";
     }
   } else {
    print ("\n<p>PMC $pmc_input not found. </p>");
@@ -83,12 +83,12 @@ if ($pmid_input) {
 		write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
 		print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
 	}	else {
-    $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
+    $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{Documentation|Template:cite_pmid/subpage}}</noinclude>";
   }
 }
 if ($doi_input) {
 	$page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi_input);
-	$cite_doi_start_code = "{{Cite journal \n| doi = $doi_input \n| pmid = $pmid_input \n| pmc = $pmc_input\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
+	$cite_doi_start_code = "{{Cite journal \n| doi = $doi_input \n| pmid = $pmid_input \n| pmc = $pmc_input\n}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>";
 } else if (!$cite_doi_start_code) {
   $page = ucfirst(strip_tags($_REQUEST["page"]));
 }
