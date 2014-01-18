@@ -22,7 +22,6 @@ global $last_revision_id, $edit_initiator;
 echo "\nRevision #$last_revision_id";
 $edit_initiator = "[&beta;$last_revision_id]";
 
-
 class Page {
 
   public $text, $title, $modifications;
@@ -564,7 +563,7 @@ class Template extends Item {
         $journal_type = $this->has("periodical") ? "periodical" : "journal";
         if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
         $this->sanitize_doi();
-        $this->verify_doi();
+        if ($this->verify_doi()) $this->expand_by_doi();
         $this->tidy(); // Do now to maximize quality of metadata for DOI searches, etc
         $this->expand_by_adsabs(); //Primarily to try to find DOI
         $this->get_doi_from_crossref();
@@ -615,10 +614,11 @@ class Template extends Item {
   }
   
   public function add_if_new($param, $value) {
+    if ($corrected_spelling = $common_mistakes[$param]) $param = $corrected_spelling;
     if (trim($value) == "") return false;
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      $this->add_if_new('displayauthors', 30);
+      if ($this->displayauthors()) $this->add_if_new('displayauthors', 30);
       return false;
     }
     preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
@@ -628,6 +628,10 @@ class Template extends Item {
         if ($this->blank('editor') && $this->blank("editor-last") && $this->blank("editor-first"))
           return $this->add($param, $value); 
         else return false;
+      case 'editor4': case 'editor4-last': case 'editor4-first':
+        $this->add_if_new('displayeditors', 29);
+        return $this->add($param, $value);
+      break;
       case "author": case "author1": case "last1": case "last": case "authors": // "authors" is automatically corrected by the bot to "author"; include to avoid a false positive.
         $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
@@ -720,7 +724,7 @@ class Template extends Item {
         return false;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
-          return $this->add($param, $value);
+          return $this->add($param, str_ireplace(array('<title>', '</title>'), '', $value));
         }
         return false;
       case "page": case "pages":
@@ -1898,52 +1902,7 @@ class Template extends Item {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
   // TODO replace coauthors with author2, author3, etc.
-  global $parameter_list;
-  // Common mistakes that aren't picked up by the levenshtein approach
-  $common_mistakes = array
-  (
-    "authorurl"       =>  "authorlink",
-    "authorn"         =>  "author2",
-    "authors"         =>  "author",
-    "co-author"       =>  "author2",
-    "co-authors"      =>  "coauthors",
-    "coauthor"        =>  "author2",
-    "display-authors" =>  "displayauthors",
-    "display_authors" =>  "displayauthors",
-    "ed"              =>  "editor",
-    "ed2"             =>  "editor2",
-    "ed3"             =>  "editor3",
-    "editorlink1"     =>  "editor1-link",
-    "editorlink2"     =>  "editor2-link",
-    "editorlink3"     =>  "editor3-link",
-    "editorlink4"     =>  "editor4-link",
-    "editor1link"     =>  "editor1-link",
-    "editor2link"     =>  "editor2-link",
-    "editor3link"     =>  "editor3-link",
-    "editor4link"     =>  "editor4-link",
-    "editorn"         =>  "editor2",
-    "editorn-link"    =>  "editor2-link",
-    "editorn-last"    =>  "editor2-last",
-    "editorn-first"   =>  "editor2-first",
-    "firstn"          =>  "first2",
-    "ibsn"            =>  "isbn",
-    "lastn"           =>  "last2",
-    "number"          =>  "issue",
-    "no"              =>  "issue",
-    "No"              =>  "issue",
-    "No."             =>  "issue",
-    "origmonth"       =>  "month",
-    "p"               =>  "page",
-    "p."              =>  "page",
-    "pmpmid"          =>  "pmid",
-    "pp"              =>  "pages",
-    "pp."             =>  "pages",
-    "translator"      =>  "others",
-    "translators"     =>  "others",
-    "vol"             =>  "volume",
-    "Vol"             =>  "volume",
-    "Vol."            =>  "volume",
-  );
+  global $parameter_list, $common_mistakes;
   $mistake_corrections = array_values($common_mistakes);
   $mistake_keys = array_keys($common_mistakes);
   if ($this->param) foreach ($this->param as $p) {
@@ -2161,7 +2120,7 @@ class Template extends Item {
   
   protected function verify_doi () {
     $doi = $this->get('doi');
-    if (!$doi) return;
+    if (!$doi) return NULL;
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
       case ".":
@@ -2187,11 +2146,13 @@ class Template extends Item {
     if ($this->query_crossref() === FALSE) {
       $this->set("doi_inactivedate", date("Y-m-d"));
       echo "\n   ! Broken doi: $doi";
+      return FALSE;
     } else {
       $this->forget('doi_brokendate');
       $this->forget('doi_inactivedate');
       echo ' DOI ok.';
-    } 
+      return TRUE;
+    }
   }
   
   public function check_url() {
@@ -2328,7 +2289,7 @@ class Template extends Item {
   ### Retrieve parameters 
   public function displayauthors($newval = FALSE) {
     if ($newval && is_int($newval)) $this->set('display-authors', $newval);
-    $da = $this->get('displayauthors');
+    if (($da = $this->get('display-authors')) === NULL) $da = $this->get('displayauthors');
     return is_int($da) ? $da : FALSE;
   }
   
