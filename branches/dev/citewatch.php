@@ -24,6 +24,7 @@ categoryMembers("Pages_with_incomplete_DOI_references")
 ;
 #
 #$toDo = array("User:DOI bot/Zandbox");
+#$toDo = array("Xymmer");
 print_r($toDo);
 #shuffle($toDo);
 $space = (array_keys($toDo, " "));

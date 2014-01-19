@@ -1357,6 +1357,7 @@ class Template extends Item {
     global $editing_cite_doi_template;
     $doi = $this->get('doi');
     if ($doi && $this->incomplete()) {
+      if (preg_match('~^10\.2307/(\d+)$~', $doi)) $this->add_if_new('jstor', substr($doi, 8));
       $crossRef = $this->query_crossref($doi);
       if ($crossRef) {
         echo "\n - Expanding from crossRef record" . tag();
@@ -2570,9 +2571,9 @@ class Parameter {
   
   public function parse_text($text) {
     $split = explode('=', $text, 2);
-    preg_match('~^(\s*)(.*)(\s*)$~', $split[0], $pre_eq);
+    preg_match('~^(\s*)(.*?)(\s*+)$~', $split[0], $pre_eq);
     if ($split[1]) {
-      preg_match('~^(\s*)(.*)(\s*)$~', $split[1], $post_eq);
+      preg_match('~^(\s*)(.*?)(\s*+)$~', $split[1], $post_eq);
       $this->pre   = $pre_eq[1];
       $this->param = $pre_eq[2];
       $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
