@@ -23,7 +23,7 @@ categoryMembers("Pages_with_incomplete_DOI_references")
  #categoryMembers("Pages_with_incomplete_JSTOR_references");
 ;
 #
-$toDo = array("User:DOI bot/Zandbox");
+#$toDo = array("User:DOI bot/Zandbox");
 print_r($toDo);
 #shuffle($toDo);
 $space = (array_keys($toDo, " "));
@@ -56,11 +56,9 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   $current_page = new Page();
   $current_page->get_text_from($article_in_progress);
   $current_page->expand_remote_templates();
-  die("\ncold die in citewatch.php\n");
-  $current_page->write();  # Touch, to update category membership
   print "\n** Completed page; touching...";
-  // Touch the current article to update its categories:
-  touch_page($article_in_progress);
+  $current_page->write(); # Touch, to update category membership; page may have been updated to fix malformed DOIs
+  die("\ncold die in citewatch.php\n");
   print " Done.";
 }
 

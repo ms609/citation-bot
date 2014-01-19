@@ -188,8 +188,7 @@ class Page {
     }
     $this->replace_object($comments);
     if ($html_output === -1) ob_end_clean();
-    if (strcasecmp($this->text, $this->start_text) == 0) return FALSE;
-    else return TRUE;
+    return strcasecmp($this->text, $this->start_text) != 0;
   }
   
   public function expand_remote_templates() {
@@ -218,7 +217,10 @@ class Page {
     }
     $doi_to_do = array_unique($doi_to_do);
     $pmid_to_do = array_unique($pmid_to_do);
-    if (count($doi_to_do) == 0 && count($pmid_to_do) == 0) return NULL;
+    if (count($doi_to_do) == 0 && count($pmid_to_do) == 0) {
+      $this->replace_object($templates);
+      return NULL;
+    }
     if ($pmid_to_do) foreach ($pmid_to_do as $pmid) {
       echo "\n   > PMID $pmid: ";
       $template_page = new Page();
@@ -311,6 +313,7 @@ class Page {
       }  
     }
     $this->replace_object($templates);
+    return TRUE;
   }
     
   public function edit_summary() {

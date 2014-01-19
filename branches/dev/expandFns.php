@@ -40,7 +40,7 @@ define('MYSQL_USERNAME', ...);
 define('MYSQL_PASSWORD', ...);
 */
 function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
-  return ('\r\n # The maintainers have disabled database support.  This action will not be logged.');
+  if ($dbName == 'yarrow') return ('\r\n # The maintainers have disabled database support.  This action will not be logged.');
   // fix redundant error-reporting
   $errorlevel = ini_set('error_reporting','0');
   // connect
