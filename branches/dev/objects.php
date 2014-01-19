@@ -1178,7 +1178,7 @@ class Template extends Item {
   }
     
   ### Obtain data from external database
-  protected function expand_by_arxiv() {
+  public function expand_by_arxiv() {
     if ($this->wikiname() == 'cite arxiv') {
       $arxiv_param = 'eprint';
       $this->rename('arxiv', 'eprint');
@@ -1240,7 +1240,7 @@ class Template extends Item {
     return false;
   }
  
-  protected function expand_by_adsabs() {
+  public function expand_by_adsabs() {
     global $slow_mode;
     if ($slow_mode || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
@@ -1314,7 +1314,7 @@ class Template extends Item {
     }
   }
     
-  protected function expand_by_doi() {
+  public function expand_by_doi() {
     global $editing_cite_doi_template;
     $doi = $this->get('doi');
     if ($doi && $this->incomplete()) {
@@ -1367,7 +1367,7 @@ class Template extends Item {
     }
   }
  
-  protected function expand_by_pubmed() {
+  public function expand_by_pubmed() {
     if (!$this->incomplete()) return;
     if ($pm = $this->get('pmid')) $identifier = 'pmid';
     else if ($pm = $this->get('pmc')) $identifier = 'pmc';
