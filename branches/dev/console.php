@@ -6,7 +6,7 @@
 $accountSuffix = '_4'; // Keep this before including expandFns
 error_reporting(E_ALL^E_NOTICE);
 $slow_mode = 1;
-include('object_expandFns.php');
+include('expandFns.php');
 
 $bot_exclusion_compliant = TRUE;
 
@@ -31,11 +31,12 @@ $page->text =  <<<problemtxt
 }}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
 
 problemtxt;
-$page->expand_text();
-die($page->text);
+#$page->expand_text();
+#die($page->text);
 
-if ($page->lookup('User:Smith609/sandbox') && $page->expand_text()) {
+if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . '... ';
+  print $page->text; die("\n\nbyebye\n");
   while (!$page->write() && $attempts < 2) ++$attempts;
   if ($attempts < 3 ) echo $html_output ?
        " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
@@ -46,9 +47,8 @@ if ($page->lookup('User:Smith609/sandbox') && $page->expand_text()) {
 } else {
   echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
   updateBacklog($page->title);
-}    
-    
-    
+}
+
     
     die("\n# # # \n");
     

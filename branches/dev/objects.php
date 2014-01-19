@@ -229,20 +229,20 @@ class Page {
       $is_redirect = $template_page->is_redirect();
       switch($is_redirect[0]) {
         case -1:
-          print "\r\n   * Expanding template from PMID";
+          echo "\r\n   * Expanding template from PMID";
           $template->expand_by_pubmed();
           // Page has not yet been created for this PMID.
           if ($doi = $template->get('doi')) {
             // redirect to a Cite Doi page, to avoid duplication
             $encoded_doi = anchorencode($doi);
             $template_page->text = "#REDIRECT[[Template:Cite doi/$encoded_doi]]";
-            print "\n * Creating redirect to DOI $doi";
-            print ($template_page->write(" Redirecting to DOI citation") ? " - success" : " - failed.");
+            echo "\n * Creating redirect to DOI $doi";
+            echo ($template_page->write(" Redirecting to DOI citation") ? " - success" : " - failed.");
             $template_page->title = "Template:Cite doi/$encoded_doi";
             $type = 'doi';
-            print "\n * Creating new page for DOI $doi... ";
+            echo "\n * Creating new page for DOI $doi... ";
           } else {
-            print "\n * No DOI found; creating new page for PMID $pmid... ";
+            echo  "\n * No DOI found; creating new page for PMID $pmid... ";
             $type = 'pmid';
           }
           $template_page->text = $template->parsed_text() . sprintf($doc_footer, $type);
@@ -251,7 +251,7 @@ class Page {
         case 0:
           #TODO: log_citation("pmid", $pmid);
           // Save to database
-          print "Citation OK";
+          echo "Citation OK";
         break;
         case 1:    // Page exists; we need to check that the redirect has been created.
           // Check that redirect leads to a cite doi:
@@ -262,17 +262,18 @@ class Page {
           if (preg_match("~/(10\..*)]]~",
                 str_replace($dotEncode, $dotDecode, $redirect_page->text), $redirect_target_doi)) {
             $encoded_doi = anchorencode(trim($redirect_target_doi[1]));
-            print "Redirects to ";
+            echo "Redirects to ";
             if (getArticleId("Template:Cite doi/" . $encoded_doi)) {
               // Destination page exists
               log_citation("pmid", $oPmid, $redirect_target_doi[1]);
-              print $redirect_target_doi[1] . ".";
+              echo $redirect_target_doi[1] . ".";
             } else {
               // Create it if it doesn't
-              print "nonexistent page. Creating > ";
+              echo "nonexistent page. Creating > ";
               $template_page->title = 'Template:Cite doi/' . $encoded_doi;
               $template->add_if_new('doi', $redirect_target_doi[1]);
               $template->expand_by_pubmed();
+              $template->cite_doi_format();
               $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
               $template_page->write();
             }
@@ -280,7 +281,7 @@ class Page {
             exit ($redirect_page->title . " redirects to " . $redirect_page->text);
           }
         break;
-        case 2: print "Database lists page as a redirect"; break;
+        case 2: echo "Database lists page as a redirect"; break;
       }    
     }
     if ($doi_to_do) foreach ($doi_to_do as $doi) {
@@ -294,11 +295,7 @@ class Page {
       }
       $doi_citation_exists = doi_citation_exists($doi); // Checks in our database
       if ($doi_citation_exists) {
-        if ($doi_citation_exists > 1) {
-          log_citation("doi", $doi);
-        }
-        echo ".";
-        print $doi;
+        if ($doi_citation_exists > 1) log_citation("doi", $doi);
       } else {
         echo "\n   > Creating new page for DOI $doi: ";
         $template_page = new Page();
@@ -307,6 +304,7 @@ class Page {
         $template = new Template();
         $template->parse_text("{{Cite journal\n | doi = $doi\n}}");
         $template->expand_by_doi();
+        $template->cite_doi_format();
         $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
         $template_page->write();   
       }  
@@ -393,7 +391,7 @@ class Page {
       $result = json_decode($bot->results);
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        echo "Success";
+        echo "\n Written to " . $my_page->title . '.  ';
         return TRUE;
       } else if ($result->edit->result) {
         echo $result->edit->result;
@@ -2373,25 +2371,70 @@ class Template extends Item {
   }
   
   public function cite_doi_format() {
-    echo "\n   * Cite Doi formatting" . tag();
-
+    global $dotEncode, $dotDecode;
+    echo "\n   * Cite Doi formatting... " . tag();
+    $this->tidy();
+    $doi = $this->get('doi');
+    
     // If we only have the first author, look for more!
     if ($this->blank('coauthors')
        && $this->blank('author2')
        && $this->blank('last2')
-         && $doi = $this->get('doi')
-      ) {
+       && $doi) {
       echo "\n     - Looking for co-authors & page numbers...";
       $this->find_more_authors();
     }
     for ($i = 1; $i < 100; $i ++) {
       foreach (array("author", "last", "first") as $param) {
-        if (trim($p[$param . $i][0]) == "") {
-          unset ($p[$param . $i]);
+        if ($this->get($param . $i) == "") {
+          $this->forget($param . $i);
         }
       }
     }
-    citeDoiOutputFormat();
+    // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
+    if (strpos($doi, ".2F") && !strpos($doi, "/")) {
+      $this->set('doi', str_replace($dotEncode, $dotDecode, $doi));
+    }
+
+    // Cycle through authors
+    for ($i = null; $i < 100; $i++) {
+      if (strpos(($au = $this->get("author$i")), ', ')) {
+        // $au is an array with two parameters: the surname [0] and forename [1].
+        $au = explode(', ', $au);
+        $this->forget("author$i");
+        $this->set("author$i", formatSurname($au[0])); // i.e. drop the forename; this is safe in $au[1]
+      } else if ($this->get("first$i")) {
+        $au[1] = $this->get("first$i");
+      } else {
+         unset($au);
+      }
+      if ($au[1]) {
+        if ($au[1] == mb_strtoupper($au[1]) && mb_strlen($au[1]) < 4) {
+          // Try to separate Smith, LE for Smith, Le.
+          $au[1] = preg_replace("~([A-Z])[\s\.]*~u", "$1.", $au[1]);
+        }
+        if (trim(mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1]))))
+                != trim($this->get("first$i"))) {
+          // Don't try to modify if we don't need to change
+          $this->set("first$i", mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
+        }
+        $para_pos = $this->get_param_position("first$i");
+        if ($para_pos > 1) {
+          $this->param[$this->get_param_position("first$i") - 1]->post = str_replace(array("\r", "\n"), " ", $this->param[$this->get_param_position("first$i") - 1]->post); // Save space by including on same line as previous parameter
+        }
+      }
+    }
+    if ($pp_start = $this->get('pages')) {
+      // Format pages to R100-R102 format
+      if (preg_match("~([A-Za-z0-9]+)[^A-Za-z0-9]+([A-Za-z0-9]+)~", $pp_start, $pp)) {
+         if (strlen($pp[1]) > strlen($pp[2])) {
+            // The end page range must be truncated
+            $this->set('pages', str_replace("!!!DELETE!!!", "", preg_replace("~([A-Za-z0-9]+[^A-Za-z0-9]+)[A-Za-z0-9]+~",
+            ("$1!!!DELETE!!!" . substr($pp[1], 0, strlen($pp[1]) - strlen($pp[2])) . $pp[2])
+            , $pp_start)));
+         }
+      }
+    }
   }
   
   public function citation2cite ($harvard_style = false) {
@@ -2570,7 +2613,6 @@ class Parameter {
   
   public function parse_text($text) {
     $split = explode('=', $text, 2);
-    print_r($split);
     preg_match('~^(\s*)([\s\S]*?)(\s*+)$~m', $split[0], $pre_eq);
     if (count($split) == 2) {
       preg_match('~^(\s*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
@@ -2579,7 +2621,6 @@ class Parameter {
       $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
       $this->post  = $post_eq[3];
       $this->parse_val($post_eq[2]);
-      print_r($this);
     } else {
       $this->pre  = $pre_eq[1];
       $this->val  = $pre_eq[2];
