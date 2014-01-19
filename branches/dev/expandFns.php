@@ -176,7 +176,7 @@ ob_end_flush();
 ################ Functions ##############
 
 function updateBacklog($page) {
-  print "\r\n # Backlog not updated: database access not yet implemented.\r\n   (Task is on developers' #ToDo list)";
+  print "-[#TODO unhandled DB request]-";
   return (NULL);
   $sPage = addslashes($page);
   $id = addslashes(articleId($page));

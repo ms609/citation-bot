@@ -16,9 +16,16 @@ $dotDecode = array("/"  , "["  , "{"  , "}"  , "]"  , "<"  , ">"  , ";"  , "("  
 
 echo "\n Retrieving category members: ";
 #$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
+$toDo = #array_merge(
+categoryMembers("Pages_with_incomplete_DOI_references")
+#categoryMembers("Pages_with_incomplete_PMID_references"),
+#categoryMembers("Pages_with_incomplete_PMC_references")#,
+ #categoryMembers("Pages_with_incomplete_JSTOR_references");
+;
+#
 $toDo = array("User:DOI bot/Zandbox");
-
-shuffle($toDo);
+print_r($toDo);
+#shuffle($toDo);
 $space = (array_keys($toDo, " "));
 if ($space) {
   unset($toDo[$space[0]]);
@@ -49,61 +56,23 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   $current_page = new Page();
   $current_page->get_text_from($article_in_progress);
   $current_page->expand_remote_templates();
-  die("\n");
+  $current_page->write();  # Touch, to update category membership
+  die("\ncold die in citewatch.php\n");
   $toCite = getCiteList($article_in_progress);
 
   while ($pmid_todo && (false !== ($oPmid = array_shift($pmid_todo)))) {
     print "\n   > PMID $oPmid: ";
     // Is there already a page for this PMID?
     switch (citation_is_redirect("pmid", $oPmid)) {
-      case -1:
-        // Page has not yet been created for this PMID.
-        // Can we retrive a DOI from PubMed?
-        $pubmed_result = (pmArticleDetails($oPmid));
-        $doi_from_pmid = $pubmed_result["doi"];
-        if ($doi_from_pmid) {
-          // redirect to a Cite Doi page, to avoid duplication
-          $encoded_doi = anchorencode($doi_from_pmid);
-          print "Creating new page at DOI $doi_from_pmid";
-          if (create_page("doi", $doi_from_pmid, array("pmid" => $oPmid))) {
-            print "\n    Created. \n  > Redirecting PMID $oPmid to $encoded_doi";
-            print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation")
-                ? " : Done."
-                : " : ERROR\n\n > Write failed!\n";
-          } else {
-            print "\n Could not create doi target page.";
-          }
-        } else {
-          print "No DOI found!";
-          // No DOI found.  Create a new page with a {cite journal}, then trigger the Citation Bot process on it.
-          print create_page("pmid", $oPmid) ? " - Created page at PMID $oPmid" : " Couldn't create page at PMID $oPmid";
-        }
+      case -1:#done
       break;
-      case 0:
-        log_citation("pmid", $oPmid);
-        // Save to database
-        print "Citation OK.";
+      case 0: #done
       break;
       case 1:
-        print "On record as a redirect";
+      #done
       break;
-      case 2:
-        // Check that redirect leads to a cite doi:
-        if (preg_match("~/(10\..*)]]~",
-              str_replace($dotEncode, $dotDecode, getRawWikiText($pmid_page)), $redirect_target_doi)) {
-          print "Redirects to ";
-          // Check that destination page exists
-          if (getArticleId("Template:Cite doi/" . anchorencode(trim($redirect_target_doi[1])))) {
-            log_citation("pmid", $oPmid, $redirect_target_doi[1]);
-            print $redirect_target_doi[1] . ".";
-          } else {
-           // Create it if it doesn't
-           print "nonexistent page. Creating > ";
-           print create_page("doi", $redirect_target_doi[1]) ? "Success " : "Failure";
-          }
-        } else {
-          exit ("$pmid_page Redirects to " . getRawWikiText($pmid_page));
-        }
+      case 2: // Page exists; we need to check that the redirect has been created.
+      #done
       break;
       default:
         exit ("That's odd. This hasn't worked.  our PMID: $oPmid; citation_is_redirect: " . citation_is_redirect("pmid", $oPmid));

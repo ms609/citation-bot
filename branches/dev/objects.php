@@ -205,13 +205,18 @@ class Page {
         case 'cite doi':
           array_push($doi_to_do, $template->get(0));
         break;
+        case 'ref jstor': 
+          #TODO derefify
         case 'cite jstor':
           array_push($doi_to_do, '10.2307/' . $template->get(0));
+        case 'ref pmid':
+          #TODO derefify
         case 'cite pmid':
           array_push($pmid_to_do, $template->get(0));
         break;
       }
     }
+    $this->replace_object($templates);
     $doi_to_do = array_unique($doi_to_do);
     $pmid_to_do = array_unique($pmid_to_do);
     if (count($doi_to_do) == 0 && count($pmid_to_do) == 0) return NULL;
@@ -224,8 +229,9 @@ class Page {
       $is_redirect = $template_page->is_redirect();
       switch($is_redirect[0]) {
         case -1:
-          // Page has not yet been created for this PMID.
+          print "\r\n   * Expanding template from PMID";
           $template->expand_by_pubmed();
+          // Page has not yet been created for this PMID.
           if ($doi = $template->get('doi')) {
             // redirect to a Cite Doi page, to avoid duplication
             $encoded_doi = anchorencode($doi);
@@ -234,50 +240,61 @@ class Page {
             print ($template_page->write(" Redirecting to DOI citation") ? " - success" : " - failed.");
             $template_page->title = "Template:Cite doi/$encoded_doi";
             $type = 'doi';
-            print "\n * Creating new page at DOI $doi";
+            print "\n * Creating new page for DOI $doi... ";
           } else {
-            print "\n * No DOI found; creating new page at PMID $pmid";
+            print "\n * No DOI found; creating new page for PMID $pmid... ";
             $type = 'pmid';
           }
           $template_page->text = $template->parsed_text() . sprintf($doc_footer, $type);
-          print $template_page->text;
           $template_page->write();
-        break;        
+        break;
+        case 0:
+          #TODO: log_citation("pmid", $pmid);
+          // Save to database
+          print "Citation OK";
+        break;
+        case 1:    // Page exists; we need to check that the redirect has been created.
+          // Check that redirect leads to a cite doi:
+          $redirect_page = new Page();
+          $redirect_page->get_text_from('Template:Cite pmid/' . $pmid);
+          
+          global $dotDecode, $dotEncode;
+          if (preg_match("~/(10\..*)]]~",
+                str_replace($dotEncode, $dotDecode, $redirect_page->text), $redirect_target_doi)) {
+            $encoded_doi = anchorencode(trim($redirect_target_doi[1]));
+            print "Redirects to ";
+            if (getArticleId("Template:Cite doi/" . $encoded_doi)) {
+              // Destination page exists
+              log_citation("pmid", $oPmid, $redirect_target_doi[1]);
+              print $redirect_target_doi[1] . ".";
+            } else {
+              // Create it if it doesn't
+              print "nonexistent page. Creating > ";
+              $template_page->title = 'Template:Cite doi/' . $encoded_doi;
+              $template->add_if_new('doi', $redirect_target_doi[1]);
+              $template->expand_by_pubmed();
+              $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
+              $template_page->write();
+            }
+          } else {
+            exit ($redirect_page->title . " redirects to " . $redirect_page->text);
+          }
+        break;
+        case 2: print "Database lists page as a redirect"; break;
       }    
     }
-    
-    die("\nsoft die\n");
-  }
-  
-  public function fill($type, $id, $bonus_ids) {
-  // TODO DELETE ## TODO
-    if (getArticleId($this->name)) return false; // Don't create a page that already exists.
-    global $dotDecode, $dotEncode;
-    $type = strtolower($type);
-    $template = 'Cite ' . $type;
-    if ($type == 'doi') {
-      if (!get_data_from_doi($id, true) && substr($id, 0, 8) == "10.2307/") {
-        // Invalid DOI generated from 10.2307/JSTORID.  Just use JSTOR parameter
-        $encoded_id = anchorencode($id);
-        $type = 'jstor';
-        $template = 'Cite doi';
-        $id = substr($id, 8);
-      } else {
-        $encoded_id = anchorencode($id);
-      }
-    } else {
-      $encoded_id = $id;
+    if ($doi_to_do) foreach ($doi_to_do as $doi) {
+      $template_page = new Page();
+      $encoded_doi = anchorencode($doi);
+      $template_page->title = "Template:Cite doi/$encoded_doi";
+      $template = new Template();
+      $template->parse_text("{{Cite journal\n | doi = $doi\n}}");
+      $template->expand_by_doi();
+      $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
+      $template_page->write();      
     }
-    
-    foreach ($bonus_ids as $key => $value) $bonus .= " | $key = $value\n";
-    print "{{Cite journal\n | $type = $id\n$bonus}}\n\n";
-    
-    $page->text = "{{Cite journal\n | $type = $id\n$bonus}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>";
-    
-    $page->expand_text();
-    return $page->write();
   }
-  
+    
   public function edit_summary() {
     if ($this->modifications["additions"]) {
       $auto_summary = "Add: ";
@@ -321,6 +338,7 @@ class Page {
   }
   
   public function write($edit_summary = NULL) {
+  die("\nNOT WRITING: " . $this->text);
     if ($this->allow_bots()) {
       global $bot;
       // Check that bot is logged in:
@@ -1377,7 +1395,7 @@ class Template extends Item {
     echo "\n - Checking " . strtoupper($identifier) . ' ' . $pm . ' for more details' . tag();
     $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=$pm");
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
-    foreach($xml->DocSum->Item as $item) {
+    if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $this->add_if_new('doi', $match[0]);
       switch ($item["Name"]) {
                 case "Title":   $this->add_if_new('title', str_replace(array("[", "]"), "",(string) $item));
@@ -2074,6 +2092,7 @@ class Template extends Item {
 }
   
   protected function join_params() {
+    $ret = '';
     if ($this->param) foreach($this->param as $p) {
       $ret .= '|' . $p->parsed_text();
     }
@@ -2530,20 +2549,18 @@ class Parameter {
   
   public function parse_text($text) {
     $split = explode('=', $text, 2);
-    preg_match('~^\s+~', $split[0], $pre);
-    preg_match('~\s+$~', $split[0], $pre_eq);
+    preg_match('~^(\s*)(.*)(\s*)$~', $split[0], $pre_eq);
     if ($split[1]) {
-      preg_match('~^\s+~', $split[1], $post_eq);
-      preg_match('~\s+$~', $split[1], $post);
-      $this->pre = $pre[0];
-      $this->param = trim($split[0]);
-      $this->eq = $pre_eq[0] . '=' . $post_eq[0];
-      $this->parse_val(trim($split[1]));
-      $this->post= $post[0];
+      preg_match('~^(\s*)(.*)(\s*)$~', $split[1], $post_eq);
+      $this->pre   = $pre_eq[1];
+      $this->param = $pre_eq[2];
+      $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
+      $this->post  = $post_eq[3];
+      $this->parse_val($post_eq[2]);
     } else {
-      $this->pre = $pre[0];
-      $this->val = trim($split[0]);
-      $this->post = $pre_eq[0];
+      $this->pre  = $pre_eq[1];
+      $this->val  = $pre_eq[2];
+      $this->post = $pre_eq[3];
     }
   }
   
@@ -2557,6 +2574,7 @@ class Parameter {
   }
   
   public function parsed_text() {
+    print "\n=====\n[pre|$this->pre][param|$this->param][eq|$this->eq][val|$this->val][post|$this->post]";
     return $this->pre . $this->param . (($this->param && empty($this->eq))?' = ':$this->eq) . $this->val . $this->post;
   }
 }
