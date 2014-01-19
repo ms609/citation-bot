@@ -229,27 +229,28 @@ class Page {
           if ($doi = $template->get('doi')) {
             // redirect to a Cite Doi page, to avoid duplication
             $encoded_doi = anchorencode($doi);
-            print "Creating new page at DOI $doi";
             $template_page->text = "#REDIRECT[[Template:Cite doi/$encoded_doi]]";
-            $template_page->write("Redirecting to DOI citation");
-            $template_page->name = "Template:Cite doi/$encoded_doi";
+            print "\n * Creating redirect to DOI $doi";
+            print ($template_page->write(" Redirecting to DOI citation") ? " - success" : " - failed.");
+            $template_page->title = "Template:Cite doi/$encoded_doi";
             $type = 'doi';
+            print "\n * Creating new page at DOI $doi";
           } else {
-            print "No DOI found!";
+            print "\n * No DOI found; creating new page at PMID $pmid";
             $type = 'pmid';
-          }        
-          $template_page->text = $template->parsed_text() . printf($doc_footer, $type);
-          $template_page->expand_text();
+          }
+          $template_page->text = $template->parsed_text() . sprintf($doc_footer, $type);
+          print $template_page->text;
           $template_page->write();
         break;        
       }    
     }
     
-    
-    print_r($templates);die;
+    die("\nsoft die\n");
   }
   
   public function fill($type, $id, $bonus_ids) {
+  // TODO DELETE ## TODO
     if (getArticleId($this->name)) return false; // Don't create a page that already exists.
     global $dotDecode, $dotEncode;
     $type = strtolower($type);
