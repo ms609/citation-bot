@@ -2,6 +2,7 @@
 <?php
 // $Id$
 $ON = true;
+error_reporting(E_ALL^E_NOTICE);
 
 $accountSuffix = '_2'; // Should use account _2. Include this line before expandfunctions
 require_once("expandFns.php"); // includes login
@@ -35,175 +36,24 @@ function getCiteList($page) {
   $category = "[[Category:Articles citing non-functional identifiers]]";
 	if ($raw && !$doi && !$jstorid && !$pmid && !$pmc && !strpos($raw, $category)) {
     global $editInitiator;
-    write($page, $raw . "\n$category", "$editInitiator Page contains malformed 'Cite xxx' templates; please fix!");
+    #TODO mark as erroneous:
+    #write($page, $raw . "\n$category", "$editInitiator Page contains malformed 'Cite xxx' templates; please fix!");
   }
   return Array($doi[1], $jstorid[1], $pmid[1], $pmc[1]);
 }
 
-function create_page ($type, $id, $bonus_ids) {
-  $template = 'Cite ' . $type;
-  $type = strtolower($type);
-  global $ON, $dotDecode, $dotEncode;
-  switch ($type) {
-    case "doi":
-      if (!get_data_from_doi($id, true) && substr($id, 0, 8) == "10.2307/") {
-        // Invalid DOI generated from 10.2307/JSTORID.  Just use JSTOR parameter
-        $encoded_id = anchorencode($id);
-        $type = 'jstor';
-        $template = 'Cite doi';
-        $id = substr($id, 8);
-      } else {
-        $encoded_id = anchorencode($id);
-      }
-    break;
-    default:
-      $encoded_id = $id;
-  }
-
-  
-  // Don't go creating a page that already exists.
-  print "\nTemplate:Cite $type/$encoded_id\n";
-  print (getArticleId("Template:Cite $type/$encoded_id"));
-  if (getArticleId("Template:Cite $type/$encoded_id")) return false;
-
-  foreach ($bonus_ids as $key => $value) {
-    $bonus .= " | $key = $value\n";
-  }
-  print "{{Cite journal\n | $type = $id\n$bonus}}\n\n";
-  return expand("Template:$template/$encoded_id", $ON, true,
-                  "{{Cite journal\n | $type = $id\n$bonus}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>", -1);
-}
-/*
-function swap_doi_for_jstor ($page, $doi) {
-  $page_code = getRawWikiText($page);
-  if ($page_code) {
-    global $editInitiator;
-    return write($page
-            , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($doi) . "\s*\}\}~i",
-                    '{{cite jstor|' . substr($doi, 8) . '}}', $page_code)
-            , "$editInitiator JSTOR parameter substituted for broken [[doi:$doi]]"
-    );
-  } else {
-    return false;
-  }
-}*/
-
 while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in list */)) {
 
   // load citations from article
-  if ($article_in_progress && trim($article_in_progress)) {
-    print "\n\n** Finding citations in article: $article_in_progress";
-    $toCite = getCiteList($article_in_progress);
-    if (!$toCite) {
-      echo " - None found!";
-    }
-    $doi_todo = $toCite[0];
-    foreach ($toCite[1] as $jid){
-      $doi_todo[] = "10.2307/$jid";
-    }
-    $doi_todo = array_unique($doi_todo);
-    $pmid_todo = array_unique($toCite[2]);
-    $pmc_todo = array_unique($toCite[3]);
-    print " ... " . (count($doi_todo) + count($pmid_todo) + count($pmc_todo)) . " found.";
-  } elseif ($article_in_progress) {
-    print_r($toDo);
-    print "Null article: [$article_in_progress]";
-    break;
-  }
-
-  // Get the next PMC from our to-do list
-  while ($pmc_todo && (false !== ($oPmc = array_shift($pmc_todo)))) {
-     print "\n   > PMC $oPmc: ";
-    $pmc_page = "Template:Cite pmc/$oPmc";
-    // Is there already a page for this PMC?
-    switch (citation_is_redirect ("pmc", $oPmc)) {
-      case -1:
-        // page does not exist
-        $pmc_details = pmArticleDetails($oPmc, "pmc");
-        $doi_from_pmc = $pmc_details["doi"]; // DOI is preferable to PMID to avoid double-redirect.
-        $pmid_from_pmc = $pmc_details["pmid"];
-        if (!$doi_from_pmc) {
-          $pmid_details = pmArticleDetails($pmc_details["pmid"]);
-          $doi_from_pmc = $pmid_details["doi"];
-          $pmid_from_pmc = $pmid_details["pmid"];
-        }
-        $pmid_page = "Template:Cite pmid/$pmid_from_pmc";
-        if ($doi_from_pmc) {
-          // redirect to a Cite Doi page, to avoid duplication
-          $encoded_doi = anchorencode($doi_from_pmc);
-          print "\n  > Creating page at Template:Cite doi/$encoded_doi...";
-          if (create_page("doi", $doi_from_pmc, array ("pmid" => $pmid_from_pmc, "pmc" => $oPmc))) {
-            print "\n  > Now redirecting PMC $oPmc to $encoded_doi";
-            print write($pmc_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation [citewatch.php]")
-                ? " : Done."
-                : " : ERROR\n\n > Write failed!\n";
-            if ($pmid_from_pmc && !getArticleId($pmid_page)) {
-              print "\n  > Now redirecting PMID $pmid_from_pmc to $encoded_doi";
-              print write($pmid_page, "#REDIRECT[[Template:Cite doi/$encoded_doi]]", "Redirecting to DOI citation [citewatch.php]")
-                  ? " : Done."
-                  : " : ERROR\n\n > Write failed!\n";
-            }
-          }
-        } else {
-          print "No DOI found; using PMID instead";
-          if ($pmid_from_pmc){
-            if (create_page("pmid", $pmid_from_pmc, array("pmc" => $oPmc))) {
-            print "\n  > Redirecting PMC $oPmc to PMID $pmid_from_pmc";
-            print write($pmc_page, "#REDIRECT[[Template:Cite pmid/$pmid_from_pmc]]", "Redirecting to PMID citation [citewatch.php]")
-                ? " : Done."
-                : " : ERROR\n\n > Write failed!\n";
-          
-            } else {
-              print "\n     - Page already exists.";
-            }
-          } else {
-            print "\n Could not find PMID or DOI for this PMC.  \n??????????????????????????????????????????????????";
-          }
-        }
-      break;
-      case 0:
-        // Page exists and is not redirect
-        print "Page exists and is not redirect.";
-        log_citation("pmc", $oPmc);
-      break;
-      case 1:
-        print "On record as a redirect";
-      break;
-      case 2:
-        // page is a redirect
-        $pmc_page_text = getRawWikiText($pmc_page);
-        // Check that redirect leads to  a cite DOI:
-        if (preg_match("~/(10\..*)]]~", str_replace($dotEncode, $dotDecode, $pmc_page_text), $redirect_target_doi)) {
-          print "Redirects to ";
-          // Check that destination page exists
-          if (getArticleId("Template:Cite doi/" . anchorencode(trim($redirect_target_doi[1])))) {
-         -   log_citation("pmc", $oPmc, $redirect_target_doi[1]);
-            print $redirect_target_doi[1] . ".";
-          } else {
-            // Create it if it doesn't
-            print "non-existent page. Creating > ";
-            print create_page("doi", $redirect_target_doi[1]) ? " Done." : "Failed )-: ";
-          }
-        } else if (preg_match("~pmid/(\d+)\s*]]~", $pmc_page_text, $redirect_target_pmid)) {
-          print "Redirects to ";
-          // Check that the destination page exists
-          if (getArticleId("Template:Cite pmid/" . $redirect_target_pmid[1])) {
-            print "PMID " . $redirect_target_pmid[1] . ".";
-          } else {
-            // Create the target page
-            print "non-existent page; creating > ";
-            print create_page("pmid", $redirect_target_pmid[1]) ? "Done. " : "Failed )-:";
-          }
-        } else {
-          print "Cannot identify destination of redirect.  \n??????????????????????????????????????????????????????? ";
-        }
-      break;
-    }
-  }
+  print "\n\n** Finding citations in article: $article_in_progress";
+  $current_page = new Page();
+  $current_page->get_text_from($article_in_progress);
+  $current_page->expand_remote_templates();
+  die("\n");
+  $toCite = getCiteList($article_in_progress);
 
   while ($pmid_todo && (false !== ($oPmid = array_shift($pmid_todo)))) {
     print "\n   > PMID $oPmid: ";
-    $pmid_page = "Template:Cite pmid/$oPmid";
     // Is there already a page for this PMID?
     switch (citation_is_redirect("pmid", $oPmid)) {
       case -1:

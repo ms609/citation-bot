@@ -12,6 +12,7 @@
 #define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
 $file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision: 448 $');
 $doitools_revision_id = revisionID();
+$editInitiator = "[dev$doitools_revision_id]";
 if ($file_revision_id < $doitools_revision_id) {
   $last_revision_id = $doitools_revision_id;
 } else {
@@ -27,7 +28,24 @@ class Page {
   public $text, $title, $modifications;
   protected $ref_names;
   
-  public function lookup($title) {
+  public function is_redirect() {
+    $url = Array(
+        "action" => "query",
+        "format" => "xml",
+        "prop" => "info",
+        "titles" => $this->title,
+        );
+    $xml = load_xml_via_bot($url);
+    if ($xml->query->pages->page["pageid"]) {
+      // Page exists
+      return array ((($xml->query->pages->page["redirect"])?1:0),
+                      $xml->query->pages->page["pageid"]);
+      } else {
+        return array (-1, null);
+     }
+  }
+  
+  public function get_text_from($title) {
     global $bot;
     $bot->fetch(wikiroot . "title=" . urlencode($title) . "&action=raw");
     $this->text = $bot->results;
@@ -173,7 +191,92 @@ class Page {
     if (strcasecmp($this->text, $this->start_text) == 0) return FALSE;
     else return TRUE;
   }
+  
+  public function expand_remote_templates() {
+    $doc_footer = "<noinclude>{{Documentation|Template:cite_%s/subpage}}</noinclude>";
+    $templates = $this->extract_object(Template);
+    if (count($templates) == 0) return NULL;
+    $pmid_to_do = array();
+    $doi_to_do = array();
+    foreach ($templates as $template) {
+      switch (strtolower($template->name())) {
+        case 'ref doi':
+          #TODO derefify
+        case 'cite doi':
+          array_push($doi_to_do, $template->get(0));
+        break;
+        case 'cite jstor':
+          array_push($doi_to_do, '10.2307/' . $template->get(0));
+        case 'cite pmid':
+          array_push($pmid_to_do, $template->get(0));
+        break;
+      }
+    }
+    $doi_to_do = array_unique($doi_to_do);
+    $pmid_to_do = array_unique($pmid_to_do);
+    if (count($doi_to_do) == 0 && count($pmid_to_do) == 0) return NULL;
+    if ($pmid_to_do) foreach ($pmid_to_do as $pmid) {
+      print "\n   > PMID $pmid: ";
+      $template_page = new Page();
+      $template_page->title = "Template:Cite pmid/$pmid";
+      $template = new Template();
+      $template->parse_text("{{Cite journal\n | pmid = $pmid\n}}");
+      $is_redirect = $template_page->is_redirect();
+      switch($is_redirect[0]) {
+        case -1:
+          // Page has not yet been created for this PMID.
+          $template->expand_by_pubmed();
+          if ($doi = $template->get('doi')) {
+            // redirect to a Cite Doi page, to avoid duplication
+            $encoded_doi = anchorencode($doi);
+            print "Creating new page at DOI $doi";
+            $template_page->text = "#REDIRECT[[Template:Cite doi/$encoded_doi]]";
+            $template_page->write("Redirecting to DOI citation");
+            $template_page->name = "Template:Cite doi/$encoded_doi";
+            $type = 'doi';
+          } else {
+            print "No DOI found!";
+            $type = 'pmid';
+          }        
+          $template_page->text = $template->parsed_text() . printf($doc_footer, $type);
+          $template_page->expand_text();
+          $template_page->write();
+        break;        
+      }    
+    }
     
+    
+    print_r($templates);die;
+  }
+  
+  public function fill($type, $id, $bonus_ids) {
+    if (getArticleId($this->name)) return false; // Don't create a page that already exists.
+    global $dotDecode, $dotEncode;
+    $type = strtolower($type);
+    $template = 'Cite ' . $type;
+    if ($type == 'doi') {
+      if (!get_data_from_doi($id, true) && substr($id, 0, 8) == "10.2307/") {
+        // Invalid DOI generated from 10.2307/JSTORID.  Just use JSTOR parameter
+        $encoded_id = anchorencode($id);
+        $type = 'jstor';
+        $template = 'Cite doi';
+        $id = substr($id, 8);
+      } else {
+        $encoded_id = anchorencode($id);
+      }
+    } else {
+      $encoded_id = $id;
+    }
+    
+    foreach ($bonus_ids as $key => $value) $bonus .= " | $key = $value\n";
+    print "{{Cite journal\n | $type = $id\n$bonus}}\n\n";
+    
+    $page->text = "{{Cite journal\n | $type = $id\n$bonus}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>";
+    
+    $page->expand_text();
+    return $page->write();
+  }
+  
   public function edit_summary() {
     if ($this->modifications["additions"]) {
       $auto_summary = "Add: ";
@@ -216,7 +319,7 @@ class Page {
     return $edit_initiator . $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
   
-  public function write() {
+  public function write($edit_summary = NULL) {
     if ($this->allow_bots()) {
       global $bot;
       // Check that bot is logged in:
@@ -233,12 +336,13 @@ class Page {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
+      global $edit_initiator;
       $submit_vars = array(
           "action" => "edit",
           "title" => $my_page->title,
           "text" => $this->text,
           "token" => $my_page->edittoken,
-          "summary" => $this->edit_summary(),
+          "summary" => $edit_summary ? ($edit_initiator . $edit_summary) : $this->edit_summary(),
           "minor" => "1",
           "bot" => "1",
           "basetimestamp" => $my_page->touched,
@@ -2313,6 +2417,8 @@ class Template extends Item {
 
   public function page() {return ($page = $this->get('pages') ? $page : $this->get('page'));}
   
+  public function name() {return trim($this->name);}
+  
   public function page_range() {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
     return $pagenos;
@@ -2692,7 +2798,7 @@ function url2template($url, $citation) {
 function expand_cite_page ($title) {
   $page = new Page();
   $attempts = 0;
-  if ($page->lookup($title) && $page->expand_text()) {
+  if ($page->get_text_from($title) && $page->expand_text()) {
     echo "\n # Writing to " . $page->title;
     while (!$page->write() && $attempts < 3) $attempts++;
     if (!articleID($page) && !$doiCrossRef && $oDoi) { #TODO!

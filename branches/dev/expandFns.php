@@ -1,8 +1,5 @@
 <?
-
 // $Id$
-
-session_start();
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
 
@@ -13,14 +10,12 @@ function includeIfNew($file) {
     if (strstr($include, $file))
       return false;
   }
-  if ($GLOBALS["linkto2"])
-    echo "\n// including $file";
-  require_once($file . $GLOBALS["linkto2"] . ".php");
+  require_once($file . ".php");
   return true;
 }
 
 function expandFnsRevId() {
-  return substr('$Id$', 19, 3);
+  return (int) trim(substr('$Id$', 19, 4));
 }
 
 function quiet_echo($text) {
@@ -29,21 +24,15 @@ function quiet_echo($text) {
     echo $text;
 }
 
-require_once(HOME . "credentials/doiBot$linkto2.login");
-/* php file containing
-define('USERID','1');
-define('USERNAME','Citation_bot' . $accountSuffix);
-define('PASSWORD', ...);
-*/
-# Snoopy should be set so the host name is en.wikipedia.org.
+require_once(HOME . "credentials/doiBot.login");
+# Snoopy's ini files should be modified so the host name is en.wikipedia.org.
 includeIfNew('Snoopy.class');
-includeIfNew("wikiFunctions");
 includeIfNew("DOItools");
 includeIfNew("objects");
+includeIfNew("wikiFunctions");
 require_once("expand.php");
 require_once(HOME . "credentials/mysql.login");
 /* php file containing
-//$db = udbconnect("yarrow");
 define('MYSQL_DBNAME', ...);
 define('MYSQL_SERVER', ...);
 define('MYSQL_PREFIX', ...);
@@ -51,6 +40,7 @@ define('MYSQL_USERNAME', ...);
 define('MYSQL_PASSWORD', ...);
 */
 function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
+  return ('\r\n # The maintainers have disabled database support.  This action will not be logged.');
   // fix redundant error-reporting
   $errorlevel = ini_set('error_reporting','0');
   // connect
@@ -79,7 +69,6 @@ define('NYTUSERNAME', 'citation_bot');
 */
 $crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
-$bot = new Snoopy();
 $alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
@@ -110,6 +99,7 @@ define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
 #define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 //Common replacements
+global $doiIn, $doiOut, $pcDecode, $pcEncode, $dotDecode, $dotEncode;
 $doiIn = array("[", "]", "<", ">", "&#60;!", "-&#62;", "%2F");
 $doiOut = array("&#x5B;", "&#x5D;", "&#60;", "&#62;", "<!", "->", "/");
 
@@ -118,6 +108,52 @@ $pcEncode = array("&#x5B;", "&#x5D;", "&#60;", "&#62;");
 
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
 $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
+
+// Common mistakes that aren't picked up by the levenshtein approach
+$common_mistakes = array
+(
+  "authorurl"       =>  "authorlink",
+  "authorn"         =>  "author2",
+  "authors"         =>  "author",
+  "co-author"       =>  "author2",
+  "co-authors"      =>  "coauthors",
+  "coauthor"        =>  "author2",
+  "display-authors" =>  "displayauthors",
+  "display_authors" =>  "displayauthors",
+  "ed"              =>  "editor",
+  "ed2"             =>  "editor2",
+  "ed3"             =>  "editor3",
+  "editorlink1"     =>  "editor1-link",
+  "editorlink2"     =>  "editor2-link",
+  "editorlink3"     =>  "editor3-link",
+  "editorlink4"     =>  "editor4-link",
+  "editor1link"     =>  "editor1-link",
+  "editor2link"     =>  "editor2-link",
+  "editor3link"     =>  "editor3-link",
+  "editor4link"     =>  "editor4-link",
+  "editorn"         =>  "editor2",
+  "editorn-link"    =>  "editor2-link",
+  "editorn-last"    =>  "editor2-last",
+  "editorn-first"   =>  "editor2-first",
+  "firstn"          =>  "first2",
+  "ibsn"            =>  "isbn",
+  "lastn"           =>  "last2",
+  "number"          =>  "issue",
+  "no"              =>  "issue",
+  "No"              =>  "issue",
+  "No."             =>  "issue",
+  "origmonth"       =>  "month",
+  "p"               =>  "page",
+  "p."              =>  "page",
+  "pmpmid"          =>  "pmid",
+  "pp"              =>  "pages",
+  "pp."             =>  "pages",
+  "translator"      =>  "others",
+  "translators"     =>  "others",
+  "vol"             =>  "volume",
+  "Vol"             =>  "volume",
+  "Vol."            =>  "volume",
+);
 
 //Optimisation
 #ob_start(); //Faster, but output is saved until page finshed.
@@ -140,6 +176,8 @@ ob_end_flush();
 ################ Functions ##############
 
 function updateBacklog($page) {
+  print "\r\n # Backlog not updated: database access not yet implemented.\r\n   (Task is on developers' #ToDo list)";
+  return (NULL);
   $sPage = addslashes($page);
   $id = addslashes(articleId($page));
   $db = udbconnect("yarrow");
@@ -182,7 +220,7 @@ function logIn($username, $password) {
   foreach ($bot->headers as $header) {
     if (substr($header, 0, 10) == "Set-Cookie") {
       $cookies = explode(";", substr($header, 12));
-      foreach ($cookies as $oCook) {
+      if ($cookies) foreach ($cookies as $oCook) {
         $cookie = explode("=", $oCook);
         $bot->cookies[trim($cookie[0])] = $cookie[1];
       }
@@ -200,6 +238,7 @@ function logIn($username, $password) {
     $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
     return true;
   } else {
+    print_r($login_result);
     exit("\nCould not log in to Wikipedia servers.  Edits will not be committed.\n"); // Will not display to user
     global $ON;
     $ON = false;
@@ -216,56 +255,6 @@ function inputValue($tag, $form) {
   if ($name)
     return $name[1];
   return false;
-}
-
-function write($page, $data, $edit_summary = "Bot edit") {
-
-  global $bot;
-
-  // Check that bot is logged in:
-  $bot->fetch(api . "?action=query&prop=info&meta=userinfo&format=json");
-  $result = json_decode($bot->results);
-
-  if ($result->query->userinfo->id == 0) {
-    return "LOGGED OUT:  The bot has been logged out from Wikipedia servers";
-  }
-
-  $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($page));
-  $result = json_decode($bot->results);
-
-  foreach ($result->query->pages as $i_page) {
-    $my_page = $i_page;
-  }
-
-  
-  $submit_vars = array(
-      "action" => "edit",
-      "title" => $my_page->title,
-      "text" => $data,
-      "token" => $my_page->edittoken,
-      "summary" => $edit_summary,
-      "minor" => "1",
-      "bot" => "1",
-      "basetimestamp" => $my_page->touched,
-      "starttimestamp" => $my_page->starttimestamp,
-      #"md5"       => hash('md5', $data), // removed because I can't figure out how to make the hash of the UTF-8 encoded string that I send match that generated by the server.
-      "watchlist" => "nochange",
-      "format" => "json",
-  );
-
-  $bot->submit(api, $submit_vars);
-  $result = json_decode($bot->results);
-  if ($result->edit->result == "Success") {
-    // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-    return "Success";
-  } else if ($result->edit->result) {
-    return $result->edit->result;
-  } else if ($result->error->code) {
-    // Return error code
-    return strtoupper($result->error->code) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), $result->error->info);
-  } else {
-    return "Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
-  }
 }
 
 function parameters_from_citation($c) {
@@ -363,90 +352,9 @@ function reassemble_citation($p, $sort = false) {
   return $cText;
 }
 
-function mark_broken_doi_template($article_in_progress, $oDoi) {
-  $page_code = getRawWikiText($article_in_progress);
-  if ($page_code) {
-    global $editInitiator;
-    return write($article_in_progress
-            , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i", "{{broken doi|$oDoi}}", $page_code)
-            , "$editInitiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
-    );
-  } else {
-    exit("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
-  }
-}
 
 function noteDoi($doi, $src) {
   quiet_echo("<h3 style='color:coral;'>Found <a href='http://dx.doi.org/$doi'>DOI</a> $doi from $src.</h3>");
-}
-
-function isDoiBroken($doi, $p = false, $slow_mode = false) {
-
-  $doi = verify_doi($doi);
-
-  if (crossRefData($doi)) {
-    if ($slow_mode) {
-      quiet_echo("\"");
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_HEADER, 1);
-      curl_setopt($ch, CURLOPT_NOBODY, 1);
-      curl_setopt($ch, CURLOPT_URL, "http://dx.doi.org/$doi");
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
-      curl_setopt($ch, CURLOPT_MAXREDIRS, 5);  //This means we can't get stuck.
-      curl_setopt($ch, CURLOPT_TIMEOUT, 1);
-      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-      $result = curl_exec($ch);
-      curl_close($ch);
-      preg_match("~\d{3}~", $result, $code);
-      switch ($code[0]) {
-        case false:
-          $parsed = parse_url("http://dx.doi.org/$doi");
-          $host = $parsed["host"];
-          $fp = @fsockopen($host, 80, $errno, $errstr, 20);
-          if ($fp) {
-            return false; // Page exists, but had timed out when we first tried.
-          } else {
-            logBrokenDoi($doi, $p, 404);
-            return 404; // DOI is correct but points to a dead page
-          }
-        case 302: // Moved temporarily
-        case 303: // See other
-          return false;
-        case 200:
-          if ($p["url"][0]) {
-            $ch = curl_init();
-            curlSetup($ch, $p["url"][0]);
-            $content = curl_exec($ch);
-            if (!preg_match("~\Wwiki(\W|pedia)~", $content) && preg_match("~" . preg_quote(urlencode($doi)) . "~", urlencode($content))) {
-              logBrokenDoi($doi, $p, 200);
-              return 200; // DOI is present in page, so probably correct
-            } else
-              return 999; // DOI could not be found in URL - or URL is a wiki mirror
-          } else
-            return 100; // No URL to check for DOI
-      }
-    } else {
-      return false;
-    }
-  }
-  return true;
-}
-
-function logBrokenDoi($doi, $p, $error) {
-  $file = "brokenDois.xml";
-  if (file_exists($file))
-    $xml = simplexml_load_file($file);
-  else
-    $xml = new SimpleXMLElement("<errors></errors>");
-  $oDoi = $xml->addChild("doi", $doi);
-  $oDoi->addAttribute("error_code", $error);
-  $oDoi->addAttribute("error_found", date("Y-m-d"));
-  unset($p["doi"], $p["unused_data"], $p["accessdate"]);
-  foreach ($p as $key => $value)
-    $oDoi->addAttribute($key, $value[0]);
-  $xml->asXML($file);
-  chmod($file, 0644);
 }
 
 // Error codes:
@@ -519,235 +427,6 @@ function get_template_prefix($type) {
   // The below code errantly produces cite jstor/10.2307/JSTORID, not cite jstor/JSTORID.
   return "Template: Cite "
   . ($type == "jstor" ? ("jstor/10.2307" . wikititle_encode("/")) : $type . "/");
-}
-
-//TODO:
-/*
-  // Replace ids with appropriately formatted parameters
-  $c = preg_replace("~\bid(\s*=\s*)(isbn\s*)?(\d[\-\dX ]{9,})~i","isbn$1$3",
-  preg_replace("~(isbn\s*=\s*)isbn\s?=?\s?(\d\d)~i","$1$2",
-  preg_replace("~(?<![\?&]id=)isbn\s?:(\s?)(\d\d)~i","isbn$1=$1$2", $citation[$cit_i+1]))); // Replaces isbn: with isbn = */
-function id_to_parameters() {
-  global $p, $modifications;
-  $id = $p["id"][0];
-  if (trim($id)) {
-    echo ("\n - Trying to convert ID parameter to parameterized identifiers.");
-  } else {
-    return false;
-  }
-  if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARVIV|LCCN)[\s:]*(\d[^\s\}\{\|]*)~iu", $id, $match)) {
-    if_null_set(strtolower($match[1]), $match[2]);
-    $id = str_replace($match[0], "", $id);
-  }
-  preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
-  foreach ($match["content"] as $i => $content) {
-    $content = explode(pipePlaceholder, $content);
-    unset($parameters);
-    $j = 0;
-    foreach ($content as $fragment) {
-      $content[$j++] = $fragment;
-      $para = explode("=", $fragment);
-      if (trim($para[1])) {
-        $parameters[trim($para[0])] = trim($para[1]);
-      }
-    }
-    switch (strtolower(trim($content[0]))) {
-      case "arxiv":
-        array_shift($content);
-        if ($parameters["id"]) {
-          if_null_set("arxiv", ($parameters["archive"] ? trim($parameters["archive"]) . "/" : "") . trim($parameters["id"]));
-        } else if ($content[1]) {
-          if_null_set("arxiv", trim($content[0]) . "/" . trim($content[1]));
-        } else {
-          if_null_set("arxiv", implode(pipePlaceholder, $content));
-        }
-        $id = str_replace($match[0][$i], "", $id);
-        break;
-      case "lccn":
-        if_null_set("lccn", trim($content[1]) . $content[3]);
-        $id = str_replace($match[0][$i], "", $id);
-        break;
-      case "rfcurl":
-        $identifier_parameter = "rfc";
-      case "asin":
-        if ($parameters["country"]) {
-          echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
-          break;
-        }
-      case "oclc":
-        if ($content[2]) {
-          echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-          break;
-        }
-      case "ol":
-        if ($parameters["author"]) {
-          echo "\n    - {{OL}} author parameter not supported: can't convert.";
-          break;
-        }
-      case "bibcode":
-      case "doi":
-      case "isbn":
-      case "issn":
-      case "jfm":
-      case "jstor":
-        if ($parameters["sici"] || $parameters["issn"]) {
-          echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
-          break;
-        }
-      case "mr":
-      case "osti":
-      case "pmid":
-      case "pmc":
-      case "ssrn":
-      case "zbl":
-        if ($identifier_parameter) {
-          array_shift($content);
-        }
-        if (!if_null_set($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))), $parameters["id"] ? $parameters["id"] : $content[0]
-        )) {
-          $modifications["removed"] = true;
-        }
-        $identifier_parameter = null;
-        $id = str_replace($match[0][$i], "", $id);
-        break;
-      default:
-        echo "\n    - No match found for $content[0].";
-    }
-  }
-  if (trim($id)) {
-    $p["id"][0] = $id;
-  } else {
-    unset($p["id"]);
-  }
-}
-
-function get_identifiers_from_url() {
-  // Convert URLs to article identifiers:
-  global $p;
-  $url = $p["url"][0];
-  // JSTOR
-  if (strpos($url, "jstor.org") !== FALSE) {
-    if (strpos($url, "sici")) {
-      #Skip.  We can't do anything more with the SICI, unfortunately.
-    } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
-      rename_parameter("url", "jstor", $match[1]);
-    }
-  } else {
-    if (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
-      rename_parameter("url", "bibcode", urldecode($bibcode[1]));
-    } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                    . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-      rename_parameter("url", "pmc", $match[1] . $match[2]);
-      get_data_from_pubmed('pmc');
-    } else if (preg_match("~^http://dx\.doi\.org/(.*)", $url, $match)) {
-      rename_parameter("url", "doi", urldecode($match[1]));
-      get_data_from_doi();
-    } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
-      //ARXIV
-      rename_parameter("url", "arxiv", $match[1]);
-      get_data_from_arxiv();
-    } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
-      rename_parameter('url', 'pmid', $match[1]);
-      get_data_from_pubmed('pmid');
-    } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+X?)~", $url, $match)) {
-      if ($match['domain'] == ".com") {
-        rename_parameter('url', 'asin', $match['id']);
-      } else {
-        $p["id"][0] .= " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
-        unset($p["url"]);
-        unset($p["accessdate"]);
-      }
-    }
-  }
-}
-
-function url2template($url, $citation) {
-  if (preg_match("~jstor\.org/(?!sici).*[/=](\d+)~", $url, $match)) {
-    return "{{Cite doi | 10.2307/$match[1] }}";
-  } else if (preg_match("~//dx\.doi\.org/(.+)$~", $url, $match)) {
-    return "{{Cite doi | " . urldecode($match[1]) . " }}";
-  } else if (preg_match("~^http://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+X?)~", $url, $match)) {
-    return ($match['domain'] == ".com") ? "{{ASIN | {$match['id']} }}" : " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
-  } else if (preg_match("~^http://books\.google(?:\.\w{2,3}\b)+/~", $url, $match)) {
-    return "{{" . ($citation ? 'Cite book' : 'Cite journal') . ' | url = ' . $url . '}}'; 
-  } else if (preg_match("~^http://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                  . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-    return "{{Cite pmc | {$match[1]}{$match[2]} }}";
-  } elseif (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
-    return "{{Cite journal | bibcode = " . urldecode($bibcode[1]) . "}}";
-  } else if (preg_match("~http://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
-    return "{{Cite pmid | {$match[1]} }}";
-  } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
-    return "{{Cite arxiv | eprint={$match[1]} }}";
-  } else {
-    return $url;
-  }
-}
-
-function tidy_citation() {
-  global $p, $pStart, $modifications;
-  if (!trim($pStart["title"]) && isset($p["title"][0])) {
-    $p["title"][0] = formatTitle($p["title"][0]);
-  } else if ($modifications && is("title")) {
-    $p["title"][0] = (mb_substr($p["title"][0], -1) == ".") ? mb_substr($p["title"][0], 0, -1) : $p["title"][0];
-    $p['title'][0] = straighten_quotes($p['title'][0]);
-  }
-  foreach (array("pages", "page", "issue", "year") as $oParameter) {
-    if (is($oParameter)) {
-      if (!preg_match("~^[A-Za-z ]+\-~", $p[$oParameter][0]) 
-              && mb_ereg(to_en_dash, $p[$oParameter][0])) {
-        $modifications["dashes"] = true;
-        echo ( "\n - Upgrading to en-dash in $oParameter");
-        $p[$oParameter][0] = mb_ereg_replace(to_en_dash, en_dash, $p[$oParameter][0]);
-      }
-    }
-  }
-  //Edition - don't want 'Edition ed.'
-  if (is("edition")) {
-    $p["edition"][0] = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p["edition"][0]);
-  }
-
-  // Don't add ISSN if there's a journal name
-  if (is('journal') && !isset($pStart['issn'][0])) unset($p['issn']);
-  // Remove publisher if [cite journal/doc] warrants it
-  if (is($p["journal"]) && (is("doi") || is("issn"))) unset($p["publisher"]);
-
-  if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
-    $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
-  }
-  if (strlen($p['issue'][0]) > 1 && $p['issue'][0][0] == '0') {
-    $p['issue'][0] = preg_replace('~^0+~', '', $p['issue'][0]);
-  }
-
-  // If we have any unused data, check to see if any is redundant!
-  if (is("unused_data")) {
-    $freeDat = explode("|", trim($p["unused_data"][0]));
-    unset($p["unused_data"]);
-    foreach ($freeDat as $dat) {
-      $eraseThis = false;
-      foreach ($p as $oP) {
-        similar_text(mb_strtolower($oP[0]), mb_strtolower($dat), $percentSim);
-        if ($percentSim >= 85)
-          $eraseThis = true;
-      }
-      if (!$eraseThis)
-        $p["unused_data"][0] .= "|" . $dat;
-    }
-    if (trim(str_replace("|", "", $p["unused_data"][0])) == "")
-      unset($p["unused_data"]);
-    else {
-      if (substr(trim($p["unused_data"][0]), 0, 1) == "|")
-        $p["unused_data"][0] = substr(trim($p["unused_data"][0]), 1);
-    }
-  }
-  if (is('accessdate') && !is('url')) {
-    unset($p['accessdate']);
-  }
-  
-  if ($modifications['additions']['display-authors']) {
-    if_null_set('author' . ($p['display-authors'][0] + 1), '<Please add first missing authors to populate metadata.>');
-  }
-  
 }
 
 function standardize_reference($reference) {
@@ -892,61 +571,6 @@ function combine_duplicate_references($page_code) {
   return $page_code;
 }
 
-// If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
-// which ought to exist earlier in the page.  It's important to check that this doesn't exist elsewhere in the reflist, though.
-function named_refs_in_reflist($page_code) {
-  if (preg_match(reflist_regexp, $page_code, $match) &&
-      preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*/\s*>~i', $match[1], $empty_refs)) {
-      print_r($match[1]);die('--');
-      $temp_reflist = $match[1];
-      foreach ($empty_refs['name'] as $i => $ref_name) {
-        echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
-            ."\n     Reference #$i name: $ref_name";
-        $this_regexp = '~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
-                . '(?P=quote)\s*>[\s\S]+?<\s*/\s*ref>~';
-        if (preg_match($this_regexp, $temp_reflist, $full_ref)) {
-          // A full-text reference exists elsewhere in the reflist.  The duplicate can be safely deleted from the reflist.
-          $temp_reflist = str_replace($empty_refs[0][$i], '', $temp_reflist);
-        } elseif (preg_match($this_regexp, $page_code, $full_ref)) {
-          // Remove all full-text references from the page code.  We'll add an updated reflist later.
-          $page_code = str_replace($full_ref[0], $empty_refs[0][$i], $page_code);
-          $temp_reflist = str_replace($empty_refs[0][$i], $full_ref[0], $temp_reflist);
-        }
-      }
-      // Add the updated reflist, which should now contain no empty references.
-      $page_code = str_replace($match[1], $temp_reflist, $page_code);
-    
-  }
-  return $page_code;
-}
-
-function ref_templates($page_code, $type) {
-  while (false !== ($ref_template = extract_template($page_code, "ref $type"))) {
-    echo "\n   - Converted {{ref $type}}.";
-    $ref_parameters = extract_parameters($ref_template);
-    $ref_id = $ref_parameters[1] ? $ref_parameters[1][0] : $ref_parameters["unnamed_parameter_1"][0];
-    $trimmed_id = trim_identifier($ref_id);
-    
-    if (!getArticleId("Template:cite $type/" . wikititle_encode($ref_id))) {
-      $citation_code = create_cite_template($type, $ref_id);
-      $template = extract_parameters(extract_template($citation_code, "cite journal"));
-    } else {
-      $template = cite_template_contents($type, $ref_id);
-    }
-    $last = trim($template["last1"][0] . $template["last"][0]);
-    $replacement_template_name = generate_template_name(
-            ($last != "") ? $last . trim($template["year"][0]) : "ref_"
-            , $page_code);
-    $ref_content = "<ref name=\"$replacement_template_name\">"
-            . $ref_template
-            . "</ref>";
-    $page_code = str_replace($ref_template,
-                    str_ireplace("ref $type", "cite $type",
-                        str_replace($ref_id, $trimmed_id, $ref_content)
-                    ), $page_code);
-  }
-  return $page_code;
-}
 
 function trim_identifier($id) {
   $cruft = "[\.,;:><\s]*";
@@ -969,229 +593,10 @@ function name_references($page_code) {
   return $page_code;
 }
 
-function rename_references($page_code) {
-  if (preg_match_all("~(<ref name=(?P<quote>[\"']?)[Rr]ef_?[ab]?(?:[a-z]|utogenerated|erence[a-zA-Z])?(?P=quote)\s*>)"
-                  . "[^\{<]*\{\{\s*(?=[cC]it|[rR]ef)[\s\S]*</ref>~U", $page_code, $refs)) {
-    $countRefs = count($refs[0]);
-    for ($i = 0; $i < $countRefs; ++$i) {
-      $ref_name = get_name_for_reference($refs[0][$i], $page_code);
-      if (substr($ref_name, 0, 4) != "ref_") {
-        // i.e. we have used an interesting reference name
-        echo " renaming references with meaningless names";
-        $page_code = str_replace($refs[1][$i], "<ref name=\"$ref_name\">", $page_code);
-      }
-      echo ".";
-    }
-  }
-  return $page_code;
-}
-
-function get_name_for_reference($text, $page_code) {
-  if (stripos($text, "{{harv") !== FALSE && preg_match("~\|([\s\w\-]+)\|\s*([12]\d{3})\D~", $text, $match)) {
-    $author = $match[1];
-    $date = $match[2];
-  } else {
-    $parsed = parse_wikitext(strip_tags($text));
-    $parsed_plaintext = strip_tags($parsed);
-    $date = (preg_match("~rft\.date=[^&]*(\d\d\d\d)~", $parsed, $date) ? $date[1] : "" );
-    $author = preg_match("~rft\.aulast=([^&]+)~", $parsed, $author) 
-            ? urldecode($author[1])
-            : preg_match("~rft\.au=([^&]+)~", $parsed, $author) ? urldecode($author[1]) : "ref_";
-    $btitle = preg_match("~rft\.[bah]title=([^&]+)~", $parsed, $btitle) ? urldecode($btitle[1]) : "";
-  }
-  if ($author != "ref_") {
-    preg_match("~\w+~", authorify($author), $author);
-  } else if ($btitle) {
-    preg_match("~\w+\s?\w+~", authorify($btitle), $author);
-  } else if ($parsed_plaintext) {
-    if (!preg_match("~\w+\s?\w+~", authorify($parsed_plaintext), $author)) {
-      preg_match("~\w+~", authorify($parsed_plaintext), $author);
-    }
-  }
-  if (strpos($text, "://")) {
-    if (preg_match("~\w+://(?:www\.)?([^/]+?)(?:\.\w{2,3}\b)+~i", $text, $match)) {
-      $replacement_template_name = $match[1];
-    } else {
-      $replacement_template_name = "bare_url"; // just in case there's some bizarre way that the URL doesn't match the regexp
-    }
-  } else {
-    $replacement_template_name = str_replace(Array("\n", "\r", "\t", " "), "", ucfirst($author[0])) . $date;
-  }
-  return generate_template_name($replacement_template_name, $page_code);
-}
-
-// Strips special characters from reference name,
-// then does a check against the current page code to generate a unique name for the reference
-// (by suffixing _a, etc, as necessary)
-function generate_template_name($replacement_template_name, $page_code) {
-  $replacement_template_name = remove_accents($replacement_template_name);
-  if (!trim(preg_replace("~\d~", "", $replacement_template_name))) {
-    $replacement_template_name = "ref" . $replacement_template_name;
-  }
-  global $alphabet;
-  $die_length = count($alphabet);
-  $underscore = (preg_match("~[\d_]$~", $replacement_template_name) ? "" : "_");
-  while (preg_match("~<ref name=(?P<quote>['\"]?)"
-          . preg_quote($replacement_template_name) . "_?" . $alphabet[$i++]
-          . "(?P=quote)[/\s]*>~i", $page_code, $match)) {
-    if ($i >= $die_length) {
-      $replacement_template_name .= $underscore . $alphabet[++$j];
-      $underscore = "";
-      $i = 0;
-    }
-  }
-  if ($i < 2) {
-    $underscore = "";
-  }
-  return $replacement_template_name
-  . $underscore
-  . $alphabet[--$i];
-}
-
 function remove_accents($input) {
   $search = explode(",", "ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
   $replace = explode(",", "c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u");
   return str_replace($search, $replace, $input);
-}
-
-function handle_et_al() {
-  global $p, $authors_missing;
-  $parameter_group = array(
-      1 => array('last', 'author', 'first', 'coauthors', 'coauthor', 'authors', 'first1', 'last1', 'author1'),
-      2 => array('first2', 'last2', 'author2'),
-      3 => array('first3', 'last3', 'author3'),
-      4 => array('first4', 'last4', 'author4'),
-      5 => array('first5', 'last5', 'author5'),
-      6 => array('first6', 'last6', 'author6'),
-      7 => array('first7', 'last7', 'author7'),
-      8 => array('first8', 'last8', 'author8'),
-      9 => array('first9', 'last9', 'author9'),
-      10 => array('first10', 'last10', 'author10'),
-      11 => array('first11', 'last11', 'author11'),
-      12 => array('first12', 'last12', 'author12'),
-      13 => array('first13', 'last13', 'author13'),
-      14 => array('first14', 'last14', 'author14'),
-      15 => array('first15', 'last15', 'author15'),
-      16 => array('first16', 'last16', 'author16'),
-      17 => array('first17', 'last17', 'author17'),
-      18 => array('first18', 'last18', 'author18'),
-      19 => array('first19', 'last19', 'author19'),
-      20 => array('first20', 'last20', 'author20'),
-      21 => array('first21', 'last21', 'author21'),
-      22 => array('first22', 'last22', 'author22'),
-      23 => array('first23', 'last23', 'author23'),
-      24 => array('first24', 'last24', 'author24'),
-      25 => array('first25', 'last25', 'author25'),
-      26 => array('first26', 'last26', 'author26'),
-      27 => array('first27', 'last27', 'author27'),
-      28 => array('first28', 'last28', 'author28'),
-      29 => array('first29', 'last29', 'author29'),
-      30 => array('first30', 'last30', 'author30'),
-      31 => array('first31', 'last31', 'author31'),
-      32 => array('first32', 'last32', 'author32'),
-      33 => array('first33', 'last33', 'author33'),
-      34 => array('first34', 'last34', 'author34'),
-      35 => array('first35', 'last35', 'author35'),
-      36 => array('first36', 'last36', 'author36'),
-      37 => array('first37', 'last37', 'author37'),
-      38 => array('first38', 'last38', 'author38'),
-      39 => array('first39', 'last39', 'author39'),
-      40 => array('first40', 'last40', 'author40'),
-      41 => array('first41', 'last41', 'author41'),
-      42 => array('first42', 'last42', 'author42'),
-      43 => array('first43', 'last43', 'author43'),
-      44 => array('first44', 'last44', 'author44'),
-      45 => array('first45', 'last45', 'author45'),
-      46 => array('first46', 'last46', 'author46'),
-      47 => array('first47', 'last47', 'author47'),
-      48 => array('first48', 'last48', 'author48'),
-      49 => array('first49', 'last49', 'author49'),
-      50 => array('first50', 'last50', 'author50'),
-      51 => array('first51', 'last51', 'author51'),
-      52 => array('first52', 'last52', 'author52'),
-      53 => array('first53', 'last53', 'author53'),
-      54 => array('first54', 'last54', 'author54'),
-      55 => array('first55', 'last55', 'author55'),
-      56 => array('first56', 'last56', 'author56'),
-      57 => array('first57', 'last57', 'author57'),
-      58 => array('first58', 'last58', 'author58'),
-      59 => array('first59', 'last59', 'author59'),
-      60 => array('first60', 'last60', 'author60'),
-      61 => array('first61', 'last61', 'author61'),
-      62 => array('first62', 'last62', 'author62'),
-      63 => array('first63', 'last63', 'author63'),
-      64 => array('first64', 'last64', 'author64'),
-      65 => array('first65', 'last65', 'author65'),
-      66 => array('first66', 'last66', 'author66'),
-      67 => array('first67', 'last67', 'author67'),
-      68 => array('first68', 'last68', 'author68'),
-      69 => array('first69', 'last69', 'author69'),
-      70 => array('first70', 'last70', 'author70'),
-      71 => array('first71', 'last71', 'author71'),
-      72 => array('first72', 'last72', 'author72'),
-      73 => array('first73', 'last73', 'author73'),
-      74 => array('first74', 'last74', 'author74'),
-      75 => array('first75', 'last75', 'author75'),
-      76 => array('first76', 'last76', 'author76'),
-      77 => array('first77', 'last77', 'author77'),
-      78 => array('first78', 'last78', 'author78'),
-      79 => array('first79', 'last79', 'author79'),
-      80 => array('first80', 'last80', 'author80'),
-      81 => array('first81', 'last81', 'author81'),
-      82 => array('first82', 'last82', 'author82'),
-      83 => array('first83', 'last83', 'author83'),
-      84 => array('first84', 'last84', 'author84'),
-      85 => array('first85', 'last85', 'author85'),
-      86 => array('first86', 'last86', 'author86'),
-      87 => array('first87', 'last87', 'author87'),
-      88 => array('first88', 'last88', 'author88'),
-      89 => array('first89', 'last89', 'author89'),
-  );
-
-  foreach ($parameter_group as $i => $group) {
-    foreach ($group as $param) {
-      if (strpos($p[$param][0], 'et al')) {
-        $authors_missing = true;
-        $oParam = preg_replace("~,?\s*'*et al['.]*~", '', $p[$param][0]);
-        if ($i == 1) {
-          // then there's scope for "Smith, AB; Peters, Q.R. et al"
-          $coauthor_parameter = strpos($param, 'co') === FALSE ? 0 : 1;
-          if (strpos($oParam, ';')) {
-            $authors = explode(';', $oParam);
-          } else if (substr_count($oParam, ',') > 1
-                  || substr_count($oParam, ',') < substr_count(trim($oParam), ' ')) {
-            // then we (probably) have a list of authors joined by commas in our first parameter
-            $authors = explode(',', $oParam);
-            if_null_set('author-separator', ',');
-          }
-          
-          if ($authors) {
-            foreach ($authors as $au) {
-              if ($i == 1) {
-                if ($coauthor_parameter) {
-                  unset($p[$param]);
-                  set('author2', $au);
-                } else {
-                  set($param, $au);
-                }
-                $i = 2;
-              }
-              else {
-                if_null_set('author' . ($i++ + $coauthor_parameter), $au);
-              }
-            }
-            $i--;
-          } else {
-            set($param, $oParam);
-          }
-        }
-        if (trim($oParam) == "") {
-          unset($p[$param]);
-        } 
-        if_null_set('display-authors', $i);
-      }
-    }
-  }
 }
 
 // returns the surname of the authors.
@@ -1201,195 +606,11 @@ function authorify($author) {
   return $author;
 }
 
-function get_first_author($p) {
-  // Fetch the surname of the first author only
-  preg_match("~[^.,;\s]{2,}~u", implode(' ', 
-          array($p["author"][0], $p["author1"][0], $p["last"][0], $p["last1"][0]))
-          , $first_author);
-  return $first_author[0];
-}
-
-function get_first_page ($p) { //i.e. start page
-  $page_parameter = $p["pages"][0] ? $p["pages"][0] : $p["page"][0];
-  preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $page_parameter, $pagenos);
-  return $pagenos[1];
-}
-
-function get_last_page ($p) {
-  $page_parameter = $p["pages"][0] ? $p["pages"][0] : $p["page"][0];
-  preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $page_parameter, $pagenos);
-  return $pagenos[2];  
-}
 
 /*function ifNullSet($a, $b, $DEPRECATED = TRUE) {
   print "\n\n Call to deprecated function ifNullSet in expandFns.php";
   if_null_set($a, $b);
 }*/
-
-function if_null_set($param, $value) {
-  global $p;
-  if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
-    // The parameter is of 'first101' or 'last2000' format and adds nothing but clutter.
-    // My sense is that the automatic adding of >30 authors is likely to annoy editors!  
-    return false;
-  }
-  preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
-  switch ($param) {
-    case "editor": case "editor-last": case "editor-first":
-      $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-      if (trim($p["editor"][0]) == "" && trim($p["editor-last"][0]) == "" && trim($p["editor-first"][0]) == "" && trim($value) != "") {
-        set($param, $value);
-        return true;
-      }
-      break;
-    case "author": case "author1": case "last1": case "last": case "authors": // "authors" is automatically corrected by the bot to "author"; include to avoid a false positive.
-      $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-      if (trim($p["last1"][0]) == ""
-              && trim($p["last"][0]) == ""
-              && trim($p["author"][0]) == ""
-              && trim($p["author1"][0]) == ""
-              && trim($p["editor"][0]) == ""
-              && trim($p["editor-last"][0]) == ""
-              && trim($p["editor-first"][0]) == ""
-              && trim($value) != ""
-      ) {
-        if (strpos($value, ',')) {
-          $au = explode(',', $value);
-          set($param, formatSurname($au[0]));
-          set('first' . (substr($param, -1) == '1' ? '1' : ''), formatForename(trim($au[1])));
-        } else {
-          set($param, $value);
-        }
-        return true;
-      }
-      break;
-    case "first": case "first1":
-      if (trim($p["first"][0]) == ""
-              && trim($p["first1"][0]) == ""
-              && trim($p["author"][0]) == ""
-              && trim($p['author1'][0]) == "") {
-        set($param, $value);
-        return true;
-      }
-      break;
-    case "coauthor": case "coauthors":
-      $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
-      if (trim($p["last2"][0]) == "" && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == "" && trim($p["author"][0]) == "" && trim($value) != "") {
-        // Note; we shouldn't be using this parameter ever....
-        set($param, $value);
-        return true;
-      }
-      break;
-    case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
-    case "last10": case "last20": case "last30": case "last40": case "last50": case "last60": case "last70": case "last80": case "last90":
-    case "last11": case "last21": case "last31": case "last41": case "last51": case "last61": case "last71": case "last81": case "last91": 
-    case "last12": case "last22": case "last32": case "last42": case "last52": case "last62": case "last72": case "last82": case "last92": 
-    case "last13": case "last23": case "last33": case "last43": case "last53": case "last63": case "last73": case "last83": case "last93": 
-    case "last14": case "last24": case "last34": case "last44": case "last54": case "last64": case "last74": case "last84": case "last94": 
-    case "last15": case "last25": case "last35": case "last45": case "last55": case "last65": case "last75": case "last85": case "last95": 
-    case "last16": case "last26": case "last36": case "last46": case "last56": case "last66": case "last76": case "last86": case "last96": 
-    case "last17": case "last27": case "last37": case "last47": case "last57": case "last67": case "last77": case "last87": case "last97": 
-    case "last18": case "last28": case "last38": case "last48": case "last58": case "last68": case "last78": case "last88": case "last98": 
-    case "last19": case "last29": case "last39": case "last49": case "last59": case "last69": case "last79": case "last89": case "last99": 
-    case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9":
-    case "author10": case "author20": case "author30": case "author40": case "author50": case "author60": case "author70": case "author80": case "author90":
-    case "author11": case "author21": case "author31": case "author41": case "author51": case "author61": case "author71": case "author81": case "author91": 
-    case "author12": case "author22": case "author32": case "author42": case "author52": case "author62": case "author72": case "author82": case "author92": 
-    case "author13": case "author23": case "author33": case "author43": case "author53": case "author63": case "author73": case "author83": case "author93": 
-    case "author14": case "author24": case "author34": case "author44": case "author54": case "author64": case "author74": case "author84": case "author94": 
-    case "author15": case "author25": case "author35": case "author45": case "author55": case "author65": case "author75": case "author85": case "author95": 
-    case "author16": case "author26": case "author36": case "author46": case "author56": case "author66": case "author76": case "author86": case "author96": 
-    case "author17": case "author27": case "author37": case "author47": case "author57": case "author67": case "author77": case "author87": case "author97": 
-    case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98": 
-    case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99": 
-      $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-      if (strpos($value, ',')) {
-        $au = explode(',', $value);
-        set('last' . $auNo, formatSurname($au[0]));
-        if_null_set('first' . $auNo, formatForename(trim($au[1])));
-      }
-      if (trim($p["last$auNo"][0]) == "" && trim($p["author$auNo"][0]) == ""
-              && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
-              && underTwoAuthors($p['author'][0])) {
-        set($param, $value);
-        return true;
-      }
-      break;
-    case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": 
-    case "first10": case "first11": case "first12": case "first13": case "first14": case "first15": case "first16": case "first17": case "first18": case "first19":
-    case "first20": case "first21": case "first22": case "first23": case "first24": case "first25": case "first26": case "first27": case "first28": case "first29":
-    case "first30": case "first31": case "first32": case "first33": case "first34": case "first35": case "first36": case "first37": case "first38": case "first39":
-    case "first40": case "first41": case "first42": case "first43": case "first44": case "first45": case "first46": case "first47": case "first48": case "first49":
-    case "first50": case "first51": case "first52": case "first53": case "first54": case "first55": case "first56": case "first57": case "first58": case "first59":
-    case "first60": case "first61": case "first62": case "first63": case "first64": case "first65": case "first66": case "first67": case "first68": case "first69":
-    case "first70": case "first71": case "first72": case "first73": case "first74": case "first75": case "first76": case "first77": case "first78": case "first79":
-    case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
-    case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
-      if (trim($p[$param][0]) == ""
-              && underTwoAuthors($p['author'][0]) && trim($p["author" . $auNo][0]) == ""
-              && trim($p["coauthor"][0]) == "" && trim($p["coauthors"][0]) == ""
-              && trim($value) != "") {
-        set($param, $value);
-        return true;
-      }
-      break;
-    case "date":
-      if (preg_match("~^\d{4}$~", sanitize_string($value))) {
-        // Not adding any date data beyond the year, so 'year' parameter is more suitable
-        $param = "year";
-      }
-    // Don't break here; we want to go straight in to year;
-    case "year":
-      if (trim($value) != "" 
-          && (trim($p["date"][0]) == "" || trim(strtolower($p['date'][0])) == "in press")
-          && (trim($p["year"][0]) == "" || trim(strtolower($p['year'][0])) == "in press") 
-        ) {
-        set($param, $value);
-        return true;
-      }
-      break;
-    case "periodical": case "journal":
-      if (trim($p["journal"][0]) == "" && trim($p["periodical"][0]) == "" && trim($p["work"][0]) == "" && trim($value) != "") {
-        set($param, sanitize_string($value));
-        return true;
-      }
-      break;
-    case 'chapter': case 'contribution':
-      if (trim($p["chapter"][0]) == "" && trim($p["contribution"][0]) == "" && trim($value) != "") {
-        set($param, $value);
-        return true;
-      }
-      break;
-    case "page": case "pages":
-      if (( trim($p["pages"][0]) == ""
-              && trim($p["page"][0]) == ""
-              && trim($value) != "" )
-              || strpos(strtolower($p["pages"][0] . $p['page'][0]), 'no') !== FALSE
-              || (strpos($value, chr(2013)) || (strpos($value, '-'))
-                && !strpos($p['pages'][0], chr(2013))
-                && !strpos($p['pages'][0], chr(150)) // Also en-dash
-                && !strpos($p['pages'][0], chr(226)) // Also en-dash
-                && !strpos($p['pages'][0], '-')
-                && !strpos($p['pages'][0], '&ndash;'))
-      ) {
-        set($param, sanitize_string($value));
-        return true;
-      }
-      break;
-    case 'title': 
-      if (trim($p[$param][0]) == "" && trim($value) != "") {
-        set($param, formatTitle(sanitize_string($value)));
-        return true;
-      }
-      break;
-    default: 
-      if (trim($p[$param][0]) == "" && trim($value) != "") {
-        set($param, sanitize_string($value));
-        return true;
-      }
-  }
-  return false;
-}
 
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
@@ -1476,9 +697,7 @@ function normalize_special_characters($str) {
 }
 
 quiet_echo("\n Establishing connection to Wikipedia servers ... ");
-// Log in to Wikipedia
 logIn(USERNAME, PASSWORD);
-
 quiet_echo("\n Fetching parameter list ... ");
 // Get a current list of parameters used in citations from WP
 $page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters&format=json");
