@@ -216,12 +216,11 @@ class Page {
         break;
       }
     }
-    $this->replace_object($templates);
     $doi_to_do = array_unique($doi_to_do);
     $pmid_to_do = array_unique($pmid_to_do);
     if (count($doi_to_do) == 0 && count($pmid_to_do) == 0) return NULL;
     if ($pmid_to_do) foreach ($pmid_to_do as $pmid) {
-      print "\n   > PMID $pmid: ";
+      echo "\n   > PMID $pmid: ";
       $template_page = new Page();
       $template_page->title = "Template:Cite pmid/$pmid";
       $template = new Template();
@@ -284,15 +283,34 @@ class Page {
       }    
     }
     if ($doi_to_do) foreach ($doi_to_do as $doi) {
-      $template_page = new Page();
-      $encoded_doi = anchorencode($doi);
-      $template_page->title = "Template:Cite doi/$encoded_doi";
-      $template = new Template();
-      $template->parse_text("{{Cite journal\n | doi = $doi\n}}");
-      $template->expand_by_doi();
-      $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
-      $template_page->write();      
+      if (preg_match("~^[\s,\.:;>]*(?:d?o?i?[:.,>\s]+|(?:http://)?dx\.doi\.org/)(?P<doi>.+)~i", $doi, $match)
+        || preg_match('~^0?(?P<end>\.\d{4}/.+)~', $doi, $match)) {
+        $doi = $match['doi'] ? $match['doi'] : '10' . $match['end'];
+        if ($this->text) {
+          echo "\n   > Fixing prefixes in {{cite doi}} templates, in [[$this->title]]: ";
+          $this->text = str_replace("1$doi", $doi, str_replace($match[0], $doi, $this->text));
+        }
+      }
+      $doi_citation_exists = doi_citation_exists($doi); // Checks in our database
+      if ($doi_citation_exists) {
+        if ($doi_citation_exists > 1) {
+          log_citation("doi", $doi);
+        }
+        echo ".";
+        print $doi;
+      } else {
+        echo "\n   > Creating new page for DOI $doi: ";
+        $template_page = new Page();
+        $encoded_doi = anchorencode($doi);
+        $template_page->title = "Template:Cite doi/$encoded_doi";
+        $template = new Template();
+        $template->parse_text("{{Cite journal\n | doi = $doi\n}}");
+        $template->expand_by_doi();
+        $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
+        $template_page->write();   
+      }  
     }
+    $this->replace_object($templates);
   }
     
   public function edit_summary() {
@@ -338,7 +356,6 @@ class Page {
   }
   
   public function write($edit_summary = NULL) {
-  die("\nNOT WRITING: " . $this->text);
     if ($this->allow_bots()) {
       global $bot;
       // Check that bot is logged in:
@@ -1381,7 +1398,8 @@ class Template extends Item {
                   : "") );
         echo " (ok)";
       } else {
-        echo "\n - No CrossRef record found for doi '$doi'";
+        echo "\n - No CrossRef record found for doi '$doi'; marking as broken";
+        $this->add_if_new('doi_brokendate', date('Y-m-d'));
       }
     }
   }
@@ -2574,7 +2592,6 @@ class Parameter {
   }
   
   public function parsed_text() {
-    print "\n=====\n[pre|$this->pre][param|$this->param][eq|$this->eq][val|$this->val][post|$this->post]";
     return $this->pre . $this->param . (($this->param && empty($this->eq))?' = ':$this->eq) . $this->val . $this->post;
   }
 }
