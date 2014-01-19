@@ -246,7 +246,7 @@ class Page {
             $type = 'pmid';
           }
           $template_page->text = $template->parsed_text() . sprintf($doc_footer, $type);
-          $template_page->write();
+          $template_page->write("New page from {{Cite pmid}} template");
         break;
         case 0:
           #TODO: log_citation("pmid", $pmid);
@@ -275,7 +275,7 @@ class Page {
               $template->expand_by_pubmed();
               $template->cite_doi_format();
               $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
-              $template_page->write();
+              $template_page->write("New page from Cite pmid redirect");
             }
           } else {
             exit ($redirect_page->title . " redirects to " . $redirect_page->text);
@@ -306,7 +306,7 @@ class Page {
         $template->expand_by_doi();
         $template->cite_doi_format();
         $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
-        $template_page->write();   
+        $template_page->write("New page from {{Cite doi}} template");   
       }  
     }
     $this->replace_object($templates);
@@ -758,7 +758,7 @@ class Template extends Item {
     if (trim($value) == "") return false;
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      if ($this->displayauthors()) $this->add_if_new('displayauthors', 30);
+      if ($this->displayauthors()) $this->add_if_new('displayauthors', 29);
       return false;
     }
     preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
@@ -794,7 +794,8 @@ class Template extends Item {
           return $this->add($param, $value);
           // Note; we shouldn't be using this parameter ever....
       return false;
-      case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
+      case "last9": case "author9": if (!$this->displayauthors()) $this->add_if_new('displayauthors', 29);
+      case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": 
       case "last10": case "last20": case "last30": case "last40": case "last50": case "last60": case "last70": case "last80": case "last90":
       case "last11": case "last21": case "last31": case "last41": case "last51": case "last61": case "last71": case "last81": case "last91": 
       case "last12": case "last22": case "last32": case "last42": case "last52": case "last62": case "last72": case "last82": case "last92": 
@@ -805,7 +806,7 @@ class Template extends Item {
       case "last17": case "last27": case "last37": case "last47": case "last57": case "last67": case "last77": case "last87": case "last97": 
       case "last18": case "last28": case "last38": case "last48": case "last58": case "last68": case "last78": case "last88": case "last98": 
       case "last19": case "last29": case "last39": case "last49": case "last59": case "last69": case "last79": case "last89": case "last99": 
-      case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9":
+      case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8":
       case "author10": case "author20": case "author30": case "author40": case "author50": case "author60": case "author70": case "author80": case "author90":
       case "author11": case "author21": case "author31": case "author41": case "author51": case "author61": case "author71": case "author81": case "author91": 
       case "author12": case "author22": case "author32": case "author42": case "author52": case "author62": case "author72": case "author82": case "author92": 
@@ -2385,7 +2386,7 @@ class Template extends Item {
       $this->find_more_authors();
     }
     for ($i = 1; $i < 100; $i ++) {
-      foreach (array("author", "last", "first") as $param) {
+      foreach (array("author", "last", "first", 'editor') as $param) {
         if ($this->get($param . $i) == "") {
           $this->forget($param . $i);
         }

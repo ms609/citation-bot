@@ -15,18 +15,16 @@ $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28"
 $dotDecode = array("/"  , "["  , "{"  , "}"  , "]"  , "<"  , ">"  , ";"  , "("  , ")"  , "_");
 
 echo "\n Retrieving category members: ";
-#$toDo = array_merge(categoryMembers("Pages_with_incomplete_DOI_references"), categoryMembers("Pages_with_incomplete_PMID_references"), categoryMembers("Pages_with_incomplete_PMC_references"), categoryMembers("Pages_with_incomplete_JSTOR_references"));
-$toDo = #array_merge(
-categoryMembers("Pages_with_incomplete_DOI_references")
-#categoryMembers("Pages_with_incomplete_PMID_references"),
-#categoryMembers("Pages_with_incomplete_PMC_references")#,
- #categoryMembers("Pages_with_incomplete_JSTOR_references");
-;
+$toDo = array_unique(array_merge(
+categoryMembers("Pages_with_incomplete_DOI_references"),
+categoryMembers("Pages_with_incomplete_PMID_references"),
+categoryMembers("Pages_with_incomplete_PMC_references"),
+categoryMembers("Pages_with_incomplete_JSTOR_references")));
 #
 #$toDo = array("User:DOI bot/Zandbox");
 #$toDo = array("Xymmer");
 print_r($toDo);
-#shuffle($toDo);
+shuffle($toDo);
 $space = (array_keys($toDo, " "));
 if ($space) unset($toDo[$space[0]]);
 echo count($toDo) . " pages found.";
@@ -41,6 +39,5 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   #die("\nSTOP\n");
   $current_page->write(); # Touch, to update category membership; page may have been updated to fix malformed DOIs
   echo " $article_in_progress complete.";
-  die("\ncold die in citewatch.php\n");
 }
 print "\n===End===\n\n";?>
