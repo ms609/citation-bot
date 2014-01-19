@@ -12,16 +12,15 @@
 #define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
 $file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision: 448 $');
 $doitools_revision_id = revisionID();
-$editInitiator = "[dev$doitools_revision_id]";
+global $last_revision_id, $edit_initiator;
+$edit_initiator = "[dev$doitools_revision_id]";
 if ($file_revision_id < $doitools_revision_id) {
   $last_revision_id = $doitools_revision_id;
 } else {
-  $editInitiator = str_replace($doitools_revision_id, $file_revision_id, $editInitiator);
+  $edit_initiator = str_replace($doitools_revision_id, $file_revision_id, $edit_initiator);
   $last_revision_id = $file_revision_id;
 }
-global $last_revision_id, $edit_initiator;
 echo "\nRevision #$last_revision_id";
-$edit_initiator = "[&beta;$last_revision_id]";
 
 class Page {
 
@@ -423,11 +422,11 @@ class Page {
     while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
-      $objects[] = $obj;
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $obj->occurrences = count($exploded) - 1;
       $obj->page = $this;
+      $objects[] = $obj;
     }
     $this->text = $text;
     return $objects;
@@ -642,7 +641,7 @@ class Template extends Item {
     $this->rawtext = $text;
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
-      $this->name = substr($text, 2, $pipe_pos-2);
+      $this->name = substr($text, 2, $pipe_pos - 2);
       $this->split_params(substr($text, $pipe_pos + 1, -2));
     } else {
       $this->name = substr($text, 2, -2);
@@ -2571,14 +2570,16 @@ class Parameter {
   
   public function parse_text($text) {
     $split = explode('=', $text, 2);
-    preg_match('~^(\s*)(.*?)(\s*+)$~', $split[0], $pre_eq);
-    if ($split[1]) {
-      preg_match('~^(\s*)(.*?)(\s*+)$~', $split[1], $post_eq);
+    print_r($split);
+    preg_match('~^(\s*)([\s\S]*?)(\s*+)$~m', $split[0], $pre_eq);
+    if (count($split) == 2) {
+      preg_match('~^(\s*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
       $this->pre   = $pre_eq[1];
       $this->param = $pre_eq[2];
       $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
       $this->post  = $post_eq[3];
       $this->parse_val($post_eq[2]);
+      print_r($this);
     } else {
       $this->pre  = $pre_eq[1];
       $this->val  = $pre_eq[2];
@@ -2698,10 +2699,10 @@ function leave_broken_doi_message($id, $page, $doi) { #todo
 function mark_broken_doi_template($article_in_progress, $oDoi) {#TODO use class architecture
   $page_code = getRawWikiText($article_in_progress);
   if ($page_code) {
-    global $editInitiator;
+    global $edit_initiator;
     return write($article_in_progress
             , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i", "{{broken doi|$oDoi}}", $page_code)
-            , "$editInitiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
+            , "$edit_initiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
     );
   } else {
     exit("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
