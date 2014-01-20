@@ -838,7 +838,7 @@ class Template extends Item {
       case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
         if ($this->blank($param)
-                && underTwoAuthors($p['author'][0]) && $this->blank("author" . $auNo)
+                && underTwoAuthors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
           return $this->add($param, $value);
         }
@@ -850,8 +850,8 @@ class Template extends Item {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
-        if (   ($this->blank("date") || trim(strtolower($p['date'][0])) == "in press")
-            && ($this->blank("year") || trim(strtolower($p['year'][0])) == "in press") 
+        if (   ($this->blank("date") || trim(strtolower($this->get('date'))) == "in press")
+            && ($this->blank("year") || trim(strtolower($this->get('year'))) == "in press") 
           ) {
           return $this->add($param, $value);
         }
@@ -1637,7 +1637,8 @@ class Template extends Item {
     }
     
     $count_new_authors = count($new_authors) - 1;
-    if ($count_new_authors) {
+    if ($count_new_authors > 0) {
+      $this->forget('author');
       for ($j = 0; $j < $count_new_authors; ++$j) {
         $au = explode(', ', $new_authors[$j - 1]);
         if ($au[1]) {
@@ -1650,7 +1651,6 @@ class Template extends Item {
           }
         }
       }
-      $this->forget('author');
     }
     if ($new_pages) {
       $this->set('pages', $new_pages);
