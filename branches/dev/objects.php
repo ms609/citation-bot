@@ -1669,7 +1669,7 @@ class Template extends Item {
       $duplicated_parameters = array();
       $duplicate_identical = array();
       foreach ($this->param as $pointer => $par) {
-        if (($duplicate_pos = $param_occurrences[$par->param]) !== NULL) {
+        if ($par->param && ($duplicate_pos = $param_occurrences[$par->param]) !== NULL) {
           array_unshift($duplicated_parameters, $duplicate_pos);
           array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
         }
@@ -1964,7 +1964,7 @@ class Template extends Item {
     }
     preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
     foreach ($match["content"] as $i => $content) {
-      $content = explode(pipePlaceholder, $content);
+      $content = explode(PIPE_PLACEHOLDER, $content);
       unset($parameters);
       $j = 0;
       foreach ($content as $fragment) {
@@ -1982,7 +1982,7 @@ class Template extends Item {
           } else if ($content[1]) {
             $this->add_if_new("arxiv", trim($content[0]) . "/" . trim($content[1]));
           } else {
-            $this->add_if_new("arxiv", implode(pipePlaceholder, $content));
+            $this->add_if_new("arxiv", implode(PIPE_PLACEHOLDER, $content));
           }
           $id = str_replace($match[0][$i], "", $id);
           break;
@@ -2055,7 +2055,7 @@ class Template extends Item {
   $i = 0;
   foreach ($this->param as $p) {
     ++$i;
-    if (!in_array($p->param, $parameter_list)) {
+    if (strlen($p->param) > 0 && !in_array($p->param, $parameter_list)) {
       echo "\n  *  Unrecognised parameter {$p->param} ";
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
@@ -2090,8 +2090,8 @@ class Template extends Item {
 
       // Account for short words...
       if ($str_len < 4) {
-        $shortest *= ($str_len / similar_text($p->param, $closest));
-        $shortish *= ($str_len / similar_text($p->param, $comp));
+        $shortest *= ($str_len / (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
+        $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
@@ -2123,6 +2123,7 @@ class Template extends Item {
   
   protected function split_params($text) {
     # | [pre] [param] [eq] [value] [post]
+    $text = preg_replace('~(\[\[[^\[\]]+)\|([^\[\]]+\]\])~', "$1" . PIPE_PLACEHOLDER . "$2", $text);
     if ($this->wikiname() == 'cite doi')
       $text = preg_replace('~d?o?i?\s*[:.,;>]*\s*(10\.\S+).*?(\s*)$~', "$1$2", $text);
     $params = explode('|', $text);
@@ -2157,7 +2158,7 @@ class Template extends Item {
             $p->val = preg_replace($translator_regexp, "", $p->val);
           }
           break;
-        case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE); break;
+        case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
         case 'edition': $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);break; // Don't want 'Edition ed.'
         case 'pages': case 'page': case 'issue': case 'year': 
           if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val)) {
@@ -2470,6 +2471,7 @@ class Template extends Item {
     if ($newval && is_int($newval)) {
       $this->forget('displayauthors');
       $this->set('display-authors', $newval);
+      $this->modifications['display-authors'] = '~';
     }
     if (($da = $this->get('display-authors')) === NULL) $da = $this->get('displayauthors');
     return is_int($da) ? $da : FALSE;
@@ -2530,6 +2532,7 @@ class Template extends Item {
   
   public function add($par, $val) {
     echo "\n   + Adding $par" .tag();
+    $this->modifications[$par] = '+';
     return $this->set($par, $val); 
   }
   public function set($par, $val) {
@@ -2557,6 +2560,7 @@ class Template extends Item {
     if ($pos) {
       echo "\n   - Dropping redundant parameter $par" . tag();
       unset($this->param[$pos]);
+      $this->modifications[$par] = '-';
     }
   }
   
@@ -2605,8 +2609,9 @@ class Parameter {
   public $pre, $param, $eq, $val, $post;
   
   public function parse_text($text) {
+    $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
     $split = explode('=', $text, 2);
-    preg_match('~^(\s*)([\s\S]*?)(\s*+)$~m', $split[0], $pre_eq);
+    preg_match('~^(\s*?)([\s\S]*?)(\s*+)$~m', $split[0], $pre_eq);
     if (count($split) == 2) {
       preg_match('~^(\s*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
       $this->pre   = $pre_eq[1];
@@ -2639,13 +2644,13 @@ class Parameter {
  *  	If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and capitalises the letter after any period.
   *		If not, it will assume it is a journal abbreviation and won't capitalise after periods.
  */
-function capitalize_title($in, $sents = true) {
+function capitalize_title($in, $sents = TRUE, $could_be_italics = TRUE) {
 	global $dontCap, $unCapped;
 	if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
 		$in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
 	}
   $in = str_ireplace(" (New York, N.Y.)", "", $in); // Pubmed likes to include this after "Science", for some reason
-  $in = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $in); // <em> tags often go missing around species namesin CrossRef
+  if ($could_be_italics) $in = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $in); // <em> tags often go missing around species namesin CrossRef
   $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
 	if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
     $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",

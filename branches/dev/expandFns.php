@@ -73,8 +73,8 @@ $alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 define("editinterval", 10);
-define("pipePlaceholder", "doi_bot_pipe_placeholder"); #4 when online...
-define("comment_placeholder", "### Citation bot : comment placeholder %s ###"); #4 when online...
+define("pipePlaceholder", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
+define("comment_placeholder", "### Citation bot : comment placeholder %s ###");
 define("to_en_dash", "--?|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
 define("blank_ref", "<ref name=\"%s\" />");
 define("reflist_regexp", "~{{\s*[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~u");
@@ -138,6 +138,7 @@ $common_mistakes = array
   "firstn"          =>  "first2",
   "ibsn"            =>  "isbn",
   "lastn"           =>  "last2",
+  "part"            =>  "issue",
   "number"          =>  "issue",
   "no"              =>  "issue",
   "No"              =>  "issue",
