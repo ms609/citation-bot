@@ -94,7 +94,6 @@ class Page {
     echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.  Using dominant template {{" . ($citation_template_dominant?'Citation':'Cite XXX') . '}}.';
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
-      $templates[$i]->cite_doi_format();
       $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
     }
     $text = $this->replace_object($templates);
@@ -197,7 +196,7 @@ class Page {
     $pmid_to_do = array();
     $doi_to_do = array();
     foreach ($templates as $template) {
-      switch (strtolower($template->name())) {
+      switch (strtolower($template->wikiname())) {
         case 'ref doi':
           #TODO derefify
         case 'cite doi':
@@ -732,7 +731,7 @@ class Template extends Item {
     if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
       return TRUE;
     }
-    if ($this->displayauthors() >= $this->authorcount()) return TRUE;
+    if ($this->displayauthors() >= $this->number_of_authors()) return TRUE;
     return (!(
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
@@ -758,7 +757,7 @@ class Template extends Item {
     if (trim($value) == "") return false;
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      if ($this->displayauthors()) $this->add_if_new('displayauthors', 29);
+      if ($this->displayauthors()) $this->add_if_new('display-authors', 29);
       return false;
     }
     preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
@@ -794,8 +793,7 @@ class Template extends Item {
           return $this->add($param, $value);
           // Note; we shouldn't be using this parameter ever....
       return false;
-      case "last9": case "author9": if (!$this->displayauthors()) $this->add_if_new('displayauthors', 29);
-      case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": 
+      case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9": 
       case "last10": case "last20": case "last30": case "last40": case "last50": case "last60": case "last70": case "last80": case "last90":
       case "last11": case "last21": case "last31": case "last41": case "last51": case "last61": case "last71": case "last81": case "last91": 
       case "last12": case "last22": case "last32": case "last42": case "last52": case "last62": case "last72": case "last82": case "last92": 
@@ -806,7 +804,7 @@ class Template extends Item {
       case "last17": case "last27": case "last37": case "last47": case "last57": case "last67": case "last77": case "last87": case "last97": 
       case "last18": case "last28": case "last38": case "last48": case "last58": case "last68": case "last78": case "last88": case "last98": 
       case "last19": case "last29": case "last39": case "last49": case "last59": case "last69": case "last79": case "last89": case "last99": 
-      case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8":
+      case "author2": case "author3": case "author4": case "author5": case "author6": case "author7": case "author8": case "author9":
       case "author10": case "author20": case "author30": case "author40": case "author50": case "author60": case "author70": case "author80": case "author90":
       case "author11": case "author21": case "author31": case "author41": case "author51": case "author61": case "author71": case "author81": case "author91": 
       case "author12": case "author22": case "author32": case "author42": case "author52": case "author62": case "author72": case "author82": case "author92": 
@@ -818,14 +816,14 @@ class Template extends Item {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98": 
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99": 
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        if (strpos($value, ',')) {
+        if (strpos($value, ',') && substr($param, 0, 3) == 'aut' && $this->blank("last$auNo") && $this->blank("author$auNo")) {
           $au = explode(',', $value);
           $this->add('last' . $auNo, formatSurname($au[0]));
           return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
         }
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
                 && $this->blank("coauthor") && $this->blank("coauthors")
-                && underTwoAuthors($p['author'][0])) {
+                && underTwoAuthors($this->get('author'))) {
           return $this->add($param, $value);
         }
         return false;
@@ -2179,6 +2177,12 @@ class Template extends Item {
       else $this->set('others', $others);
     }
     
+    if ($this->number_of_authors() == 9 && $this->displayauthors() == FALSE) {
+      $this->displayauthors(8); // So that displayed output does not change
+      $this->find_more_authors();
+      if ($this->number_of_authors() == 9) $this->displayauthors(9); // Better display an author's name than 'et al' when the et al only hides 1 author!
+    }
+    
     if ($this->added('journal') || $journal && $this->added('issn')) $this->forget('issn');    
     
     if ($journal) {
@@ -2463,14 +2467,17 @@ class Template extends Item {
   
   ### Retrieve parameters 
   public function displayauthors($newval = FALSE) {
-    if ($newval && is_int($newval)) $this->set('display-authors', $newval);
+    if ($newval && is_int($newval)) {
+      $this->forget('displayauthors');
+      $this->set('display-authors', $newval);
+    }
     if (($da = $this->get('display-authors')) === NULL) $da = $this->get('displayauthors');
     return is_int($da) ? $da : FALSE;
   }
   
-  public function authorcount() {
+  public function number_of_authors() {
     $max = 0;
-    foreach ($this->param as $p) {
+    if ($this->param) foreach ($this->param as $p) {
       if (preg_match('~(?:author|last|first|forename|initials|surname)(\d+)~', $p->param, $matches))
         $max = max($matches[1], $max);
     }
@@ -2512,7 +2519,7 @@ class Template extends Item {
   }
   
   protected function get_param_position ($needle) {
-    foreach ($this->param as $i => $p) {
+    if ($this->param) foreach ($this->param as $i => $p) {
       if ($p->param == $needle) return $i;
     }
     return NULL;
@@ -2729,7 +2736,7 @@ function mark_broken_doi_template($article_in_progress, $oDoi) {#TODO use class 
     global $edit_initiator;
     return write($article_in_progress
             , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i", "{{broken doi|$oDoi}}", $page_code)
-            , "$edit_initiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doi]]: please fix!"
+            , "$edit_initiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doiCite doi]]: please fix!"
     );
   } else {
     exit("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");

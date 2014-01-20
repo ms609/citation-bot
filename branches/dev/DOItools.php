@@ -220,18 +220,6 @@ function myIP() {
 	}
 }
 
-/*underTwoAuthors
-  * Return true if 0 or 1 author in $author; false otherwise
- */
-function underTwoAuthors($author) {
-  $author = str_replace(array (" '", "et al"), "", $author);
-  $chars = count_chars(trim($author));
-  if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 2 || $chars[ord(",")] > 1) {
-    return false;
-  }
-  return true;
-}
-
 /* jrTest - tests a name for a Junior appelation
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
@@ -610,7 +598,7 @@ function fmtSurname2($surname) {
                   'return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);'
           ),
           mb_ereg_replace(" - ", "-", $surname));
-  $ret = str_replace(array('Von ', 'Und '), array('von ', 'und '), $ret);
+  $ret = str_ireplace(array('Von ', 'Und ', 'De La '), array('von ', 'und ', 'de la '), $ret);
   return $ret;
 }
 
