@@ -743,7 +743,7 @@ class Template extends Item {
     if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
       return TRUE;
     }
-    if ($this->displayauthors() >= $this->number_of_authors()) return TRUE;
+    if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
     return (!(
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
@@ -769,7 +769,7 @@ class Template extends Item {
     if (trim($value) == "") return false;
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      if ($this->displayauthors()) $this->add_if_new('display-authors', 29);
+      if ($this->display_authors()) $this->add_if_new('display-authors', 29);
       return false;
     }
     preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
@@ -1654,12 +1654,12 @@ class Template extends Item {
       for ($j = 0; $j < $count_new_authors; ++$j) {
         $au = explode(', ', $new_authors[$j - 1]);
         if ($au[1]) {
-          $this->set ('last' . $j, $au[0]);
-          $this->set ('first' . $j, preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", $au[1]));
+          $this->add_if_new ('last' . $j, $au[0]);
+          $this->add_if_new ('first' . $j, preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", $au[1]));
           $this->forget('author' . $j);
         } else {
           if ($au[0]) {
-            $this->set ("author$j", $au[0]);
+            $this->add_if_new ("author$j", $au[0]);
           }
         }
       }
@@ -2178,10 +2178,12 @@ class Template extends Item {
       else $this->set('others', $others);
     }
     
-    if ($this->number_of_authors() == 9 && $this->displayauthors() == FALSE) {
-      $this->displayauthors(8); // So that displayed output does not change
+    if ($this->number_of_authors() == 9 && $this->display_authors() == FALSE) {
+      $this->display_authors(8); // So that displayed output does not change
+      echo "\n * Exactly 9 authors; look for more [... tidy]:";
       $this->find_more_authors();
-      if ($this->number_of_authors() == 9) $this->displayauthors(9); // Better display an author's name than 'et al' when the et al only hides 1 author!
+      echo "now we have ". $this->number_of_authors() ."\n";
+      if ($this->number_of_authors() == 9) $this->display_authors(9); // Better display an author's name than 'et al' when the et al only hides 1 author!
     }
     
     if ($this->added('journal') || $journal && $this->added('issn')) $this->forget('issn');    
@@ -2467,14 +2469,15 @@ class Template extends Item {
   
   
   ### Retrieve parameters 
-  public function displayauthors($newval = FALSE) {
+  public function display_authors($newval = FALSE) {
     if ($newval && is_int($newval)) {
       $this->forget('displayauthors');
+      echo "\n ~ Seting display-authors to $newval" . tag();
       $this->set('display-authors', $newval);
       $this->modifications['display-authors'] = '~';
     }
     if (($da = $this->get('display-authors')) === NULL) $da = $this->get('displayauthors');
-    return is_int($da) ? $da : FALSE;
+    return is_int(1 * $da) ? $da : FALSE;
   }
   
   public function number_of_authors() {

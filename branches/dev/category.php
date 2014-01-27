@@ -38,6 +38,7 @@ if ($category) {
   foreach ($pages_in_category as $page_title) {
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       echo "\n # Writing to " . $page->title . '... ';
+      die($page->text);
       while (!$page->write() && $attempts < 2) ++$attempts;
       #print $page->text; die("\n\n Written to {$page->title}. \nbyebye\n");
       if ($attempts < 3 ) echo $html_output ?

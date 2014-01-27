@@ -728,7 +728,7 @@ function formatAuthors($authors, $returnAsArray = false){
   }
 
 	$authors = explode(";", $authors);
-	dbg(array("IN"=>$authors));
+	#dbg(array("IN"=>$authors));
 	if (isset($authors[1])) {
 		foreach ($authors as $A){
 			if (trim($A) != "")	$return[] = formatAuthor($A);
