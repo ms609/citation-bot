@@ -15,11 +15,12 @@ $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28"
 $dotDecode = array("/"  , "["  , "{"  , "}"  , "]"  , "<"  , ">"  , ";"  , "("  , ")"  , "_");
 
 echo "\n Retrieving category members: ";
-$toDo = array_unique(array_merge(
+$toDo = array_diff(array_unique(array_merge(
 categoryMembers("Pages_with_incomplete_DOI_references"),
 categoryMembers("Pages_with_incomplete_PMID_references"),
 categoryMembers("Pages_with_incomplete_PMC_references"),
-categoryMembers("Pages_with_incomplete_JSTOR_references")));
+categoryMembers("Pages_with_incomplete_JSTOR_references"))), 
+array('', "User talk:Citation bot/Archive1"));
 #
 #$toDo = array("User:DOI bot/Zandbox");
 #$toDo = array("Xymmer");

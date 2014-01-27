@@ -34,13 +34,14 @@ if ($category) {
   #print_r($pages_in_category);
   shuffle($pages_in_category);
   $page = new Page();
-  $pages_in_category = array('User:DOI bot/Zandbox');
+  #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       echo "\n # Writing to " . $page->title . '... ';
-      die($page->text);
+      #die($page->text);
       while (!$page->write() && $attempts < 2) ++$attempts;
-      #print $page->text; die("\n\n Written to {$page->title}. \nbyebye\n");
+      print $page->text; 
+      if ($stopper++ > 2) die("\n\n Written to {$page->title}. \nbyebye\n");
       if ($attempts < 3 ) echo $html_output ?
            " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
            . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="

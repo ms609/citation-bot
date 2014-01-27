@@ -7,7 +7,6 @@
  - Associate initials with surnames: don't put them on a new line
 */
 
-#include('temp_parameter_list.php'); // #TODO DELETE
 #define ('ref_regexp', '~<ref.*</ref>~u'); // #TODO DELETE
 #define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
 $file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision: 448 $');
