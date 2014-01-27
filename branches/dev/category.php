@@ -34,6 +34,7 @@ if ($category) {
   #print_r($pages_in_category);
   shuffle($pages_in_category);
   $page = new Page();
+  $pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       echo "\n # Writing to " . $page->title . '... ';

@@ -73,7 +73,7 @@ $alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 define("editinterval", 10);
-define("pipePlaceholder", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
+define("PIPE_PLACEHOLDER", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
 define("comment_placeholder", "### Citation bot : comment placeholder %s ###");
 define("to_en_dash", "--?|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
 define("blank_ref", "<ref name=\"%s\" />");
@@ -268,6 +268,7 @@ function format_title_text($title) {
               ? mb_substr($title, 0, -6)
               : $title
             );
+  $title = preg_replace('~[\*]$~', '', $title);
   $iIn = array("<i>","</i>", '<title>', '</title>',
               "From the Cover: ", "|");
   $iOut = array("''","''",'','',
@@ -301,7 +302,7 @@ function parameters_from_citation($c) {
     $c = str_replace($match[0], $comment_placeholders[$i++], $c);
   }
   while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
-    $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . pipePlaceholder, $c);
+    $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . PIPE_PLACEHOLDER, $c);
   }
   // Split citation into parameters
   $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -367,7 +368,7 @@ function reassemble_citation($p, $sort = false) {
       $cText .= ( $v[1] ? $v[1] : $pipe)
               . $param
               . $this_equals
-              . str_replace(array(pipePlaceholder, "\r", "\n"), array("|", "", " "), $val)
+              . str_replace(array(PIPE_PLACEHOLDER, "\r", "\n"), array("|", "", " "), $val)
               . $nline;
     }
     if (is($param)) {

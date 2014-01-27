@@ -647,6 +647,18 @@ class Template extends Item {
     $this->initial_param = $this->param;
   }
   
+  protected function split_params($text) {
+    # | [pre] [param] [eq] [value] [post]
+    $text = preg_replace('~(\[\[[^\[\]]+)\|([^\[\]]+\]\])~', "$1" . PIPE_PLACEHOLDER . "$2", $text);
+    if ($this->wikiname() == 'cite doi')
+      $text = preg_replace('~d?o?i?\s*[:.,;>]*\s*(10\.\S+).*?(\s*)$~', "$1$2", $text);
+    $params = explode('|', $text);
+    foreach ($params as $i => $text) {
+      $this->param[$i] = new Parameter();
+      $this->param[$i]->parse_text($text);
+    }
+  }
+  
   public function process() {
     switch ($this->wikiname()) {
       case 'reflist': $this->page->has_reflist = TRUE; break;
@@ -2055,7 +2067,7 @@ class Template extends Item {
   $i = 0;
   foreach ($this->param as $p) {
     ++$i;
-    if (strlen($p->param) > 0 && !in_array($p->param, $parameter_list)) {
+    if ((strlen($p->param) > 0) && !in_array($p->param, $parameter_list)) {
       echo "\n  *  Unrecognised parameter {$p->param} ";
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
@@ -2120,19 +2132,7 @@ class Template extends Item {
   public function wikiname() {
     return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
   }
-  
-  protected function split_params($text) {
-    # | [pre] [param] [eq] [value] [post]
-    $text = preg_replace('~(\[\[[^\[\]]+)\|([^\[\]]+\]\])~', "$1" . PIPE_PLACEHOLDER . "$2", $text);
-    if ($this->wikiname() == 'cite doi')
-      $text = preg_replace('~d?o?i?\s*[:.,;>]*\s*(10\.\S+).*?(\s*)$~', "$1$2", $text);
-    $params = explode('|', $text);
-    foreach ($params as $i => $text) {
-      $this->param[$i] = new Parameter();
-      $this->param[$i]->parse_text($text);
-    }
-  }
-  
+    
   ### Tidying and formatting
   protected function tidy() {
     if ($this->added('title')) {
@@ -2611,7 +2611,7 @@ class Parameter {
   public function parse_text($text) {
     $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
     $split = explode('=', $text, 2);
-    preg_match('~^(\s*?)([\s\S]*?)(\s*+)$~m', $split[0], $pre_eq);
+    preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~m', $split[0], $pre_eq);
     if (count($split) == 2) {
       preg_match('~^(\s*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
       $this->pre   = $pre_eq[1];

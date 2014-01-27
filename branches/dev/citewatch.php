@@ -21,7 +21,7 @@ categoryMembers("Pages_with_incomplete_PMID_references"),
 categoryMembers("Pages_with_incomplete_PMC_references"),
 categoryMembers("Pages_with_incomplete_JSTOR_references")));
 #
-$toDo = array("User:DOI bot/Zandbox");
+#$toDo = array("User:DOI bot/Zandbox");
 #$toDo = array("Xymmer");
 print_r($toDo);
 shuffle($toDo);
@@ -36,8 +36,8 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   $current_page->get_text_from($article_in_progress);
   $current_page->expand_remote_templates();
   echo "\n** Completed page; touching...";
-  print $current_page->text;
-  die("\nSTOP\n");
+  #print $current_page->text;
+  if ($stopper++ > 88) die("\nSTOP - limit loop length in citewatch.php\n");
   $current_page->write(); # Touch, to update category membership; page may have been updated to fix malformed DOIs
   echo " $article_in_progress complete.";
 }
