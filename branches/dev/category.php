@@ -21,8 +21,8 @@ foreach ($argv as $arg) {
 
 $slowMode = false;
 $fastMode = false;
-$accountSuffix='_1'; // Keep this before including expandFns
-$accountSuffix='_4'; // Whilst testing
+$account_suffix='_1'; // Keep this before including expandFns
+$account_suffix='_4'; // Whilst testing
 include("expandFns.php");
 $htmlOutput = false;
 $edit_initiator = '[Cat' . revisionID() . '-dev]';
@@ -36,12 +36,13 @@ if ($category) {
   $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
+    echo ("\n\n\n*** Processing page '{$page_title}' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       echo "\n # Writing to " . $page->title . '... ';
       #die($page->text);
       while (!$page->write() && $attempts < 2) ++$attempts;
       print $page->text; 
-      if ($stopper++ > 2) die("\n\n Written to {$page->title}. \nbyebye\n");
+      if ($stopper++ > 5) die("\n\n Written to {$page->title}. \nbyebye\n");
       if ($attempts < 3 ) echo $html_output ?
            " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
            . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="

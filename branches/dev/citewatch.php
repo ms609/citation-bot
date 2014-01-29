@@ -4,7 +4,7 @@
 $ON = true;
 error_reporting(E_ALL^E_NOTICE);
 
-$accountSuffix = '_2'; // Should use account _2. Include this line before expandfunctions
+$account_suffix = '_2'; // Should use account _2. Include this line before expandfunctions
 require_once("expandFns.php"); // includes login
 require_once("citewatchFns.php");
 
@@ -34,6 +34,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   // load citations from article
   echo "\n\n** Finding citations in article: $article_in_progress ... ";
   $current_page = new Page();
+  echo ("\n\n\n*** Processing page '{$article_in_progress}' : " . date("H:i:s") . "\n");
   $current_page->get_text_from($article_in_progress);
   $current_page->expand_remote_templates();
   echo "\n** Completed page; touching...";

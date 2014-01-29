@@ -18,11 +18,41 @@ function expandFnsRevId() {
   return (int) trim(substr('$Id$', 19, 4));
 }
 
-function quiet_echo($text) {
+function quiet_echo($text, $alternate_text = '') {
   global $html_output;
   if ($html_output >= 0)
     echo $text;
+  else
+    echo $alternate_text;
 }
+
+define("editinterval", 10);
+define("PIPE_PLACEHOLDER", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
+define("comment_placeholder", "### Citation bot : comment placeholder %s ###");
+define("to_en_dash", "--?|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
+define("blank_ref", "<ref name=\"%s\" />");
+define("reflist_regexp", "~{{\s*[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~u");
+define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
+define("wikiroot", "http://en.wikipedia.org/w/index.php?");
+define("api", "http://en.wikipedia.org/w/api.php");
+define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
+                    "http://(?:\w+.)?adsabs.harvard.edu",
+                    "http://ads.ari.uni-heidelberg.de",
+                    "http://ads.inasan.ru",
+                    "http://ads.mao.kiev.ua",
+                    "http://ads.astro.puc.cl",
+                    "http://ads.on.br",
+                    "http://ads.nao.ac.jp",
+                    "http://ads.bao.ac.cn",
+                    "http://ads.iucaa.ernet.in",
+                    "http://ads.lipi.go.id",
+                    "http://cdsads.u-strasbg.fr",
+                    "http://esoads.eso.org",
+                    "http://ukads.nottingham.ac.uk",
+                    "http://www.ads.lipi.go.id",
+                ))) . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~");
+//define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
+#define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 
 require_once(HOME . "credentials/doiBot.login");
 # Snoopy's ini files should be modified so the host name is en.wikipedia.org.
@@ -72,32 +102,6 @@ $isbnKey = "268OHQMW";
 $alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
-define("editinterval", 10);
-define("PIPE_PLACEHOLDER", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
-define("comment_placeholder", "### Citation bot : comment placeholder %s ###");
-define("to_en_dash", "--?|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
-define("blank_ref", "<ref name=\"%s\" />");
-define("reflist_regexp", "~{{\s*[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~u");
-define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
-define("wikiroot", "http://en.wikipedia.org/w/index.php?");
-define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
-                    "http://(?:\w+.)?adsabs.harvard.edu",
-                    "http://ads.ari.uni-heidelberg.de",
-                    "http://ads.inasan.ru",
-                    "http://ads.mao.kiev.ua",
-                    "http://ads.astro.puc.cl",
-                    "http://ads.on.br",
-                    "http://ads.nao.ac.jp",
-                    "http://ads.bao.ac.cn",
-                    "http://ads.iucaa.ernet.in",
-                    "http://ads.lipi.go.id",
-                    "http://cdsads.u-strasbg.fr",
-                    "http://esoads.eso.org",
-                    "http://ukads.nottingham.ac.uk",
-                    "http://www.ads.lipi.go.id",
-                ))) . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~");
-//define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
-#define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 //Common replacements
 global $doiIn, $doiOut, $pcDecode, $pcEncode, $dotDecode, $dotEncode;
 $doiIn = array("[", "]", "<", ">", "&#60;!", "-&#62;", "%2F");

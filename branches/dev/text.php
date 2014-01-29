@@ -1,18 +1,22 @@
 <html>
   <body onload="//form.wpDiff.click()">
-    <h1>Citation bot is running...</h1>
-    <h3>Wait a moment whilst the bot runs.  You'll be returned to Wikipedia when it's done.</h3>
-    <form id="form" method="post" action="<?=str_replace("&action=edit", "&action=submit", $_SERVER["HTTP_REFERER"])?>">
-      <textarea rows="20" cols="90" name="wpTextbox1"><?php
+    <?
       error_reporting(E_ALL^E_NOTICE);
-      $accountSuffix = '_1'; // Keep this before including expandFns
+      $account_suffix = '_1'; // Keep this before including expandFns
+      global $html_output;
       $html_output = -1;
       include("expandFns.php");
-      $editInitiator = '[txt' . revisionID() . ']';
-
+      $edit_initiator = '[txt' . revisionID() . ']';
       $postvars = $_POST;
-      echo htmlentities(expand_text(
-              mb_convert_encoding($postvars["wpTextbox1"], "ISO-8859-1")));
+      $page = new Page();
+      $page->text = mb_convert_encoding($postvars["wpTextbox1"], "ISO-8859-1");
+    ?>
+    <h1>Citation bot v. <?=$last_revision_id?> is running...</h1>
+    <h3>Wait a moment whilst the bot runs.  You'll be returned to Wikipedia when it's done.</h3>
+    <?$page->expand_text();?>
+    <form id="form" method="post" action="<?=str_replace("&action=edit", "&action=submit", $_SERVER["HTTP_REFERER"])?>">
+      <textarea rows="20" cols="90" name="wpTextbox1"><?php
+      echo htmlentities($page->text);
     ?></textarea>
       <?php
 unset ($postvars["wpTextbox1"]);

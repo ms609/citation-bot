@@ -19,7 +19,7 @@ if ($file_revision_id < $doitools_revision_id) {
   $edit_initiator = str_replace($doitools_revision_id, $file_revision_id, $edit_initiator);
   $last_revision_id = $file_revision_id;
 }
-echo "\nRevision #$last_revision_id";
+quiet_echo ("\nRevision #$last_revision_id");
 
 class Page {
 
@@ -69,7 +69,7 @@ class Page {
   
   public function expand_text() {
     global $html_output;
-    echo $html_output > 0 ? ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>"):("\n\n\n*** Processing page '{$this->title}' : " . date("H:i:s") . "\n");
+    quiet_echo ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
     $text = $this->text;
     if (!$text) {echo "\n\n  ! No text retrieved.\n"; return false;}
     if ($html_output === -1) ob_start();   
@@ -244,7 +244,7 @@ class Page {
             $type = 'pmid';
           }
           $template_page->text = $template->parsed_text() . sprintf($doc_footer, $type);
-          $template_page->write("New page from {{Cite pmid}} template");
+          $template_page->write("New page, from {{Cite pmid}} template in [[" . $this->title . ']].');
         break;
         case 0:
           #TODO: log_citation("pmid", $pmid);
@@ -273,7 +273,7 @@ class Page {
               $template->expand_by_pubmed();
               $template->cite_doi_format();
               $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
-              $template_page->write("New page from Cite pmid redirect");
+              $template_page->write("New page from Cite pmid redirect in [[" . $this->title . "]]");
             }
           } else {
             exit ($redirect_page->title . " redirects to " . $redirect_page->text);
@@ -304,7 +304,7 @@ class Page {
         $template->expand_by_doi();
         $template->cite_doi_format();
         $template_page->text = $template->parsed_text() . sprintf($doc_footer, 'doi');
-        $template_page->write("New page from {{Cite doi}} template");   
+        $template_page->write("New page from {{Cite doi}} template in [[" . $this->title . "]]");   
       }  
     }
     $this->replace_object($templates);
