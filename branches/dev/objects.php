@@ -2621,10 +2621,12 @@ class Parameter {
       $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
       $this->post  = $post_eq[3];
       $this->parse_val($post_eq[2]);
-    } else {
+    } else if ($pre_eq) {
       $this->pre  = $pre_eq[1];
       $this->val  = $pre_eq[2];
       $this->post = $pre_eq[3];
+    } else {
+      $this->val  = $text;
     }
   }
   

@@ -18,21 +18,15 @@ problemtxt;
 
 $page = new Page();
 $page->text =  <<<problemtxt
-{{Cite journal 
-| doi = 10.1007/s00441-003-0756-7 
-| title = Fibroblast growth factors and their receptors in the central nervous system 
-| journal = Cell and Tissue Research 
-| volume = 313 
-| issue = 2 
-| pages = 139–157 
-| year = 2003 
-| pmid = 12845521 
-| pmc = 
-}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
+{{somebox|
+|
+|test = test |
+| alter = none }}
+
 
 problemtxt;
-#$page->expand_text();
-#die($page->text);
+$page->expand_text();
+die($page->text);
 
 if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . '... ';
