@@ -42,7 +42,7 @@ if ($category) {
       #die($page->text);
       while (!$page->write() && $attempts < 2) ++$attempts;
       print $page->text; 
-      if ($stopper++ > 5) die("\n\n Written to {$page->title}. \nbyebye\n");
+      #if ($stopper++ > 5) die("\n\n Written to {$page->title}. \nbyebye\n");
       if ($attempts < 3 ) echo $html_output ?
            " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
            . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="

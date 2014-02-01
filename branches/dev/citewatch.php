@@ -43,4 +43,8 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   $current_page->write(); # Touch, to update category membership; page may have been updated to fix malformed DOIs
   echo " $article_in_progress complete.";
 }
-print "\n===End===\n\n";?>
+
+print "\n===End===\n\n";
+sleep(60);
+shell_exec('jstart -continuous -N citewatch-rpt -mem 500m php public_html/citewatch.php');
+?>

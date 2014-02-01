@@ -48,6 +48,7 @@ class Page {
     $bot->fetch(wikiroot . "title=" . urlencode($title) . "&action=raw");
     $this->text = $bot->results;
     $this->start_text = $this->text;
+    $this->modifications = array();
     
     $bot->fetch(api . "?action=query&prop=info&format=json&titles=" . urlencode($title));
     $details = json_decode($bot->results);
@@ -71,6 +72,7 @@ class Page {
     global $html_output;
     quiet_echo ("\n<hr>[" . date("H:i:s", $started_page_at) . "] Processing page '<a href='http://en.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>$page</a>' &mdash; <a href='http://en.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
     $text = $this->text;
+    $this->modifications = array();
     if (!$text) {echo "\n\n  ! No text retrieved.\n"; return false;}
     if ($html_output === -1) ob_start();   
     // COMMENTS //
