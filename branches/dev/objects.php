@@ -329,7 +329,6 @@ class Page {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["removed"][$pos]);
     }
-    print_r($this->modifications); die;
     if ($this->modifications["changeonly"]) $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     
     $auto_summary .= (($this->modifications["removed"])
@@ -644,7 +643,7 @@ class Template extends Item {
       $this->name = substr($text, 2, -2);
       $this->param = NULL;
     }
-    $this->initial_param = $this->param;
+    foreach ($this->param as $p) $this->initial_param[$p->param] = $p->val;
   }
   
   protected function split_params($text) {
@@ -2591,7 +2590,7 @@ class Template extends Item {
   
   public function modifications ($type='all') {
     if ($this->param) foreach ($this->param as $p) $new[$p->param] = $p->val; else $new = array();
-    if ($this->initial_param) foreach ($this->initial_param as $p) $old[$p->param] = $p->val; else $old = array();
+    $old = ($this->initial_param) ? $this->initial_param : array();
     if ($new) {
       if ($old) {
         $ret['modifications'] = array_keys(array_diff_assoc ($new, $old));
