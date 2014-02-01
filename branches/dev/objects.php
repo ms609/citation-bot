@@ -324,15 +324,14 @@ class Page {
   }
     
   public function edit_summary() {
+    if ($this->modifications["changeonly"]) $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     if ($this->modifications["additions"])
       $auto_summary = "Add: " . implode(', ', $this->modifications['additions']) . ". ";
-    if ($this->modifications["removed"] && ($pos = array_search('accessdate', $this->modifications["removed"])) !== FALSE) {
+    if ($this->modifications["deletions"] && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE) {
       $auto_summary .= "Removed accessdate with no specified URL. ";
-      unset($this->modifications["removed"][$pos]);
-    }
-    if ($this->modifications["changeonly"]) $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
-    
-    $auto_summary .= (($this->modifications["removed"])
+      unset($this->modifications["deletions"][$pos]);
+    }    
+    $auto_summary .= (($this->modifications["deletions"])
       ? "Removed redundant parameters. "
       : ""
       ) . (($this->modifications["cite_type"] || $unify_citation_templates)
@@ -645,6 +644,8 @@ class Template extends Item {
       $this->param = NULL;
     }
     foreach ($this->param as $p) $this->initial_param[$p->param] = $p->val;
+    print "\n\n" . tag(1);
+    print_r($this->initial_param);
   }
   
   protected function split_params($text) {
@@ -2043,10 +2044,7 @@ class Template extends Item {
           if ($identifier_parameter) {
             array_shift($content);
           }
-          if (!$this->add_if_new($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))), $parameters["id"] ? $parameters["id"] : $content[0]
-          )) {
-            $this->modifications["removed"] = true;
-          }
+          $this->add_if_new($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))), $parameters["id"] ? $parameters["id"] : $content[0]);
           $identifier_parameter = null;
           $id = str_replace($match[0][$i], "", $id);
           break;
@@ -2594,6 +2592,7 @@ class Template extends Item {
       if ($old) {
         $ret['modifications'] = array_keys(array_diff_assoc ($new, $old));
         $ret['additions'] = array_diff(array_keys($new), array_keys($old));
+        $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
         $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
       } else {
         $ret['additions'] = array_keys($new);
@@ -2695,12 +2694,15 @@ function capitalize_title($in, $sents = TRUE, $could_be_italics = TRUE) {
   }
 }
 
-function tag() {
+function tag($long = FALSE) {
   $dbg = array_reverse(debug_backtrace());
   echo ' [..';
   array_pop($dbg); array_shift($dbg);
   foreach ($dbg as $d) {
-    echo '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);  
+    echo '> ' . ($long
+      ? $d['function']
+      : substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7)
+    );
   }
   echo ']';
 }

@@ -12,18 +12,14 @@ $bot_exclusion_compliant = TRUE;
 
 $problem_text =  <<<problemtxt
 
-<ref>{{cite journal |doi=10.1159/000056992 |title=Comparative cytogenetics of the African elephant ''(Loxodonta africana)'' and Asiatic elephant ''(Elephas maximus)'' |year=2001 |last1=Houck |first1=M.L. |last2=Kumamoto |first2=A.T. |last3=Gallagher |first3=D.S. |last4=Benirschke |first4=K. |journal=Cytogenetic and Genome Research |volume=93 |issue=3–4 |pages=249–52 |pmid=11528120}}</ref> || 5
+{{cite journal|last=Somasundaram, S. et al.|year=2000|title=Uncoupling of intestinal mitochondrial oxidative phosphorylation and inhibition of cyclooxygenase are required for the development of NSAID-enteropathy in the rat|journal=Aliment Pharmacol Ther|volume=14|pages=639–650|url=http://www.blackwell-synergy.com/doi/pdf/10.1046/j.1365-2036.2000.00723.x|doi=10.1046/j.1365-2036.2000.00723.x|accessdate=2008-05-28|pmid=10792129|first1=S|last2=Sigthorsson|first2=G|last3=Simpson|first3=RJ|last4=Watts|first4=J|last5=Jacob|first5=M|last6=Tavares|first6=IA|last7=Rafi|first7=S|last8=Roseth|first8=A|last9=Foster|first9=R|issue=5}}
 
 problemtxt;
 
 $page = new Page();
 $page->text =  <<<problemtxt
 
-
-{{Persondata
-| THIS = that
-| THE OTHER = somt else
-}}
+{{cite journal|last=Somasundaram, S. et al.|year=2000|title=Uncoupling of intestinal mitochondrial oxidative phosphorylation and inhibition of cyclooxygenase are required for the development of NSAID-enteropathy in the rat|journal=Aliment Pharmacol Ther|volume=14|pages=639–650|url=http://www.blackwell-synergy.com/doi/pdf/10.1046/j.1365-2036.2000.00723.x|doi=10.1046/j.1365-2036.2000.00723.x|accessdate=2008-05-28|pmid=10792129|first1=S|last2=Sigthorsson|first2=G|last3=Simpson|first3=RJ|last4=Watts|first4=J|last5=Jacob|first5=M|last6=Tavares|first6=IA|last7=Rafi|first7=S|last8=Roseth|first8=A|last9=Foster|first9=R|issue=5}}
 
 problemtxt;
 $page->expand_text();

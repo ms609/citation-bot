@@ -46,5 +46,5 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
 
 print "\n===End===\n\n";
 sleep(60);
-shell_exec('jstart -continuous -N citewatch-rpt -mem 500m php public_html/citewatch.php');
+shell_exec('jstart -continuous -N citewatch -mem 500m php ~/public_html/citewatch.php');
 ?>
