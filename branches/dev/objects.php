@@ -92,7 +92,6 @@ class Page {
     $citation_template_dominant = $citation_templates > $cite_templates;
     echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.  Using dominant template {{" . ($citation_template_dominant?'Citation':'Cite XXX') . '}}.';
     for ($i = 0; $i < count($templates); $i++) {
-      $templates[$i]->lowercase_parameters();
       $templates[$i]->process();
       $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
       
@@ -659,17 +658,14 @@ class Template extends Item {
   }
   
   public function lowercase_parameters() {
-    for ($i=0; $i < count($this->param); $i++) {
-      if ($this->param[$i]->param != strtolower($this->param[$i]->param)) {
-        $this->param[$i]->param = strtolower($this->param[$i]->param);
-      }
-    }
+    for ($i=0; $i < count($this->param); $i++)
+      $this->param[$i]->param = strtolower($this->param[$i]->param);
   }
   
   public function process() {
     switch ($this->wikiname()) {
       case 'reflist': $this->page->has_reflist = TRUE; break;
-      case 'cite web': 
+      case 'cite web':
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->tidy();
@@ -1683,6 +1679,7 @@ class Template extends Item {
     //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
     global $parameter_list;
     if ($this->param) {
+      $this->lowercase_parameters();
       $param_occurrences = array();
       $duplicated_parameters = array();
       $duplicate_identical = array();

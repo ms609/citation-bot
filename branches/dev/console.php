@@ -20,8 +20,10 @@ $page = new Page();
 $page->text =  <<<problemtxt
 
 
-{{cite journal |last1=Chonis|first1=Taylor|last2=Martínez-Delgado |first2=David |last3=GaBany |first3=R. Jay |last4=Majewski |first4=Steven R |last5=Hills |first5=Gary |last6=Gralak |first6=Ray |last7=Trujillo |first7=Ignacio |year=2011 |title=A Petal of the Sunflower: Photometry of the Stellar Tidal Stream in the Halo of Messier 63 (NGC 5055) |journal=Astronomical Journal |issue=5 |pages= |publisher= |doi=10.1088/0004-6256/142/5/166 |url=http://iopscience.iop.org/1538-3881/142/5/166 |accessdate=17 October 2011 |bibcode=2011AJ....142..166C|arxiv = 1109.0019 }}
-
+{{Persondata
+| THIS = that
+| THE OTHER = somt else
+}}
 
 problemtxt;
 $page->expand_text();
