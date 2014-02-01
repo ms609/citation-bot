@@ -324,9 +324,21 @@ class Page {
   }
     
   public function edit_summary() {
+    $auto_summary = "";
     if ($this->modifications["changeonly"]) $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
-    if ($this->modifications["additions"])
-      $auto_summary = "Add: " . implode(', ', $this->modifications['additions']) . ". ";
+    if ($addns = $this->modifications["additions"]) {
+      $auto_summary .= "Add: ";
+      $min_au = 9999;
+      $max_au = 0;
+      while ($add = array_pop($addns)) {
+        if (preg_match('~(?:author|last|first)(\d+)~', $add, $match)) {
+          if ($match[1] < $min_au) $min_au = $match[1];
+          if ($match[1] > $max_au) $max_au = $match[1];
+        } else $auto_summary .= $add . ', ';
+      }
+      if ($max_au) $auto_summary .= "author pars. $min_au-$max_au. ";
+      else $auto_summary = substr($auto_summary, 0, -2) . '. ';
+    }
     if ($this->modifications["deletions"] && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE) {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["deletions"][$pos]);
