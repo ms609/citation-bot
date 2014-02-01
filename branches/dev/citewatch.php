@@ -39,7 +39,7 @@ while ($toDo && (false !== ($article_in_progress = array_pop($toDo))/* pages in 
   $current_page->expand_remote_templates();
   echo "\n** Completed page; touching...";
   #print $current_page->text;
-  if ($stopper++ > 88) die("\nSTOP - limit loop length in citewatch.php\n");
+  if ($stopper++ > 256) die("\nSTOP - limit loop length in citewatch.php\n");
   $current_page->write(); # Touch, to update category membership; page may have been updated to fix malformed DOIs
   echo " $article_in_progress complete.";
 }

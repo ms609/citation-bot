@@ -92,8 +92,15 @@ class Page {
     $citation_template_dominant = $citation_templates > $cite_templates;
     echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.  Using dominant template {{" . ($citation_template_dominant?'Citation':'Cite XXX') . '}}.';
     for ($i = 0; $i < count($templates); $i++) {
+      $templates[$i]->lowercase_parameters();
       $templates[$i]->process();
       $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
+      
+      $template_mods = $templates[$i]->modifications();
+      foreach (array_keys($template_mods) as $key) {
+        if (!$this->modifications[$key]) $this->modifications[$key] = $template_mods[$key];
+        else if ($template_mods[$key]) $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
+      }            
     }
     $text = $this->replace_object($templates);
     // REFERENCE TAGS //
@@ -199,15 +206,18 @@ class Page {
         case 'ref doi':
           #TODO derefify
         case 'cite doi':
+          $template->remove_non_ascii();
           array_push($doi_to_do, $template->get(0));
         break;
         case 'ref jstor': 
           #TODO derefify
         case 'cite jstor':
+          $template->remove_non_ascii();
           array_push($doi_to_do, '10.2307/' . $template->get(0));
         case 'ref pmid':
           #TODO derefify
         case 'cite pmid':
+          $template->remove_non_ascii();
           array_push($pmid_to_do, $template->get(0));
         break;
       }
@@ -293,9 +303,10 @@ class Page {
       }
       $doi_citation_exists = doi_citation_exists($doi); // Checks in our database
       if ($doi_citation_exists) {
+        quiet_echo("\n   . Citation exists at $doi");
         if ($doi_citation_exists > 1) log_citation("doi", $doi);
       } else {
-        echo "\n   > Creating new page for DOI $doi: ";
+        echo "\n   > Creating new page for DOI $doi: ";       
         $template_page = new Page();
         $encoded_doi = anchorencode($doi);
         $template_page->title = "Template:Cite doi/$encoded_doi";
@@ -312,25 +323,15 @@ class Page {
   }
     
   public function edit_summary() {
-    if ($this->modifications["additions"]) {
-      $auto_summary = "Add: ";
-      foreach ($this->modifications["additions"] as $param=>$v)	{
-        $auto_summary .= "$param, ";
-        unset($this->modifications["additions"][$param]);
-      }
-      $auto_summary = substr($auto_summary, 0, strlen($auto_summary)-2);
-      $auto_summary .= ". ";
-    }
-    if ($this->modifications["removed"]["accessdate"]) {
+    if ($this->modifications["additions"])
+      $auto_summary = "Add: " . implode(', ', $this->modifications['additions']) . ". ";
+    if ($this->modifications["removed"] && ($pos = array_search('accessdate', $this->modifications["removed"])) !== FALSE) {
       $auto_summary .= "Removed accessdate with no specified URL. ";
-      unset($this->modifications["removed"]["accessdate"]);
+      unset($this->modifications["removed"][$pos]);
     }
-    if ($this->modifications["changes"]) {
-      $auto_summary .= "Tweak: ";
-      foreach ($this->modifications["changes"] as $param=>$v)	$auto_summary .= "$param, ";
-      $auto_summary = substr($auto_summary, 0, -2);
-      $auto_summary.=". ";
-    }
+    print_r($this->modifications); die;
+    if ($this->modifications["changeonly"]) $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
+    
     $auto_summary .= (($this->modifications["removed"])
       ? "Removed redundant parameters. "
       : ""
@@ -523,7 +524,7 @@ class Short_Reference extends Item {
   } 
 }
 
-# LONG REFERENECE #
+// LONG REFERENECE //
 class Long_Reference extends Item {
   const placeholder_text = '# # # Citation bot : long ref placeholder %s # # #';
   const regexp = '~<ref\s?[^/>]*?>.*?<\s*/\s*ref\s*>~s';
@@ -625,7 +626,7 @@ class Long_Reference extends Item {
   
 }
  
-# TEMPLATE #
+// TEMPLATE //
 class Template extends Item {
   const placeholder_text = '# # # Citation bot : template placeholder %s # # #';
   const regexp = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
@@ -647,7 +648,7 @@ class Template extends Item {
   }
   
   protected function split_params($text) {
-    # | [pre] [param] [eq] [value] [post]
+    // | [pre] [param] [eq] [value] [post]
     $text = preg_replace('~(\[\[[^\[\]]+)\|([^\[\]]+\]\])~', "$1" . PIPE_PLACEHOLDER . "$2", $text);
     if ($this->wikiname() == 'cite doi')
       $text = preg_replace('~d?o?i?\s*[:.,;>]*\s*(10\.\S+).*?(\s*)$~', "$1$2", $text);
@@ -655,6 +656,14 @@ class Template extends Item {
     foreach ($params as $i => $text) {
       $this->param[$i] = new Parameter();
       $this->param[$i]->parse_text($text);
+    }
+  }
+  
+  public function lowercase_parameters() {
+    for ($i=0; $i < count($this->param); $i++) {
+      if ($this->param[$i]->param != strtolower($this->param[$i]->param)) {
+        $this->param[$i]->param = strtolower($this->param[$i]->param);
+      }
     }
   }
   
@@ -734,7 +743,6 @@ class Template extends Item {
       if (!$this->blank('authors') && $this->blank('author')) $this->rename('authors', 'author');
       $this->correct_param_spelling();
       $this->check_url();
-      print_r($this->modifications); die("\n". 'unmodified?');
     }
   }
   
@@ -2120,6 +2128,12 @@ class Template extends Item {
   }
 }
   
+  public function remove_non_ascii() {
+    for ($i = 0; $i < count($this->param); $i++) {
+      $this->param[$i]->val = preg_replace('/[^\x20-\x7e]/', '', $this->param[$i]->val); // Remove illegal non-ASCII characters such as invisible spaces
+    }
+  }
+  
   protected function join_params() {
     $ret = '';
     if ($this->param) foreach($this->param as $p) {
@@ -2131,7 +2145,7 @@ class Template extends Item {
   public function wikiname() {
     return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
   }
-    
+  
   ### Tidying and formatting
   protected function tidy() {
     if ($this->added('title')) {
@@ -2249,8 +2263,8 @@ class Template extends Item {
       $doi = $this->get('doi');
       if (!$doi) return false;
     }
-    global $pcEncode, $pcDecode;
-    $this->set('doi', str_replace($pcEncode, $pcDecode, str_replace(' ', '+', trim(urldecode($doi)))));
+    global $pcEncode, $pcDecode, $spurious_whitespace;
+    $this->set('doi', str_replace($spurious_whitespace, '', str_replace($pcEncode, $pcDecode, str_replace(' ', '+', trim(urldecode($doi))))));
     return true;
   }
   
@@ -2467,13 +2481,12 @@ class Template extends Item {
   }
   
   
-  ### Retrieve parameters 
+  // Retrieve parameters 
   public function display_authors($newval = FALSE) {
     if ($newval && is_int($newval)) {
       $this->forget('displayauthors');
       echo "\n ~ Seting display-authors to $newval" . tag();
       $this->set('display-authors', $newval);
-      $this->modifications['display-authors'] = '~';
     }
     if (($da = $this->get('display-authors')) === NULL) $da = $this->get('displayauthors');
     return is_int(1 * $da) ? $da : FALSE;
@@ -2505,7 +2518,7 @@ class Template extends Item {
     return $pagenos;
   }
   
-  #### Amend parameters
+  // Amend parameters
   public function rename($old, $new, $new_value = FALSE) {
     foreach ($this->param as $p) {
       if ($p->param == $old) {
@@ -2534,7 +2547,6 @@ class Template extends Item {
   
   public function add($par, $val) {
     echo "\n   + Adding $par" .tag();
-    $this->modifications[$par] = '+';
     return $this->set($par, $val); 
   }
   public function set($par, $val) {
@@ -2562,11 +2574,10 @@ class Template extends Item {
     if ($pos) {
       echo "\n   - Dropping redundant parameter $par" . tag();
       unset($this->param[$pos]);
-      $this->modifications[$par] = '-';
     }
   }
   
-  ### Record modifications
+  // Record modifications
   protected function modified ($param, $type='modifications') {
     switch ($type) {
       case '+': $type='additions'; break;
@@ -2578,7 +2589,7 @@ class Template extends Item {
   }
   protected function added($param) {return $this->modified($param, '+');}
   
-  protected function modifications ($type='all') {
+  public function modifications ($type='all') {
     if ($this->param) foreach ($this->param as $p) $new[$p->param] = $p->val; else $new = array();
     if ($this->initial_param) foreach ($this->initial_param as $p) $old[$p->param] = $p->val; else $old = array();
     if ($new) {
@@ -2600,7 +2611,7 @@ class Template extends Item {
     return (bool) count($this->modifications('modifications'));
   } 
   
-  ### Parse initial text
+  // Parse initial text
   public function parsed_text() {
     return ($this->add_ref_tags ? '<ref>' : '') . '{{' . $this->name . $this->join_params() . '}}' . ($this->add_ref_tags ? '</ref>' : '');
   }

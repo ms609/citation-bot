@@ -110,6 +110,8 @@ $doiOut = array("&#x5B;", "&#x5D;", "&#60;", "&#62;", "<!", "->", "/");
 $pcDecode = array("[", "]", "<", ">");
 $pcEncode = array("&#x5B;", "&#x5D;", "&#60;", "&#62;");
 
+$spurious_whitespace= array(""); // regexp for replacing spurious custom whitespace
+
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
 $dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 

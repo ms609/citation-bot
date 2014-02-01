@@ -102,9 +102,20 @@ $slowMode = $_REQUEST["slow"];
 
 if (!$dont_expand) {
   print "Expanding '$page'; " . ($ON ? "will" : "won't") . " commit edits.";
-  expand($page, $ON, $editing_cite_doi_template, $cite_doi_start_code, $htmlOutput);
+  $my_page = new Page();
+  if ($my_page->get_text_from($page) && $my_page->expand_text()) {
+    while (!$my_page->write() && $attempts < 2) ++$attempts;
+    if ($attempts < 3 ) echo $html_output ?
+         " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
+         . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
+         . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
+         : ".";
+    else echo "\n # Failed. Text was:\n" . $my_page->text;
+  } else {
+    echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
+    updateBacklog($my_page->title);
+  }
 }
-
 ?>
 
 End of output
