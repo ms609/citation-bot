@@ -656,8 +656,6 @@ class Template extends Item {
       $this->param = NULL;
     }
     foreach ($this->param as $p) $this->initial_param[$p->param] = $p->val;
-    print "\n\n" . tag(1);
-    print_r($this->initial_param);
   }
   
   protected function split_params($text) {
@@ -720,6 +718,7 @@ class Template extends Item {
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
         $this->citation_template = TRUE;
+        echo "\n\n* Expand citation: " . $this->get('title');
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         if ($this->use_sici()) echo "\n * Found and used SICI";
@@ -728,7 +727,6 @@ class Template extends Item {
         // TODO: Check for the doi-inline template in the title
         $this->handle_et_al();
         $this->correct_param_spelling();
-        echo "\n\n* Expand citation: " . $this->get('title');
         $journal_type = $this->has("periodical") ? "periodical" : "journal";
         if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
         $this->sanitize_doi();
@@ -949,33 +947,65 @@ class Template extends Item {
       if (strpos($url, "sici")) {
         #Skip.  We can't do anything more with the SICI, unfortunately.
       } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
-        $this->rename("url", "jstor", $match[1]);
+        if ($this->get('jstor')) {
+          $this->forget('url');
+        } else {
+          $this->rename("url", "jstor", $match[1]);
+        }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       }
     } else {
       if (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
-        $this->rename("url", "bibcode", urldecode($bibcode[1]));
+        if ($this->get('bibcode')) {
+          $this->forget('url');
+        } else {
+          $this->rename("url", "bibcode", urldecode($bibcode[1]));
+        }
       } else if (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-        $this->rename("url", "pmc", $match[1] . $match[2]);
+        if ($this->get('pmc')) {
+          $this->forget('url');
+        } else {
+          $this->rename("url", "pmc", $match[1] . $match[2]);
+        }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/(.*)~", $url, $match)) {
-        $this->rename("url", "doi", urldecode($match[1]));
-        $this->expand_by_doi(1);
+        if ($this->get('doi')) {
+          $this->forget('url');
+        } else {
+          $this->rename("url", "doi", urldecode($match[1]));
+          $this->expand_by_doi(1);
+        }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } elseif (preg_match("~10\.\d{4}/[^&\s\|]*~", $url, $match)) {
-        $this->rename('url', 'doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
-        $this->expand_by_doi(1);
+        if ($this->get('doi')) {
+          $this->forget('url');
+        } else {
+          $this->rename('url', 'doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
+          $this->expand_by_doi(1);
+        }
       } elseif (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
         //ARXIV
-        $this->rename("url", "eprint", $match[1]);
+        if ($this->get('eprint')) {
+          $this->forget('url');
+        } else {
+          $this->rename("url", "eprint", $match[1]);
+        }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        $this->rename('url', 'pmid', $match[1]);
+        if ($this->get('pmid')) {
+          $this->forget('pmid');
+        } else {
+          $this->rename('url', 'pmid', $match[1]);
+        }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
         if ($match['domain'] == ".com") {
-          $this->rename('url', 'asin', $match['id']);
+          if ($this->get('asin')) {
+            $this->forget('url');
+          } else {
+            $this->rename('url', 'asin', $match['id']);
+          }
         } else {
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
           $this->forget('url');
@@ -2170,8 +2200,6 @@ class Template extends Item {
     
     if (!($authors = $this->get('author'))) $authors = $this->get('authors');
     if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
-      print_r($match);
-      print "\n\n -|" . $match[1] . '.'. $match[2] . "|--";
       $this->add_if_new('author_separator', $match[1] ? $match[1] : $match[2]);
       $new_authors = explode($match[1] . $match[2], $authors);
       $this->forget('author'); $this->forget('authors');
@@ -2185,9 +2213,7 @@ class Template extends Item {
       switch ($pmatch[1]) { 
         case 'author': case 'authors': case 'last': case 'surname':
           if ($pmatch[2]) {
-            print $p->val . "\n";
             if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
-              print_r($match);
               $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
               $p->val = $match[3];
               echo "\n   ~ Dissecting authorlink" . tag();

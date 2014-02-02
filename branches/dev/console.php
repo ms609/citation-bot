@@ -21,7 +21,8 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-f>{{cite journal |author=[[Test A. Test]], Hold Up, [[Whoa|Just A Minute]], Don T Delete-me}}<
+Double doi
+>{{cite journal | url = dx.doi.org/10.1007/s00216-011-5557-3 | title = New identification of proanthocyanidins in cinnamon (''Cinnamomum zeylanicum'' L.) using MALDI-TOF/TOF mass spectrometry | author = María Luisa Mateos-Martín, Elisabet Fuguet, Carmen Quero, Jara Pérez-Jiménez, Josep Lluís Torres. | year = 2012 | journal = Analytical and bioanalytical chemistry  | volume = 402 | issue = 3 | pages = 1327–1336 | doi = 10.1007/s00216-011-5557-3 | pmid = 22101466 | last2 = Fuguet | last3 = Quero | last4 = Pérez-Jiménez | last5 = Torres }}
 
 problemtxt;
 $page->expand_text();
