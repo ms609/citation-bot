@@ -20,9 +20,28 @@ problemtxt;
 
 $page = new Page();
 $page->text =  <<<problemtxt
+Addition location
+{{Cite journal 
+| last1 = Grohmann | first1 = K. 
+| last2 = Varon | first2 = R. 
+| last3 = Stolz | first3 = P. 
+| last4 = Schuelke | first4 = M. 
+| last5 = Janetzki | first5 = C. 
+| last6 = Bertini | first6 = E. 
+| last7 = Bushby | first7 = K. 
+| last8 = Muntoni | first8 = F. 
+| last9 = Ouvrier | first9 = R. 
+| doi = 10.1002/ana.10755 
+| title = Infantile spinal muscular atrophy with respiratory distress type 1 (SMARD1) 
+| journal = Annals of Neurology 
+| volume = 54 
+| issue = 6 
+| pages = 719–724 
+| year = 2003 
+| pmid =  14681881
+| pmc = 
+}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
 
-Author sep
-owing that 82% were positive for BK virus.<ref>{{cite journal|author=Egli A, Infanti L, Dumoulin A, ''et al.''|title=Prevalence of polyomavirus BK and JC infection and replication in 400 healthy blood donors|year=2009|journal=J Infect Dis|volume=199|issue=6|doi=10.1086/597126|pmid=19434930|pages=837–46}}</ref>
 
 problemtxt;
 $page->expand_text();

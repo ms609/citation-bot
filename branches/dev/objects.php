@@ -1412,10 +1412,10 @@ class Template extends Item {
     }
   }
     
-  public function expand_by_doi() {
+  public function expand_by_doi($force = FALSE) {
     global $editing_cite_doi_template;
     $doi = $this->get('doi');
-    if ($doi && $this->incomplete()) {
+    if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) $this->add_if_new('jstor', substr($doi, 8));
       $crossRef = $this->query_crossref($doi);
       if ($crossRef) {
@@ -1467,8 +1467,8 @@ class Template extends Item {
     }
   }
  
-  public function expand_by_pubmed() {
-    if (!$this->incomplete()) return;
+  public function expand_by_pubmed($force = FALSE) {
+    if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) $identifier = 'pmid';
     else if ($pm = $this->get('pmc')) $identifier = 'pmc';
     else return false;
@@ -1643,13 +1643,14 @@ class Template extends Item {
    *   Send the URL and the first author's SURNAME ONLY as $a1
    *  The function will return an array of authors in the form $new_authors[3] = Author, The Third
    */
+    if ($doi = $this->get('doi')) $this->expand_by_doi(TRUE);
+    if ($this->get('pmid')) $this->expand_by_pubmed(TRUE);
     $pages = $this->page_range();
     $pages = $pages[0];
     if (preg_match("~\d\D+\d~", $pages)) $new_pages = $pages;
-    $doi = $this->get('doi');
-    
+    if ($doi) $url = "http://dx.doi.org/$doi"; else $url = $this->get('url');
     $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
-    $url = "http://dx.doi.org/$doi";
+    if (!$url) return NULL;
     echo "\n  * Looking for more authors @ $url:";
     echo "\n   - Using meta tags...";
     $meta_tags = get_meta_tags($url);
