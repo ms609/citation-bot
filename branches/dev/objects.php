@@ -9,7 +9,7 @@
 
 #define ('ref_regexp', '~<ref.*</ref>~u'); // #TODO DELETE
 #define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
-$file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision: 448 $');
+$file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision$');
 $doitools_revision_id = revisionID();
 global $last_revision_id, $edit_initiator;
 $edit_initiator = "[dev$doitools_revision_id]";
@@ -931,6 +931,10 @@ class Template extends Item {
           if ($this->blank('doi')) $this->get_doi_from_crossref();
           return true;
         }
+      case 'author_separator': 
+        if ($this->blank($param)) {        
+          return $this->add($param, $value);
+        }        
       default:
         if ($this->blank($param)) {        
           return $this->add($param, sanitize_string($value));
@@ -2164,29 +2168,35 @@ class Template extends Item {
        
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) $this->rename('origyear', 'year');
     
+    if (!($authors = $this->get('author'))) $authors = $this->get('authors');
+    if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
+      print_r($match);
+      print "\n\n -|" . $match[1] . '.'. $match[2] . "|--";
+      $this->add_if_new('author_separator', $match[1] ? $match[1] : $match[2]);
+      $new_authors = explode($match[1] . $match[2], $authors);
+      $this->forget('author'); $this->forget('authors');
+      for ($i = 0; $i < count($new_authors); $i++) {
+        $this->add_if_new("author" . ($i + 1), trim($new_authors[$i]));
+      }
+    }
+    
     if ($this->param) foreach ($this->param as $p) {
-      preg_match('~(\w+)(\d*)~', $p->param, $pmatch);
-      switch ($pmatch[1]) {
+      preg_match('~(\D+)(\d*)~', $p->param, $pmatch);
+      switch ($pmatch[1]) { 
         case 'author': case 'authors': case 'last': case 'surname':
           if ($pmatch[2]) {
+            print $p->val . "\n";
             if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
+              print_r($match);
               $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
               $p->val = $match[3];
-              echo "\n   ~ Dissecting authorlink" .tag();
+              echo "\n   ~ Dissecting authorlink" . tag();
             }
             $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
             if (preg_match($translator_regexp, trim($p->val), $match)) {
               $others = "{$match[1]} {$match[5]}";
               $p->val = preg_replace($translator_regexp, "", $p->val);
             }
-          } else {
-            break; # TODO YOU ARE HERE
-            if (preg_match_all("~(((\[\[(([^\|\]]+)\|)?([^\]]+)\]\]).*?)+)~", $p->val, $match)) {
-              for ($i = 0; $i < count($match[0]); $i++) $authorlink[$match[6][$i]] = ucfirst($match[5][$i] ? $match[5][$i] : $match[6][$i]);
-              print_r($authorlink); die;
-              $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
-              $p->val = $match[3];
-              echo "\n   ~ Dissecting authorlink" .tag();
           }
           break;
         case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
@@ -2589,7 +2599,7 @@ class Template extends Item {
   
   public function forget ($par) {
     $pos = $this->get_param_position($par);
-    if ($pos) {
+    if ($pos !== NULL) {
       echo "\n   - Dropping redundant parameter $par" . tag();
       unset($this->param[$pos]);
     }
