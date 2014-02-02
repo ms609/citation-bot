@@ -34,9 +34,7 @@ Addition location
 | doi = 10.1002/ana.10755 
 | title = Infantile spinal muscular atrophy with respiratory distress type 1 (SMARD1) 
 | journal = Annals of Neurology 
-| volume = 54 
-| issue = 6 
-| pages = 719–724 
+| volume = 54
 | year = 2003 
 | pmid =  14681881
 | pmc = 

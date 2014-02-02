@@ -1706,8 +1706,8 @@ class Template extends Item {
       for ($j = 0; $j < $count_new_authors; ++$j) {
         $au = explode(', ', $new_authors[$j - 1]);
         if ($au[1]) {
-          $this->add_if_new ('last' . $j, $au[0]);
-          $this->add_if_new ('first' . $j, preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", $au[1]));
+          $this->add_if_new('last' . $j, $au[0]);
+          $this->add_if_new('first' . $j, preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", $au[1]));
           $this->forget('author' . $j);
         } else {
           if ($au[0]) {
@@ -2614,6 +2614,14 @@ class Template extends Item {
     }
     $p->param = $par;
     $p->val = $val;
+    $insert_after = prior_parameters($par);
+    foreach (array_reverse($insert_after) as $after) {
+    print "\n - " . $after . "-" . $this->get_param_position($after);
+      if (($insert_pos = $this->get_param_position($after)) !== NULL) {
+        $this->param = array_merge(array_slice($this->param, 0, $insert_pos + 1), array($p), array_slice($this->param,$insert_pos + 1));
+        return true;
+      }
+    }
     $this->param[] = $p;
     return true;
   }

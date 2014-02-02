@@ -668,6 +668,30 @@ function sanitize_string($str) {
   return trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
 }
 
+function prior_parameters($par, $list=array()) {
+  array_unshift($list, $par);
+  if (preg_match('~(\D+)(\d+)~', $par, $match)) {
+    switch ($match[1]) {
+      case 'first': case 'initials': case 'forename':
+        return array('last' . $match[2], 'surname' . $match[2]);
+      case 'last': case 'surname': 
+        return array('first' . ($match[2]-1), 'forename' . ($match[2]-1), 'initials' . ($match[2]-1));
+      default: return array($match[1] . ($match[2]-1));
+    }
+  }
+  switch ($par) {
+    case 'title':       return prior_parameters('author', array_merge(array('author', 'authors', 'author1', 'first1', 'initials1'), $list) );
+    case 'journal':       return prior_parameters('title', $list);
+    case 'volume':       return prior_parameters('journal', $list);
+    case 'issue':       return prior_parameters('volume', $list);
+    case 'page' : case 'pages':       return prior_parameters('issue', $list);
+
+    case 'pmid':       return prior_parameters('doi', $list);
+    case 'pmc':       return prior_parameters('pmic', $list);
+    default: return $list;
+  }
+}
+
 function set($key, $value) {
   // Dud DOI in PMID database
   if ($key == "doi") {
