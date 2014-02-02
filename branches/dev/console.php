@@ -12,14 +12,16 @@ $bot_exclusion_compliant = TRUE;
 
 $problem_text =  <<<problemtxt
 
-{{cite journal|last=Somasundaram, S. et al.|year=2000|title=Uncoupling of intestinal mitochondrial oxidative phosphorylation and inhibition of cyclooxygenase are required for the development of NSAID-enteropathy in the rat|journal=Aliment Pharmacol Ther|volume=14|pages=639–650|url=http://www.blackwell-synergy.com/doi/pdf/10.1046/j.1365-2036.2000.00723.x|doi=10.1046/j.1365-2036.2000.00723.x|accessdate=2008-05-28|pmid=10792129|first1=S|last2=Sigthorsson|first2=G|last3=Simpson|first3=RJ|last4=Watts|first4=J|last5=Jacob|first5=M|last6=Tavares|first6=IA|last7=Rafi|first7=S|last8=Roseth|first8=A|last9=Foster|first9=R|issue=5}}
+#todo
+https://en.wikipedia.org/w/index.php?title=MUD&diff=prev&oldid=593423766 : double-doi
+
 
 problemtxt;
 
 $page = new Page();
 $page->text =  <<<problemtxt
 
-f>{{cite journal |author1=The ADMX Collaboration |author2=Asztalos |author3=Carosi |author4=Hagmann |author5=Kinion |author6=van Bibber |author7=Hotz |author8=Rosenberg |author9=Rybka |title=A SQUID-based microwave cavity search for dark-matter axions |doi=10.1103/PhysRevLett.104.041301 |year=2010 |journal=Physical Review Letters |volume=104 |issue=4 |arxiv=0910.5914|bibcode = 2010PhRvL.104d1301A }}<
+f>{{cite journal |author=[[Test A. Test]], Hold Up, [[Whoa|Just A Minute]], Don T Delete-me}}<
 
 problemtxt;
 $page->expand_text();

@@ -2168,15 +2168,25 @@ class Template extends Item {
       preg_match('~(\w+)(\d*)~', $p->param, $pmatch);
       switch ($pmatch[1]) {
         case 'author': case 'authors': case 'last': case 'surname':
-          if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
-            $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
-            $p->val = $match[3];
-            echo "\n    ~ Dissecting authorlink" .tag();
-          }
-          $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
-          if (preg_match($translator_regexp, trim($p->val), $match)) {
-            $others = "{$match[1]} {$match[5]}";
-            $p->val = preg_replace($translator_regexp, "", $p->val);
+          if ($pmatch[2]) {
+            if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
+              $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
+              $p->val = $match[3];
+              echo "\n   ~ Dissecting authorlink" .tag();
+            }
+            $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+            if (preg_match($translator_regexp, trim($p->val), $match)) {
+              $others = "{$match[1]} {$match[5]}";
+              $p->val = preg_replace($translator_regexp, "", $p->val);
+            }
+          } else {
+            break; # TODO YOU ARE HERE
+            if (preg_match_all("~(((\[\[(([^\|\]]+)\|)?([^\]]+)\]\]).*?)+)~", $p->val, $match)) {
+              for ($i = 0; $i < count($match[0]); $i++) $authorlink[$match[6][$i]] = ucfirst($match[5][$i] ? $match[5][$i] : $match[6][$i]);
+              print_r($authorlink); die;
+              $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
+              $p->val = $match[3];
+              echo "\n   ~ Dissecting authorlink" .tag();
           }
           break;
         case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
