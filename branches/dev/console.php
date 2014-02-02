@@ -21,8 +21,8 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-Double doi
->{{cite journal | url = dx.doi.org/10.1007/s00216-011-5557-3 | title = New identification of proanthocyanidins in cinnamon (''Cinnamomum zeylanicum'' L.) using MALDI-TOF/TOF mass spectrometry | author = María Luisa Mateos-Martín, Elisabet Fuguet, Carmen Quero, Jara Pérez-Jiménez, Josep Lluís Torres. | year = 2012 | journal = Analytical and bioanalytical chemistry  | volume = 402 | issue = 3 | pages = 1327–1336 | doi = 10.1007/s00216-011-5557-3 | pmid = 22101466 | last2 = Fuguet | last3 = Quero | last4 = Pérez-Jiménez | last5 = Torres }}
+Author sep
+owing that 82% were positive for BK virus.<ref>{{cite journal|author=Egli A, Infanti L, Dumoulin A, ''et al.''|title=Prevalence of polyomavirus BK and JC infection and replication in 400 healthy blood donors|year=2009|journal=J Infect Dis|volume=199|issue=6|doi=10.1086/597126|pmid=19434930|pages=837–46}}</ref>
 
 problemtxt;
 $page->expand_text();
@@ -30,7 +30,7 @@ die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 
 if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . ' with edit summary ' . $page->edit_summary() . "\n";
-  print $page->text; die("\n\nbyebye\n");
+  #print $page->text; die("\n\nbyebye\n");
   while (!$page->write() && $attempts < 2) ++$attempts;
   if ($attempts < 3 ) echo $html_output ?
        " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "

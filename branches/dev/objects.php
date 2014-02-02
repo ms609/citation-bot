@@ -655,7 +655,7 @@ class Template extends Item {
       $this->name = substr($text, 2, -2);
       $this->param = NULL;
     }
-    foreach ($this->param as $p) $this->initial_param[$p->param] = $p->val;
+    if ($this->param) foreach ($this->param as $p) $this->initial_param[$p->param] = $p->val;
   }
   
   protected function split_params($text) {
@@ -929,7 +929,7 @@ class Template extends Item {
           if ($this->blank('doi')) $this->get_doi_from_crossref();
           return true;
         }
-      case 'author_separator': 
+      case 'author_separator': case 'author-separator': 
         if ($this->blank($param)) {        
           return $this->add($param, $value);
         }        
@@ -2200,7 +2200,7 @@ class Template extends Item {
     
     if (!($authors = $this->get('author'))) $authors = $this->get('authors');
     if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
-      $this->add_if_new('author_separator', $match[1] ? $match[1] : $match[2]);
+      $this->add_if_new('author-separator', $match[1] ? $match[1] : $match[2]);
       $new_authors = explode($match[1] . $match[2], $authors);
       $this->forget('author'); $this->forget('authors');
       for ($i = 0; $i < count($new_authors); $i++) {
@@ -2396,7 +2396,6 @@ class Template extends Item {
               $authors = explode(',', $val_base);
               $this->add_if_new('author-separator', ',');
             }
-            
             if ($authors) {
               foreach ($authors as $au) {
                 if ($i == 1) {
