@@ -597,6 +597,7 @@ function fmtSurname2($surname) {
           ),
           mb_ereg_replace(" - ", "-", $surname));
   $ret = str_ireplace(array('Von ', 'Und ', 'De La '), array('von ', 'und ', 'de la '), $ret);
+  $ret = preg_replace_callback('~;\w~', create_function('$matches', 'return strtolower($matches[0]);'), $ret);
   return $ret;
 }
 

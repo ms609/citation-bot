@@ -2607,7 +2607,7 @@ class Template extends Item {
     if (($pos = $this->get_param_position($par)) !== NULL) return $this->param[$pos]->val = $val;
     if ($this->param[0]) {
       $p = new Parameter;
-      $p->parse_text($this->param[0]->parsed_text());
+      $p->parse_text($this->param[$this->param[1] ? 1 : 0]->parsed_text()); // Use second param if present, in case first pair is last1 = Smith | first1 = J.\n
     } else {
       $p = new Parameter;
       $p->parse_text('| param = val');
