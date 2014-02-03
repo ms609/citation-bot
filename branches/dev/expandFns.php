@@ -120,7 +120,7 @@ $common_mistakes = array
 (
   "authorurl"       =>  "authorlink",
   "authorn"         =>  "author2",
-  "authors"         =>  "author",
+#  "authors"         =>  "author",
   "co-author"       =>  "author2",
   "co-authors"      =>  "coauthors",
   "coauthor"        =>  "author2",
@@ -153,7 +153,6 @@ $common_mistakes = array
   "ibsn"            =>  "isbn",
   "lastn"           =>  "last2",
   "part"            =>  "issue",
-#  "number"          =>  "issue",
   "no"              =>  "issue",
   "No"              =>  "issue",
   "No."             =>  "issue",
@@ -683,7 +682,7 @@ function prior_parameters($par, $list=array()) {
     case 'title':       return prior_parameters('author', array_merge(array('author', 'authors', 'author1', 'first1', 'initials1'), $list) );
     case 'journal':       return prior_parameters('title', $list);
     case 'volume':       return prior_parameters('journal', $list);
-    case 'issue':       return prior_parameters('volume', $list);
+    case 'issue': case 'number':       return prior_parameters('volume', $list);
     case 'page' : case 'pages':       return prior_parameters('issue', $list);
 
     case 'pmid':       return prior_parameters('doi', $list);

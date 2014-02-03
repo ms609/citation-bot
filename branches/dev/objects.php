@@ -762,7 +762,7 @@ class Template extends Item {
     return (!(
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
-          &&  $this->has("issue")
+          &&  ($this->has("issue") || $this->has('number'))
           &&  $this->has("title")
           && ($this->has("date") || $this->has("year"))
           && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
@@ -1538,7 +1538,7 @@ class Template extends Item {
       if ($this->blank("year")) $this->set("year", $sici[2]);
       //if ($this->blank("day") && is("month") && $sici[4]) set ("day", $sici[4]);
       if ($this->blank("volume")) $this->set("volume", 1*$sici[5]);
-      if ($this->blank("issue") && $sici[6]) $this->set("issue", 1*$sici[6]);
+      if ($this->blank("issue") && $this->blank('number') && $sici[6]) $this->set("issue", 1*$sici[6]);
       if ($this->blank("pages", "page")) $this->set("pages", 1*$sici[7]);
       return true;
     } else return false;
@@ -2273,7 +2273,7 @@ class Template extends Item {
     }
     
     // Remove leading zeroes
-    if (!$this->blank('issue')) {
+    if (!$this->blank('issue') && $this->blank('number')) {
       $new_issue =  preg_replace('~^0+~', '', $this->get('issue'));
       if ($new_issue) $this->set('issue', $new_issue);
       else $this->forget('issue');

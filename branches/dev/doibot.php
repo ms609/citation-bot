@@ -36,7 +36,7 @@
           <h3 id="siteSub">Please wait while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> processes the page you requested.</h3>
             <pre><?
 ## Set up - including dotDecode array
-$html_output = true;
+$html_output = TRUE;
 require_once ("expandFns.php");
 $editInitiator = "[" . revisionID() . "]";
 
@@ -102,7 +102,7 @@ if (!$dont_expand) {
   print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
   $my_page = new Page();
   if ($my_page->get_text_from($title)) {
-     if($my_page->expand_text()) {
+     if ($my_page->expand_text()) {
       while (!$my_page->write() && $attempts < 2) ++$attempts;
       if ($attempts < 3 ) echo $html_output ?
            " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
