@@ -1,5 +1,4 @@
-<?php require_once ("expandFns.php");
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -31,15 +30,14 @@
 <body class="mediawiki ns-2 ltr">
 	<div id="globalWrapper">
 		<div id="column-content">
-	<div id="content">
-<h1 class="firstHeading">Welcome to Citation Bot</h1>
-<div id="bodyContent">
-	<h3 id="siteSub">Please wait while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a>
-		processes the page you requested.</h3>
-<pre><?
-
+      <div id="content">
+        <h1 class="firstHeading">Welcome to Citation Bot</h1>
+        <div id="bodyContent">
+          <h3 id="siteSub">Please wait while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> processes the page you requested.</h3>
+            <pre><?
 ## Set up - including dotDecode array
 $html_output = true;
+require_once ("expandFns.php");
 $editInitiator = "[" . revisionID() . "]";
 
 if (is_valid_user($user)) {
@@ -54,18 +52,18 @@ $pmid_input = str_replace(array("pmid", "PMID"), "", $_GET["pmid"]);
 $pmc_input = str_replace(array("pmc", "PMC"), "", $_GET["pmc"]);
 
 if ($pmc_input) {
-  $page = "Template:Cite pmc/" . $pmc_input;
+  $title = "Template:Cite pmc/" . $pmc_input;
   $article_details = pmArticleDetails($pmc_input, "pmc");
   print_r($article_details);
   if ($article_details) {
     $doi_input = $article_details["doi"];
     if ($doi_input) {
       $encDoi = str_replace($dotDecode, $dotEncode, $doi_input);
-      write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
+      write($title, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
       print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
     }	else {
       $pmid_input = $article_details["pmid"];
-      write($page, "#REDIRECT[[Template:Cite pmid/$pmid_input]]", "Redirecting to PMID for consistency");
+      write($title, "#REDIRECT[[Template:Cite pmid/$pmid_input]]", "Redirecting to PMID for consistency");
       print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite pmid/$pmid_input'>Template:Cite pmid/$pmid_input</a></p>";
       $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{Documentation|Template:cite_pmid/subpage}}</noinclude>";
     }
@@ -75,22 +73,22 @@ if ($pmc_input) {
   }
 }
 if ($pmid_input) {
-	$page = "Template:Cite pmid/" . str_replace($dotDecode, $dotEncode, $pmid_input);
+	$title = "Template:Cite pmid/" . str_replace($dotDecode, $dotEncode, $pmid_input);
 	$pma = pmArticleDetails($pmid_input);
 	$doi_input = $pma["doi"];
 	if ($doi_input) {
 		$encDoi = str_replace($dotDecode, $dotEncode, $doi_input);
-		write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
+		write($title, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
 		print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
 	}	else {
     $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{Documentation|Template:cite_pmid/subpage}}</noinclude>";
   }
 }
 if ($doi_input) {
-	$page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi_input);
+	$title = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi_input);
 	$cite_doi_start_code = "{{Cite journal \n| doi = $doi_input \n| pmid = $pmid_input \n| pmc = $pmc_input\n}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>";
 } else if (!$cite_doi_start_code) {
-  $page = ucfirst(strip_tags($_REQUEST["page"]));
+  $title = ucfirst($_REQUEST["page"]);
 }
 
 if ($cite_doi_start_code) {
@@ -101,20 +99,23 @@ if ($cite_doi_start_code) {
 $slowMode = $_REQUEST["slow"];
 
 if (!$dont_expand) {
-  print "Expanding '$page'; " . ($ON ? "will" : "won't") . " commit edits.";
+  print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
   $my_page = new Page();
-  if ($my_page->get_text_from($page) && $my_page->expand_text()) {
-    while (!$my_page->write() && $attempts < 2) ++$attempts;
-    if ($attempts < 3 ) echo $html_output ?
-         " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
-         . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
-         . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
-         : ".";
-    else echo "\n # Failed. Text was:\n" . $my_page->text;
-  } else {
-    echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
-    updateBacklog($my_page->title);
+  if ($my_page->get_text_from($title)) {
+     if($my_page->expand_text()) {
+      while (!$my_page->write() && $attempts < 2) ++$attempts;
+      if ($attempts < 3 ) echo $html_output ?
+           " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
+           . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
+           . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
+           : ".";
+      else echo "\n # Failed. Text was:\n" . $my_page->text;
+    } else {
+      echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
+      updateBacklog($my_page->title);
+    }
   }
+  else echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
 }
 ?>
 
