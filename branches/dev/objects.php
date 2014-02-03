@@ -2616,7 +2616,6 @@ class Template extends Item {
     $p->val = $val;
     $insert_after = prior_parameters($par);
     foreach (array_reverse($insert_after) as $after) {
-    print "\n - " . $after . "-" . $this->get_param_position($after);
       if (($insert_pos = $this->get_param_position($after)) !== NULL) {
         $this->param = array_merge(array_slice($this->param, 0, $insert_pos + 1), array($p), array_slice($this->param,$insert_pos + 1));
         return true;

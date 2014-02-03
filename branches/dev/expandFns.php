@@ -663,8 +663,8 @@ function authorify($author) {
 
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
-  $dirty = array ('[', ']');
-  $clean = array ('&#92;', '&#93;');
+  $dirty = array ('[', ']', '|', '{', '}');
+  $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;');
   return trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
 }
 

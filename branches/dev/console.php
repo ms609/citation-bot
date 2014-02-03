@@ -20,11 +20,8 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-{{Cite journal 
-| doi = 10.1159/000073502
-}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>
-
-
+* {{cite journal |doi=10.1107/S0108270183009348}}
+ 
 problemtxt;
 $page->expand_text();
 die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
