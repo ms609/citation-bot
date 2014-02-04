@@ -1,7 +1,53 @@
 #!/usr/bin/php
-<?      
+<?
 // $Id$
 #$abort_mysql_connection = true; // Whilst there's a problem with login
+
+$account_suffix = '_4'; // Keep this before including expandFns
+error_reporting(E_ALL^E_NOTICE);
+$slow_mode = 1;
+include('expandFns.php');
+
+$bot_exclusion_compliant = TRUE;
+
+$problem_text =  <<<problemtxt
+
+#todo
+
+
+problemtxt;
+
+$page = new Page();
+$page->text =  <<<problemtxt
+
+* {{cite journal || year = 2009-03-17}}
+ 
+problemtxt;
+$page->expand_text();
+die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
+
+if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
+  echo "\n # Writing to " . $page->title . ' with edit summary ' . $page->edit_summary() . "\n";
+  #print $page->text; die("\n\nbyebye\n");
+  while (!$page->write() && $attempts < 2) ++$attempts;
+  if ($attempts < 3 ) echo $html_output ?
+       " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
+       . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
+       . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
+       : ".";
+  else echo "\n # Failed. \n" . $page->text;
+} else {
+  echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
+  updateBacklog($page->title);
+}
+
+    
+    die("\n# # # \n");
+    
+
+
+
+
 
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
@@ -19,10 +65,9 @@ foreach ($argv as $arg) {
   }
 }
 
-error_reporting(E_ALL^E_NOTICE);
 $slow_mode = ($argument["slow"] || $argument["slowmode"] || $argument["thorough"]) ? true : false;
-$accountSuffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
-include("expandFns.php");
+$account_suffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
+include("object_expandFns.php");
 $htmlOutput = false;
 $editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
@@ -60,36 +105,8 @@ if ($argument["pages"]) {
     echo " done. ";
   } else {
    
-    
-    /*  die (expand_text("DELETION OF REF ARana 
-         <ref name=ARanard/><ref name=MinNaing/> 
-          <ref name=ARana/>, 
-          
-{{reflist|1|refs=
-<ref name=Ranard>{{harv|Ranard|2009|pp=47–64}}</ref>
-<ref name=ARanard>{{harv|Ranard|2009|pp=6, 18, 222, Endnote 15}}</ref>
-<ref name=AR>{{harv|Ranard|2009|p=60, Fig. 62}}</ref>
-<ref name=Ran>{{harv|Ranard|2009|pp=71–89}}</ref>
-<ref name=R>{{harv|Ranard|2009|p=117}}</ref>
-<ref name=Naing>{{harv|Naing|1974}}</ref>
-<ref name=MinNaing>{{harv|Naing|1975|pp=2–25}}</ref>
-<ref name=Shein>{{harv|Shein|1998|p=61–67}}</ref>
-<ref name=GHlaMaung>{{harv|Maung|1968|p=81–85}}</ref>
-<ref name=GHMaung>{{harv|Maung|1968|p=95–97}}</ref>
-<ref name=ARana>{{harv|Ranard|2009|p=58, Fig. 60}}</ref>
-<ref name=Hudson>{{harv|Hudson|1975|pp=60–72, 84, 124–128}}</ref>
-}}
 
-"));
-    */
-$problem_text =             <<<problemtxt
-
-
-<ref name="ref_">{{cite doi|10.1098/rspb.2012.1577}}</ref>
-
-problemtxt;
-    
-    
+      $slow_mode = true;
     die (expand_text(
             $problem_text, false, false
 ));
