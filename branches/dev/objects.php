@@ -922,6 +922,11 @@ class Template extends Item {
           return true;
         }
         return false;
+      case 'doi_brokendate': case 'doi_inactivedate':
+        if ($this->blank('doi_brokendate') && $this->blank('doi_inactivedate')) {
+          return $this->add($param, $value);
+        }
+      return false;
       case 'pmid':
         if ($this->blank($param)) {        
           $this->add($param, sanitize_string($value));
@@ -2349,7 +2354,7 @@ class Template extends Item {
     }    
     echo "\n   . Checking that DOI $doi is operational..." . tag();
     if ($this->query_crossref() === FALSE) {
-      $this->set("doi_inactivedate", date("Y-m-d"));
+      $this->set("doi_brokendate", date("Y-m-d"));
       echo "\n   ! Broken doi: $doi";
       return FALSE;
     } else {
