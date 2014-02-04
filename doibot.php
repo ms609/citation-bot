@@ -1,5 +1,4 @@
-<?php require_once ("expandFns.php");
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -28,18 +27,17 @@
 @import "http://en.wikipedia.org/w/index.php?title=User:Smith609/monobook.css&action=raw&ctype=text/css";
 /*]]>*/</style>
 	</head>
-<body class="mediawiki ns-2 ltr page-User_DOI_bot_5andbox">
+<body class="mediawiki ns-2 ltr">
 	<div id="globalWrapper">
 		<div id="column-content">
-	<div id="content">
-<h1 class="firstHeading">Welcome to Citation Bot</h1>
-<div id="bodyContent">
-	<h3 id="siteSub">Please wait while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a>
-		processes the page you requested.</h3>
-<pre><?
-
+      <div id="content">
+        <h1 class="firstHeading">Welcome to Citation Bot</h1>
+        <div id="bodyContent">
+          <h3 id="siteSub">Please wait while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> processes the page you requested.</h3>
+            <pre><?
 ## Set up - including dotDecode array
-$html_output = true;
+$html_output = TRUE;
+require_once ("expandFns.php");
 $editInitiator = "[" . revisionID() . "]";
 
 if (is_valid_user($user)) {
@@ -54,20 +52,20 @@ $pmid_input = str_replace(array("pmid", "PMID"), "", $_GET["pmid"]);
 $pmc_input = str_replace(array("pmc", "PMC"), "", $_GET["pmc"]);
 
 if ($pmc_input) {
-  $page = "Template:Cite pmc/" . $pmc_input;
+  $title = "Template:Cite pmc/" . $pmc_input;
   $article_details = pmArticleDetails($pmc_input, "pmc");
   print_r($article_details);
   if ($article_details) {
     $doi_input = $article_details["doi"];
     if ($doi_input) {
       $encDoi = str_replace($dotDecode, $dotEncode, $doi_input);
-      write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
+      write($title, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
       print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
     }	else {
       $pmid_input = $article_details["pmid"];
-      write($page, "#REDIRECT[[Template:Cite pmid/$pmid_input]]", "Redirecting to PMID for consistency");
+      write($title, "#REDIRECT[[Template:Cite pmid/$pmid_input]]", "Redirecting to PMID for consistency");
       print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite pmid/$pmid_input'>Template:Cite pmid/$pmid_input</a></p>";
-      $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
+      $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{Documentation|Template:cite_pmid/subpage}}</noinclude>";
     }
   } else {
    print ("\n<p>PMC $pmc_input not found. </p>");
@@ -75,22 +73,22 @@ if ($pmc_input) {
   }
 }
 if ($pmid_input) {
-	$page = "Template:Cite pmid/" . str_replace($dotDecode, $dotEncode, $pmid_input);
+	$title = "Template:Cite pmid/" . str_replace($dotDecode, $dotEncode, $pmid_input);
 	$pma = pmArticleDetails($pmid_input);
 	$doi_input = $pma["doi"];
 	if ($doi_input) {
 		$encDoi = str_replace($dotDecode, $dotEncode, $doi_input);
-		write($page, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
+		write($title, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
 		print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
 	}	else {
-    $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{template doc|Template:cite_pmid/subpage}}</noinclude>";
+    $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{Documentation|Template:cite_pmid/subpage}}</noinclude>";
   }
 }
 if ($doi_input) {
-	$page = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi_input);
-	$cite_doi_start_code = "{{Cite journal \n| doi = $doi_input \n| pmid = $pmid_input \n| pmc = $pmc_input\n}}<noinclude>{{template doc|Template:cite_doi/subpage}}</noinclude>";
+	$title = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi_input);
+	$cite_doi_start_code = "{{Cite journal \n| doi = $doi_input \n| pmid = $pmid_input \n| pmc = $pmc_input\n}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>";
 } else if (!$cite_doi_start_code) {
-  $page = ucfirst(strip_tags($_REQUEST["page"]));
+  $title = ucfirst($_REQUEST["page"]);
 }
 
 if ($cite_doi_start_code) {
@@ -101,10 +99,24 @@ if ($cite_doi_start_code) {
 $slowMode = $_REQUEST["slow"];
 
 if (!$dont_expand) {
-  print "Expanding '$page'; " . ($ON ? "will" : "won't") . " commit edits.";
-  expand($page, $ON, $editing_cite_doi_template, $cite_doi_start_code, $htmlOutput);
+  print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
+  $my_page = new Page();
+  if ($my_page->get_text_from($title)) {
+     if ($my_page->expand_text()) {
+      while (!$my_page->write() && $attempts < 2) ++$attempts;
+      if ($attempts < 3 ) echo $html_output ?
+           " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
+           . "<a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
+           . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
+           : ".";
+      else echo "\n # Failed. Text was:\n" . $my_page->text;
+    } else {
+      echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
+      updateBacklog($my_page->title);
+    }
+  }
+  else echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
 }
-
 ?>
 
 End of output
@@ -124,10 +136,10 @@ End of output
 
 		<div class="pBody">
 			<ul>
-					 <li id="ca-nstab-user" class="selected"><a href="http://en.wikipedia.org/wiki/User:DOI_bot" title="View the user page [c]" accesskey="c">User page</a></li>
-					 <li id="ca-talk" class="new"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:DOI_bot&amp;action=edit" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
-					 <li id="ca-edit"><a href="http://en.wikipedia.org/w/index.php?title=User:DOI_bot/bugs" title="Click here to report an error [e]" accesskey="e">Report error</a></li>
-					 <li id="ca-history"><a href="http://en.wikipedia.org/wiki/Special:Contributions/DOI_bot" title="This bot's contributions [x]" accesskey="x">Contributions</a></li>
+					 <li id="ca-nstab-user" class="selected"><a href="http://en.wikipedia.org/wiki/User:Citation_bot" title="View the user page [c]" accesskey="c">User page</a></li>
+					 <li id="ca-talk" class="new"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:Citation_bot" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
+					 <li id="ca-edit"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:Citation_bot" title="Click here to report an error [e]" accesskey="e">Report error</a></li>
+					 <li id="ca-history"><a href="http://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" title="This bot's contributions [x]" accesskey="x">Contributions</a></li>
 				</ul>
 		</div>
 	</div>
