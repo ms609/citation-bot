@@ -346,7 +346,7 @@ class Page {
     $auto_summary .= (($this->modifications["deletions"])
       ? "Removed redundant parameters. "
       : ""
-      ) . (($this->modifications["cite_type"] || $unify_citation_templates)
+      ) . (($this->modifications["cite_type"])
       ? "Unified citation types. "
       : ""
       ) . (($this->modifications["combine_references"])
@@ -401,7 +401,10 @@ class Page {
       $result = json_decode($bot->results);
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
+        global $html_output;
+        if ($html_output > -1) echo '<span style="color: #b20">';
         echo "\n Written to " . $my_page->title . '.  ';
+        if ($html_output > -1) echo '</span>';
         return TRUE;
       } else if ($result->edit->result) {
         echo $result->edit->result;
@@ -2028,7 +2031,7 @@ class Template extends Item {
     } else {
       return false;
     }
-    if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARVIV|LCCN)[\s:]*(\d[^\s\}\{\|]*)~iu", $id, $match)) {
+    if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[^\s\}\{\|]*)~iu", $id, $match)) {
       $this->add_if_new(strtolower($match[1]), $match[2]);
       $id = str_replace($match[0], '', $id);
     }
@@ -2204,7 +2207,7 @@ class Template extends Item {
        
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) $this->rename('origyear', 'year');
     
-    if (!($authors = $this->get('author'))) $authors = $this->get('authors');
+    if (!($authors = $this->get('authors'))) $authors = $this->get('author'); # Order _should_ be irrelevant as only one will be set... but prefer 'authors' if not.
     if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
       $this->add_if_new('author-separator', $match[1] ? $match[1] : $match[2]);
       $new_authors = explode($match[1] . $match[2], $authors);
@@ -2529,12 +2532,14 @@ class Template extends Item {
     }
     elseif ($this->has('url')) $this->name = "Cite web"; // fall back to this if URL
     else $this->name = "Cite document"; // If no URL, cite journal ought to handle it okay
+    $this->modifications['cite_type'] = TRUE;
     echo "\n    Converting to dominant {{Cite XXX}} template";
   }
   
   public function cite2citation() {
     if (!preg_match("~[cC]ite[ _]\w+~", $this->wikiname())) return ;
     $this->add_if_new("postscript", ".");
+    $this->modifications['cite_type'] = TRUE;
     $this->name = 'Citation';
     echo "\n    Converting to dominant {{Citation}} template";
   }
@@ -2925,16 +2930,16 @@ $author_parameters = array(
     87 => array('surname87', 'forename87', 'initials87', 'first87', 'last87', 'author87'),
     88 => array('surname88', 'forename88', 'initials88', 'first88', 'last88', 'author88'),
     89 => array('surname89', 'forename89', 'initials89', 'first89', 'last89', 'author89'),
-    90 => array('surname80', 'forename80', 'initials80', 'first80', 'last80', 'author80'),
-    91 => array('surname81', 'forename81', 'initials81', 'first81', 'last81', 'author81'),
-    92 => array('surname82', 'forename82', 'initials82', 'first82', 'last82', 'author82'),
-    93 => array('surname83', 'forename83', 'initials83', 'first83', 'last83', 'author83'),
-    94 => array('surname84', 'forename84', 'initials84', 'first84', 'last84', 'author84'),
-    95 => array('surname85', 'forename85', 'initials85', 'first85', 'last85', 'author85'),
-    96 => array('surname86', 'forename86', 'initials86', 'first86', 'last86', 'author86'),
-    97 => array('surname87', 'forename87', 'initials87', 'first87', 'last87', 'author87'),
-    98 => array('surname88', 'forename88', 'initials88', 'first88', 'last88', 'author88'),
-    99 => array('surname89', 'forename89', 'initials89', 'first89', 'last89', 'author89'),
+    90 => array('surname90', 'forename90', 'initials90', 'first90', 'last90', 'author90'),
+    91 => array('surname91', 'forename91', 'initials91', 'first91', 'last91', 'author91'),
+    92 => array('surname92', 'forename92', 'initials92', 'first92', 'last92', 'author92'),
+    93 => array('surname93', 'forename93', 'initials93', 'first93', 'last93', 'author93'),
+    94 => array('surname94', 'forename94', 'initials94', 'first94', 'last94', 'author94'),
+    95 => array('surname95', 'forename95', 'initials95', 'first95', 'last95', 'author95'),
+    96 => array('surname96', 'forename96', 'initials96', 'first96', 'last96', 'author96'),
+    97 => array('surname97', 'forename97', 'initials97', 'first97', 'last97', 'author97'),
+    98 => array('surname98', 'forename98', 'initials98', 'first98', 'last98', 'author98'),
+    99 => array('surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99'),
 );
 
 function url2template($url, $citation) {
