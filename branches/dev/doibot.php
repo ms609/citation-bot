@@ -53,7 +53,7 @@ $pmc_input = trim(str_replace(array("pmc", "PMC"), "", $_GET["pmc"]));
 
 if ($pmid_input) {
 	$page = new Page();
-  if ((int) $pmid_input > 0 && (int) $pmid_input < 3000000) {
+  if ((int) $pmid_input > 0 && (int) $pmid_input < 30000000) {
     $page->text = "{{Cite pmid|" . trim((int) $pmid_input) . "}}";
     $page->title = $_REQUEST["page"] ? ucfirst($_REQUEST["page"]) : "[User-activated]";
     $page->expand_remote_templates();
