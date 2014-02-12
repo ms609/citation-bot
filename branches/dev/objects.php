@@ -402,9 +402,8 @@ class Page {
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
         global $html_output;
-        if ($html_output > -1) echo '<span style="color: #b20">';
-        echo "\n Written to " . $my_page->title . '.  ';
-        if ($html_output > -1) echo '</span>';
+        if ($html_output) echo "\n <span style='color: #e21'>Written to <a href='" . wikiroot . "title=" . urlencode($my_page->title) . "'>" . $my_page->title . '</a></span>';
+        else echo "\n Written to " . $my_page->title . '.  ';
         return TRUE;
       } else if ($result->edit->result) {
         echo $result->edit->result;
@@ -1480,8 +1479,8 @@ class Template extends Item {
     if ($pm = $this->get('pmid')) $identifier = 'pmid';
     else if ($pm = $this->get('pmc')) $identifier = 'pmc';
     else return false;
-    
-    echo "\n - Checking " . strtoupper($identifier) . ' ' . $pm . ' for more details' . tag();
+    global $html_output;
+    echo "\n - Checking " . ($html_output?'<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . $pm . '" target="_blank">':'') . strtoupper($identifier) . ' ' . $pm . ($html_output ? "</a>" : '') . ' for more details' . tag();
     $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=$pm");
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
     if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
@@ -2780,62 +2779,6 @@ function tag($long = FALSE) {
     );
   }
   echo ']';
-}
-
-///////////////////////
-function leave_broken_doi_message($id, $page, $doi) { #todo
-  echo "\n\n* Non-functional identifier $id found in article [[$page]]";
-  if (getNamespace($page) == 0) {
-    $talkPage = "Talk:$page";
-    $talkMessage = "== Reference to broken DOI ==\n"
-                 . "A reference was recently added to this article using the [[Template:Cite doi|Cite DOI template]]. "
-                 . "The [[User:Citation bot|citation bot]] tried to expand the citation, but could not access the specified DOI. "
-                 . "Please check that the [[Digital object identifier|DOI]] [[doi:$doi]] has been correctly entered.  If the DOI is correct, it is possible that it "
-                 . "has not yet been entered into the [[CrossRef]] database.  Please  "
-                 . "[http://en.wikipedia.org/w/index.php?title=" . urlencode($id)
-                 . "&preload=Template:Cite_doi/preload/nodoi&action=edit complete the reference by hand here]. "
-                 . "\nThe script that left this message was unable to track down the user who added the citation; "
-                 . "it may be prudent to alert them to this message.  Thanks, ";
-    $talkId = articleId($page, 1);
-
-    if ($talkId) {
-      $text = getRawWikiText($talkPage);
-      echo "\nTALK PAGE EXISTS " . strlen($text) . "\n\n";
-    } else {
-      $text = '';
-      echo "\nTALK PAGE DOES NOT EXIST\n\n";
-    }
-    if (strpos($text, "|DOI]] [[doi:" . $doi) || strpos($text, "d/nodoi&a")) {
-      echo "\n - Message already on talk page.  Zzz.\n";
-    } else if ($text && $talkId || !$text && !$talkId) {
-      echo "\n * Writing message on talk page..." . $talkPage . "\n\n";
-      echo "\n\n Talk page $talkPage has ID $talkId; text was: [$text].  Our page was $id and " .
-              "the article in progress was $page.\n";
-      write($talkPage,
-              ($text . "\n" . $talkMessage . "~~~~"),
-              "Reference to broken [[doi:$doi]] using [[Template:Cite doi]]: please fix!");
-      echo " Message left.\n";
-    } else {
-      echo "\n *  Talk page exists, but no text could be attributed to it. \n ?????????????????????????";
-    }
-    mark_broken_doi_template($page, $doi);
-  } else {
-    echo "\n * Article in question is not in article space.  Switched to use 'Template:Broken DOI'." ;
-    mark_broken_doi_template($page, $doi);
-  }
-}
-
-function mark_broken_doi_template($article_in_progress, $oDoi) {#TODO use class architecture
-  $page_code = getRawWikiText($article_in_progress);
-  if ($page_code) {
-    global $edit_initiator;
-    return write($article_in_progress
-            , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i", "{{broken doi|$oDoi}}", $page_code)
-            , "$edit_initiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doiCite doi]]: please fix!"
-    );
-  } else {
-    exit("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
-  }
 }
 
 global $author_parameters;

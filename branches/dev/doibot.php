@@ -73,16 +73,14 @@ if ($pmc_input) {
   }
 }
 if ($pmid_input) {
-	$title = "Template:Cite pmid/" . str_replace($dotDecode, $dotEncode, $pmid_input);
-	$pma = pmArticleDetails($pmid_input);
-	$doi_input = $pma["doi"];
-	if ($doi_input) {
-		$encDoi = str_replace($dotDecode, $dotEncode, $doi_input);
-		write($title, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
-		print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
-	}	else {
-    $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{Documentation|Template:cite_pmid/subpage}}</noinclude>";
+	$page = new Page();
+  if ((int) $pmid_input > 0 && (int) $pmid_input < 3000000) {
+    $page->text = "{{Cite pmid|" . trim((int) $pmid_input) . "}}";
+    $page->expand_remote_templates();
+  } else {
+    echo ("\n ! The specified PMID, '" . htmlspecialchars($pmid_input) . "', appears to be invalid.");
   }
+  $dont_expand = TRUE;
 }
 if ($doi_input) {
 	$title = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi_input);
