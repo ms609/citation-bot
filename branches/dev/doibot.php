@@ -47,35 +47,15 @@ if (is_valid_user($user)) {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
-$doi_input = $_GET["doi"];
-$pmid_input = str_replace(array("pmid", "PMID"), "", $_GET["pmid"]);
-$pmc_input = str_replace(array("pmc", "PMC"), "", $_GET["pmc"]);
+$doi_input = trim($_GET["doi"]);
+$pmid_input = trim(str_replace(array("pmid", "PMID"), "", $_GET["pmid"]));
+$pmc_input = trim(str_replace(array("pmc", "PMC"), "", $_GET["pmc"]));
 
-if ($pmc_input) {
-  $title = "Template:Cite pmc/" . $pmc_input;
-  $article_details = pmArticleDetails($pmc_input, "pmc");
-  print_r($article_details);
-  if ($article_details) {
-    $doi_input = $article_details["doi"];
-    if ($doi_input) {
-      $encDoi = str_replace($dotDecode, $dotEncode, $doi_input);
-      write($title, "#REDIRECT[[Template:Cite doi/$encDoi]]", "Redirecting to DOI for consistency");
-      print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite doi/$encDoi'>Template:Cite doi/$encDoi</a></p>";
-    }	else {
-      $pmid_input = $article_details["pmid"];
-      write($title, "#REDIRECT[[Template:Cite pmid/$pmid_input]]", "Redirecting to PMID for consistency");
-      print "\n<p>Redirected to <a href='http://en.wikipedia.org/wiki/Template:Cite pmid/$pmid_input'>Template:Cite pmid/$pmid_input</a></p>";
-      $cite_doi_start_code = "{{Cite journal \n| pmid = {$pmid_input}\n}}<noinclude>{{Documentation|Template:cite_pmid/subpage}}</noinclude>";
-    }
-  } else {
-   print ("\n<p>PMC $pmc_input not found. </p>");
-   $dont_expand = true;
-  }
-}
 if ($pmid_input) {
 	$page = new Page();
   if ((int) $pmid_input > 0 && (int) $pmid_input < 3000000) {
     $page->text = "{{Cite pmid|" . trim((int) $pmid_input) . "}}";
+    $page->title = $_REQUEST["page"] ? ucfirst($_REQUEST["page"]) : "[User-activated]";
     $page->expand_remote_templates();
   } else {
     echo ("\n ! The specified PMID, '" . htmlspecialchars($pmid_input) . "', appears to be invalid.");
@@ -83,15 +63,15 @@ if ($pmid_input) {
   $dont_expand = TRUE;
 }
 if ($doi_input) {
-	$title = "Template:Cite doi/" . str_replace($dotDecode, $dotEncode, $doi_input);
-	$cite_doi_start_code = "{{Cite journal \n| doi = $doi_input \n| pmid = $pmid_input \n| pmc = $pmc_input\n}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>";
-} else if (!$cite_doi_start_code) {
-  $title = ucfirst($_REQUEST["page"]);
-}
-
-if ($cite_doi_start_code) {
-  $editing_cite_doi_template = true;
-  $ON = true;
+	$page = new Page();
+  if (preg_match('~^10.\d{4}/.+[A-z0-9]$~', $doi_input)) {
+    $page->text = "{{Cite doi|" . $doi_input . "}}";
+    $page->title = $_REQUEST["page"] ? ucfirst($_REQUEST["page"]) : "[User-activated]";
+    $page->expand_remote_templates();
+  } else {
+    echo ("\n ! The specified DOI, '" . htmlspecialchars($doi_input) . "', appears to be invalid.");
+  }
+  $dont_expand = TRUE;
 }
 
 $slowMode = $_REQUEST["slow"];

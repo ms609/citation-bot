@@ -60,6 +60,7 @@ includeIfNew('Snoopy.class');
 includeIfNew("DOItools");
 includeIfNew("objects");
 includeIfNew("wikiFunctions");
+includeIfNew("citewatchFns");
 require_once("expand.php");
 require_once(HOME . "credentials/mysql.login");
 /* php file containing
