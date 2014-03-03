@@ -77,6 +77,7 @@ if ($doi_input) {
 $slowMode = $_REQUEST["slow"];
 
 if (!$dont_expand) {
+  $title = ucfirst(strip_tags($_REQUEST["page"]));
   print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
   $my_page = new Page();
   if ($my_page->get_text_from($title)) {
