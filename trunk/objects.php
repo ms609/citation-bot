@@ -346,7 +346,7 @@ class Page {
     $auto_summary .= (($this->modifications["deletions"])
       ? "Removed redundant parameters. "
       : ""
-      ) . (($this->modifications["cite_type"] || $unify_citation_templates)
+      ) . (($this->modifications["cite_type"])
       ? "Unified citation types. "
       : ""
       ) . (($this->modifications["combine_references"])
@@ -401,7 +401,9 @@ class Page {
       $result = json_decode($bot->results);
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        echo "\n Written to " . $my_page->title . '.  ';
+        global $html_output;
+        if ($html_output) echo "\n <span style='color: #e21'>Written to <a href='" . wikiroot . "title=" . urlencode($my_page->title) . "'>" . $my_page->title . '</a></span>';
+        else echo "\n Written to " . $my_page->title . '.  ';
         return TRUE;
       } else if ($result->edit->result) {
         echo $result->edit->result;
@@ -784,7 +786,7 @@ class Template extends Item {
     if (trim($value) == "") return false;
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      if ($this->display_authors()) $this->add_if_new('display-authors', 29);
+      if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', 29);
       return false;
     }
     preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
@@ -843,7 +845,7 @@ class Template extends Item {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98": 
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99": 
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        if (strpos($value, ',') && substr($param, 0, 3) == 'aut' && $this->blank("last$auNo") && $this->blank("author$auNo") && $this->blank("coauthors")) {
+        if (strpos($value, ',') && substr($param, 0, 3) == 'aut' && $this->blank("last$auNo") && $this->blank("author$auNo") && $this->blank("coauthors") && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE) {
           $au = explode(',', $value);
           $this->add('last' . $auNo, formatSurname($au[0]));
           return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
@@ -922,6 +924,16 @@ class Template extends Item {
           return true;
         }
         return false;
+      case 'display-authors': case 'displayauthors':
+        if ($this->blank('display-authors') && $this->blank('displayauthors')) {
+          return $this->add($param, $value);
+        }
+      return false;
+      case 'display-editors': case 'displayeditors':
+        if ($this->blank('display-editors') && $this->blank('displayeditors')) {
+          return $this->add($param, $value);
+        }
+      return false;
       case 'doi_brokendate': case 'doi_inactivedate':
         if ($this->blank('doi_brokendate') && $this->blank('doi_inactivedate')) {
           return $this->add($param, $value);
@@ -974,7 +986,8 @@ class Template extends Item {
           $this->rename("url", "pmc", $match[1] . $match[2]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } else if (preg_match("~^https?://d?x?\.?doi\.org/(.*)~", $url, $match)) {
+      } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
+        quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         if ($this->get('doi')) {
           $this->forget('url');
         } else {
@@ -982,7 +995,8 @@ class Template extends Item {
           $this->expand_by_doi(1);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } elseif (preg_match("~10\.\d{4}/[^&\s\|]*~", $url, $match)) {
+      } elseif (preg_match("~10\.\d{4}/[^&\s\|\?]*~", $url, $match)) {
+        quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
         if ($this->get('doi')) {
           $this->forget('url');
         } else {
@@ -1477,8 +1491,8 @@ class Template extends Item {
     if ($pm = $this->get('pmid')) $identifier = 'pmid';
     else if ($pm = $this->get('pmc')) $identifier = 'pmc';
     else return false;
-    
-    echo "\n - Checking " . strtoupper($identifier) . ' ' . $pm . ' for more details' . tag();
+    global $html_output;
+    echo "\n - Checking " . ($html_output?'<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . $pm . '" target="_blank">':'') . strtoupper($identifier) . ' ' . $pm . ($html_output ? "</a>" : '') . ' for more details' . tag();
     $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=$pm");
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
     if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
@@ -2028,7 +2042,7 @@ class Template extends Item {
     } else {
       return false;
     }
-    if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARVIV|LCCN)[\s:]*(\d[^\s\}\{\|]*)~iu", $id, $match)) {
+    if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[^\s\}\{\|]*)~iu", $id, $match)) {
       $this->add_if_new(strtolower($match[1]), $match[2]);
       $id = str_replace($match[0], '', $id);
     }
@@ -2204,7 +2218,7 @@ class Template extends Item {
        
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) $this->rename('origyear', 'year');
     
-    if (!($authors = $this->get('author'))) $authors = $this->get('authors');
+    if (!($authors = $this->get('authors'))) $authors = $this->get('author'); # Order _should_ be irrelevant as only one will be set... but prefer 'authors' if not.
     if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
       $this->add_if_new('author-separator', $match[1] ? $match[1] : $match[2]);
       $new_authors = explode($match[1] . $match[2], $authors);
@@ -2385,6 +2399,7 @@ class Template extends Item {
   }
   
   protected function handle_et_al() {
+    return "Disabled because some Wikipedians do not like author parameters to be changed";
     global $author_parameters;
     foreach ($author_parameters as $i => $group) {
       foreach ($group as $param) {
@@ -2529,12 +2544,14 @@ class Template extends Item {
     }
     elseif ($this->has('url')) $this->name = "Cite web"; // fall back to this if URL
     else $this->name = "Cite document"; // If no URL, cite journal ought to handle it okay
+    $this->modifications['cite_type'] = TRUE;
     echo "\n    Converting to dominant {{Cite XXX}} template";
   }
   
   public function cite2citation() {
     if (!preg_match("~[cC]ite[ _]\w+~", $this->wikiname())) return ;
     $this->add_if_new("postscript", ".");
+    $this->modifications['cite_type'] = TRUE;
     $this->name = 'Citation';
     echo "\n    Converting to dominant {{Citation}} template";
   }
@@ -2777,62 +2794,6 @@ function tag($long = FALSE) {
   echo ']';
 }
 
-///////////////////////
-function leave_broken_doi_message($id, $page, $doi) { #todo
-  echo "\n\n* Non-functional identifier $id found in article [[$page]]";
-  if (getNamespace($page) == 0) {
-    $talkPage = "Talk:$page";
-    $talkMessage = "== Reference to broken DOI ==\n"
-                 . "A reference was recently added to this article using the [[Template:Cite doi|Cite DOI template]]. "
-                 . "The [[User:Citation bot|citation bot]] tried to expand the citation, but could not access the specified DOI. "
-                 . "Please check that the [[Digital object identifier|DOI]] [[doi:$doi]] has been correctly entered.  If the DOI is correct, it is possible that it "
-                 . "has not yet been entered into the [[CrossRef]] database.  Please  "
-                 . "[http://en.wikipedia.org/w/index.php?title=" . urlencode($id)
-                 . "&preload=Template:Cite_doi/preload/nodoi&action=edit complete the reference by hand here]. "
-                 . "\nThe script that left this message was unable to track down the user who added the citation; "
-                 . "it may be prudent to alert them to this message.  Thanks, ";
-    $talkId = articleId($page, 1);
-
-    if ($talkId) {
-      $text = getRawWikiText($talkPage);
-      echo "\nTALK PAGE EXISTS " . strlen($text) . "\n\n";
-    } else {
-      $text = '';
-      echo "\nTALK PAGE DOES NOT EXIST\n\n";
-    }
-    if (strpos($text, "|DOI]] [[doi:" . $doi) || strpos($text, "d/nodoi&a")) {
-      echo "\n - Message already on talk page.  Zzz.\n";
-    } else if ($text && $talkId || !$text && !$talkId) {
-      echo "\n * Writing message on talk page..." . $talkPage . "\n\n";
-      echo "\n\n Talk page $talkPage has ID $talkId; text was: [$text].  Our page was $id and " .
-              "the article in progress was $page.\n";
-      write($talkPage,
-              ($text . "\n" . $talkMessage . "~~~~"),
-              "Reference to broken [[doi:$doi]] using [[Template:Cite doi]]: please fix!");
-      echo " Message left.\n";
-    } else {
-      echo "\n *  Talk page exists, but no text could be attributed to it. \n ?????????????????????????";
-    }
-    mark_broken_doi_template($page, $doi);
-  } else {
-    echo "\n * Article in question is not in article space.  Switched to use 'Template:Broken DOI'." ;
-    mark_broken_doi_template($page, $doi);
-  }
-}
-
-function mark_broken_doi_template($article_in_progress, $oDoi) {#TODO use class architecture
-  $page_code = getRawWikiText($article_in_progress);
-  if ($page_code) {
-    global $edit_initiator;
-    return write($article_in_progress
-            , preg_replace("~\{\{\s*cite doi\s*\|\s*" . preg_quote($oDoi) . "\s*\}\}~i", "{{broken doi|$oDoi}}", $page_code)
-            , "$edit_initiator Reference to broken [[doi:$oDoi]] using [[Template:Cite doiCite doi]]: please fix!"
-    );
-  } else {
-    exit("Could not retrieve getRawWikiText($article_in_progress) at expand.php#1q537");
-  }
-}
-
 global $author_parameters;
 $author_parameters = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author', 
@@ -2925,16 +2886,16 @@ $author_parameters = array(
     87 => array('surname87', 'forename87', 'initials87', 'first87', 'last87', 'author87'),
     88 => array('surname88', 'forename88', 'initials88', 'first88', 'last88', 'author88'),
     89 => array('surname89', 'forename89', 'initials89', 'first89', 'last89', 'author89'),
-    90 => array('surname80', 'forename80', 'initials80', 'first80', 'last80', 'author80'),
-    91 => array('surname81', 'forename81', 'initials81', 'first81', 'last81', 'author81'),
-    92 => array('surname82', 'forename82', 'initials82', 'first82', 'last82', 'author82'),
-    93 => array('surname83', 'forename83', 'initials83', 'first83', 'last83', 'author83'),
-    94 => array('surname84', 'forename84', 'initials84', 'first84', 'last84', 'author84'),
-    95 => array('surname85', 'forename85', 'initials85', 'first85', 'last85', 'author85'),
-    96 => array('surname86', 'forename86', 'initials86', 'first86', 'last86', 'author86'),
-    97 => array('surname87', 'forename87', 'initials87', 'first87', 'last87', 'author87'),
-    98 => array('surname88', 'forename88', 'initials88', 'first88', 'last88', 'author88'),
-    99 => array('surname89', 'forename89', 'initials89', 'first89', 'last89', 'author89'),
+    90 => array('surname90', 'forename90', 'initials90', 'first90', 'last90', 'author90'),
+    91 => array('surname91', 'forename91', 'initials91', 'first91', 'last91', 'author91'),
+    92 => array('surname92', 'forename92', 'initials92', 'first92', 'last92', 'author92'),
+    93 => array('surname93', 'forename93', 'initials93', 'first93', 'last93', 'author93'),
+    94 => array('surname94', 'forename94', 'initials94', 'first94', 'last94', 'author94'),
+    95 => array('surname95', 'forename95', 'initials95', 'first95', 'last95', 'author95'),
+    96 => array('surname96', 'forename96', 'initials96', 'first96', 'last96', 'author96'),
+    97 => array('surname97', 'forename97', 'initials97', 'first97', 'last97', 'author97'),
+    98 => array('surname98', 'forename98', 'initials98', 'first98', 'last98', 'author98'),
+    99 => array('surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99'),
 );
 
 function url2template($url, $citation) {
