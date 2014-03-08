@@ -786,7 +786,7 @@ class Template extends Item {
     if (trim($value) == "") return false;
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      if ($this->display_authors()) $this->add_if_new('display-authors', 29);
+      $this->add_if_new('display-authors', 29);
       return false;
     }
     preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
@@ -2399,6 +2399,7 @@ class Template extends Item {
   }
   
   protected function handle_et_al() {
+    return "Disabled because some Wikipedians do not like author parameters to be changed";
     global $author_parameters;
     foreach ($author_parameters as $i => $group) {
       foreach ($group as $param) {

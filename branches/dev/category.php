@@ -21,8 +21,8 @@ foreach ($argv as $arg) {
 
 $slowMode = false;
 $fastMode = false;
-$account_suffix='_1'; // Keep this before including expandFns
 $account_suffix='_4'; // Whilst testing
+$account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
 $edit_initiator = '[Cat' . revisionID() . '-dev]';
