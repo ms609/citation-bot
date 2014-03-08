@@ -786,7 +786,7 @@ class Template extends Item {
     if (trim($value) == "") return false;
     if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      $this->add_if_new('display-authors', 29);
+      if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', 29);
       return false;
     }
     preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
@@ -845,7 +845,7 @@ class Template extends Item {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98": 
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99": 
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        if (strpos($value, ',') && substr($param, 0, 3) == 'aut' && $this->blank("last$auNo") && $this->blank("author$auNo") && $this->blank("coauthors")) {
+        if (strpos($value, ',') && substr($param, 0, 3) == 'aut' && $this->blank("last$auNo") && $this->blank("author$auNo") && $this->blank("coauthors") && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE) {
           $au = explode(',', $value);
           $this->add('last' . $auNo, formatSurname($au[0]));
           return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));

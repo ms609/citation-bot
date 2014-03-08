@@ -19,7 +19,9 @@ problemtxt;
 
 $page = new Page();
 $page->text =  <<<problemtxt
-<ref name="o'hara">{{Cite journal|10.1056/NEJMoa055218}}</ref>
+
+
+* {{cite journal | author=Esin, A. A. and Blandford, R. | title=Dust Echoes from Gamma-Ray Bursts | journal=[[Astrophysical Journal]] | volume=534 | issue=2 | year=2000 | pages=L151–L154 | pmid=10813670 | doi=10.1086/312670 | ref = Esin | bibcode=2000ApJ...534L.151E|arxiv = astro-ph/0003415 }}
 
 
  
