@@ -20,7 +20,7 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-* {{cite journal || year = 2009-03-17}}
+* {{cite journal |url=http://pubs.acs.org/doi/abs/10.1021/ac200974w?prevSearch=%255Bauthor%253A%2BWorkman%255D%2BNOT%2B%255Batype%253A%2Bad%255D%2BNOT%2B%255Batype%253A%2Bacs-toc%255D&searchHistoryKey=}}
  
 problemtxt;
 $page->expand_text();

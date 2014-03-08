@@ -976,7 +976,8 @@ class Template extends Item {
           $this->rename("url", "pmc", $match[1] . $match[2]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } else if (preg_match("~^https?://d?x?\.?doi\.org/(.*)~", $url, $match)) {
+      } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
+        quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         if ($this->get('doi')) {
           $this->forget('url');
         } else {
@@ -984,7 +985,8 @@ class Template extends Item {
           $this->expand_by_doi(1);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } elseif (preg_match("~10\.\d{4}/[^&\s\|]*~", $url, $match)) {
+      } elseif (preg_match("~10\.\d{4}/[^&\s\|\?]*~", $url, $match)) {
+        quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
         if ($this->get('doi')) {
           $this->forget('url');
         } else {
