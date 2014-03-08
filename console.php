@@ -20,11 +20,14 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-* {{cite journal || year = 2009-03-17}}
+
+* {{cite journal | author=Esin, A. A. and Blandford, R. | title=Dust Echoes from Gamma-Ray Bursts | journal=[[Astrophysical Journal]] | volume=534 | issue=2 | year=2000 | pages=L151–L154 | pmid=10813670 | doi=10.1086/312670 | ref = Esin | bibcode=2000ApJ...534L.151E|arxiv = astro-ph/0003415 }}
+
+
  
 problemtxt;
 $page->expand_text();
-die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
+#die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 
 if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . ' with edit summary ' . $page->edit_summary() . "\n";
