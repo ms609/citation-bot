@@ -20,7 +20,48 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-* {{cite journal |url=http://pubs.acs.org/doi/abs/10.1021/ac200974w?prevSearch=%255Bauthor%253A%2BWorkman%255D%2BNOT%2B%255Batype%253A%2Bad%255D%2BNOT%2B%255Batype%253A%2Bacs-toc%255D&searchHistoryKey=}}
+{{Cite journal 
+| doi = 10.1038/ng.736 
+| last1 = Argout | first1 = X. 
+| last2 = Salse | first2 = J. 
+| last3 = Aury | first3 = J. M. 
+| last4 = Guiltinan | first4 = M. J. 
+| last5 = Droc | first5 = G. 
+| last6 = Gouzy | first6 = J. 
+| last7 = Allegre | first7 = M. 
+| last8 = Chaparro | first8 = C. 
+| last9 = Legavre | first9 = T. 
+| last10 = Maximova | first10 = S. N. 
+| last11 = Abrouk | first11 = M. 
+| last12 = Murat | first12 = F. 
+| last13 = Fouet | first13 = O. 
+| last14 = Poulain | first14 = J. 
+| last15 = Ruiz | first15 = M. 
+| last16 = Roguet | first16 = Y. 
+| last17 = Rodier-Goud | first17 = M. 
+| last18 = Barbosa-Neto | first18 = J. F. 
+| last19 = Sabot | first19 = F. 
+| last20 = Kudrna | first20 = D. 
+| last21 = Ammiraju | first21 = J. S. S. 
+| last22 = Schuster | first22 = S. C. 
+| last23 = Carlson | first23 = J. E. 
+| last24 = Sallet | first24 = E. 
+| last25 = Schiex | first25 = T. 
+| last26 = Dievart | first26 = A. 
+| last27 = Kramer | first27 = M. 
+| last28 = Gelley | first28 = L. 
+| last29 = Shi | first29 = Z. 
+| last30 = Bérard | first30 = A. L. 
+| title = The genome of Theobroma cacao 
+| journal = Nature Genetics 
+| volume = 43 
+| issue = 2 
+| pages = 101–108 
+| year = 2010 
+| pmid = 21186351 
+| displayauthors = 30
+}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>
+
  
 problemtxt;
 $page->expand_text();

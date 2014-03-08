@@ -924,6 +924,16 @@ class Template extends Item {
           return true;
         }
         return false;
+      case 'display-authors': case 'displayauthors':
+        if ($this->blank('display-authors') && $this->blank('displayauthors')) {
+          return $this->add($param, $value);
+        }
+      return false;
+      case 'display-editors': case 'displayeditors':
+        if ($this->blank('display-editors') && $this->blank('displayeditors')) {
+          return $this->add($param, $value);
+        }
+      return false;
       case 'doi_brokendate': case 'doi_inactivedate':
         if ($this->blank('doi_brokendate') && $this->blank('doi_inactivedate')) {
           return $this->add($param, $value);
