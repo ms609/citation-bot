@@ -845,7 +845,7 @@ class Template extends Item {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98": 
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99": 
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        if (strpos($value, ',') && substr($param, 0, 3) == 'aut' && $this->blank("last$auNo") && $this->blank("author$auNo") && $this->blank("coauthors") && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE) {
+        if (strpos($value, ',') && substr($param, 0, 3) == 'aut' && $this->blank("last$auNo") && $this->blank("author$auNo") && $this->blank("coauthors") && $this->single_author_in_author_parameter()) {
           $au = explode(',', $value);
           $this->add('last' . $auNo, formatSurname($au[0]));
           return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
@@ -2566,6 +2566,14 @@ class Template extends Item {
     }
     if (($da = $this->get('display-authors')) === NULL) $da = $this->get('displayauthors');
     return is_int(1 * $da) ? $da : FALSE;
+  }
+  
+  public function single_author_in_author_parameter() {
+    $author = $this->get('author') . $this->get('authors');
+    if (strpos($author, ' and ') === FALSE || strpos($author, ' et al') === FALSE) return FALSE;
+    if (count(explode(',', $author)) > 2) return FALSE;
+    if (preg_match('~\..*,~', $author)) return FALSE;
+    return TRUE;
   }
   
   public function number_of_authors() {

@@ -20,12 +20,21 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-
-* {{cite journal | author=Esin, A. A. and Blandford, R. | title=Dust Echoes from Gamma-Ray Bursts | journal=[[Astrophysical Journal]] | volume=534 | issue=2 | year=2000 | pages=L151–L154 | pmid=10813670 | doi=10.1086/312670 | ref = Esin | bibcode=2000ApJ...534L.151E|arxiv = astro-ph/0003415 }}
+{{cite journal
+|author=I. Ribas, C. Jordi, F. Vilardell, E.L. Fitzpatrick, R.W. Hilditch, F. Edward
+|title=First Determination of the Distance and Fundamental Properties of an Eclipsing Binary in the Andromeda Galaxy
+|journal=Astrophysical Journal
+|year=2005
+|volume=635|issue=1|pages=L37–L40
+|bibcode=2005ApJ...635L..37R
+|doi = 10.1086/499161
+|arxiv = astro-ph/0511045}}
 
 
  
 problemtxt;
+print count(explode(',', "I. Ribas, C. Jordi"));
+print "\n-"; print count(explode(',', "I. Ribas, C. Jordi, F. Vilardell, E.L. Fitzpatrick, R.W. Hilditch, F. Edward"));die;
 $page->expand_text();
 die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 
