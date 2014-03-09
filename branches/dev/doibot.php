@@ -77,10 +77,10 @@ if ($doi_input) {
 $slowMode = $_REQUEST["slow"];
 
 if (!$dont_expand) {
-  $title = ucfirst(strip_tags($_REQUEST["page"]));
+  $title = trim(ucfirst(strip_tags($_REQUEST["page"])));
   print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
   $my_page = new Page();
-  if ($my_page->get_text_from($title)) {
+  if ($my_page->get_text_from(str_replace(' ', '_', $_REQUEST["page"])) {
      if ($my_page->expand_text()) {
       while (!$my_page->write() && $attempts < 2) ++$attempts;
       if ($attempts < 3 ) echo $html_output ?

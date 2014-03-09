@@ -20,21 +20,12 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-{{cite journal
-|author=I. Ribas, C. Jordi, F. Vilardell, E.L. Fitzpatrick, R.W. Hilditch, F. Edward
-|title=First Determination of the Distance and Fundamental Properties of an Eclipsing Binary in the Andromeda Galaxy
-|journal=Astrophysical Journal
-|year=2005
-|volume=635|issue=1|pages=L37–L40
-|bibcode=2005ApJ...635L..37R
-|doi = 10.1086/499161
-|arxiv = astro-ph/0511045}}
 
 
  
 problemtxt;
-print count(explode(',', "I. Ribas, C. Jordi"));
-print "\n-"; print count(explode(',', "I. Ribas, C. Jordi, F. Vilardell, E.L. Fitzpatrick, R.W. Hilditch, F. Edward"));die;
+
+$page->get_text_from(ucfirst(strip_tags('Amyotrophic_lateral_sclerosis')));
 $page->expand_text();
 die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 
