@@ -6,6 +6,7 @@
 $account_suffix = '_4'; // Keep this before including expandFns
 error_reporting(E_ALL^E_NOTICE);
 $slow_mode = 1;
+$slow_mode = ($argument["slow"] || $argument["slowmode"] || $argument["thorough"]) ? true : false;
 include('expandFns.php');
 
 $bot_exclusion_compliant = TRUE;
@@ -21,11 +22,21 @@ $page = new Page();
 $page->text =  <<<problemtxt
 
 
+{{Cite journal
+ | title = DNA sequence of both chromosomes of the cholera pathogen Vibrio cholerae
+ | journal = Nature
+ | volume = 406
+ | issue = 6795
+ | pages = 477–483
+ | year = 2000
+ | doi = 10.1038/35020000
+ | pmid = 10952301
+}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>
+
 
  
 problemtxt;
-
-$page->get_text_from(ucfirst(strip_tags('Amyotrophic_lateral_sclerosis')));
+#$page->get_text_from('Amyotrophic_lateral_sclerosis');
 $page->expand_text();
 die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 
@@ -68,7 +79,6 @@ foreach ($argv as $arg) {
   }
 }
 
-$slow_mode = ($argument["slow"] || $argument["slowmode"] || $argument["thorough"]) ? true : false;
 $account_suffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
 include("object_expandFns.php");
 $htmlOutput = false;

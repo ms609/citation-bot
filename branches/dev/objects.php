@@ -852,7 +852,7 @@ class Template extends Item {
         }
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
                 && $this->blank("coauthor") && $this->blank("coauthors")
-                && underTwoAuthors($this->get('author'))) {
+                && $this->single_author_in_author_parameter()) {
           return $this->add($param, $value);
         }
         return false;
@@ -867,7 +867,7 @@ class Template extends Item {
       case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
         if ($this->blank($param)
-                && underTwoAuthors($this->get('author')) && $this->blank("author" . $auNo)
+                && $this->single_author_in_author_parameter() && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
           return $this->add($param, $value);
         }
@@ -1386,6 +1386,7 @@ class Template extends Item {
                 . "&volume=" . $this->get('volume')
                 . "&page=" . ($pages = $this->get('pages') ? $pages : $this->get('page'))
                 );
+        if ($xml["retrieved"] != 1) return FALSE;
         $journal_string = explode(",", (string) $xml->record->journal);
         $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
         if (strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
@@ -2549,7 +2550,7 @@ class Template extends Item {
   }
   
   public function cite2citation() {
-    if (!preg_match("~[cC]ite[ _]\w+~", $this->wikiname())) return ;
+    if (!preg_match("~[cC]ite[ _](journal|web|book|conference|encyclopedia|news|thesis)~", $this->wikiname())) return ;
     $this->add_if_new("postscript", ".");
     $this->modifications['cite_type'] = TRUE;
     $this->name = 'Citation';
@@ -2570,8 +2571,10 @@ class Template extends Item {
   
   public function single_author_in_author_parameter() {
     $author = $this->get('author') . $this->get('authors');
-    if (strpos($author, ' and ') === FALSE || strpos($author, ' et al') === FALSE) return FALSE;
-    if (count(explode(',', $author)) > 2) return FALSE;
+    if (strpos($author, ' and ') !== FALSE) return FALSE;
+    if (strpos($author, ' et al') !== FALSE) return FALSE;
+    $chars = count_chars(trim($author));
+    if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 3 || $chars[ord(",")] > 1) return FALSE;
     if (preg_match('~\..*,~', $author)) return FALSE;
     return TRUE;
   }

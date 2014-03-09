@@ -292,20 +292,6 @@ function format_title_text($title) {
   return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
 }
 
-
-/*underTwoAuthors
-  * Return true if 0 or 1 author in $author; false otherwise
- */
-function underTwoAuthors($author) {
-  $author = str_replace(array (" '", "et al"), "", $author);
-  $chars = count_chars(trim($author));
-  if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 2 || $chars[ord(",")] > 1) {
-    return false;
-  }
-  return true;
-}
-
-
 function parameters_from_citation($c) {
   // Comments
   global $comments, $comment_placeholders;
