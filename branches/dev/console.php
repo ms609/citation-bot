@@ -22,16 +22,7 @@ $page = new Page();
 $page->text =  <<<problemtxt
 
 
-{{Cite journal
- | title = DNA sequence of both chromosomes of the cholera pathogen Vibrio cholerae
- | journal = Nature
- | volume = 406
- | issue = 6795
- | pages = 477–483
- | year = 2000
- | doi = 10.1038/35020000
- | pmid = 10952301
-}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>
+{{cite journal |journal=Current Opinion in Psychiatry |title=Current use of benzodiazepines in anxiety disorders |volume=22 |issue=1 |date=January 2009 |pages=90–95 |pmid=19122540 |author=Cloos JM, Ferreira V. |doi=10.1097/YCO.0b013e32831a473d}}<
 
 
  

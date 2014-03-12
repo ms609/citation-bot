@@ -2576,6 +2576,7 @@ class Template extends Item {
     $chars = count_chars(trim($author));
     if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 3 || $chars[ord(",")] > 1) return FALSE;
     if (preg_match('~\..*,~', $author)) return FALSE;
+    if (preg_match('~\w+\s+[A-Z]+,\s+\w+\s+[A-Z]+~', $author)) return FALSE;
     return TRUE;
   }
   
