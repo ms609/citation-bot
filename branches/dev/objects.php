@@ -895,6 +895,11 @@ class Template extends Item {
           return $this->add($param, format_title_text($value));
         }
         return false;
+      case "issue": case "number":
+        if ($this->blank('issue') && $this->blank('number')) {
+          return $this->add('issue', $value);
+        }
+        return false;
       case "page": case "pages":
         if (( $this->blank("pages") && $this->blank("page"))
                 || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE

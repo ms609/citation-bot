@@ -25,6 +25,7 @@ $page->text =  <<<problemtxt
 {{cite journal |journal=Current Opinion in Psychiatry |title=Current use of benzodiazepines in anxiety disorders |volume=22 |issue=1 |date=January 2009 |pages=90–95 |pmid=19122540 |author=Cloos JM, Ferreira V. |doi=10.1097/YCO.0b013e32831a473d}}<
 
 
+
  
 problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
