@@ -157,6 +157,7 @@ $common_mistakes = array
   "no"              =>  "issue",
   "No"              =>  "issue",
   "No."             =>  "issue",
+  "nurl"            =>  "url",
   "origmonth"       =>  "month",
   "p"               =>  "page",
   "p."              =>  "page",
@@ -168,6 +169,7 @@ $common_mistakes = array
   "vol"             =>  "volume",
   "Vol"             =>  "volume",
   "Vol."            =>  "volume",
+  "website"         =>  "url",
 );
 
 //Optimisation

@@ -2331,7 +2331,6 @@ class Template extends Item {
           $this->!et('unused_data') = substr(trim($this->!et('unused_data')), 1);
       }
     }*/
-    if ($this->has('accessdate') && $this->lacks('url')) $this->forget('accessdate');
   }
   
   protected function format_title($title = FALSE) {
