@@ -21,16 +21,15 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-
-{{cite journal |journal=Current Opinion in Psychiatry |title=Current use of benzodiazepines in anxiety disorders |volume=22 |issue=1 |date=January 2009 |pages=90–95 |pmid=19122540 |author=Cloos JM, Ferreira V. |doi=10.1097/YCO.0b013e32831a473d}}<
+f>{{cite book| author = George Fletcher Bass| coauthors = James W. Allan| title = Serçe Limani: An Eleventh-century Shipwreck| url = http://books.google.com/?id=E6ZJ-05aC-sC&pg=PA506| year = 2003| publisher = Texas A&M University Press| isbn = 978-0-89096-947-2| page = 506 }}</ref> [[Rhus typhina|Staghorn sumac]]
 
 
 
  
 problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
-#$page->expand_text();
-#die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
+$page->expand_text();
+die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 
 if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . ' with edit summary ' . $page->edit_summary() . "\n";
