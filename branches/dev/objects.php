@@ -494,7 +494,7 @@ class Item {
 
 class Comment extends Item {
   const placeholder_text = '# # # Citation bot : comment placeholder %s # # #';
-  const regexp = '~<!--.*-->~us';
+  const regexp = '~<!--.*?-->~us';
   const treat_identical_separately = FALSE;
   
   public function parse_text($text) {
@@ -658,6 +658,7 @@ class Template extends Item {
       $this->param = NULL;
     }
     if ($this->param) foreach ($this->param as $p) $this->initial_param[$p->param] = $p->val;
+    else $this->initial_param = NULL;
   }
   
   protected function split_params($text) {

@@ -29,12 +29,12 @@ $page->text =  <<<problemtxt
  
 problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
-$page->expand_text();
-die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
+#$page->expand_text();
+#die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 
 if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . ' with edit summary ' . $page->edit_summary() . "\n";
-  #print $page->text; die("\n\nbyebye\n");
+  print $page->text; die("\n\nbyebye\n");
   while (!$page->write() && $attempts < 2) ++$attempts;
   if ($attempts < 3 ) echo $html_output ?
        " <small><a href=http://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "

@@ -191,7 +191,7 @@ ob_end_flush();
 ################ Functions ##############
 
 function updateBacklog($page) {
-  print "-[#TODO unhandled DB request]-";
+  # "-[#TODO unhandled DB request]-";
   return (NULL);
   $sPage = addslashes($page);
   $id = addslashes(articleId($page));
