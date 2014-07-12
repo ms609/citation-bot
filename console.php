@@ -21,13 +21,14 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-{{cite journal|pmid=12578157}} 
+{{citation|url=http://webmineral.com/data/Sylvite.shtml|title=Webmineral|accessdate=2011-10-05}}
+{{cite journal | 1234}}{{cite journal | 1234}}
 
 problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
 
-#$page->expand_text();
-#die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
+$page->expand_text();
+die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 
 if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . ' with edit summary ' . $page->edit_summary() . "\n";

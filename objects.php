@@ -947,10 +947,17 @@ class Template extends Item {
           if ($this->blank('doi')) $this->get_doi_from_crossref();
           return true;
         }
+      return false;
       case 'author_separator': case 'author-separator': 
         if ($this->blank($param)) {        
           return $this->add($param, $value);
-        }        
+        }
+      return false;
+      case 'postscript':
+        if ($this->blank($param)) {        
+          return $this->add($param, $value);
+        } 
+      return false;
       default:
         if ($this->blank($param)) {        
           return $this->add($param, sanitize_string($value));
