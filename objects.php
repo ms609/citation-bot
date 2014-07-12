@@ -2137,53 +2137,62 @@ class Template extends Item {
   foreach ($this->param as $p) {
     ++$i;
     if ((strlen($p->param) > 0) && !in_array($p->param, $parameter_list)) {
-      echo "\n  *  Unrecognised parameter {$p->param} ";
-      $mistake_id = array_search($p->param, $mistake_keys);
-      if ($mistake_id) {
-        // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
-        $p->param = $mistake_corrections[$mistake_id];
-        echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
-        continue;
-      }
-      $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
-      $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
-      $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
-      
-      // Check the parameter list to find a likely replacement
-      $shortest = -1;
-      foreach ($unused_parameters as $parameter)
-      {
-        $lev = levenshtein($p->param, $parameter, 5, 4, 6);
-        // Strict inequality as we want to favour the longest match possible
-        if ($lev < $shortest || $shortest < 0) {
-          $comp = $closest;
-          $closest = $parameter;
-          $shortish = $shortest;
-          $shortest = $lev;
-        }
-        // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
-        else if ($lev < $shortish) {
-          $shortish = $lev;
-          $comp = $parameter;
-        }
-      }
-      $str_len = strlen($p->param);
-
-      // Account for short words...
-      if ($str_len < 4) {
-        $shortest *= ($str_len / (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
-        $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
-      }
-      if ($shortest < 12 && $shortest < $shortish) {
-        $p->param = $closest;
-        echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
-      } else {
-        $similarity = similar_text($p->param, $closest) / strlen($p->param);
-        if ($similarity > 0.6) {
-          $p->param = $closest;
-          echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+      if (substr($p->param, 0, 8) == "coauthor") {
+        echo "\n  ! The coauthor parameter is deprecated";
+        if ($this->has('last2') || $this->has('author2')) {
+          echo " please replace this manually."
         } else {
-          echo "could not be replaced with confidence.  Please check the citation yourself.";
+          $p->param = 'author2';
+        }      
+      } else {
+        echo "\n  *  Unrecognised parameter {$p->param} ";
+        $mistake_id = array_search($p->param, $mistake_keys);
+        if ($mistake_id) {
+          // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
+          $p->param = $mistake_corrections[$mistake_id];
+          echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
+          continue;
+        }
+        $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
+        $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
+        $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
+        
+        // Check the parameter list to find a likely replacement
+        $shortest = -1;
+        foreach ($unused_parameters as $parameter)
+        {
+          $lev = levenshtein($p->param, $parameter, 5, 4, 6);
+          // Strict inequality as we want to favour the longest match possible
+          if ($lev < $shortest || $shortest < 0) {
+            $comp = $closest;
+            $closest = $parameter;
+            $shortish = $shortest;
+            $shortest = $lev;
+          }
+          // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
+          else if ($lev < $shortish) {
+            $shortish = $lev;
+            $comp = $parameter;
+          }
+        }
+        $str_len = strlen($p->param);
+
+        // Account for short words...
+        if ($str_len < 4) {
+          $shortest *= ($str_len / (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
+          $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
+        }
+        if ($shortest < 12 && $shortest < $shortish) {
+          $p->param = $closest;
+          echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+        } else {
+          $similarity = similar_text($p->param, $closest) / strlen($p->param);
+          if ($similarity > 0.6) {
+            $p->param = $closest;
+            echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+          } else {
+            echo "could not be replaced with confidence.  Please check the citation yourself.";
+          }
         }
       }
     }
