@@ -2410,7 +2410,6 @@ class Template extends Item {
   }
   
   protected function handle_et_al() {
-    return "Disabled because some Wikipedians do not like author parameters to be changed";
     global $author_parameters;
     foreach ($author_parameters as $i => $group) {
       foreach ($group as $param) {
@@ -2421,14 +2420,16 @@ class Template extends Item {
             // then there's scope for "Smith, AB; Peters, Q.R. et al"
             $coauthor_parameter = strpos($param, 'co') === FALSE ? 0 : 1;
             if (strpos($val_base, ';')) {
-              $authors = explode(';', $val_base);
+              if ($param == 'author') $this->rename('author', 'authors');
+              #$authors = explode(';', $val_base);
             } else if (substr_count($val_base, ',') > 1
                     || substr_count($val_base, ',') < substr_count(trim($val_base), ' ')) {
               // then we (probably) have a list of authors joined by commas in our first parameter
-              $authors = explode(',', $val_base);
-              $this->add_if_new('author-separator', ',');
+              if ($param == 'author') $this->rename('author', 'authors');
+              #$authors = explode(',', $val_base);
+              #$this->add_if_new('author-separator', ',');
             }
-            if ($authors) {
+            if ($authors) { # Will never be true; some Wikipedians get prickly if anything is changed.
               foreach ($authors as $au) {
                 if ($i == 1) {
                   if ($coauthor_parameter) {
