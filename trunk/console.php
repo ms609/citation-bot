@@ -21,11 +21,8 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
+{{cite journal|pmid=12578157}} 
 
-LIVE as of June 28th 2014.  Google URL being treated as separate parameters.
-{{cite book |title=Intertidal Invertebrates of the Central California Coast |last=Felty Light |first=Sol |year= |publisher=Google Books |page=108 |url=http://books.google.co.uk/books?id=2Qnod-98-q8C&pg=PA129&lpg=PA129&dq=scutum+tergum&source=bl&ots=wsWm6DEOGm&sig=LH3iepinX3T6AAI9r8G52x7vFkQ&hl=en&ei=pOPTTo7ZMobl8QPdptHXDw&sa=X&oi=book_result&ct=result&resnum=2&ved=0CCMQ6AEwAQ#v=onepage&q=scutum%20tergum&f=false |accessdate=2011-11-30}}
-
- 
 problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
 
