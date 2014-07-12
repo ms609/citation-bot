@@ -2042,7 +2042,7 @@ class Template extends Item {
     } else {
       return false;
     }
-    if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[^\s\}\{\|]*)~iu", $id, $match)) {
+    if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*[^\s\}\{\|]*)~iu", $id, $match)) {
       $this->add_if_new(strtolower($match[1]), $match[2]);
       $id = str_replace($match[0], '', $id);
     }
