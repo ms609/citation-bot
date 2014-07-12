@@ -658,6 +658,7 @@ class Template extends Item {
       $this->param = NULL;
     }
     if ($this->param) foreach ($this->param as $p) $this->initial_param[$p->param] = $p->val;
+    #print_r($this);
   }
   
   protected function split_params($text) {
