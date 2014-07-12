@@ -1,11 +1,12 @@
 #!/usr/bin/php
-<?
+<?php
 // $Id$
 #$abort_mysql_connection = true; // Whilst there's a problem with login
 
 $account_suffix = '_4'; // Keep this before including expandFns
 error_reporting(E_ALL^E_NOTICE);
 $slow_mode = 1;
+$slow_mode = ($argument["slow"] || $argument["slowmode"] || $argument["thorough"]) ? true : false;
 include('expandFns.php');
 
 $bot_exclusion_compliant = TRUE;
@@ -20,14 +21,14 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-
-* {{cite journal | author=Esin, A. A. and Blandford, R. | title=Dust Echoes from Gamma-Ray Bursts | journal=[[Astrophysical Journal]] | volume=534 | issue=2 | year=2000 | pages=L151–L154 | pmid=10813670 | doi=10.1086/312670 | ref = Esin | bibcode=2000ApJ...534L.151E|arxiv = astro-ph/0003415 }}
-
+LIVE as of June 28th 2014.  Google URL being treated as separate parameters.
+{{cite book |title=Intertidal Invertebrates of the Central California Coast |last=Felty Light |first=Sol |year= |publisher=Google Books |page=108 |url=http://books.google.co.uk/books?id=2Qnod-98-q8C&pg=PA129&lpg=PA129&dq=scutum+tergum&source=bl&ots=wsWm6DEOGm&sig=LH3iepinX3T6AAI9r8G52x7vFkQ&hl=en&ei=pOPTTo7ZMobl8QPdptHXDw&sa=X&oi=book_result&ct=result&resnum=2&ved=0CCMQ6AEwAQ#v=onepage&q=scutum%20tergum&f=false |accessdate=2011-11-30}}
 
  
 problemtxt;
+#$page->get_text_from('Amyotrophic_lateral_sclerosis');
 $page->expand_text();
-#die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
+die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 
 if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . ' with edit summary ' . $page->edit_summary() . "\n";
@@ -68,7 +69,6 @@ foreach ($argv as $arg) {
   }
 }
 
-$slow_mode = ($argument["slow"] || $argument["slowmode"] || $argument["thorough"]) ? true : false;
 $account_suffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
 include("object_expandFns.php");
 $htmlOutput = false;

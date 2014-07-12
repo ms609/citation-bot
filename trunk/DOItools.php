@@ -1,4 +1,5 @@
-<?
+<?php
+global $bot, $slow_mode;
 global $bot, $slow_mode;
 $bot = new Snoopy();
 define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.

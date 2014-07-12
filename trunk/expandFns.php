@@ -1,4 +1,4 @@
-<?
+<?php
 // $Id$
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
@@ -123,7 +123,8 @@ $common_mistakes = array
   "authorn"         =>  "author2",
 #  "authors"         =>  "author",
   "co-author"       =>  "author2",
-  "co-authors"      =>  "coauthors",
+  "co-authors"      =>  "author2",
+  "coauthors"       =>  "author2",
   "coauthor"        =>  "author2",
   "display-authors" =>  "displayauthors",
   "display_authors" =>  "displayauthors",
@@ -157,6 +158,7 @@ $common_mistakes = array
   "no"              =>  "issue",
   "No"              =>  "issue",
   "No."             =>  "issue",
+  "nurl"            =>  "url",
   "origmonth"       =>  "month",
   "p"               =>  "page",
   "p."              =>  "page",
@@ -168,6 +170,7 @@ $common_mistakes = array
   "vol"             =>  "volume",
   "Vol"             =>  "volume",
   "Vol."            =>  "volume",
+  "website"         =>  "url",
 );
 
 //Optimisation
@@ -191,7 +194,7 @@ ob_end_flush();
 ################ Functions ##############
 
 function updateBacklog($page) {
-  print "-[#TODO unhandled DB request]-";
+  # "-[#TODO unhandled DB request]-";
   return (NULL);
   $sPage = addslashes($page);
   $id = addslashes(articleId($page));
@@ -291,20 +294,6 @@ function format_title_text($title) {
   $out = array("<",		">"			);
   return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
 }
-
-
-/*underTwoAuthors
-  * Return true if 0 or 1 author in $author; false otherwise
- */
-function underTwoAuthors($author) {
-  $author = str_replace(array (" '", "et al"), "", $author);
-  $chars = count_chars(trim($author));
-  if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 2 || $chars[ord(",")] > 1) {
-    return false;
-  }
-  return true;
-}
-
 
 function parameters_from_citation($c) {
   // Comments
