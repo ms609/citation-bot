@@ -30,8 +30,16 @@ problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
 
 $page->text = <<<done
-ef>  Like "The River", "Stolen Car" is an inner-directed, psychological song that deals with a failing marriage.<ref name=creswell/><ref>{{Cite book|title=Bruce Springsteen|author=Humphries,Patrick|page=42|year=1996|id=ISBN 0 7119 5304 X}}
 
+{{Persondata <!-- Metadata: see [[Wikipedia:Persondata]]. -->
+| page              = Wacquant, Loïc
+| alternative names =
+| short description = French sociologist
+| date of birth     = 1960
+| place of birth    = Montpellier, France
+| date of death     =
+| place of death    =
+}}
 done;
 $page->expand_text();
 die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
