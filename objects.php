@@ -729,6 +729,7 @@ class Template extends Item {
         // TODO: Check for the doi-inline template in the title
         $this->handle_et_al();
         $this->correct_param_spelling();
+        $this->expand_by_pubmed(); //partly to try to find DOI
         $journal_type = $this->has("periodical") ? "periodical" : "journal";
         if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
         $this->sanitize_doi();
@@ -852,7 +853,7 @@ class Template extends Item {
         }
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
                 && $this->blank("coauthor") && $this->blank("coauthors")
-                && underTwoAuthors($this->get('author'))) {
+                && under_two_authors($this->get('author'))) {
           return $this->add($param, $value);
         }
         return false;
@@ -867,7 +868,7 @@ class Template extends Item {
       case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
         if ($this->blank($param)
-                && underTwoAuthors($this->get('author')) && $this->blank("author" . $auNo)
+                && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
           return $this->add($param, $value);
         }
@@ -2419,17 +2420,11 @@ class Template extends Item {
           if ($i == 1) {
             // then there's scope for "Smith, AB; Peters, Q.R. et al"
             $coauthor_parameter = strpos($param, 'co') === FALSE ? 0 : 1;
-            if (strpos($val_base, ';')) {
+            // then we (probably) have a list of authors joined by commas in our first parameter
+            if (under_two_authors($val_base)) {
               if ($param == 'author') $this->rename('author', 'authors');
-              #$authors = explode(';', $val_base);
-            } else if (substr_count($val_base, ',') > 1
-                    || substr_count($val_base, ',') < substr_count(trim($val_base), ' ')) {
-              // then we (probably) have a list of authors joined by commas in our first parameter
-              if ($param == 'author') $this->rename('author', 'authors');
-              #$authors = explode(',', $val_base);
-              #$this->add_if_new('author-separator', ',');
             }
-            if ($authors) { # Will never be true; some Wikipedians get prickly if anything is changed.
+            if (FALSE) { # Some Wikipedians objected to this feature
               foreach ($authors as $au) {
                 if ($i == 1) {
                   if ($coauthor_parameter) {

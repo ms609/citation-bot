@@ -426,25 +426,6 @@ function loadParam($param, $value, $equals, $pipe, $weight) {
   $p[$param] = Array($value, $equals, $pipe, "weight" => ($weight + 3) / 4 * 10); // weight will be 10, 20, 30, 40 ...
 }
 
-function rename_parameter($old_name, $new_name, $new_value = null) {
-  global $p;
-  if (is($new_name)) {
-    return false;
-  } else {
-    $p[$new_name] = $p[$old_name];
-    if ($new_value !== null) {
-      $p[$new_name][0] = $new_value;
-    }
-    unset($p[$old_name]);
-    if ($old_name == "url") {
-      global $modifications;
-      unset($p["accessdate"]);
-      $modifications['removed']['accessdate'];
-    }
-    return true;
-  }
-}
-
 function cite_template_contents($type, $id) {
   $page = get_template_prefix($type);
   $replacement_template_name = $page . wikititle_encode($id);
@@ -642,18 +623,19 @@ function remove_accents($input) {
   return str_replace($search, $replace, $input);
 }
 
+function under_two_authors ($text) {
+  return (strpos($val_base, ';') !== FALSE 
+          || substr_count($val_base, ',') > 1
+          || substr_count($val_base, ',') < substr_count(trim($val_base), ' ')
+          );
+}
+
 // returns the surname of the authors.
 function authorify($author) {
   $author = preg_replace("~[^\s\w]|\b\w\b|[\d\-]|\band\s+~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
   $author = preg_match("~[a-z]~", $author) ? preg_replace("~\b[A-Z]+\b~", "", $author) : strtolower($author);
   return $author;
 }
-
-
-/*function ifNullSet($a, $b, $DEPRECATED = TRUE) {
-  print "\n\n Call to deprecated function ifNullSet in expandFns.php";
-  if_null_set($a, $b);
-}*/
 
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
@@ -683,51 +665,6 @@ function prior_parameters($par, $list=array()) {
     case 'pmid':       return prior_parameters('doi', $list);
     case 'pmc':       return prior_parameters('pmid', $list);
     default: return $list;
-  }
-}
-
-function set($key, $value) {
-  // Dud DOI in PMID database
-  if ($key == "doi") {
-    if ($value == "10.1267/science.040579197") {
-      return false;
-    } else {
-      $value = str_replace(array("?cookieset=1",), "", $value);
-    }
-  }
-
-  $parameter_order = list_parameters();
-  if (trim($value) != "") {
-    global $p, $modifications;
-    $modifications[$p[$key][0] ? 'changes' : 'additions'][$key] = true;
-    $p[$key][0] = (string) $value;
-    echo "\n    + $key: $value";
-    if (!$p[$key]["weight"]) {
-      // Calculate the appropriate weight:
-      #print "-$key-" . array_search($key, $parameter_order) . array_search("year", $parameter_order);
-      $key_position = array_search($key, $parameter_order);
-      if (!$key_position) {
-        $p[$key]["weight"] = 16383;
-      } else {
-        $lightest_weight = 16383; // (2^14)-1, arbritarily large
-        for ($i = count($parameter_order); $i >= $key_position && $i > 0; $i--) {
-          if ($p[$parameter_order[$i]]["weight"] > 0) {
-            $lightest_weight = $p[$parameter_order[$i]]["weight"];
-            $lightest_param = $parameter_order[$i];
-          }
-        }
-
-        for ($i = $key_position; $i >= 0; $i--) {
-          if ($p[$parameter_order[$i]]["weight"] > 0) {
-            $heaviest_weight = $p[$parameter_order[$i]]["weight"];
-            $heaviest_param = $parameter_order[$i];
-            break;
-          }
-        }
-        $p[$key]["weight"] = ($lightest_weight + $heaviest_weight) / 2;
-        # echo " ({$p[$key]["weight"]})";
-      }
-    }
   }
 }
 
