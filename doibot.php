@@ -34,7 +34,7 @@
         <h1 class="firstHeading">Welcome to Citation Bot</h1>
         <div id="bodyContent">
           <h3 id="siteSub">Please wait while the <a href="http://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> processes the page you requested.</h3>
-            <pre><?
+            <pre><?php
 ## Set up - including dotDecode array
 $html_output = TRUE;
 require_once ("expandFns.php");
@@ -101,38 +101,26 @@ if (!$dont_expand) {
 End of output
    # # #
 </pre>
-
-<div class="printfooter">
-
-						<!-- end content -->
-			<div class="visualClear"></div>
-		</div>
-	</div>
-		</div>
-		<div id="column-one">
-	<div id="p-cactions" class="portlet">
-		<h5>Views</h5>
-
-		<div class="pBody">
-			<ul>
-					 <li id="ca-nstab-user" class="selected"><a href="http://en.wikipedia.org/wiki/User:Citation_bot" title="View the user page [c]" accesskey="c">User page</a></li>
-					 <li id="ca-talk" class="new"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:Citation_bot" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
-					 <li id="ca-edit"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:Citation_bot" title="Click here to report an error [e]" accesskey="e">Report error</a></li>
-					 <li id="ca-history"><a href="http://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" title="This bot's contributions [x]" accesskey="x">Contributions</a></li>
-				</ul>
-		</div>
-	</div>
-	<div class="portlet" id="p-logo">
-		<a style="background-image: url(http://wiki.ts.wikimedia.org/images/wiki-en.png);" ></a>
-	</div>
+    </div><!-- div 'bodyContent' -->
+  </div><!-- div 'content' -->
+  <div id="column-one">
+    <div id="p-cactions" class="portlet">
+      <h5>Views</h5>
+      <div class="pBody">
+        <ul>
+           <li id="ca-nstab-user" class="selected"><a href="http://en.wikipedia.org/wiki/User:Citation_bot" title="View the user page [c]" accesskey="c">User page</a></li>
+           <li id="ca-talk" class="new"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:Citation_bot" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li>
+           <li id="ca-edit"><a href="http://en.wikipedia.org/w/index.php?title=User_talk:Citation_bot" title="Click here to report an error [e]" accesskey="e">Report error</a></li>
+           <li id="ca-history"><a href="http://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" title="This bot's contributions [x]" accesskey="x">Contributions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="portlet" id="p-logo">
+      <a style="background-image: url(http://wiki.ts.wikimedia.org/images/wiki-en.png);" ></a>
+    </div>
 	<script type="text/javascript"> if (window.isMSIE55) fixalpha(); </script>
-		</div><!-- end of the left (by default at least) column -->
+  </div><!-- end of the left (by default at least) column -->
 			<div class="visualClear"></div>
-			<div id="footer">
-				<div id="f-poweredbyico"><a href="http://wiki.ts.wikimedia.org/view/Main_Page"><img src="http://tools.wikimedia.de/images/wikimedia-toolserver-button.png" alt="Powered by Toolserver" /></a></div>
-			<ul id="f-list">
-				<li id="copyright">All text is available under the terms of the <a class='internal' href="http://en.wikipedia.org/wiki/Wikipedia:Text_of_the_GNU_Free_Documentation_License" title="Wikipedia:Text of the GNU Free Documentation License">GNU Free Documentation License</a>. (See <b><a class='internal' href="http://en.wikipedia.org/wiki/Wikipedia:Copyrights" title="Wikipedia:Copyrights">Copyrights</a></b> for details.)</li>
-			</ul>
 		</div>
 </div>
 </body></html>
