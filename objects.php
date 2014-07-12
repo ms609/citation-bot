@@ -1615,7 +1615,9 @@ class Template extends Item {
 
   protected function google_book_details ($gid) {
     $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
-    $simplified_xml = str_replace(":", "___", file_get_contents($google_book_url));
+    $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom', 
+      str_replace(":", "___", file_get_contents($google_book_url))
+    );
     $xml = simplexml_load_string($simplified_xml);
     if ($xml->dc___title[1]) {
       $this->add_if_new("title", str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]));
