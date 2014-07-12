@@ -155,6 +155,7 @@ $common_mistakes = array
   "editorn-first"   =>  "editor2-first",
   "firstn"          =>  "first2",
   "ibsn"            =>  "isbn",
+  "ibsn2"           =>  "isbn",
   "lastn"           =>  "last2",
   "part"            =>  "issue",
   "no"              =>  "issue",
