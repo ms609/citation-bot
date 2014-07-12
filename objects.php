@@ -981,49 +981,35 @@ class Template extends Item {
       }
     } else {
       if (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
-        if ($this->get('bibcode')) {
-          $this->forget('url');
-        } else {
+        if (!$this->get('bibcode')) {
           $this->rename("url", "bibcode", urldecode($bibcode[1]));
         }
-      } else if (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+      } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-        if ($this->get('pmc')) {
-          $this->forget('url');
-        } else {
+        if (!$this->get('pmc')) {
           $this->rename("url", "pmc", $match[1] . $match[2]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
-        if ($this->get('doi')) {
-          $this->forget('url');
-        } else {
-          $this->rename("url", "doi", urldecode($match[1]));
+        if (!$this->get('doi')) {
+          $this->set("doi", urldecode($match[1]));
           $this->expand_by_doi(1);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } elseif (preg_match("~10\.\d{4}/[^&\s\|\?]*~", $url, $match)) {
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
-        if ($this->get('doi')) {
-          $this->forget('url');
-        } else {
-          $this->rename('url', 'doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
+        if (!$this->get('doi')) {
+          $this->set('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
           $this->expand_by_doi(1);
         }
       } elseif (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
         //ARXIV
-        if ($this->get('eprint')) {
-          $this->forget('url');
-        } else {
-          $this->rename("url", "eprint", $match[1]);
-        }
+        $this->add_if_new("arxiv", $match[1]);
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        if ($this->get('pmid')) {
-          $this->forget('pmid');
-        } else {
-          $this->rename('url', 'pmid', $match[1]);
+        if (!$this->get('pmid')) {
+          $this->set('pmid', $match[1]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
