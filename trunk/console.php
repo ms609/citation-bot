@@ -29,18 +29,6 @@ LIVE as of June 28th 2014.  Google URL being treated as separate parameters.
 problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
 
-$page->text = <<<done
-
-{{Persondata <!-- Metadata: see [[Wikipedia:Persondata]]. -->
-| page              = Wacquant, Loïc
-| alternative names =
-| short description = French sociologist
-| date of birth     = 1960
-| place of birth    = Montpellier, France
-| date of death     =
-| place of death    =
-}}
-done;
 $page->expand_text();
 die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
 

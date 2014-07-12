@@ -892,10 +892,11 @@ function assessUrl($url){
 }
 
 function testDoi($doi) {
+  # TODO: this function doesn't seem to be used any more.  Where was it called before, and where can it be used now?
 	global $p;
 	echo "<div style='font-size:small; color:#888'>[";
 	if ($p["url"][0]){
-	if (strpos($p["url"][0], "ttp://dx.doi.org/")==1) return $doi;
+	if (strpos($p["url"][0], "http://dx.doi.org/")===0) return $doi;
 	$ch = curl_init();
 	curlSetup($ch, "http://dx.doi.org/$doi");
 	curl_setopt($ch, CURLOPT_NOBODY, 1);

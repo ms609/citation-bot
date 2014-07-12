@@ -681,7 +681,7 @@ function prior_parameters($par, $list=array()) {
     case 'page' : case 'pages':       return prior_parameters('issue', $list);
 
     case 'pmid':       return prior_parameters('doi', $list);
-    case 'pmc':       return prior_parameters('pmic', $list);
+    case 'pmc':       return prior_parameters('pmid', $list);
     default: return $list;
   }
 }
