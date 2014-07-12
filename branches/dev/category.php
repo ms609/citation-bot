@@ -1,5 +1,5 @@
 #!/usr/bin/php
-<?
+<?php
 // $Id$
 error_reporting(E_ALL^E_NOTICE);
 

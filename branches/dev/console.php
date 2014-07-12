@@ -1,5 +1,5 @@
 #!/usr/bin/php
-<?
+<?php
 // $Id$
 #$abort_mysql_connection = true; // Whilst there's a problem with login
 

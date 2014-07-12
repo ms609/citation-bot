@@ -1,4 +1,4 @@
-<?
+<?php
 // $Id$
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
