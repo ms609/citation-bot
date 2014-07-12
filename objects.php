@@ -2140,7 +2140,7 @@ class Template extends Item {
       if (substr($p->param, 0, 8) == "coauthor") {
         echo "\n  ! The coauthor parameter is deprecated";
         if ($this->has('last2') || $this->has('author2')) {
-          echo " please replace this manually."
+          echo " please replace this manually.";
         } else {
           $p->param = 'author2';
         }      

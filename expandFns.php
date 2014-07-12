@@ -770,7 +770,8 @@ quiet_echo("\n Fetching parameter list ... ");
 $page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters&format=json");
 $json = json_decode($bot->results, true);
 $parameter_list = (explode("\n", $json["query"]["pages"][26899494]["revisions"][0]["*"]));
-
+#$page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=Module:Citation/CS1/Whitelist&format=json");
+#print_r($page); die;
 function ascii_sort($val_1, $val_2) {
   $return = 0;
   $len_1 = strlen($val_1);
