@@ -1,5 +1,5 @@
 #!/usr/bin/php
-<?
+<?php
 // $Id: console-doibot.php 169 2010-07-03 08:45:38Z MartinS $
 
 error_reporting(E_ALL^E_NOTICE);

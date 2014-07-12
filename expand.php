@@ -1,4 +1,4 @@
-<?
+<?php
 // $Id$
 
 // This function, given $original_code, returns the $text with any citation templates expanded as far as possible.
