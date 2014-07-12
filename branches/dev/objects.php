@@ -563,7 +563,6 @@ class Long_Reference extends Item {
     if (!$this->attr['name']
     || preg_match('~ref_?[ab]?(?:..?|utogenerated|erence[a-zA-Z]*)?~i', $this->attr['name'])
     ) echo "\n * Generating name for anonymous reference [" . $this->attr['name'] . ']: ' . $this->generate_name();
-    else print "\n * No name for ". $this->attr['name'];
   }
   
   public function generate_name() {
@@ -2475,6 +2474,7 @@ class Template extends Item {
         if ($this->get($param . $i) == "") {
           $this->forget($param . $i);
         }
+        if (trim($auth_i) == "") $this->forget($param . $i);
       }
     }
     // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
@@ -2943,7 +2943,7 @@ function expand_cite_page ($title) {
   $attempts = 0;
   if ($page->get_text_from($title) && $page->expand_text()) {
     echo "\n # Writing to " . $page->title;
-    while (!$page->write() && $attempts < 3) $attempts++;
+    while (!$page->write() && $attempts < 2) $attempts++;
     if (!articleID($page) && !$doiCrossRef && $oDoi) { #TODO!
       leave_broken_doi_message($page, $article_in_progress, $oDoi);
     }

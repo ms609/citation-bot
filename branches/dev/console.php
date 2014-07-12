@@ -21,9 +21,8 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-f>{{cite book| author = George Fletcher Bass| coauthors = James W. Allan| title = Serçe Limani: An Eleventh-century Shipwreck| url = http://books.google.com/?id=E6ZJ-05aC-sC&pg=PA506| year = 2003| publisher = Texas A&M University Press| isbn = 978-0-89096-947-2| page = 506 }}</ref> [[Rhus typhina|Staghorn sumac]]
-
-
+LIVE as of June 28th 2014.  Google URL being treated as separate parameters.
+{{cite book |title=Intertidal Invertebrates of the Central California Coast |last=Felty Light |first=Sol |year= |publisher=Google Books |page=108 |url=http://books.google.co.uk/books?id=2Qnod-98-q8C&pg=PA129&lpg=PA129&dq=scutum+tergum&source=bl&ots=wsWm6DEOGm&sig=LH3iepinX3T6AAI9r8G52x7vFkQ&hl=en&ei=pOPTTo7ZMobl8QPdptHXDw&sa=X&oi=book_result&ct=result&resnum=2&ved=0CCMQ6AEwAQ#v=onepage&q=scutum%20tergum&f=false |accessdate=2011-11-30}}
 
  
 problemtxt;
