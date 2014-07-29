@@ -21,11 +21,7 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-{{Citation|text=blabla}}
-{{Citation|text=blabla}}
-{{Citation|text=ablabla}}
-{{Citation|title=blabla}}
-{{Cite doi|10.1038/nature09068}}
+{{cite journal |last1=Allende |first1=Luise M. |last2=Rubio |first2=Isabel |last3=Ruiz del Valle |first3=Valentin |last4=Guillén |first4=Jesus |last5=Martínez-Laso |first5=Jorge |last6=Lowy |first6=Ernesto |last7=Varela |first7=Pilar |last8=Zamora |first8=Jorge |last9=Arnaiz-Villena |first9=Antonio |year=2001 | title= The Old World sparrows (genus ''Passer'') phylogeography and their relative abundance of nuclear mtDNA pseudogenes | journal= [[Journal of Molecular Evolution]] | volume=53| pmid= 11479685 | pages= 144–154| url = http://chopo.pntic.mec.es/~biolmol/publicaciones/Passer.pdf |format = PDF| issue= 2|archiveurl=http://web.archive.org/web/20110721034443/http://chopo.pntic.mec.es/~biolmol/publicaciones/Passer.pdf|archivedate=21 July 2011 | doi=<!-- do not add unless it works -->}}</
 
 problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
