@@ -21,8 +21,11 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-{{cite journal | dio = 10.1051/0004-6361:20000064}}
-{{cite journal | doi = 10.1007/978-94-009-8635-0_3}}
+{{Citation|text=blabla}}
+{{Citation|text=blabla}}
+{{Citation|text=ablabla}}
+{{Citation|title=blabla}}
+{{Cite doi|10.1038/nature09068}}
 
 problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
