@@ -846,15 +846,19 @@ class Template extends Item {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98": 
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99": 
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        if (strpos($value, ',') && substr($param, 0, 3) == 'aut' && $this->blank("last$auNo") && $this->blank("author$auNo") && $this->blank("coauthors") && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE) {
-          $au = explode(',', $value);
-          $this->add('last' . $auNo, formatSurname($au[0]));
-          return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
-        }
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
-                && $this->blank("coauthor") && $this->blank("coauthors")
-                && under_two_authors($this->get('author'))) {
-          return $this->add($param, $value);
+          && $this->blank("coauthor") && $this->blank("coauthors")
+          && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE
+          && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
+          && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
+        ) {
+          if (strpos($value, ',') && substr($param, 0, 3) == 'aut') {
+            $au = explode(',', $value);
+            $this->add('last' . $auNo, formatSurname($au[0]));
+            return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
+          } else {
+            return $this->add($param, $value);
+          }
         }
         return false;
       case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9": 

@@ -21,8 +21,8 @@ problemtxt;
 $page = new Page();
 $page->text =  <<<problemtxt
 
-{{citation|url=http://webmineral.com/data/Sylvite.shtml|title=Webmineral|accessdate=2011-10-05}}
-{{cite journal | 1234}}{{cite journal | 1234}}
+{{cite journal | dio = 10.1051/0004-6361:20000064}}
+{{cite journal | doi = 10.1007/978-94-009-8635-0_3}}
 
 problemtxt;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');

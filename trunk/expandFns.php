@@ -127,6 +127,7 @@ $common_mistakes = array
   "co-author"       =>  "author2",
   "co-authors"      =>  "author2",
   "coauthors"       =>  "author2",
+  "dio"             =>  "doi",
   "director"        =>  "others",
   "display-authors" =>  "displayauthors",
   "display_authors" =>  "displayauthors",
@@ -625,9 +626,9 @@ function remove_accents($input) {
 }
 
 function under_two_authors ($text) {
-  return (strpos($val_base, ';') !== FALSE 
-          || substr_count($val_base, ',') > 1
-          || substr_count($val_base, ',') < substr_count(trim($val_base), ' ')
+  return !(strpos($text, ';') !== FALSE 
+          || substr_count($text, ',') > 1
+          || substr_count($text, ',') < substr_count(trim($text), ' ')
           );
 }
 
