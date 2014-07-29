@@ -2553,7 +2553,7 @@ class Template extends Item {
   }
   
   public function cite2citation() {
-    if (!preg_match("~[cC]ite[ _]\w+~", $this->wikiname())) return ;
+    if (!preg_match("~[cC]ite[ _](journal|web|book|encyclopa?edia|conference|thesis)~", $this->wikiname())) return ;
     $this->add_if_new("postscript", ".");
     $this->modifications['cite_type'] = TRUE;
     $this->name = 'Citation';
