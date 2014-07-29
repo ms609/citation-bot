@@ -1431,7 +1431,7 @@ class Template extends Item {
     
   public function expand_by_doi($force = FALSE) {
     global $editing_cite_doi_template;
-    $doi = $this->get('doi');
+    $doi = $this->get_without_comments($doi);
     if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) $this->add_if_new('jstor', substr($doi, 8));
       $crossRef = $this->query_crossref($doi);
@@ -1662,7 +1662,7 @@ class Template extends Item {
    *   Send the URL and the first author's SURNAME ONLY as $a1
    *  The function will return an array of authors in the form $new_authors[3] = Author, The Third
    */
-    if ($doi = $this->get('doi')) $this->expand_by_doi(TRUE);
+    if ($doi = $this->get_without_comments('doi')) $this->expand_by_doi(TRUE);
     if ($this->get('pmid')) $this->expand_by_pubmed(TRUE);
     $pages = $this->page_range();
     $pages = $pages[0];
@@ -2352,7 +2352,7 @@ class Template extends Item {
   }
   
   protected function verify_doi () {
-    $doi = $this->get('doi');
+    $doi = $this->get_without_comments('doi');
     if (!$doi) return NULL;
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
@@ -2613,6 +2613,10 @@ class Template extends Item {
       if ($p->param == $name) return $p->val;
     }
     return NULL;
+  }
+  public function get_without_comments($name) {
+    $ret = preg_replace('~<!--.*?-->~su', '', $this->get($name));
+    return (trim($ret) ? $ret : FALSE); 
   }
   
   protected function get_param_position ($needle) {
