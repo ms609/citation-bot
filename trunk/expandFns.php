@@ -1,6 +1,6 @@
 <?php
 // $Id$
-ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
+ini_set("user_agent", "Citation_bot$account_suffix; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
 
 function includeIfNew($file) {
@@ -702,7 +702,7 @@ function normalize_special_characters($str) {
   return utf8_encode($str);
 }
 
-quiet_echo("\n Establishing connection to Wikipedia servers ... ");
+quiet_echo("\n Establishing connection to Wikipedia servers with username " . USERNAME . "... ");
 logIn(USERNAME, PASSWORD);
 quiet_echo("\n Fetching parameter list ... ");
 // Get a current list of parameters used in citations from WP
