@@ -91,12 +91,8 @@ class Page {
       elseif (preg_match("~[cC]ite[ _]\w+~", $template->wikiname())) $cite_templates++;
       elseif (stripos($template->wikiname(), 'harv') === 0) $harvard_templates++;
     }
-    $citation_template_dominant = $citation_templates > $cite_templates;
-    echo "\n * $citation_templates {{Citation}} templates and $cite_templates {{Cite XXX}} templates identified.  Using dominant template {{" . ($citation_template_dominant?'Citation':'Cite XXX') . '}}.';
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
-      $citation_template_dominant ? $templates[$i]->cite2citation() : $templates[$i]->citation2cite($harvard_templates);
-      
       $template_mods = $templates[$i]->modifications();
       foreach (array_keys($template_mods) as $key) {
         if (!$this->modifications[$key]) $this->modifications[$key] = $template_mods[$key];
@@ -2520,46 +2516,6 @@ class Template extends Item {
       }
     }
   }
-  
-  public function citation2cite ($harvard_style = false) {
-    if ($this->wikiname() != 'citation') return ;
-    if ($harvard_style) $this->add_if_new("ref", "harv");
-    $this->add_if_new("postscript", "<!-- Bot inserted parameter. Either remove it; or change its value to \".\" for the cite to end in a \".\", as necessary. -->{{inconsistent citations}}");
-  
-    if ($this->has('inventor-last') || $this->has('inventor-surname') || $this->has('inventor1-surname')
-            || $this->has('inventor1-last') || is ('inventor')) $this->name = "Cite patent";
-    elseif ($this->has('journal')) $this->name = "Cite journal";
-    elseif ($this->has('agency') || $this->has('newspaper') || $this->has('magazine') || $this->has('periodical')) $this->name = "Cite news";
-    elseif ($this->has('encyclopedia')) $this->name = "Cite encyclopedia";
-    elseif ($this->has('conference') || $this->has('conferenceurl')) $this->name = "Cite conference";
-
-    // Straightforward cases now out of the way... now for the trickier ones
-    elseif ($this->has('chapter') || $this->has('editor') || $this->has('editor-last') || $this->has('editor1') || $this->has('editor1-last')) $this->name = "Cite book";
-     // Books usually catalogued by year; no month expected
-    elseif ($this->blank('date', 'month') && ($this->has('isbn') || $this->has('oclc') || $this->has('series'))) $this->name = "Cite book";
-    elseif ($this->has('publisher')) {
-      // This should be after we've checked for a journal parameter
-      if (preg_match("~\w\.\w\w~", $this->get('publisher'))) {
-       // it's a fair bet the publisher is a web address
-        $this->name = "Cite web";
-      } else {
-        $this->name = "Cite document";
-      }
-    }
-    elseif ($this->has('url')) $this->name = "Cite web"; // fall back to this if URL
-    else $this->name = "Cite document"; // If no URL, cite journal ought to handle it okay
-    $this->modifications['cite_type'] = TRUE;
-    echo "\n    Converting to dominant {{Cite XXX}} template";
-  }
-  
-  public function cite2citation() {
-    if (!preg_match("~[cC]ite[ _](journal|web|book|encyclopa?edia|conference|thesis)~", $this->wikiname())) return ;
-    $this->add_if_new("postscript", ".");
-    $this->modifications['cite_type'] = TRUE;
-    $this->name = 'Citation';
-    echo "\n    Converting to dominant {{Citation}} template";
-  }
-  
   
   // Retrieve parameters 
   public function display_authors($newval = FALSE) {
