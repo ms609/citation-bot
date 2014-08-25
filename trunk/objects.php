@@ -729,7 +729,9 @@ class Template extends Item {
         $journal_type = $this->has("periodical") ? "periodical" : "journal";
         if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
         $this->sanitize_doi();
-        if ($this->verify_doi()) $this->expand_by_doi();
+        if ($this->verify_doi()) {
+          $this->expand_by_doi();
+        }
         $this->tidy(); // Do now to maximize quality of metadata for DOI searches, etc
         $this->expand_by_adsabs(); //Primarily to try to find DOI
         $this->get_doi_from_crossref();
@@ -1427,7 +1429,7 @@ class Template extends Item {
     
   public function expand_by_doi($force = FALSE) {
     global $editing_cite_doi_template;
-    $doi = $this->get_without_comments($doi);
+    $doi = $this->get_without_comments('doi');
     if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) $this->add_if_new('jstor', substr($doi, 8));
       $crossRef = $this->query_crossref($doi);
@@ -2359,13 +2361,17 @@ class Template extends Item {
         // Or is this extra punctuation copied in?
         $trial[] = substr($doi, 0, -1);
     }
-    if (substr($doi, 0, 3) != "10.") $trial[] = $doi;
+    if (substr($doi, 0, 3) != "10.") {
+      $trial[] = $doi;
+    }
     if (preg_match("~^(.+)(10\.\d{4}/.+)~", trim($doi), $match)) {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
     $replacements = array (      "&lt;" => "<",      "&gt;" => ">",    );
-    if (preg_match("~&[lg]t;~", $doi)) $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
+    if (preg_match("~&[lg]t;~", $doi)) {
+      $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
+    }
     if ($trial) foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];

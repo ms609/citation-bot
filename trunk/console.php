@@ -24,10 +24,18 @@ $page->text =  <<<problemtxt
 {{cite journal |last1=Allende |first1=Luise M. |last2=Rubio |first2=Isabel |last3=Ruiz del Valle |first3=Valentin |last4=Guillén |first4=Jesus |last5=Martínez-Laso |first5=Jorge |last6=Lowy |first6=Ernesto |last7=Varela |first7=Pilar |last8=Zamora |first8=Jorge |last9=Arnaiz-Villena |first9=Antonio |year=2001 | title= The Old World sparrows (genus ''Passer'') phylogeography and their relative abundance of nuclear mtDNA pseudogenes | journal= [[Journal of Molecular Evolution]] | volume=53| pmid= 11479685 | pages= 144–154| url = http://chopo.pntic.mec.es/~biolmol/publicaciones/Passer.pdf |format = PDF| issue= 2|archiveurl=http://web.archive.org/web/20110721034443/http://chopo.pntic.mec.es/~biolmol/publicaciones/Passer.pdf|archivedate=21 July 2011 | doi=<!-- do not add unless it works -->}}</
 
 problemtxt;
-#$page->get_text_from('Amyotrophic_lateral_sclerosis');
 
+$page->text = <<<ProblemText
+{{Cite journal
+ | doi = 10.1371/journal.pone.0055950
+}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>
+
+
+ProblemText;
+#$page->get_text_from('Amyotrophic_lateral_sclerosis');
+print "\n\n";
 $page->expand_text();
-die($page->text .  "\n \n \n" . $page->edit_summary() . "\n");
+die($page->text .  "\n \n" . $page->edit_summary() . "\n\n");
 
 if ($page->get_text_from('User:DOI_bot/Zandbox') && $page->expand_text()) {
   echo "\n # Writing to " . $page->title . ' with edit summary ' . $page->edit_summary() . "\n";
