@@ -25,13 +25,6 @@ $page->text =  <<<problemtxt
 
 problemtxt;
 
-$page->text = <<<ProblemText
-{{Cite journal
- | doi = 10.1371/journal.pone.0055950
-}}<noinclude>{{Documentation|Template:cite_doi/subpage}}</noinclude>
-
-
-ProblemText;
 #$page->get_text_from('Amyotrophic_lateral_sclerosis');
 print "\n\n";
 $page->expand_text();
