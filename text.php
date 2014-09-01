@@ -1,6 +1,6 @@
 <?php header('Content-Type: text/html; charset="UTF-8"');?>
 <html>
-  <body onload="//form.wpDiff.click()">
+  <body onload="form.wpDiff.click()">
     <?
       error_reporting(E_ALL^E_NOTICE);
       $account_suffix = '_1'; // Keep this before including expandFns
