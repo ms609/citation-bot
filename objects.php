@@ -12,7 +12,7 @@
 $file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision$');
 $doitools_revision_id = revisionID();
 global $last_revision_id, $edit_initiator;
-$edit_initiator = "[dev$doitools_revision_id]";
+$edit_initiator = "[$doitools_revision_id]";
 if ($file_revision_id < $doitools_revision_id) {
   $last_revision_id = $doitools_revision_id;
 } else {
