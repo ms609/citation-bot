@@ -1,5 +1,6 @@
 <?php
 // $Id$
+//TODO: $account_suffix is not declared, gives "Notice: Undefined variable"
 ini_set("user_agent", "Citation_bot$account_suffix; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
 
@@ -33,8 +34,8 @@ define("to_en_dash", "--?|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacin
 define("blank_ref", "<ref name=\"%s\" />");
 define("reflist_regexp", "~{{\s*[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~u");
 define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
-define("wikiroot", "http://en.wikipedia.org/w/index.php?");
-define("api", "http://en.wikipedia.org/w/api.php");
+define("wikiroot", "https://test.wikipedia.org/w/index.php?"); //FIXME in prod
+define("api", "https://test.wikipedia.org/w/api.php"); //FIXME in prod
 define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
                     "http://(?:\w+.)?adsabs.harvard.edu",
                     "http://ads.ari.uni-heidelberg.de",
@@ -184,6 +185,7 @@ $common_mistakes = array
 #ob_start(); //Faster, but output is saved until page finshed.
 ini_set("memory_limit", "256M");
 
+//TODO: none of these indices are declared, all give "Notice: undefined index"
 $fastMode = $_REQUEST["fast"];
 $slow_mode = $_REQUEST["slow"];
 $user = $_REQUEST["user"];
@@ -252,19 +254,23 @@ function logIn($username, $password) {
     }
   }
 
+
+
   $bot->submit(api, $submit_vars);
   $login_result = json_decode($bot->results);
   if ($login_result->login->result == "Success") {
     quiet_echo("\n Using account " . $login_result->login->lgusername . ".");
     // Add other cookies, which are necessary to remain logged in.
-    $cookie_prefix = "enwiki";
+    $cookie_prefix = "testwiki"; //FIXME in prod
     $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
     $bot->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
     $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
+
+    print_r($bot); //FIXME
     return true;
   } else {
-    print_r($login_result);
-    exit("\nCould not log in to Wikipedia servers.  Edits will not be committed.\n"); // Will not display to user
+    print_r($login_result); //FIXME
+    exit("\nCould not log in to Wikipedia servers.  Edits will not be committed.\n"); // Will not display to user (not sure this is true)
     global $ON;
     $ON = false;
     return false;
@@ -708,8 +714,8 @@ quiet_echo("\n Fetching parameter list ... ");
 // Get a current list of parameters used in citations from WP
 $page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters|Module:Citation/CS1/Whitelist&format=json");
 $json = json_decode($bot->results, true);
-$parameter_list = (explode("\n", $json["query"]["pages"][26899494]["revisions"][0]["*"]));
-preg_match_all("~\['([^']+)'\] = true~", $json["query"]["pages"][39013723]["revisions"][0]["*"], $match);
+$parameter_list = (explode("\n", $json["query"]["pages"][82740]["revisions"][0]["*"])); //FIXME, this is 26899494 on enwiki
+preg_match_all("~\['([^']+)'\] = true~", $json["query"]["pages"][70802]["revisions"][0]["*"], $match); //FIXME, this is 39013723 on enwiki
 foreach($match[1] as $parameter_name) {
   if (strpos($parameter_name, '#') !== FALSE) {
     for ($i = 1; $i < 100; $i++) {

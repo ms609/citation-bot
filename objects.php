@@ -70,7 +70,7 @@ class Page {
   
   public function expand_text() {
     global $html_output;
-    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>{$this->title}</a>' &mdash; <a href='http://en.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
+    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://test.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>{$this->title}</a>' &mdash; <a href='http://test.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://test.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
     $text = $this->text;
     $this->modifications = array();
     if (!$text) {echo "\n\n  ! No text retrieved.\n"; return false;}
@@ -364,15 +364,19 @@ class Page {
   public function write($edit_summary = NULL) {
     if ($this->allow_bots()) {
       global $bot;
+      var_dump($bot); //FIXME
       // Check that bot is logged in:
       $bot->fetch(api . "?action=query&prop=info&meta=userinfo&format=json");
+      var_dump($bot->results); //FIXME
       $result = json_decode($bot->results);
       if ($result->query->userinfo->id == 0) {
         echo "\n ! LOGGED OUT:  The bot has been logged out from Wikipedia servers";
         return FALSE;
       }
+
       $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
+      print_r($result); //fixme
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
       if ($my_page->lastrevid != $this->lastrevid) {
         echo "\n ! Possible edit conflict detected. Aborting.";
@@ -393,8 +397,10 @@ class Page {
           "watchlist" => "nochange",
           "format" => "json",
       );
+      var_dump($my_page);//fixme
       $bot->submit(api, $submit_vars);
       $result = json_decode($bot->results);
+      var_dump($bot);//FIXME
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
         global $html_output;
