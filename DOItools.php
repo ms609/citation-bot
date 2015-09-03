@@ -7,6 +7,30 @@ define("timelimit", $slow_mode?15:10);
 define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
 define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
 
+global $dontCap, $unCapped;
+// Remember to enclose any word in spaces.
+// $dontCap is a global array of strings that should not be capitalized in their titlecase format; $unCapped is their correct capitalization
+$dontCap  = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ');
+$unCapped = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ');
+
+// journal acrynyms which should be capitilised are downloaded from User:Citation_bot/capitalisation_exclusions
+$bot->fetch(wikiroot . "title=" . urlencode('User:Citation_bot/capitalisation_exclusions') . "&action=raw");
+if (preg_match_all('~\n\*\s*(.+)~', $bot->results, $dontCaps)) {
+        foreach ($dontCaps[1] as $o) {
+                $unCapped[] = ' ' . trim($o) . ' ';
+    // dontCap is a global array of strings that should not be capitalized in their titlecase format; $unCapped is their correct capitalization
+    $dontCap[] = ' '
+               . trim(
+                      (strlen(str_replace(array("[", "]"), "", trim($o))) > 6)
+                      ? mb_convert_case($o, MB_CASE_TITLE, "UTF-8")
+                      :$o
+                 )
+               . ' ';
+        }
+}
+
+/* FUNCTIONS */
+
 function list_parameters () { // Lists the parameters in order. 
     return Array(
      "null",
@@ -156,28 +180,6 @@ function list_parameters () { // Lists the parameters in order.
      "postscript",
      "authorauthoramp",
    );
-}
-
-global $dontCap, $unCapped;
-// Remember to enclose any word in spaces.
-// $dontCap is a global array of strings that should not be capitalized in their titlecase format; $unCapped is their correct capitalization
-$dontCap  = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ');
-$unCapped = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ');
-
-// journal acrynyms which should be capitilised are downloaded from User:Citation_bot/capitalisation_exclusions
-$bot->fetch(wikiroot . "title=" . urlencode('User:Citation_bot/capitalisation_exclusions') . "&action=raw");
-if (preg_match_all('~\n\*\s*(.+)~', $bot->results, $dontCaps)) {
-	foreach ($dontCaps[1] as $o) {
-		$unCapped[] = ' ' . trim($o) . ' ';
-    // dontCap is a global array of strings that should not be capitalized in their titlecase format; $unCapped is their correct capitalization
-    $dontCap[] = ' '
-               . trim(
-                      (strlen(str_replace(array("[", "]"), "", trim($o))) > 6)
-                      ? mb_convert_case($o, MB_CASE_TITLE, "UTF-8")
-                      :$o
-                 )
-               . ' ';
-	}
 }
 
 /** Returns revision number */
@@ -920,4 +922,5 @@ function parameterOrder($first, $author) {
   }
   else return true;
 }
+
 ?>

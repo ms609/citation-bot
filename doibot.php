@@ -38,6 +38,7 @@
 ## Set up - including dotDecode array
 $html_output = TRUE;
 require_once ("expandFns.php");
+
 $editInitiator = "[" . revisionID() . "]";
 
 if (is_valid_user($user)) {
@@ -82,20 +83,27 @@ if (!$dont_expand) {
   $my_page = new Page();
   if ($my_page->get_text_from($_REQUEST["page"])) {
      if ($my_page->expand_text()) {
-      while (!$my_page->write() && $attempts < 2) ++$attempts;
-      if ($attempts < 3 ) echo $html_output ?
-           " <small><a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
-           . "<a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
-           . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
-           : ".";
-      else echo "\n # Failed. Text was:\n" . $my_page->text;
+      while (!$my_page->write() && $attempts < 2) {
+        ++$attempts;
+      }
+      if ($attempts < 3 ) {
+        echo $html_output ?
+          " <small><a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
+          . "<a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
+          . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
+          : ".";
+      } else {
+        echo "\n # Failed. Text was:\n" . $my_page->text;
+      }
     } else {
       echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
       updateBacklog($my_page->title);
     }
+  } else {
+    echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
   }
-  else echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
 }
+
 ?>
 
 End of output
