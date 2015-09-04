@@ -32,7 +32,7 @@ foreach ($postvars as $key => $value) {
   echo "\n\t<input type=\"hidden\" name=\"$key\" value=\"" . str_replace('"', '&#34;', $value) . "\" />";
 }
 ?>    <br />
-      <input id="wpDiff" name="wpDiff" type="submit" value="Show changes" accesskey="v" title="Show which changes the bot made to the text [v]" />
+      <input id="wpDiff" name="wpDiff" type="submit" value="View changes on edit page" accesskey="v" title="Go back to the edit page, showing which changes the bot made to the text [v]" />
     </form>
   </body>
 </html>
