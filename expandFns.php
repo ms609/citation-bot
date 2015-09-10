@@ -177,8 +177,9 @@ $slow_mode = $_REQUEST["slow"];
 $user = $_REQUEST["user"];
 $bugFix = $_REQUEST["bugfix"];
 $crossRefOnly = $_REQUEST["crossrefonly"] ? true : $_REQUEST["turbo"];
+$edit = $_REQUEST["edit"];
 
-if ($_REQUEST["edit"] || $_GET["doi"] || $_GET["pmid"])
+if ($edit || $_GET["doi"] || $_GET["pmid"])
   $ON = true;
 
 $editSummaryStart = ($bugFix ? "Double-checking that a [[User talk:Citation bot|bug]] has been fixed. " : "Citations: ");

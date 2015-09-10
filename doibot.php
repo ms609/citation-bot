@@ -48,6 +48,7 @@ if (is_valid_user($user)) {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
+/*####### TODO: take this out I think. Not using Cite pmid/doi/etc templates anymore.
 $doi_input = trim($_GET["doi"]);
 $pmid_input = trim(str_replace(array("pmid", "PMID"), "", $_GET["pmid"]));
 $pmc_input = trim(str_replace(array("pmc", "PMC"), "", $_GET["pmc"]));
@@ -74,34 +75,38 @@ if ($doi_input) {
   }
   $dont_expand = TRUE;
 }
+####### end TODO. Works fine with this commented out.
+*/
 
-$slowMode = $_REQUEST["slow"];
-
-if (!$dont_expand) {
-  $title = trim(ucfirst(strip_tags($_REQUEST["page"])));
-  print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
-  $my_page = new Page();
-  if ($my_page->get_text_from($_REQUEST["page"])) {
-     if ($my_page->expand_text()) {
-      while (!$my_page->write() && $attempts < 2) {
-        ++$attempts;
-      }
-      if ($attempts < 3 ) {
-        echo $html_output ?
-          " <small><a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
-          . "<a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
-          . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
-          : ".";
-      } else {
-        echo "\n # Failed. Text was:\n" . $my_page->text;
-      }
-    } else {
-      echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
-      updateBacklog($my_page->title);
+$title = trim(ucfirst(strip_tags($_REQUEST["page"])));
+print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
+$my_page = new Page();
+if ($my_page->get_text_from($_REQUEST["page"])) {
+  $text_expanded = $my_page->expand_text();
+  if ($text_expanded and $ON) {
+    while (!$my_page->write() && $attempts < 2) {
+      ++$attempts;
     }
+    if ($attempts < 3 ) {
+      echo $html_output ?
+        " <small><a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
+        . "<a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
+        . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
+        : ".";
+    } else {
+      echo "\n # Failed. Text was:\n" . $my_page->text;
+    }
+  } elseif (!$ON) {
+    echo "\n # Proposed code for " . $my_page->title . ', which you have asked the bot to commit with edit summary ' . $my_page->edit_summary() . "<br><pre>";
+    echo $my_page->text;
+    echo "</pre>";
+    // TODO: Add a button that submits this POST request: https://tools.wmflabs.org/citations-dev/doibot.php?page=$title&user=$user&edit=on&slow=$slow_mode
   } else {
-    echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
+    echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
+    updateBacklog($my_page->title);
   }
+} else {
+  echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
 }
 
 ?>
