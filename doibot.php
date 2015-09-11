@@ -100,7 +100,15 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
     echo "\n # Proposed code for " . $my_page->title . ', which you have asked the bot to commit with edit summary ' . $my_page->edit_summary() . "<br><pre>";
     echo $my_page->text;
     echo "</pre>";
-    // TODO: Add a button that submits this POST request: https://tools.wmflabs.org/citations-dev/doibot.php?page=$title&user=$user&edit=on&slow=$slow_mode
+?>
+<form method="post" action="doibot.php">
+  <input type="hidden" name="page" value="<?php echo $title;?>"></input>
+  <input type="hidden" name="user" value="<?php echo $user;?>"></input>
+  <input type="hidden" name="edit" value="on"></input>
+  <input type="hidden" name="slow" value="<?php echo $slow_mode;?>"></input>
+  <input type=submit value="Submit edits"></input>
+</form>
+<?php
   } else {
     echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
     updateBacklog($my_page->title);
@@ -111,8 +119,6 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
 
 ?>
 
-End of output
-   # # #
 </pre>
     </div><!-- div 'bodyContent' -->
   </div><!-- div 'content' -->
