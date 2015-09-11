@@ -256,20 +256,30 @@ class Page {
     
     $bot->fetch(api . "?action=query&prop=info&format=json&titles=" . urlencode($title));
     $details = json_decode($bot->results);
-    foreach ($details->query->pages as $p) $my_details = $p;
+    foreach ($details->query->pages as $p) {
+      $my_details = $p;
+    }
     $details = $my_details;
     $this->title = $details->title;
     $this->namespace = $details->ns;
     $this->touched = $details->touched;
     $this->lastrevid = $details->lastrevid;
+
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
       updateBacklog($title);
       return FALSE;
     }
+
+    // FIXME: take out cite template abilities/references.
     if (strpos($title, "Template:Cite") !== FALSE) $this->cite_template = TRUE;
     if ($this->cite_template && !$this->text) $this->text = $cite_doi_start_code;
-    if ($this->text) return TRUE;
+
+    if ($this->text) {
+      return TRUE;
+    } else{
+      return NULL;
+    }
   }
   
   public function expand_text() {
@@ -277,8 +287,16 @@ class Page {
     quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://test.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>{$this->title}</a>' &mdash; <a href='http://test.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://test.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
     $text = $this->text;
     $this->modifications = array();
-    if (!$text) {echo "\n\n  ! No text retrieved.\n"; return false;}
-    if ($html_output === -1) ob_start();   
+    if (!$text) {
+      echo "\n\n  ! No text retrieved.\n";
+      return false;
+    }
+
+    //this seems to be set to -1 only in text.php
+    if ($html_output === -1) {
+      ob_start();
+    }
+
     // COMMENTS //
     $comments = $this->extract_object(Comment);
     if ($bot_exclusion_compliant && !$this->allow_bots()) {
@@ -286,10 +304,12 @@ class Page {
       updateBacklog($this->title);
       return FALSE;
     }
+
     // TEMPLATES //
     $templates = $this->extract_object(Template);
     $start_templates = $templates;
     $citation_templates = 0; $cite_templates = 0;
+
     if ($templates) {
       foreach ($templates as $template) {
         if ($template->wikiname() == 'citation') {
@@ -301,6 +321,7 @@ class Page {
         }
       }
     }
+
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
@@ -315,6 +336,7 @@ class Page {
       }
     }
     $text = $this->replace_object($templates);
+
     // REFERENCE TAGS //
     if (FALSE && $reference_support_debugged) { #todo
       if ($this->has_reflist) {
@@ -348,7 +370,8 @@ class Page {
       } else {
         $short_refs = $this->extract_object(Short_Reference);
         $long_refs = $this->extract_object(Long_Reference);
-        for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {}
+        for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {} //FIXME, is this left over?
+
         foreach ($long_refs as $i=>$ref) {
           $ref_contents[$i] = str_replace(' ', '', $ref->content);
           $this->ref_names[$i] = $ref->attr['name'];
@@ -358,12 +381,20 @@ class Page {
           natcasesort($this->ref_names);
           reset($this->ref_names);
         }
+
         $old_name = NULL;
+
         foreach ($this->ref_names as $key => $name) {
-          if ($name === NULL) continue;
-          if (strcasecmp($name, $old_name) === 0) $to_rename[] = $key;
+          if ($name === NULL) {
+            continue;
+          }
+
+          if (strcasecmp($name, $old_name) === 0) {
+            $to_rename[] = $key;
+          }
           $old_name = $name;
         }
+
         if ($to_rename) foreach ($to_rename as $ref) {
           $new_name = $this->generate_template_name($this->ref_names[$ref]);
           $this->ref_names[$ref] = $new_name;
@@ -374,6 +405,7 @@ class Page {
         natcasesort($ref_contents);
         reset($ref_contents);
         $old_key = NULL; $old_val = NULL;
+
         foreach ($ref_contents as $key => $val) {
           if ($val === NULL) continue;
           if (strcasecmp($old_val, $val) === 0) {
@@ -382,6 +414,7 @@ class Page {
           }
           $old_val = $val; $old_key = $key;
         }
+
         foreach ($duplicate_refs as $dup) {
           $dup_name = NULL;
           $name_giver = NULL;
@@ -398,12 +431,19 @@ class Page {
             if ($instance != $name_giver) $long_refs[$instance]->shorten($dup_name);
           }
         }
+
         $this->replace_object($long_refs);
         $this->replace_object($short_refs);
       }
     }
+
     $this->replace_object($comments);
-    if ($html_output === -1) ob_end_clean();
+
+    // seems to be set as -1  in text.php and then re-set
+    if ($html_output === -1) {
+      ob_end_clean();
+    }
+
     return strcasecmp($this->text, $this->start_text) != 0;
   }
   
@@ -599,7 +639,7 @@ class Page {
           "action" => "edit",
           "title" => $my_page->title,
           "text" => $this->text,
-          "token" => $my_page->edittoken,
+          "token" => $my_page->edittoken, // from $result above
           "summary" => $edit_summary ? ($edit_initiator . $edit_summary) : $this->edit_summary(),
           "minor" => "1",
           "bot" => "1",
