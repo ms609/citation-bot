@@ -129,7 +129,7 @@ $author_parameters = array(
 
 /* FUNCTIONS */
 
-/** Returns a properly capitalsied title.
+/** Returns a properly capitalised title.
  *      If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and capitalises the letter after any period.
   *             If not, it will assume it is a journal abbreviation and won't capitalise after periods.
  */
@@ -446,7 +446,8 @@ class Page {
 
     return strcasecmp($this->text, $this->start_text) != 0;
   }
-  
+
+  // FIXME: this is only used in the pmid and doi parts of doibot.php and is probably not at all useful anymore. 
   public function expand_remote_templates() {
     $doc_footer = "<noinclude>{{Documentation|Template:cite_%s/subpage}}</noinclude>";
     $templates = $this->extract_object(Template);
@@ -627,6 +628,7 @@ class Page {
         return FALSE;
       }
 
+      // FIXME: this is very deprecated, use ?action=query&meta=tokens to get a 'csrf' type token (the default)
       $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
@@ -1056,7 +1058,9 @@ class Template extends Item {
         return $this->add($param, $value);
       break;
       case "author": case "author1": case "last1": case "last": case "authors": // "authors" is automatically corrected by the bot to "author"; include to avoid a false positive.
-        $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
+        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*", "’"), array(";", ";", " ", ";", " ", "", "", "'"), $value);
+        //needs a test case for the apostrophe business
+        $value = straighten_quotes($value);
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
@@ -1068,10 +1072,13 @@ class Template extends Item {
         }
       return false;
       case "first": case "first1":
+        $value = straighten_quotes($value);
         if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
           return $this->add($param, $value);
       return false;
       case "coauthor": case "coauthors":
+        echo("param in coauthor(s) is $param before replacement. value is $value. \n"); //FIXME remove
+        $value = straighten_quotes($value);
         $param = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $param);
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
           return $this->add($param, $value);
@@ -1100,6 +1107,7 @@ class Template extends Item {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98": 
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99": 
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
+        $value = straighten_quotes($value);
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
           && $this->blank("coauthor") && $this->blank("coauthors")
           && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE
@@ -1125,6 +1133,7 @@ class Template extends Item {
       case "first70": case "first71": case "first72": case "first73": case "first74": case "first75": case "first76": case "first77": case "first78": case "first79":
       case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
+        $value = straighten_quotes($value);
         if ($this->blank($param)
                 && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
