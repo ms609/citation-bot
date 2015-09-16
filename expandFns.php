@@ -4,17 +4,7 @@
 ini_set("user_agent", "Citation_bot$account_suffix; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
 
-function includeIfNew($file) {
-  // include missing files
-  $alreadyIn = get_included_files();
-  foreach ($alreadyIn as $include) {
-    if (strstr($include, $file))
-      return false;
-  }
-  require_once($file . ".php");
-  return true;
-}
-
+// SVN revision ID for this file. FIXME: not using SVN anymore.
 function expandFnsRevId() {
   return (int) trim(substr('$Id$', 19, 4));
 }
@@ -57,10 +47,12 @@ define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
 
 require_once(HOME . "credentials/doiBot.login");
 # Snoopy's ini files should be modified so the host name is en.wikipedia.org.
-includeIfNew('Snoopy.class');
-includeIfNew("DOItools");
-includeIfNew("objects");
-includeIfNew("wikiFunctions");
+require_once('Snoopy.class.php');
+require_once("DOItools.php");
+require_once("Template.php");
+require_once("Parameter.php");
+require_once("objects.php");
+require_once("wikiFunctions.php");
 
 //Commented out because they seem to be not used or not functional
 //includeIfNew("citewatchFns");
@@ -267,7 +259,7 @@ function countMainLinks($title) {
 }
 
 function logIn($username, $password) {
-  global $bot; // Snoopy class loaded elsewhere
+  global $bot; // Snoopy class loaded in DOItools.php
   // Set POST variables to retrieve a token
   $submit_vars["format"] = "json";
   $submit_vars["action"] = "login";
@@ -661,9 +653,9 @@ function remove_accents($input) {
 }
 
 function under_two_authors ($text) {
-  return !(strpos($text, ';') !== FALSE 
-          || substr_count($text, ',') > 1
-          || substr_count($text, ',') < substr_count(trim($text), ' ')
+  return !(strpos($text, ';') !== FALSE  //if there is a semicolon
+          || substr_count($text, ',') > 1  //if there is more than one comma
+          || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the (whitespace-stripped) string
           );
 }
 

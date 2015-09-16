@@ -1,6 +1,5 @@
 <?php
 global $bot, $slow_mode;
-global $bot, $slow_mode;
 $bot = new Snoopy();
 define("doiRegexp", "(10\.\d{4}(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 define("timelimit", $slow_mode?15:10);
@@ -13,7 +12,7 @@ global $dontCap, $unCapped;
 $dontCap  = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ');
 $unCapped = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ');
 
-// journal acrynyms which should be capitilised are downloaded from User:Citation_bot/capitalisation_exclusions
+// journal acronyms which should be capitalised are downloaded from User:Citation_bot/capitalisation_exclusions
 $bot->fetch(wikiroot . "title=" . urlencode('User:Citation_bot/capitalisation_exclusions') . "&action=raw");
 if (preg_match_all('~\n\*\s*(.+)~', $bot->results, $dontCaps)) {
         foreach ($dontCaps[1] as $o) {
@@ -31,7 +30,7 @@ if (preg_match_all('~\n\*\s*(.+)~', $bot->results, $dontCaps)) {
 
 /* FUNCTIONS */
 
-function list_parameters () { // Lists the parameters in order. 
+function list_parameters() { // Lists the parameters in order.
     return Array(
      "null",
      "author", "author1", "last", "last1", "first", "first1", "authorlink", "authorlink1", "author1-link",
@@ -182,8 +181,9 @@ function list_parameters () { // Lists the parameters in order.
    );
 }
 
-/** Returns revision number */
+/** Written to return SVN revision id of this file. FIXME: no SVN anymore. */
 function revisionID() {
+  return 0;
     global $last_revision_id;
     if ($last_revision_id) return $last_revision_id;
     $svnid = '$Rev$';
