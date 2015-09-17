@@ -840,7 +840,9 @@ class Template extends Item {
     global $editing_cite_doi_template;
     $doi = $this->get_without_comments('doi');
     if ($doi && ($force || $this->incomplete())) {
-      if (preg_match('~^10\.2307/(\d+)$~', $doi)) $this->add_if_new('jstor', substr($doi, 8));
+      if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
+        $this->add_if_new('jstor', substr($doi, 8));
+      }
       $crossRef = $this->query_crossref($doi);
       if ($crossRef) {
         echo "\n - Expanding from crossRef record" . tag();
@@ -879,10 +881,12 @@ class Template extends Item {
         //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
           $this->add_if_new('issue', $crossRef->issue);
         }
-        if ($this->blank("page")) $this->add_if_new("pages", $crossRef->first_page
+        if ($this->blank("page")) {
+          $this->add_if_new("pages", $crossRef->first_page
                   . ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)
                   ? "-" . $crossRef->last_page //replaced by an endash later in script
                   : "") );
+        }
         echo " (ok)";
       } else {
         echo "\n - No CrossRef record found for doi '$doi'; marking as broken";
@@ -902,7 +906,9 @@ class Template extends Item {
     $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=$pm");
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
     if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
-      if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) $this->add_if_new('doi', $match[0]);
+      if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
+        $this->add_if_new('doi', $match[0]);
+      }
       switch ($item["Name"]) {
                 case "Title":   $this->add_if_new('title', str_replace(array("[", "]"), "",(string) $item));
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
@@ -922,7 +928,9 @@ class Template extends Item {
               $junior = $jr_test[1];
               if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
                 $first = trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
-                if (strpos($first, '.') && substr($first, -1) != '.') $first = $first . '.';
+                if (strpos($first, '.') && substr($first, -1) != '.') {
+                  $first = $first . '.';
+                }
                 $this->add_if_new("author$i", $names[1] . $junior . ',' . $first);
               }
             } else {
@@ -945,7 +953,9 @@ class Template extends Item {
               case "doi": case "pii":
               default:
                 if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
-                  if ($this->add_if_new('doi', $match[0])) $this->expand_by_doi();
+                  if ($this->add_if_new('doi', $match[0])) {
+                    $this->expand_by_doi();
+                  }
                 }
                 break;
             }
@@ -1329,8 +1339,9 @@ class Template extends Item {
             }
             if ($matched_parameter) {
               $dat = trim(str_replace($oMatch, "", $dat));
-              if ($i) $this->add_if_new($matched_parameter, $match[2][$i]);
-              else {
+              if ($i) {
+                $this->add_if_new($matched_parameter, $match[2][$i]);
+              } else {
                 $this->param[$i]->param = $matched_parameter;
                 $this->param[$i]->val = $match[2][0];
               }
