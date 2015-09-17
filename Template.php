@@ -10,6 +10,9 @@ class Template extends Item {
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, $mod_dashes;
 
   public function parse_text($text) {
+    global $author_parameters, $flattened_author_params;
+    flatten_author_parameters($author_parameters);  //create flat array with all author params
+
     $this->rawtext = $text;
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
@@ -19,7 +22,16 @@ class Template extends Item {
       $this->name = substr($text, 2, -2);
       $this->param = NULL;
     }
-    if ($this->param) foreach ($this->param as $p) $this->initial_param[$p->param] = $p->val;
+
+    // extract initial parameters/values from Parameters in $this->param
+    if ($this->param) foreach ($this->param as $p) {
+      $this->initial_param[$p->param] = $p->val;
+
+      // Save author params for special handling
+      if (in_array($p->param, $flattened_author_params)) {
+        $this->initial_author_params[$p->param] = $p->val;
+      }
+    }
   }
 
   protected function split_params($text) {
@@ -41,7 +53,7 @@ class Template extends Item {
 
   public function process() {
     var_dump($this->initial_param); //FIXME debug
-    // FIXME: either up here or in the cases, should check for the presence of author parameters by seeing what overlap there is between $this->initial_param and $this->initial_author_params
+    var_dump($this->initial_author_params); //FIXME debug
 
     switch ($this->wikiname()) {
       case 'reflist': $this->page->has_reflist = TRUE; break;
@@ -125,17 +137,6 @@ class Template extends Item {
     }
   }
 
-/*
-  //TODO FIXME ETC?
-  public function authors_exist() {
-    if (param in any of $author_parameters) {
-      return true;
-    } else { 
-      return false;
-    }
-  }
-*/
-
   protected function incomplete() {
     if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
       return TRUE;
@@ -162,11 +163,17 @@ class Template extends Item {
   }
 
   public function add_if_new($param, $value) {
+    global $flattened_author_params;
     if ($corrected_spelling = $common_mistakes[$param]) {
       $param = $corrected_spelling;
     }
 
     if (trim($value) == "") {
+      return false;
+    }
+
+    // If we already have name parameters for editor or author, don't add more
+    if ($this->initial_author_params && in_array($param, $flattened_author_params)) {
       return false;
     }
 
@@ -191,12 +198,9 @@ class Template extends Item {
         return $this->add($param, $value);
       break;
       case "author": case "author1": case "last1": case "last": case "authors":
-        //TODO: Is it ok to make these mods? maybe.
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*", "’"), array(";", ";", " ", ";", " ", "", "", "'"), $value);
-        //TODO: needs a test case for the apostrophe business
         $value = straighten_quotes($value);
 
-        //FIXME: some sort of expanding here...
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
@@ -206,11 +210,10 @@ class Template extends Item {
             return $this->add($param, $value);
           }
         }
-      return false; //FIXME: what does that do?
+      return false;
       case "first": case "first1":
-
        $value = straighten_quotes($value);
-        if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
+       if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
           return $this->add($param, $value);
       return false;
       case "coauthor": //FIXME: not sure if this works as desired; what if it's pulling a "coauthor" from some field on the internet?
@@ -218,6 +221,7 @@ class Template extends Item {
       case "coauthors"://FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
         $value = straighten_quotes($value);
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
+
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
           return $this->add($param, $value);
         // if authors doesn't exist, coauthors -> authors
@@ -248,6 +252,7 @@ class Template extends Item {
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
+
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
           && $this->blank("coauthor") && $this->blank("coauthors")
           && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE
@@ -274,6 +279,7 @@ class Template extends Item {
       case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
         $value = straighten_quotes($value);
+
         if ($this->blank($param)
                 && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
@@ -356,8 +362,11 @@ class Template extends Item {
         }
       return false;
       case 'author_separator': case 'author-separator':
-        if ($this->blank($param)) {
-          return $this->add($param, $value);
+        echo "\n ! 'author-separator' is deprecated.";
+        if(!trim($value)) {
+          $this->forget($param);
+        } else {
+          echo " Please fix manually.";
         }
       return false;
       case 'postscript':

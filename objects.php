@@ -32,7 +32,7 @@ quiet_echo ("\nRevision #$last_revision_id");
 global $author_parameters;
 $author_parameters = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author',
-                'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1', 'authors'),
+                'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1', 'authors', 'vauthors'),
     2  => array('surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'coauthors', 'coauthor'),
     3  => array('surname3' , 'forename3' , 'initials3' , 'first3' , 'last3' , 'author3' ),
     4  => array('surname4' , 'forename4' , 'initials4' , 'first4' , 'last4' , 'author4' ),
@@ -133,8 +133,22 @@ $author_parameters = array(
     99 => array('surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99'),
 );
 
-
 /* FUNCTIONS */
+
+/* Return a flat numerically indexed array containing all the parameters in
+ * $author_parameters, and set the global variable $flattened_author_params
+ * to that flat array.
+ */
+function flatten_author_parameters($author_parameters) {
+  global $flattened_author_params;
+  $flattened_author_params = array();
+
+  foreach ($author_parameters as $i => $group) {
+    $flattened_author_params = array_merge($flattened_author_params, $group);
+  }
+
+  return $flattened_author_params;
+}
 
 /** Returns a properly capitalised title.
  *      If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and capitalises the letter after any period.
