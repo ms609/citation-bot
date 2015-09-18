@@ -212,8 +212,9 @@ class Template extends Item {
        if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
           return $this->add($param, $value);
       return false;
-      case "coauthor": //FIXME: not sure if this works as desired; what if it's pulling a "coauthor" from some field on the internet?
-        echo "\n The \"coauthor\" parameter is deprecated. Please replace manually.";
+      case "coauthor":
+        echo "\n ! The \"coauthor\" parameter is deprecated. Please replace manually.";
+      return false;
       case "coauthors"://FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
         $value = straighten_quotes($value);
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
