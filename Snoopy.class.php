@@ -41,7 +41,7 @@ class Snoopy
 	
 	/* user definable vars */
 
-	var $host			=	"en.wikipedia.org";	// host name we are connecting to
+	var $host			=	"test.wikipedia.org";	// host name we are connecting to, FIXME in prod
 	var $port			=	80;					// port we are connecting to
 	var $proxy_host		=	"";					// proxy host to use
 	var $proxy_port		=	"";					// proxy port to use
@@ -88,7 +88,7 @@ class Snoopy
 												// has permission to write to.
 												// under Windows, this should be C:\temp
 
-	var	$curl_path		=	"/usr/local/bin/curl";
+	var	$curl_path		=	'/usr/bin/curl';
 												// Snoopy will use cURL for fetching
 												// SSL content if a full system path to
 												// the cURL binary is supplied here.
@@ -419,10 +419,10 @@ class Snoopy
 						else
 							break;
 					}
-				}					
+				}
 				return true;					
 				break;
-				
+
 			default:
 				// not a valid protocol
 				$this->error	=	'Invalid protocol "'.$URI_PARTS["scheme"].'"\n';
