@@ -344,7 +344,6 @@ class Page {
       }
     }
 
-    //TODO: should probably put the "are there author params" in here or in Template::process(). Probably actually in Template; it conceptually makes sense to be all $template->modify_authors[()?]
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
@@ -393,7 +392,8 @@ class Page {
       } else {
         $short_refs = $this->extract_object(Short_Reference);
         $long_refs = $this->extract_object(Long_Reference);
-        for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {echo "\nProcessing long reference template";} //FIXME, is this left over?
+        // note: all the action happens in the increment section. Would be better as a foreach, FIXME
+        for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {}
 
         foreach ($long_refs as $i=>$ref) {
           $ref_contents[$i] = str_replace(' ', '', $ref->content);

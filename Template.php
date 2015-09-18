@@ -52,9 +52,6 @@ class Template extends Item {
   }
 
   public function process() {
-    var_dump($this->initial_param); //FIXME debug
-    var_dump($this->initial_author_params); //FIXME debug
-
     switch ($this->wikiname()) {
       case 'reflist': $this->page->has_reflist = TRUE; break;
       case 'cite web':
@@ -126,7 +123,9 @@ class Template extends Item {
         $type = substr($this->wikiname(), 5);
         $id = trim_identifier($this->param[0]->val);
         $linked_page = "Template:Cite $type/" . wikititle_encode($id);
-        if (!getArticleId($linked_page)) expand_cite_page($linked_page); //TODO: how's this handling separate cite template pages?
+        if (!getArticleId($linked_page)) {
+          expand_cite_page($linked_page); //TODO/FIXME: how's this handling separate cite template pages?
+        }
     }
     if ($this->citation_template) {
       $this->correct_param_spelling();
@@ -138,7 +137,7 @@ class Template extends Item {
     if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
       return TRUE;
     }
-    if ($this->display_authors() >= $this->number_of_authors()) return TRUE; //FIXME; compatible with not modifying author-related?
+    if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
     return (!(
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
@@ -221,8 +220,6 @@ class Template extends Item {
 
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
           return $this->add($param, $value);
-        // if authors doesn't exist, coauthors -> authors
-        // if
           // Note; we shouldn't be using this parameter ever....
       return false;
       case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
@@ -1660,7 +1657,8 @@ class Template extends Item {
       $this->rename('origyear', 'year');
     }
 
-    if (!($authors = $this->get('authors'))) {
+    $authors = $this->get('authors');
+    if (!$authors) {
       $authors = $this->get('author'); # Order _should_ be irrelevant as only one will be set... but prefer 'authors' if not.
     }
 
@@ -1849,7 +1847,6 @@ class Template extends Item {
 
   }
 
-# FIXME this maybe shouldn't exist at all?
   protected function handle_et_al() {
     global $author_parameters;
     foreach ($author_parameters as $i => $group) {
@@ -1857,12 +1854,11 @@ class Template extends Item {
         if (strpos($this->get($param), 'et al')) {
           $val_base = preg_replace("~,?\s*'*et al['.]*~", '', $this->get($param));
           if ($i == 1) {
-            // then there's scope for "Smith, AB; Peters, Q.R. et al"
-
             // then we (probably) have a list of authors joined by commas in our first parameter
             if (under_two_authors($val_base)) {
-              if ($param == 'authors') $this->rename('authors', 'author');  //FIXME still not sure whether this is right
-              echo "\n under two authors according to et al. fn\n"; //FIXME debug
+              if ($param == 'authors' && !$this->get('author')) {
+                $this->rename('authors', 'author');
+              }
             }
             $this->set($param, $val_base);
           }
