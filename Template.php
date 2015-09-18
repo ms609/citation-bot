@@ -208,7 +208,7 @@ class Template extends Item {
         return $this->add($param, $value);
       break;
       case "author": case "author1": case "last1": case "last": case "authors":
-        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*", "’"), array(";", ";", " ", ";", " ", "", "", "'"), $value);
+        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
 
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
