@@ -1874,6 +1874,7 @@ class Template extends Item {
     foreach ($author_parameters as $i => $group) {
       foreach ($group as $param) {
         if (strpos($this->get($param), 'et al')) {
+          // remove 'et al' from the parameter value if present
           $val_base = preg_replace("~,?\s*'*et al['.]*~", '', $this->get($param));
           if ($i == 1) {
             // then we (probably) have a list of authors joined by commas in our first parameter
