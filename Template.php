@@ -62,9 +62,6 @@ class Template extends Item {
         $this->get_identifiers_from_url();
         $this->tidy();
         if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
-          if ($this->has('arxiv') && $this->blank('class')) {
-            $this->rename('arxiv', 'eprint'); #TODO test arXiv handling
-          }
           $this->name = 'Cite journal';
           $this->process();
         } elseif ($this->has('eprint')) {
