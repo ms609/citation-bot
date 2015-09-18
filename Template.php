@@ -81,7 +81,12 @@ class Template extends Item {
       break;
       case 'cite book':
         $this->citation_template = TRUE;
-        $this->handle_et_al();
+
+        // If the et al. is from added parameters, go ahead and handle
+        if (!$this->initial_author_parameters) {
+          $this->handle_et_al();
+        }
+
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->id_to_param();
@@ -96,11 +101,20 @@ class Template extends Item {
         echo "\n\n* Expand citation: " . $this->get('title');
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
-        if ($this->use_sici()) echo "\n * Found and used SICI";
+
+        if ($this->use_sici()) {
+          echo "\n * Found and used SICI";
+        }
+
         $this->id_to_param();
         $this->get_doi_from_text();
         // TODO: Check for the doi-inline template in the title
-        $this->handle_et_al();
+
+        // If the et al. is from added parameters, go ahead and handle
+        if (!$this->initial_author_params) {
+          $this->handle_et_al();
+        }
+
         $this->correct_param_spelling();
         $this->expand_by_pubmed(); //partly to try to find DOI
         $journal_type = $this->has("periodical") ? "periodical" : "journal";
@@ -1561,67 +1575,63 @@ class Template extends Item {
   }
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
-  $i = 0;
+  $i = 0; // FIXME: this would be better as a proper for loop rather than foreach with counter
   foreach ($this->param as $p) {
     ++$i;
+
+    if ($this->initial_author_params) {
+      echo "\n * initial authors exist, not correcting $param";
+      continue;
+    }
+
     if ((strlen($p->param) > 0) && !in_array($p->param, $parameter_list)) {
-      //FIXME this is making bad "corrections", not distinguishing between coauthor/s
-      if (substr($p->param, 0, 8) == "coauthor") {
-        echo "\n  ! The coauthor parameter is deprecated";
-        if ($this->has('authors')) {
-          echo " please replace this manually.";
-        } else {
-          $p->param = 'authors';
+      echo "\n  *  Unrecognised parameter {$p->param} ";
+      $mistake_id = array_search($p->param, $mistake_keys);
+      if ($mistake_id) {
+        // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
+        $p->param = $mistake_corrections[$mistake_id];
+        echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
+        continue;
+      }
+      $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
+      $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
+      $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
+
+      // Check the parameter list to find a likely replacement
+      $shortest = -1;
+      foreach ($unused_parameters as $parameter)
+      {
+        $lev = levenshtein($p->param, $parameter, 5, 4, 6);
+        // Strict inequality as we want to favour the longest match possible
+        if ($lev < $shortest || $shortest < 0) {
+          $comp = $closest;
+          $closest = $parameter;
+          $shortish = $shortest;
+          $shortest = $lev;
         }
+        // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
+        else if ($lev < $shortish) {
+          $shortish = $lev;
+          $comp = $parameter;
+        }
+      }
+      $str_len = strlen($p->param);
+
+      // Account for short words...
+      if ($str_len < 4) {
+        $shortest *= ($str_len / (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
+        $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
+      }
+      if ($shortest < 12 && $shortest < $shortish) {
+        $p->param = $closest;
+        echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
       } else {
-        echo "\n  *  Unrecognised parameter {$p->param} ";
-        $mistake_id = array_search($p->param, $mistake_keys);
-        if ($mistake_id) {
-          // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
-          $p->param = $mistake_corrections[$mistake_id];
-          echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
-          continue;
-        }
-        $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
-        $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
-        $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
-
-        // Check the parameter list to find a likely replacement
-        $shortest = -1;
-        foreach ($unused_parameters as $parameter)
-        {
-          $lev = levenshtein($p->param, $parameter, 5, 4, 6);
-          // Strict inequality as we want to favour the longest match possible
-          if ($lev < $shortest || $shortest < 0) {
-            $comp = $closest;
-            $closest = $parameter;
-            $shortish = $shortest;
-            $shortest = $lev;
-          }
-          // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
-          else if ($lev < $shortish) {
-            $shortish = $lev;
-            $comp = $parameter;
-          }
-        }
-        $str_len = strlen($p->param);
-
-        // Account for short words...
-        if ($str_len < 4) {
-          $shortest *= ($str_len / (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
-          $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
-        }
-        if ($shortest < 12 && $shortest < $shortish) {
+        $similarity = similar_text($p->param, $closest) / strlen($p->param);
+        if ($similarity > 0.6) {
           $p->param = $closest;
-          echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+          echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
         } else {
-          $similarity = similar_text($p->param, $closest) / strlen($p->param);
-          if ($similarity > 0.6) {
-            $p->param = $closest;
-            echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
-          } else {
-            echo "could not be replaced with confidence.  Please check the citation yourself.";
-          }
+          echo "could not be replaced with confidence.  Please check the citation yourself.";
         }
       }
     }
@@ -1663,12 +1673,14 @@ class Template extends Item {
       $authors = $this->get('author'); # Order _should_ be irrelevant as only one will be set... but prefer 'authors' if not.
     }
 
-    if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
-      $this->add_if_new('author-separator', $match[1] ? $match[1] : $match[2]);
-      $new_authors = explode($match[1] . $match[2], $authors);
-      $this->forget('author'); $this->forget('authors');
-      for ($i = 0; $i < count($new_authors); $i++) {
-        $this->add_if_new("author" . ($i + 1), trim($new_authors[$i]));
+    if(!$this->initial_author_params) {
+      if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
+        $this->add_if_new('author-separator', $match[1] ? $match[1] : $match[2]);
+        $new_authors = explode($match[1] . $match[2], $authors);
+        $this->forget('author'); $this->forget('authors');
+        for ($i = 0; $i < count($new_authors); $i++) {
+          $this->add_if_new("author" . ($i + 1), trim($new_authors[$i]));
+        }
       }
     }
 
@@ -1676,17 +1688,21 @@ class Template extends Item {
       preg_match('~(\D+)(\d*)~', $p->param, $pmatch);
       switch ($pmatch[1]) {
         case 'author': case 'authors': case 'last': case 'surname':
-          if ($pmatch[2]) {
-            if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
-              $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
-              $p->val = $match[3];
-              echo "\n   ~ Dissecting authorlink" . tag();
+          if (!$this->initial_author_params) {
+            if ($pmatch[2]) {
+              if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
+                $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
+                $p->val = $match[3];
+                echo "\n   ~ Dissecting authorlink" . tag();
+              }
+              $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+              if (preg_match($translator_regexp, trim($p->val), $match)) {
+                $others = "{$match[1]} {$match[5]}";
+                $p->val = preg_replace($translator_regexp, "", $p->val);
+              }
             }
-            $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
-            if (preg_match($translator_regexp, trim($p->val), $match)) {
-              $others = "{$match[1]} {$match[5]}";
-              $p->val = preg_replace($translator_regexp, "", $p->val);
-            }
+          } else {
+            echo "\n * Initial authors exist, skipping authorlink in tidy";
           }
           break;
         case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
@@ -1710,12 +1726,16 @@ class Template extends Item {
       else $this->set('others', $others);
     }
 
-    if ($this->number_of_authors() == 9 && $this->display_authors() == FALSE) {
-      $this->display_authors(8); // So that displayed output does not change
-      echo "\n * Exactly 9 authors; look for more [... tidy]:";
-      $this->find_more_authors();
-      echo "now we have ". $this->number_of_authors() ."\n";
-      if ($this->number_of_authors() == 9) $this->display_authors(9); // Better display an author's name than 'et al' when the et al only hides 1 author!
+    if(!$this->initial_author_params) {
+      if ($this->number_of_authors() == 9 && $this->display_authors() == FALSE) {
+        $this->display_authors(8); // So that displayed output does not change
+        echo "\n * Exactly 9 authors; look for more [... tidy]:";
+        $this->find_more_authors();
+        echo "now we have ". $this->number_of_authors() ."\n";
+        if ($this->number_of_authors() == 9) {
+          $this->display_authors(9); // Better display an author's name than 'et al' when the et al only hides 1 author!
+        }
+      }
     }
 
     if ($this->added('journal') || $journal && $this->added('issn')) $this->forget('issn');
@@ -1867,8 +1887,10 @@ class Template extends Item {
             $this->forget($param);
           }
 
-//          $this->add_if_new('author' . ($i + 1), 'and others'); //FIXME: this may be the thing that's overwriting author parameters
-          $this->add_if_new('displayauthors', $i);
+// These two lines are most likely a hack to get "et al." to display automatically. Don't do this.
+// If you need to, use "displayauthors = etal" in the template.
+//          $this->add_if_new('author' . ($i + 1), 'and others'); //FIXME: this may overwrite author parameters.
+          $this->add_if_new('displayauthors', $i); //FIXME: doesn't overwrite but may not be a good idea
         }
       }
     }
