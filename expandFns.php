@@ -649,10 +649,10 @@ function remove_accents($input) {
   return str_replace($search, $replace, $input);
 }
 
-function under_two_authors ($text) {
+function under_two_authors($text) {
   return !(strpos($text, ';') !== FALSE  //if there is a semicolon
           || substr_count($text, ',') > 1  //if there is more than one comma
-          || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the (whitespace-stripped) string
+          || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
           );
 }
 
