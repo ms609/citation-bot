@@ -900,10 +900,11 @@ class Template extends Item {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
-          $this->add_if_new("pages", $crossRef->first_page
-                  . ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)
-                  ? "-" . $crossRef->last_page //replaced by an endash later in script
-                  : "") );
+          if ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page) {
+            $this->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
+          } else {
+            $this->add_if_new("pages", $crossRef->first_page);
+          }
         }
         echo " (ok)";
       } else {
