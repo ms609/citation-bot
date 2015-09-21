@@ -24,8 +24,8 @@ define("to_en_dash", "--?|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacin
 define("blank_ref", "<ref name=\"%s\" />");
 define("reflist_regexp", "~{{\s*[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~u");
 define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
-define("wikiroot", "https://test.wikipedia.org/w/index.php?"); //FIXME in prod
-define("api", "https://test.wikipedia.org/w/api.php"); //FIXME in prod
+define("wikiroot", "https://en.wikipedia.org/w/index.php?");
+define("api", "https://en.wikipedia.org/w/api.php"); // wiki's API endpoint
 define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
                     "http://(?:\w+.)?adsabs.harvard.edu",
                     "http://ads.ari.uni-heidelberg.de",
@@ -181,8 +181,8 @@ quiet_echo("\n Fetching parameter list ... ");
 // Get a current list of parameters used in citations from WP
 $page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters|Module:Citation/CS1/Whitelist&format=json");
 $json = json_decode($bot->results, true);
-$parameter_list = (explode("\n", $json["query"]["pages"][82740]["revisions"][0]["*"])); //FIXME, this is 26899494 on enwiki
-preg_match_all("~\['([^']+)'\] = true~", $json["query"]["pages"][70802]["revisions"][0]["*"], $match); //FIXME, this is 39013723 on enwiki
+$parameter_list = (explode("\n", $json["query"]["pages"][26899494]["revisions"][0]["*"]));
+preg_match_all("~\['([^']+)'\] = true~", $json["query"]["pages"][39013723]["revisions"][0]["*"], $match);
 foreach($match[1] as $parameter_name) {
   if (strpos($parameter_name, '#') !== FALSE) {
     for ($i = 1; $i < 100; $i++) {
@@ -282,7 +282,7 @@ function logIn($username, $password) {
   if ($login_result->login->result == "Success") {
     quiet_echo("\n Using account " . $login_result->login->lgusername . ".");
     // Add other cookies, which are necessary to remain logged in.
-    $cookie_prefix = "testwiki"; //FIXME in prod
+    $cookie_prefix = "enwiki";
     $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
     $bot->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
     $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;

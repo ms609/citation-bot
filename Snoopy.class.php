@@ -41,7 +41,7 @@ class Snoopy
 	
 	/* user definable vars */
 
-	var $host			=	"test.wikipedia.org";	// host name we are connecting to, FIXME in prod
+	var $host			=	"en.wikipedia.org";	// host name we are connecting to
 	var $port			=	80;					// port we are connecting to
 	var $proxy_host		=	"";					// proxy host to use
 	var $proxy_port		=	"";					// proxy port to use
