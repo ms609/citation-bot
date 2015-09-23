@@ -182,7 +182,7 @@ class Template extends Item {
       return false;
     }
 
-    // If we already have name parameters for editor or author, don't add more
+    // If we already have name parameters for author, don't add more
     if ($this->initial_author_params && in_array($param, $flattened_author_params)) {
       return false;
     }

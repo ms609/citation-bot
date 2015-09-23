@@ -1,13 +1,7 @@
 <?php
-// $Id$
 //TODO: $account_suffix is not declared, gives "Notice: Undefined variable"
 ini_set("user_agent", "Citation_bot$account_suffix; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
-
-// SVN revision ID for this file. FIXME: not using SVN anymore.
-function expandFnsRevId() {
-  return (int) trim(substr('$Id$', 19, 4));
-}
 
 function quiet_echo($text, $alternate_text = '') {
   global $html_output;
@@ -234,7 +228,7 @@ function updateBacklog($page) {
   $db = udbconnect("yarrow");
   $result = mysql_query("SELECT page FROM citation WHERE id = '$id'") or print (mysql_error());
   $result = mysql_fetch_row($result);
-  $sql = $result ? "UPDATE citation SET fast = '" . date("c") . "', revision = '" . revisionID()
+  $sql = $result ? "UPDATE citation SET fast = '" . date("c") . "', revision = '" . revisionID() // SVN revision ID, not used anymore
           . "' WHERE page = '$sPage'" : "INSERT INTO citation VALUES ('"
           . $id . "', '$sPage', '" . date("c") . "', '0000-00-00', '" . revisionID() . "')";
   $result = mysql_query($sql) or print (mysql_error());

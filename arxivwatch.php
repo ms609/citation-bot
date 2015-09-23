@@ -5,7 +5,6 @@
 $accountSuffix = '_2'; // Before expandfunctions, which contains login
 require_once("expandFns.php"); //Must include first
 define("wikiroot", "http://en.wikipedia.org/w/index.php?");
-$editInitiator = '[ax'. revisionID() . ']';
 $htmlOutput = false;
 $toDo = categoryMembers("Articles with missing Cite arXiv inputs");
 function nextPage(){

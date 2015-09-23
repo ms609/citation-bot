@@ -1,5 +1,4 @@
 <?php
-/*$Id$*/
 /* Treats comments, templates and references as objects */
 
 /* 
@@ -13,21 +12,6 @@ require_once("Parameter.php");
 
 #define ('ref_regexp', '~<ref.*</ref>~u'); // #TODO DELETE
 #define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
-
-// The following section is about SVN revision IDs: FIXME, not using SVN any more.
-$file_revision_id = str_replace(array("Revision: ", "$", " "), "", '$Revision$');
-$doitools_revision_id = revisionID();
-global $last_revision_id, $edit_initiator;
-$edit_initiator = "[$doitools_revision_id]";
-if ($file_revision_id < $doitools_revision_id) {
-  $last_revision_id = $doitools_revision_id;
-} else {
-  $edit_initiator = str_replace($doitools_revision_id, $file_revision_id, $edit_initiator);
-  $last_revision_id = $file_revision_id;
-}
-
-quiet_echo ("\nRevision #$last_revision_id");
-// end SVN revision ID section
 
 global $author_parameters;
 $author_parameters = array(
@@ -636,8 +620,7 @@ class Page {
     );
     if ($this->modifications['ref_names']) $auto_summary .= 'Named references. ';
     if (!$auto_summary) $auto_summary = "Misc citation tidying. ";
-    global $edit_initiator;
-    return $edit_initiator . $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
+    return $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
   
   public function write($edit_summary = NULL) {
@@ -659,13 +642,12 @@ class Page {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
-      global $edit_initiator;
       $submit_vars = array(
           "action" => "edit",
           "title" => $my_page->title,
           "text" => $this->text,
           "token" => $my_page->edittoken, // from $result above
-          "summary" => $edit_summary ? ($edit_initiator . $edit_summary) : $this->edit_summary(),
+          "summary" => $edit_summary ? $edit_summary : $this->edit_summary(),
           "minor" => "1",
           "bot" => "1",
           "basetimestamp" => $my_page->touched,
