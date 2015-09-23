@@ -43,8 +43,6 @@ require_once(HOME . "credentials/doiBot.login");
 # Snoopy's ini files should be modified so the host name is en.wikipedia.org.
 require_once('Snoopy.class.php');
 require_once("DOItools.php");
-require_once("Template.php");
-require_once("Parameter.php");
 require_once("objects.php");
 require_once("wikiFunctions.php");
 

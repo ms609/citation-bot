@@ -1,5 +1,6 @@
 <?php
-require_once("objects.php");
+require_once("Item.php");
+require_once("Page.php");
 
 // TEMPLATE //
 class Template extends Item {

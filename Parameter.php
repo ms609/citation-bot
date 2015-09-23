@@ -1,5 +1,4 @@
 <?php
-# PARAMETERS #
 class Parameter {
   public $pre, $param, $eq, $val, $post;
 
