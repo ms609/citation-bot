@@ -1,4 +1,8 @@
 <?php
+/*
+ * Short_Reference extends Item. It contains constants and parsing functions for
+ * short ref tags.
+ */
 
 require_once('Item.php');
 

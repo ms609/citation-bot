@@ -1,4 +1,10 @@
 <?php
+/*
+ * expandFns.php sets up most of the page expansion. A number of constants and variables
+ * are set here. HTTP handing takes place using an instance of the Snoopy class. Most of
+ * the page expansion depends on the classes in objects.php, particularly Template and Page.
+ */
+
 //TODO: $account_suffix is not declared, gives "Notice: Undefined variable"
 ini_set("user_agent", "Citation_bot$account_suffix; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
@@ -221,6 +227,15 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
 function updateBacklog($page) {
   # "-[#TODO unhandled DB request]-";
   return (NULL);
+/*
+ * This is code that interacted with the Toolserver database. revisionID() referred to the
+ * SVN revision ID and has been removed from the codebase, but is kept here so that the query
+ * here will match the recovered database schema.
+
+ * TODO: decide what to do with the database functions. Either set up a database on Tool Labs
+ *       and rewrite/update, or decide that a database is not necessary and take out code that
+ *       refers to it.
+
   $sPage = addslashes($page);
   $id = addslashes(articleId($page));
   $db = udbconnect("yarrow");
@@ -231,6 +246,7 @@ function updateBacklog($page) {
           . $id . "', '$sPage', '" . date("c") . "', '0000-00-00', '" . revisionID() . "')";
   $result = mysql_query($sql) or print (mysql_error());
   mysql_close($db);
+ */
 }
 
 function countMainLinks($title) {

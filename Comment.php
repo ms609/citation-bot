@@ -1,4 +1,7 @@
 <?php
+/*
+ * Extends Item. Contains constants and text-parsing functions for wikitext comments.
+ */
 
 require_once('Item.php');
 

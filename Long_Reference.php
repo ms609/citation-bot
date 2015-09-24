@@ -1,4 +1,8 @@
 <?php
+/*
+ * Long_Reference extends Item.
+ * It contains methods to process long references (parse, generate names, return parsed text).
+ */
 
 require_once('Item.php');
 
@@ -26,8 +30,11 @@ class Long_Reference extends Item {
     );
     if (!$this->attr['name']
     || preg_match('~ref_?[ab]?(?:..?|utogenerated|erence[a-zA-Z]*)?~i', $this->attr['name'])
-    ) echo "\n * Generating name for anonymous reference [" . $this->attr['name'] . ']: ' . $this->generate_name();
-    else print "\n * No name for ". $this->attr['name'];
+    ) {
+      echo "\n * Generating name for anonymous reference [" . $this->attr['name'] . ']: ' . $this->generate_name();
+    } else {
+      print "\n * No name for ". $this->attr['name'];
+    }
   }
 
   public function generate_name() {

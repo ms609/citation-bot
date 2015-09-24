@@ -1,4 +1,11 @@
 <?php
+/*
+ * Page contains methods that will do most of the higher-level work of expanding citations
+ * and handling references on the wikipage associated with the Page object.
+ * Provides functions to read, parse, expand text (using Template, Comment, Long_Reference,
+ * and Short_Reference), handle collected page modifications, and save the edited page text
+ * to the wiki.
+ */
 
 require_once('Comment.php');
 require_once('Short_Reference.php');

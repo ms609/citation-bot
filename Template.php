@@ -1,8 +1,22 @@
 <?php
+/*
+ * Template extends Item. Template has methods to handle most aspects of citation template
+ * parsing, handling, and expansion.
+ *
+ * Of particular note:
+ *     process() is what handles the different cite/Cite templates differently.
+ *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
+ *       switch statement handles various parameters differently.
+ *     tidy() cleans up citations and the templates, but it includes various other functions
+ *       and side effects as well. Beware!
+ *
+ * A range of functions will search CrossRef/adsabs/Google Books/other online databases
+ * to find information that can be added to existing citations.
+ */
+
 require_once("Item.php");
 require_once("Page.php");
 
-// TEMPLATE //
 class Template extends Item {
   const placeholder_text = '# # # Citation bot : template placeholder %s # # #';
   const regexp = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
