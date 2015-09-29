@@ -89,8 +89,8 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
     }
     if ($attempts < 3 ) {
       echo $html_output ?
-        " <small><a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
-        . "<a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
+        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
+        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
         . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
         : ".";
     } else {

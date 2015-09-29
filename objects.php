@@ -305,7 +305,7 @@ class Page {
   
   public function expand_text() {
     global $html_output;
-    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://test.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>{$this->title}</a>' &mdash; <a href='http://test.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://test.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
+    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>{$this->title}</a>' &mdash; <a href='http://en.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
     $text = $this->text;
     $this->modifications = array();
     if (!$text) {
