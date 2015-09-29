@@ -1,6 +1,5 @@
 <?php
 
-// $Id: $
 define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
 define ("BRACESPACE", "!BOTCODE-spaceBeforeTheBrace");
 

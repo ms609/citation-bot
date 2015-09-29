@@ -181,19 +181,6 @@ function list_parameters() { // Lists the parameters in order.
    );
 }
 
-/** Written to return SVN revision id of this file. FIXME: no SVN anymore. */
-function revisionID() {
-  return 0;
-    global $last_revision_id;
-    if ($last_revision_id) return $last_revision_id;
-    $svnid = '$Rev$';
-    $scid = substr($svnid, 6);
-    $thisRevId = intval(substr($scid, 0, strlen($scid) - 2));
-    return expandFnsRevId() > $thisRevId ? expandFnsRevId() : $thisRevId;
-    $repos_handle = svn_repos_open('~/citation-bot');
-    return svn_fs_youngest_rev($repos_handle);
-}
-
 function bubble_p ($a, $b) {
   return ($a["weight"] > $b["weight"]) ? 1 : -1;
 }

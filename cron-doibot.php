@@ -8,7 +8,6 @@ $fastMode = false;
 $accountSuffix = '_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
-$editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
 define ("START_HOUR", date("H"));
 

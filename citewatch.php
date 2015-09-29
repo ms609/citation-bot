@@ -8,7 +8,6 @@ $account_suffix = '_2'; // Should use account _2. Include this line before expan
 require_once("expandFns.php"); // includes login
 require_once("citewatchFns.php");
 
-$edit_initiator = '[cw' . revisionID() . ']';
 $htmlOutput = false;
 
 $dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29", " ");

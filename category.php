@@ -24,7 +24,6 @@ $account_suffix='_4'; // Whilst testing
 $account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
 $htmlOutput = false;
-$edit_initiator = '[Cat' . revisionID() . ']';
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
