@@ -1,13 +1,13 @@
 <?php
-// $Id$
+/*
+ * expandFns.php sets up most of the page expansion. A number of constants and variables
+ * are set here. HTTP handing takes place using an instance of the Snoopy class. Most of
+ * the page expansion depends on the classes in objects.php, particularly Template and Page.
+ */
+
 //TODO: $account_suffix is not declared, gives "Notice: Undefined variable"
 ini_set("user_agent", "Citation_bot$account_suffix; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
-
-// SVN revision ID for this file. FIXME: not using SVN anymore.
-function expandFnsRevId() {
-  return (int) trim(substr('$Id$', 19, 4));
-}
 
 function quiet_echo($text, $alternate_text = '') {
   global $html_output;
@@ -49,8 +49,6 @@ require_once(HOME . "credentials/doiBot.login");
 # Snoopy's ini files should be modified so the host name is en.wikipedia.org.
 require_once('Snoopy.class.php');
 require_once("DOItools.php");
-require_once("Template.php");
-require_once("Parameter.php");
 require_once("objects.php");
 require_once("wikiFunctions.php");
 
@@ -229,16 +227,26 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
 function updateBacklog($page) {
   # "-[#TODO unhandled DB request]-";
   return (NULL);
+/*
+ * This is code that interacted with the Toolserver database. revisionID() referred to the
+ * SVN revision ID and has been removed from the codebase, but is kept here so that the query
+ * here will match the recovered database schema.
+
+ * TODO: decide what to do with the database functions. Either set up a database on Tool Labs
+ *       and rewrite/update, or decide that a database is not necessary and take out code that
+ *       refers to it.
+
   $sPage = addslashes($page);
   $id = addslashes(articleId($page));
   $db = udbconnect("yarrow");
   $result = mysql_query("SELECT page FROM citation WHERE id = '$id'") or print (mysql_error());
   $result = mysql_fetch_row($result);
-  $sql = $result ? "UPDATE citation SET fast = '" . date("c") . "', revision = '" . revisionID()
+  $sql = $result ? "UPDATE citation SET fast = '" . date("c") . "', revision = '" . revisionID() // SVN revision ID, not used anymore
           . "' WHERE page = '$sPage'" : "INSERT INTO citation VALUES ('"
           . $id . "', '$sPage', '" . date("c") . "', '0000-00-00', '" . revisionID() . "')";
   $result = mysql_query($sql) or print (mysql_error());
   mysql_close($db);
+ */
 }
 
 function countMainLinks($title) {
@@ -649,10 +657,10 @@ function remove_accents($input) {
   return str_replace($search, $replace, $input);
 }
 
-function under_two_authors ($text) {
+function under_two_authors($text) {
   return !(strpos($text, ';') !== FALSE  //if there is a semicolon
           || substr_count($text, ',') > 1  //if there is more than one comma
-          || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the (whitespace-stripped) string
+          || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
           );
 }
 

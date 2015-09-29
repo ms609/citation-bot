@@ -72,7 +72,6 @@ foreach ($argv as $arg) {
 $account_suffix = '_' . ($argument['user'] ? $argument['user'][0] : '1'); // Keep this before including expandFns
 include("object_expandFns.php");
 $htmlOutput = false;
-$editInitiator = '[Pu' . (revisionID() + 1) . '&beta;]';
 define ("START_HOUR", date("H"));
 
 function nextPage($page){

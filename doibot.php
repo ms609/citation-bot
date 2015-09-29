@@ -39,8 +39,6 @@
 $html_output = TRUE;
 require_once ("expandFns.php");
 
-$editInitiator = "[" . revisionID() . "]";
-
 if (is_valid_user($user)) {
   print "Activated by $user\n";
   $edit_summary_end = " | [[User:$user|$user]]";

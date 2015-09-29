@@ -9,12 +9,11 @@
       // this is absolute because cwd/__DIR__ = /data/projects/citations-dev/ when redirected from the expand-citations gadget
       require_once('/data/project/citations-dev/public_html/expandFns.php');
       $html_output = 0;
-      $edit_initiator = '[txt' . revisionID() . ']';
       $postvars = $_POST;
       $page = new Page();
       $page->text = mb_convert_encoding($postvars["wpTextbox1"], "UTF-8");
     ?>
-    <h1>Citation bot v. <?=$last_revision_id?> is running...</h1>
+    <h1>Citation bot is running...</h1>
     <h3>Wait a moment whilst the bot runs.  You'll be returned to Wikipedia when it's done.</h3>
     <?php
       $page->expand_text();
@@ -25,9 +24,12 @@
     ?></textarea>
       <?php
 unset ($postvars["wpTextbox1"]);
-$postvars["wpSummary"] .= stripos($postvars["wpSummary"], "citation bot")
-        ? ""
-        : " | [[WP:UCB|Assisted by Citation bot r" . revisionID() . ']]';
+
+if ($postvars['wpSummary']) {
+  $postvars['wpSummary'] .= " | ";
+}
+$postvars["wpSummary"] .= "[[WP:UCB|Assisted by Citation bot]]";
+
 foreach ($postvars as $key => $value) {
   echo "\n\t<input type=\"hidden\" name=\"$key\" value=\"" . str_replace('"', '&#34;', $value) . "\" />";
 }

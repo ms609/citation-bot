@@ -6,7 +6,6 @@ $fastMode=false;
 include("expandFns.php");
 
 
-$editInitiator = '[Pu'. revisionID() . ']';
 $accountSuffix='_1';
 
 $ON = true;

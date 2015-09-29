@@ -1,7 +1,22 @@
 <?php
-require_once("objects.php");
+/*
+ * Template extends Item. Template has methods to handle most aspects of citation template
+ * parsing, handling, and expansion.
+ *
+ * Of particular note:
+ *     process() is what handles the different cite/Cite templates differently.
+ *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
+ *       switch statement handles various parameters differently.
+ *     tidy() cleans up citations and the templates, but it includes various other functions
+ *       and side effects as well. Beware!
+ *
+ * A range of functions will search CrossRef/adsabs/Google Books/other online databases
+ * to find information that can be added to existing citations.
+ */
 
-// TEMPLATE //
+require_once("Item.php");
+require_once("Page.php");
+
 class Template extends Item {
   const placeholder_text = '# # # Citation bot : template placeholder %s # # #';
   const regexp = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
@@ -182,7 +197,7 @@ class Template extends Item {
       return false;
     }
 
-    // If we already have name parameters for editor or author, don't add more
+    // If we already have name parameters for author, don't add more
     if ($this->initial_author_params && in_array($param, $flattened_author_params)) {
       return false;
     }
@@ -208,7 +223,7 @@ class Template extends Item {
         return $this->add($param, $value);
       break;
       case "author": case "author1": case "last1": case "last": case "authors":
-        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*", "’"), array(";", ";", " ", ";", " ", "", "", "'"), $value);
+        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
 
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
@@ -900,10 +915,11 @@ class Template extends Item {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
-          $this->add_if_new("pages", $crossRef->first_page
-                  . ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)
-                  ? "-" . $crossRef->last_page //replaced by an endash later in script
-                  : "") );
+          if ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)) {
+            $this->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
+          } else {
+            $this->add_if_new("pages", $crossRef->first_page);
+          }
         }
         echo " (ok)";
       } else {
@@ -1873,6 +1889,7 @@ class Template extends Item {
     foreach ($author_parameters as $i => $group) {
       foreach ($group as $param) {
         if (strpos($this->get($param), 'et al')) {
+          // remove 'et al' from the parameter value if present
           $val_base = preg_replace("~,?\s*'*et al['.]*~", '', $this->get($param));
           if ($i == 1) {
             // then we (probably) have a list of authors joined by commas in our first parameter
