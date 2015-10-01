@@ -43,7 +43,7 @@ class Template extends Item {
       $this->initial_param[$p->param] = $p->val;
 
       // Save author params for special handling
-      if (in_array($p->param, $flattened_author_params)) {
+      if (in_array($p->param, $flattened_author_params) && $p->val) {
         $this->initial_author_params[$p->param] = $p->val;
       }
     }
