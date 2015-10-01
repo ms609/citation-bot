@@ -7,12 +7,15 @@
 class Parameter {
   public $pre, $param, $eq, $val, $post;
 
+/*
+ * Breaks a citation template down to component parts.
+ */
   public function parse_text($text) {
     $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
     $split = explode('=', $text, 2);
-    preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~m', $split[0], $pre_eq);
+    preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~', $split[0], $pre_eq);
     if (count($split) == 2) {
-      preg_match('~^(\s*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
+      preg_match('~^([ \t]*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
       if (count($pre_eq) == 0) {
         $this->eq    = $split[0] . '=' . $post_eq[1];
       } else {
@@ -31,6 +34,7 @@ class Parameter {
     }
   }
 
+  // FIXME: this does not appear to actually parse values, should be renamed.
   protected function parse_val($value) {
     switch ($this->param) {
       case 'pages':
@@ -40,7 +44,13 @@ class Parameter {
     }
   }
 
+/*
+ * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
+ */
   public function parsed_text() {
-    return $this->pre . $this->param . (($this->param && empty($this->eq))?' = ':$this->eq) . $this->val . $this->post;
+    if ($this->param && empty($this->eq)) {
+      $this->eq = ' = ';
+    }
+    return $this->pre . $this->param . $this->eq . $this->val . $this->post;
   }
 }

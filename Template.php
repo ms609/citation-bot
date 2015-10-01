@@ -1662,8 +1662,10 @@ class Template extends Item {
 
   protected function join_params() {
     $ret = '';
-    if ($this->param) foreach($this->param as $p) {
-      $ret .= '|' . $p->parsed_text();
+    if ($this->param) {
+      foreach($this->param as $p) {
+        $ret .= '|' . $p->parsed_text();
+      }
     }
     return $ret;
   }
@@ -2018,11 +2020,13 @@ class Template extends Item {
   }
 
   // Amend parameters
-  public function rename($old, $new, $new_value = FALSE) {
+  public function rename($old_param, $new_param, $new_value = FALSE) {
     foreach ($this->param as $p) {
-      if ($p->param == $old) {
-        $p->param = $new;
-        if ($new_value) $p->val = $new_value;
+      if ($p->param == $old_param) {
+        $p->param = $new_param;
+        if ($new_value) {
+          $p->val = $new_value;
+        }
       }
     }
   }
@@ -2100,7 +2104,14 @@ class Template extends Item {
   protected function added($param) {return $this->modified($param, '+');}
 
   public function modifications ($type='all') {
-    if ($this->param) foreach ($this->param as $p) $new[$p->param] = $p->val; else $new = array();
+    if ($this->param) {
+      foreach ($this->param as $p) {
+        $new[$p->param] = $p->val;
+      }
+    } else {
+      $new = array();
+    }
+
     $old = ($this->initial_param) ? $this->initial_param : array();
     if ($new) {
       if ($old) {
