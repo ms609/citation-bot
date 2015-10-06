@@ -16,6 +16,7 @@
 
 require_once("Item.php");
 require_once("Page.php");
+require_once("Parameter.php");
 
 class Template extends Item {
   const placeholder_text = '# # # Citation bot : template placeholder %s # # #';
@@ -55,6 +56,8 @@ class Template extends Item {
     if ($this->wikiname() == 'cite doi')
       $text = preg_replace('~d?o?i?\s*[:.,;>]*\s*(10\.\S+).*?(\s*)$~', "$1$2", $text);
     $params = explode('|', $text);
+    // TODO: this naming is confusing, distinguish between $text above and
+    //       $text in the loop (derived from $text above via $params)
     foreach ($params as $i => $text) {
       $this->param[$i] = new Parameter();
       $this->param[$i]->parse_text($text);

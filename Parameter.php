@@ -9,13 +9,16 @@ class Parameter {
 
 /*
  * Breaks a citation template down to component parts.
+ * Expects that any instances of "|" in $text will have been replaced with
+ * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%' and set
+ * in expandFns.php) before this function is called.
  */
   public function parse_text($text) {
     $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
     $split = explode('=', $text, 2);
     preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~', $split[0], $pre_eq);
     if (count($split) == 2) {
-      preg_match('~^([ \t]*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
+      preg_match('~^([ \t\p{Zs}]*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
       if (count($pre_eq) == 0) {
         $this->eq    = $split[0] . '=' . $post_eq[1];
       } else {
@@ -46,6 +49,8 @@ class Parameter {
 
 /*
  * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
+ * FIXME: might be better named "join_parsed_text" or similar to make it clear what
+ * this function does to the parsed text.
  */
   public function parsed_text() {
     if ($this->param && empty($this->eq)) {
