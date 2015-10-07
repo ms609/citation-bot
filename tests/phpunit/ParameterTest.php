@@ -102,6 +102,8 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($parameter->post, " \n");
   }
 
+  // This test may not work, depending on your test environment.
+  // Works on Tool Labs with PHP 5.5.9-1ubuntu4.13 (cli), PHPUnit 3.7.28
   public function testBlankValueNonBreakingSpaces() {
     $text = " first7 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
@@ -133,17 +135,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($parameter->eq, '=');
     $this->assertEquals($parameter->val, '');
     $this->assertEquals($parameter->post, "\n");
-  }
-
-  public function testTwoBracketsInValue() {
-    $text = "title=Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-[2-carboxy-2-(4-hydroxyphenyl)acetamido]-7.alpha.-methoxy-3-[[(1-methyl-1H-tetrazol-5-yl)thio]methyl]-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems";
-    $parameter = $this->parameter_parse_text_helper($text);
-
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, 'title');
-    $this->assertEquals($parameter->eq, '=');
-    $this->assertEquals($parameter->val, "Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-[2-carboxy-2-(4-hydroxyphenyl)acetamido]-7.alpha.-methoxy-3-[[(1-methyl-1H-tetrazol-5-yl)thio]methyl]-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems");
-    $this->assertEquals($parameter->post, "");
   }
 
   public function testHasProtectedCommentInValue() {
