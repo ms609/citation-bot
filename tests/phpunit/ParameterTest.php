@@ -113,6 +113,17 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($parameter->post, "\n");
   }
 
+  public function testMultilinevalueTrailingNewline() {
+    $text = "param=multiline\nvalue\n";
+    $parameter = $this->parameter_parse_text_helper($text);
+
+    $this->assertEquals($parameter->pre, '');
+    $this->assertEquals($parameter->param, "param");
+    $this->assertEquals($parameter->eq, '=');
+    $this->assertEquals($parameter->val, "multiline\nvalue");
+    $this->assertEquals($parameter->post, "\n");
+  }
+
   public function testMultilineParamTrailingNewline() {
     $text = "multiline\nparam=\n";
     $parameter = $this->parameter_parse_text_helper($text);
