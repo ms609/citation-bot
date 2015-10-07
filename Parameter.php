@@ -7,12 +7,18 @@
 class Parameter {
   public $pre, $param, $eq, $val, $post;
 
+/*
+ * Breaks a citation template down to component parts.
+ * Expects that any instances of "|" in $text will have been replaced with
+ * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%' and set
+ * in expandFns.php) before this function is called.
+ */
   public function parse_text($text) {
     $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
     $split = explode('=', $text, 2);
-    preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~m', $split[0], $pre_eq);
+    preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~', $split[0], $pre_eq);
     if (count($split) == 2) {
-      preg_match('~^(\s*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
+      preg_match('~^([ \t\p{Zs}]*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
       if (count($pre_eq) == 0) {
         $this->eq    = $split[0] . '=' . $post_eq[1];
       } else {
@@ -31,6 +37,7 @@ class Parameter {
     }
   }
 
+  // FIXME: this does not appear to actually parse values, should be renamed.
   protected function parse_val($value) {
     switch ($this->param) {
       case 'pages':
@@ -40,7 +47,15 @@ class Parameter {
     }
   }
 
+/*
+ * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
+ * FIXME: might be better named "join_parsed_text" or similar to make it clear what
+ * this function does to the parsed text.
+ */
   public function parsed_text() {
-    return $this->pre . $this->param . (($this->param && empty($this->eq))?' = ':$this->eq) . $this->val . $this->post;
+    if ($this->param && empty($this->eq)) {
+      $this->eq = ' = ';
+    }
+    return $this->pre . $this->param . $this->eq . $this->val . $this->post;
   }
 }
