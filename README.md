@@ -35,7 +35,7 @@ above include/require it. It includes several files itself:
    appears to use curl only for https, so the path to curl on Labs must be
    correct or the bot will fail to log in because the request can't reach the
    server.
-* `DOITools.php`: defines `$bot` (the Snoopy instance), some regexes,
+* `DOItools.php`: defines `$bot` (the Snoopy instance), some regexes,
    capitalization
 * `objects.php`: mix of variables, script, functions, and classes with their
    methods. Classes include `Page`, of which the key methods are

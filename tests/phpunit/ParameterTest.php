@@ -29,8 +29,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
     $text = "last1 = [[:en:Bigwig%%CITATION_BOT_PIPE_PLACEHOLDER%%SomeoneFamous]]\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    var_dump($parameter);
-
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, 'last1');
     $this->assertEquals($parameter->eq, ' = ');
@@ -41,7 +39,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testBlankValueWithSpacesLeadingSpaceTrailingNewline() {
     $text = " first1 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, ' ');
     $this->assertEquals($parameter->param, 'first1');
@@ -53,7 +50,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testBlankValueWithSpacesAndTrailingNewline() {
     $text = "first2 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, 'first2');
@@ -65,7 +61,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testBlankValueWithPreEqSpaceAndTrailingNewline() {
     $text = "first3 =\n";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, 'first3');
@@ -77,7 +72,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testBlankValueWithPostEqSpaceAndTrailingNewline() {
     $text = "first4= \n";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, 'first4');
@@ -89,7 +83,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testBlankValueNoSpacesTrailingNewline() {
     $text = "first5=\n";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, 'first5');
@@ -101,7 +94,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testBlankValueNoEquals() {
     $text = "first6 \n";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, '');
@@ -124,7 +116,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testMultilineParamTrailingNewline() {
     $text = "multiline\nparam=\n";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, "multiline\nparam");
@@ -136,7 +127,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testTwoBracketsInValue() {
     $text = "title=Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-[2-carboxy-2-(4-hydroxyphenyl)acetamido]-7.alpha.-methoxy-3-[[(1-methyl-1H-tetrazol-5-yl)thio]methyl]-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, 'title');
@@ -148,7 +138,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testHasProtectedCommentInValue() {
     $text = "archivedate= 24 April 2008 # # # Citation bot : comment placeholder 0 # # #";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, 'archivedate');
@@ -159,7 +148,6 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
   public function testHasUnreplacedCommentInValue() {
     $text = "archivedate= 9 August 2006 <!--DASHBot-->";
     $parameter = $this->parameter_parse_text_helper($text);
-    var_dump($parameter);
 
     $this->assertEquals($parameter->pre, '');
     $this->assertEquals($parameter->param, 'archivedate');
