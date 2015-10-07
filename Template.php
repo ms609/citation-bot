@@ -16,6 +16,7 @@
 
 require_once("Item.php");
 require_once("Page.php");
+require_once("Parameter.php");
 
 class Template extends Item {
   const placeholder_text = '# # # Citation bot : template placeholder %s # # #';
@@ -43,7 +44,7 @@ class Template extends Item {
       $this->initial_param[$p->param] = $p->val;
 
       // Save author params for special handling
-      if (in_array($p->param, $flattened_author_params)) {
+      if (in_array($p->param, $flattened_author_params) && $p->val) {
         $this->initial_author_params[$p->param] = $p->val;
       }
     }
@@ -55,6 +56,8 @@ class Template extends Item {
     if ($this->wikiname() == 'cite doi')
       $text = preg_replace('~d?o?i?\s*[:.,;>]*\s*(10\.\S+).*?(\s*)$~', "$1$2", $text);
     $params = explode('|', $text);
+    // TODO: this naming is confusing, distinguish between $text above and
+    //       $text in the loop (derived from $text above via $params)
     foreach ($params as $i => $text) {
       $this->param[$i] = new Parameter();
       $this->param[$i]->parse_text($text);
@@ -1662,8 +1665,10 @@ class Template extends Item {
 
   protected function join_params() {
     $ret = '';
-    if ($this->param) foreach($this->param as $p) {
-      $ret .= '|' . $p->parsed_text();
+    if ($this->param) {
+      foreach($this->param as $p) {
+        $ret .= '|' . $p->parsed_text();
+      }
     }
     return $ret;
   }
@@ -2018,11 +2023,13 @@ class Template extends Item {
   }
 
   // Amend parameters
-  public function rename($old, $new, $new_value = FALSE) {
+  public function rename($old_param, $new_param, $new_value = FALSE) {
     foreach ($this->param as $p) {
-      if ($p->param == $old) {
-        $p->param = $new;
-        if ($new_value) $p->val = $new_value;
+      if ($p->param == $old_param) {
+        $p->param = $new_param;
+        if ($new_value) {
+          $p->val = $new_value;
+        }
       }
     }
   }
@@ -2100,7 +2107,14 @@ class Template extends Item {
   protected function added($param) {return $this->modified($param, '+');}
 
   public function modifications ($type='all') {
-    if ($this->param) foreach ($this->param as $p) $new[$p->param] = $p->val; else $new = array();
+    if ($this->param) {
+      foreach ($this->param as $p) {
+        $new[$p->param] = $p->val;
+      }
+    } else {
+      $new = array();
+    }
+
     $old = ($this->initial_param) ? $this->initial_param : array();
     if ($new) {
       if ($old) {
