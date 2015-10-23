@@ -375,7 +375,7 @@ class Template extends Item {
           return $this->add($param, $value);
         }
       return false;
-      case 'doi_brokendate': case 'doi_inactivedate':
+      case 'doi_brokendate':
         if ($this->blank('doi_brokendate') && $this->blank('doi_inactivedate')) {
           return $this->add($param, $value);
         }
@@ -1858,7 +1858,10 @@ class Template extends Item {
     }
     echo "\n   . Checking that DOI $doi is operational..." . tag();
     if ($this->query_crossref() === FALSE) {
+      // Replace old "doi_inactivedate" parameter, if present, with new "doi_brokendate"
+      $this->forget("doi_inactivedate");
       $this->set("doi_brokendate", date("Y-m-d"));
+
       echo "\n   ! Broken doi: $doi";
       return FALSE;
     } else {
@@ -2089,7 +2092,7 @@ class Template extends Item {
   public function forget ($par) {
     $pos = $this->get_param_position($par);
     if ($pos !== NULL) {
-      echo "\n   - Dropping redundant parameter $par" . tag();
+      echo "\n   - Dropping parameter $par" . tag();
       unset($this->param[$pos]);
     }
   }

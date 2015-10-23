@@ -105,6 +105,7 @@ $common_mistakes = array
   "director"        =>  "others",
   "display-authors" =>  "displayauthors",
   "display_authors" =>  "displayauthors",
+  "doi_inactivedate"=>  "doi_brokendate",
   "ed"              =>  "editor",
   "ed2"             =>  "editor2",
   "ed3"             =>  "editor3",
