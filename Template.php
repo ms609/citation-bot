@@ -1698,7 +1698,9 @@ class Template extends Item {
       if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
         $this->add_if_new('author-separator', $match[1] ? $match[1] : $match[2]);
         $new_authors = explode($match[1] . $match[2], $authors);
-        $this->forget('author'); $this->forget('authors');
+        $this->forget('author');
+        $this->forget('authors');
+
         for ($i = 0; $i < count($new_authors); $i++) {
           $this->add_if_new("author" . ($i + 1), trim($new_authors[$i]));
         }
@@ -1745,18 +1747,6 @@ class Template extends Item {
     if ($others) {
       if ($this->has('others')) $this->appendto('others', '; ' . $others);
       else $this->set('others', $others);
-    }
-
-    if(!$this->initial_author_params) {
-      if ($this->number_of_authors() == 9 && $this->display_authors() == FALSE) {
-        $this->display_authors(8); // So that displayed output does not change
-        echo "\n * Exactly 9 authors; look for more [... tidy]:";
-        $this->find_more_authors();
-        echo "now we have ". $this->number_of_authors() ."\n";
-        if ($this->number_of_authors() == 9) {
-          $this->display_authors(9); // Better display an author's name than 'et al' when the et al only hides 1 author!
-        }
-      }
     }
 
     if ($this->added('journal') || $journal && $this->added('issn')) $this->forget('issn');
@@ -1989,10 +1979,13 @@ class Template extends Item {
   public function display_authors($newval = FALSE) {
     if ($newval && is_int($newval)) {
       $this->forget('displayauthors');
-      echo "\n ~ Seting display-authors to $newval" . tag();
+      echo "\n ~ Setting display-authors to $newval" . tag();
       $this->set('display-authors', $newval);
     }
-    if (($da = $this->get('display-authors')) === NULL) $da = $this->get('displayauthors');
+
+    if (($da = $this->get('display-authors')) === NULL) {
+      $da = $this->get('displayauthors');
+    }
     return is_int(1 * $da) ? $da : FALSE;
   }
 
