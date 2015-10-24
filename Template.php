@@ -375,8 +375,10 @@ class Template extends Item {
           return $this->add($param, $value);
         }
       return false;
-      case 'doi_brokendate':
-        if ($this->blank('doi_brokendate') && $this->blank('doi_inactivedate')) {
+      case 'doi-broken-date':
+        if ($this->blank('doi_brokendate') &&
+            $this->blank('doi_inactivedate') &&
+            $this->blank('doi-inactive-date')) {
           return $this->add($param, $value);
         }
       return false;
@@ -927,7 +929,7 @@ class Template extends Item {
         echo " (ok)";
       } else {
         echo "\n - No CrossRef record found for doi '$doi'; marking as broken";
-        $this->add_if_new('doi_brokendate', date('Y-m-d'));
+        $this->add_if_new('doi-broken-date', date('Y-m-d'));
       }
     }
   }
@@ -1018,13 +1020,21 @@ class Template extends Item {
 
   protected function query_crossref($doi = FALSE) {
     global $crossRefId;
-    if (!$doi) $doi = $this->get('doi');
-    if (!$doi) warn('#TODO: crossref lookup with no doi');
+    if (!$doi) {
+      $doi = $this->get('doi');
+    }
+    if (!$doi) {
+      warn('#TODO: crossref lookup with no doi');
+    }
     $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
     $xml = @simplexml_load_file($url);
     if ($xml) {
       $result = $xml->query_result->body->query;
-      return ($result["status"]=="resolved")?$result:false;
+      if ($result["status"] == "resolved") {
+        return $result;
+      } else {
+        return false;
+      }
     } else {
        echo "\n   ! Error loading CrossRef file from DOI $doi!";
        return false;
@@ -1858,15 +1868,20 @@ class Template extends Item {
     }
     echo "\n   . Checking that DOI $doi is operational..." . tag();
     if ($this->query_crossref() === FALSE) {
-      // Replace old "doi_inactivedate" parameter, if present, with new "doi_brokendate"
+      // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
+      // if present, with new "doi-broken-date"
       $this->forget("doi_inactivedate");
-      $this->set("doi_brokendate", date("Y-m-d"));
+      $this->forget("doi-inactive-date");
+      $this->forget("doi_brokendate");
+      $this->set("doi-broken-date", date("Y-m-d"));
 
       echo "\n   ! Broken doi: $doi";
       return FALSE;
     } else {
       $this->forget('doi_brokendate');
       $this->forget('doi_inactivedate');
+      $this->forget('doi-broken-date');
+      $this->forget('doi-inactive-date');
       echo ' DOI ok.';
       return TRUE;
     }
