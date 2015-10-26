@@ -377,6 +377,7 @@ class Template extends Item {
       return false;
       case 'doi-broken-date':
         if ($this->blank('doi_brokendate') &&
+            $this->blank('doi-broken-date') &&
             $this->blank('doi_inactivedate') &&
             $this->blank('doi-inactive-date')) {
           return $this->add($param, $value);
