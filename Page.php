@@ -384,7 +384,7 @@ class Page {
       unset($this->modifications["deletions"][$pos]);
     }
     $auto_summary .= (($this->modifications["deletions"])
-      ? "Removed redundant parameters. "
+      ? "Removed parameters. "
       : ""
       ) . (($this->modifications["cite_type"])
       ? "Unified citation types. "
