@@ -135,7 +135,13 @@ class Template extends Item {
 
         $this->correct_param_spelling();
         $this->expand_by_pubmed(); //partly to try to find DOI
-        $journal_type = $this->has("periodical") ? "periodical" : "journal";
+
+        if ($this->has("periodical") ) {
+          $journal_type = "periodical";
+        } else {
+          $journal_type = "journal";
+        }
+
         if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
         $this->sanitize_doi();
         if ($this->verify_doi()) {
