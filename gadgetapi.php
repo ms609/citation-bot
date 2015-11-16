@@ -7,7 +7,7 @@ global $html_output;
 $html_output = -1;
 
 //Set up tool requirements
-require_once('/data/project/citations-dev/public_html/expandFns.php');
+require_once __DIR__ . '/expandFns.php';
 
 $originalText = $_POST['text'];
 $editSummary = $_POST['summary'];
