@@ -24,8 +24,8 @@ if ($editSummary) {
 $editSummary .= "[[WP:UCB|Assisted by Citation bot]]";
 
 $result = array(
-	'expandedtext' => $page->text,
-	'editsummary' => $editSummary
+  'expandedtext' => $page->text,
+  'editsummary' => $editSummary,
 );
 
 echo json_encode($result);
