@@ -52,10 +52,6 @@ require_once("DOItools.php");
 require_once("objects.php");
 require_once("wikiFunctions.php");
 
-//Commented out because they seem to be not used or not functional
-//includeIfNew("citewatchFns");
-//require_once("expand.php");
-
 //require_once(HOME . "credentials/mysql.login");
 /* mysql.login is a php file containing:
   define('MYSQL_DBNAME', ...);
@@ -461,33 +457,6 @@ function loadParam($param, $value, $equals, $pipe, $weight) {
     }
   }
   $p[$param] = Array($value, $equals, $pipe, "weight" => ($weight + 3) / 4 * 10); // weight will be 10, 20, 30, 40 ...
-}
-
-function cite_template_contents($type, $id) {
-  $page = get_template_prefix($type);
-  $replacement_template_name = $page . wikititle_encode($id);
-  $text = getRawWikiText($replacement_template_name);
-  if (!$text) {
-    return false;
-  } else {
-    return extract_parameters(extract_template($text, "cite journal"));
-  }
-}
-
-function create_cite_template($type, $id) {
-  $page = get_template_prefix($type);
-  return expand($page . wikititle_encode($id), true, true, "{{Cite journal\n | $type = $id \n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>");
-}
-
-function get_template_prefix($type) {
-  return "Template: Cite "
-  . ($type == "jstor" ? ("doi/10.2307" . wikititle_encode("/")) : $type . "/");
-  // Not sure that this works:
-  return "Template: Cite $type/";
-  // Do we really need to handle JSTORs differently?
-  // The below code errantly produces cite jstor/10.2307/JSTORID, not cite jstor/JSTORID.
-  return "Template: Cite "
-  . ($type == "jstor" ? ("jstor/10.2307" . wikititle_encode("/")) : $type . "/");
 }
 
 function standardize_reference($reference) {

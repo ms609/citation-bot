@@ -50,12 +50,12 @@ class Template extends Item {
     }
   }
 
+  // Parts of each param: | [pre] [param] [eq] [value] [post]
   protected function split_params($text) {
-    // | [pre] [param] [eq] [value] [post]
+    // Replace | characters that are inside template parameter/value pairs
     $text = preg_replace('~(\[\[[^\[\]]+)\|([^\[\]]+\]\])~', "$1" . PIPE_PLACEHOLDER . "$2", $text);
-    if ($this->wikiname() == 'cite doi')
-      $text = preg_replace('~d?o?i?\s*[:.,;>]*\s*(10\.\S+).*?(\s*)$~', "$1$2", $text);
     $params = explode('|', $text);
+
     // TODO: this naming is confusing, distinguish between $text above and
     //       $text in the loop (derived from $text above via $params)
     foreach ($params as $i => $text) {
@@ -152,18 +152,6 @@ class Template extends Item {
         $this->get_doi_from_crossref();
         $this->find_pmid();
         $this->tidy();
-      break;
-      case 'ref doi': case 'ref pmid': case 'ref jstor': case 'ref pmc':
-        $this->add_ref_tags = TRUE;
-        echo "\n * Added ref tags to {{{$this->name}}}" . tag();
-        $this->name = 'Cite ' . substr($this->wikiname(), 4);
-      case 'cite doi': case 'cite pmid': case 'cite jstor': case 'cite pmc':
-        $type = substr($this->wikiname(), 5);
-        $id = trim_identifier($this->param[0]->val);
-        $linked_page = "Template:Cite $type/" . wikititle_encode($id);
-        if (!getArticleId($linked_page)) {
-          expand_cite_page($linked_page); //TODO/FIXME: how's this handling separate cite template pages?
-        }
     }
     if ($this->citation_template) {
       $this->correct_param_spelling();
@@ -2163,6 +2151,12 @@ class Template extends Item {
 
   // Parse initial text
   public function parsed_text() {
-    return ($this->add_ref_tags ? '<ref>' : '') . '{{' . $this->name . $this->join_params() . '}}' . ($this->add_ref_tags ? '</ref>' : '');
+    if ($this->add_ref_tags) {
+      $ref_tags = array('<ref>', '</ref>');
+    } else {
+      $ref_tags = array('', '');
+    }
+
+    return $ref_tags[0] . '{{' . $this->name . $this->join_params() . '}}' . $ref_tags[1];
   }
 }

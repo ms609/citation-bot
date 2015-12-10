@@ -46,36 +46,6 @@ if (is_valid_user($user)) {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
-/*####### TODO: take this out I think. Not using Cite pmid/doi/etc templates anymore.
-$doi_input = trim($_GET["doi"]);
-$pmid_input = trim(str_replace(array("pmid", "PMID"), "", $_GET["pmid"]));
-$pmc_input = trim(str_replace(array("pmc", "PMC"), "", $_GET["pmc"]));
-
-if ($pmid_input) {
-	$page = new Page();
-  if ((int) $pmid_input > 0 && (int) $pmid_input < 30000000) {
-    $page->text = "{{Cite pmid|" . trim((int) $pmid_input) . "}}";
-    $page->title = $_REQUEST["page"] ? ucfirst($_REQUEST["page"]) : "[User-activated]";
-    $page->expand_remote_templates();
-  } else {
-    echo ("\n ! The specified PMID, '" . htmlspecialchars($pmid_input) . "', appears to be invalid.");
-  }
-  $dont_expand = TRUE;
-}
-if ($doi_input) {
-	$page = new Page();
-  if (preg_match('~^10.\d{4}/.+[A-z0-9]$~', $doi_input)) {
-    $page->text = "{{Cite doi|" . $doi_input . "}}";
-    $page->title = $_REQUEST["page"] ? ucfirst($_REQUEST["page"]) : "[User-activated]";
-    $page->expand_remote_templates();
-  } else {
-    echo ("\n ! The specified DOI, '" . htmlspecialchars($doi_input) . "', appears to be invalid.");
-  }
-  $dont_expand = TRUE;
-}
-####### end TODO. Works fine with this commented out.
-*/
-
 $title = trim(ucfirst(strip_tags($_REQUEST["page"])));
 print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
 $my_page = new Page();
