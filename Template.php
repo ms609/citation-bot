@@ -71,7 +71,6 @@ class Template extends Item {
 
   public function process() {
     switch ($this->wikiname()) {
-      case 'reflist': $this->page->has_reflist = TRUE; break;
       case 'cite web':
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
@@ -2151,12 +2150,6 @@ class Template extends Item {
 
   // Parse initial text
   public function parsed_text() {
-    if ($this->add_ref_tags) {
-      $ref_tags = array('<ref>', '</ref>');
-    } else {
-      $ref_tags = array('', '');
-    }
-
-    return $ref_tags[0] . '{{' . $this->name . $this->join_params() . '}}' . $ref_tags[1];
+    return '{{' . $this->name . $this->join_params() . '}}';
   }
 }

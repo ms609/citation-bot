@@ -1,21 +1,18 @@
 <?php
 /*
  * Page contains methods that will do most of the higher-level work of expanding citations
- * and handling references on the wikipage associated with the Page object.
- * Provides functions to read, parse, expand text (using Template, Comment, Long_Reference,
- * and Short_Reference), handle collected page modifications, and save the edited page text
+ * on the wikipage associated with the Page object.
+ * Provides functions to read, parse, expand text (using Template and Comment)
+ * handle collected page modifications, and save the edited page text
  * to the wiki.
  */
 
 require_once('Comment.php');
-require_once('Short_Reference.php');
-require_once('Long_Reference.php');
 require_once('Template.php');
 
 class Page {
 
   public $text, $title, $modifications;
-  protected $ref_names;
 
   public function is_redirect() {
     $url = Array(
@@ -54,13 +51,8 @@ class Page {
 
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
-      updateBacklog($title);
       return FALSE;
     }
-
-    // FIXME: take out cite template abilities/references.
-    if (strpos($title, "Template:Cite") !== FALSE) $this->cite_template = TRUE;
-    if ($this->cite_template && !$this->text) $this->text = $cite_doi_start_code;
 
     if ($this->text) {
       return TRUE;
@@ -71,7 +63,7 @@ class Page {
 
   public function expand_text() {
     global $html_output;
-    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://test.wikipedia.org/wiki/" . addslashes($this->title) . "' style='text-weight:bold;'>{$this->title}</a>' &mdash; <a href='http://test.wikipedia.org/?title=". addslashes(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://test.wikipedia.org/?title=" . addslashes(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
+    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://test.wikipedia.org/wiki/" . htmlspecialchars($this->title) . "' style='text-weight:bold;'>{$this->title}</a>' &mdash; <a href='http://test.wikipedia.org/?title=". htmlspecialchars(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://test.wikipedia.org/?title=" . htmlspecialchars(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");  //FIXME important
     $text = $this->text;
     $this->modifications = array();
     if (!$text) {
@@ -89,21 +81,18 @@ class Page {
     $comments = $this->extract_object(Comment);
     if ($bot_exclusion_compliant && !$this->allow_bots()) {
       echo "\n ! Page marked with {{nobots}} template.  Skipping.";
-      updateBacklog($this->title);
       return FALSE;
     }
 
     // TEMPLATES //
     $templates = $this->extract_object(Template);
     $start_templates = $templates;
-    $citation_templates = 0; $cite_templates = 0;
+    $citation_templates = 0;
 
     if ($templates) {
       foreach ($templates as $template) {
         if ($template->wikiname() == 'citation') {
           $citation_templates++;
-        } elseif (preg_match("~[cC]ite[ _]\w+~", $template->wikiname())) {
-          $cite_templates++;
         } elseif (stripos($template->wikiname(), 'harv') === 0) {
           $harvard_templates++;
         }
@@ -124,107 +113,6 @@ class Page {
       }
     }
     $text = $this->replace_object($templates);
-
-    // REFERENCE TAGS //
-    if (FALSE && $reference_support_debugged) { #todo
-      if ($this->has_reflist) {
-        # TODO! Handle reflists.
-        /*TODO - once all refs are done, swap short refs in reflists with their long equivalents elsewhere.
-        if (preg_match(reflist_regexp, $page_code, $match) &&
-          preg_match_all('~[\r\n\*]*<ref name=(?P<quote>[\'"]?)(?P<name>.+?)(?P=quote)\s*!!!dontstopthecomment!!!/\s*>~i', $match[1], $empty_refs)) {
-          // If <ref name=Bla /> appears in the reference list, it'll break things.  It needs to be replaced with <ref name=Bla>Content</ref>
-          // which ought to exist earlier in the page.  It's important to check that this doesn't exist elsewhere in the reflist, though.
-
-          print_r($match[1]);die('--');
-          $temp_reflist = $match[1];
-          foreach ($empty_refs['name'] as $i => $ref_name) {
-            echo "\n   - Found an empty ref in the reflist; switching with occurrence in article text."
-                ."\n     Reference #$i name: $ref_name";
-            $this_regexp = '~<ref name=(?P<quote>[\'"]?)' . preg_quote($ref_name)
-                    . '(?P=quote)\s*>[\s\S]+?<\s*!!dontstopthecomment!!/\s*ref>~';
-            if (preg_match($this_regexp, $temp_reflist, $full_ref)) {
-              // A full-text reference exists elsewhere in the reflist.  The duplicate can be safely deleted from the reflist.
-              $temp_reflist = str_replace($empty_refs[0][$i], '', $temp_reflist);
-            } elseif (preg_match($this_regexp, $page_code, $full_ref)) {
-              // Remove all full-text references from the page code.  We'll add an updated reflist later.
-              $page_code = str_replace($full_ref[0], $empty_refs[0][$i], $page_code);
-              $temp_reflist = str_replace($empty_refs[0][$i], $full_ref[0], $temp_reflist);
-            }
-          }
-          // Add the updated reflist, which should now contain no empty references.
-          $page_code = str_replace($match[1], $temp_reflist, $page_code);
-        }*/
-        print "\n ! Not addressing reference tags: unsupported template {{reflist}} present.";
-      } else {
-        $short_refs = $this->extract_object(Short_Reference);
-        $long_refs = $this->extract_object(Long_Reference);
-        // note: all the action happens in the increment section. Would be better as a foreach, FIXME
-        for ($i = 0; $i < count($long_refs); $long_refs[$i++]->process($citation_template_dominant)) {}
-
-        foreach ($long_refs as $i=>$ref) {
-          $ref_contents[$i] = str_replace(' ', '', $ref->content);
-          $this->ref_names[$i] = $ref->attr['name'];
-        }
-        $duplicate_names = array();
-        if ($this->ref_names) {
-          natcasesort($this->ref_names);
-          reset($this->ref_names);
-        }
-
-        $old_name = NULL;
-
-        foreach ($this->ref_names as $key => $name) {
-          if ($name === NULL) {
-            continue;
-          }
-
-          if (strcasecmp($name, $old_name) === 0) {
-            $to_rename[] = $key;
-          }
-          $old_name = $name;
-        }
-
-        if ($to_rename) foreach ($to_rename as $ref) {
-          $new_name = $this->generate_template_name($this->ref_names[$ref]);
-          $this->ref_names[$ref] = $new_name;
-          $long_refs[$ref]->name($new_name);
-        }
-
-        $duplicate_refs = array();
-        natcasesort($ref_contents);
-        reset($ref_contents);
-        $old_key = NULL; $old_val = NULL;
-
-        foreach ($ref_contents as $key => $val) {
-          if ($val === NULL) continue;
-          if (strcasecmp($old_val, $val) === 0) {
-            $duplicate_refs[$val][] = $old_key;
-            $duplicate_refs[$val][] = $key;
-          }
-          $old_val = $val; $old_key = $key;
-        }
-
-        foreach ($duplicate_refs as $dup) {
-          $dup_name = NULL;
-          $name_giver = NULL;
-          natsort($dup);
-          foreach ($dup as $instance) {
-            if ($this_name = $long_refs[$instance]->attr['name']) {
-              $dup_name = $this_name;
-              $name_giver = $instance;
-            }
-          }
-          foreach ($dup as $instance) {
-            if ($name_giver === NULL) $name_giver = $instance;
-            if (!$dup_name) $dup_name = get_name_for_reference($long_refs[$name_giver]);
-            if ($instance != $name_giver) $long_refs[$instance]->shorten($dup_name);
-          }
-        }
-
-        $this->replace_object($long_refs);
-        $this->replace_object($short_refs);
-      }
-    }
 
     $this->replace_object($comments);
     // seems to be set as -1  in text.php and then re-set
@@ -261,9 +149,6 @@ class Page {
       ) . (($this->modifications["cite_type"])
       ? "Unified citation types. "
       : ""
-      ) . (($this->modifications["combine_references"])
-      ? "Combined duplicate references. "
-      : ""
       ) . (($this->modifications["dashes"])
       ? "Formatted [[WP:ENDASH|dashes]]. "
       : ""
@@ -271,8 +156,9 @@ class Page {
       ? "Updated published arXiv refs. "
       : ""
     );
-    if ($this->modifications['ref_names']) $auto_summary .= 'Named references. ';
-    if (!$auto_summary) $auto_summary = "Misc citation tidying. ";
+    if (!$auto_summary) {
+      $auto_summary = "Misc citation tidying. ";
+    }
     return $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
 
@@ -328,10 +214,8 @@ class Page {
         echo "\n ! Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
         return FALSE;
       }
-      updateBacklog($page);
     } else {
       echo "\n - Can't write to " . $this->title . " - prohibited by {{bots]} template.";
-      updateBacklog($page);
     }
   }
 
@@ -370,31 +254,5 @@ class Page {
     if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $this->text))
       return false;
     return true;
-  }
-
-  public function generate_template_name($replacement_name) {
-    // Strips special characters from reference name,
-    // then does a check against $this->ref_names to generate a unique name for the reference
-    // (by suffixing _a, etc, as necessary)
-    $replacement_name = remove_accents($replacement_name);
-    if (preg_match("~^[\d\s]*$~", $replacement_name)) $replacement_name = "ref" . $replacement_name;
-    if (!$this->ref_names || !in_array($replacement_name, $this->ref_names)) return $replacement_name;
-    global $alphabet;
-    $die_length = count($alphabet);
-    $underscore = (preg_match("~[\d_]$~", $replacement_name) ? "" : "_");
-    $i = 1;
-    while (in_array($replacement_name . $underscore . $alphabet[$i], $this->ref_names)) {
-      if (++$i >= $die_length) {
-        if ($j) {
-          $replacement_name = substr($replacement_name, -1) . $alphabet[++$j];
-          if ($j == $die_length) $j = 0;
-        } else {
-          $replacement_name .= $underscore . $alphabet[++$j];
-          $underscore = "";
-        }
-        $i = 1;
-      }
-    }
-  return $replacement_name . ($i < 1 ? '' : $underscore) . $alphabet[$i];
   }
 }
