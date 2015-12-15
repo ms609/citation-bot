@@ -1057,7 +1057,7 @@ class Template extends Item {
         $hash = "#" . $url_parts[1];
       }
       $url_parts = explode("&", str_replace("?", "&", $url));
-      $url = "http://books.google.com/?id=" . $gid[1];
+      $url = "https://books.google.com/?id=" . $gid[1];
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
