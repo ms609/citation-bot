@@ -107,17 +107,19 @@ class Template extends Item {
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->id_to_param();
-        echo "\n* " . $this->get('title');
+        echo "\n* " . htmlspecialchars($this->get('title'));
         $this->correct_param_spelling();
         if ($this->expand_by_google_books()) {
           echo "\n * Expanded from Google Books API";
         }
         $this->tidy();
-        if ($this->find_isbn()) echo "\n * Found ISBN " . $this->get('isbn');
+        if ($this->find_isbn()) {
+          echo "\n * Found ISBN " . htmlspecialchars($this->get('isbn'));
+        }
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
         $this->citation_template = TRUE;
-        echo "\n\n* Expand citation: " . $this->get('title');
+        echo "\n\n* Expand citation: " . htmlspecialchars($this->get('title'));
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
 
@@ -514,7 +516,7 @@ class Template extends Item {
           echo "\n   * Error loading simpleXML file from CrossRef.";
         }
         else if ($result['status'] == 'malformed') {
-          echo "\n   * Cannot search CrossRef: " . $result->msg;
+          echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
         }
         else if ($result["status"] == "resolved") {
           return $result;
@@ -534,7 +536,7 @@ class Template extends Item {
         echo "\n   * Error loading simpleXML file from CrossRef." . tag();
       }
       else if ($result['status'] == 'malformed') {
-        echo "\n   * Cannot search CrossRef: " . $result->msg;
+        echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
       } else if ($result["status"]=="resolved") {
         echo " Successful!";
         return $result;
@@ -552,14 +554,14 @@ class Template extends Item {
       if (substr($url, -4) == ".pdf") {
         global $html_output;
         echo $html_output
-              ? ("\n - Avoiding <a href=\"$url\">PDF URL</a>. <br>")
-              : "\n - Avoiding PDF URL $url";
+              ? ("\n - Avoiding <a href=\"" . urlencode($url) . "\">PDF URL</a>. <br>")
+              : "\n - Avoiding PDF URL " . htmlspecialchars($url);
       } else {
         // Try using URL parameter
         global $urlsTried, $slow_mode;
         echo $html_output
-              ? ("\n - Trying <a href=\"$url\">URL</a>. <br>")
-              : "\n - Trying URL $url";
+              ? ("\n - Trying <a href=\"" . urlencode($url) . "\">URL</a>. <br>")
+              : "\n - Trying URL " . htmlspecialchars($url);
         // Metas might be hidden if we don't have access the the page, so try the abstract:
 
         if (@in_array($url, $urlsTried)) {
@@ -584,7 +586,7 @@ class Template extends Item {
         if (!$slow_mode) {
           echo "\n -- Aborted: not running in 'slow_mode'!";
         } else if ($size[1] > 0 &&  $size[1] < 100000) { // TODO. The bot seems to keep crashing here; let's evaluate whether it's worth doing.  For now, restrict to slow mode.
-          echo "\n -- Querying URL with reported file size of ", $size[1], "b...", $htmlOutput?"<br>":"\n";
+          echo "\n -- Querying URL with reported file size of " . htmlspecialchars($size[1]) . "b..." . ($htmlOutput?"<br>":"\n");
           //Initiate cURL resource
           $ch = curl_init();
 
@@ -608,8 +610,8 @@ class Template extends Item {
           }
         } else {
           echo $htmlOutput
-               ? ("\n\n ** ERROR: PDF may have been too large to open.  File size: ". $size[1]. "b<br>")
-               : "\n -- PDF too large ({$size[1]}b)";
+               ? ("\n\n ** ERROR: PDF may have been too large to open.  File size: ". htmlspecialchars($size[1]) . "b<br>")
+               : "\n -- PDF too large (" . htmlspecialchars($size[1]) . " b)";
         }
         if ($doi){
           if (!preg_match("/>\d\.\d\.\w\w;\d/", $doi))
@@ -632,7 +634,7 @@ class Template extends Item {
           return false;
         }
         if ($doi) {
-          echo " found doi $doi";
+          echo " found doi " . htmlspecialchars($doi);
           $this->set('doi', $doi);
         } else {
           $urlsTried[] = $url; //Log barren urls so we don't search them again. 
@@ -729,7 +731,7 @@ class Template extends Item {
     if ($check_for_errors && $xml->ErrorList) {
       echo $xml->ErrorList->PhraseNotFound
               ? " no results."
-              : "\n - Errors detected in PMID search (" . print_r($xml->ErrorList, 1) . "); abandoned.";
+              : "\n - Errors detected in PMID search (" . htmlspecialchars(print_r($xml->ErrorList, 1)) . "); abandoned.";
       return array(null, 0);
     }
 
@@ -752,7 +754,7 @@ class Template extends Item {
     $this->set($arxiv_param, $eprint);
 
     if ($eprint) {
-      echo "\n * Getting data from arXiv " . $eprint;
+      echo "\n * Getting data from arXiv " . htmlspecialchars($eprint);
       $xml = simplexml_load_string(
         preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint"))
       );
@@ -833,7 +835,9 @@ class Template extends Item {
         $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
         if (strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
                 mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))) === FALSE) {
-          echo "\n   Match for pagination but database journal \"{$journal_string[0]}\" didn't match \"journal = $journal\"." . tag();
+          echo "\n   Match for pagination but database journal \"" .
+            htmlspecialchars($journal_string[0]) . "\" didn't match \"journal = " .
+            htmlspecialchars($journal) . "\"." . tag();
           return false;
         }
       }
@@ -928,7 +932,7 @@ class Template extends Item {
         }
         echo " (ok)";
       } else {
-        echo "\n - No CrossRef record found for doi '$doi'; marking as broken";
+        echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
         $this->add_if_new('doi-broken-date', date('Y-m-d'));
       }
     }
@@ -941,8 +945,16 @@ class Template extends Item {
     else if ($pm = $this->get('pmc')) $identifier = 'pmc';
     else return false;
     global $html_output;
-    echo "\n - Checking " . ($html_output?'<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . $pm . '" target="_blank">':'') . strtoupper($identifier) . ' ' . $pm . ($html_output ? "</a>" : '') . ' for more details' . tag();
-    $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=$pm");
+    if ($html_output) {
+      echo "\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
+        urlencode($pm) . '" target="_blank">' .
+        htmlspecialchars(strtoupper($identifier) . ' ' . $pm) . "</a> for more details" .
+        tag();
+    } else {
+      echo "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
+        . ' for more details' . tag();
+    }
+    $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
     if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
@@ -1036,7 +1048,7 @@ class Template extends Item {
         return false;
       }
     } else {
-       echo "\n   ! Error loading CrossRef file from DOI $doi!";
+       echo "\n   ! Error loading CrossRef file from DOI " . htmlspecialchars($doi) ."!";
        return false;
     }
   }
@@ -1063,7 +1075,7 @@ class Template extends Item {
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
           default:
-            echo "\n - $part";
+            echo "\n - " . htmlspecialchars($part);
             $removed_redundant++;
         }
       }
@@ -1137,11 +1149,19 @@ class Template extends Item {
     }
     $pages = $this->page_range();
     $pages = $pages[0];
-    if (preg_match("~\d\D+\d~", $pages)) $new_pages = $pages;
-    if ($doi) $url = "http://dx.doi.org/$doi"; else $url = $this->get('url');
+    if (preg_match("~\d\D+\d~", $pages)) {
+      $new_pages = $pages;
+    }
+    if ($doi) {
+      $url = "http://dx.doi.org/" . urlencode($doi);
+    } else {
+      $url = urlencode($this->get('url'));
+    }
     $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
-    if (!$url) return NULL;
-    echo "\n  * Looking for more authors @ $url:";
+    if (!$url) {
+      return NULL;
+    }
+    echo "\n  * Looking for more authors @ " . htmlspecialchars($url) . ":";
     echo "\n   - Using meta tags...";
     $meta_tags = get_meta_tags($url);
     if ($meta_tags["citation_authors"]) {
@@ -1240,12 +1260,14 @@ class Template extends Item {
       $n_dup_params = count($duplicated_parameters);
       for ($i = 0; $i < $n_dup_params; $i++) {
         if ($duplicate_identical[$i]) {
-          echo "\n * Deleting identical duplicate of parameter: {$this->param[$duplicated_parameters[$i]]->param}\n";
+          echo "\n * Deleting identical duplicate of parameter: " .
+            htmlspecialchars($this->param[$duplicated_parameters[$i]]->param) . "\n";
           unset($this->param[$duplicated_parameters[$i]]);
         }
         else {
           $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
-          echo "\n * Marking duplicate parameter: {$duplicated_parameters[$i]->param}\n";
+          echo "\n * Marking duplicate parameter: " .
+            htmlspecialchars($duplicated_parameters[$i]->param) . "\n";
         }
       }
       foreach ($this->param as $iP => $p) {
@@ -1597,7 +1619,7 @@ class Template extends Item {
           $id = str_replace($match[0][$i], "", $id);
           break;
         default:
-          echo "\n    - No match found for $content[0].";
+          echo "\n    - No match found for " . htmlspecialchars($content[0]);
       }
     }
     if (trim($id)) $this->set('id', $id); else $this->forget('id');
@@ -1619,12 +1641,12 @@ class Template extends Item {
     ++$i;
 
     if ($this->initial_author_params) {
-      echo "\n * initial authors exist, not correcting $param";
+      echo "\n * initial authors exist, not correcting " . htmlspecialchars($param);
       continue;
     }
 
     if ((strlen($p->param) > 0) && !in_array($p->param, $parameter_list)) {
-      echo "\n  *  Unrecognised parameter {$p->param} ";
+      echo "\n  *  Unrecognised parameter " . htmlspecialchars($p->param);
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
         // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
@@ -1751,7 +1773,7 @@ class Template extends Item {
         case 'pages': case 'page': case 'issue': case 'year':
           if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val)) {
             $this->mod_dashes = TRUE;
-            echo ( "\n   ~ Upgrading to en-dash in" . $p->param . tag());
+            echo ( "\n   ~ Upgrading to en-dash in" . htmlspecialchars($p->param) . tag());
             $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
           }
           break;
@@ -1876,7 +1898,7 @@ class Template extends Item {
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
       if ($this->expand_by_doi($try)) {$this->set('doi', $try); $doi = $try;}
     }
-    echo "\n   . Checking that DOI $doi is operational..." . tag();
+    echo "\n   . Checking that DOI " . htmlspecialchars($doi) . " is operational..." . tag();
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
@@ -1885,7 +1907,7 @@ class Template extends Item {
       $this->forget("doi_brokendate");
       $this->set("doi-broken-date", date("Y-m-d"));
 
-      echo "\n   ! Broken doi: $doi";
+      echo "\n   ! Broken doi: " . htmlspecialchars($doi);
       return FALSE;
     } else {
       $this->forget('doi_brokendate');
@@ -2057,7 +2079,7 @@ class Template extends Item {
   public function forget ($par) {
     $pos = $this->get_param_position($par);
     if ($pos !== NULL) {
-      echo "\n   - Dropping parameter $par" . tag();
+      echo "\n   - Dropping parameter " . htmlspecialchars($par) . tag();
       unset($this->param[$pos]);
     }
   }

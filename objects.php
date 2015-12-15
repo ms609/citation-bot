@@ -178,13 +178,14 @@ function capitalize_title($in, $sents = TRUE, $could_be_italics = TRUE) {
 
 function tag($long = FALSE) {
   $dbg = array_reverse(debug_backtrace());
-  echo ' [..';
-  array_pop($dbg); array_shift($dbg);
+  array_pop($dbg);
+  array_shift($dbg);
   foreach ($dbg as $d) {
-    echo '> ' . ($long
-      ? $d['function']
-      : substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7)
-    );
+    if ($long) {
+      $output = '> ' . $d['function'];
+    } else {
+      $output = '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);
+    }
   }
-  echo ']';
+  echo ' [..' . htmlspecialchars($output) . ']';
 }

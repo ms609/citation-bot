@@ -191,9 +191,15 @@ function is($key){
 }
 
 function dbg($array, $key = false) {
-if(myIP())
-	echo "<pre>" . str_replace("<", "&lt;", $key ? print_r(array($key=>$array),1) : print_r($array,1)), "</pre>";
-else echo "<p>Debug mode active</p>";
+  if(myIP()) {
+    if($key) {
+      echo "<pre>" . htmlspecialchars(print_r(array($key=>$array),1) . "</pre>";
+    } else {
+      echo "<pre>" . htmlspecialchars(print_r($array,1)) . "</pre>";
+    }
+  } else {
+    echo "<p>Debug mode active</p>";
+  }
 }
 
 function myIP() {
@@ -285,7 +291,7 @@ function get_data_from_jstor($jid) {
       }
     }
     if (!$handled_data) {
-      echo "unhandled data: $data->dc___relation";
+      echo "unhandled data: " . htmlspecialchars($data->dc___relation);
     }
     /* -- JSTOR's publisher field is often dodgily formatted.
     if (preg_match("~[^/;]*~", $data->dc___publisher, str_replace("___", ":", $match))) {
@@ -296,7 +302,7 @@ function get_data_from_jstor($jid) {
     }
     return true;
   } else {
-    echo $xml->srw___numberOfRecords . " records obtained. ";
+    echo htmlspecialchars($xml->srw___numberOfRecords) . " records obtained. ";
     return false;
   }
 }
@@ -430,7 +436,10 @@ function scrapeDoi($url){
                           return false;
                         }
 			echo "..)<br>";
-			if (strlen($title) < 15) {echo "Title ($title) is under 15 characters: too short to use."; return false;}
+			if (strlen($title) < 15) {
+				echo "Title (" . htmlspecialchars($title) . ") is under 15 characters: too short to use.";
+				return false;
+                        }
 			$lSource = literate($source);
 			$lTitle = literate($title);
 			if (preg_match("|[=/](10\.\d{4}/[^?&]*)|", str_replace("%2F", "/", $url), $doiX)){
@@ -443,8 +452,11 @@ function scrapeDoi($url){
 			if ($meta) {
 				$lsTitle = literate(strip_tags($title));
 				preg_match('~<meta name="citation_title" content="(.*)">~iU', $source, $metaTitle)?"":preg_match('~<meta name="dc.Title" content="(.*)">~iU', $source, $metaTitle);
-				if (literate($metaTitle[1]) == $lsTitle) {echo "DOI found in meta tags: $meta[1]<br>"; return $meta[1];}
-				echo "Meta info found but title does not match.<br>" . literate($metaTitle[1]) . " != <br>$lsTitle</i><br>";
+				if (literate($metaTitle[1]) == $lsTitle) {
+					echo "DOI found in meta tags: " . htmlspecialchars($meta[1]) . "<br>";
+					return $meta[1];
+				}
+				echo "Meta info found but title does not match.<br>" . htmlspecialchars(literate($metaTitle[1])) . " != <br>" . htmlspecialchars($lsTitle) . "</i><br>";
 			}
 			//No luck? Find the DOIs in the source.
 			$doi = getDoiFromText($source);
@@ -482,16 +494,17 @@ function getDoiFromText($source, $testDoi = false){
 				if ($thisDoi[0][1] < early){
 					if (preg_match("~" . $lTitle . "~", substr($lSource, 0, early + 500))){
 						//if DO I AND Title are found near the start of the article...
-						echo "Unique DOI found, early in document (Offset = " . $thisDoi[0][1] . "). $doi<br>";
+						echo "Unique DOI found, early in document (Offset = " . htmlspecialchars($thisDoi[0][1]) . "). " . htmlspecialchars($doi) . "<br>";
 						return $dois[1][0];
-					} else {echo "A unique DOI found early in document (Offset = " . $thisDoi[0][1] . "), but without the required title.<br>"; return false;}
+					} else {echo "A unique DOI found early in document (Offset = " . htmlspecialchars($thisDoi[0][1]) . "), but without the required title.<br>"; return false;}
 				} else {
-					echo "A unique DOI was found, but late in the document (offset = {$thisDoi[0][1]}). Removing HTML to get a clearer picture...<br>";
+					echo "A unique DOI was found, but late in the document (offset = " . htmlspecialchars($thisDoi[0][1]) . "). Removing HTML to get a clearer picture...<br>";
 					$position = strpos(strip_tags($source), $dois[1][0]);
 					if ($position < (early/2)) {
-						echo "Nice and early: $position . Accepting DOI.<br>"; return $dois[1][0];
+						echo "Nice and early: " . htmlspecialchars($position) . ". Accepting DOI.<br>"; return $dois[1][0];
 					} else{
-						echo "Still too late ($position).  Rejecting."; return false;
+						echo "Still too late (" . htmlspecialchars($position) . ").  Rejecting.";
+						return false;
 					}
 				}
 			} else {echo "\n2 different DOIs were found. Abandoned.<br>"; return false;}
@@ -901,7 +914,7 @@ function testDoi($doi) {
 	$source = curl_exec($ch);
 	$effectiveUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 	curl_close($ch);
-	echo equivUrl($effectiveUrl), "] DOI resolves to equivalent of this.<br>",
+	echo htmlspecialchars(equivUrl($effectiveUrl)), "] DOI resolves to equivalent of this.<br>",
 	"[", equivUrl($p["url"][0]),"] URL was equivalent to this.</div>";
 	if (equivUrl($effectiveUrl) == equivUrl($p["url"][0]))  return $doi; else return false;
 	}

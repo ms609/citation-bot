@@ -21,7 +21,7 @@ function categoryMembers($cat){
           $list[] = (string) $page["title"];
         }
     } else {
-      echo 'Error reading API from ' . $url . "\n\n";
+      echo 'Error reading API from ' . htmlspecialchars($url) . "\n\n";
     }
 	} while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
   return $list?$list:Array(" ");
@@ -71,7 +71,7 @@ function getPrefixIndex($prefix, $namespace = 0, $start = "") {
         $page_ids[] = (integer) $page["pageid"];
       }
     } else {
-      echo 'Error reading API from ' . $url;
+      echo 'Error reading API from ' . htmlspecialchars($url);
     }
 	} while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
   set_time_limit(45);
@@ -213,7 +213,7 @@ function whatTranscludes2($template, $namespace = 99) {
     $res = load_xml_via_bot($vars);
     print_r($res->query);
 		if (!$res) {
-      echo 'Error reading API from ' . $url . "\n";
+      echo 'Error reading API from ' . htmlspecialchars($url) . "\n";
     } else foreach($res->query->embeddedin->ei as $page) {
 			$list["title"][] = (string) $page["title"];
 			$list["id"][] = (integer) $page["pageid"];
