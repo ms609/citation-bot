@@ -423,17 +423,17 @@ function scrapeDoi($url){
 			curlSetup($ch, $url);
 			$source = curl_exec($ch);
 			if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
-                          echo "404 returned from URL.<br>";
-                          return false;
+				echo "404 returned from URL.<br>";
+				return false;
                         }
 			if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {
-                          echo "501 returned from URL.<br>";
-                          return false;
+				echo "501 returned from URL.<br>";
+				return false;
                         }
 			curl_close($ch);
 			if (!$source) {
-                          echo "Page appears to be blank! <br>";
-                          return false;
+				echo "Page appears to be blank! <br>";
+				return false;
                         }
 			echo "..)<br>";
 			if (strlen($title) < 15) {
@@ -444,8 +444,12 @@ function scrapeDoi($url){
 			$lTitle = literate($title);
 			if (preg_match("|[=/](10\.\d{4}/[^?&]*)|", str_replace("%2F", "/", $url), $doiX)){
 				//If there is a DOI in the URL
-				if (preg_match("~spanclasstitle".$lTitle."~", $lSource)) {echo "DOI found in URL. Web page has correct title.<br>"; return $doiX[1];				}
-				else echo "URL contains DOI, but may not refer to the correct article.<br>";
+				if (preg_match("~spanclasstitle".$lTitle."~", $lSource)) {
+					echo "DOI found in URL. Web page has correct title.<br>";
+					return $doiX[1];
+				} else {
+					echo "URL contains DOI, but may not refer to the correct article.<br>";
+				}
 			}
 			// Now check the META tags
 			preg_match('~<meta name="citation_doi" content="' . doiRegexp . '">~iU', $source, $meta)?"":preg_match('~<meta name="dc.Identifier" content="' . doiRegexp . '">~iU', $source, $meta);
@@ -460,18 +464,22 @@ function scrapeDoi($url){
 			}
 			//No luck? Find the DOIs in the source.
 			$doi = getDoiFromText($source);
-			if (!$doi) {$urlsTried[] = $url; echo "URL is barren.<br>"; return false;}
+			if (!$doi) {
+				$urlsTried[] = $url;
+				echo "URL is barren.<br>";
+				return false;
+			}
 			echo "A DOI has been found. " ;
 			return $doi;
-		}	else {
-		echo " - Cancelled. URL blacklisted.<br>";
-		global $searchLimit;
-		$searchLimit++;
+		} else {
+			echo " - Cancelled. URL blacklisted.<br>";
+			global $searchLimit;
+			$searchLimit++;
 		}
 	}
 	if (!$doi) {
-    $urlsTried[] = $url; //Log barren urls so we don't search them again.  We may want to search
-  }
+		$urlsTried[] = $url; //Log barren urls so we don't search them again.  We may want to search
+	}
 }
 
 function getDoiFromText($source, $testDoi = false){

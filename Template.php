@@ -483,7 +483,9 @@ class Template extends Item {
   }
 
   protected function get_doi_from_crossref() { #TODO test
-    if ($doi = $this->get('doi')) return $doi;
+    if ($doi = $this->get('doi')) {
+      return $doi;
+    }
     echo "\n - Checking CrossRef database for doi. " . tag();
     $title = $this->get('title');
     $journal = $this->get('journal');
