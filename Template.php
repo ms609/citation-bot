@@ -1930,73 +1930,6 @@ class Template extends Item {
     }
   }
 
-  public function cite_doi_format() {
-    global $dotEncode, $dotDecode;
-    echo "\n   * Cite Doi formatting... " . tag();
-    $this->tidy();
-    $doi = $this->get('doi');
-
-    // If we only have the first author, look for more!
-    if ($this->blank('coauthors')
-       && $this->blank('author2')
-       && $this->blank('last2')
-       && $doi) {
-      echo "\n     - Looking for co-authors & page numbers...";
-      $this->find_more_authors();
-    }
-    for ($i = 1; $i < 100; $i ++) {
-      foreach (array("author", "last", "first", 'editor') as $param) {
-        if ($this->get($param . $i) == "") {
-          $this->forget($param . $i);
-        }
-      }
-    }
-    // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
-    if (strpos($doi, ".2F") && !strpos($doi, "/")) {
-      $this->set('doi', str_replace($dotEncode, $dotDecode, $doi));
-    }
-
-    // Cycle through authors
-    for ($i = null; $i < 100; $i++) {
-      if (strpos(($au = $this->get("author$i")), ', ')) {
-        // $au is an array with two parameters: the surname [0] and forename [1].
-        $au = explode(', ', $au);
-        $this->forget("author$i");
-        $this->set("author$i", formatSurname($au[0])); // i.e. drop the forename; this is safe in $au[1]
-      } else if ($this->get("first$i")) {
-        $au[1] = $this->get("first$i");
-      } else {
-         unset($au);
-      }
-      if ($au[1]) {
-        if ($au[1] == mb_strtoupper($au[1]) && mb_strlen($au[1]) < 4) {
-          // Try to separate Smith, LE for Smith, Le.
-          $au[1] = preg_replace("~([A-Z])[\s\.]*~u", "$1.", $au[1]);
-        }
-        if (trim(mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1]))))
-                != trim($this->get("first$i"))) {
-          // Don't try to modify if we don't need to change
-          $this->set("first$i", mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
-        }
-        $para_pos = $this->get_param_position("first$i");
-        if ($para_pos > 1) {
-          $this->param[$this->get_param_position("first$i") - 1]->post = str_replace(array("\r", "\n"), " ", $this->param[$this->get_param_position("first$i") - 1]->post); // Save space by including on same line as previous parameter
-        }
-      }
-    }
-    if ($pp_start = $this->get('pages')) {
-      // Format pages to R100-R102 format
-      if (preg_match("~([A-Za-z0-9]+)[^A-Za-z0-9]+([A-Za-z0-9]+)~", $pp_start, $pp)) {
-         if (strlen($pp[1]) > strlen($pp[2])) {
-            // The end page range must be truncated
-            $this->set('pages', str_replace("!!!DELETE!!!", "", preg_replace("~([A-Za-z0-9]+[^A-Za-z0-9]+)[A-Za-z0-9]+~",
-            ("$1!!!DELETE!!!" . substr($pp[1], 0, strlen($pp[1]) - strlen($pp[2])) . $pp[2])
-            , $pp_start)));
-         }
-      }
-    }
-  }
-
   // Retrieve parameters 
   public function display_authors($newval = FALSE) {
     if ($newval && is_int($newval)) {
@@ -2047,8 +1980,15 @@ class Template extends Item {
   }
 
   public function get($name) {
-    if ($this->param) foreach ($this->param as $p) {
-      if ($p->param == $name) return $p->val;
+    // NOTE $this->param and $p->param are different and refer to different types!
+    // $this->param is probably a Parameter object
+    // $p->param is probably the parameter name within the Parameter object
+    if ($this->param) {
+      foreach ($this->param as $p) {
+        if ($p->param == $name) {
+          return $p->val;
+        }
+      }
     }
     return NULL;
   }
