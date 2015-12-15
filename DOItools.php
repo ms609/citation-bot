@@ -416,10 +416,19 @@ function scrapeDoi($url){
 			$ch = curl_init();
 			curlSetup($ch, $url);
 			$source = curl_exec($ch);
-			if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {echo "404 returned from URL.<br>"; return false;}
-			if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {echo "501 returned from URL.<br>"; return false;}
+			if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
+                          echo "404 returned from URL.<br>";
+                          return false;
+                        }
+			if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {
+                          echo "501 returned from URL.<br>";
+                          return false;
+                        }
 			curl_close($ch);
-			if (!$source) {echo "Page appears to be blank! <br>"; return false;}
+			if (!$source) {
+                          echo "Page appears to be blank! <br>";
+                          return false;
+                        }
 			echo "..)<br>";
 			if (strlen($title) < 15) {echo "Title ($title) is under 15 characters: too short to use."; return false;}
 			$lSource = literate($source);

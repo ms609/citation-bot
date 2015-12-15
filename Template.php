@@ -109,7 +109,9 @@ class Template extends Item {
         $this->id_to_param();
         echo "\n* " . $this->get('title');
         $this->correct_param_spelling();
-        if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
+        if ($this->expand_by_google_books()) {
+          echo "\n * Expanded from Google Books API";
+        }
         $this->tidy();
         if ($this->find_isbn()) echo "\n * Found ISBN " . $this->get('isbn');
       break;
@@ -141,7 +143,9 @@ class Template extends Item {
           $journal_type = "journal";
         }
 
-        if ($this->expand_by_google_books()) echo "\n * Expanded from Google Books API";
+        if ($this->expand_by_google_books()) {
+          echo "\n * Expanded from Google Books API";
+        }
         $this->sanitize_doi();
         if ($this->verify_doi()) {
           $this->expand_by_doi();
@@ -584,8 +588,7 @@ class Template extends Item {
           //Initiate cURL resource
           $ch = curl_init();
 
-
-         curlSetup($ch, $url);
+          curlSetup($ch, $url);
           $source = curl_exec($ch);
           if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
             echo " -- 404 returned from URL.", $htmlOutput?"<br>":"\n";
@@ -614,7 +617,10 @@ class Template extends Item {
             echo " -- DOI may have picked up some tags. ";
             $content = strip_tags(str_replace("<", " <", $source)); // if doi is superceded by a <tag>, any ensuing text would run into it when we removed tags unless we added a space before it!
             preg_match("~" . doiRegexp . "~Ui", $content, $dois); // What comes after doi, then any nonword, but before whitespace
-            if ($dois[1]) {$doi = trim($dois[1]); echo " Removing them.<br>";} else {
+            if ($dois[1]) {
+              $doi = trim($dois[1]);
+              echo " Removing them.<br>";
+            } else {
               echo "More probably, the DOI was itself in a tag. CHECK it's right!<br>";
               //If we can't find it when tags have been removed, it might be in a <a> tag, for example.  Use it "neat"...
             }
@@ -1123,8 +1129,12 @@ class Template extends Item {
    *   Send the URL and the first author's SURNAME ONLY as $a1
    *  The function will return an array of authors in the form $new_authors[3] = Author, The Third
    */
-    if ($doi = $this->get_without_comments('doi')) $this->expand_by_doi(TRUE);
-    if ($this->get('pmid')) $this->expand_by_pubmed(TRUE);
+    if ($doi = $this->get_without_comments('doi')) {
+      $this->expand_by_doi(TRUE);
+    }
+    if ($this->get('pmid')) {
+      $this->expand_by_pubmed(TRUE);
+    }
     $pages = $this->page_range();
     $pages = $pages[0];
     if (preg_match("~\d\D+\d~", $pages)) $new_pages = $pages;
@@ -1134,7 +1144,9 @@ class Template extends Item {
     echo "\n  * Looking for more authors @ $url:";
     echo "\n   - Using meta tags...";
     $meta_tags = get_meta_tags($url);
-    if ($meta_tags["citation_authors"]) $new_authors = formatAuthors($meta_tags["citation_authors"], true);
+    if ($meta_tags["citation_authors"]) {
+      $new_authors = formatAuthors($meta_tags["citation_authors"], true);
+    }
     global $slow_mode;
     if ($slow_mode && !$new_pages && !$new_authors) {
       echo "\n   - Now scraping web-page.";
@@ -1143,9 +1155,11 @@ class Template extends Item {
       curlSetup($ch, $url);
 
       curl_setopt($ch, CURLOPT_MAXREDIRS, 7);  //This means we can't get stuck.
-      if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) echo "404 returned from URL.<br>";
-      elseif (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) echo "501 returned from URL.<br>";
-      else {
+      if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
+        echo "404 returned from URL.<br>";
+      } elseif (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {
+        echo "501 returned from URL.<br>";
+      } else {
         $source = str_ireplace(
                     array('&nbsp;', '<p ',          '<DIV '),
                     array(' ',     "\r\n    <p ", "\r\n    <DIV "),
@@ -1177,7 +1191,9 @@ class Template extends Item {
               $new_authors=$authors[1];
             }
           }
-        } else echo "\n   x File size was too large. Abandoned.";
+        } else {
+          echo "\n   x File size was too large. Abandoned.";
+        }
       }
     }
 
