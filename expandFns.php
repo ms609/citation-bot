@@ -5,8 +5,7 @@
  * the page expansion depends on the classes in objects.php, particularly Template and Page.
  */
 
-//TODO: $account_suffix is not declared, gives "Notice: Undefined variable"
-ini_set("user_agent", "Citation_bot$account_suffix; citations@tools.wmflabs.org");
+ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 define('HOME', dirname(__FILE__) . '/');
 
 function quiet_echo($text, $alternate_text = '') {
