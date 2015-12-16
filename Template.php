@@ -386,7 +386,9 @@ class Template extends Item {
         if ($this->blank($param)) {
           $this->add($param, sanitize_string($value));
           $this->expand_by_pubmed();
-          if ($this->blank('doi')) $this->get_doi_from_crossref();
+          if ($this->blank('doi')) {
+            $this->get_doi_from_crossref();
+          }
           return true;
         }
       return false;
@@ -543,108 +545,6 @@ class Template extends Item {
         echo " Successful!";
         return $result;
       }
-    }
-  }
-
-  protected function get_doi_from_webpage() { #TODO test 
-    if ($doi = $this->has('doi')) return $doi;
-    if ($url = trim($this->get('url')) && (strpos($url, "http://") !== false || strpos($url, "https://") !== false)) {
-      $url = explode(" ", trim($url));
-      $url = $url[0];
-      $url = preg_replace("~\.full(\.pdf)?$~", ".abstract", $url);
-      $url = preg_replace("~<!--.*-->~", '', $url);
-      if (substr($url, -4) == ".pdf") {
-        global $html_output;
-        echo $html_output
-              ? ("\n - Avoiding <a href=\"" . urlencode($url) . "\">PDF URL</a>. <br>")
-              : "\n - Avoiding PDF URL " . htmlspecialchars($url);
-      } else {
-        // Try using URL parameter
-        global $urlsTried, $slow_mode;
-        echo $html_output
-              ? ("\n - Trying <a href=\"" . urlencode($url) . "\">URL</a>. <br>")
-              : "\n - Trying URL " . htmlspecialchars($url);
-        // Metas might be hidden if we don't have access the the page, so try the abstract:
-
-        if (@in_array($url, $urlsTried)) {
-          echo "URL has been scraped already - and scrapped.<br>";
-          return null;
-        }
-        //Check that it's not in the URL to start with
-        if (preg_match("|/(10\.\d{4}/[^?]*)|i", urldecode($url), $doi)) {
-          echo "Found DOI in URL." . tag();
-          return $this->set('doi', $doi[1]);
-        }
-
-        //Try meta tags first.
-        $meta = @get_meta_tags($url);
-        if ($meta) {
-          $this->add_if_new("pmid", $meta["citation_pmid"]);
-          foreach ($meta as $oTag) if (preg_match("~^\s*10\.\d{4}/\S*\s*~", $oTag)) {
-              echo "Found DOI in meta tags" . tag();
-              return $this->set('doi', $oTag);
-          }
-        }
-        if (!$slow_mode) {
-          echo "\n -- Aborted: not running in 'slow_mode'!";
-        } else if ($size[1] > 0 &&  $size[1] < 100000) { // TODO. The bot seems to keep crashing here; let's evaluate whether it's worth doing.  For now, restrict to slow mode.
-          echo "\n -- Querying URL with reported file size of " . htmlspecialchars($size[1]) . "b..." . ($htmlOutput?"<br>":"\n");
-          //Initiate cURL resource
-          $ch = curl_init();
-
-          curlSetup($ch, $url);
-          $source = curl_exec($ch);
-          if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
-            echo " -- 404 returned from URL.", $htmlOutput?"<br>":"\n";
-            // Try anyway.  There may still be metas.
-          } else if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {
-            echo " -- 501 returned from URL.", $htmlOutput?"<br>":"\n";
-            return false;
-          }
-          curl_close($ch);
-          if (strlen($source) < 100000) {
-            $doi = getDoiFromText($source, true);
-            if (!$doi) {
-              checkTextForMetas($source);
-            }
-          } else {
-            echo "\n -- File size was too large. Abandoned.";
-          }
-        } else {
-          echo $htmlOutput
-               ? ("\n\n ** ERROR: PDF may have been too large to open.  File size: ". htmlspecialchars($size[1]) . "b<br>")
-               : "\n -- PDF too large (" . htmlspecialchars($size[1]) . " b)";
-        }
-        if ($doi){
-          if (!preg_match("/>\d\.\d\.\w\w;\d/", $doi))
-          { //If the DOI contains a tag but doesn't conform to the usual syntax with square brackes, it's probably picked up an HTML entity.
-            echo " -- DOI may have picked up some tags. ";
-            $content = strip_tags(str_replace("<", " <", $source)); // if doi is superceded by a <tag>, any ensuing text would run into it when we removed tags unless we added a space before it!
-            preg_match("~" . doiRegexp . "~Ui", $content, $dois); // What comes after doi, then any nonword, but before whitespace
-            if ($dois[1]) {
-              $doi = trim($dois[1]);
-              echo " Removing them.<br>";
-            } else {
-              echo "More probably, the DOI was itself in a tag. CHECK it's right!<br>";
-              //If we can't find it when tags have been removed, it might be in a <a> tag, for example.  Use it "neat"...
-            }
-          }
-          $urlsTried[] = $url;
-          $this->set('doi', urldecode($doi));
-        } else {
-          $urlsTried[] = $url;
-          return false;
-        }
-        if ($doi) {
-          echo " found doi " . htmlspecialchars($doi);
-          $this->set('doi', $doi);
-        } else {
-          $urlsTried[] = $url; //Log barren urls so we don't search them again. 
-          echo " no doi found.";
-        }
-      }
-    } else {
-      echo "No valid URL specified.  ";
     }
   }
 

@@ -193,7 +193,7 @@ function is($key){
 function dbg($array, $key = false) {
   if(myIP()) {
     if($key) {
-      echo "<pre>" . htmlspecialchars(print_r(array($key=>$array),1) . "</pre>";
+      echo "<pre>" . htmlspecialchars(print_r(array($key=>$array),1)) . "</pre>";
     } else {
       echo "<pre>" . htmlspecialchars(print_r($array,1)) . "</pre>";
     }

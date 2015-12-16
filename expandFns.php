@@ -401,16 +401,6 @@ function reassemble_citation($p, $sort = false) {
   return $cText;
 }
 
-
-function noteDoi($doi, $src) {
-  quiet_echo("<h3 style='color:coral;'>Found <a href='http://dx.doi.org/" . urlencode($doi) . "'>DOI</a> " . htmlspecialchars($doi) . " from " . htmlspecialchars($src) . ".</h3>");
-}
-
-// Error codes:
-// 404 is a working DOI pointing to a page not found;
-// 200 is a broken DOI, found in the source of the URL
-// Broken DOIs are only logged if they can be spotted in the URL page specified.
-
 function loadParam($param, $value, $equals, $pipe, $weight) {
   global $p;
   $param = strtolower(trim(str_replace("DUPLICATE DATA:", "", $param)));
