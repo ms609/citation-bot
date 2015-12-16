@@ -20,8 +20,6 @@ define("editinterval", 10);
 define("PIPE_PLACEHOLDER", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
 define("comment_placeholder", "### Citation bot : comment placeholder %s ###");
 define("to_en_dash", "--?|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
-define("blank_ref", "<ref name=\"%s\" />");
-define("reflist_regexp", "~{{\s*[Rr]eflist\s*(?:\|[^}]+?)+(<ref[\s\S]+)~u");
 define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
 define("wikiroot", "https://test.wikipedia.org/w/index.php?"); //FIXME in prod
 define("api", "https://test.wikipedia.org/w/api.php"); //FIXME in prod
@@ -50,10 +48,6 @@ require_once('Snoopy.class.php');
 require_once("DOItools.php");
 require_once("objects.php");
 require_once("wikiFunctions.php");
-
-//Commented out because they seem to be not used or not functional
-//includeIfNew("citewatchFns");
-//require_once("expand.php");
 
 //require_once(HOME . "credentials/mysql.login");
 /* mysql.login is a php file containing:
@@ -226,37 +220,12 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
   return ($db);
 }
 
-function updateBacklog($page) {
-  # "-[#TODO unhandled DB request]-";
-  return (NULL);
-/*
- * This is code that interacted with the Toolserver database. revisionID() referred to the
- * SVN revision ID and has been removed from the codebase, but is kept here so that the query
- * here will match the recovered database schema.
-
- * TODO: decide what to do with the database functions. Either set up a database on Tool Labs
- *       and rewrite/update, or decide that a database is not necessary and take out code that
- *       refers to it.
-
-  $sPage = addslashes($page);
-  $id = addslashes(articleId($page));
-  $db = udbconnect("yarrow");
-  $result = mysql_query("SELECT page FROM citation WHERE id = '$id'") or print (mysql_error());
-  $result = mysql_fetch_row($result);
-  $sql = $result ? "UPDATE citation SET fast = '" . date("c") . "', revision = '" . revisionID() // SVN revision ID, not used anymore
-          . "' WHERE page = '$sPage'" : "INSERT INTO citation VALUES ('"
-          . $id . "', '$sPage', '" . date("c") . "', '0000-00-00', '" . revisionID() . "')";
-  $result = mysql_query($sql) or print (mysql_error());
-  mysql_close($db);
- */
-}
-
 function countMainLinks($title) {
   // Counts the links to the mainpage
   global $bot;
   if (preg_match("/\w*:(.*)/", $title, $title))
     $title = $title[1]; //Gets {{PAGENAME}}
-  $url = "http://en.wikipedia.org/w/api.php?action=query&bltitle=" . urlencode($title) . "&list=backlinks&bllimit=500&format=yaml";
+  $url = "https://en.wikipedia.org/w/api.php?action=query&bltitle=" . urlencode($title) . "&list=backlinks&bllimit=500&format=yaml";
   $bot->fetch($url);
   $page = $bot->results;
   if (preg_match("~\n\s*blcontinue~", $page))
@@ -462,38 +431,6 @@ function loadParam($param, $value, $equals, $pipe, $weight) {
   $p[$param] = Array($value, $equals, $pipe, "weight" => ($weight + 3) / 4 * 10); // weight will be 10, 20, 30, 40 ...
 }
 
-function cite_template_contents($type, $id) {
-  $page = get_template_prefix($type);
-  $replacement_template_name = $page . wikititle_encode($id);
-  $text = getRawWikiText($replacement_template_name);
-  if (!$text) {
-    return false;
-  } else {
-    return extract_parameters(extract_template($text, "cite journal"));
-  }
-}
-
-function create_cite_template($type, $id) {
-  $page = get_template_prefix($type);
-  return expand($page . wikititle_encode($id), true, true, "{{Cite journal\n | $type = $id \n}}<noinclude>{{Documentation|Template:cite_$type/subpage}}</noinclude>");
-}
-
-function get_template_prefix($type) {
-  return "Template: Cite "
-  . ($type == "jstor" ? ("doi/10.2307" . wikititle_encode("/")) : $type . "/");
-  // Not sure that this works:
-  return "Template: Cite $type/";
-  // Do we really need to handle JSTORs differently?
-  // The below code errantly produces cite jstor/10.2307/JSTORID, not cite jstor/JSTORID.
-  return "Template: Cite "
-  . ($type == "jstor" ? ("jstor/10.2307" . wikititle_encode("/")) : $type . "/");
-}
-
-function standardize_reference($reference) {
-  $whitespace = Array(" ", "\n", "\r", "\v", "\t");
-  return str_replace($whitespace, "", $reference);
-}
-
 // $comments should be an array, with the original comment content.
 // $placeholder will be prepended to the comment number in the sprintf to comment_placeholder's %s.
 function replace_comments($text, $comments, $placeholder = "") {
@@ -503,154 +440,10 @@ function replace_comments($text, $comments, $placeholder = "") {
   return $text;
 }
 
-// This function may need to be called twice; the second pass will combine <ref name="Name" /> with <ref name=Name />.
-function combine_duplicate_references($page_code) {
-  
-  $original_encoding = mb_detect_encoding($page_code);
-  $page_code = mb_convert_encoding($page_code, "UTF-8");
-  
-  if (preg_match_all("~<!--[\s\S]*?-->~", $page_code, $match)) {
-    $removed_comments = $match[0];
-    foreach ($removed_comments as $i => $content) {
-      $page_code = str_replace($content, sprintf(comment_placeholder, "sr$i"), $page_code);
-    }
-  }
-  // Before we start with the page code, find and combine references in the reflist section that have the same name
-  if (preg_match(reflist_regexp, $page_code, $match)) {
-    if (preg_match_all('~(?P<ref1><ref\s+name\s*=\s*'
-            . '(?<quote1>["\']?+)(?P<name>[^/>]+)(?P=quote1)'
-            . '(?:\s[^/>]+)?\s*>[\p{L}\P{L}]+</\s*ref>)'
-            . '[\p{L}\P{L}]+'
-            . '(?P<ref2><ref\s+name\s*=\s*(?P<quote2>["\']?+)(?P=name)\b(?P=quote2)(?:\s[^/>]+)?\s*>'
-              . '.+</\s*ref>)~isuU', $match[1], $duplicates)) {
-      foreach ($duplicates['ref2'] as $i => $to_delete) {
-        print "\n\n$to_delete\n\n===";
-        if ($to_delete == $duplicates['ref1'][$i]) {
-          $mb_start = mb_strpos($page_code, $to_delete) + mb_strlen($to_delete);
-          $page_code = mb_substr($page_code, 0, $mb_start)
-                  . str_replace($to_delete, '', mb_substr($page_code, $mb_start));
-        } else {
-          $page_code = str_replace($to_delete, '', $page_code);
-        }
-        echo "\n  * deleted duplicate reference: $to_delete";
-      }
-    } 
-  }
-  // Now look at the rest of the page:
-  preg_match_all("~<ref\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*/>~", $page_code, $empty_refs);
-  // match 1 = ref names
-  if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
-                  . "(([^<]|<(?![Rr]ef))+?)</ref>~i", $page_code, $refs)) {
-    // match 0 = full ref; 1 = redundant; 2= used in regexp for backreference;
-    // 3 = ref name; 4 = ref content; 5 = redundant
-    foreach ($refs[4] as $ref) {
-      $standardized_ref[] = standardize_reference($ref);
-    }
-    // Turn essentially-identical references into exactly-identical references
-    foreach ($refs[4] as $i => $this_ref) {
-      if (false !== ($key = array_search(standardize_reference($this_ref), $standardized_ref))
-              && $key != $i) {
-        $full_original[] = ">" . $refs[4][$key] . "<"; // be careful; I hope that this is specific enough.
-        $duplicate_content[] = ">" . $this_ref . "<";
-      }
-      print_r($duplicate_content); print_r($full_original);
-      $page_code = str_replace($duplicate_content, $full_original, $page_code);
-    }
-  } else {
-    // no matches, return input
-    echo "\n - No references found.";
-    return mb_convert_encoding(replace_comments($page_code, $removed_comments, 'sr'), $original_encoding);
-  }
-
-  // Reset
-  $full_original = null;
-  $duplicate_content = null;
-  $standardized_ref = null;
-
-  // Now all references that need merging will have identical content.  Proceed to do the replacements...
-  if (preg_match_all("~<ref(\s*name\s*=\s*(?P<quote>[\"']?)([^>]+)(?P=quote)\s*)?>"
-                  . "(([^<]|<(?!ref))+?)</ref>~i", $page_code, $refs)) {
-    $standardized_ref = $refs[4]; // They were standardized above.
-    
-    foreach ($refs[4] as $i => $content) {
-      if (false !== ($key = array_search($refs[4][$i], $standardized_ref))
-              && $key != $i) {
-        $full_original[] = $refs[0][$key];
-        $full_duplicate[] = $refs[0][$i];
-        $name_of_original[] = $refs[3][$key];
-        $name_of_duplicate[] = $refs[3][$i];
-        $duplicate_content[] = $content;
-        $name_for[$content] = $name_for[$content] ? $name_for[$content] : ($refs[3][$key] ? $refs[3][$key] : ($refs[3][$i] ? $refs[3][$i] : null));
-      }
-    }
-    $already_replaced = Array(); // so that we can use FALSE and not NULL in the check...
-    if ($full_duplicate) {
-      foreach ($full_duplicate as $i => $this_duplicate) {
-        if (FALSE === array_search($this_duplicate, $already_replaced)) {
-          $already_replaced[] = $full_duplicate[$i]; // So that we only replace the same reference once
-          echo "\n   - Replacing duplicate reference $this_duplicate. \n     Reference name: "
-          . ( $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]] : "Autogenerating." ); // . " (original: $full_original[$i])";
-          $replacement_template_name = $name_for[$duplicate_content[$i]] ? $name_for[$duplicate_content[$i]] : get_name_for_reference($duplicate_content[$i], $page_code);
-          // First replace any empty <ref name=Blah content=none /> or <ref name=Blah></ref> with the new name
-          $ready_to_replace = preg_replace("~<ref\s*name\s*=\s*(?P<quote>[\"']?)"
-                  . preg_quote($name_of_duplicate[$i])
-                  . "(?P=quote)(\s*/>|\s*>\s*</\s*ref>)~"
-                  , "<ref name=\"" . $replacement_template_name . "\"$2"
-                  , $page_code);
-          if ($name_of_original[$i]) {
-            // Don't replace the original template!
-            $original_ref_end_pos = mb_strpos($ready_to_replace, $full_original[$i]) + mb_strlen($full_original[$i]);
-            $code_upto_original_ref = mb_substr($ready_to_replace, 0, $original_ref_end_pos);
-          } elseif ($name_of_duplicate[$i]) {
-            // This is an odd case; in a fashion the simplest.
-            // In effect, we switch the original and duplicate over,..
-            $original_ref_end_pos = 0;
-            $code_upto_original_ref = "";
-            $already_replaced[] = $full_original[$i];
-            $this_duplicate = $full_original[$i];
-          } else {
-            // We need add a name to the original template, and not to replace it
-            $original_ref_end_pos = mb_strpos($ready_to_replace, $full_original[$i]);
-            $code_upto_original_ref = mb_substr($ready_to_replace, 0, $original_ref_end_pos) // Sneak this in to "first_duplicate"
-                    . preg_replace("~<ref(\s+name\s*=\s*(?P<quote>[\"']?)" . preg_quote($name_of_original[$i])
-                            . "(?P=quote)\s*)?>~i", "<ref name=\"$replacement_template_name\">", $full_original[$i]);
-            $original_ref_end_pos += mb_strlen($full_original[$i]);
-          }
-          // Then check that the first occurrence won't be replaced
-          $page_code = $code_upto_original_ref . str_replace($this_duplicate,
-                    sprintf(blank_ref, $replacement_template_name), mb_substr($ready_to_replace, $original_ref_end_pos));
-          global $modifications;
-          $modifications["combine_references"] = true;
-        }
-      }
-    }
-  }
-
-  $page_code = replace_comments($page_code, $removed_comments, 'sr');
-  echo ($already_replaced) ? "\n - Combined duplicate references." : "\n   - No duplicate references to combine." ;
-  return $page_code;
-}
-
-
 function trim_identifier($id) {
   $cruft = "[\.,;:><\s]*";
   preg_match("~^$cruft(?:d?o?i?:)?\s*(.*?)$cruft$~", $id, $match);
   return $match[1];
-}
-
-function name_references($page_code) {
-  echo " naming";
-  if (preg_match_all("~<ref>[^\{<]*\{\{\s*(?=[cC]it|[rR]ef).*</ref>~U", $page_code, $refs)) {
-    foreach ($refs[0] as $ref) {
-      $ref_name = get_name_for_reference($ref, $page_code);
-      if (substr($ref_name, 0, 4) != "ref_") {
-        // i.e. we have used an interesting reference name
-        $page_code = str_replace($ref, str_replace("<ref>", "<ref name=\"$ref_name\">", $ref), $page_code);
-      }
-      echo ".";
-    }
-  }
-  return $page_code;
 }
 
 function remove_accents($input) {

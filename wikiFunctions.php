@@ -223,6 +223,7 @@ function whatTranscludes2($template, $namespace = 99) {
 }
 
 #### Functions below were written offline so need testing & debgging
+// TODO: either test these and incorporate them, or take them out.
 
 // Extract template
 // Pass the code to find the template in, and the name of the template (with spaces, not underscores, if appropriate)

@@ -1,5 +1,5 @@
 <?php
-/* Treats comments, templates and references as objects */
+/* Treats comments and templates as objects */
 
 /* 
 # TODO # 
@@ -12,11 +12,6 @@ require_once("Item.php");
 require_once("Template.php");
 require_once("Parameter.php");
 require_once("Comment.php");
-require_once("Short_Reference.php");
-require_once("Long_Reference.php");
-
-#define ('ref_regexp', '~<ref.*</ref>~u'); // #TODO DELETE
-#define ('refref_regexp', '~<ref.*/>~u'); // #TODO DELETE
 
 global $author_parameters;
 $author_parameters = array(
@@ -192,42 +187,4 @@ function tag($long = FALSE) {
     );
   }
   echo ']';
-}
-
-function url2template($url, $citation) {
-  if (preg_match("~jstor\.org/(?!sici).*[/=](\d+)~", $url, $match)) {
-    return "{{Cite doi | 10.2307/$match[1] }}";
-  } else if (preg_match("~//dx\.doi\.org/(.+)$~", $url, $match)) {
-    return "{{Cite doi | " . urldecode($match[1]) . " }}";
-  } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/dp/(?P<id>\d+X?)~", $url, $match)) {
-    return ($match['domain'] == ".com") ? "{{ASIN | {$match['id']} }}" : " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}";
-  } else if (preg_match("~^https?://books\.google(?:\.\w{2,3}\b)+/~", $url, $match)) {
-    return "{{" . ($citation ? 'Cite book' : 'Cite journal') . ' | url = ' . $url . '}}';
-  } else if (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                  . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-    return "{{Cite pmc | {$match[1]}{$match[2]} }}";
-  } elseif (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
-    return "{{Cite journal | bibcode = " . urldecode($bibcode[1]) . "}}";
-  } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*=(\d{6,})~", $url, $match)) {
-    return "{{Cite pmid | {$match[1]} }}";
-  } else if (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
-    return "{{Cite arxiv | eprint={$match[1]} }}";
-  } else {
-    return $url;
-  }
-}
-
-function expand_cite_page ($title) {
-  $page = new Page();
-  $attempts = 0;
-  if ($page->get_text_from($title) && $page->expand_text()) {
-    echo "\n # Writing to " . $page->title;
-    while (!$page->write() && $attempts < 3) $attempts++;
-    if (!articleID($page) && !$doiCrossRef && $oDoi) { #TODO!
-      leave_broken_doi_message($page, $article_in_progress, $oDoi);
-    }
-  } else {
-    echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
-    updateBacklog($page->title);
-  }
 }

@@ -50,7 +50,6 @@ if ($category) {
       }
     } else {
       echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
-      updateBacklog($page->title);
     }
   }
 
