@@ -259,7 +259,7 @@ function logIn($username, $password) {
   $bot->submit(api, $submit_vars);
   $login_result = json_decode($bot->results);
   if ($login_result->login->result == "Success") {
-    quiet_echo("\n Using account " . $login_result->login->lgusername . ".");
+    quiet_echo("\n Using account " . htmlspecialchars($login_result->login->lgusername) . ".");
     // Add other cookies, which are necessary to remain logged in.
     $cookie_prefix = "testwiki"; //FIXME in prod
     $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
@@ -399,16 +399,6 @@ function reassemble_citation($p, $sort = false) {
   }
   return $cText;
 }
-
-
-function noteDoi($doi, $src) {
-  quiet_echo("<h3 style='color:coral;'>Found <a href='http://dx.doi.org/$doi'>DOI</a> $doi from $src.</h3>");
-}
-
-// Error codes:
-// 404 is a working DOI pointing to a page not found;
-// 200 is a broken DOI, found in the source of the URL
-// Broken DOIs are only logged if they can be spotted in the URL page specified.
 
 function loadParam($param, $value, $equals, $pipe, $weight) {
   global $p;

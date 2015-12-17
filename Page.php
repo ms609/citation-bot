@@ -63,7 +63,8 @@ class Page {
 
   public function expand_text() {
     global $html_output;
-    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://test.wikipedia.org/wiki/" . htmlspecialchars($this->title) . "' style='text-weight:bold;'>{$this->title}</a>' &mdash; <a href='http://test.wikipedia.org/?title=". htmlspecialchars(urlencode($this->title))."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://test.wikipedia.org/?title=" . htmlspecialchars(urlencode($this->title)) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");  //FIXME important
+    $safetitle = htmlspecialchars($this->title);
+    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://test.wikipedia.org/wiki/" . urlencode($this->title) . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://test.wikipedia.org/?title=". urlencode($this->title)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://test.wikipedia.org/?title=" . urlencode($this->title) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
     $text = $this->text;
     $this->modifications = array();
     if (!$text) {
@@ -200,22 +201,22 @@ class Page {
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
         global $html_output;
-        if ($html_output) echo "\n <span style='color: #e21'>Written to <a href='" . wikiroot . "title=" . urlencode($my_page->title) . "'>" . $my_page->title . '</a></span>';
-        else echo "\n Written to " . $my_page->title . '.  ';
+        if ($html_output) echo "\n <span style='color: #e21'>Written to <a href='" . wikiroot . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
+        else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
         return TRUE;
       } else if ($result->edit->result) {
-        echo $result->edit->result;
+        echo htmlspecialchars($result->edit->result);
         return TRUE;
       } else if ($result->error->code) {
         // Return error code
-        echo "\n ! " . strtoupper($result->error->code) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), $result->error->info);
+        echo "\n ! " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
         return FALSE;
       } else {
         echo "\n ! Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
         return FALSE;
       }
     } else {
-      echo "\n - Can't write to " . $this->title . " - prohibited by {{bots]} template.";
+      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots]} template.";
     }
   }
 

@@ -59,17 +59,15 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
       echo $html_output ?
         " <small><a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
         . "<a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
-        . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
+        . urlencode(getLastRev($title)) . ">last edit</a></small></i>\n\n<br>"
         : ".";
-      // FIXME important
     } else {
-      echo "\n # Failed. Text was:\n" . $my_page->text;
+      echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
     }
   } elseif (!$ON) {
-    echo "\n # Proposed code for " . $my_page->title . ', which you have asked the bot to commit with edit summary ' . $my_page->edit_summary() . "<br><pre>";  //FIXME important
-    echo $my_page->text;
+    echo "\n # Proposed code for " . htmlspecialchars($my_page->title) . ', which you have asked the bot to commit with edit summary ' . htmlspecialchars($my_page->edit_summary()) . "<br><pre>";
+    echo htmlspecialchars($my_page->text);
     echo "</pre>";
-    // using bare $title in form below; FIXME important?
 ?>
 <form method="post" action="doibot.php">
   <input type="hidden" name="page" value="<?php echo $title;?>"></input>
