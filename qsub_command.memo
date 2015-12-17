@@ -1,5 +1,0 @@
-Run from smith609 WMFlabs account.
--b: might this be a binary file?
--r: should we restart if interrupted?
-
-qsub -N CITEWATCH -b y -r y php ~/citations-active/citewatch.php

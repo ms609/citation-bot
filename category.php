@@ -34,11 +34,11 @@ if ($category) {
   $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
-    echo ("\n\n\n*** Processing page '{$page_title}' : " . date("H:i:s") . "\n");
+    echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title) && $page->expand_text()) {
-      echo "\n # Writing to " . $page->title . '... ';
+      echo "\n # Writing to " . htmlspecialchars($page->title) . '... ';
       while (!$page->write() && $attempts < 2) ++$attempts;
-      print $page->text; 
+      print htmlspecialchars($page->text);
       if ($attempts < 3 ) {
         echo $html_output ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
@@ -46,11 +46,10 @@ if ($category) {
         . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
         : ".";
       } else {
-         echo "\n # Failed. \n" . $page->text;
+         echo "\n # Failed. \n" . htmlspecialchars($page->text);
       }
     } else {
       echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
-      updateBacklog($page->title);
     }
   }
 
