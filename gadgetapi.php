@@ -1,11 +1,6 @@
 <?php
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
-// If this is an AJAX request, set proper JSON header
-if ( !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
-  && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
-) {
-  header("Content-Type: text/json");
-}
+header("Content-Type: text/json");
 
 //Configure setting to suppress buffered output
 global $html_output;
