@@ -1,4 +1,4 @@
- <?php
+<?php
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/json");
 
@@ -29,5 +29,3 @@ $result = array(
 );
 
 echo json_encode($result);
-
-?>
