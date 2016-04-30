@@ -951,6 +951,7 @@ class Snoopy
 			$this->setcookies();
 
 		$headers = array();		
+		$cmdline_params = '';
 					
 		$URI_PARTS = parse_url($URI);
 		if(empty($url))
@@ -1011,7 +1012,7 @@ class Snoopy
 		if($this->read_timeout > 0)
 			$cmdline_params .= " -m ".$this->read_timeout;
 		
-		$headerfile = tempnam($temp_dir, "sno");
+		$headerfile = tempnam($this->temp_dir, "sno");
 
 		$safer_URI = strtr( $URI, "\"", " " ); // strip quotes from the URI to avoid shell access
 		exec($this->curl_path." -D \"$headerfile\"".$cmdline_params." \"".$safer_URI."\"",$results,$return);
