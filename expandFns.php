@@ -253,19 +253,7 @@ function logIn($username, $password) {
   }
   $first_response = json_decode($bot->results);
   $submit_vars["lgtoken"] = $first_response->login->token;
-  // Store cookies; resubmit with new request (which hast token added to post vars)
-  foreach ($bot->headers as $header) {
-    if (substr($header, 0, 10) == "Set-Cookie") {
-      $cookies = explode(";", substr($header, 12));
-      if ($cookies) foreach ($cookies as $oCook) {
-        $cookie = explode("=", $oCook);
-        if (isset($cookie[1])) {
-          $bot->cookies[trim($cookie[0])] = $cookie[1];
-        }
-      }
-    }
-  }
-
+  // Resubmit with new request (which has token added to post vars)
   $bot->submit(api, $submit_vars);
   $login_result = json_decode($bot->results);
   if ($login_result->login->result == "Success") {
