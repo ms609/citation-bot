@@ -154,13 +154,18 @@ $common_mistakes = array
 #ob_start(); //Faster, but output is saved until page finshed.
 ini_set("memory_limit", "256M");
 
-//TODO: none of these indices are declared, all give "Notice: undefined index"
-$fastMode = $_REQUEST["fast"];
-$slow_mode = $_REQUEST["slow"];
-$user = $_REQUEST["user"];
-$bugFix = $_REQUEST["bugfix"];
-$crossRefOnly = $_REQUEST["crossrefonly"] ? true : $_REQUEST["turbo"];
-$edit = $_REQUEST["edit"];
+$fastMode = isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : false;
+$slow_mode = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : false;
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : null;
+$bugFix = isset($_REQUEST["bugfix"]) ? $_REQUEST["bugfix"] : null;
+if (isset($_REQUEST["crossrefonly"])) {
+  $crossRefOnly = true;
+} elseif (isset($_REQUEST["turbo"])) {
+  $crossRefOnly = $_REQUEST["turbo"];
+} else {
+  $crossRefOnly = false;
+}
+$edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : null;
 
 if ($edit || $_GET["doi"] || $_GET["pmid"])
   $ON = true;
@@ -243,19 +248,12 @@ function logIn($username, $password) {
   $submit_vars["lgpassword"] = $password;
   // Submit POST variables and retrieve a token
   $bot->submit(api, $submit_vars);
+  if (!$bot->results) {
+    exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
+  }
   $first_response = json_decode($bot->results);
   $submit_vars["lgtoken"] = $first_response->login->token;
-  // Store cookies; resubmit with new request (which hast token added to post vars)
-  foreach ($bot->headers as $header) {
-    if (substr($header, 0, 10) == "Set-Cookie") {
-      $cookies = explode(";", substr($header, 12));
-      if ($cookies) foreach ($cookies as $oCook) {
-        $cookie = explode("=", $oCook);
-        $bot->cookies[trim($cookie[0])] = $cookie[1];
-      }
-    }
-  }
-
+  // Resubmit with new request (which has token added to post vars)
   $bot->submit(api, $submit_vars);
   $login_result = json_decode($bot->results);
   if ($login_result->login->result == "Success") {
@@ -265,9 +263,10 @@ function logIn($username, $password) {
     $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
     $bot->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
     $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
+    $bot->cookies[$cookie_prefix . "_session"] = $login_result->login->sessionid;
     return true;
   } else {
-    exit("\nCould not log in to Wikipedia servers.  Edits will not be committed.\n"); // Will not display to user (not sure this is true)
+    exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
     global $ON;
     $ON = false;
     return false;
@@ -300,7 +299,7 @@ function format_title_text($title) {
               "From the Cover: ", "|");
   $iOut = array("''","''",'','',
                 "", '{{!}}');
-  $in = array("&lt;", "&gt;"	);
+  $in = array("&lt;", "&gt;");
   $out = array("<",		">"			);
   return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
 }

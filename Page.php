@@ -64,6 +64,7 @@ class Page {
   public function expand_text() {
     global $html_output;
     $safetitle = htmlspecialchars($this->title);
+    date_default_timezone_set('UTC');
     quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/wiki/" . urlencode($this->title) . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($this->title)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . urlencode($this->title) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
     $text = $this->text;
     $this->modifications = array();
@@ -79,14 +80,14 @@ class Page {
     }
 
     // COMMENTS //
-    $comments = $this->extract_object(Comment);
-    if ($bot_exclusion_compliant && !$this->allow_bots()) {
+    $comments = $this->extract_object('Comment');
+    if (!$this->allow_bots()) {
       echo "\n ! Page marked with {{nobots}} template.  Skipping.";
       return FALSE;
     }
 
     // TEMPLATES //
-    $templates = $this->extract_object(Template);
+    $templates = $this->extract_object('Template');
     $start_templates = $templates;
     $citation_templates = 0;
 
@@ -104,12 +105,10 @@ class Page {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
       foreach (array_keys($template_mods) as $key) {
-        if (!$this->modifications[$key]) {
+        if (!isset($this->modifications[$key])) {
           $this->modifications[$key] = $template_mods[$key];
         } else {
-          if ($template_mods[$key]) {
-            $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
-          }
+          $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         }
       }
     }
@@ -226,6 +225,7 @@ class Page {
     $regexp = $class::regexp;
     $placeholder_text = $class::placeholder_text;
     $treat_identical_separately = $class::treat_identical_separately;
+    $objects = array();
     while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);

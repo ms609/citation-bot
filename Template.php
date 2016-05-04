@@ -1153,7 +1153,8 @@ class Template extends Item {
       $duplicated_parameters = array();
       $duplicate_identical = array();
       foreach ($this->param as $pointer => $par) {
-        if ($par->param && ($duplicate_pos = $param_occurrences[$par->param]) !== NULL) {
+        if ($par->param && isset($param_occurrences[$par->param])) {
+          $duplicate_pos = $param_occurrences[$par->param];
           array_unshift($duplicated_parameters, $duplicate_pos);
           array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
         }
@@ -1543,7 +1544,7 @@ class Template extends Item {
     ++$i;
 
     if ($this->initial_author_params) {
-      echo "\n * initial authors exist, not correcting " . htmlspecialchars($param);
+      echo "\n * initial authors exist, not correcting " . htmlspecialchars($p->param);
       continue;
     }
 
@@ -1623,6 +1624,8 @@ class Template extends Item {
 
   ### Tidying and formatting
   protected function tidy() {
+    $to_add = array();
+    $others = '';
     if ($this->added('title')) {
       $this->format_title();
     } else if ($this->is_modified() && $this->get('title')) {
@@ -1693,23 +1696,7 @@ class Template extends Item {
       else $this->set('others', $others);
     }
 
-    if ($this->added('journal') || $journal && $this->added('issn')) $this->forget('issn');
-
-    if ($journal) {
-      $volume = $this->get('volume');
-      if (($this->has('doi') || $this->has('issn'))) $this->forget('publisher', 'tidy');
-      // Replace "volume = B 120" with "series=VB, volume = 120
-      if (preg_match("~^([A-J])(?!\w)\d*\d+~u", $volume, $match) && mb_substr(trim($journal), -2) != " $match[1]") {
-        $journal .= " $match[1]";
-        $this->set('volume', trim(mb_substr($volume, mb_strlen($match[1]))));
-      }
-      $this->set('journal', $journal);
-        // Clean up after errors in publishers' databases
-      if (0 === strpos(trim($journal), "BMC ") && $this->page_range()) {
-        $this->forget('issue');
-        echo "\n   - dropping issue number (BMC journals only have page numbers)";
-      }
-    }
+    if ($this->added('journal')) $this->forget('issn');
 
     // Remove leading zeroes
     if (!$this->blank('issue') && $this->blank('number')) {
