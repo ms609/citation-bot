@@ -65,7 +65,7 @@ class Page {
     global $html_output;
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/wiki/" . urlencode($this->title) . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($this->title)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . urlencode($this->title) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
+    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" . urlencode($this->title) . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($this->title)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . urlencode($this->title) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
     $text = $this->text;
     $this->modifications = array();
     if (!$text) {
@@ -181,6 +181,10 @@ class Page {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
+      if ( stripos($this->text,"Citation bot : comment placeholder") != false )  {
+        echo "\n ! Comment placeholder left escaped. Aborting.";
+        return FALSE;
+      }
       $submit_vars = array(
           "action" => "edit",
           "title" => $my_page->title,
@@ -242,7 +246,7 @@ class Page {
   protected function replace_object ($objects) {
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
-      $this->text = str_replace(sprintf($obj::placeholder_text, --$i), $obj->parsed_text(), $this->text);
+      $this->text = str_ireplace(sprintf($obj::placeholder_text, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
 
   public function allow_bots() {

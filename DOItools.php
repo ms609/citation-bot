@@ -139,6 +139,16 @@ function list_parameters() { // Lists the parameters in order.
      "editor2", "editor2-author", "editor2-first", "editor2-link",
      "editor3", "editor3-author", "editor3-first", "editor3-link",
      "editor4", "editor4-author", "editor4-first", "editor4-link",
+     "editor5", "editor5-author", "editor5-first", "editor5-link",
+     "editor6", "editor6-author", "editor6-first", "editor6-link",
+     "editor7", "editor7-author", "editor7-first", "editor7-link",
+     "editor8", "editor8-author", "editor8-first", "editor8-link",
+     "editor9", "editor9-author", "editor9-first", "editor9-link",
+     "editor10", "editor10-author", "editor10-first", "editor10-link",
+     "editor11", "editor11-author", "editor11-first", "editor11-link",
+     "editor12", "editor12-author", "editor12-first", "editor12-link",
+     "editor13", "editor13-author", "editor13-first", "editor13-link",
+     "editor14", "editor14-author", "editor14-first", "editor14-link",
      "others",
      "chapter", "trans_chapter",  "chapterurl",
      "title", "trans_title", "language",
@@ -568,7 +578,7 @@ function checkTextForMetas($text){
     $authors = formatAuthors($author_list, true);
     foreach ($authors as $no => $auth) {
       $names = explode (', ', $auth);
-      $newp["author" . ($no + 1)] = $names[0];
+      $newp["last" . ($no + 1)] = $names[0];
       $newp["first" . ($no + 1)] = $names[1];
     }
   }

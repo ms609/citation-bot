@@ -7,7 +7,7 @@ require_once('Item.php');
 
 class Comment extends Item {
   const placeholder_text = '# # # Citation bot : comment placeholder %s # # #';
-  const regexp = '~<!--.*-->~us';
+  const regexp = '~<!--.*?-->~us';
   const treat_identical_separately = FALSE;
 
   public function parse_text($text) {

@@ -285,6 +285,7 @@ function inputValue($tag, $form) {
 }
 
 function format_title_text($title) {
+  $title = sanitize_string($title)
   $title = capitalize_title($title, TRUE);
   $title = html_entity_decode($title, null, "UTF-8");
   $title = (mb_substr($title, -1) == ".")
