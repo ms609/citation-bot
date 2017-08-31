@@ -285,7 +285,7 @@ function inputValue($tag, $form) {
 }
 
 function format_title_text($title) {
-  $title = sanitize_string($title)
+  $title = sanitize_string($title);
   $title = capitalize_title($title, TRUE);
   $title = html_entity_decode($title, null, "UTF-8");
   $title = (mb_substr($title, -1) == ".")
@@ -437,7 +437,7 @@ function trim_identifier($id) {
 }
 
 function remove_accents($input) {
-  $search = explode(",", "ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
+  $search = explode(",", "Ã§,Ã¦,Âœ,Ã¡,Ã©,Ã­,Ã³,Ãº,Ã ,Ã¨,Ã¬,Ã²,Ã¹,Ã¤,Ã«,Ã¯,Ã¶,Ã¼,Ã¿,Ã¢,Ãª,Ã®,Ã´,Ã»,Ã¥,e,i,Ã¸,u");
   $replace = explode(",", "c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u");
   return str_replace($search, $replace, $input);
 }
@@ -493,23 +493,23 @@ function normalize_special_characters($str) {
   $str = utf8_decode($str);
   # Quotes cleanup
   $str = ereg_replace(chr(ord("`")), "'", $str);        # `
-  $str = ereg_replace(chr(ord("´")), "'", $str);        # ´
-  $str = ereg_replace(chr(ord("„")), ",", $str);        # „
+  $str = ereg_replace(chr(ord("Â´")), "'", $str);        # Â´
+  $str = ereg_replace(chr(ord("Â„")), ",", $str);        # Â„
   $str = ereg_replace(chr(ord("`")), "'", $str);        # `
-  $str = ereg_replace(chr(ord("´")), "'", $str);        # ´
-  $str = ereg_replace(chr(ord("“")), "\"", $str);        # “
-  $str = ereg_replace(chr(ord("”")), "\"", $str);        # ”
-  $str = ereg_replace(chr(ord("´")), "'", $str);        # ´
+  $str = ereg_replace(chr(ord("Â´")), "'", $str);        # Â´
+  $str = ereg_replace(chr(ord("Â“")), "\"", $str);        # Â“
+  $str = ereg_replace(chr(ord("Â”")), "\"", $str);        # Â”
+  $str = ereg_replace(chr(ord("Â´")), "'", $str);        # Â´
 
-  $unwanted_array = array('Š' => 'S', 'š' => 's', '' => 'Z', '' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
-      'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
-      'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'İ' => 'Y', 'Ş' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
-      'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ğ' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
-      'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ı' => 'y', 'ı' => 'y', 'ş' => 'b', 'ÿ' => 'y');
+  $unwanted_array = array('ÂŠ' => 'S', 'Âš' => 's', 'Â' => 'Z', 'Â' => 'z', 'Ã€' => 'A', 'Ã' => 'A', 'Ã‚' => 'A', 'Ãƒ' => 'A', 'Ã„' => 'A', 'Ã…' => 'A', 'Ã†' => 'A', 'Ã‡' => 'C', 'Ãˆ' => 'E', 'Ã‰' => 'E',
+      'ÃŠ' => 'E', 'Ã‹' => 'E', 'ÃŒ' => 'I', 'Ã' => 'I', 'Ã' => 'I', 'Ã' => 'I', 'Ã‘' => 'N', 'Ã’' => 'O', 'Ã“' => 'O', 'Ã”' => 'O', 'Ã•' => 'O', 'Ã–' => 'O', 'Ã˜' => 'O', 'Ã™' => 'U',
+      'Ãš' => 'U', 'Ã›' => 'U', 'Ãœ' => 'U', 'Ã' => 'Y', 'Ã' => 'B', 'ÃŸ' => 'Ss', 'Ã ' => 'a', 'Ã¡' => 'a', 'Ã¢' => 'a', 'Ã£' => 'a', 'Ã¤' => 'a', 'Ã¥' => 'a', 'Ã¦' => 'a', 'Ã§' => 'c',
+      'Ã¨' => 'e', 'Ã©' => 'e', 'Ãª' => 'e', 'Ã«' => 'e', 'Ã¬' => 'i', 'Ã­' => 'i', 'Ã®' => 'i', 'Ã¯' => 'i', 'Ã°' => 'o', 'Ã±' => 'n', 'Ã²' => 'o', 'Ã³' => 'o', 'Ã´' => 'o', 'Ãµ' => 'o',
+      'Ã¶' => 'o', 'Ã¸' => 'o', 'Ã¹' => 'u', 'Ãº' => 'u', 'Ã»' => 'u', 'Ã½' => 'y', 'Ã½' => 'y', 'Ã¾' => 'b', 'Ã¿' => 'y');
   $str = strtr($str, $unwanted_array);
 
 # Bullets, dashes, and trademarks
-  $str = ereg_replace(chr(149), "&#8226;", $str);    # bullet •
+  $str = ereg_replace(chr(149), "&#8226;", $str);    # bullet Â•
   $str = ereg_replace(chr(150), "&ndash;", $str);    # en dash
   $str = ereg_replace(chr(151), "&mdash;", $str);    # em dash
   $str = ereg_replace(chr(153), "&#8482;", $str);    # trademark
