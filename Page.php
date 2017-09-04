@@ -81,6 +81,7 @@ class Page {
 
     // COMMENTS //
     $comments = $this->extract_object('Comment');
+    $nowiki   = $this->extract_object('Nowiki');
     if (!$this->allow_bots()) {
       echo "\n ! Page marked with {{nobots}} template.  Skipping.";
       return FALSE;
@@ -115,6 +116,7 @@ class Page {
     $text = $this->replace_object($templates);
 
     $this->replace_object($comments);
+    $this->replace_object($nowiki);
     // seems to be set as -1  in text.php and then re-set
     if ($html_output === -1) {
       ob_end_clean();
