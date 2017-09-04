@@ -413,15 +413,15 @@ class Template extends Item {
       return false;
       case 'volume':
         if ($this->blank($param)) {
-          if (  $this->get('journal') == "ZookKeys" ) add_if_new('issue',$value) ; // This journal has no volume
+          if ($this->get('journal') == "ZookKeys" ) add_if_new('issue',$value) ; // This journal has no volume
           return $this->add($param, $value);
         }
       return false;
       case 'bibcode':
         if ($this->blank($param)) { 
-          $bibcode_pad =  strlen($value) - 19;
-          if($bibcode_pad > 0 ) {  // Paranoid, don't want a negative value, if bibcodes get longer
-              value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
+          $bibcode_pad = 19 - strlen($value);
+          if ($bibcode_pad > 0) {  // Paranoid, don't want a negative value, if bibcodes get longer
+            $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
           }
           return $this->add($param, $value);
         } 
