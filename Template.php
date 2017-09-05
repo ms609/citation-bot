@@ -774,7 +774,7 @@ class Template extends Item {
       if ($xml["retrieved"] == 1) {
         echo tag();
         $this->add_if_new("bibcode", (string) $xml->record->bibcode);
-        if ( strcasecmp( (string) $xml->record->bibcode ), "unknown") )  {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
+        if (strcasecmp( (string) $xml->record->bibcode, "unknown") == 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
             $this->add_if_new("title", (string) $xml->record->title);
         }
         foreach ($xml->record->author as $author) {
