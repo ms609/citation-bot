@@ -413,7 +413,7 @@ class Template extends Item {
       return false;
       case 'volume':
         if ($this->blank($param)) {
-          if ($this->get('journal') == "ZookKeys" ) add_if_new('issue',$value) ; // This journal has no volume
+          if ($this->get('journal') == "ZookKeys" ) return $this->add('issue', $value); // This journal has no volume
           return $this->add($param, $value);
         }
       return false;
