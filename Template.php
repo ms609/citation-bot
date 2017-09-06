@@ -439,7 +439,7 @@ class Template extends Item {
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {
         #Skip.  We can't do anything more with the SICI, unfortunately.
-      elseif (strpos($url, "plants.jstor.org")) {
+      } elseif (strpos($url, "plants.jstor.org")) {
         #Skip.  We can't do anything more with the plants, unfortunately.
       } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
         if ($this->get('jstor')) {
@@ -774,7 +774,7 @@ class Template extends Item {
       if ($xml["retrieved"] == 1) {
         echo tag();
         $this->add_if_new("bibcode", (string) $xml->record->bibcode);
-        if ( strcasecmp( (string) $xml->record->bibcode ), "unknown") )  {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
+        if (strcasecmp( (string) $xml->record->bibcode, "unknown") == 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
             $this->add_if_new("title", (string) $xml->record->title);
         }
         foreach ($xml->record->author as $author) {
