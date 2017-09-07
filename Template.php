@@ -232,7 +232,7 @@ class Template extends Item {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
             $this->add($param, formatSurname($au[0]));
-            return $this->add(sanitize_string('first' . (substr($param, -1) == '1' ? '1' : ''), formatForename(trim($au[1]))));
+            return $this->add('first' . (substr($param, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
           } else {
             return $this->add($param,sanitize_string($value));
           }
