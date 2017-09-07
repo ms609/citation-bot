@@ -774,7 +774,7 @@ class Template extends Item {
       if ($xml["retrieved"] == 1) {
         echo tag();
         $this->add_if_new("bibcode", (string) $xml->record->bibcode);
-        if (strcasecmp( (string) $xml->record->bibcode, "unknown") == 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
+        if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
             $this->add_if_new("title", (string) $xml->record->title);
         }
         foreach ($xml->record->author as $author) {
@@ -794,7 +794,7 @@ class Template extends Item {
             $this->appendto('id', ' ' . substr($journal_start, 13));
           }
         } else {
-          $this->add_if_new('journal', $journal_string[0]);
+          if (strcasecmp($journal_string[0], "unknown") != 0) $this->add_if_new('journal', $journal_string[0]); // Bibcodes titles are sometimes unknown
         }
         if ($this->add_if_new('doi', (string) $xml->record->DOI)) {
           $this->expand_by_doi();
