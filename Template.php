@@ -1713,7 +1713,7 @@ class Template extends Item {
         case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
         case 'edition': $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);break; // Don't want 'Edition ed.'
         case 'pages': case 'page': case 'issue': case 'year':
-          if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("http", $p->val)) {
+          if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("\http\i", $p->val)) {
             $this->mod_dashes = TRUE;
             echo ( "\n   ~ Upgrading to en-dash in" . htmlspecialchars($p->param) . tag());
             $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
