@@ -578,7 +578,7 @@ function checkTextForMetas($text){
     $authors = formatAuthors($author_list, true);
     foreach ($authors as $no => $auth) {
       $names = explode (', ', $auth);
-      $newp["last" . ($no + 1)] = $names[0];
+      $newp["author" . ($no + 1)] = $names[0];
       $newp["first" . ($no + 1)] = $names[1];
     }
   }
