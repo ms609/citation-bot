@@ -327,8 +327,7 @@ class Template extends Item {
         return false;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
-          if ( sanitize_string($value) == "
-          s" ) $this->blank("volume") ; // No volumes, just issues.
+          if ( sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
           return $this->add($param, format_title_text(sanitize_string($value)));
         }
         return false;
