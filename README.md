@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/ms609/citation-bot.svg?branch=development)](https://travis-ci.org/ms609/citation-bot)
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+
 # Citation bot
 
 ## Github repository details
