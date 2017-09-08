@@ -178,7 +178,7 @@ quiet_echo("\n Establishing connection to Wikipedia servers with username " . US
 logIn(USERNAME, PASSWORD);
 quiet_echo("\n Fetching parameter list ... ");
 // Get a current list of parameters used in citations from WP
-$page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters|Module:Citation/CS1/Whitelist&'=json");
+$page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters|Module:Citation/CS1/Whitelist&format=json");
 $json = json_decode($bot->results, true);
 $parameter_list = (explode("\n", $json["query"]["pages"][26899494]["revisions"][0]["*"]));
 preg_match_all("~\['([^']+)'\] = true~", $json["query"]["pages"][39013723]["revisions"][0]["*"], $match);
