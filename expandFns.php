@@ -305,6 +305,26 @@ function format_title_text($title) {
   return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
 }
 
+function format_title_text_nocaps($title) {
+  $title = sanitize_string($title);
+  $title = html_entity_decode($title, null, "UTF-8");
+  $title = (mb_substr($title, -1) == ".")
+            ? mb_substr($title, 0, -1)
+            :(
+              (mb_substr($title, -6) == "&nbsp;")
+              ? mb_substr($title, 0, -6)
+              : $title
+            );
+  $title = preg_replace('~[\*]$~', '', $title);
+  $iIn = array("<i>","</i>", '<title>', '</title>',
+              "From the Cover: ", "|");
+  $iOut = array("''","''",'','',
+                "", '{{!}}');
+  $in = array("&lt;", "&gt;");
+  $out = array("<",		">"			);
+  return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title))); // order IS important!
+}
+
 function parameters_from_citation($c) {
   // Comments
   global $comments, $comment_placeholders;
