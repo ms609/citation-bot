@@ -178,7 +178,7 @@ quiet_echo("\n Establishing connection to Wikipedia servers with username " . US
 logIn(USERNAME, PASSWORD);
 quiet_echo("\n Fetching parameter list ... ");
 // Get a current list of parameters used in citations from WP
-$page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters|Module:Citation/CS1/Whitelist&format=json");
+$page = $bot->fetch(api . "?action=query&prop=revisions&rvprop=content&titles=User:Citation_bot/parameters|Module:Citation/CS1/Whitelist&'=json");
 $json = json_decode($bot->results, true);
 $parameter_list = (explode("\n", $json["query"]["pages"][26899494]["revisions"][0]["*"]));
 preg_match_all("~\['([^']+)'\] = true~", $json["query"]["pages"][39013723]["revisions"][0]["*"], $match);
@@ -284,9 +284,9 @@ function inputValue($tag, $form) {
   return false;
 }
 
-function format_title_text($title) {
+function format_title_text($title, $capitalize = TRUE) {
   $title = sanitize_string($title);
-  $title = capitalize_title($title, TRUE);
+  if ($capitalize) $title = capitalize_title($title, TRUE);
   $title = html_entity_decode($title, null, "UTF-8");
   $title = (mb_substr($title, -1) == ".")
             ? mb_substr($title, 0, -1)
@@ -302,27 +302,11 @@ function format_title_text($title) {
                 "", '{{!}}');
   $in = array("&lt;", "&gt;");
   $out = array("<",		">"			);
-  return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
-}
-
-function format_title_text_nocaps($title) {
-  $title = sanitize_string($title);
-  $title = html_entity_decode($title, null, "UTF-8");
-  $title = (mb_substr($title, -1) == ".")
-            ? mb_substr($title, 0, -1)
-            :(
-              (mb_substr($title, -6) == "&nbsp;")
-              ? mb_substr($title, 0, -6)
-              : $title
-            );
-  $title = preg_replace('~[\*]$~', '', $title);
-  $iIn = array("<i>","</i>", '<title>', '</title>',
-              "From the Cover: ", "|");
-  $iOut = array("''","''",'','',
-                "", '{{!}}');
-  $in = array("&lt;", "&gt;");
-  $out = array("<",		">"			);
-  return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title))); // order IS important!
+  if ($capitalize) {
+    return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
+  } else {
+    return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title))); // order IS important
+  }
 }
 
 function parameters_from_citation($c) {
