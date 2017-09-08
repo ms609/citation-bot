@@ -1,5 +1,11 @@
 # Citation bot
 
+## Github repository details
+There are two main branches of the bot: the **master** code is (should be) implemented at https://tools.wmflabs.org/citations/doibot.php, whereas the **development** branch is implemented at https://tools.wmflabs.org/citations-dev/doibot.php .  Edits should be made first to the development
+branch, then – once fully tested – pulled to the master branch.
+
+## Overview
+
 This is some basic documentation about what this bot is and how some of the parts connect.
 
 This is more properly a bot-gadget-tool combination. The parts are:
