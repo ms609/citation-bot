@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/ms609/citation-bot.svg?branch=development)](https://travis-ci.org/ms609/citation-bot)
-[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/inactive.svg)](http://www.repostatus.org/#inactive)
 
 # Citation bot
 
