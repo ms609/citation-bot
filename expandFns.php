@@ -301,11 +301,8 @@ function format_title_text($title, $capitalize = TRUE) {
                 "", '{{!}}');
   $in = array("&lt;", "&gt;");
   $out = array("<",		">"			);
-  if ($capitalize) {
-    return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title))))); // order IS important!
-  } else {
-    return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important
-  }
+  if ($capitalize) $title = capitalize_title($title, TRUE);
+  return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important!
 }
 
 function parameters_from_citation($c) {
