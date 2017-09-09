@@ -139,13 +139,12 @@ function flatten_author_parameters($author_parameters) {
   *             If not, it will assume it is a journal abbreviation and won't capitalise after periods.
  */
 function capitalize_title($in, $sents = TRUE, $could_be_italics = TRUE) {
-        global $dontCap, $unCapped;
         if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
                 $in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
         }
   $in = str_ireplace(" (New York, N.Y.)", "", $in); // Pubmed likes to include this after "Science", for some reason
   if ($could_be_italics) $in = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $in); // <em> tags often go missing around species namesin CrossRef
-  $captIn = str_replace($dontCap, $unCapped, " " .  $in . " ");
+  $captIn = str_replace(dontCap, unCapped, " " .  $in . " ");
         if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
     $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
                                         preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(

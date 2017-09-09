@@ -814,7 +814,6 @@ class Template extends Item {
   }
 
   public function expand_by_doi($force = FALSE) {
-    global $editing_cite_doi_template;
     $doi = $this->get_without_comments('doi');
     if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
