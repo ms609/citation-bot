@@ -39,7 +39,7 @@ A quick tour of the main files:
    appears to use curl only for https, so the path to curl on Labs must be
    correct or the bot will fail to log in because the request can't reach the
    server.
-* `constants.php`: constants
+* `constants.php`: constants defined
 * `wikifunctions.php`: functions related to Wikipedia ineractions, including some marked
    as "untested".
 * `DOItools.php`: defines `$bot` (the Snoopy instance) and Crossref-related functions
