@@ -26,9 +26,7 @@ class Template extends Item {
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, $mod_dashes;
 
   public function parse_text($text) {
-    global $author_parameters, $flattened_author_params;
-    flatten_author_parameters($author_parameters);  //create flat array with all author params
-
+    
     $this->rawtext = $text;
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
@@ -44,7 +42,7 @@ class Template extends Item {
       $this->initial_param[$p->param] = $p->val;
 
       // Save author params for special handling
-      if (in_array($p->param, $flattened_author_params) && $p->val) {
+      if (in_array($p->param, flattened_author_params) && $p->val) {
         $this->initial_author_params[$p->param] = $p->val;
       }
     }
@@ -190,7 +188,6 @@ class Template extends Item {
   }
 
   public function add_if_new($param, $value) {
-    global $flattened_author_params;
     if ($corrected_spelling = $common_mistakes[$param]) {
       $param = $corrected_spelling;
     }
@@ -200,7 +197,7 @@ class Template extends Item {
     }
 
     // If we already have name parameters for author, don't add more
-    if ($this->initial_author_params && in_array($param, $flattened_author_params)) {
+    if ($this->initial_author_params && in_array($param, flattened_author_params)) {
       return false;
     }
 
@@ -1872,8 +1869,7 @@ class Template extends Item {
   }
 
   protected function handle_et_al() {
-    global $author_parameters;
-    foreach ($author_parameters as $i => $group) {
+    foreach (author_parameters as $i => $group) {
       foreach ($group as $param) {
         if (strpos($this->get($param), 'et al')) {
           // remove 'et al' from the parameter value if present
