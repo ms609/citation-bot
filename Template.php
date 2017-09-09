@@ -555,8 +555,7 @@ class Template extends Item {
           return $result;
         }
       }
-      global $fastMode;
-      if ($fastMode || !$author || !($journal || $issn) || !$start_page ) return;
+      if (FAST_MODE || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
       echo "\n   x Full search failed. Dropping author & end_page... ";
       $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
@@ -734,7 +733,7 @@ class Template extends Item {
 
 
   public function expand_by_adsabs() {
-    if (slow_mode || $this->has('bibcode')) {
+    if (SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
       $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
       if ($bibcode = $this->get("bibcode")) {
@@ -1102,7 +1101,7 @@ class Template extends Item {
     if ($meta_tags["citation_authors"]) {
       $new_authors = formatAuthors($meta_tags["citation_authors"], true);
     }
-    if (slow_mode && !$new_pages && !$new_authors) {
+    if (SLOW_MODE && !$new_pages && !$new_authors) {
       echo "\n   - Now scraping web-page.";
       //Initiate cURL resource
       $ch = curl_init();
