@@ -331,7 +331,7 @@ class Template extends Item {
         return false;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
-          return $this->add($param, format_title_text($value));
+          return $this->add($param, format_title_text($value, FALSE));
         }
         return false;
       case "page": case "pages":
@@ -774,7 +774,7 @@ class Template extends Item {
         echo tag();
         $this->add_if_new("bibcode", (string) $xml->record->bibcode);
         if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
-            $this->add_if_new("title", format_title_text(sanitize_string( (string) $xml->record->title)));
+            $this->add_if_new("title", format_title_text(sanitize_string( (string) $xml->record->title),FALSE));
         }
         foreach ($xml->record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
@@ -1764,7 +1764,7 @@ class Template extends Item {
 
   protected function format_title($title = FALSE) {
     if (!$title) $title = $this->get('title');
-    $this->set('title', format_title_text($title)); // order IS important!
+    $this->set('title', format_title_text($title), FALSE); // order IS important!
   }
 
   protected function sanitize_doi($doi = FALSE) {
