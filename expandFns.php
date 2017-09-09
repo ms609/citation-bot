@@ -284,8 +284,8 @@ function inputValue($tag, $form) {
   return false;
 }
 
-function format_title_text($title) {
-  $title = capitalize_title($title, TRUE);
+function format_title_text($title, $capitalize = TRUE) {
+  if ($capitalize) $title = capitalize_title($title, TRUE);
   $title = html_entity_decode($title, null, "UTF-8");
   $title = (mb_substr($title, -1) == ".")
             ? mb_substr($title, 0, -1)
@@ -302,7 +302,11 @@ function format_title_text($title) {
                 "", '{{!}}');
   $in = array("&lt;", "&gt;");
   $out = array("<",		">"			);
-  return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
+  if ($capitalize) {
+    return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
+  } else {
+    return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title))); // order IS important
+  }
 }
 
 function parameters_from_citation($c) {

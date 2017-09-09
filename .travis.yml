@@ -1,0 +1,2 @@
+language: php
+script: phpunit --bootstrap Parameter.php tests/phpunit/ParameterTest.php

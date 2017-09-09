@@ -232,7 +232,7 @@ class Template extends Item {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
             $this->add($param, formatSurname($au[0]));
-            return $this->add(sanitize_string('first' . (substr($param, -1) == '1' ? '1' : ''), formatForename(trim($au[1]))));
+            return $this->add('first' . (substr($param, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
           } else {
             return $this->add($param,sanitize_string($value));
           }
@@ -328,12 +328,13 @@ class Template extends Item {
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if ( sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
+          if ( strcasecmp( (string) $value, "unknown") == 0 ) return false;
           return $this->add($param, format_title_text(sanitize_string($value)));
         }
         return false;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
-          return $this->add($param, format_title_text($value));
+          return $this->add($param, format_title_text($value, FALSE));
         }
         return false;
       case "page": case "pages":
@@ -725,7 +726,7 @@ class Template extends Item {
           $journal_data = preg_replace("~[\s:,;]*$~", "",
                   str_replace(array($match[1], $match[2]), "", $journal_data));
         }
-        $this->add_if_new("journal", $journal_data);
+        if ( strcasecmp( (string) $journal_data, "unknown") !=0 ) $this->add_if_new("journal", format_title_text(sanitize_string($journal_data)));
       } else {
         $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       }
@@ -778,7 +779,7 @@ class Template extends Item {
         echo tag();
         $this->add_if_new("bibcode", (string) $xml->record->bibcode);
         if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
-            $this->add_if_new("title", (string) $xml->record->title);
+            $this->add_if_new("title", format_title_text(sanitize_string( (string) $xml->record->title),FALSE));
         }
         foreach ($xml->record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
@@ -797,7 +798,7 @@ class Template extends Item {
             $this->appendto('id', ' ' . substr($journal_start, 13));
           }
         } else {
-          if (strcasecmp($journal_string[0], "unknown") != 0) $this->add_if_new('journal', $journal_string[0]); // Bibcodes titles are sometimes unknown
+          if (strcasecmp($journal_string[0], "unknown") != 0) $this->add_if_new('journal', format_title_text(sanitize_string($journal_string[0]))); // Bibcodes titles are sometimes unknown
         }
         if ($this->add_if_new('doi', (string) $xml->record->DOI)) {
           $this->expand_by_doi();
@@ -1774,7 +1775,7 @@ class Template extends Item {
 
   protected function format_title($title = FALSE) {
     if (!$title) $title = $this->get('title');
-    $this->set('title', format_title_text($title)); // order IS important!
+    $this->set('title', format_title_text($title), FALSE); // order IS important!
   }
 
   protected function sanitize_doi($doi = FALSE) {
