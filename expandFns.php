@@ -52,8 +52,8 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 #ob_start(); //Faster, but output is saved until page finshed.
 ini_set("memory_limit", "256M");
 
-$fastMode = isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : false;
-define("slow_mode", isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : false);
+define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : false);
+define("SLOW_MODE", isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : false);
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : null;
 $bugFix = isset($_REQUEST["bugfix"]) ? $_REQUEST["bugfix"] : null;
 if (isset($_REQUEST["crossrefonly"])) {
@@ -97,6 +97,7 @@ foreach($match[1] as $parameter_name) {
 }
 
 uasort($parameter_list, "ascii_sort");
+define("parameter_list", $parameter_list);
 quiet_echo("done.");
 
 ################ Functions ##############
