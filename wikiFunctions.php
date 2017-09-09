@@ -351,8 +351,7 @@ function load_xml_via_bot($vars) {
 function touch_page($page) {
   $text = getRawWikiText($page);
   if ($text) {
-    global $editInitiator;
-    write ($page, $text, $editInitiator . " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
+    write ($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
     return true;
   } else {
     return false;

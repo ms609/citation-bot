@@ -25,7 +25,7 @@ Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_t
 ## Structure
 
 Basic structure of a Citation bot script:
-* configure global variables (for instance, `$html_output` will allow or suppress
+* define configuration constants (for instance, `html_output` will allow or suppress
   buffered output)
 * require `expandFns.php`, which will set up the rest of the needed functions and
   global variables

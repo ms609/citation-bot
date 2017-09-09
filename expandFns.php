@@ -7,6 +7,10 @@
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 
+if (!defined("html_output")) {
+  define("html_output", false);
+}  
+
 function quiet_echo($text, $alternate_text = '') {
   global $html_output;
   if ($html_output >= 0)
@@ -43,7 +47,6 @@ require_once(HOME . "credentials/crossref.login");
 */
 
 $crossRefId = CROSSREFUSERNAME;
-$isbnKey = "268OHQMW";
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Optimisation
