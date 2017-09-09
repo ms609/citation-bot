@@ -1,2 +1,4 @@
 language: php
-script: phpunit --bootstrap Parameter.php tests/phpunit/ParameterTest.php
+script: 
+phpunit --bootstrap Parameter.php tests/phpunit/ParameterTest.php
+phpunit --bootstrap constants.php tests/phpunit/constantsTest.php
