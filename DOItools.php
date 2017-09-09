@@ -232,7 +232,7 @@ function pmFullTextUrl($pmid){
 }
 
 function get_data_from_isbn() {
-	global $p, $isbnKey;
+	global $p;
 	$params = array("author"=>"author", "year"=>"year", "publisher"=>"publisher", "location"=>"city", "title"=>"title"/*, "oclc"=>"oclcnum"*/);
 	if (is("author") || is("first") || is("author1") ||
 			is("editor") || is("editor-last") || is("editor-last1") || is("editor1-last")
@@ -255,7 +255,7 @@ function get_data_from_isbn() {
 		if (substr($p["author"][0], 0, 3) == "by ") $p["author"][0] =substr( $p["author"][0], 3);
 		if (preg_match("~\d+~", $p["oclc"][0], $match)) $p["oclc"][0] = $match[0];
 	} else {
-		$xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=isbn&value1=". urlencode($p["isbn"][0]));
+		$xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . isbnKey . "&index1=isbn&value1=". urlencode($p["isbn"][0]));
 		if ($xml->BookList["total_results"] >0){
 			$params = array("title"=>"Title", "author"=>"AuthorsText", "publisher"=>"PublisherText");
 			if (is("author") || is("first") || is("author1") || is("author1")) unset($params["author"]);

@@ -881,8 +881,7 @@ class Template extends Item {
     if ($pm = $this->get('pmid')) $identifier = 'pmid';
     else if ($pm = $this->get('pmc')) $identifier = 'pmc';
     else return false;
-    global $html_output;
-    if ($html_output) {
+    if (html_output) {
       echo "\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
         urlencode($pm) . '" target="_blank">' .
         htmlspecialchars(strtoupper($identifier) . ' ' . $pm) . "</a> for more details" .
@@ -1063,10 +1062,10 @@ class Template extends Item {
     if ($this->blank('isbn') && $this->has('title')) {
       $title = trim($this->get('title'));
       $auth = trim($this->get('author') . $this->get('author1') . ' ' . $this->get('last') . $this->get('last1'));
-      global $isbnKey, $over_isbn_limit;
+      global $over_isbn_limit;
       // TODO: implement over_isbn_limit based on &results=keystats in API
       if ($title && !$over_isbn_limit) {
-        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth));
+        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . isbnKey . "index1=combined&value1=" . urlencode($title . " " . $auth));
         print "\n\nhttp://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
         if ($xml->BookList["total_results"] == 1) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
         if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
