@@ -252,10 +252,10 @@ class Page {
 
   public function allow_bots() {
     // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
-    $user = '(?:Citation|DOI)[ _]bot';
-    if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$user.'.*?)\}\}/iS',$this->text))
+    $bot_username = '(?:Citation|DOI)[ _]bot';
+    if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
       return false;
-    if (preg_match('/\{\{(bots\|allow=all|bots\|allow=.*?'.$user.'.*?)\}\}/iS', $this->text))
+    if (preg_match('/\{\{(bots\|allow=all|bots\|allow=.*?'.$bot_username.'.*?)\}\}/iS', $this->text))
       return true;
     if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $this->text))
       return false;
