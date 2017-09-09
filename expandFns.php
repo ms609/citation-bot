@@ -58,8 +58,6 @@ ini_set("memory_limit", "256M");
 
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : false);
 define("SLOW_MODE", isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : false);
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : null;
-$bugFix = isset($_REQUEST["bugfix"]) ? $_REQUEST["bugfix"] : null;
 if (isset($_REQUEST["crossrefonly"])) {
   $crossRefOnly = true;
 } elseif (isset($_REQUEST["turbo"])) {
@@ -73,7 +71,6 @@ if ($edit || $_GET["doi"] || $_GET["pmid"]) {
   $ON = true;
 }
 
-$editSummaryStart = ($bugFix ? "Double-checking that a [[User talk:Citation bot|bug]] has been fixed. " : "Citations: ");
 
 ob_end_flush();
 

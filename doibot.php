@@ -38,7 +38,7 @@
 ## Set up - including dotDecode array
 define("html_output", TRUE);
 require_once ("expandFns.php");
-
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : null;
 if (is_valid_user($user)) {
   print "Activated by $user\n";
   $edit_summary_end = " | [[User:$user|$user]]";
