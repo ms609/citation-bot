@@ -57,5 +57,19 @@ class ParameterTest extends PHPUnit_Framework_TestCase {
     $parsed_text = $this->template_parse_text_helper($text);
     $this->assertEquals($parsed_text->expand_text(), '{{Cite journal | doi=10.1111/j.1475-4983.2012.01203.x}}'); // It's not "expand_text" that we're testing here.
   }
-
+  public function testGarbageRemoval() {
+    $text = "{{Cite web | pages=10-11| edition = 3rd ed. |journal=My Journal|issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}"
+    $parsed_text = $this->template_parse_text_helper($text);
+    $this->assertEquals($parsed_text->expand_text(), '{{Cite journal| pages=10–11| edition = 3rd | journal=My Journal | issn=1234-4321 }}'); // It's not "expand_text" that we're testing here.
+  }
+  public function testEtAlHandling() {
+    $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}"
+    $parsed_text = $this->template_parse_text_helper($text);
+    $this->assertEquals($parsed_text->expand_text(), '{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}'); // It's not "expand_text" that we're testing here.
+  }
+  public function testGoogleBooksExpansion() {
+    $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}"
+    $parsed_text = $this->template_parse_text_helper($text);
+    $this->assertEquals($parsed_text->expand_text(), '{{Cite book| url=http://books.google.com/?id=SjpSkzjIzfsC| title=Wonderful Life: The Burgess Shale and the Nature of History| isbn=9780393307009| author1=Gould| first1=Stephen Jay| year=1990}}}'); // It's not "expand_text" that we're testing here.
+  }
 }
