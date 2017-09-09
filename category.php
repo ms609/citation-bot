@@ -19,7 +19,6 @@ foreach ($argv as $arg) {
   }
 }
 
-$slow_mode = false;
 $account_suffix='_4'; // Whilst testing
 $account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");

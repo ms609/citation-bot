@@ -737,8 +737,7 @@ class Template extends Item {
 
 
   public function expand_by_adsabs() {
-    global $slow_mode;
-    if ($slow_mode || $this->has('bibcode')) {
+    if (slow_mode || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
       $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
       if ($bibcode = $this->get("bibcode")) {
@@ -1108,8 +1107,7 @@ class Template extends Item {
     if ($meta_tags["citation_authors"]) {
       $new_authors = formatAuthors($meta_tags["citation_authors"], true);
     }
-    global $slow_mode;
-    if ($slow_mode && !$new_pages && !$new_authors) {
+    if (slow_mode && !$new_pages && !$new_authors) {
       echo "\n   - Now scraping web-page.";
       //Initiate cURL resource
       $ch = curl_init();
@@ -1222,9 +1220,8 @@ class Template extends Item {
               $this->process();
             }
           } elseif ($p->param == 'doix') {
-            global $dotEncode, $dotDecode;
             $this->param[$iP]->param = 'doi';
-            $this->param[$iP]->val = str_replace($dotEncode, $dotDecode, $p->val);
+            $this->param[$iP]->val = str_replace(dotEncode, dotDecode, $p->val);
           }
           continue;
         }
@@ -1783,8 +1780,7 @@ class Template extends Item {
       $doi = $this->get('doi');
       if (!$doi) return false;
     }
-    global $pcEncode, $pcDecode, $spurious_whitespace;
-    $this->set('doi', str_replace($spurious_whitespace, '', str_replace($pcEncode, $pcDecode, str_replace(' ', '+', trim(urldecode($doi))))));
+    $this->set('doi', str_replace(pcEncode, pcDecode, str_replace(' ', '+', trim(urldecode($doi)))));
     return true;
   }
 

@@ -44,21 +44,7 @@ require_once(HOME . "credentials/crossref.login");
 
 $crossRefId = CROSSREFUSERNAME;
 $isbnKey = "268OHQMW";
-$alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
 mb_internal_encoding('UTF-8'); // Avoid ??s
-
-//Common replacements
-global $doiIn, $doiOut, $pcDecode, $pcEncode, $dotDecode, $dotEncode;
-$doiIn = array("[", "]", "<", ">", "&#60;!", "-&#62;", "%2F");
-$doiOut = array("&#x5B;", "&#x5D;", "&#60;", "&#62;", "<!", "->", "/");
-
-$pcDecode = array("[", "]", "<", ">");
-$pcEncode = array("&#x5B;", "&#x5D;", "&#60;", "&#62;");
-
-$spurious_whitespace= array(""); // regexp for replacing spurious custom whitespace
-
-$dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
-$dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 
 // Common mistakes that aren't picked up by the levenshtein approach
 $common_mistakes = array

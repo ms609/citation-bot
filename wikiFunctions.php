@@ -34,8 +34,7 @@ function whatTranscludes($template, $namespace=99){
 }
 
 function wikititle_encode($in) {
-  global $dotDecode, $dotEncode;
-  return str_replace($dotDecode, $dotEncode, $in);
+  return str_replace(dotDecode, dotEncode, $in);
 }
 
 function anchorencode($in) {
