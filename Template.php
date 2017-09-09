@@ -188,7 +188,7 @@ class Template extends Item {
   }
 
   public function add_if_new($param, $value) {
-    if ($corrected_spelling = $common_mistakes[$param]) {
+    if ($corrected_spelling = common_mistakes[$param]) {
       $param = $corrected_spelling;
     }
 
@@ -1177,7 +1177,6 @@ class Template extends Item {
   protected function use_unnamed_params() {
     // Load list of parameters used in citation templates.
     //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
-    global $parameter_list;
     if ($this->param) {
       $this->lowercase_parameters();
       $param_occurrences = array();
@@ -1374,7 +1373,7 @@ class Template extends Item {
         }
 
         $shortest = -1;
-        foreach ($parameter_list as $parameter) {
+        foreach (parameter_list as $parameter) {
           $para_len = strlen($parameter);
           if (substr(strtolower($dat), 0, $para_len) == $parameter) {
             $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
@@ -1561,13 +1560,12 @@ class Template extends Item {
   protected function correct_param_spelling() {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
-  global $parameter_list, $common_mistakes;
-  $mistake_corrections = array_values($common_mistakes);
-  $mistake_keys = array_keys($common_mistakes);
+  $mistake_corrections = array_values(common_mistakes);
+  $mistake_keys = array_keys(common_mistakes);
   if ($this->param) foreach ($this->param as $p) {
     $parameters_used[] = $p->param;
   }
-  $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
+  $unused_parameters = ($parameters_used ? array_diff(parameter_list, $parameters_used) : parameter_list);
 
   $i = 0; // FIXME: this would be better as a proper for loop rather than foreach with counter
   foreach ($this->param as $p) {
@@ -1578,7 +1576,7 @@ class Template extends Item {
       continue;
     }
 
-    if ((strlen($p->param) > 0) && !in_array($p->param, $parameter_list)) {
+    if ((strlen($p->param) > 0) && !in_array($p->param, parameter_list)) {
       echo "\n  *  Unrecognised parameter " . htmlspecialchars($p->param);
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
