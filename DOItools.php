@@ -167,11 +167,6 @@ function bubble_p ($a, $b) {
   return ($a["weight"] > $b["weight"]) ? 1 : -1;
 }
 
-function is($key){
-	global $p;
-  return ("" != trim($p[$key][0])) ? true : false;
-}
-
 function dbg($array, $key = false) {
   if(myIP()) {
     if($key) {
