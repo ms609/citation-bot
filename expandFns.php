@@ -295,7 +295,6 @@ function format_title_text($title, $capitalize = TRUE) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $title = sanitize_string($title);
   $iIn = array("<i>","</i>", '<title>', '</title>',
               "From the Cover: ", "|");
   $iOut = array("''","''",'','',
@@ -303,9 +302,9 @@ function format_title_text($title, $capitalize = TRUE) {
   $in = array("&lt;", "&gt;");
   $out = array("<",		">"			);
   if ($capitalize) {
-    return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
+    return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title))))); // order IS important!
   } else {
-    return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title))); // order IS important
+    return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important
   }
 }
 
