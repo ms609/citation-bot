@@ -412,9 +412,6 @@ function straighten_quotes($str) {
   return $str;
 }
 
-/** Format authors according to author = Surname; first= N.E.
- * Requires the global $p
-**/
 function curlSetUp($ch, $url){
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -432,44 +429,6 @@ function equivUrl ($u){
 	str_replace("/links/doi/", "/doi/abs/", str_replace("/citation/", "/abstract/", str_replace("/extract/", "/abstract/", $u))))))))));
 	if (preg_match("~(.*&doi=.*)&~Ui", $db, $db2)) $db = $db2[1];
 	return $db;
-}
-
-function assessUrl($url){
-  echo "assessing URL ";
-	#if (strpos($url, "abstract") >0 || (strpos($url, "/abs") >0 && strpos($url, "adsabs.") === false)) return "abstract page";
-	$ch = curl_init();
-	curlSetUp($ch, str_replace("&amp;", "&", $url));
-	curl_setopt($ch, CURLOPT_NOBODY, 1);
-	curl_setopt($ch, CURLOPT_HEADER, false);
-	curl_exec($ch);
-	switch(curl_getinfo($ch, CURLINFO_HTTP_CODE)){
-		case "404":
-			global $p;
-			return "{{dead link|date=" . date("F Y") . "}}";
-		#case "403": case "401": return "subscription required"; DOesn't work for, e.g. http://arxiv.org/abs/cond-mat/9909293
-	}
-	curl_close($ch);
-	return null;
-}
-
-function testDoi($doi) {
-  # TODO: this function doesn't seem to be used any more.  Where was it called before, and where can it be used now?
-	global $p;
-	echo "<div style='font-size:small; color:#888'>[";
-	if ($p["url"][0]){
-	if (strpos($p["url"][0], "http://dx.doi.org/")===0) return $doi;
-	$ch = curl_init();
-	curlSetup($ch, "http://dx.doi.org/$doi");
-	curl_setopt($ch, CURLOPT_NOBODY, 1);
-	$source = curl_exec($ch);
-	$effectiveUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-	curl_close($ch);
-	echo htmlspecialchars(equivUrl($effectiveUrl)), "] DOI resolves to equivalent of this.<br>",
-	"[", equivUrl($p["url"][0]),"] URL was equivalent to this.</div>";
-	if (equivUrl($effectiveUrl) == equivUrl($p["url"][0]))  return $doi; else return false;
-	}
-	echo "No URL specified]</div>";
-	return false;
 }
 
 function parameterOrder($first, $author) {

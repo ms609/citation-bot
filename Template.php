@@ -1839,6 +1839,24 @@ class Template extends Item {
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
 
+     function assessUrl($url){
+        echo "assessing URL ";
+        #if (strpos($url, "abstract") >0 || (strpos($url, "/abs") >0 && strpos($url, "adsabs.") === false)) return "abstract page";
+        $ch = curl_init();
+        curlSetUp($ch, str_replace("&amp;", "&", $url));
+        curl_setopt($ch, CURLOPT_NOBODY, 1);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_exec($ch);
+        switch(curl_getinfo($ch, CURLINFO_HTTP_CODE)){
+          case "404":
+            global $p;
+            return "{{dead link|date=" . date("F Y") . "}}";
+          #case "403": case "401": return "subscription required"; DOesn't work for, e.g. http://arxiv.org/abs/cond-mat/9909293
+        }
+        curl_close($ch);
+        return null;
+      }
+     
      if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
     {
       echo "\n - Checking that URL is live...";
