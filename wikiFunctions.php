@@ -1,8 +1,5 @@
 <?php
 
-define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
-define ("BRACESPACE", "!BOTCODE-spaceBeforeTheBrace");
-
 function categoryMembers($cat){
   $vars = Array(
     "cmtitle" => "Category:$cat", // Don't URLencode.

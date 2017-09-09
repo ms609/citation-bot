@@ -9,6 +9,8 @@ define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_e
 define("wikiroot", "https://en.wikipedia.org/w/index.php?");
 define("isbnKey", "268OHQMW");
 define("api", "https://en.wikipedia.org/w/api.php"); // wiki's API endpoint
+define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
+define ("BRACESPACE", "!BOTCODE-spaceBeforeTheBrace");
 define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
                     "http://(?:\w+.)?adsabs.harvard.edu",
                     "http://ads.ari.uni-heidelberg.de",
