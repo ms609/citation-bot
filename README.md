@@ -39,11 +39,10 @@ A quick tour of the main files:
    appears to use curl only for https, so the path to curl on Labs must be
    correct or the bot will fail to log in because the request can't reach the
    server.
-* `wikifunctions.php`: more constants and functions, and some functions marked
+* `constants.php`: constants
+* `wikifunctions.php`: functions related to Wikipedia ineractions, including some marked
    as "untested".
-* `DOItools.php`: defines `$bot` (the Snoopy instance), some regexes,
-   capitalization
-* `objects.php`: mix of variables, script, and functions
+* `DOItools.php`: defines `$bot` (the Snoopy instance) and Crossref-related functions
 * `expandFns.php`: sets up needed functions and global variables, requires most
   of the other files listed here
 * `credentials/crossref.login` allows crossref searches.
