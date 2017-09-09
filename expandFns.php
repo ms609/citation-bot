@@ -295,8 +295,8 @@ function format_title_text($title, $capitalize = TRUE) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $iIn = array("<i>","</i>", '<title>', '</title>',"From the Cover: ", "|");
-  $iOut = array("''","''",'','',"", '{{!}}');
+  $iIn = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
+  $iOut = array("''","''",'','',"");
   $in = array("&lt;", "&gt;");
   $out = array("<", ">");
   if ($capitalize) $title = capitalize_title($title);
