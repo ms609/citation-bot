@@ -415,60 +415,6 @@ function straighten_quotes($str) {
 /** Format authors according to author = Surname; first= N.E.
  * Requires the global $p
 **/
-function citeDoiOutputFormat() {
-  global $p;
-  unset ($p['']);
-
-  // Check that DOI hasn't been urlencoded.  Note that the doix parameter is decoded and used in step 1.
-  if (strpos($p['doi'][0], ".2F~") && !strpos($p['doi'][0], "/")) {
-    $p['doi'][0] = str_replace(dotEncode, dotDecode, $p['doi'][0]);
-  }
-
-  // Cycle through authors
-  for ($i = null; $i < 100; $i++) {
-    if (strpos($p["author$i"][0], ', ')) {
-      // $au is an array with two parameters: the surname [0] and forename [1].
-      $au = explode(', ', $p["author$i"][0]);
-      unset($p["author$i"]);
-      set("author$i", formatSurname($au[0])); // i.e. drop the forename; this is safe in $au[1]
-    } else if (is("first$i")) {
-      $au[1] = $p["first$i"][0];
-    } else {
-       unset($au);
-    }
-    if ($au[1]) {
-      if ($au[1] == mb_strtoupper($au[1]) && mb_strlen($au[1]) < 4) {
-        // Try to separate Smith, LE for Smith, Le.
-        $au[1] = preg_replace("~([A-Z])[\s\.]*~u", "$1.", $au[1]);
-      }
-      if (trim(mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1]))))
-              != trim($p["first$i"][0])) {
-        // Don't try to modify if we don't need to change
-        set("first$i", mb_strtoupper(preg_replace("~(\w)[a-z]*.? ?~u", "$1. ", trim($au[1])))); // Replace names with initials; beware hyphenated names!
-      }
-      if (strpos($p["first$i"][1], "\n") !== false || (!$p["first$i"][1] && $p["first$i"][0])) {
-        $p["first$i"][1] = " | "; // We don't want a new line for first names, it takes up too much space
-      }
-      if (is("author$i")) {
-        $p["author$i"][1] = "\n| "; // hard-coding first$i will change the default for author$i.
-      }
-    }
-  }
-  if ($p['pages'][0]) {
-    // Format pages to R100-R102 format
-    if (preg_match("~([A-Za-z0-9]+)[^A-Za-z0-9]+([A-Za-z0-9]+)~", $p['pages'][0], $pp)) {
-       if (strlen($pp[1]) > strlen($pp[2])) {
-          // The end page range must be truncated
-          $p['pages'][0] = str_replace("!!!DELETE!!!", "", preg_replace("~([A-Za-z0-9]+[^A-Za-z0-9]+)[A-Za-z0-9]+~",
-                                        ("$1!!!DELETE!!!"
-                                        . substr($pp[1], 0, strlen($pp[1]) - strlen($pp[2]))
-                                        . $pp[2]), $p['pages'][0]));
-       }
-    }
-  }
-  //uksort($p, parameterOrder);
-}
-
 function curlSetUp($ch, $url){
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -478,32 +424,6 @@ function curlSetUp($ch, $url){
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
 	curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
 	curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
-}
-
-function get_all_meta_tags($url){
-	if (preg_match("~http://www\.pubmedcentral\.nih\.gov/articlerender\.fcgi\?artinstid=(\d*)~", $url, $pmc)) $return["pmc"]=$pmc[1];
-	$ch = curl_init();
-	curlSetUp($ch, $url);
-	curl_setopt($ch, CURLOPT_HEADER,true);
-	$pageText = curl_exec($ch);
-	preg_match_all("~<meta name=\"dc\.Creator\" content=\"([^\"]*)\"~", $pageText, $creators);
-	preg_match("~<meta name=['\"]citation_pmid[\"'] content=['\"](\d+)['\"]~", $pageText, $pmid);
-	if ($creators[1][1]){
-		foreach ($creators[1] as $aut){
-			if (mb_strtoupper($aut) == $aut) {
-				$return["author"] .= " " . ucwords(str_replace(",", ", ", mb_strtolower($aut))) . ";";
-			} else {
-				$aut = preg_split("~([A-Z])~", $aut, null,PREG_SPLIT_DELIM_CAPTURE);
-				$count = count($aut);
-				for ($i = 0; $i <= $count; $i+=2) $return["author"] .= $aut[$i] . (isset($aut[$i+1])?" ":"") . $aut[$i+1];
-				$return["author"] .= ";";
-			}
-		}
-		$return["author"] = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), trim(substr($return["author"], 0, strlen($return["author"])-1)));
-	}
-	if (isset($pmid[1])) $return["pmid"] = $pmid[1];
-	curl_close($ch);
-	return $return;
 }
 
 function equivUrl ($u){
