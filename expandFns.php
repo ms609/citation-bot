@@ -8,12 +8,11 @@
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 
 if (!defined("html_output")) {
-  define("html_output", false);
+  define("html_output", -1);
 }  
 
 function quiet_echo($text, $alternate_text = '') {
-  global $html_output;
-  if ($html_output >= 0)
+  if (html_output >= 0)
     echo $text;
   else
     echo $alternate_text;
@@ -66,8 +65,9 @@ if (isset($_REQUEST["crossrefonly"])) {
 }
 $edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : null;
 
-if ($edit || $_GET["doi"] || $_GET["pmid"])
+if ($edit || $_GET["doi"] || $_GET["pmid"]) {
   $ON = true;
+}
 
 $editSummaryStart = ($bugFix ? "Double-checking that a [[User talk:Citation bot|bug]] has been fixed. " : "Citations: ");
 
@@ -208,137 +208,6 @@ function format_title_text($title, $capitalize = TRUE) {
   }
 }
 
-function parameters_from_citation($c) {
-  // Comments
-  global $comments, $comment_placeholders;
-  $i = 0;
-  while(preg_match("~<!--.*?-->~", $c, $match)) {
-    $comments[] = $match[0];
-    $comment_placeholders[] = sprintf(comment_placeholder, $i);
-    $c = str_replace($match[0], $comment_placeholders[$i++], $c);
-  }
-  while (preg_match("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", $c)) {
-    $c = preg_replace("~(?<=\{\{)([^\{\}]*)\|(?=[^\{\}]*\}\})~", "$1" . PIPE_PLACEHOLDER, $c);
-  }
-  // Split citation into parameters
-  $parts = preg_split("~([\n\s]*\|[\n\s]*)([\w\d-_]*)(\s*= *)~", $c, -1, PREG_SPLIT_DELIM_CAPTURE);
-  $partsLimit = count($parts);
-  if (strpos($parts[0], "|") > 0
-          && strpos($parts[0], "[[") === FALSE
-          && strpos($parts[0], "{{") === FALSE
-  ) {
-    $p["unused_data"][0] = substr($parts[0], strpos($parts[0], "|") + 1);
-  }
-  for ($partsI = 1; $partsI <= $partsLimit; $partsI += 4) {
-    $value = $parts[$partsI + 3];
-    $pipePos = strpos($value, "|");
-    if ($pipePos > 0 && strpos($value, "[[") === false & strpos($value, "{{") === FALSE) {
-      // There are two "parameters" on one line.  One must be missing an equals.
-      switch (strtolower($parts[$partsI + 1])) {
-        case 'title': 
-          $value = str_replace('|', '&#124;', $value);
-          break;
-        case 'url':
-          $value = str_replace('|', '%7C', $value);
-          break;
-        default:
-        $p["unused_data"][0] .= " " . substr($value, $pipePos);
-        $value = substr($value, 0, $pipePos);
-      }
-    }
-    // Load each line into $p[param][0123]
-    $weight += 32;
-    $p[strtolower($parts[$partsI + 1])] = Array($value, $parts[$partsI], $parts[$partsI + 2], "weight" => $weight); // Param = value, pipe, equals
-  }
-  return $p;
-}
-
-function reassemble_citation($p, $sort = false) {
-  global $comments, $comment_placeholders, $pStart, $modifications;
-  // Load an exemplar pipe and equals symbol to deduce the parameter spacing, so that new parameters match the existing format
-  foreach ($p as $oP) {
-    $pipe = $oP[1] ? $oP[1] : null;
-    $equals = $oP[2] ? $oP[2] : null;
-    if ($pipe)
-      break;
-  }
-  if (!$pipe) $pipe = "\n | ";
-  if (!$equals) $equals = " = ";
-  if ($sort) {
-    echo "\n (sorting parameters)";
-    uasort($p, "bubble_p");
-  }
-
-  foreach ($p as $param => $v) {
-    $val = trim(str_replace($comment_placeholders, $comments, $v[0]));
-    if ($param == 'unused_data') {
-      $cText .= ($v[1] ? $v[1] : $pipe) . $val;
-    } elseif ($param) {
-      $this_equals = ($v[2] ? $v[2] : $equals);
-      if (trim($v[0]) && preg_match("~[\r\n]~", $this_equals)) {
-        $this_equals = preg_replace("~[\r\n]+\s*$~", "", $this_equals);
-        $nline = "\r\n";
-      } else {
-        $nline = null;
-      }
-      $cText .= ( $v[1] ? $v[1] : $pipe)
-              . $param
-              . $this_equals
-              . str_replace(array(PIPE_PLACEHOLDER, "\r", "\n"), array("|", "", " "), $val)
-              . $nline;
-    }
-    if (is($param)) {
-      $pEnd[$param] = $v[0];
-    }
-  }
-  if ($pEnd) {
-    foreach ($pEnd as $param => $value) {
-      if (!$pStart[$param]) {
-        $modifications["additions"][$param] = true;
-      } elseif ($pStart[$param] != $value) {
-        $modifications["changes"][$param] = true;
-      }
-    }
-  }
-  return $cText;
-}
-
-function loadParam($param, $value, $equals, $pipe, $weight) {
-  global $p;
-  $param = strtolower(trim(str_replace("DUPLICATE DATA:", "", $param)));
-  if ($param == "unused_data") {
-    $value = trim(str_replace("DUPLICATE DATA:", "", $value));
-  }
-  if (is($param)) {
-    if (substr($param, strlen($param) - 1) > 0 && trim($value) != trim($p[$param][0])) {
-      // Add one to last1 to create last2
-      $param = substr($param, 0, strlen($param) - 1) . (substr($param, strlen($param) - 1) + 1);
-    } else {
-      // Parameter already exists
-      if ($param != "unused_data" && $p[$param][0] != $value) {
-        // If they have different values, best keep them; if not: discard the exact duplicate!
-        $param = "DUPLICATE DATA: $param";
-      }
-    }
-  }
-  $p[$param] = Array($value, $equals, $pipe, "weight" => ($weight + 3) / 4 * 10); // weight will be 10, 20, 30, 40 ...
-}
-
-// $comments should be an array, with the original comment content.
-// $placeholder will be prepended to the comment number in the sprintf to comment_placeholder's %s.
-function replace_comments($text, $comments, $placeholder = "") {
-  foreach ($comments as $i => $comment) {
-    $text = str_replace(sprintf(comment_placeholder, $placeholder . $i), $comment, $text);
-  }
-  return $text;
-}
-
-function trim_identifier($id) {
-  $cruft = "[\.,;:><\s]*";
-  preg_match("~^$cruft(?:d?o?i?:)?\s*(.*?)$cruft$~", $id, $match);
-  return $match[1];
-}
-
 function remove_accents($input) {
   $search = explode(",", "ç,æ,,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
   $replace = explode(",", "c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u");
@@ -350,13 +219,6 @@ function under_two_authors($text) {
           || substr_count($text, ',') > 1  //if there is more than one comma
           || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
           );
-}
-
-// returns the surname of the authors.
-function authorify($author) {
-  $author = preg_replace("~[^\s\w]|\b\w\b|[\d\-]|\band\s+~", "", normalize_special_characters(html_entity_decode(urldecode($author), ENT_COMPAT, "UTF-8")));
-  $author = preg_match("~[a-z]~", $author) ? preg_replace("~\b[A-Z]+\b~", "", $author) : strtolower($author);
-  return $author;
 }
 
 function sanitize_string($str) {
@@ -388,38 +250,6 @@ function prior_parameters($par, $list=array()) {
     case 'pmc':       return prior_parameters('pmid', $list);
     default: return $list;
   }
-}
-
-// Function from http://stackoverflow.com/questions/1890854
-// Modified to expect utf8-encoded string
-function normalize_special_characters($str) {
-  $str = utf8_decode($str);
-  # Quotes cleanup
-  $str = ereg_replace(chr(ord("`")), "'", $str);        # `
-  $str = ereg_replace(chr(ord("´")), "'", $str);        # ´
-  $str = ereg_replace(chr(ord("")), ",", $str);        # 
-  $str = ereg_replace(chr(ord("`")), "'", $str);        # `
-  $str = ereg_replace(chr(ord("´")), "'", $str);        # ´
-  $str = ereg_replace(chr(ord("")), "\"", $str);        # 
-  $str = ereg_replace(chr(ord("")), "\"", $str);        # 
-  $str = ereg_replace(chr(ord("´")), "'", $str);        # ´
-
-  $unwanted_array = array('' => 'S', '' => 's', '' => 'Z', '' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
-      'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
-      'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
-      'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
-      'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y');
-  $str = strtr($str, $unwanted_array);
-
-# Bullets, dashes, and trademarks
-  $str = ereg_replace(chr(149), "&#8226;", $str);    # bullet 
-  $str = ereg_replace(chr(150), "&ndash;", $str);    # en dash
-  $str = ereg_replace(chr(151), "&mdash;", $str);    # em dash
-  $str = ereg_replace(chr(153), "&#8482;", $str);    # trademark
-  $str = ereg_replace(chr(169), "&copy;", $str);    # copyright mark
-  $str = ereg_replace(chr(174), "&reg;", $str);        # registration mark
-
-  return utf8_encode($str);
 }
 
 function ascii_sort($val_1, $val_2) {
