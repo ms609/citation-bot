@@ -1,4 +1,6 @@
 language: php
+php:
+  - 7.0.0
 script:
   - phpunit --bootstrap Parameter.php tests/phpunit/ParameterTest.php
   - phpunit --bootstrap constants.php tests/phpunit/constantsTest.php
