@@ -98,7 +98,7 @@ class Template extends Item {
         $this->citation_template = TRUE;
 
         // If the et al. is from added parameters, go ahead and handle
-        # if (!$this->initial_author_parameters) {
+        # if (!$this->initial_author_parameters) { // This property does not seem to be sent anywhere
           $this->handle_et_al();
         #}
 
@@ -1373,7 +1373,8 @@ class Template extends Item {
         }
 
         $shortest = -1;
-        foreach (parameter_list as $parameter) {
+        $parameter_list = PARAMETER_LIST;
+        foreach ($parameter_list as $parameter) {
           $para_len = strlen($parameter);
           if (substr(strtolower($dat), 0, $para_len) == $parameter) {
             $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
@@ -1565,7 +1566,8 @@ class Template extends Item {
   if ($this->param) foreach ($this->param as $p) {
     $parameters_used[] = $p->param;
   }
-  $unused_parameters = ($parameters_used ? array_diff(parameter_list, $parameters_used) : parameter_list);
+  $parameter_list = PARAMETER_LIST;
+  $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
   $i = 0; // FIXME: this would be better as a proper for loop rather than foreach with counter
   foreach ($this->param as $p) {
@@ -1576,7 +1578,7 @@ class Template extends Item {
       continue;
     }
 
-    if ((strlen($p->param) > 0) && !in_array($p->param, parameter_list)) {
+    if ((strlen($p->param) > 0) && !in_array($p->param, PARAMETER_LIST)) {
       echo "\n  *  Unrecognised parameter " . htmlspecialchars($p->param);
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
