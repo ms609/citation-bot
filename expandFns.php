@@ -70,10 +70,7 @@ if ($edit || isset($_GET["doi"]) || isset($_GET["pmid"])) {
   $ON = true;
 }
 
-
-ob_end_flush();
-
-################ Functions ##############
+s################ Functions ##############
 
 function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
   // if the bot is trying to connect to the defunct toolserver
