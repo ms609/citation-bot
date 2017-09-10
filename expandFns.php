@@ -66,7 +66,7 @@ if (isset($_REQUEST["crossrefonly"])) {
 }
 $edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : null;
 
-if ($edit || $_GET["doi"] || $_GET["pmid"]) {
+if ($edit || isset($_GET["doi"]) || isset($_GET["pmid"])) {
   $ON = true;
 }
 
