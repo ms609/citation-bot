@@ -285,8 +285,7 @@ function inputValue($tag, $form) {
 }
 
 function format_title_text($title, $capitalize = TRUE) {
-  $title = sanitize_string($title);
-  if ($capitalize) $title = capitalize_title($title, TRUE);
+  if ($capitalize) $title = capitalize_title($title);
   $title = html_entity_decode($title, null, "UTF-8");
   $title = (mb_substr($title, -1) == ".")
             ? mb_substr($title, 0, -1)
@@ -296,18 +295,14 @@ function format_title_text($title, $capitalize = TRUE) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $iIn = array("<i>","</i>", '<title>', '</title>',
-              "From the Cover: ", "|");
-  $iOut = array("''","''",'','',
-                "", '{{!}}');
+  $iIn = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
+  $iOut = array("''","''",'','',"");
   $in = array("&lt;", "&gt;");
-  $out = array("<",		">"			);
-  if ($capitalize) {
-    return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, capitalize_title($title)))); // order IS important!
-  } else {
-    return(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title))); // order IS important
-  }
+  $out = array("<", ">");
+  if ($capitalize) $title = capitalize_title($title);
+  return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important!
 }
+
 
 function parameters_from_citation($c) {
   // Comments
