@@ -2,6 +2,6 @@ language: php
 php:
   - '7.0'
 script:
-  - phpunit --bootstrap Template.php tests/phpunit/TemplateTest.php
+  - phpunit --bootstrap expandFns.php tests/phpunit/TemplateTest.php
   - phpunit --bootstrap constants.php tests/phpunit/constantsTest.php
   - phpunit --bootstrap Parameter.php tests/phpunit/ParameterTest.php
