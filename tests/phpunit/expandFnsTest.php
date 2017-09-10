@@ -7,25 +7,27 @@
 class expandFnsTest extends PHPUnit_Framework_TestCase {
 
   protected function setUp() {
-    if (!defined("PIPE_PLACEHOLDER")) {
-// this is usually done elsewhere in the code
-      define("PIPE_PLACEHOLDER", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
-    }
   }
 
   protected function tearDown() {
   }
   
-  protected function template_parse_text_helper($text) {
+  protected function page_parse_text_helper($text) {
     $page = new Page();
     $page->parse_text($text);
     return $page;
+  }
+  protected function template_parse_text_helper($text) {
+    $template = new Template();
+    $template->parse_text($text);
+    $template->process();
+    return $template;
   }
   
   public function testUseUnusedData() {
     $text = "{{Cite web | http://google.com | editor1link=test | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}"
     $parsed_text = $this->template_parse_text_helper($text);
-    $this->assertEquals($parsed_text->expand_text(), '{{Cite web | url = http://google.com | editor1-link=test | title =  I am a title | author = Other, A. N. | issue = 9 | volume = 22 | pages = 5-6 }}');
+    $this->assertEquals($parsed_text->parsed_text(), '{{Cite web | url = http://google.com | editor1-link=test | title =  I am a title | author = Other, A. N. | issue = 9 | volume = 22 | pages = 5-6 }}');
   }
   public function testJstorExpansion() {
     $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true}}"
