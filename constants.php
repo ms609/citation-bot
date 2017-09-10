@@ -804,7 +804,7 @@ function ascii_sort($val_1, $val_2) {
   return $return;
 }
 
-define('PARAMETER_LIST', uasort($PARAMETER_LIST, "ascii_sort"));
+define('PARAMETER_LIST', uasort($parameter_list, "ascii_sort"));
 
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
 #define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
