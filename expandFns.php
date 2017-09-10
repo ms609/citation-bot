@@ -223,7 +223,7 @@ function capitalize_title($in, $sents = TRUE, $could_be_italics = TRUE) {
           'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'), $newcase);
   // Use 'straight quotes' per WP:MOS
   $newcase = straighten_quotes($newcase);
-  if (in_array(" " . trim($newcase) . " ", $unCapped)) {
+  if (in_array(" " . trim($newcase) . " ", unCapped)) {
     // Keep "z/Journal" with lcfirst
     return $newcase;
   } else {

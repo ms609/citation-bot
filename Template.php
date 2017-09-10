@@ -98,9 +98,9 @@ class Template extends Item {
         $this->citation_template = TRUE;
 
         // If the et al. is from added parameters, go ahead and handle
-        if (!$this->initial_author_parameters) {
+        # if (!$this->initial_author_parameters) {
           $this->handle_et_al();
-        }
+        #}
 
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
@@ -130,9 +130,9 @@ class Template extends Item {
         // TODO: Check for the doi-inline template in the title
 
         // If the et al. is from added parameters, go ahead and handle
-        if (!$this->initial_author_params) {
+        #if (!$this->initial_author_params) { // This parameter seems not to be set anywhere
           $this->handle_et_al();
-        }
+        #}
 
         $this->correct_param_spelling();
         $this->expand_by_pubmed(); //partly to try to find DOI
@@ -1220,7 +1220,7 @@ class Template extends Item {
         }
         $dat = $p->val;
         $endnote_test = explode("\n%", "\n" . $dat);
-        if ($endnote_test[1]) {
+        if (isset($endnote_test[1])) {
           foreach ($endnote_test as $endnote_line) {
             switch ($endnote_line[0]) {
               case "A": $endnote_authors++; $endnote_parameter = "author$endnote_authors";        break;
@@ -1979,9 +1979,9 @@ class Template extends Item {
   }
   public function set($par, $val) {
     if (($pos = $this->get_param_position($par)) !== NULL) return $this->param[$pos]->val = $val;
-    if ($this->param[0]) {
+    if (isset($this->param[0])) {
       $p = new Parameter;
-      $p->parse_text($this->param[$this->param[1] ? 1 : 0]->parsed_text()); // Use second param if present, in case first pair is last1 = Smith | first1 = J.\n
+      $p->parse_text($this->param[isset($this->param[1]) ? 1 : 0]->parsed_text()); // Use second param if present, in case first pair is last1 = Smith | first1 = J.\n
     } else {
       $p = new Parameter;
       $p->parse_text('| param = val');
