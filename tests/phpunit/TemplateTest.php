@@ -1,10 +1,10 @@
 <?php
 
 /*
- * Tests for Template.php.
+ * Tests for Template.php, called from expandFns.php.
  */
 
-class TemplateTest extends PHPUnit_Framework_TestCase {
+class expandFnsTest extends PHPUnit_Framework_TestCase {
 
   protected function setUp() {
     if (!defined("PIPE_PLACEHOLDER")) {
