@@ -49,7 +49,8 @@ class Parameter {
   protected function parse_val($value) {
     switch ($this->param) {
       case 'pages':
-        $this->val = mb_ereg_replace(to_en_dash, en_dash, $value);
+        if ( !preg_match("/http/i", $value)) $value = mb_ereg_replace(to_en_dash, en_dash, $value);
+        $this->val = $value;
       break;
       default: $this->val = $value;
     }
