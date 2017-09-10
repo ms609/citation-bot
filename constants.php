@@ -790,6 +790,20 @@ $parameter_list = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID',
  'inventor17-first', 'inventor18-first', 'inventor19-first', 'inventor20-first', 'inventor21-first',
  'inventor22-first', 'inventor23-first', 'inventor24-first', 'inventor25-first', 'inventor26-first',
  'inventor27-first', 'inventor28-first', 'inventor29-first', 'inventor30-first');
+ 
+function ascii_sort($val_1, $val_2) {
+  $return = 0;
+  $len_1 = strlen($val_1);
+  $len_2 = strlen($val_2);
+
+  if ($len_1 > $len_2) {
+    $return = -1;
+  } else if ($len_1 < $len_2) {
+    $return = 1;
+  }
+  return $return;
+}
+
 define('parameter_list', uasort($parameter_list, "ascii_sort"));
 
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");

@@ -284,18 +284,4 @@ function prior_parameters($par, $list=array()) {
     default: return $list;
   }
 }
-
-function ascii_sort($val_1, $val_2) {
-  $return = 0;
-  $len_1 = strlen($val_1);
-  $len_2 = strlen($val_2);
-
-  if ($len_1 > $len_2) {
-    $return = -1;
-  } else if ($len_1 < $len_2) {
-    $return = 1;
-  }
-  return $return;
-}
-
 ?>
