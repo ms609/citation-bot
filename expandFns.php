@@ -19,7 +19,6 @@ function quiet_echo($text, $alternate_text = '') {
 }
 
 require_once("constants.php");
-require_once(HOME . "credentials/doiBot.login");
 # Snoopy's ini files should be modified so the host name is en.wikipedia.org.
 require_once("Snoopy.class.php");
 require_once("DOItools.php");
@@ -73,9 +72,6 @@ if ($edit || $_GET["doi"] || $_GET["pmid"]) {
 
 
 ob_end_flush();
-
-quiet_echo("\n Establishing connection to Wikipedia servers with username " . USERNAME . "... ");
-logIn(USERNAME, PASSWORD);
 
 ################ Functions ##############
 

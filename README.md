@@ -46,6 +46,7 @@ A quick tour of the main files:
 * `expandFns.php`: sets up needed functions and global variables, requires most
   of the other files listed here
 * `credentials/crossref.login` allows crossref searches.
+* `logIn.php`: Logs the bot in to Wikipedia servers
 
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
