@@ -994,6 +994,9 @@ class Template extends Item {
   protected function expand_by_google_books() {
     $url = $this->get('url');
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
+      $removed_redundant = 0;
+      $hash = '';
+      
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
         $url = $url_parts[0];
