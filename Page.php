@@ -61,6 +61,16 @@ class Page {
     }
   }
 
+  public function parse_text($text) { // used in testing context.
+    $this->text = $text;
+    $this->start_text = $this->text;
+    $this->modifications = array();
+  }
+  
+  public function parsed_text() {
+    return $this->text;
+  }
+  
   public function expand_text() {
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
