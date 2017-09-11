@@ -63,13 +63,10 @@ class Template extends Item {
   }
 
   public function lowercase_parameters() {
-    $n_params = count($this->param);
-    if ($n_params == 0) {
-      return;
-    }
     if (is_array($this->param)) {
-      for ($i=0; $i < $n_params; $i++) {
-        $this->param[$i]->param = strtolower($this->param[$i]->param);
+      $keys = array_keys($this->param);
+      for ($i=0; $i < count($keys); $i++) {
+        $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
       }
     } else {
       $this->param = strtolower($this->param);
