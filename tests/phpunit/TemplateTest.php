@@ -67,7 +67,7 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
   public function testAmazonExpansion() {
     $text = "{{Cite web | http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20}}";
     $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded_citation->wikiname());
+    $this->assertEquals('cite book', $expanded_citation->wikiname());
     $this->assertEquals('0226845494', $expanded_citation->get('asin'));
   }
   
@@ -78,16 +78,16 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($expanded_citation->get('doi'), '10.1111/j.1475-4983.2012.01203.x');
   }
   
-  public function testGarbageRemoval() {
+  public function testGarbageRemovalAndSpacing() {
     $text = "{{Cite web | pages=10-11| edition = 3rd ed. |journal=My Journal|issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
     $parsed_text = $this->process_citation($text);
-    $this->assertEquals($parsed_text->parsed_text(), '{{Cite journal| pages=10–11| edition = 3rd | journal=My Journal | issn=1234-4321 }}');
+    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd | journal=My Journal | issn=1234-4321 }}', $parsed_text->parsed_text());
   }
   
   public function testEtAlHandlingAndSpaceRetention() {
     $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";
     $parsed_text = $this->process_citation($text);
-    $this->assertEquals($parsed_text->parsed_text(), '{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}'); 
+    $this->assertEquals('{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}', $parsed_text->parsed_text()); 
   }
   
   public function testGoogleBooksExpansion() {
