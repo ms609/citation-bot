@@ -1194,6 +1194,7 @@ class Template extends Item {
     $param_occurrences = array();
     $duplicated_parameters = array();
     $duplicate_identical = array();
+    
     foreach ($this->param as $pointer => $par) {
       if ($par->param && isset($param_occurrences[$par->param])) {
         $duplicate_pos = $param_occurrences[$par->param];
@@ -1202,7 +1203,9 @@ class Template extends Item {
       }
       $param_occurrences[$par->param] = $pointer;
     }
+    
     $n_dup_params = count($duplicated_parameters);
+    
     for ($i = 0; $i < $n_dup_params; $i++) {
       if ($duplicate_identical[$i]) {
         echo "\n * Deleting identical duplicate of parameter: " .
@@ -1215,18 +1218,19 @@ class Template extends Item {
           htmlspecialchars($duplicated_parameters[$i]->param) . "\n";
       }
     }
-    foreach ($this->param as $iP => $p) {
+    
+    foreach ($this->param as $param_index => $p) {
       if (!empty($p->param)) {
         if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-          $this->param[$iP]->val = $p->param . '=' . $p->val;
-          $this->param[$iP]->param = 'url';
+          $this->param[$param_index]->val = $p->param . '=' . $p->val;
+          $this->param[$param_index]->param = 'url';
           if (stripos($p->val, 'books.google.') !== FALSE) {
             $this->name = 'Cite book';
             $this->process();
           }
         } elseif ($p->param == 'doix') {
-          $this->param[$iP]->param = 'doi';
-          $this->param[$iP]->val = str_replace(dotEncode, dotDecode, $p->val);
+          $this->param[$param_index]->param = 'doi';
+          $this->param[$param_index]->val = str_replace(dotEncode, dotDecode, $p->val);
         }
         continue;
       }
@@ -1335,12 +1339,13 @@ class Template extends Item {
             $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
           }
         }
-
       }
-      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { #Takes priority over more tenative matches
+      
+      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
         $this->set('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
+      
       if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
         foreach ($match[0] as $i => $oMatch) {
           switch (strtolower($match[1][$i])) {
@@ -1364,10 +1369,10 @@ class Template extends Item {
             if ($i) {
               $this->add_if_new($matched_parameter, $match[2][$i]);
             } else {
-              $this->set($matched_parameter, $match[2][0]);
+              $this->add_if_new($matched_parameter, $match[2][0]);
               /* Original code was:
-              $this->param[]->param = $matched_parameter;
-              $this->param[]->val = $match[2][0];
+              $this->param[$param_index]->param = $matched_parameter;
+              $this->param[$param_index]->val = $match[2][0];
               - not sure what this was trying to do.
               Would we prefer add_if_new?
               */
@@ -1396,8 +1401,8 @@ class Template extends Item {
           $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->param[$iP]->param = $parameter;
-          $this->param[$iP]->val = $parameter_value;
+          $this->param[$param_index]->param = $parameter;
+          $this->param[$param_index]->val = $parameter_value;
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
@@ -1465,27 +1470,27 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$iP]->param = $p1;
-            $this->param[$iP]->val = implode(" ", $pAll);
+            $this->param[$param_index]->param = $p1;
+            $this->param[$param_index]->val = implode(" ", $pAll);
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$iP]->param = 'issue';
-            $this->param[$iP]->val = implode(" ", $pAll);
+            $this->param[$param_index]->param = 'issue';
+            $this->param[$param_index]->val = implode(" ", $pAll);
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$iP]->param = 'accessdate';
-            $this->param[$iP]->val = implode(" ", $pAll);
+            $this->param[$param_index]->param = 'accessdate';
+            $this->param[$param_index]->val = implode(" ", $pAll);
           }
           break;
         }
       }
-      if (!trim($dat)) unset($this->param[$iP]);
+      if (!trim($dat)) unset($this->param[$param_index]);
     }
   
   }
