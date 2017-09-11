@@ -1724,8 +1724,12 @@ class Template extends Item {
               echo "\n * Initial authors exist, skipping authorlink in tidy";
             }
             break;
-          case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
-          case 'edition': $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);break; // Don't want 'Edition ed.'
+          case 'journal': case 'periodical': 
+            $p->val = capitalize_title($p->val, FALSE, FALSE); 
+            break;
+          case 'edition': 
+            $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
+            break; // Don't want 'Edition ed.'
           case 'pages': case 'page': case 'issue': case 'year':
             if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
               $this->mod_dashes = TRUE;
@@ -1746,7 +1750,10 @@ class Template extends Item {
       else $this->set('others', $others);
     }
 
-    if ($this->added('journal')) $this->forget('issn');
+    if ($this->added('journal')) {
+      $this->forget('issn');
+      $this->forget('publisher');
+    }
 
     // Remove leading zeroes
     if (!$this->blank('issue') && $this->blank('number')) {
