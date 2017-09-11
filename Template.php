@@ -530,8 +530,10 @@ class Template extends Item {
     $year = $this->get('year');
     $volume = $this->get('volume');
     $page_range = $this->page_range();
-    $start_page = $page_range[1];
-    $end_page = isset($page_range[2]) ? $page_range[2] : null;
+    if ($page_range) {
+      $start_page = $page_range[1];
+      $end_page = isset($page_range[2]) ? $page_range[2] : null;
+    }
     $issn = $this->get('issn');
     $url1 = trim($this->get('url'));
     $input = array($title, $journal, $author, $year, $volume, $start_page, $end_page, $issn, $url1);
