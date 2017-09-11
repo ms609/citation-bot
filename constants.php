@@ -119,8 +119,8 @@ foreach (unCapped as $exclusion) {
   $dontCap[] = mb_convert_case($exclusion, MB_CASE_TITLE, "UTF-8");
 }
 
-define (dontCap, $dontCap);
-
+define ('dontCap', $dontCap);
+const CAPITALIZATION_EXCLUSIONS = $dontCap;
 
 
 const author_parameters = array(
@@ -230,7 +230,7 @@ $flattened_author_params = array();
 foreach (author_parameters as $i => $group) {
   $flattened_author_params = array_merge($flattened_author_params, $group);
 }
-const flattened_author_params = $flattened_author_params;
+define('flattened_author_params', $flattened_author_params);
 
 
 $parameter_list = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID',
