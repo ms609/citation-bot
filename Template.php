@@ -1940,7 +1940,10 @@ class Template extends Item {
     }        
   }
 
-  public function page() {return ($page = $this->get('pages') ? $page : $this->get('page'));}
+  public function page() {
+    $page = $this->get('pages');
+    return ($page ? $page : $this->get('page'));
+  }
 
   public function name() {return trim($this->name);}
 
