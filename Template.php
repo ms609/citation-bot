@@ -1737,7 +1737,8 @@ class Template extends Item {
           case 'pages': case 'page': case 'issue': case 'year':
             if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
               $this->mod_dashes = TRUE;
-              echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) . tag());
+              echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) .
+                    "parameter" . tag());
               $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
             }
             break;
