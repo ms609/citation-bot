@@ -82,8 +82,8 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
   
   public function testEtAlHandlingAndSpaceRetention() {
     $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";
-    $parsed_text = $this->process_citation($text);
-    $this->assertEquals('{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}', $parsed_text->parsed_text()); 
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}', $expanded_citation->parsed_text()); 
   }
   
   public function testGoogleBooksExpansion() {
