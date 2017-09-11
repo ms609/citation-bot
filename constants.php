@@ -113,7 +113,7 @@ const unCapped = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor 
 ' HOAJ biology ', ' ISRN Genetics ', ' iConference ', ' JABS : Journal of Applied Biological Sciences ',
 ' Molecular and Cellular Biology ', ' Ocean Science Journal : OSJ ', ' PALAIOS ', ' PLOS ONE ', ' PNAS ',
 ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', ' The EMBO Journal ', ' Time Out London ',
-' z/Journal ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei '));
+' z/Journal ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ');
 
 foreach (unCapped as $exclusion) {
   $dontCap[] = mb_convert_case($exclusion, MB_CASE_TITLE, "UTF-8");
@@ -224,13 +224,13 @@ const author_parameters = array(
     97 => array('surname97', 'forename97', 'initials97', 'first97', 'last97', 'author97'),
     98 => array('surname98', 'forename98', 'initials98', 'first98', 'last98', 'author98'),
     99 => array('surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99'),
-));
+);
 
 $flattened_author_params = array();
 foreach (author_parameters as $i => $group) {
   $flattened_author_params = array_merge($flattened_author_params, $group);
 }
-define("flattened_author_params", $flattened_author_params);
+const flattened_author_params = $flattened_author_params;
 
 
 $parameter_list = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID',
