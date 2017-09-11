@@ -120,8 +120,6 @@ foreach (unCapped as $exclusion) {
 }
 
 define ('dontCap', $dontCap);
-const CAPITALIZATION_EXCLUSIONS = $dontCap;
-
 
 const author_parameters = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author',
