@@ -194,9 +194,9 @@ class Template extends Item {
     return TRUE;
   }
 
-  public function add_if_new($param, $value) {
-    if (isset(common_mistakes[$param])) {
-      $param = common_mistakes[$param];
+  public function add_if_new($param_name, $value) {
+    if (isset(common_mistakes[$param_name])) {
+      $param_name = common_mistakes[$param_name];
     }
 
     if (trim($value) == "") {
@@ -204,29 +204,29 @@ class Template extends Item {
     }
 
     // If we already have name parameters for author, don't add more
-    if ($this->initial_author_params && in_array($param, flattened_author_params)) {
+    if ($this->initial_author_params && in_array($param_name, flattened_author_params)) {
       return false;
     }
 
-    if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
+    if (substr($param_name, -4) > 0 || substr($param_name, -3) > 0 || substr($param_name, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
       if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', 29);
       return false;
     }
 
-    $auNo = preg_match('~\d+$~', $param, $auNo) ? $auNo[0] : null;        
+    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : null;        
 
-    switch ($param) {
+    switch ($param_name) {
       case "editor": case "editor-last": case "editor-first":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         if ($this->blank('editor') && $this->blank("editor-last") && $this->blank("editor-first")) {
-          return $this->add($param, sanitize_string($value));
+          return $this->add($param_name, sanitize_string($value));
         } else {
           return false;
         }
       case 'editor4': case 'editor4-last': case 'editor4-first':
         $this->add_if_new('displayeditors', 29);
-        return $this->add($param, sanitize_string($value));
+        return $this->add($param_name, sanitize_string($value));
       break;
       case "author": case "author1": case "last1": case "last": case "authors":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
@@ -235,17 +235,17 @@ class Template extends Item {
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
-            $this->add($param, formatSurname($au[0]));
-            return $this->add('first' . (substr($param, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
+            $this->add($param_name, formatSurname($au[0]));
+            return $this->add('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
           } else {
-            return $this->add($param,sanitize_string($value));
+            return $this->add($param_name,sanitize_string($value));
           }
         }
       return false;
       case "first": case "first1":
        $value = straighten_quotes($value);
        if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
-          return $this->add($param,sanitize_string($value));
+          return $this->add($param_name,sanitize_string($value));
       return false;
       case "coauthor":
         echo "\n ! The \"coauthor\" parameter is deprecated. Please replace manually.";
@@ -255,7 +255,7 @@ class Template extends Item {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
-          return $this->add($param,sanitize_string($value));
+          return $this->add($param_name,sanitize_string($value));
           // Note; we shouldn't be using this parameter ever....
       return false;
       case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
@@ -289,12 +289,12 @@ class Template extends Item {
           && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
         ) {
-          if (strpos($value, ',') && substr($param, 0, 3) == 'aut') {
+          if (strpos($value, ',') && substr($param_name, 0, 3) == 'aut') {
             $au = explode(',', $value);
             $this->add('last' . $auNo, formatSurname($au[0]));
             return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
           } else {
-            return $this->add($param,sanitize_string($value));
+            return $this->add($param_name,sanitize_string($value));
           }
         }
         return false;
@@ -310,35 +310,35 @@ class Template extends Item {
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
         $value = straighten_quotes($value);
 
-        if ($this->blank($param)
+        if ($this->blank($param_name)
                 && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
-          return $this->add($param,sanitize_string($value));
+          return $this->add($param_name,sanitize_string($value));
         }
         return false;
       case "date":
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
-          $param = "year";
+          $param_name = "year";
         }
       // Don't break here; we want to go straight in to year;
       case "year":
         if (   ($this->blank("date") || trim(strtolower($this->get('date'))) == "in press")
             && ($this->blank("year") || trim(strtolower($this->get('year'))) == "in press")
           ) {
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         }
         return false;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if ( sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
           if ( strcasecmp( (string) $value, "unknown") == 0 ) return false;
-          return $this->add($param, format_title_text($value));
+          return $this->add($param_name, format_title_text($value));
         }
         return false;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
-          return $this->add($param, format_title_text($value, FALSE));
+          return $this->add($param_name, format_title_text($value, FALSE));
         }
         return false;
       case "page": case "pages":
@@ -350,20 +350,20 @@ class Template extends Item {
                   && !strpos($this->get('pages'), chr(226)) // Also en-dash
                   && !strpos($this->get('pages'), '-')
                   && !strpos($this->get('pages'), '&ndash;'))
-        ) return $this->add($param, sanitize_string($value));
+        ) return $this->add($param_name, sanitize_string($value));
         return false;
       case 'title':
-        if ($this->blank($param)) {
+        if ($this->blank($param_name)) {
           return $this->format_title(sanitize_string($value));
         }
         return false;
       case 'class':
-        if ($this->blank($param) && strpos($this->get('eprint'), '/') === FALSE ) {
-          return $this->add($param, sanitize_string($value));
+        if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE ) {
+          return $this->add($param_name, sanitize_string($value));
         }
         return false;
       case 'doi':
-        if ($this->blank($param) &&  preg_match('~(10\..+)$~', $value, $match)) {
+        if ($this->blank($param_name) &&  preg_match('~(10\..+)$~', $value, $match)) {
           $this->add('doi', $match[0]);
           $this->verify_doi();
           $this->expand_by_doi();
@@ -372,12 +372,12 @@ class Template extends Item {
         return false;
       case 'display-authors': case 'displayauthors':
         if ($this->blank('display-authors') && $this->blank('displayauthors')) {
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         }
       return false;
       case 'display-editors': case 'displayeditors':
         if ($this->blank('display-editors') && $this->blank('displayeditors')) {
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         }
       return false;
       case 'doi-broken-date':
@@ -385,12 +385,12 @@ class Template extends Item {
             $this->blank('doi-broken-date') &&
             $this->blank('doi_inactivedate') &&
             $this->blank('doi-inactive-date')) {
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         }
       return false;
       case 'pmid':
-        if ($this->blank($param)) {
-          $this->add($param, sanitize_string($value));
+        if ($this->blank($param_name)) {
+          $this->add($param_name, sanitize_string($value));
           $this->expand_by_pubmed();
           if ($this->blank('doi')) {
             $this->get_doi_from_crossref();
@@ -401,42 +401,42 @@ class Template extends Item {
       case 'author_separator': case 'author-separator':
         echo "\n ! 'author-separator' is deprecated.";
         if(!trim($value)) {
-          $this->forget($param);
+          $this->forget($param_name);
         } else {
           echo " Please fix manually.";
         }
       return false;
       case 'postscript':
-        if ($this->blank($param)) {
-          return $this->add($param, $value);
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, $value);
         }
       return false;
       case 'issue':
         if ($this->blank("issue") && $this->blank("number")) {        
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         } 
       return false;
       case 'volume':
-        if ($this->blank($param)) {
+        if ($this->blank($param_name)) {
           if ($this->get('journal') == "ZooKeys" ) {
             return $this->add_if_new('issue',$value);// This journal has no volume.  This is really the issue number
           } else {
-            return $this->add($param, $value);
+            return $this->add($param_name, $value);
           }
         }
       return false;
       case 'bibcode':
-        if ($this->blank($param)) { 
+        if ($this->blank($param_name)) { 
           $bibcode_pad = 19 - strlen($value);
           if ($bibcode_pad > 0) {  // Paranoid, don't want a negative value, if bibcodes get longer
             $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
           }
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         } 
       return false;
       default:
-        if ($this->blank($param)) {
-          return $this->add($param, sanitize_string($value));
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
         }
     }
   }
