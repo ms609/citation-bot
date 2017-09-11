@@ -1375,7 +1375,9 @@ class Template extends Item {
           }
         }
       }
-      if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) { //Vol(is):pp
+      
+      // Match vol(iss):pp
+      if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) {
         $this->add_if_new('volume', $match[1]);
         $this->add_if_new('issue' , $match[2]);
         $this->add_if_new('pages' , $match[3]);
@@ -1985,17 +1987,18 @@ class Template extends Item {
 
   public function get($name) {
     // NOTE $this->param and $p->param are different and refer to different types!
-    // $this->param is probably a Parameter object
-    // $p->param is probably the parameter name within the Parameter object
+    // $this->param is an array of Parameter objects
+    // $p->param is the parameter name within the Parameter object
     if ($this->param) {
-      foreach ($this->param as $p) {
-        if ($p->param == $name) {
-          return $p->val;
+      foreach ($this->param as $parameter_i) {
+        if ($parameter_i->param == $name) {
+          return $parameter_i->val;
         }
       }
     }
     return NULL;
   }
+  
   public function get_without_comments($name) {
     $ret = preg_replace('~<!--.*?-->~su', '', $this->get($name));
     return (trim($ret) ? $ret : FALSE);
