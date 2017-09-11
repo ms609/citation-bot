@@ -708,7 +708,7 @@ class Template extends Item {
           $this->add_if_new("author$i", $name);
         }
       }
-      $this->add_if_new("title", (string) $xml->entry->title);
+      $this->add_if_new("title", format_title_text((string) $xml->entry->title), FALSE);
       $this->add_if_new("class", (string) $xml->entry->category["term"]);
       $this->add_if_new("author", substr($authors, 2));
       $this->add_if_new("year", substr($xml->entry->published, 0, 4));
@@ -828,15 +828,15 @@ class Template extends Item {
         echo "\n - Expanding from crossRef record" . tag();
 
         if ($crossRef->volume_title && $this->blank('journal')) {
-          $this->add_if_new('chapter', $crossRef->article_title);
+          $this->add_if_new('chapter', format_title_text($crossRef->article_title,FALSE));
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
             $this->forget('title');
           }
-          $this->add_if_new('title', $crossRef->volume_title);
+          $this->add_if_new('title',  format_title_text($crossRef->volume_title,FALSE));
         } else {
-          $this->add_if_new('title', $crossRef->article_title);
+          $this->add_if_new('title',  format_title_text($crossRef->article_title,FALSE));
         }
-        $this->add_if_new('series', $crossRef->series_title);
+        $this->add_if_new('series',  format_title_text($crossRef->series_title,FALSE));
         $this->add_if_new("year", $crossRef->year);
         if ($this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) && $crossRef->contributors->contributor) {
           $au_i = 0;
@@ -856,7 +856,7 @@ class Template extends Item {
           }
         }
         $this->add_if_new('isbn', $crossRef->isbn);
-        $this->add_if_new('journal', $crossRef->journal_title);
+        $this->add_if_new('journal',  format_title_text($crossRef->journal_title));
         if ($crossRef->volume > 0) $this->add_if_new('volume', $crossRef->volume);
         if ((integer) $crossRef->issue > 1) {
         // "1" may refer to a journal without issue numbers,
@@ -903,10 +903,10 @@ class Template extends Item {
         $this->add_if_new('doi', $match[0]);
       }
       switch ($item["Name"]) {
-                case "Title":   $this->add_if_new('title', str_replace(array("[", "]"), "",(string) $item));
+                case "Title":   $this->add_if_new('title',  format_title_text(str_replace(array("[", "]"), "",(string) $item),FALSE));
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
                                 $this->add_if_new('year', (string) $match[1]);
-        break;  case "FullJournalName": $this->add_if_new('journal', (string) $item);
+        break;  case "FullJournalName": $this->add_if_new('journal',  format_title_text((string) $item));
         break;  case "Volume":  $this->add_if_new('volume', (string) $item);
         break;  case "Issue":   $this->add_if_new('issue', (string) $item);
         break;  case "Pages":   $this->add_if_new('pages', (string) $item);
@@ -1042,9 +1042,9 @@ class Template extends Item {
     );
     $xml = simplexml_load_string($simplified_xml);
     if ($xml->dc___title[1]) {
-      $this->add_if_new("title", str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]));
+      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]),FALSE));
     } else {
-      $this->add_if_new("title", str_replace("___", ":", $xml->title));
+      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->title),FALSE));
     }
     // Possibly contains dud information on occasion
     // $this->add_if_new("publisher", str_replace("___", ":", $xml->dc___publisher)); 
@@ -1677,7 +1677,7 @@ class Template extends Item {
     if ($this->added('title')) {
       $this->format_title();
     } else if ($this->is_modified() && $this->get('title')) {
-      $this->set('title', straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')));
+      $this->set('title', format_title_text(straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title'))),FALSE);
     }
 
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) {
@@ -1726,7 +1726,7 @@ class Template extends Item {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            $p->val = capitalize_title($p->val, FALSE, FALSE); 
+            $p->val = format_title_text(capitalize_title($p->val, FALSE, FALSE));
             break;
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
