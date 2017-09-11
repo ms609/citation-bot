@@ -330,7 +330,7 @@ const flattened_author_params = array('surname', 'forename', 'initials',
 );
 
 
-$parameter_list = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID',
+const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID',
 'ISBN', 'ISBN13', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR', 'OCLC', 'OL', 'OSTI', 'PMC', 'PMID',
 'RFC', 'SSRN', 'URL', 'ZBL', 'Author', 'DoiBroken', 'Editor', 'EditorGiven', 'EditorSurname',
  'Embargo', 'PPPrefix', 'PPrefix', 'Ref', 'Author1', 'Author2', 'Author3', 'Author4', 'Author5',
@@ -887,21 +887,6 @@ $parameter_list = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID',
  'inventor17-first', 'inventor18-first', 'inventor19-first', 'inventor20-first', 'inventor21-first',
  'inventor22-first', 'inventor23-first', 'inventor24-first', 'inventor25-first', 'inventor26-first',
  'inventor27-first', 'inventor28-first', 'inventor29-first', 'inventor30-first');
- 
-function ascii_sort($val_1, $val_2) {
-  $return = 0;
-  $len_1 = strlen($val_1);
-  $len_2 = strlen($val_2);
-
-  if ($len_1 > $len_2) {
-    $return = -1;
-  } else if ($len_1 < $len_2) {
-    $return = 1;
-  }
-  return $return;
-}
-
-const PARAMETER_LIST = uasort($parameter_list, "ascii_sort");
 
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
 #define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
