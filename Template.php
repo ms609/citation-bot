@@ -197,8 +197,8 @@ class Template extends Item {
   }
 
   public function add_if_new($param, $value) {
-    if ($corrected_spelling = common_mistakes[$param]) {
-      $param = $corrected_spelling;
+    if (isset(common_mistakes[$param])) {
+      $param = common_mistakes[$param];
     }
 
     if (trim($value) == "") {
