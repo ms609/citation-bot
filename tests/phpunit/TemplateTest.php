@@ -20,11 +20,10 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testUseUnusedData() {
-    $text = "{{Cite web | http://google.com | editor11ink=test | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
+    $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
     $expanded_citation = $this->process_citation($text);
     $this->assertEquals('cite web',          $expanded_citation->wikiname());
     $this->assertEquals('http://google.com', $expanded_citation->get('url'));
-    $this->assertEquals('test',              $expanded_citation->get('editor1link'));
     $this->assertEquals('I am a title',      $expanded_citation->get('title')); 
     $this->assertEquals('Other, A. N.',      $expanded_citation->get('author'));
     $this->assertEquals('9'           ,      $expanded_citation->get('issue'));
