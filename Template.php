@@ -213,7 +213,7 @@ class Template extends Item {
       return false;
     }
 
-    preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
+    $auNo = preg_match('~\d+$~', $param, $auNo) ? $auNo[0] : null;        
 
     switch ($param) {
       case "editor": case "editor-last": case "editor-first":
