@@ -1344,7 +1344,6 @@ class Template extends Item {
         if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
           foreach ($match[0] as $i => $oMatch) {
             switch (strtolower($match[1][$i])) {
-
               case "vol": case "v": case 'volume':
                 $matched_parameter = "volume";
                 break;
@@ -1365,8 +1364,13 @@ class Template extends Item {
               if ($i) {
                 $this->add_if_new($matched_parameter, $match[2][$i]);
               } else {
+                $this->set($matched_parameter, $match[2][0]);
+                /* Original code was:
                 $this->param[]->param = $matched_parameter;
                 $this->param[]->val = $match[2][0];
+                - not sure what this was trying to do.
+                Would we prefer add_if_new?
+                */
               }
             }
           }
