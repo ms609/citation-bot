@@ -1724,7 +1724,9 @@ class Template extends Item {
               echo "\n * Initial authors exist, skipping authorlink in tidy";
             }
             break;
-          case 'journal': case 'periodical': 
+          case 'journal': 
+            $this->forget('publisher');
+          case 'periodical': 
             $p->val = capitalize_title($p->val, FALSE, FALSE); 
             break;
           case 'edition': 
@@ -1752,7 +1754,6 @@ class Template extends Item {
 
     if ($this->added('journal')) {
       $this->forget('issn');
-      $this->forget('publisher');
     }
 
     // Remove leading zeroes
