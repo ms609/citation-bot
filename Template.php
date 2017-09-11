@@ -245,7 +245,7 @@ class Template extends Item {
       case "first": case "first1":
        $value = straighten_quotes($value);
        if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
-          return $this->add($param_name,sanitize_string($value));
+          return $this->add($param_name, sanitize_string($value));
       return false;
       case "coauthor":
         echo "\n ! The \"coauthor\" parameter is deprecated. Please replace manually.";
@@ -419,7 +419,8 @@ class Template extends Item {
       case 'volume':
         if ($this->blank($param_name)) {
           if ($this->get('journal') == "ZooKeys" ) {
-            return $this->add_if_new('issue',$value);// This journal has no volume.  This is really the issue number
+            // This journal has no volume.  This is really the issue number
+            return $this->add_if_new('issue', $value);
           } else {
             return $this->add($param_name, $value);
           }
@@ -798,7 +799,7 @@ class Template extends Item {
           if (substr($journal_start, 7, 6) == "arxiv:") {
             if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
           } else {
-            $this->appendto('id', ' ' . substr($journal_start, 13));
+            $this->append_to('id', ' ' . substr($journal_start, 13));
           }
         } else {
           if (strcasecmp($journal_string[0], "unknown") != 0) $this->add_if_new('journal', format_title_text($journal_string[0])); // Bibcodes titles are sometimes unknown
@@ -1749,7 +1750,7 @@ class Template extends Item {
     }
 
     if ($others) {
-      if ($this->has('others')) $this->appendto('others', '; ' . $others);
+      if ($this->has('others')) $this->append_to('others', '; ' . $others);
       else $this->set('others', $others);
     }
 
@@ -2004,10 +2005,14 @@ class Template extends Item {
     return (trim($ret) ? $ret : FALSE);
   }
 
-  protected function get_param_position ($needle) {
-    if ($this->param) foreach ($this->param as $i => $p) {
+  protected function get_param_key ($needle) {
+    if (empty($this->param)) return NULL;
+    if (!is_array($this->param)) return NULL; // Maybe the wrong thing to do?
+    
+    foreach ($this->param as $i => $p) {
       if ($p->param == $needle) return $i;
     }
+    
     return NULL;
   }
 
@@ -2018,11 +2023,16 @@ class Template extends Item {
     echo "\n   + Adding $par" .tag();
     return $this->set($par, $val);
   }
+  
   public function set($par, $val) {
-    if (($pos = $this->get_param_position($par)) !== NULL) return $this->param[$pos]->val = $val;
+    if (($pos = $this->get_param_key($par)) !== NULL) {
+      return $this->param[$pos]->val = $val;
+    }
     if (isset($this->param[0])) {
       $p = new Parameter;
-      $p->parse_text($this->param[isset($this->param[1]) ? 1 : 0]->parsed_text()); // Use second param if present, in case first pair is last1 = Smith | first1 = J.\n
+      // Use second param as a template if present, in case first pair 
+      // is last1 = Smith | first1 = J.\n
+      $p->parse_text($this->param[isset($this->param[1]) ? 1 : 0]->parsed_text()); 
     } else {
       $p = new Parameter;
       $p->parse_text('| param = val');
@@ -2030,9 +2040,14 @@ class Template extends Item {
     $p->param = $par;
     $p->val = $val;
     $insert_after = prior_parameters($par);
+    $this->param = array_values($this->param); // Renumber, in case a parameter has been unset
     foreach (array_reverse($insert_after) as $after) {
-      if (($insert_pos = $this->get_param_position($after)) !== NULL) {
-        $this->param = array_merge(array_slice($this->param, 0, $insert_pos + 1), array($p), array_slice($this->param,$insert_pos + 1));
+      if (($insert_key = $this->get_param_key($after)) !== NULL) {
+        
+        $this->param = array_merge(
+          array_slice($this->param, 0, $insert_pos + 1), 
+          array($p), 
+          array_slice($this->param, $insert_pos + 1));
         return true;
       }
     }
@@ -2040,13 +2055,17 @@ class Template extends Item {
     return true;
   }
 
-  public function appendto($par, $val) {
-    if ($pos=$this->get_param_position($par)) return $this->param[$pos]->val = $this->param[$pos]->val . $val;
-    else return $this->set($par, $val);
+  public function append_to($par, $val) {
+    $pos = $this->get_param_key($par);
+    if ($pos) {
+      return $this->param[$pos]->val = $this->param[$pos]->val . $val;
+    } else {
+      return $this->set($par, $val);
+    }
   }
 
   public function forget ($par) {
-    $pos = $this->get_param_position($par);
+    $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
       echo "\n   - Dropping parameter " . htmlspecialchars($par) . tag();
       unset($this->param[$pos]);
