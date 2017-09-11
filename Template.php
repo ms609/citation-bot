@@ -1814,10 +1814,13 @@ class Template extends Item {
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
-    if ($trial) foreach ($trial as $try) {
+    if (isset($trial)) foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
-      if ($this->expand_by_doi($try)) {$this->set('doi', $try); $doi = $try;}
+      if ($this->expand_by_doi($try)) {
+        $this->set('doi', $try);
+        $doi = $try;
+      }
     }
     echo "\n   . Checking that DOI " . htmlspecialchars($doi) . " is operational..." . tag();
     if ($this->query_crossref() === FALSE) {
