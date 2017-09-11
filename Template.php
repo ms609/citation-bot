@@ -2042,12 +2042,11 @@ class Template extends Item {
     $insert_after = prior_parameters($par);
     $this->param = array_values($this->param); // Renumber, in case a parameter has been unset
     foreach (array_reverse($insert_after) as $after) {
-      if (($insert_key = $this->get_param_key($after)) !== NULL) {
-        
+      if (($prior_pos = $this->get_param_key($after)) !== NULL) {
         $this->param = array_merge(
-          array_slice($this->param, 0, $insert_pos + 1), 
+          array_slice($this->param, 0, $prior_pos + 1), 
           array($p), 
-          array_slice($this->param, $insert_pos + 1));
+          array_slice($this->param, $prior_pos + 1));
         return true;
       }
     }
