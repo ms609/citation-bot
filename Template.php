@@ -837,6 +837,8 @@ class Template extends Item {
         $this->add_if_new('series', $crossRef->series_title);
         $this->add_if_new("year", $crossRef->year);
         if ($this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) && $crossRef->contributors->contributor) {
+          $au_i = 0;
+          £ed_i = 0;
           foreach ($crossRef->contributors->contributor as $author) {
             if ($author["contributor_role"] == 'editor') {
               ++$ed_i;
