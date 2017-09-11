@@ -119,7 +119,7 @@ foreach (unCapped as $exclusion) {
   $dontCap[] = mb_convert_case($exclusion, MB_CASE_TITLE, "UTF-8");
 }
 
-const dontCap = $dontCap;
+define (dontCap, $dontCap);
 
 
 
