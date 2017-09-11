@@ -1364,8 +1364,8 @@ class Template extends Item {
               if ($i) {
                 $this->add_if_new($matched_parameter, $match[2][$i]);
               } else {
-                $this->param[$i]->param = $matched_parameter;
-                $this->param[$i]->val = $match[2][0];
+                $this->param[]->param = $matched_parameter;
+                $this->param[]->val = $match[2][0];
               }
             }
           }
