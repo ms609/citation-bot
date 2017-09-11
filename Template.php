@@ -98,6 +98,7 @@ class Template extends Item {
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
           $this->forget('class');
+          $this->forget('publisher');
         }
       break;
       case 'cite book':
