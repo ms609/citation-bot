@@ -1703,35 +1703,36 @@ class Template extends Item {
     }
 
     if ($this->param) foreach ($this->param as $p) {
-      preg_match('~(\D+)(\d*)~', $p->param, $pmatch);
-      switch ($pmatch[1]) {
-        case 'author': case 'authors': case 'last': case 'surname':
-          if (!$this->initial_author_params) {
-            if ($pmatch[2]) {
-              if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
-                $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
-                $p->val = $match[3];
-                echo "\n   ~ Dissecting authorlink" . tag();
+      if (preg_match('~(\D+)(\d*)~', $p->param, $pmatch)) {
+        switch ($pmatch[1]) {
+          case 'author': case 'authors': case 'last': case 'surname':
+            if (!$this->initial_author_params) {
+              if ($pmatch[2]) {
+                if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
+                  $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
+                  $p->val = $match[3];
+                  echo "\n   ~ Dissecting authorlink" . tag();
+                }
+                $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+                if (preg_match($translator_regexp, trim($p->val), $match)) {
+                  $others = "{$match[1]} {$match[5]}";
+                  $p->val = preg_replace($translator_regexp, "", $p->val);
+                }
               }
-              $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
-              if (preg_match($translator_regexp, trim($p->val), $match)) {
-                $others = "{$match[1]} {$match[5]}";
-                $p->val = preg_replace($translator_regexp, "", $p->val);
-              }
+            } else {
+              echo "\n * Initial authors exist, skipping authorlink in tidy";
             }
-          } else {
-            echo "\n * Initial authors exist, skipping authorlink in tidy";
-          }
-          break;
-        case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
-        case 'edition': $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);break; // Don't want 'Edition ed.'
-        case 'pages': case 'page': case 'issue': case 'year':
-          if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
-            $this->mod_dashes = TRUE;
-            echo ( "\n   ~ Upgrading to en-dash in" . htmlspecialchars($p->param) . tag());
-            $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
-          }
-          break;
+            break;
+          case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
+          case 'edition': $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);break; // Don't want 'Edition ed.'
+          case 'pages': case 'page': case 'issue': case 'year':
+            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
+              $this->mod_dashes = TRUE;
+              echo ( "\n   ~ Upgrading to en-dash in" . htmlspecialchars($p->param) . tag());
+              $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
+            }
+            break;
+        }
       }
     }
 
