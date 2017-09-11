@@ -106,7 +106,7 @@ define("common_mistakes", array ( // Common mistakes that aren't picked up by th
 // unCapped is their correct capitalization. Remember to enclose any word in spaces.
 
 
-define("unCapped", array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ',
+const unCapped = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ',
 ' ACM SIGPLAN Notices ', ' ASME AES ', ' ASME MTD ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Neuroforum ', 
 ' Early Modern Japan: an Interdisciplinary Journal ', ' eLife ', ' EMBO J ', ' EMBO J. ', ' EMBO Journal ',
 ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ',
@@ -119,11 +119,11 @@ foreach (unCapped as $exclusion) {
   $dontCap[] = mb_convert_case($exclusion, MB_CASE_TITLE, "UTF-8");
 }
 
-define("dontCap", $dontCap);
+const dontCap = $dontCap;
 
 
 
-define ("author_parameters", array(
+const author_parameters = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author',
                 'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1', 'authors', 'vauthors'),
     2  => array('surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'coauthors', 'coauthor'),
@@ -804,7 +804,7 @@ function ascii_sort($val_1, $val_2) {
   return $return;
 }
 
-define('PARAMETER_LIST', uasort($parameter_list, "ascii_sort"));
+const PARAMETER_LIST = uasort($parameter_list, "ascii_sort");
 
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
 #define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
