@@ -639,6 +639,7 @@ class Template extends Item {
    * return the results as array (first result, # of results)
    * If $check_for_errors is true, it will return 'fasle' on errors returned by pubmed
    */
+    $query = '';
     foreach ($terms as $term) {
       $key_index = array(
         'doi' =>  'AID',
