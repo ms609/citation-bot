@@ -75,9 +75,9 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testGarbageRemovalAndSpacing() {
-    $text = "{{Cite web | pages=10-11| edition = 3rd ed. |journal=My Journal|issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
-    $parsed_text = $this->process_citation($text);
-    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd | journal=My Journal | issn=1234-4321 }}', $parsed_text->parsed_text());
+    $text = "{{Cite web | pages=10-11| edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $expanded_citation->parsed_text());
   }
   
   public function testEtAlHandlingAndSpaceRetention() {
