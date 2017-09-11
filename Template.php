@@ -1366,16 +1366,11 @@ class Template extends Item {
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i) {
-              $this->add_if_new($matched_parameter, $match[2][$i]);
-            } else {
-              $this->add_if_new($matched_parameter, $match[2][0]);
-              /* Original code was:
+            if ($i == 0) { // Use existing parameter slot in first instance
               $this->param[$param_index]->param = $matched_parameter;
               $this->param[$param_index]->val = $match[2][0];
-              - not sure what this was trying to do.
-              Would we prefer add_if_new?
-              */
+            } else { 
+              $this->add_if_new($matched_parameter, $match[2][$i]);
             }
           }
         }
