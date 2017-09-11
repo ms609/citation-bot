@@ -1668,7 +1668,7 @@ class Template extends Item {
     if ($this->added('title')) {
       $this->format_title();
     } else if ($this->is_modified() && $this->get('title')) {
-      $this->set('title', straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')));
+      $this->set('title', format_title_text(straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title'))),FALSE);
     }
 
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) {
@@ -1714,7 +1714,7 @@ class Template extends Item {
             echo "\n * Initial authors exist, skipping authorlink in tidy";
           }
           break;
-        case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
+        case 'journal': case 'periodical': $p->val = format_title_text(capitalize_title($p->val, FALSE, FALSE),FALSE); break;
         case 'edition': $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);break; // Don't want 'Edition ed.'
         case 'pages': case 'page': case 'issue': case 'year':
           if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
