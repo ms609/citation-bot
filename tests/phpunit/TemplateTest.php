@@ -7,10 +7,6 @@
 class expandFnsTest extends PHPUnit_Framework_TestCase {
 
   protected function setUp() {
-    if (!defined("PIPE_PLACEHOLDER")) {
-      // this is usually done elsewhere in the code
-      define("PIPE_PLACEHOLDER", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
-    }
   }
 
   protected function tearDown() {
