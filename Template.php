@@ -1612,8 +1612,7 @@ class Template extends Item {
       // Check the parameter list to find a likely replacement
       $shortest = -1;
       $closest = null;
-      foreach ($unused_parameters as $parameter)
-      {
+      foreach ($unused_parameters as $parameter) {
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {

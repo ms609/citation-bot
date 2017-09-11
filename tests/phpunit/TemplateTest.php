@@ -31,7 +31,8 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
   public function testJstorExpansion() {
     $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true}}";
     $parsed_text = $this->template_parse_text_helper($text);
-    $this->assertEquals($parsed_text->parsed_text(), '{{Cite journal| jstor=1701972}}'); 
+    $this->assertEquals(str_replace(" ", "", $parsed_text->parsed_text()), // Position of spaces doesn't matter
+      '{{Citejournal|jstor=1701972}}'); # 
   }
   public function testPmidExpansion() {
     $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pubmed/1941451?dopt=AbstractPlus}}";
