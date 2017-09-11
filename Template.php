@@ -1928,10 +1928,13 @@ class Template extends Item {
 
   public function first_author() {
     // Fetch the surname of the first author only
-    preg_match("~[^.,;\s]{2,}~u", implode(' ',
+    if (preg_match("~[^.,;\s]{2,}~u", implode(' ',
             array($this->get('author'), $this->get('author1'), $this->get('last'), $this->get('last1')))
-            , $first_author);
-    return $first_author[0];
+            , $first_author)) {
+      return $first_author[0];
+    } else {
+      return null;
+    }        
   }
 
   public function page() {return ($page = $this->get('pages') ? $page : $this->get('page'));}
