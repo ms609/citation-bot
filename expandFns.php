@@ -155,7 +155,6 @@ function inputValue($tag, $form) {
 }
 
 function format_title_text($title, $capitalize = TRUE) {
-  if ($capitalize) $title = capitalize_title($title);
   $title = html_entity_decode($title, null, "UTF-8");
   $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
   $title = (mb_substr($title, -1) == ".")
@@ -170,7 +169,8 @@ function format_title_text($title, $capitalize = TRUE) {
   $iOut = array("''","''",'','',"");
   $in = array("&lt;", "&gt;");
   $out = array("<", ">");
-  if ($capitalize) $title = capitalize_title($title);
+  $title = title_capitalization($title);
+  
   return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important!
 }
 
@@ -192,43 +192,42 @@ function title_case($text) {
 }
 
 /** Returns a properly capitalised title.
- *      If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and capitalises the letter after any period.
-  *             If not, it will assume it is a journal abbreviation and won't capitalise after periods.
+ *      If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and allows the letter after any period to remain capitalized.
+  *     If not, it will assume it is a journal abbreviation and won't capitalise after periods.
  */
-function capitalize_title($in, $sents = TRUE, $could_be_italics = TRUE) {
-        if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
-                $in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
-        }
-  if ($could_be_italics) $in = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $in); // <em> tags often go missing around species namesin CrossRef
-  $captIn = str_replace(dontCap, unCapped, " " .  $in . " ");
-        if ($sents || (substr_count($in, '.') / strlen($in)) > .07) { // If there are lots of periods, then they probably mark abbrev.s, not sentance ends
-    $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
-                                        preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
-                    '$matches',
-                    'return mb_strtolower($matches[0]);'
-                ), preg_replace_callback("~[?.:!]\s+[a-z]~u" /*Capitalise after punctuation*/, create_function(
-                    '$matches',
-                    'return mb_strtoupper($matches[0]);'
-                ), trim($captIn))));
-        } else {
-                $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2",
-                                        preg_replace_callback("~\w{2}'[A-Z]\b~u" /*Apostrophes*/, create_function(
-                    '$matches',
-                    'return mb_strtolower($matches[0]);'
-                ), trim(($captIn))));
-        }
-  $newcase = preg_replace_callback("~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui", create_function('$matches',
-          'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'), $newcase);
+function title_capitalization($in, $sents = TRUE, $could_be_italics = TRUE) {
+  if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
+    // ALL CAPS to Title Case
+    $in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
+  }
+  
+  if ($could_be_italics) {
+    // <em> tags often go missing around species names in CrossRef
+    $in = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $in);
+  }
+  
+  if ($sents || (substr_count($in, '.') / strlen($in)) > .07) {
+    // When there are lots of periods, then they probably mark abbrev.s, not sentance ends
+    // We should therefore capitalize after each punctuation character.
+    $in = preg_replace_callback("~[?.:!]\s+[a-z]~u" /*Capitalise after punctuation*/,
+      create_function('$matches','return mb_strtoupper($matches[0]);'),
+      $in);
+  }
+  
+  $apostrophes_safe = preg_replace_callback(
+    "~\w{2}'[A-Z]\b~u",
+    create_function('$matches', 'return mb_strtolower($matches[0]);'),
+    trim($in));
+  $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $apostrophes_safe);
+  $newcase = preg_replace_callback(
+    "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui",
+    create_function('$matches', 'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'),
+    $newcase);
   // Use 'straight quotes' per WP:MOS
   $newcase = straighten_quotes($newcase);
-  if (in_array(" " . trim($newcase) . " ", unCapped)) {
-    // Keep "z/Journal" with lcfirst
-    return $newcase;
-  } else {
-    // Catch "the Journal" --> "The Journal"
-    $newcase = mb_convert_case(mb_substr($newcase, 0, 1), MB_CASE_TITLE, "UTF-8") . mb_substr($newcase, 1);
-     return $newcase;
-  }
+  $newcase = str_replace(dontCap, unCapped, " " .  ucfirst($newcase) . " ");
+  $newcase = substr($newcase, 1, strlen($newcase) - 2); // remove spaces, needed for matching in dontCap
+  return $newcase;
 }
 
 function tag($long = FALSE) {
