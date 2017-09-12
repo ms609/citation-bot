@@ -26,9 +26,7 @@ class Template extends Item {
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, $mod_dashes;
 
   public function parse_text($text) {
-    global $author_parameters, $flattened_author_params;
-    flatten_author_parameters($author_parameters);  //create flat array with all author params
-
+    
     $this->rawtext = $text;
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
@@ -44,7 +42,7 @@ class Template extends Item {
       $this->initial_param[$p->param] = $p->val;
 
       // Save author params for special handling
-      if (in_array($p->param, $flattened_author_params) && $p->val) {
+      if (in_array($p->param, flattened_author_params) && $p->val) {
         $this->initial_author_params[$p->param] = $p->val;
       }
     }
@@ -64,9 +62,15 @@ class Template extends Item {
     }
   }
 
-  public function lowercase_parameters() {
-    for ($i=0; $i < count($this->param); $i++)
-      $this->param[$i]->param = strtolower($this->param[$i]->param);
+  public function parameter_names_to_lowercase() {
+    if (is_array($this->param)) {
+      $keys = array_keys($this->param);
+      for ($i=0; $i < count($keys); $i++) {
+        $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
+      }
+    } else {
+      $this->param = strtolower($this->param);
+    }
   }
 
   public function process() {
@@ -94,15 +98,16 @@ class Template extends Item {
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
           $this->forget('class');
+          $this->forget('publisher');
         }
       break;
       case 'cite book':
         $this->citation_template = TRUE;
 
         // If the et al. is from added parameters, go ahead and handle
-        if (!$this->initial_author_parameters) {
+        # if (!$this->initial_author_parameters) { // This property does not seem to be sent anywhere
           $this->handle_et_al();
-        }
+        #}
 
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
@@ -129,14 +134,14 @@ class Template extends Item {
 
         $this->id_to_param();
         $this->get_doi_from_text();
+        $this->correct_param_spelling();
         // TODO: Check for the doi-inline template in the title
 
         // If the et al. is from added parameters, go ahead and handle
-        if (!$this->initial_author_params) {
+        #if (!$this->initial_author_params) { // This parameter seems not to be set anywhere
           $this->handle_et_al();
-        }
+        #}
 
-        $this->correct_param_spelling();
         $this->expand_by_pubmed(); //partly to try to find DOI
 
         if ($this->has("periodical") ) {
@@ -189,10 +194,9 @@ class Template extends Item {
     return TRUE;
   }
 
-  public function add_if_new($param, $value) {
-    global $flattened_author_params;
-    if ($corrected_spelling = $common_mistakes[$param]) {
-      $param = $corrected_spelling;
+  public function add_if_new($param_name, $value) {
+    if (isset(common_mistakes[$param_name])) {
+      $param_name = common_mistakes[$param_name];
     }
 
     if (trim($value) == "") {
@@ -200,29 +204,29 @@ class Template extends Item {
     }
 
     // If we already have name parameters for author, don't add more
-    if ($this->initial_author_params && in_array($param, $flattened_author_params)) {
+    if ($this->initial_author_params && in_array($param_name, flattened_author_params)) {
       return false;
     }
 
-    if (substr($param, -4) > 0 || substr($param, -3) > 0 || substr($param, -2) > 30) {
+    if (substr($param_name, -4) > 0 || substr($param_name, -3) > 0 || substr($param_name, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
       if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', 29);
       return false;
     }
 
-    preg_match('~\d+$~', $param, $auNo); $auNo = $auNo[0];
+    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : null;        
 
-    switch ($param) {
+    switch ($param_name) {
       case "editor": case "editor-last": case "editor-first":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         if ($this->blank('editor') && $this->blank("editor-last") && $this->blank("editor-first")) {
-          return $this->add($param, sanitize_string($value));
+          return $this->add($param_name, sanitize_string($value));
         } else {
           return false;
         }
       case 'editor4': case 'editor4-last': case 'editor4-first':
         $this->add_if_new('displayeditors', 29);
-        return $this->add($param, sanitize_string($value));
+        return $this->add($param_name, sanitize_string($value));
       break;
       case "author": case "author1": case "last1": case "last": case "authors":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
@@ -231,17 +235,17 @@ class Template extends Item {
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
-            $this->add($param, formatSurname($au[0]));
-            return $this->add('first' . (substr($param, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
+            $this->add($param_name, formatSurname($au[0]));
+            return $this->add('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
           } else {
-            return $this->add($param,sanitize_string($value));
+            return $this->add($param_name,sanitize_string($value));
           }
         }
       return false;
       case "first": case "first1":
        $value = straighten_quotes($value);
        if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
-          return $this->add($param,sanitize_string($value));
+          return $this->add($param_name, sanitize_string($value));
       return false;
       case "coauthor":
         echo "\n ! The \"coauthor\" parameter is deprecated. Please replace manually.";
@@ -251,7 +255,7 @@ class Template extends Item {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
-          return $this->add($param,sanitize_string($value));
+          return $this->add($param_name,sanitize_string($value));
           // Note; we shouldn't be using this parameter ever....
       return false;
       case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
@@ -285,12 +289,12 @@ class Template extends Item {
           && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
         ) {
-          if (strpos($value, ',') && substr($param, 0, 3) == 'aut') {
+          if (strpos($value, ',') && substr($param_name, 0, 3) == 'aut') {
             $au = explode(',', $value);
             $this->add('last' . $auNo, formatSurname($au[0]));
             return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
           } else {
-            return $this->add($param,sanitize_string($value));
+            return $this->add($param_name,sanitize_string($value));
           }
         }
         return false;
@@ -306,35 +310,35 @@ class Template extends Item {
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
         $value = straighten_quotes($value);
 
-        if ($this->blank($param)
+        if ($this->blank($param_name)
                 && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
-          return $this->add($param,sanitize_string($value));
+          return $this->add($param_name,sanitize_string($value));
         }
         return false;
       case "date":
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
-          $param = "year";
+          $param_name = "year";
         }
       // Don't break here; we want to go straight in to year;
       case "year":
         if (   ($this->blank("date") || trim(strtolower($this->get('date'))) == "in press")
             && ($this->blank("year") || trim(strtolower($this->get('year'))) == "in press")
           ) {
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         }
         return false;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
-          if ( sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
-          if ( strcasecmp( (string) $value, "unknown") == 0 ) return false;
-          return $this->add($param, format_title_text($value));
+          if (sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
+          if (strcasecmp( (string) $value, "unknown") == 0 ) return false;
+          return $this->add($param_name, format_title_text(title_case($value), TRUE));
         }
         return false;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
-          return $this->add($param, format_title_text($value, FALSE));
+          return $this->add($param_name, format_title_text($value, FALSE));
         }
         return false;
       case "page": case "pages":
@@ -346,20 +350,20 @@ class Template extends Item {
                   && !strpos($this->get('pages'), chr(226)) // Also en-dash
                   && !strpos($this->get('pages'), '-')
                   && !strpos($this->get('pages'), '&ndash;'))
-        ) return $this->add($param, sanitize_string($value));
+        ) return $this->add($param_name, sanitize_string($value));
         return false;
       case 'title':
-        if ($this->blank($param)) {
+        if ($this->blank($param_name)) {
           return $this->format_title(sanitize_string($value));
         }
         return false;
       case 'class':
-        if ($this->blank($param) && strpos($this->get('eprint'), '/') === FALSE ) {
-          return $this->add($param, sanitize_string($value));
+        if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE ) {
+          return $this->add($param_name, sanitize_string($value));
         }
         return false;
       case 'doi':
-        if ($this->blank($param) &&  preg_match('~(10\..+)$~', $value, $match)) {
+        if ($this->blank($param_name) &&  preg_match('~(10\..+)$~', $value, $match)) {
           $this->add('doi', $match[0]);
           $this->verify_doi();
           $this->expand_by_doi();
@@ -368,12 +372,12 @@ class Template extends Item {
         return false;
       case 'display-authors': case 'displayauthors':
         if ($this->blank('display-authors') && $this->blank('displayauthors')) {
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         }
       return false;
       case 'display-editors': case 'displayeditors':
         if ($this->blank('display-editors') && $this->blank('displayeditors')) {
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         }
       return false;
       case 'doi-broken-date':
@@ -381,12 +385,12 @@ class Template extends Item {
             $this->blank('doi-broken-date') &&
             $this->blank('doi_inactivedate') &&
             $this->blank('doi-inactive-date')) {
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         }
       return false;
       case 'pmid':
-        if ($this->blank($param)) {
-          $this->add($param, sanitize_string($value));
+        if ($this->blank($param_name)) {
+          $this->add($param_name, sanitize_string($value));
           $this->expand_by_pubmed();
           if ($this->blank('doi')) {
             $this->get_doi_from_crossref();
@@ -397,42 +401,43 @@ class Template extends Item {
       case 'author_separator': case 'author-separator':
         echo "\n ! 'author-separator' is deprecated.";
         if(!trim($value)) {
-          $this->forget($param);
+          $this->forget($param_name);
         } else {
           echo " Please fix manually.";
         }
       return false;
       case 'postscript':
-        if ($this->blank($param)) {
-          return $this->add($param, $value);
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, $value);
         }
       return false;
       case 'issue':
         if ($this->blank("issue") && $this->blank("number")) {        
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         } 
       return false;
       case 'volume':
-        if ($this->blank($param)) {
+        if ($this->blank($param_name)) {
           if ($this->get('journal') == "ZooKeys" ) {
-            return $this->add_if_new('issue',$value);// This journal has no volume.  This is really the issue number
+            // This journal has no volume.  This is really the issue number
+            return $this->add_if_new('issue', $value);
           } else {
-            return $this->add($param, $value);
+            return $this->add($param_name, $value);
           }
         }
       return false;
       case 'bibcode':
-        if ($this->blank($param)) { 
+        if ($this->blank($param_name)) { 
           $bibcode_pad = 19 - strlen($value);
           if ($bibcode_pad > 0) {  // Paranoid, don't want a negative value, if bibcodes get longer
             $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
           }
-          return $this->add($param, $value);
+          return $this->add($param_name, $value);
         } 
       return false;
       default:
-        if ($this->blank($param)) {
-          return $this->add($param, sanitize_string($value));
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
         }
     }
   }
@@ -527,8 +532,8 @@ class Template extends Item {
     $year = $this->get('year');
     $volume = $this->get('volume');
     $page_range = $this->page_range();
-    $start_page = $page_range[1];
-    $end_page = $page_range[2];
+    $start_page = isset($page_range[1]) ? $page_range[1] : null;
+    $end_page   = isset($page_range[2]) ? $page_range[2] : null;
     $issn = $this->get('issn');
     $url1 = trim($this->get('url'));
     $input = array($title, $journal, $author, $year, $volume, $start_page, $end_page, $issn, $url1);
@@ -558,8 +563,7 @@ class Template extends Item {
           return $result;
         }
       }
-      global $fastMode;
-      if ($fastMode || !$author || !($journal || $issn) || !$start_page ) return;
+      if (FAST_MODE || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
       echo "\n   x Full search failed. Dropping author & end_page... ";
       $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
@@ -587,7 +591,7 @@ class Template extends Item {
       $this->add_if_new('pmid', $results[0]);
     } else {
       echo " nothing found.";
-      if (mb_strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && $this->blank('journal')) {
+      if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
         // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
         echo "\n - Checking for ISBN";
         if ($this->blank('isbn') && $title = $this->get("title")) $this->set("isbn", findISBN( $title, $this->first_author()));
@@ -637,6 +641,7 @@ class Template extends Item {
    * return the results as array (first result, # of results)
    * If $check_for_errors is true, it will return 'fasle' on errors returned by pubmed
    */
+    $query = '';
     foreach ($terms as $term) {
       $key_index = array(
         'doi' =>  'AID',
@@ -704,7 +709,7 @@ class Template extends Item {
           $this->add_if_new("author$i", $name);
         }
       }
-      $this->add_if_new("title", (string) $xml->entry->title);
+      $this->add_if_new("title", format_title_text((string) $xml->entry->title), FALSE);
       $this->add_if_new("class", (string) $xml->entry->category["term"]);
       $this->add_if_new("author", substr($authors, 2));
       $this->add_if_new("year", substr($xml->entry->published, 0, 4));
@@ -737,8 +742,7 @@ class Template extends Item {
 
 
   public function expand_by_adsabs() {
-    global $slow_mode;
-    if ($slow_mode || $this->has('bibcode')) {
+    if (SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
       $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
       if ($bibcode = $this->get("bibcode")) {
@@ -795,7 +799,7 @@ class Template extends Item {
           if (substr($journal_start, 7, 6) == "arxiv:") {
             if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
           } else {
-            $this->appendto('id', ' ' . substr($journal_start, 13));
+            $this->append_to('id', ' ' . substr($journal_start, 13));
           }
         } else {
           if (strcasecmp($journal_string[0], "unknown") != 0) $this->add_if_new('journal', format_title_text($journal_string[0])); // Bibcodes titles are sometimes unknown
@@ -815,7 +819,6 @@ class Template extends Item {
   }
 
   public function expand_by_doi($force = FALSE) {
-    global $editing_cite_doi_template;
     $doi = $this->get_without_comments('doi');
     if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
@@ -826,17 +829,19 @@ class Template extends Item {
         echo "\n - Expanding from crossRef record" . tag();
 
         if ($crossRef->volume_title && $this->blank('journal')) {
-          $this->add_if_new('chapter', $crossRef->article_title);
+          $this->add_if_new('chapter', format_title_text($crossRef->article_title,FALSE));
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
             $this->forget('title');
           }
-          $this->add_if_new('title', $crossRef->volume_title);
+          $this->add_if_new('title',  format_title_text($crossRef->volume_title,FALSE));
         } else {
-          $this->add_if_new('title', $crossRef->article_title);
+          $this->add_if_new('title',  format_title_text($crossRef->article_title,FALSE));
         }
-        $this->add_if_new('series', $crossRef->series_title);
+        $this->add_if_new('series',  format_title_text($crossRef->series_title,FALSE));
         $this->add_if_new("year", $crossRef->year);
         if ($this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) && $crossRef->contributors->contributor) {
+          $au_i = 0;
+          $ed_i = 0;
           foreach ($crossRef->contributors->contributor as $author) {
             if ($author["contributor_role"] == 'editor') {
               ++$ed_i;
@@ -852,7 +857,7 @@ class Template extends Item {
           }
         }
         $this->add_if_new('isbn', $crossRef->isbn);
-        $this->add_if_new('journal', $crossRef->journal_title);
+        $this->add_if_new('journal',  format_title_text($crossRef->journal_title));
         if ($crossRef->volume > 0) $this->add_if_new('volume', $crossRef->volume);
         if ((integer) $crossRef->issue > 1) {
         // "1" may refer to a journal without issue numbers,
@@ -883,8 +888,7 @@ class Template extends Item {
     if ($pm = $this->get('pmid')) $identifier = 'pmid';
     else if ($pm = $this->get('pmc')) $identifier = 'pmc';
     else return false;
-    global $html_output;
-    if ($html_output) {
+    if (html_output) {
       echo "\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
         urlencode($pm) . '" target="_blank">' .
         htmlspecialchars(strtoupper($identifier) . ' ' . $pm) . "</a> for more details" .
@@ -900,10 +904,10 @@ class Template extends Item {
         $this->add_if_new('doi', $match[0]);
       }
       switch ($item["Name"]) {
-                case "Title":   $this->add_if_new('title', str_replace(array("[", "]"), "",(string) $item));
+                case "Title":   $this->add_if_new('title',  format_title_text(str_replace(array("[", "]"), "",(string) $item),FALSE));
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
                                 $this->add_if_new('year', (string) $match[1]);
-        break;  case "FullJournalName": $this->add_if_new('journal', (string) $item);
+        break;  case "FullJournalName": $this->add_if_new('journal',  format_title_text((string) $item));
         break;  case "Volume":  $this->add_if_new('volume', (string) $item);
         break;  case "Issue":   $this->add_if_new('issue', (string) $item);
         break;  case "Pages":   $this->add_if_new('pages', (string) $item);
@@ -995,6 +999,9 @@ class Template extends Item {
   protected function expand_by_google_books() {
     $url = $this->get('url');
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
+      $removed_redundant = 0;
+      $hash = '';
+      
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
         $url = $url_parts[0];
@@ -1036,9 +1043,9 @@ class Template extends Item {
     );
     $xml = simplexml_load_string($simplified_xml);
     if ($xml->dc___title[1]) {
-      $this->add_if_new("title", str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]));
+      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]),FALSE));
     } else {
-      $this->add_if_new("title", str_replace("___", ":", $xml->title));
+      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->title),FALSE));
     }
     // Possibly contains dud information on occasion
     // $this->add_if_new("publisher", str_replace("___", ":", $xml->dc___publisher)); 
@@ -1065,10 +1072,10 @@ class Template extends Item {
     if ($this->blank('isbn') && $this->has('title')) {
       $title = trim($this->get('title'));
       $auth = trim($this->get('author') . $this->get('author1') . ' ' . $this->get('last') . $this->get('last1'));
-      global $isbnKey, $over_isbn_limit;
+      global $over_isbn_limit;
       // TODO: implement over_isbn_limit based on &results=keystats in API
       if ($title && !$over_isbn_limit) {
-        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth));
+        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . isbnKey . "index1=combined&value1=" . urlencode($title . " " . $auth));
         print "\n\nhttp://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
         if ($xml->BookList["total_results"] == 1) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
         if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
@@ -1108,8 +1115,7 @@ class Template extends Item {
     if ($meta_tags["citation_authors"]) {
       $new_authors = formatAuthors($meta_tags["citation_authors"], true);
     }
-    global $slow_mode;
-    if ($slow_mode && !$new_pages && !$new_authors) {
+    if (SLOW_MODE && !$new_pages && !$new_authors) {
       echo "\n   - Now scraping web-page.";
       //Initiate cURL resource
       $ch = curl_init();
@@ -1183,302 +1189,316 @@ class Template extends Item {
 
   ### parameter processing
   protected function use_unnamed_params() {
-    // Load list of parameters used in citation templates.
-    //We generated this earlier in expandFns.php.  It is sorted from longest to shortest.
-    global $parameter_list;
-    if ($this->param) {
-      $this->lowercase_parameters();
-      $param_occurrences = array();
-      $duplicated_parameters = array();
-      $duplicate_identical = array();
-      foreach ($this->param as $pointer => $par) {
-        if ($par->param && isset($param_occurrences[$par->param])) {
-          $duplicate_pos = $param_occurrences[$par->param];
-          array_unshift($duplicated_parameters, $duplicate_pos);
-          array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
-        }
-        $param_occurrences[$par->param] = $pointer;
+    if (empty($this->param)) return;
+    
+    $this->parameter_names_to_lowercase();
+    $param_occurrences = array();
+    $duplicated_parameters = array();
+    $duplicate_identical = array();
+    
+    foreach ($this->param as $pointer => $par) {
+      if ($par->param && isset($param_occurrences[$par->param])) {
+        $duplicate_pos = $param_occurrences[$par->param];
+        array_unshift($duplicated_parameters, $duplicate_pos);
+        array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
       }
-      $n_dup_params = count($duplicated_parameters);
-      for ($i = 0; $i < $n_dup_params; $i++) {
-        if ($duplicate_identical[$i]) {
-          echo "\n * Deleting identical duplicate of parameter: " .
-            htmlspecialchars($this->param[$duplicated_parameters[$i]]->param) . "\n";
-          unset($this->param[$duplicated_parameters[$i]]);
-        }
-        else {
-          $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
-          echo "\n * Marking duplicate parameter: " .
-            htmlspecialchars($duplicated_parameters[$i]->param) . "\n";
-        }
+      $param_occurrences[$par->param] = $pointer;
+    }
+    
+    $n_dup_params = count($duplicated_parameters);
+    
+    for ($i = 0; $i < $n_dup_params; $i++) {
+      if ($duplicate_identical[$i]) {
+        echo "\n * Deleting identical duplicate of parameter: " .
+          htmlspecialchars($this->param[$duplicated_parameters[$i]]->param) . "\n";
+        unset($this->param[$duplicated_parameters[$i]]);
       }
-      foreach ($this->param as $iP => $p) {
-        if (!empty($p->param)) {
-          if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-            $this->param[$iP]->val = $p->param . '=' . $p->val;
-            $this->param[$iP]->param = 'url';
-            if (stripos($p->val, 'books.google.') !== FALSE) {
-              $this->name = 'Cite book';
-              $this->process();
-            }
-          } elseif ($p->param == 'doix') {
-            global $dotEncode, $dotDecode;
-            $this->param[$iP]->param = 'doi';
-            $this->param[$iP]->val = str_replace($dotEncode, $dotDecode, $p->val);
-          }
-          continue;
-        }
-        $dat = $p->val;
-        $endnote_test = explode("\n%", "\n" . $dat);
-        if ($endnote_test[1]) {
-          foreach ($endnote_test as $endnote_line) {
-            switch ($endnote_line[0]) {
-              case "A": $endnote_authors++; $endnote_parameter = "author$endnote_authors";        break;
-              case "D": $endnote_parameter = "date";       break;
-              case "I": $endnote_parameter = "publisher";  break;
-              case "C": $endnote_parameter = "location";   break;
-              case "J": $endnote_parameter = "journal";    break;
-              case "N": $endnote_parameter = "issue";      break;
-              case "P": $endnote_parameter = "pages";      break;
-              case "T": $endnote_parameter = "title";      break;
-              case "U": $endnote_parameter = "url";        break;
-              case "V": $endnote_parameter = "volume";     break;
-              case "@": // ISSN / ISBN
-                if (preg_match("~@\s*[\d\-]{10,}~", $endnote_line)) {
-                  $endnote_parameter = "isbn";
-                  break;
-                } else if (preg_match("~@\s*\d{4}\-?\d{4}~", $endnote_line)) {
-                  $endnote_parameter = "issn";
-                  break;
-                } else {
-                  $endnote_parameter = false;
-                }
-              case "R": // Resource identifier... *may* be DOI but probably isn't always.
-              case "8": // Date
-              case "0":// Citation type
-              case "X": // Abstract
-              case "M": // Object identifier
-                $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
-              default:
-                $endnote_parameter = false;
-            }
-            if ($endnote_parameter && $this->blank($endnote_parameter)) {
-              $to_add[$endnote_parameter] = substr($endnote_line, 1);
-              $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
-            }
-          }
-        }
-
-        if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
-          $ris = explode("\n", $dat);
-          foreach ($ris as $ris_line) {
-            $ris_part = explode(" - ", $ris_line . " ");
-            switch (trim($ris_part[0])) {
-              case "T1":
-              case "TI":
-                $ris_parameter = "title";
-                break;
-              case "AU":
-                $ris_authors++;
-                $ris_parameter = "author$ris_authors";
-                $ris_part[1] = formatAuthor($ris_part[1]);
-                break;
-              case "Y1":
-                $ris_parameter = "date";
-                break;
-              case "SP":
-                $start_page = trim($ris_part[1]);
-                $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-                break;
-              case "EP":
-                $end_page = trim($ris_part[1]);
-                $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-                if_null_set("pages", $start_page . "-" . $end_page);
-                break;
-              case "DO":
-                $ris_parameter = "doi";
-                break;
-              case "JO":
-              case "JF":
-                $ris_parameter = "journal";
-                break;
-              case "VL":
-                $ris_parameter = "volume";
-                break;
-              case "IS":
-                $ris_parameter = "issue";
-                break;
-              case "SN":
-                $ris_parameter = "issn";
-                break;
-              case "UR":
-                $ris_parameter = "url";
-                break;
-              case "PB":
-                $ris_parameter = "publisher";
-                break;
-              case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
-                $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              default:
-                $ris_parameter = false;
-            }
-            unset($ris_part[0]);
-            if ($ris_parameter
-                    && if_null_set($ris_parameter, trim(implode($ris_part)))
-                ) {
-              global $auto_summary;
-              if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
-                $auto_summary .= "Converted RIS citation to WP format. ";
-              }
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-            }
-          }
-
-        }
-        if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { #Takes priority over more tenative matches
-          $this->set('url', $match[0]);
-          $dat = str_replace($match[0], '', $dat);
-        }
-        if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
-          foreach ($match[0] as $i => $oMatch) {
-            switch (strtolower($match[1][$i])) {
-
-              case "vol": case "v": case 'volume':
-                $matched_parameter = "volume";
-                break;
-              case "no": case "number": case 'issue': case 'n':
-                $matched_parameter = "issue";
-                break;
-              case 'pages': case 'pp': case 'pg': case 'pgs': case 'pag':
-                $matched_parameter = "pages";
-                break;
-              case 'p':
-                $matched_parameter = "page";
-                break;
-              default:
-                $matched_parameter = null;
-            }
-            if ($matched_parameter) {
-              $dat = trim(str_replace($oMatch, "", $dat));
-              if ($i) {
-                $this->add_if_new($matched_parameter, $match[2][$i]);
-              } else {
-                $this->param[$i]->param = $matched_parameter;
-                $this->param[$i]->val = $match[2][0];
-              }
-            }
-          }
-        }
-        if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) { //Vol(is):pp
-          $this->add_if_new('volume', $match[1]);
-          $this->add_if_new('issue' , $match[2]);
-          $this->add_if_new('pages' , $match[3]);
-          $dat = trim(str_replace($match[0], '', $dat));
-        }
-        if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
-          if ($this->blank('year')) {
-            $this->set('year', $match[1]);
-            $dat = trim(str_replace($match[0], '', $dat));
-          }
-        }
-
-        $shortest = -1;
-        foreach ($parameter_list as $parameter) {
-          $para_len = strlen($parameter);
-          if (substr(strtolower($dat), 0, $para_len) == $parameter) {
-            $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
-            $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
-              ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-            $this->param[$iP]->param = $parameter;
-            $this->param[$iP]->val = $parameter_value;
-            break;
-          }
-          $test_dat = preg_replace("~\d~", "_$0",
-                      preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
-          if ($para_len < 3) break; // minimum length to avoid false positives
-          if (preg_match("~\d~", $parameter)) {
-            $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
-            $para_len++;
-          } else {
-            $lev = levenshtein($test_dat, $parameter);
-          }
-          if ($lev == 0) {
-            $closest = $parameter;
-            $shortest = 0;
-            break;
-          }
-          // Strict inequality as we want to favour the longest match possible
-          if ($lev < $shortest || $shortest < 0) {
-            $comp = $closest;
-            $closest = $parameter;
-            $shortish = $shortest;
-            $shortest = $lev;
-          } elseif ($lev < $shortish) {
-            // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
-            $shortish = $lev;
-            $comp = $parameter;
-          }
-
-        }
-
-        if (  $shortest < 3
-           && strlen($test_dat > 0)
-           && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
-           && ($shortest + 1 < $shortish  // No close competitor
-               || $shortest / $shortish <= 2/3
-               || strlen($closest) > strlen($comp)
-              )
-        ) {
-          // remove leading spaces or hyphens (which may have been typoed for an equals)
-          if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-            $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
-          }
-        } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
-          // Is it a number formatted like an ISBN?
-          $this->add('isbn', $match[1]);
-          $pAll = "";
-        } else {
-          // Extract whatever appears before the first space, and compare it to common parameters
-          $pAll = explode(" ", trim($dat));
-          $p1 = mb_strtolower($pAll[0]);
-          switch ($p1) {
-            case "volume": case "vol":
-            case "pages": case "page":
-            case "year": case "date":
-            case "title":
-            case "authors": case "author":
-            case "issue":
-            case "journal":
-            case "accessdate":
-            case "archiveurl":
-            case "archivedate":
-            case "format":
-            case "url":
-            if ($this->blank($p1)) {
-              unset($pAll[0]);
-              $this->param[$iP]->param = $p1;
-              $this->param[$iP]->val = implode(" ", $pAll);
-            }
-            break;
-            case "issues":
-            if ($this->blank($p1)) {
-              unset($pAll[0]);
-              $this->param[$iP]->param = 'issue';
-              $this->param[$iP]->val = implode(" ", $pAll);
-            }
-            break;
-            case "access date":
-            if ($this->blank($p1)) {
-              unset($pAll[0]);
-              $this->param[$iP]->param = 'accessdate';
-              $this->param[$iP]->val = implode(" ", $pAll);
-            }
-            break;
-          }
-        }
-        if (!trim($dat)) unset($this->param[$iP]);
+      else {
+        $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
+        echo "\n * Marking duplicate parameter: " .
+          htmlspecialchars($duplicated_parameters[$i]->param) . "\n";
       }
     }
+    
+    foreach ($this->param as $param_key => $p) {
+      if (!empty($p->param)) {
+        if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
+          $this->param[$param_key]->val = $p->param . '=' . $p->val;
+          $this->param[$param_key]->param = 'url';
+          if (stripos($p->val, 'books.google.') !== FALSE) {
+            $this->name = 'Cite book';
+            $this->process();
+          }
+        } elseif ($p->param == 'doix') {
+          $this->param[$param_key]->param = 'doi';
+          $this->param[$param_key]->val = str_replace(dotEncode, dotDecode, $p->val);
+        }
+        continue;
+      }
+      $dat = $p->val;
+      $param_recycled = FALSE;
+      $endnote_test = explode("\n%", "\n" . $dat);
+      if (isset($endnote_test[1])) {
+        foreach ($endnote_test as $endnote_line) {
+          switch ($endnote_line[0]) {
+            case "A": $endnote_authors++; $endnote_parameter = "author$endnote_authors";        break;
+            case "D": $endnote_parameter = "date";       break;
+            case "I": $endnote_parameter = "publisher";  break;
+            case "C": $endnote_parameter = "location";   break;
+            case "J": $endnote_parameter = "journal";    break;
+            case "N": $endnote_parameter = "issue";      break;
+            case "P": $endnote_parameter = "pages";      break;
+            case "T": $endnote_parameter = "title";      break;
+            case "U": $endnote_parameter = "url";        break;
+            case "V": $endnote_parameter = "volume";     break;
+            case "@": // ISSN / ISBN
+              if (preg_match("~@\s*[\d\-]{10,}~", $endnote_line)) {
+                $endnote_parameter = "isbn";
+                break;
+              } else if (preg_match("~@\s*\d{4}\-?\d{4}~", $endnote_line)) {
+                $endnote_parameter = "issn";
+                break;
+              } else {
+                $endnote_parameter = false;
+              }
+            case "R": // Resource identifier... *may* be DOI but probably isn't always.
+            case "8": // Date
+            case "0":// Citation type
+            case "X": // Abstract
+            case "M": // Object identifier
+              $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
+            default:
+              $endnote_parameter = false;
+          }
+          if ($endnote_parameter && $this->blank($endnote_parameter)) {
+            $to_add[$endnote_parameter] = substr($endnote_line, 1);
+            $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
+          }
+        }
+      }
+
+      if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
+        $ris = explode("\n", $dat);
+        foreach ($ris as $ris_line) {
+          $ris_part = explode(" - ", $ris_line . " ");
+          switch (trim($ris_part[0])) {
+            case "T1":
+            case "TI":
+              $ris_parameter = "title";
+              break;
+            case "AU":
+              $ris_authors++;
+              $ris_parameter = "author$ris_authors";
+              $ris_part[1] = formatAuthor($ris_part[1]);
+              break;
+            case "Y1":
+              $ris_parameter = "date";
+              break;
+            case "SP":
+              $start_page = trim($ris_part[1]);
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              break;
+            case "EP":
+              $end_page = trim($ris_part[1]);
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              if_null_set("pages", $start_page . "-" . $end_page);
+              break;
+            case "DO":
+              $ris_parameter = "doi";
+              break;
+            case "JO":
+            case "JF":
+              $ris_parameter = "journal";
+              break;
+            case "VL":
+              $ris_parameter = "volume";
+              break;
+            case "IS":
+              $ris_parameter = "issue";
+              break;
+            case "SN":
+              $ris_parameter = "issn";
+              break;
+            case "UR":
+              $ris_parameter = "url";
+              break;
+            case "PB":
+              $ris_parameter = "publisher";
+              break;
+            case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+            default:
+              $ris_parameter = false;
+          }
+          unset($ris_part[0]);
+          if ($ris_parameter
+                  && if_null_set($ris_parameter, trim(implode($ris_part)))
+              ) {
+            global $auto_summary;
+            if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
+              $auto_summary .= "Converted RIS citation to WP format. ";
+            }
+            $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+          }
+        }
+      }
+      
+      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
+        $this->set('url', $match[0]);
+        $dat = str_replace($match[0], '', $dat);
+      }
+      
+      if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
+        foreach ($match[0] as $i => $oMatch) {
+          switch (strtolower($match[1][$i])) {
+            case "vol": case "v": case 'volume':
+              $matched_parameter = "volume";
+              break;
+            case "no": case "number": case 'issue': case 'n':
+              $matched_parameter = "issue";
+              break;
+            case 'pages': case 'pp': case 'pg': case 'pgs': case 'pag':
+              $matched_parameter = "pages";
+              break;
+            case 'p':
+              $matched_parameter = "page";
+              break;
+            default:
+              $matched_parameter = null;
+          }
+          if ($matched_parameter) {
+            $dat = trim(str_replace($oMatch, "", $dat));
+            if ($i == 0) { // Use existing parameter slot in first instance
+              $this->param[$param_key]->param = $matched_parameter;
+              $this->param[$param_key]->val = $match[2][0];
+              $param_recycled = TRUE;
+            } else {
+              $this->add_if_new($matched_parameter, $match[2][$i]);
+            }
+          }
+        }
+      }
+      
+      // Match vol(iss):pp
+      if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) {
+        $this->add_if_new('volume', $match[1]);
+        $this->add_if_new('issue' , $match[2]);
+        $this->add_if_new('pages' , $match[3]);
+        $dat = trim(str_replace($match[0], '', $dat));
+      }
+      if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
+        if ($this->blank('year')) {
+          $this->set('year', $match[1]);
+          $dat = trim(str_replace($match[0], '', $dat));
+        }
+      }
+
+      $shortest = -1;
+      $parameter_list = PARAMETER_LIST;
+      foreach ($parameter_list as $parameter) {
+        $para_len = strlen($parameter);
+        if (substr(strtolower($dat), 0, $para_len) == $parameter) {
+          $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
+          $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
+            ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
+          $this->param[$param_key]->param = $parameter;
+          $this->param[$param_key]->val = $parameter_value;
+          $param_recycled = TRUE;
+          break;
+        }
+        $test_dat = preg_replace("~\d~", "_$0",
+                    preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
+        if ($para_len < 3) break; // minimum length to avoid false positives
+        if (preg_match("~\d~", $parameter)) {
+          $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
+          $para_len++;
+        } else {
+          $lev = levenshtein($test_dat, $parameter);
+        }
+        if ($lev == 0) {
+          $closest = $parameter;
+          $shortest = 0;
+          break;
+        } else {
+          $closest = null;
+        }
+        // Strict inequality as we want to favour the longest match possible
+        if ($lev < $shortest || $shortest < 0) {
+          $comp = $closest;
+          $closest = $parameter;
+          $shortish = $shortest;
+          $shortest = $lev;
+        } elseif ($lev < $shortish) {
+          // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
+          $shortish = $lev;
+          $comp = $parameter;
+        }
+
+      }
+
+      if (  $shortest < 3
+         && strlen($test_dat > 0)
+         && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
+         && ($shortest + 1 < $shortish  // No close competitor
+             || $shortest / $shortish <= 2/3
+             || strlen($closest) > strlen($comp)
+            )
+      ) {
+        // remove leading spaces or hyphens (which may have been typoed for an equals)
+        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
+          $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+        }
+      } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+        // Is it a number formatted like an ISBN?
+        $this->add('isbn', $match[1]);
+        $pAll = "";
+      } else {
+        // Extract whatever appears before the first space, and compare it to common parameters
+        $pAll = explode(" ", trim($dat));
+        $p1 = mb_strtolower($pAll[0]);
+        switch ($p1) {
+          case "volume": case "vol":
+          case "pages": case "page":
+          case "year": case "date":
+          case "title":
+          case "authors": case "author":
+          case "issue":
+          case "journal":
+          case "accessdate":
+          case "archiveurl":
+          case "archivedate":
+          case "format":
+          case "url":
+          if ($this->blank($p1)) {
+            unset($pAll[0]);
+            $this->param[$param_key]->param = $p1;
+            $this->param[$param_key]->val = implode(" ", $pAll);
+            $param_recycled = TRUE;
+          }
+          break;
+          case "issues":
+          if ($this->blank($p1)) {
+            unset($pAll[0]);
+            $this->param[$param_key]->param = 'issue';
+            $this->param[$param_key]->val = implode(" ", $pAll);
+            $param_recycled = TRUE;
+          }
+          break;
+          case "access date":
+          if ($this->blank($p1)) {
+            unset($pAll[0]);
+            $this->param[$param_key]->param = 'accessdate';
+            $this->param[$param_key]->val = implode(" ", $pAll);
+            $param_recycled = TRUE;
+          }
+          break;
+        }
+      }
+      if (!trim($dat) && !$param_recycled) {
+        unset($this->param[$param_key]);
+      }
+    }
+  
   }
 
   protected function id_to_param() {
@@ -1570,40 +1590,48 @@ class Template extends Item {
   protected function correct_param_spelling() {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
-  global $parameter_list, $common_mistakes;
-  $mistake_corrections = array_values($common_mistakes);
-  $mistake_keys = array_keys($common_mistakes);
-  if ($this->param) foreach ($this->param as $p) {
-    $parameters_used[] = $p->param;
+  $mistake_corrections = array_values(common_mistakes);
+  $mistake_keys = array_keys(common_mistakes);
+  if ($this->param) {
+    foreach ($this->param as $p) {
+      $parameters_used[] = $p->param;
+    }
   }
+  $parameter_list = PARAMETER_LIST;
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
   $i = 0; // FIXME: this would be better as a proper for loop rather than foreach with counter
   foreach ($this->param as $p) {
     ++$i;
 
-    if ($this->initial_author_params) {
-      echo "\n * initial authors exist, not correcting " . htmlspecialchars($p->param);
-      continue;
-    }
-
-    if ((strlen($p->param) > 0) && !in_array($p->param, $parameter_list)) {
-      echo "\n  *  Unrecognised parameter " . htmlspecialchars($p->param);
+    if ((strlen($p->param) > 0) && !in_array($p->param, PARAMETER_LIST)) {
+     
+      echo "\n  *  Unrecognised parameter " . htmlspecialchars($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
-        // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
+        // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
         $p->param = $mistake_corrections[$mistake_id];
         echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
         continue;
       }
+      
+      /* Not clear why this exception exists.
+       * If it is valid, it should apply only when $p->param relates to authors,
+       * not when it applies to e.g. pages, title.
+      if ($this->initial_author_params) {
+        echo "\n * initial authors exist, not correcting " . htmlspecialchars($p->param);
+        continue;
+      }
+      */
+
       $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
       $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
       $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
 
       // Check the parameter list to find a likely replacement
       $shortest = -1;
-      foreach ($unused_parameters as $parameter)
-      {
+      $closest = null;
+      foreach ($unused_parameters as $parameter) {
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
@@ -1625,6 +1653,7 @@ class Template extends Item {
         $shortest *= ($str_len / (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
         $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
+      
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
         echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
@@ -1668,7 +1697,7 @@ class Template extends Item {
     if ($this->added('title')) {
       $this->format_title();
     } else if ($this->is_modified() && $this->get('title')) {
-      $this->set('title', straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')));
+      $this->set('title', format_title_text(straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title'))),FALSE);
     }
 
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) {
@@ -1694,35 +1723,43 @@ class Template extends Item {
     }
 
     if ($this->param) foreach ($this->param as $p) {
-      preg_match('~(\D+)(\d*)~', $p->param, $pmatch);
-      switch ($pmatch[1]) {
-        case 'author': case 'authors': case 'last': case 'surname':
-          if (!$this->initial_author_params) {
-            if ($pmatch[2]) {
-              if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
-                $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
-                $p->val = $match[3];
-                echo "\n   ~ Dissecting authorlink" . tag();
+      if (preg_match('~(\D+)(\d*)~', $p->param, $pmatch)) {
+        switch ($pmatch[1]) {
+          case 'author': case 'authors': case 'last': case 'surname':
+            if (!$this->initial_author_params) {
+              if ($pmatch[2]) {
+                if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
+                  $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
+                  $p->val = $match[3];
+                  echo "\n   ~ Dissecting authorlink" . tag();
+                }
+                $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+                if (preg_match($translator_regexp, trim($p->val), $match)) {
+                  $others = "{$match[1]} {$match[5]}";
+                  $p->val = preg_replace($translator_regexp, "", $p->val);
+                }
               }
-              $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
-              if (preg_match($translator_regexp, trim($p->val), $match)) {
-                $others = "{$match[1]} {$match[5]}";
-                $p->val = preg_replace($translator_regexp, "", $p->val);
-              }
+            } else {
+              echo "\n * Initial authors exist, skipping authorlink in tidy";
             }
-          } else {
-            echo "\n * Initial authors exist, skipping authorlink in tidy";
-          }
-          break;
-        case 'journal': case 'periodical': $p->val = capitalize_title($p->val, FALSE, FALSE); break;
-        case 'edition': $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);break; // Don't want 'Edition ed.'
-        case 'pages': case 'page': case 'issue': case 'year':
-          if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
-            $this->mod_dashes = TRUE;
-            echo ( "\n   ~ Upgrading to en-dash in" . htmlspecialchars($p->param) . tag());
-            $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
-          }
-          break;
+            break;
+          case 'journal': 
+            $this->forget('publisher');
+          case 'periodical': 
+            $p->val = format_title_text(title_capitalization($p->val, FALSE, FALSE));
+            break;
+          case 'edition': 
+            $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
+            break; // Don't want 'Edition ed.'
+          case 'pages': case 'page': case 'issue': case 'year':
+            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
+              $this->mod_dashes = TRUE;
+              echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) .
+                    " parameter" . tag());
+              $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
+            }
+            break;
+        }
       }
     }
 
@@ -1731,11 +1768,13 @@ class Template extends Item {
     }
 
     if ($others) {
-      if ($this->has('others')) $this->appendto('others', '; ' . $others);
+      if ($this->has('others')) $this->append_to('others', '; ' . $others);
       else $this->set('others', $others);
     }
 
-    if ($this->added('journal')) $this->forget('issn');
+    if ($this->added('journal')) {
+      $this->forget('issn');
+    }
 
     // Remove leading zeroes
     if (!$this->blank('issue') && $this->blank('number')) {
@@ -1783,8 +1822,7 @@ class Template extends Item {
       $doi = $this->get('doi');
       if (!$doi) return false;
     }
-    global $pcEncode, $pcDecode, $spurious_whitespace;
-    $this->set('doi', str_replace($spurious_whitespace, '', str_replace($pcEncode, $pcDecode, str_replace(' ', '+', trim(urldecode($doi))))));
+    $this->set('doi', str_replace(pcEncode, pcDecode, str_replace(' ', '+', trim(urldecode($doi)))));
     return true;
   }
 
@@ -1811,10 +1849,13 @@ class Template extends Item {
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
-    if ($trial) foreach ($trial as $try) {
+    if (isset($trial)) foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
-      if ($this->expand_by_doi($try)) {$this->set('doi', $try); $doi = $try;}
+      if ($this->expand_by_doi($try)) {
+        $this->set('doi', $try);
+        $doi = $try;
+      }
     }
     echo "\n   . Checking that DOI " . htmlspecialchars($doi) . " is operational..." . tag();
     if ($this->query_crossref() === FALSE) {
@@ -1845,6 +1886,24 @@ class Template extends Item {
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
 
+     function assessUrl($url){
+        echo "assessing URL ";
+        #if (strpos($url, "abstract") >0 || (strpos($url, "/abs") >0 && strpos($url, "adsabs.") === false)) return "abstract page";
+        $ch = curl_init();
+        curlSetUp($ch, str_replace("&amp;", "&", $url));
+        curl_setopt($ch, CURLOPT_NOBODY, 1);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_exec($ch);
+        switch(curl_getinfo($ch, CURLINFO_HTTP_CODE)){
+          case "404":
+            global $p;
+            return "{{dead link|date=" . date("F Y") . "}}";
+          #case "403": case "401": return "subscription required"; DOesn't work for, e.g. http://arxiv.org/abs/cond-mat/9909293
+        }
+        curl_close($ch);
+        return null;
+      }
+     
      if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
     {
       echo "\n - Checking that URL is live...";
@@ -1860,8 +1919,7 @@ class Template extends Item {
   }
 
   protected function handle_et_al() {
-    global $author_parameters;
-    foreach ($author_parameters as $i => $group) {
+    foreach (author_parameters as $i => $group) {
       foreach ($group as $param) {
         if (strpos($this->get($param), 'et al')) {
           // remove 'et al' from the parameter value if present
@@ -1913,13 +1971,19 @@ class Template extends Item {
 
   public function first_author() {
     // Fetch the surname of the first author only
-    preg_match("~[^.,;\s]{2,}~u", implode(' ',
+    if (preg_match("~[^.,;\s]{2,}~u", implode(' ',
             array($this->get('author'), $this->get('author1'), $this->get('last'), $this->get('last1')))
-            , $first_author);
-    return $first_author[0];
+            , $first_author)) {
+      return $first_author[0];
+    } else {
+      return null;
+    }        
   }
 
-  public function page() {return ($page = $this->get('pages') ? $page : $this->get('page'));}
+  public function page() {
+    $page = $this->get('pages');
+    return ($page ? $page : $this->get('page'));
+  }
 
   public function name() {return trim($this->name);}
 
@@ -1942,26 +2006,31 @@ class Template extends Item {
 
   public function get($name) {
     // NOTE $this->param and $p->param are different and refer to different types!
-    // $this->param is probably a Parameter object
-    // $p->param is probably the parameter name within the Parameter object
+    // $this->param is an array of Parameter objects
+    // $p->param is the parameter name within the Parameter object
     if ($this->param) {
-      foreach ($this->param as $p) {
-        if ($p->param == $name) {
-          return $p->val;
+      foreach ($this->param as $parameter_i) {
+        if ($parameter_i->param == $name) {
+          return $parameter_i->val;
         }
       }
     }
     return NULL;
   }
+  
   public function get_without_comments($name) {
     $ret = preg_replace('~<!--.*?-->~su', '', $this->get($name));
     return (trim($ret) ? $ret : FALSE);
   }
 
-  protected function get_param_position ($needle) {
-    if ($this->param) foreach ($this->param as $i => $p) {
+  protected function get_param_key ($needle) {
+    if (empty($this->param)) return NULL;
+    if (!is_array($this->param)) return NULL; // Maybe the wrong thing to do?
+    
+    foreach ($this->param as $i => $p) {
       if ($p->param == $needle) return $i;
     }
+    
     return NULL;
   }
 
@@ -1972,21 +2041,34 @@ class Template extends Item {
     echo "\n   + Adding $par" .tag();
     return $this->set($par, $val);
   }
+  
   public function set($par, $val) {
-    if (($pos = $this->get_param_position($par)) !== NULL) return $this->param[$pos]->val = $val;
-    if ($this->param[0]) {
+    if (($pos = $this->get_param_key($par)) !== NULL) {
+      return $this->param[$pos]->val = $val;
+    }
+    if (isset($this->param[0])) {
       $p = new Parameter;
-      $p->parse_text($this->param[$this->param[1] ? 1 : 0]->parsed_text()); // Use second param if present, in case first pair is last1 = Smith | first1 = J.\n
+      // Use second param as a template if present, in case first pair 
+      // is last1 = Smith | first1 = J.\n
+      $p->parse_text($this->param[isset($this->param[1]) ? 1 : 0]->parsed_text()); 
     } else {
       $p = new Parameter;
       $p->parse_text('| param = val');
     }
     $p->param = $par;
     $p->val = $val;
+    
     $insert_after = prior_parameters($par);
     foreach (array_reverse($insert_after) as $after) {
-      if (($insert_pos = $this->get_param_position($after)) !== NULL) {
-        $this->param = array_merge(array_slice($this->param, 0, $insert_pos + 1), array($p), array_slice($this->param,$insert_pos + 1));
+      if (($after_key = $this->get_param_key($after)) !== NULL) {
+        $keys = array_keys($this->param);
+        for ($prior_pos = 0; $prior_pos < count($keys); $prior_pos++) {
+          if ($keys[$prior_pos] == $after_key) break;
+        }
+        $this->param = array_merge(
+          array_slice($this->param, 0, $prior_pos + 1), 
+          array($p),
+          array_slice($this->param, $prior_pos + 1));
         return true;
       }
     }
@@ -1994,13 +2076,17 @@ class Template extends Item {
     return true;
   }
 
-  public function appendto($par, $val) {
-    if ($pos=$this->get_param_position($par)) return $this->param[$pos]->val = $this->param[$pos]->val . $val;
-    else return $this->set($par, $val);
+  public function append_to($par, $val) {
+    $pos = $this->get_param_key($par);
+    if ($pos) {
+      return $this->param[$pos]->val = $this->param[$pos]->val . $val;
+    } else {
+      return $this->set($par, $val);
+    }
   }
 
   public function forget ($par) {
-    $pos = $this->get_param_position($par);
+    $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
       echo "\n   - Dropping parameter " . htmlspecialchars($par) . tag();
       unset($this->param[$pos]);

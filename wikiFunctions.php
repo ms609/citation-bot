@@ -1,8 +1,5 @@
 <?php
 
-define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
-define ("BRACESPACE", "!BOTCODE-spaceBeforeTheBrace");
-
 function categoryMembers($cat){
   $vars = Array(
     "cmtitle" => "Category:$cat", // Don't URLencode.
@@ -34,8 +31,7 @@ function whatTranscludes($template, $namespace=99){
 }
 
 function wikititle_encode($in) {
-  global $dotDecode, $dotEncode;
-  return str_replace($dotDecode, $dotEncode, $in);
+  return str_replace(dotDecode, dotEncode, $in);
 }
 
 function anchorencode($in) {
@@ -352,8 +348,7 @@ function load_xml_via_bot($vars) {
 function touch_page($page) {
   $text = getRawWikiText($page);
   if ($text) {
-    global $editInitiator;
-    write ($page, $text, $editInitiator . " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
+    write ($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
     return true;
   } else {
     return false;

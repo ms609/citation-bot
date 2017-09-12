@@ -61,8 +61,17 @@ class Page {
     }
   }
 
+  public function parse_text($text) { // used in testing context.
+    $this->text = $text;
+    $this->start_text = $this->text;
+    $this->modifications = array();
+  }
+  
+  public function parsed_text() {
+    return $this->text;
+  }
+  
   public function expand_text() {
-    global $html_output;
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
     quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" . urlencode($this->title) . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($this->title)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . urlencode($this->title) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
@@ -75,7 +84,7 @@ class Page {
 
     //this is set to -1 only in text.php, because there's no need to output
     // a buffer of text for the citation-expander gadget
-    if ($html_output === -1) {
+    if (html_output === -1) {
       ob_start();
     }
 
@@ -119,7 +128,7 @@ class Page {
     $this->replace_object($nowiki);
    
     // seems to be set as -1  in text.php and then re-set
-    if ($html_output === -1) {
+    if (html_output === -1) {
       ob_end_clean();
     }
 
@@ -206,8 +215,7 @@ class Page {
       $result = json_decode($bot->results);
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        global $html_output;
-        if ($html_output) echo "\n <span style='color: #e21'>Written to <a href='" . wikiroot . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
+        if (html_output) echo "\n <span style='color: #e21'>Written to <a href='" . wikiroot . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
         else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
         return TRUE;
       } else if ($result->edit->result) {
@@ -254,10 +262,10 @@ class Page {
 
   public function allow_bots() {
     // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
-    $user = '(?:Citation|DOI)[ _]bot';
-    if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$user.'.*?)\}\}/iS',$this->text))
+    $bot_username = '(?:Citation|DOI)[ _]bot';
+    if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
       return false;
-    if (preg_match('/\{\{(bots\|allow=all|bots\|allow=.*?'.$user.'.*?)\}\}/iS', $this->text))
+    if (preg_match('/\{\{(bots\|allow=all|bots\|allow=.*?'.$bot_username.'.*?)\}\}/iS', $this->text))
       return true;
     if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $this->text))
       return false;
