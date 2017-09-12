@@ -25,6 +25,13 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
     return $template;
   }
   
+  protected function process_page($text) {
+    $page = new Page();
+    $page->parse_text($text);
+    $page->expand_text();
+    return $page;
+  }
+  
   public function testUseUnusedData() {
     $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
     $expanded_citation = $this->process_citation($text);
@@ -89,6 +96,12 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
     $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";
     $expanded_citation = $this->process_citation($text);
     $this->assertEquals('{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}', $expanded_citation->parsed_text()); 
+  }
+  
+  public function testCommentHandling() {
+    $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3}}";
+    $expanded_page = $this->process_page($text);
+    $this->assertEquals($text, $expanded_page->parsed_text());
   }
   
   public function testGoogleBooksExpansion() {
