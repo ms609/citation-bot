@@ -19,7 +19,6 @@ foreach ($argv as $arg) {
   }
 }
 
-$slow_mode = false;
 $account_suffix='_4'; // Whilst testing
 $account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
@@ -40,7 +39,7 @@ if ($category) {
       while (!$page->write() && $attempts < 2) ++$attempts;
       print htmlspecialchars($page->text);
       if ($attempts < 3 ) {
-        echo $html_output ?
+        echo html_output ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
         . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
