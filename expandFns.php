@@ -169,7 +169,7 @@ function format_title_text($title, $capitalize = TRUE) {
   $iOut = array("''","''",'','',"");
   $in = array("&lt;", "&gt;");
   $out = array("<", ">");
-  $title = title_capitalization($title);
+  if ($capitalize) $title = title_capitalization($title);
   
   return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important!
 }
