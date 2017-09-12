@@ -187,6 +187,10 @@ function under_two_authors($text) {
           );
 }
 
+function title_case($text) {
+  return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
+}
+
 /** Returns a properly capitalised title.
  *      If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and capitalises the letter after any period.
   *             If not, it will assume it is a journal abbreviation and won't capitalise after periods.
