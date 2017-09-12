@@ -785,6 +785,7 @@ class Template extends Item {
         if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
             $this->add_if_new("title", format_title_text( (string) $xml->record->title,FALSE));
         }
+        $i = null;
         foreach ($xml->record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
         }
