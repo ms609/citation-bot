@@ -92,6 +92,16 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $expanded_citation->parsed_text());
   }
   
+  public function testJournalCapitalization() {
+    $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
+    $this->assertEquals('Molecular and Cellular Biology', $expanded->get('journal'));
+  }
+   public function testPageDuplication() {
+     $expanded = $this->process_citation('{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. }}');
+     $this->assertEquals('{{cite journal| page=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. }}', $expanded->parsed_text());
+   }
+
+  
   /* Don't run test until I check the consensus on how such citations should be handled
   public function testEtAlHandlingAndSpaceRetention() {
     $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";

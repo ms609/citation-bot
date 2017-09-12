@@ -134,6 +134,7 @@ class Template extends Item {
 
         $this->id_to_param();
         $this->get_doi_from_text();
+        $this->correct_param_spelling();
         // TODO: Check for the doi-inline template in the title
 
         // If the et al. is from added parameters, go ahead and handle
@@ -141,7 +142,6 @@ class Template extends Item {
           $this->handle_et_al();
         #}
 
-        $this->correct_param_spelling();
         $this->expand_by_pubmed(); //partly to try to find DOI
 
         if ($this->has("periodical") ) {
