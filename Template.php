@@ -331,9 +331,9 @@ class Template extends Item {
         return false;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
-          if ( sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
-          if ( strcasecmp( (string) $value, "unknown") == 0 ) return false;
-          return $this->add($param_name, format_title_text($value));
+          if (sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
+          if (strcasecmp( (string) $value, "unknown") == 0 ) return false;
+          return $this->add($param_name, format_title_text(title_case($value), TRUE));
         }
         return false;
       case 'chapter': case 'contribution':
@@ -1369,15 +1369,11 @@ class Template extends Item {
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
             if ($i == 0) { // Use existing parameter slot in first instance
-              print "\n\n    + REBRANDING $matched_parameter - param $param_key was called "
-              . $this->param[$param_key]->param . "\n\n";
               $this->param[$param_key]->param = $matched_parameter;
               $this->param[$param_key]->val = $match[2][0];
               $param_recycled = TRUE;
             } else {
-              print "\n\n    + ADDING $matched_parameter\n\n";
               $this->add_if_new($matched_parameter, $match[2][$i]);
-              //var_dump($this->param);
             }
           }
         }
@@ -1499,7 +1495,6 @@ class Template extends Item {
         }
       }
       if (!trim($dat) && !$param_recycled) {
-        print "\n    --- UNSETTING KEY $param_key, with value $dat ---\n\n\n\n";
         unset($this->param[$param_key]);
       }
     }
@@ -1751,7 +1746,7 @@ class Template extends Item {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            $p->val = format_title_text(capitalize_title($p->val, FALSE, FALSE));
+            $p->val = format_title_text(title_capitalization($p->val, FALSE, FALSE));
             break;
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
@@ -2074,12 +2069,10 @@ class Template extends Item {
           array_slice($this->param, 0, $prior_pos + 1), 
           array($p),
           array_slice($this->param, $prior_pos + 1));
-          // var_dump($this->param);
         return true;
       }
     }
     $this->param[] = $p;
-    // var_dump($this->param);
     return true;
   }
 
