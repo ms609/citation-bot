@@ -1220,22 +1220,23 @@ class Template extends Item {
       }
     }
     
-    foreach ($this->param as $param_index => $p) {
+    foreach ($this->param as $param_key => $p) {
       if (!empty($p->param)) {
         if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-          $this->param[$param_index]->val = $p->param . '=' . $p->val;
-          $this->param[$param_index]->param = 'url';
+          $this->param[$param_key]->val = $p->param . '=' . $p->val;
+          $this->param[$param_key]->param = 'url';
           if (stripos($p->val, 'books.google.') !== FALSE) {
             $this->name = 'Cite book';
             $this->process();
           }
         } elseif ($p->param == 'doix') {
-          $this->param[$param_index]->param = 'doi';
-          $this->param[$param_index]->val = str_replace(dotEncode, dotDecode, $p->val);
+          $this->param[$param_key]->param = 'doi';
+          $this->param[$param_key]->val = str_replace(dotEncode, dotDecode, $p->val);
         }
         continue;
       }
       $dat = $p->val;
+      $param_recycled = FALSE;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
         foreach ($endnote_test as $endnote_line) {
@@ -1368,10 +1369,15 @@ class Template extends Item {
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
             if ($i == 0) { // Use existing parameter slot in first instance
-              $this->param[$param_index]->param = $matched_parameter;
-              $this->param[$param_index]->val = $match[2][0];
-            } else { 
+              print "\n\n    + REBRANDING $matched_parameter - param $param_key was called "
+              . $this->param[$param_key]->param . "\n\n";
+              $this->param[$param_key]->param = $matched_parameter;
+              $this->param[$param_key]->val = $match[2][0];
+              $param_recycled = TRUE;
+            } else {
+              print "\n\n    + ADDING $matched_parameter\n\n";
               $this->add_if_new($matched_parameter, $match[2][$i]);
+              //var_dump($this->param);
             }
           }
         }
@@ -1399,8 +1405,9 @@ class Template extends Item {
           $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->param[$param_index]->param = $parameter;
-          $this->param[$param_index]->val = $parameter_value;
+          $this->param[$param_key]->param = $parameter;
+          $this->param[$param_key]->val = $parameter_value;
+          $param_recycled = TRUE;
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
@@ -1468,27 +1475,33 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_index]->param = $p1;
-            $this->param[$param_index]->val = implode(" ", $pAll);
+            $this->param[$param_key]->param = $p1;
+            $this->param[$param_key]->val = implode(" ", $pAll);
+            $param_recycled = TRUE;
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_index]->param = 'issue';
-            $this->param[$param_index]->val = implode(" ", $pAll);
+            $this->param[$param_key]->param = 'issue';
+            $this->param[$param_key]->val = implode(" ", $pAll);
+            $param_recycled = TRUE;
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_index]->param = 'accessdate';
-            $this->param[$param_index]->val = implode(" ", $pAll);
+            $this->param[$param_key]->param = 'accessdate';
+            $this->param[$param_key]->val = implode(" ", $pAll);
+            $param_recycled = TRUE;
           }
           break;
         }
       }
-      if (!trim($dat)) unset($this->param[$param_index]);
+      if (!trim($dat) && !$param_recycled) {
+        print "\n    --- UNSETTING KEY $param_key, with value $dat ---\n\n\n\n";
+        unset($this->param[$param_key]);
+      }
     }
   
   }
@@ -1598,7 +1611,7 @@ class Template extends Item {
       echo "\n * initial authors exist, not correcting " . htmlspecialchars($p->param);
       continue;
     }
-
+   
     if ((strlen($p->param) > 0) && !in_array($p->param, PARAMETER_LIST)) {
       echo "\n  *  Unrecognised parameter " . htmlspecialchars($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
@@ -1738,7 +1751,7 @@ class Template extends Item {
             if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
               $this->mod_dashes = TRUE;
               echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) .
-                    "parameter" . tag());
+                    " parameter" . tag());
               $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
             }
             break;
@@ -2040,18 +2053,24 @@ class Template extends Item {
     }
     $p->param = $par;
     $p->val = $val;
+    
     $insert_after = prior_parameters($par);
-    $this->param = array_values($this->param); // Renumber, in case a parameter has been unset
     foreach (array_reverse($insert_after) as $after) {
-      if (($prior_pos = $this->get_param_key($after)) !== NULL) {
+      if (($after_key = $this->get_param_key($after)) !== NULL) {
+        $keys = array_keys($this->param);
+        for ($prior_pos = 0; $prior_pos < count($keys); $prior_pos++) {
+          if ($keys[$prior_pos] == $after_key) break;
+        }
         $this->param = array_merge(
           array_slice($this->param, 0, $prior_pos + 1), 
-          array($p), 
+          array($p),
           array_slice($this->param, $prior_pos + 1));
+          // var_dump($this->param);
         return true;
       }
     }
     $this->param[] = $p;
+    // var_dump($this->param);
     return true;
   }
 
