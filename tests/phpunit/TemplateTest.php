@@ -124,6 +124,14 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
     $this->assertNotNull($expanded->get('doi-brokendate'));
   }
   
+  public function testOpenAccessLookup() {
+    $text = '{{cite journal|doi=10.1038/nature12373}}';
+    $expanded = $this->process_citation($text);
+    var_dump($expanded->get('doi-brokendate'));
+    $this->assertEquals('http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4221854', $expanded->get('url'));
+    $this->assertEquals('Accepted manuscript', $expanded->get('format'));
+  }
+  
   /* Don't run test until I check the consensus on how such citations should be handled
   public function testEtAlHandlingAndSpaceRetention() {
     $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";
