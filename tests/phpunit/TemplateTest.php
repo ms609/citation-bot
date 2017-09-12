@@ -102,8 +102,14 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
      $expanded = $this->process_citation($text);
      $this->assertEquals($text, $expanded->parsed_text());
    }
-
   
+  public function testUnknownJournal() {
+    $text = '{{cite journal|bibcode= 1975STIN...7615344H |title= Development of a transmission error model and an error control model  |volume= 76 |author1= Hammond |first1= J. L. |last2= Brown |first2= J. E. |last3= Liu |first3= S. S. S. |year= 1975}}';
+
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+  }
+
   /* Don't run test until I check the consensus on how such citations should be handled
   public function testEtAlHandlingAndSpaceRetention() {
     $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";
