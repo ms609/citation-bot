@@ -196,38 +196,48 @@ function title_case($text) {
   *     If not, it will assume it is a journal abbreviation and won't capitalise after periods.
  */
 function title_capitalization($in, $sents = TRUE, $could_be_italics = TRUE) {
-  if ($in == mb_strtoupper($in) && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6) {
+  // Use 'straight quotes' per WP:MOS
+  $new_case = straighten_quotes($in);
+  
+  if ( $new_case == mb_strtoupper($new_case) 
+     && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
+     ) {
     // ALL CAPS to Title Case
-    $in = mb_convert_case($in, MB_CASE_TITLE, "UTF-8");
+    $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
+  
   
   if ($could_be_italics) {
     // <em> tags often go missing around species names in CrossRef
-    $in = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $in);
+    $new_case = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $new_case);
   }
   
   if ($sents || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentance ends
     // We should therefore capitalize after each punctuation character.
-    $in = preg_replace_callback("~[?.:!]\s+[a-z]~u" /*Capitalise after punctuation*/,
+    $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
       create_function('$matches','return mb_strtoupper($matches[0]);'),
-      $in);
+      $new_case);
   }
   
-  $apostrophes_safe = preg_replace_callback(
-    "~\w{2}'[A-Z]\b~u",
+  $new_case = preg_replace_callback(
+    "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
     create_function('$matches', 'return mb_strtolower($matches[0]);'),
-    trim($in));
-  $newcase = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $apostrophes_safe);
-  $newcase = preg_replace_callback(
-    "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui",
+    trim($in)
+  );
+  // Solitary 'a' should be lowercase
+  $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
+  $new_case = preg_replace_callback(
+    "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
     create_function('$matches', 'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'),
-    $newcase);
-  // Use 'straight quotes' per WP:MOS
-  $newcase = straighten_quotes($newcase);
-  $newcase = str_replace(dontCap, unCapped, " " .  ucfirst($newcase) . " ");
-  $newcase = substr($newcase, 1, strlen($newcase) - 2); // remove spaces, needed for matching in dontCap
-  return $newcase;
+    $new_case);
+  
+  // Capitalization exceptions, e.g. Elife -> eLife
+  $new_case = str_replace(dontCap, unCapped, " " .  $new_case . " ");
+  
+  $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in dontCap
+  
+  return $new_case;
 }
 
 function tag($long = FALSE) {
