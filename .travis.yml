@@ -1,2 +1,7 @@
 language: php
-script: phpunit --bootstrap Parameter.php tests/phpunit/ParameterTest.php
+php:
+  - '7.0'
+script:
+  - phpunit --bootstrap expandFns.php tests/phpunit/TemplateTest.php
+  - phpunit --bootstrap constants.php tests/phpunit/constantsTest.php
+  - phpunit --bootstrap Parameter.php tests/phpunit/ParameterTest.php

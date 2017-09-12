@@ -25,10 +25,9 @@ Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_t
 ## Structure
 
 Basic structure of a Citation bot script:
-* configure global variables (for instance, `$html_output` will allow or suppress
+* define configuration constants (for instance, `html_output` will allow or suppress
   buffered output)
-* require `expandFns.php`, which will set up the rest of the needed functions and
-  global variables
+* require `expandFns.php`, which will set up the rest of the needed functions
 * use Page functions to fetch/expand/post the page's text
 
 
@@ -40,14 +39,14 @@ A quick tour of the main files:
    appears to use curl only for https, so the path to curl on Labs must be
    correct or the bot will fail to log in because the request can't reach the
    server.
-* `wikifunctions.php`: more constants and functions, and some functions marked
+* `constants.php`: constants defined
+* `wikifunctions.php`: functions related to Wikipedia ineractions, including some marked
    as "untested".
-* `DOItools.php`: defines `$bot` (the Snoopy instance), some regexes,
-   capitalization
-* `objects.php`: mix of variables, script, and functions
+* `DOItools.php`: defines `$bot` (the Snoopy instance) and Crossref-related functions
 * `expandFns.php`: sets up needed functions and global variables, requires most
   of the other files listed here
 * `credentials/crossref.login` allows crossref searches.
+* `logIn.php`: Logs the bot in to Wikipedia servers
 
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
