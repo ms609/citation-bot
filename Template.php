@@ -1597,8 +1597,10 @@ class Template extends Item {
   // It will correct any that appear to be mistyped.
   $mistake_corrections = array_values(common_mistakes);
   $mistake_keys = array_keys(common_mistakes);
-  if ($this->param) foreach ($this->param as $p) {
-    $parameters_used[] = $p->param;
+  if ($this->param) {
+    foreach ($this->param as $p) {
+      $parameters_used[] = $p->param;
+    }
   }
   $parameter_list = PARAMETER_LIST;
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
