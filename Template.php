@@ -160,6 +160,7 @@ class Template extends Item {
         $this->tidy(); // Do now to maximize quality of metadata for DOI searches, etc
         $this->expand_by_adsabs(); //Primarily to try to find DOI
         $this->get_doi_from_crossref();
+        $this->get_open_access_url();
         $this->find_pmid();
         $this->tidy();
     }
@@ -740,7 +741,6 @@ class Template extends Item {
     return false;
   }
 
-
   public function expand_by_adsabs() {
     if (SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
@@ -785,6 +785,7 @@ class Template extends Item {
         if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
             $this->add_if_new("title", format_title_text( (string) $xml->record->title,FALSE));
         }
+        $i = null;
         foreach ($xml->record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
         }
@@ -881,7 +882,6 @@ class Template extends Item {
       }
     }
   }
-
 
   public function expand_by_pubmed($force = FALSE) {
     if (!$force && !$this->incomplete()) return;
@@ -996,6 +996,35 @@ class Template extends Item {
     }
   }
 
+  protected function get_open_access_url() {
+    $doi = $this->get('doi');
+    if (!$doi || $this->get('url')) return;
+    $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
+    $json = @file_get_contents($url);
+    if ($json) {
+      $oa = json_decode($json);
+      if (isset($oa->best_oa_location)) {
+        $best_location = $oa->best_oa_location;
+        if ($best_location->host_type == 'publisher') {
+          // The best location is already linked to by the doi link
+          return true;
+        }
+        $this->add('url', $best_location->url);
+        switch ($best_location->version) {
+            case 'acceptedVersion': $format = 'Accepted manuscript'; break;
+            case 'submittedVersion': $format = 'Submitted manuscript'; break;
+            case 'publishedVersion': $format = 'Full text'; break;
+            default: $format = null;
+        }
+        if ($format) $this->add('format', $format);
+        return true;
+      }
+    } else {
+       echo "\n   ! Could not retrieve open access details from oiDOI API for doi: " . htmlspecialchars($doi);
+       return false;
+    }
+  }
+  
   protected function expand_by_google_books() {
     $url = $this->get('url');
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
@@ -1033,8 +1062,6 @@ class Template extends Item {
     }
     return false;
   }
-
-
 
   protected function google_book_details ($gid) {
     $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";

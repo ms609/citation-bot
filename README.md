@@ -63,10 +63,8 @@ Class files:
 
 ## Style and structure notes
 
-There is a heavy reliance on global variables. When there are mixed script/function
-files, convention here is to put the script portions at the top, then
-functions (if they are mixed). Classes should be in individual files. The code is
-generally written densely. Beware assignments in conditionals, one-line `if`/
-`foreach`/`else` statements, and action taking place through method calls that take
-place in assignments or equality checks. Also beware the difference between `else if`
-and `elseif`.
+Constants and definitions should be provided in `constants.php`.
+Classes should be in individual files. The code is generally written densely. 
+Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, 
+and action taking place through method calls that take place in assignments or equality checks. 
+Also beware the difference between `else if` and `elseif`.
