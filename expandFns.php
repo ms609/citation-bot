@@ -237,6 +237,10 @@ function title_capitalization($in, $sents = TRUE, $could_be_italics = TRUE) {
   
   $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in dontCap
   
+  if (preg_match("~^(the|into|at?|of)\b~", $new_case)) {
+    // If first word is a little word, it should still be capitalized
+    $new_case = ucfirst($new_case);
+  }
   return $new_case;
 }
 
