@@ -1,11 +1,13 @@
-[![Build Status](https://travis-ci.org/ms609/citation-bot.svg?branch=development)](https://travis-ci.org/ms609/citation-bot)
+[![Build Status](https://travis-ci.org/ms609/citation-bot.svg?branch=master)](https://travis-ci.org/ms609/citation-bot)
 [![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/inactive.svg)](http://www.repostatus.org/#inactive)
 
 # Citation bot
 
 ## Github repository details
 There are two main branches of the bot: the **master** code is (should be) implemented at https://tools.wmflabs.org/citations/doibot.php, whereas the **development** branch is implemented at https://tools.wmflabs.org/citations-dev/doibot.php .  Edits should be made first to the development
-branch, then – once fully tested – pulled to the master branch.
+branch, then – once fully tested – pulled to the master branch.  
+The deployment branch (`release`) differs in that credentials files are not included; 
+these should be completed with the appropriate passwords.
 
 ## Overview
 
