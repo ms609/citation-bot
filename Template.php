@@ -1607,20 +1607,26 @@ class Template extends Item {
   foreach ($this->param as $p) {
     ++$i;
 
-    if ($this->initial_author_params) {
-      echo "\n * initial authors exist, not correcting " . htmlspecialchars($p->param);
-      continue;
-    }
-   
     if ((strlen($p->param) > 0) && !in_array($p->param, PARAMETER_LIST)) {
+     
       echo "\n  *  Unrecognised parameter " . htmlspecialchars($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
-        // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link".
+        // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
         $p->param = $mistake_corrections[$mistake_id];
         echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
         continue;
       }
+      
+      /* Not clear why this exception exists.
+       * If it is valid, it should apply only when $p->param relates to authors,
+       * not when it applies to e.g. pages, title.
+      if ($this->initial_author_params) {
+        echo "\n * initial authors exist, not correcting " . htmlspecialchars($p->param);
+        continue;
+      }
+      */
+
       $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
       $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
       $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
@@ -1650,6 +1656,7 @@ class Template extends Item {
         $shortest *= ($str_len / (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
         $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
+      
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
         echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
