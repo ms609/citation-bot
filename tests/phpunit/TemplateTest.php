@@ -34,7 +34,7 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('Other, A. N.',      $expanded_citation->get('author'));
     $this->assertEquals('9'           ,      $expanded_citation->get('issue'));
     $this->assertEquals('22'          ,      $expanded_citation->get('volume'));
-    $this->assertEquals('5-6'         ,      $expanded_citation->get('pages'));
+    $this->assertEquals('5–6'         ,      $expanded_citation->get('pages'));
   }
   
   public function testJstorExpansion() {
