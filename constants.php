@@ -121,7 +121,7 @@ const dontCap = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor '
 ' Hoaj Biology ', ' Isrn Genetics ', ' Iconference ', ' Jabs : Journal Of Applied Biological Sciences ',
 ' Molecular And Cellular Biology ', ' Ocean Science Journal : Osj ', ' Palaios ', ' Plos One ', ' Pnas ',
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' The Embo Journal ', ' Time Out London ',
-' Z/Journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ');
+' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ');
 
 const author_parameters = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author',
