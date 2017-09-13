@@ -1,6 +1,8 @@
 language: php
 php:
   - '7.0'
+git:
+  depth: 3
 before-script:
   - phpenv config-rm xdebug.ini
   - composer install
