@@ -907,7 +907,7 @@ class Template extends Item {
                 case "Title":   $this->add_if_new('title',  format_title_text(str_replace(array("[", "]"), "",(string) $item)));
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
                                 $this->add_if_new('year', (string) $match[1]);
-        break;  case "FullJournalName": $this->add_if_new('journal',  format_title_text((string) $item));
+        break;  case "FullJournalName": $this->add_if_new('journal',  format_title_text(ucwords((string) $item)));
         break;  case "Volume":  $this->add_if_new('volume', (string) $item);
         break;  case "Issue":   $this->add_if_new('issue', (string) $item);
         break;  case "Pages":   $this->add_if_new('pages', (string) $item);
