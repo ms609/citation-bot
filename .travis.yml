@@ -1,6 +1,10 @@
 language: php
 php:
   - '7.0'
+git:
+  depth: 3
+before-script:
+  - composer install
 script:
   - phpunit --bootstrap expandFns.php tests/phpunit/expandFnsTest.php
   - phpunit --bootstrap expandFns.php tests/phpunit/TemplateTest.php
