@@ -10,7 +10,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
  
-class expandFnsTest extends PHPUnit_Framework_TestCase {
+class expandFnsTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
   }
@@ -115,13 +115,11 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
     $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
     $expanded = $this->process_citation($text);
     var_dump($expanded->get('doi-brokendate'));
-    $this->assertNull($expanded->get('doi-brokendate'));
+    $this->assertNull($expanded->get('doi-broken-date'));
     
     $text = '{{cite journal|doi=10.3265/Nefrologia.NOTAREALDOI.broken|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
     $expanded = $this->process_citation($text);
-    var_dump($expanded->get('doi-brokendate'));
-    var_dump($expanded);
-    $this->assertNotNull($expanded->get('doi-brokendate'));
+    $this->assertNotNull($expanded->get('doi-broken-date'));
   }
   
   public function testOpenAccessLookup() {

@@ -9,6 +9,9 @@ branch, then – once fully tested – pulled to the master branch.
 The deployment branch (`release`) differs in that credentials files are not included; 
 these should be completed with the appropriate passwords.
 
+The deployment branch (`release`) differs from the master in that credentials files are not included; 
+these should be completed locally with the appropriate passwords.
+
 ## Overview
 
 This is some basic documentation about what this bot is and how some of the parts connect.

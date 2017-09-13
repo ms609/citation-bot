@@ -6,7 +6,13 @@
  * This will ensure that the bug does not recur.
  */
 
-class doibotTest extends PHPUnit_Framework_TestCase {
+ // backward compatibility
+if (!class_exists('\PHPUnit\Framework\TestCase') &&
+    class_exists('\PHPUnit_Framework_TestCase')) {
+    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
+}
+ 
+class doibotTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
     if (!defined("PIPE_PLACEHOLDER")) {

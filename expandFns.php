@@ -154,7 +154,7 @@ function inputValue($tag, $form) {
   return false;
 }
 
-function format_title_text($title, $capitalize = TRUE) {
+function format_title_text($title) {
   $title = html_entity_decode($title, null, "UTF-8");
   $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
   $title = (mb_substr($title, -1) == ".")
