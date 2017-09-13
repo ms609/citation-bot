@@ -49,7 +49,7 @@ class Parameter {
   protected function parse_val($value) {
     switch ($this->param) {
       case 'pages':
-        if (stripos($value, "http") !== FALSE) $value = mb_ereg_replace(to_en_dash, en_dash, $value);
+        if (stripos($value, "http") === FALSE) $value = mb_ereg_replace(to_en_dash, en_dash, $value);
         $this->val = $value;
       break;
       default: $this->val = $value;
