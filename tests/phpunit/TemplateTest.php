@@ -10,7 +10,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
  
-class expandFnsTest extends PHPUnit_Framework_TestCase {
+class expandFnsTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
   }
@@ -102,7 +102,33 @@ class expandFnsTest extends PHPUnit_Framework_TestCase {
      $expanded = $this->process_citation($text);
      $this->assertEquals($text, $expanded->parsed_text());
    }
+  
+  public function testUnknownJournal() {
+    $text = '{{cite journal|bibcode= 1975STIN...7615344H |title= Development of a transmission error model and an error control model  |volume= 76 |author1= Hammond |first1= J. L. |last2= Brown |first2= J. E. |last3= Liu |first3= S. S. S. |year= 1975}}';
 
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+  }
+
+  
+  public function testBrokenDoiDetection() {
+    $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
+    $expanded = $this->process_citation($text);
+    var_dump($expanded->get('doi-brokendate'));
+    $this->assertNull($expanded->get('doi-broken-date'));
+    
+    $text = '{{cite journal|doi=10.3265/Nefrologia.NOTAREALDOI.broken|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get('doi-broken-date'));
+  }
+  
+  public function testOpenAccessLookup() {
+    $text = '{{cite journal|doi=10.1038/nature12373}}';
+    $expanded = $this->process_citation($text);
+    var_dump($expanded->get('doi-brokendate'));
+    $this->assertEquals('http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4221854', $expanded->get('url'));
+    $this->assertEquals('Accepted manuscript', $expanded->get('format'));
+  }
   
   /* Don't run test until I check the consensus on how such citations should be handled
   public function testEtAlHandlingAndSpaceRetention() {

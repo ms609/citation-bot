@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ms609/citation-bot.svg?branch=development)](https://travis-ci.org/ms609/citation-bot)
+[![Build Status](https://travis-ci.org/ms609/citation-bot.svg?branch=master)](https://travis-ci.org/ms609/citation-bot)
 [![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/inactive.svg)](http://www.repostatus.org/#inactive)
 
 # Citation bot
@@ -6,6 +6,9 @@
 ## Github repository details
 There are two main branches of the bot: the **master** code is (should be) implemented at https://tools.wmflabs.org/citations/doibot.php, whereas the **development** branch is implemented at https://tools.wmflabs.org/citations-dev/doibot.php .  Edits should be made first to the development
 branch, then – once fully tested – pulled to the master branch.
+
+The deployment branch (`release`) differs from the master in that credentials files are not included; 
+these should be completed locally with the appropriate passwords.
 
 ## Overview
 
@@ -63,10 +66,8 @@ Class files:
 
 ## Style and structure notes
 
-There is a heavy reliance on global variables. When there are mixed script/function
-files, convention here is to put the script portions at the top, then
-functions (if they are mixed). Classes should be in individual files. The code is
-generally written densely. Beware assignments in conditionals, one-line `if`/
-`foreach`/`else` statements, and action taking place through method calls that take
-place in assignments or equality checks. Also beware the difference between `else if`
-and `elseif`.
+Constants and definitions should be provided in `constants.php`.
+Classes should be in individual files. The code is generally written densely. 
+Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, 
+and action taking place through method calls that take place in assignments or equality checks. 
+Also beware the difference between `else if` and `elseif`.
