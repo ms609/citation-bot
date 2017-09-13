@@ -333,12 +333,12 @@ class Template extends Item {
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if (sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
           if (strcasecmp( (string) $value, "unknown") == 0 ) return false;
-          return $this->add($param_name, format_title_text(title_case($value), TRUE));
+          return $this->add($param_name, format_title_text(title_case($value)));
         }
         return false;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
-          return $this->add($param_name, format_title_text($value, FALSE));
+          return $this->add($param_name, format_title_text($value));
         }
         return false;
       case "page": case "pages":
@@ -709,7 +709,7 @@ class Template extends Item {
           $this->add_if_new("author$i", $name);
         }
       }
-      $this->add_if_new("title", format_title_text((string) $xml->entry->title), FALSE);
+      $this->add_if_new("title", format_title_text((string) $xml->entry->title));
       $this->add_if_new("class", (string) $xml->entry->category["term"]);
       $this->add_if_new("author", substr($authors, 2));
       $this->add_if_new("year", substr($xml->entry->published, 0, 4));
@@ -783,7 +783,7 @@ class Template extends Item {
         echo tag();
         $this->add_if_new("bibcode", (string) $xml->record->bibcode);
         if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
-            $this->add_if_new("title", format_title_text( (string) $xml->record->title,FALSE));
+            $this->add_if_new("title", format_title_text( (string) $xml->record->title));
         }
         foreach ($xml->record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
@@ -829,15 +829,15 @@ class Template extends Item {
         echo "\n - Expanding from crossRef record" . tag();
 
         if ($crossRef->volume_title && $this->blank('journal')) {
-          $this->add_if_new('chapter', format_title_text($crossRef->article_title,FALSE));
+          $this->add_if_new('chapter', format_title_text($crossRef->article_title));
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
             $this->forget('title');
           }
-          $this->add_if_new('title',  format_title_text($crossRef->volume_title,FALSE));
+          $this->add_if_new('title',  format_title_text($crossRef->volume_title));
         } else {
-          $this->add_if_new('title',  format_title_text($crossRef->article_title,FALSE));
+          $this->add_if_new('title',  format_title_text($crossRef->article_title));
         }
-        $this->add_if_new('series',  format_title_text($crossRef->series_title,FALSE));
+        $this->add_if_new('series',  format_title_text($crossRef->series_title);
         $this->add_if_new("year", $crossRef->year);
         if ($this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) && $crossRef->contributors->contributor) {
           $au_i = 0;
@@ -904,7 +904,7 @@ class Template extends Item {
         $this->add_if_new('doi', $match[0]);
       }
       switch ($item["Name"]) {
-                case "Title":   $this->add_if_new('title',  format_title_text(str_replace(array("[", "]"), "",(string) $item),FALSE));
+                case "Title":   $this->add_if_new('title',  format_title_text(str_replace(array("[", "]"), "",(string) $item)));
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
                                 $this->add_if_new('year', (string) $match[1]);
         break;  case "FullJournalName": $this->add_if_new('journal',  format_title_text((string) $item));
@@ -1043,9 +1043,9 @@ class Template extends Item {
     );
     $xml = simplexml_load_string($simplified_xml);
     if ($xml->dc___title[1]) {
-      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]),FALSE));
+      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
     } else {
-      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->title),FALSE));
+      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->title)));
     }
     // Possibly contains dud information on occasion
     // $this->add_if_new("publisher", str_replace("___", ":", $xml->dc___publisher)); 
@@ -1697,7 +1697,7 @@ class Template extends Item {
     if ($this->added('title')) {
       $this->format_title();
     } else if ($this->is_modified() && $this->get('title')) {
-      $this->set('title', format_title_text(straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title'))),FALSE);
+      $this->set('title', format_title_text(straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title'))));
     }
 
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) {
@@ -1814,7 +1814,7 @@ class Template extends Item {
 
   protected function format_title($title = FALSE) {
     if (!$title) $title = $this->get('title');
-    $this->set('title', format_title_text($title), FALSE); // order IS important!
+    $this->set('title', format_title_text($title)); // order IS important!
   }
 
   protected function sanitize_doi($doi = FALSE) {
