@@ -4,7 +4,6 @@ php:
 git:
   depth: 3
 before-script:
-  - phpenv config-rm xdebug.ini
   - composer install
 script:
   - phpunit --bootstrap expandFns.php tests/phpunit/expandFnsTest.php
