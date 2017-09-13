@@ -7,7 +7,6 @@ before-script:
   - phpenv config-rm xdebug.ini
   - composer install
 script:
-  - phpdbg -qrr phpunit
   - phpunit --bootstrap expandFns.php tests/phpunit/expandFnsTest.php
   - phpunit --bootstrap expandFns.php tests/phpunit/TemplateTest.php
   - phpunit --bootstrap constants.php tests/phpunit/constantsTest.php
