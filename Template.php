@@ -1752,7 +1752,7 @@ class Template extends Item {
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
             break; // Don't want 'Edition ed.'
           case 'pages': case 'page': case 'issue': case 'year':
-            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
+            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && (stripos($p->val, "http") === FALSE)) {
               $this->mod_dashes = TRUE;
               echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) .
                     " parameter" . tag());
