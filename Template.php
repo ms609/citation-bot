@@ -1779,7 +1779,7 @@ class Template extends Item {
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
             break; // Don't want 'Edition ed.'
           case 'year':
-            if (preg_match ('~\d{4}\-\d\d\-\d\d~', $p->val)) { // We have more than one dash, must not be range of years.
+            if (preg_match ("~\d\d*\-\d\d*\-\d\d*~", $p->val)) { // We have more than one dash, must not be range of years.
                $this->add_if_new('date', $p->val);
                $this->forget('year');
                break; 
