@@ -1,3 +1,5 @@
+branches:
+  except: release
 language: php
 php:
   - '7.0'
