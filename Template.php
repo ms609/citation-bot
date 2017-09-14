@@ -1778,8 +1778,15 @@ class Template extends Item {
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
             break; // Don't want 'Edition ed.'
+          case 'year':
+            if (preg_match ('~\d{4}\-\d\d\-\d\d~', $p->val)) { // We have more than one dash, must not be range of years.
+               $this->add_if_new('date', $p->val);
+               $this->forget('year');
+               break; 
+            }
+            // No break here
           case 'pages': case 'page': case 'issue': case 'year':
-            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && (stripos($p->val, "http") === FALSE && (substr_count($p->val, '-') < 2 || substr_count($p->val, '--') != 0 ))) {
+            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && (stripos($p->val, "http") === FALSE )) {
               $this->mod_dashes = TRUE;
               echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) .
                     " parameter" . tag());
