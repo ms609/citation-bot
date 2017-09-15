@@ -1683,14 +1683,14 @@ class Template extends Item {
       
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
-        echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+        echo " replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
       } else {
         $similarity = similar_text($p->param, $closest) / strlen($p->param);
         if ($similarity > 0.6) {
           $p->param = $closest;
-          echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+          echo " replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
         } else {
-          echo "could not be replaced with confidence.  Please check the citation yourself.";
+          echo " could not be replaced with confidence.  Please check the citation yourself.";
         }
       }
     }
