@@ -1396,7 +1396,7 @@ class Template extends Item {
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
             $this->add_if_new($matched_parameter, $match[2][$i]);
-            $param_recycled = TRUE; 
+            $param_recycled = TRUE;
           }
         }
       }
@@ -1424,7 +1424,7 @@ class Template extends Item {
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
           $this->add_if_new($parameter,$parameter_value);
-          $param_recycled = TRUE; 
+          $param_recycled = TRUE;
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
@@ -1492,19 +1492,22 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-           $this->add_if_new($p1,implode(" ", $pAll));
+            $this->add_if_new($p1,implode(" ", $pAll));
+            $param_recycled = TRUE;
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
             $this->add_if_new('issue',implode(" ", $pAll));
+            $param_recycled = TRUE;
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
             $this->add_if_new('accessdate',implode(" ", $pAll));
+            $param_recycled = TRUE;
           }
           break;
         }
