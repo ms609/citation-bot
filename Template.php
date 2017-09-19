@@ -1263,6 +1263,7 @@ class Template extends Item {
         continue;
       }
       $dat = $p->val;
+      $param_recycled = FALSE;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
         foreach ($endnote_test as $endnote_line) {
@@ -1395,6 +1396,7 @@ class Template extends Item {
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
             $this->add_if_new($matched_parameter, $match[2][$i]);
+            $param_recycled = TRUE; 
           }
         }
       }
@@ -1422,6 +1424,7 @@ class Template extends Item {
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
           $this->add_if_new($parameter,$parameter_value);
+          $param_recycled = TRUE; 
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
@@ -1506,7 +1509,7 @@ class Template extends Item {
           break;
         }
       }
-      if (!trim($dat)) {
+      if (!trim($dat) && !$param_recycled) {
         unset($this->param[$param_key]);
       }
     }
