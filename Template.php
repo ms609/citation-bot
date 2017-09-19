@@ -1263,7 +1263,6 @@ class Template extends Item {
         continue;
       }
       $dat = $p->val;
-      $param_recycled = FALSE;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
         foreach ($endnote_test as $endnote_line) {
@@ -1422,9 +1421,7 @@ class Template extends Item {
           $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->param[$param_key]->param = $parameter;
-          $this->param[$param_key]->val = $parameter_value;
-          $param_recycled = TRUE;
+          $this->add_if_new($parameter,$parameter_value);
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
@@ -1492,30 +1489,24 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = $p1;
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+           $this->add_if_new($p1,implode(" ", $pAll));
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'issue';
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            $this->add_if_new('issue',implode(" ", $pAll));
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'accessdate';
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            $this->add_if_new('accessdate',implode(" ", $pAll));
           }
           break;
         }
       }
-      if (!trim($dat) && !$param_recycled) {
+      if (!trim($dat)) {
         unset($this->param[$param_key]);
       }
     }
