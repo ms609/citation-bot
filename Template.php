@@ -1395,13 +1395,7 @@ class Template extends Item {
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i == 0) { // Use existing parameter slot in first instance
-              $this->param[$param_key]->param = $matched_parameter;
-              $this->param[$param_key]->val = $match[2][0];
-              $param_recycled = TRUE;
-            } else {
-              $this->add_if_new($matched_parameter, $match[2][$i]);
-            }
+            $this->add_if_new($matched_parameter, $match[2][$i]);
           }
         }
       }
