@@ -1370,7 +1370,7 @@ class Template extends Item {
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
-        $this->set('url', $match[0]);
+        $this->add_if_new('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
       
@@ -1408,7 +1408,7 @@ class Template extends Item {
       }
       if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
         if ($this->blank('year')) {
-          $this->set('year', $match[1]);
+          $this->add('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
