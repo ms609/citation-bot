@@ -3,7 +3,7 @@
  * Template extends Item. Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
  *
- * Of particular note:
+ * Of particular note: 
  *     process() is what handles the different cite/Cite templates differently.
  *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
  *       switch statement handles various parameters differently.
