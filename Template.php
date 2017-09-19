@@ -1263,7 +1263,6 @@ class Template extends Item {
         continue;
       }
       $dat = $p->val;
-      $param_recycled = FALSE;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
         foreach ($endnote_test as $endnote_line) {
@@ -1371,7 +1370,7 @@ class Template extends Item {
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
-        $this->set('url', $match[0]);
+        $this->add_if_new('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
       
@@ -1395,13 +1394,7 @@ class Template extends Item {
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i == 0) { // Use existing parameter slot in first instance
-              $this->param[$param_key]->param = $matched_parameter;
-              $this->param[$param_key]->val = $match[2][0];
-              $param_recycled = TRUE;
-            } else {
-              $this->add_if_new($matched_parameter, $match[2][$i]);
-            }
+            $this->add_if_new($matched_parameter, $match[2][$i]);
           }
         }
       }
@@ -1415,7 +1408,7 @@ class Template extends Item {
       }
       if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
         if ($this->blank('year')) {
-          $this->set('year', $match[1]);
+          $this->add('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
@@ -1428,9 +1421,7 @@ class Template extends Item {
           $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->param[$param_key]->param = $parameter;
-          $this->param[$param_key]->val = $parameter_value;
-          $param_recycled = TRUE;
+          $this->add_if_new($parameter,$parameter_value);
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
@@ -1473,11 +1464,11 @@ class Template extends Item {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-          $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $this->add('isbn', $match[1]);
+        $this->add_if_new('isbn', $match[1]);
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -1498,30 +1489,24 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = $p1;
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+           $this->add_if_new($p1,implode(" ", $pAll));
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'issue';
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            $this->add_if_new('issue',implode(" ", $pAll));
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'accessdate';
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            $this->add_if_new('accessdate',implode(" ", $pAll));
           }
           break;
         }
       }
-      if (!trim($dat) && !$param_recycled) {
+      if (!trim($dat)) {
         unset($this->param[$param_key]);
       }
     }
@@ -1683,14 +1668,14 @@ class Template extends Item {
       
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
-        echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+        echo " replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
       } else {
         $similarity = similar_text($p->param, $closest) / strlen($p->param);
         if ($similarity > 0.6) {
           $p->param = $closest;
-          echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+          echo " replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
         } else {
-          echo "could not be replaced with confidence.  Please check the citation yourself.";
+          echo " could not be replaced with confidence.  Please check the citation yourself.";
         }
       }
     }
@@ -1778,8 +1763,15 @@ class Template extends Item {
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
             break; // Don't want 'Edition ed.'
+          case 'year':
+            if (preg_match ("~\d\d*\-\d\d*\-\d\d*~", $p->val)) { // We have more than one dash, must not be range of years.
+               $this->add_if_new('date', $p->val);
+               $this->forget('year');
+               break; 
+            }
+            // No break here
           case 'pages': case 'page': case 'issue': case 'year':
-            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
+            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && (stripos($p->val, "http") === FALSE)) {
               $this->mod_dashes = TRUE;
               echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) .
                     " parameter" . tag());
