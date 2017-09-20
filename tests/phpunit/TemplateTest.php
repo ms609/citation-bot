@@ -33,14 +33,10 @@ class expandFnsTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testUseUnusedData() {
-    $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
+    $text = "{{Cite web | title=Goood  | pp. 5-6 }}";
     $expanded_citation = $this->process_citation($text);
     $this->assertEquals('cite web',          $expanded_citation->wikiname());
-    $this->assertEquals('http://google.com', $expanded_citation->get('url'));
-    $this->assertEquals('I am a title',      $expanded_citation->get('title')); 
-    $this->assertEquals('Other, A. N.',      $expanded_citation->get('author'));
-    $this->assertEquals('9'           ,      $expanded_citation->get('issue'));
-    $this->assertEquals('22'          ,      $expanded_citation->get('volume'));
+    $this->assertEquals('Goood',      $expanded_citation->get('title'));
     $this->assertEquals('5–6'         ,      $expanded_citation->get('pages'));
   }
   
