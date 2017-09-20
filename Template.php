@@ -1683,14 +1683,14 @@ class Template extends Item {
       
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
-        echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+        echo " replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
       } else {
         $similarity = similar_text($p->param, $closest) / strlen($p->param);
         if ($similarity > 0.6) {
           $p->param = $closest;
-          echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+          echo " replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
         } else {
-          echo "could not be replaced with confidence.  Please check the citation yourself.";
+          echo " could not be replaced with confidence.  Please check the citation yourself.";
         }
       }
     }
@@ -1778,6 +1778,13 @@ class Template extends Item {
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
             break; // Don't want 'Edition ed.'
+          case 'year':
+            if (preg_match ("~\d\d*\-\d\d*\-\d\d*~", $p->val)) { // We have more than one dash, must not be range of years.
+               $this->add_if_new('date', $p->val);
+               $this->forget('year');
+               break; 
+            }
+            // No break here
           case 'pages': case 'page': case 'issue': case 'year':
             if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && (stripos($p->val, "http") === FALSE)) {
               $this->mod_dashes = TRUE;
