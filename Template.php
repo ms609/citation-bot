@@ -1371,7 +1371,7 @@ class Template extends Item {
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
-        $this->add('url', $match[0]);
+        $this->set('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
       
