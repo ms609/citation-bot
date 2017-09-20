@@ -1371,7 +1371,7 @@ class Template extends Item {
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
-        $this->add_if_new('url', $match[0]);
+        if ($this->add_if_new('url', $match[0]) === FALSE) $this->add('url_DUPLICATE', $match[0]); // Do no lose URL
         $dat = str_replace($match[0], '', $dat);
       }
       
