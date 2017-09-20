@@ -1371,7 +1371,7 @@ class Template extends Item {
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
-        $this->set('url', $match[0]);
+        $this->add('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
       
@@ -1395,7 +1395,7 @@ class Template extends Item {
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i == 0) { // Use existing parameter slot in first instance
+            if ($i == 0 && !$param_recycled) { // Use existing parameter slot in first instance
               $this->param[$param_key]->param = $matched_parameter;
               $this->param[$param_key]->val = $match[2][0];
               $param_recycled = TRUE;
@@ -1428,9 +1428,13 @@ class Template extends Item {
           $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->param[$param_key]->param = $parameter;
-          $this->param[$param_key]->val = $parameter_value;
-          $param_recycled = TRUE;
+          if (!$param_recycled) {
+            $this->param[$param_key]->param = $parameter;
+            $this->param[$param_key]->val = $parameter_value;
+            $param_recycled = TRUE;
+          } else {
+            $this->add($parameter,$parameter_value);
+          }
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
@@ -1498,25 +1502,37 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = $p1;
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            if (!$param_recycled) {
+              $this->param[$param_key]->param = $p1;
+              $this->param[$param_key]->val = implode(" ", $pAll);
+              $param_recycled = TRUE; 
+            } else {
+              $this->add($p1,implode(" ", $pAll));
+            }
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'issue';
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            if (!$param_recycled) {
+              $this->param[$param_key]->param = 'issue';
+              $this->param[$param_key]->val = implode(" ", $pAll);
+              $param_recycled = TRUE;
+            } else {
+              $this->add('issue',implode(" ", $pAll));
+            }
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'accessdate';
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            if (!$param_recycled) {
+              $this->param[$param_key]->param = 'accessdate';
+              $this->param[$param_key]->val = implode(" ", $pAll);
+              $param_recycled = TRUE;
+            } else {
+              $this->add('accessdate',implode(" ", $pAll));
+            }
           }
           break;
         }
