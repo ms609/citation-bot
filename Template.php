@@ -1371,7 +1371,7 @@ class Template extends Item {
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
-        $this->set('url', $match[0]);
+        if ($this->add_if_new('url', $match[0]) === FALSE) $this->add('url_DUPLICATE', $match[0]); // Do no lose URL
         $dat = str_replace($match[0], '', $dat);
       }
       
@@ -1395,13 +1395,8 @@ class Template extends Item {
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i == 0) { // Use existing parameter slot in first instance
-              $this->param[$param_key]->param = $matched_parameter;
-              $this->param[$param_key]->val = $match[2][0];
-              $param_recycled = TRUE;
-            } else {
-              $this->add_if_new($matched_parameter, $match[2][$i]);
-            }
+            $this->add_if_new($matched_parameter, $match[2][$i]);
+            $param_recycled = TRUE;
           }
         }
       }
@@ -1415,7 +1410,7 @@ class Template extends Item {
       }
       if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
         if ($this->blank('year')) {
-          $this->set('year', $match[1]);
+          $this->add('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
@@ -1428,8 +1423,7 @@ class Template extends Item {
           $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->param[$param_key]->param = $parameter;
-          $this->param[$param_key]->val = $parameter_value;
+          $this->add_if_new($parameter,$parameter_value);
           $param_recycled = TRUE;
           break;
         }
@@ -1473,11 +1467,11 @@ class Template extends Item {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-          $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $this->add('isbn', $match[1]);
+        $this->add_if_new('isbn', $match[1]);
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -1498,24 +1492,21 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = $p1;
-            $this->param[$param_key]->val = implode(" ", $pAll);
+            $this->add_if_new($p1,implode(" ", $pAll));
             $param_recycled = TRUE;
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'issue';
-            $this->param[$param_key]->val = implode(" ", $pAll);
+            $this->add_if_new('issue',implode(" ", $pAll));
             $param_recycled = TRUE;
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'accessdate';
-            $this->param[$param_key]->val = implode(" ", $pAll);
+            $this->add_if_new('accessdate',implode(" ", $pAll));
             $param_recycled = TRUE;
           }
           break;
