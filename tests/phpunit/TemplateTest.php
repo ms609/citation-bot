@@ -144,7 +144,7 @@ class expandFnsTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testMisspeltParameters() {
-    $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutel=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
+    $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('author')); ## Check: the parameter might be broken down into last1, first1 etc
     $this->assertNotNull($expanded->get('title'));
