@@ -1516,7 +1516,7 @@ class Template extends Item {
         }
       }
       if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
-        if ($this->blank('year')) {
+        if ($this->blank('year') && $this->blank('date')) {
           $this->set('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
