@@ -125,7 +125,6 @@ class expandFnsTest extends PHPUnit\Framework\TestCase {
   public function testOpenAccessLookup() {
     $text = '{{cite journal|doi=10.1038/nature12373}}';
     $expanded = $this->process_citation($text);
-    var_dump($expanded->get('doi-brokendate'));
     $this->assertEquals('http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4221854', $expanded->get('url'));
     $this->assertEquals('Accepted manuscript', $expanded->get('format'));
   }
@@ -142,6 +141,16 @@ class expandFnsTest extends PHPUnit\Framework\TestCase {
     $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3}}";
     $expanded_page = $this->process_page($text);
     $this->assertEquals($text, $expanded_page->parsed_text());
+  }
+  
+  public function testMisspeltParameters() {
+    $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutel=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get('author')); ## Check: the parameter might be broken down into last1, first1 etc
+    $this->assertNotNull($expanded->get('title'));
+    $this->assertNotNull($expanded->get('journal'));
+    $this->assertNotNull($expanded->get('pages'));
+    $this->assertNotNull($expanded->get('year'));
   }
   
   /* Commented out whilst Google server are inaccessible
