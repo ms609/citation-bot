@@ -1328,7 +1328,7 @@ class Template extends Item {
             case "EP":
               $end_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              if_null_set("pages", $start_page . "-" . $end_page);
+              add_if_new("pages", $start_page . "-" . $end_page);
               break;
             case "DO":
               $ris_parameter = "doi";
@@ -1359,7 +1359,7 @@ class Template extends Item {
           }
           unset($ris_part[0]);
           if ($ris_parameter
-                  && if_null_set($ris_parameter, trim(implode($ris_part)))
+                  && add_if_new($ris_parameter, trim(implode($ris_part)))
               ) {
             global $auto_summary;
             if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
