@@ -2,6 +2,7 @@ branches:
   except: release
 language: php
 php:
+  - '5.5.9'
   - '7.0'
 git:
   depth: 3
