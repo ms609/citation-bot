@@ -11,7 +11,6 @@
  *       and side effects as well. Beware!
  *
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
- * to find information that can be added to existing citations.
  */
 
 require_once("Item.php");
@@ -233,7 +232,7 @@ class Template extends Item {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
 
-        if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
+        if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatSurname($au[0])));
