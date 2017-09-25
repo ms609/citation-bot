@@ -449,7 +449,7 @@ class Template extends Item {
       if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
         $url = "https://" . $url; // Try it with http
       }
-      if (filter_var($url, FILTER_VALIDATE_URL,FILTER_FLAG_HOST_REQUIRED) ) { // is a valid http(s) URL
+      if (filter_var($url, FILTER_VALIDATE_URL,FILTER_FLAG_HOST_REQUIRED |  FILTER_FLAG_PATH_REQUIRED ) ) { // is a valid http(s) URL with a full hostname and path of some type
         $this->set('url',$url);
         $this->forget('website');
         quiet_echo("\n   ~ website is actually HTTP URL; converting to use url parameter.");
