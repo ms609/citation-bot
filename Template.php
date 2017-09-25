@@ -444,9 +444,9 @@ class Template extends Item {
   }
 
   protected function get_identifiers_from_url() {
-    if ($this->blank('url') && !$this->blank('website') {  // No URL, but a website
+    if ($this->blank('url') && !$this->blank('website')) {  // No URL, but a website
       $url = trim($this->get('website'));
-      if (strtolower(substr( $url, 0, 4 )) !== "http") {
+      if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
         $url = "https://" . $url; // Try it with http
       }
       if (filter_var($url, FILTER_VALIDATE_URL,FILTER_FLAG_HOST_REQUIRED) ) { // is a valid http(s) URL
