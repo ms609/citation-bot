@@ -446,6 +446,9 @@ class Template extends Item {
   protected function get_identifiers_from_url() {
     if ($this->blank('url') && $this->has('website')) {  // No URL, but a website
       $url = trim($this->get('website'));
+      if (strtolower(substr( $url, 0, 6 )) === "ttp://" ) { // Not unusual to lose first character in copy and paste
+        $url = "h" . $url;
+      }
       if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
         $url = "http://" . $url; // Try it with http
       }
@@ -458,6 +461,10 @@ class Template extends Item {
       }
     }
     $url = $this->get('url');
+    if (strtolower(substr( $url, 0, 6 )) === "ttp://" ) { // Not unusual to lose first character in copy and paste
+      $url = "h" . $url;
+      $this->set('url',$url); // Save it
+    }
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {
