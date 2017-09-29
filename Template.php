@@ -327,7 +327,8 @@ class Template extends Item {
         if (   ($this->blank("date") || trim(strtolower($this->get('date'))) == "in press")
             && ($this->blank("year") || trim(strtolower($this->get('year'))) == "in press")
           ) {
-          if (trim(strtolower($this->get('date'))) == "in press") $this->unset('date');
+          if (trim(strtolower($this->get('date'))) == "in press" && $param_name == 'year') $this->unset('date');
+          if (trim(strtolower($this->get('year'))) == "in press" && $param_name == 'date') $this->unset('year');
           return $this->add($param_name, $value);
         }
         return false;
