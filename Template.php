@@ -329,7 +329,7 @@ class Template extends Item {
             && ($this->blank("year") || in_array(trim(strtolower($this->get('year'))),$in_press))
           ) {
           if ($param_name != 'date') $this->unset('date'); // Delete any "in press" dates.
-          if ($param_name != 'year') $this->unset('year');
+          if ($param_name != 'year') $this->unset('year'); // We only unset the other one so that parameters stay in order as much as possible
           return $this->add($param_name, $value);
         }
         return false;
