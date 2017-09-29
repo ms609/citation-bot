@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="exampleFns.php">
+<phpunit bootstrap="exampleFns.php"
+         stopOnError="false">
   <testsuites>
     <testsuite name="TestSuite">
-      <file>./tests/phpunit/constantsTest.php</file>
-      <file>./tests/phpunit/expandFnsTest.php</file>
-      <file>./tests/phpunit/TemplateTest.php</file>
-      <file>./tests/phpunit/ParameterTest.php</file>
+      <directory>./tests/phpunit</file>
     </testsuite>
   </testsuites>
+  <filter>
+    <whitelist processUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">./</directory>
+      <exclude>
+        <file>./doibot.php</file>
+      </exclude>
+    </whitelist>
+  </filter>
 </phpunit>
