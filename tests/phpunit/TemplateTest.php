@@ -182,6 +182,10 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($expanded->get('journal'));
     $this->assertNotNull($expanded->get('pages'));
     $this->assertNotNull($expanded->get('year'));
+      
+    $text = "{{Cite journal|pp. 1–5}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get('pages'));
   }
   
   public function testGoogleBooksExpansion() {
@@ -204,4 +208,30 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text, $expanded->parsed_text());
   }
 
+  public function testInPress() {
+    $text = '{{Cite journal|pmid=9858585|date =in press}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('date'));
+    $this->assertEquals('1999',$expanded->get('year'));
+
+    $text = '{{cite journal|pmid=9858585|year=in press}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('date'));
+    $this->assertEquals('1999','$expanded->get('year'));
+  }
+  
+  public function testSICI() {
+    $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('year')); // Do not add year
+    $this->assertEquals('152', $expanded->get('volume'));
+  }
+  
+  public function testISODates() {
+      $text = '{{cite book |author=Me |title=Title |year=2007-08-01 }}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('2007-08-01', $expanded->get('date'));
+      $this->assertNull($expanded->get('year'));
+  }
+  
 }
