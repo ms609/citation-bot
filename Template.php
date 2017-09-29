@@ -324,9 +324,8 @@ class Template extends Item {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
-        $in_press = array("in press","pending","published","unpublished","unknown","tba","forthcoming","in the press","na","submitted","tbd","missing","inpress");
-        if (   ($this->blank("date") || in_array(trim(strtolower($this->get('date'))),$in_press))
-            && ($this->blank("year") || in_array(trim(strtolower($this->get('year'))),$in_press))
+        if (   ($this->blank("date") || in_array(trim(strtolower($this->get('date'))), IN_PRESS_ALIASES))
+            && ($this->blank("year") || in_array(trim(strtolower($this->get('year'))), IN_PRESS_ALIASES))
           ) {
           if ($param_name != 'date') $this->forget('date'); // Delete any "in press" dates.
           if ($param_name != 'year') $this->forget('year'); // We only unset the other one so that parameters stay in order as much as possible
