@@ -192,7 +192,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Wonderful Life: The Burgess Shale and the Nature of History',
       $expanded_citation->get('title'));
     $this->assertEquals('9780393307009', $expanded_citation->get('isbn')   );
-    $this->assertEquals('Gould'        , $expanded_citation->get('author1'));
+    $this->assertEquals('Gould'        , $expanded_citation->get('last1'));
     $this->assertEquals('Stephen Jay'  , $expanded_citation->get('first1') );
     $this->assertEquals('1990-09-17'   , $expanded_citation->get('date'));
   }
