@@ -3,6 +3,7 @@ branches:
 
 language: php
 php:
+  - '5.5.9'
   - '7.0'
 
 git:
