@@ -330,6 +330,12 @@ class Template extends Item {
           return $this->add($param_name, $value);
         }
         return false;
+      case "issn":
+        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
+          // Only add ISSN if journal is unspecified
+          return $this->add($param_name, $value);
+        }
+        return false;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if (sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
@@ -1619,11 +1625,10 @@ class Template extends Item {
             echo "\n    - {{OL}} author parameter not supported: can't convert.";
             break;
           }
-        case "issn":
-           if ($this->set('journal') || $this->set('periodical')) return false; // don't set ISSN if journal present
         case "bibcode":
         case "doi":
         case "isbn":
+        case "issn":
         case "jfm":
         case "jstor":
           if ($parameters["sici"] || $parameters["issn"]) {
