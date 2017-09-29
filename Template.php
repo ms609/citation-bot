@@ -196,7 +196,7 @@ class Template extends Item {
   }
 
   public function add_if_new($param_name, $value) {
-    if (isset(common_mistakes[$param_name])) {
+    if (array_key_exists($param_name, common_mistakes)) {
       $param_name = common_mistakes[$param_name];
     }
 
@@ -330,6 +330,12 @@ class Template extends Item {
           return $this->add($param_name, $value);
         }
         return false;
+      case "issn":
+        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
+          // Only add ISSN if journal is unspecified
+          return $this->add($param_name, $value);
+        }
+        return false;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if (sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
@@ -444,7 +450,26 @@ class Template extends Item {
   }
 
   protected function get_identifiers_from_url() {
+    if ($this->blank('url') && $this->has('website')) {  // No URL, but a website
+      $url = trim($this->get('website'));
+      if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+        $url = "h" . $url;
+      }
+      if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
+        $url = "http://" . $url; // Try it with http
+      }
+      if (filter_var($url, FILTER_VALIDATE_URL,FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED ) === FALSE ) return ; // PHP does not like it
+      $pattern = '_^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.\\d{1,3}){3})(?!127(?:\\.\\d{1,3}){3})(?!169\\.254(?:\\.\\d{1,3}){2})(?!192\\.168(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)*(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}]{2,})))(?::\\d{2,5})?(?:/[^\\s]*)?$_iuS';
+      if (preg_match ($pattern, $url) !== 1) return ;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
+      $this->rename('website', 'url'); // Rename it first, so that parameters stay in same order
+      $this->set('url',$url);
+      quiet_echo("\n   ~ website is actually HTTP URL; converting to use url parameter.");
+    }
     $url = $this->get('url');
+    if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+      $url = "h" . $url;
+      $this->set('url',$url); // Save it
+    }
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {
@@ -962,13 +987,13 @@ class Template extends Item {
 
   protected function use_sici() {
     if (preg_match(siciRegExp, urldecode($this->parsed_text()), $sici)) {
-      if ($this->blank($journal, "issn")) $this->set("issn", $sici[1]);
+      $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
-      if ($this->blank("year")) $this->set("year", $sici[2]);
+      $this->add_if_new("year", $sici[2]);
       //if ($this->blank("day") && is("month") && $sici[4]) set ("day", $sici[4]);
-      if ($this->blank("volume")) $this->set("volume", 1*$sici[5]);
-      if ($this->blank("issue") && $this->blank('number') && $sici[6]) $this->set("issue", 1*$sici[6]);
-      if ($this->blank("pages", "page")) $this->set("pages", 1*$sici[7]);
+      $this->add_if_new("volume", 1*$sici[5]);
+      if ($sici[6]) $this->add_if_new("issue", 1*$sici[6]);
+      $this->add_if_new("pages", 1*$sici[7]);
       return true;
     } else return false;
   }
@@ -1328,7 +1353,7 @@ class Template extends Item {
             case "EP":
               $end_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              if_null_set("pages", $start_page . "-" . $end_page);
+              add_if_new("pages", $start_page . "-" . $end_page);
               break;
             case "DO":
               $ris_parameter = "doi";
@@ -1359,7 +1384,7 @@ class Template extends Item {
           }
           unset($ris_part[0]);
           if ($ris_parameter
-                  && if_null_set($ris_parameter, trim(implode($ris_part)))
+                  && add_if_new($ris_parameter, trim(implode($ris_part)))
               ) {
             global $auto_summary;
             if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
@@ -1395,7 +1420,7 @@ class Template extends Item {
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i == 0) { // Use existing parameter slot in first instance
+            if ($i == 0 && !$param_recycled) { // Use existing parameter slot in first instance
               $this->param[$param_key]->param = $matched_parameter;
               $this->param[$param_key]->val = $match[2][0];
               $param_recycled = TRUE;
@@ -1413,12 +1438,6 @@ class Template extends Item {
         $this->add_if_new('pages' , $match[3]);
         $dat = trim(str_replace($match[0], '', $dat));
       }
-      if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
-        if ($this->blank('year')) {
-          $this->set('year', $match[1]);
-          $dat = trim(str_replace($match[0], '', $dat));
-        }
-      }
 
       $shortest = -1;
       $parameter_list = PARAMETER_LIST;
@@ -1428,9 +1447,13 @@ class Template extends Item {
           $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
           $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
             ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
-          $this->param[$param_key]->param = $parameter;
-          $this->param[$param_key]->val = $parameter_value;
-          $param_recycled = TRUE;
+          if (!$param_recycled) {
+            $this->param[$param_key]->param = $parameter;
+            $this->param[$param_key]->val = $parameter_value;
+            $param_recycled = TRUE;
+          } else {
+            $this->add($parameter,$parameter_value);
+          }
           break;
         }
         $test_dat = preg_replace("~\d~", "_$0",
@@ -1498,27 +1521,45 @@ class Template extends Item {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = $p1;
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            if (!$param_recycled) {
+              $this->param[$param_key]->param = $p1;
+              $this->param[$param_key]->val = implode(" ", $pAll);
+              $param_recycled = TRUE; 
+            } else {
+              $this->add($p1,implode(" ", $pAll));
+            }
           }
           break;
           case "issues":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'issue';
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            if (!$param_recycled) {
+              $this->param[$param_key]->param = 'issue';
+              $this->param[$param_key]->val = implode(" ", $pAll);
+              $param_recycled = TRUE;
+            } else {
+              $this->add('issue',implode(" ", $pAll));
+            }
           }
           break;
           case "access date":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            $this->param[$param_key]->param = 'accessdate';
-            $this->param[$param_key]->val = implode(" ", $pAll);
-            $param_recycled = TRUE;
+            if (!$param_recycled) {
+              $this->param[$param_key]->param = 'accessdate';
+              $this->param[$param_key]->val = implode(" ", $pAll);
+              $param_recycled = TRUE;
+            } else {
+              $this->add('accessdate',implode(" ", $pAll));
+            }
           }
           break;
+        }
+      }
+      if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
+        if ($this->blank('year') && $this->blank('date')) {
+          $this->set('year', $match[1]);
+          $dat = trim(str_replace($match[0], '', $dat));
         }
       }
       if (!trim($dat) && !$param_recycled) {
@@ -1683,14 +1724,14 @@ class Template extends Item {
       
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
-        echo "replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+        echo " replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
       } else {
         $similarity = similar_text($p->param, $closest) / strlen($p->param);
         if ($similarity > 0.6) {
           $p->param = $closest;
-          echo "replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+          echo " replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
         } else {
-          echo "could not be replaced with confidence.  Please check the citation yourself.";
+          echo " could not be replaced with confidence.  Please check the citation yourself.";
         }
       }
     }
@@ -1778,8 +1819,15 @@ class Template extends Item {
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
             break; // Don't want 'Edition ed.'
+          case 'year':
+            if (preg_match ("~\d\d*\-\d\d*\-\d\d*~", $p->val)) { // We have more than one dash, must not be range of years.
+               $this->add_if_new('date', $p->val);
+               $this->forget('year');
+               break; 
+            }
+            // No break here
           case 'pages': case 'page': case 'issue': case 'year':
-            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && !preg_match("/http/i", $p->val)) {
+            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && (stripos($p->val, "http") === FALSE)) {
               $this->mod_dashes = TRUE;
               echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) .
                     " parameter" . tag());
