@@ -102,7 +102,7 @@ function countMainLinks($title) {
   global $bot;
   if (preg_match("/\w*:(.*)/", $title, $title))
     $title = $title[1]; //Gets {{PAGENAME}}
-  $url = "https://en.wikipedia.org/w/api.php?action=query&bltitle=" . urlencode($title) . "&list=backlinks&bllimit=500&format=yaml";
+  $url = API_ROOT . "?action=query&bltitle=" . urlencode($title) . "&list=backlinks&bllimit=500&format=yaml";
   $bot->fetch($url);
   $page = $bot->results;
   if (preg_match("~\n\s*blcontinue~", $page))
@@ -119,14 +119,14 @@ function logIn($username, $password) {
   $submit_vars["lgname"] = $username;
   $submit_vars["lgpassword"] = $password;
   // Submit POST variables and retrieve a token
-  $bot->submit(api, $submit_vars);
+  $bot->submit(API_ROOT, $submit_vars);
   if (!$bot->results) {
     exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
   }
   $first_response = json_decode($bot->results);
   $submit_vars["lgtoken"] = $first_response->login->token;
   // Resubmit with new request (which has token added to post vars)
-  $bot->submit(api, $submit_vars);
+  $bot->submit(API_ROOT, $submit_vars);
   $login_result = json_decode($bot->results);
   if ($login_result->login->result == "Success") {
     quiet_echo("\n Using account " . htmlspecialchars($login_result->login->lgusername) . ".");

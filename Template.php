@@ -42,7 +42,7 @@ class Template extends Item {
       $this->initial_param[$p->param] = $p->val;
 
       // Save author params for special handling
-      if (in_array($p->param, flattened_author_params) && $p->val) {
+      if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS) && $p->val) {
         $this->initial_author_params[$p->param] = $p->val;
       }
     }
@@ -196,8 +196,8 @@ class Template extends Item {
   }
 
   public function add_if_new($param_name, $value) {
-    if (array_key_exists($param_name, common_mistakes)) {
-      $param_name = common_mistakes[$param_name];
+    if (array_key_exists($param_name, COMMON_MISTAKES)) {
+      $param_name = COMMON_MISTAKES[$param_name];
     }
 
     if (trim($value) == "") {
@@ -205,7 +205,7 @@ class Template extends Item {
     }
 
     // If we already have name parameters for author, don't add more
-    if ($this->initial_author_params && in_array($param_name, flattened_author_params)) {
+    if ($this->initial_author_params && in_array($param_name, FLATTENED_AUTHOR_PARAMETERS)) {
       return false;
     }
 
@@ -486,7 +486,7 @@ class Template extends Item {
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       }
     } else {
-      if (preg_match(bibcode_regexp, urldecode($url), $bibcode)) {
+      if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
         if (!$this->get('bibcode')) {
           $this->forget('url');
           $this->set("bibcode", urldecode($bibcode[1]));
@@ -749,7 +749,7 @@ class Template extends Item {
         }
         if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
           $journal_data = str_replace($match[0], "", $journal_data);
-          $this->add_if_new("pages", str_replace("--", en_dash, $match[0]));
+          $this->add_if_new("pages", str_replace("--", EN_DASH, $match[0]));
         }
         if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
           $this->add_if_new("volume", $match[1]);
@@ -986,7 +986,7 @@ class Template extends Item {
   }
 
   protected function use_sici() {
-    if (preg_match(siciRegExp, urldecode($this->parsed_text()), $sici)) {
+    if (preg_match(SICI_REGEXP, urldecode($this->parsed_text()), $sici)) {
       $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       $this->add_if_new("year", $sici[2]);
@@ -1138,8 +1138,8 @@ class Template extends Item {
       global $over_isbn_limit;
       // TODO: implement over_isbn_limit based on &results=keystats in API
       if ($title && !$over_isbn_limit) {
-        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . isbnKey . "index1=combined&value1=" . urlencode($title . " " . $auth));
-        print "\n\nhttp://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
+        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
+        print "\n\nhttp://isbndb.com/api/books.xml?access_key=$ISBN_KEY&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
         if ($xml->BookList["total_results"] == 1) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
         if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
         else return false;
@@ -1294,7 +1294,7 @@ class Template extends Item {
           }
         } elseif ($p->param == 'doix') {
           $this->param[$param_key]->param = 'doi';
-          $this->param[$param_key]->val = str_replace(dotEncode, dotDecode, $p->val);
+          $this->param[$param_key]->val = str_replace(DOT_ENCODE, DOT_DECODE, $p->val);
         }
         continue;
       }
@@ -1669,8 +1669,8 @@ class Template extends Item {
   protected function correct_param_spelling() {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
-  $mistake_corrections = array_values(common_mistakes);
-  $mistake_keys = array_keys(common_mistakes);
+  $mistake_corrections = array_values(COMMON_MISTAKES);
+  $mistake_keys = array_keys(COMMON_MISTAKES);
   if ($this->param) {
     foreach ($this->param as $p) {
       $parameters_used[] = $p->param;
@@ -1838,11 +1838,11 @@ class Template extends Item {
             }
             // No break here
           case 'pages': case 'page': case 'issue': case 'year':
-            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(to_en_dash, $p->val) && (stripos($p->val, "http") === FALSE)) {
+            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(TO_EN_DASH, $p->val) && (stripos($p->val, "http") === FALSE)) {
               $this->mod_dashes = TRUE;
               echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) .
                     " parameter" . tag());
-              $p->val = mb_ereg_replace(to_en_dash, en_dash, $p->val);
+              $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
             break;
         }
@@ -1908,7 +1908,7 @@ class Template extends Item {
       $doi = $this->get('doi');
       if (!$doi) return false;
     }
-    $this->set('doi', str_replace(pcEncode, pcDecode, str_replace(' ', '+', trim(urldecode($doi)))));
+    $this->set('doi', str_replace(PERCENT_ENCODE, PERCENT_DECODE, str_replace(' ', '+', trim(urldecode($doi)))));
     return true;
   }
 
@@ -2005,7 +2005,7 @@ class Template extends Item {
   }
 
   protected function handle_et_al() {
-    foreach (author_parameters as $i => $group) {
+    foreach (AUTHOR_PARAMETERS as $i => $group) {
       foreach ($group as $param) {
         if (strpos($this->get($param), 'et al')) {
           // remove 'et al' from the parameter value if present

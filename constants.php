@@ -1,33 +1,30 @@
 <?php 
 define('HOME', dirname(__FILE__) . '/');
 
-const editinterval = 10;
 const PIPE_PLACEHOLDER = '%%CITATION_BOT_PIPE_PLACEHOLDER%%';
 const comment_placeholder = "### Citation bot : comment placeholder %s ###";
-const to_en_dash = "--?|\&mdash;|\xe2\x80\x94|\?\?\?"; // regexp for replacing to ndashes using mb_ereg_replace
-const en_dash = "\xe2\x80\x93"; // regexp for replacing to ndashes using mb_ereg_replace
-const wikiroot = "https://en.wikipedia.org/w/index.php?";
-const isbnKey = "268OHQMW";
-const api = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
-const template_regexp = "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~";
+const TO_EN_DASH = "--?|\&mdash;|\xe2\x80\x94|\?\?\?"; // regexp for replacing to ndashes using mb_ereg_replace
+const EN_DASH = "\xe2\x80\x93"; // regexp for replacing to ndashes using mb_ereg_replace
+const WIKI_ROOT = "https://en.wikipedia.org/w/index.php?";
+const ISBN_KEY = "268OHQMW";
+const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
+const TEMPLATE_REGEXP = "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~";
 const BRACESPACE = "!BOTCODE-spaceBeforeTheBrace";
-const bibcode_regexp = "~^(?:http://(?:\w+.)?adsabs.harvard.edu|http://ads\.ari\.uni-heidelberg\.de|http://ads\.inasan\.ru|http://ads\.mao\.kiev\.ua|http://ads\.astro\.puc\.cl|http://ads\.on\.br|http://ads\.nao\.ac\.jp|http://ads\.bao\.ac\.cn|http://ads\.iucaa\.ernet\.in|http://ads\.lipi\.go\.id|http://cdsads\.u-strasbg\.fr|http://esoads\.eso\.org|http://ukads\.nottingham\.ac\.uk|http://www\.ads\.lipi\.go\.id)/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
+const BIBCODE_REGEXP = "~^(?:http://(?:\w+.)?adsabs.harvard.edu|http://ads\.ari\.uni-heidelberg\.de|http://ads\.inasan\.ru|http://ads\.mao\.kiev\.ua|http://ads\.astro\.puc\.cl|http://ads\.on\.br|http://ads\.nao\.ac\.jp|http://ads\.bao\.ac\.cn|http://ads\.iucaa\.ernet\.in|http://ads\.lipi\.go\.id|http://cdsads\.u-strasbg\.fr|http://esoads\.eso\.org|http://ukads\.nottingham\.ac\.uk|http://www\.ads\.lipi\.go\.id)/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
 const IN_PRESS_ALIASES = array("in press","pending","published","unpublished","unknown","tba","forthcoming","in the press","na","submitted","tbd","missing");
+const SICI_REGEXP = "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~";
 
 //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
-const doiRegexp = "(10\.\d{4}\d?(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)";
-//Characters into the literated text of an article in which a DOI is considered "early".
-const early = 8000; 
-const siciRegExp = "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~";
+const UNUSED_doiRegexp = "(10\.\d{4}\d?(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)";
 
 //Common replacements
-const pcDecode = array("[", "]", "<", ">");
-const pcEncode = array("&#x5B;", "&#x5D;", "&#60;", "&#62;");
+const PERCENT_DECODE = array("[", "]", "<", ">");
+const PERCENT_ENCODE = array("&#x5B;", "&#x5D;", "&#60;", "&#62;");
 
-const dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
-const dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
+const DOT_ENCODE = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
+const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 
-const common_mistakes = array ( // Common mistakes that aren't picked up by the levenshtein approach
+const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the levenshtein approach
   "albumlink"       =>  "titlelink",
   "artist"          =>  "others",
   "authorurl"       =>  "authorlink",
@@ -114,7 +111,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' The Embo Journal ', ' Time Out London ',
 ' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ');
 
-const author_parameters = array(
+const AUTHOR_PARAMETERS = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author',
                 'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1', 'authors', 'vauthors'),
     2  => array('surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'coauthors', 'coauthor'),
@@ -217,7 +214,7 @@ const author_parameters = array(
     99 => array('surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99'),
 );
 
-const flattened_author_params = array('surname', 'forename', 'initials', 
+const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials', 
     'first'  , 'last'  , 'author',
     'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1' , 'authors', 'vauthors',
     'surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'coauthors', 'coauthor',

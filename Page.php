@@ -33,12 +33,12 @@ class Page {
 
   public function get_text_from($title) {
     global $bot;
-    $bot->fetch(wikiroot . "title=" . urlencode($title) . "&action=raw");
+    $bot->fetch(WIKI_ROOT . "title=" . urlencode($title) . "&action=raw");
     $this->text = $bot->results;
     $this->start_text = $this->text;
     $this->modifications = array();
 
-    $bot->fetch(api . "?action=query&prop=info&format=json&titles=" . urlencode($title));
+    $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&titles=" . urlencode($title));
     $details = json_decode($bot->results);
     foreach ($details->query->pages as $p) {
       $my_details = $p;
@@ -178,7 +178,7 @@ class Page {
     if ($this->allow_bots()) {
       global $bot;
       // Check that bot is logged in:
-      $bot->fetch(api . "?action=query&prop=info&meta=userinfo&format=json");
+      $bot->fetch(API_ROOT . "?action=query&prop=info&meta=userinfo&format=json");
       $result = json_decode($bot->results);
       if ($result->query->userinfo->id == 0) {
         echo "\n ! LOGGED OUT:  The bot has been logged out from Wikipedia servers";
@@ -186,7 +186,7 @@ class Page {
       }
 
       // FIXME: this is very deprecated, use ?action=query&meta=tokens to get a 'csrf' type token (the default)
-      $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
+      $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
       if ($my_page->lastrevid != $this->lastrevid) {
@@ -211,11 +211,11 @@ class Page {
           "watchlist" => "nochange",
           "format" => "json",
       );
-      $bot->submit(api, $submit_vars);
+      $bot->submit(API_ROOT, $submit_vars);
       $result = json_decode($bot->results);
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        if (html_output) echo "\n <span style='color: #e21'>Written to <a href='" . wikiroot . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
+        if (html_output) echo "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
         else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
         return TRUE;
       } else if ($result->edit->result) {
