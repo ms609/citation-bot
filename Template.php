@@ -1448,7 +1448,7 @@ class Template extends Item {
             $this->param[$param_key]->val = $parameter_value;
             $param_recycled = TRUE;
           } else {
-            $this->add($parameter,$parameter_value);
+            $this->add_if_new($parameter,$parameter_value);
           }
           break;
         }
@@ -1492,11 +1492,11 @@ class Template extends Item {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-          $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $this->add('isbn', $match[1]);
+        $this->add_if_new('isbn', $match[1]);
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -1522,7 +1522,7 @@ class Template extends Item {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE; 
             } else {
-              $this->add($p1,implode(" ", $pAll));
+              $this->add_if_new($p1,implode(" ", $pAll));
             }
           }
           break;
@@ -1534,7 +1534,7 @@ class Template extends Item {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('issue',implode(" ", $pAll));
+              $this->add_if_new('issue',implode(" ", $pAll));
             }
           }
           break;
@@ -1546,7 +1546,7 @@ class Template extends Item {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('accessdate',implode(" ", $pAll));
+              $this->add_if_new('accessdate',implode(" ", $pAll));
             }
           }
           break;
