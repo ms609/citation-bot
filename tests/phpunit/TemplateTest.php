@@ -217,7 +217,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|pmid=9858585|year=in press}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('date'));
-    $this->assertEquals('1999','$expanded->get('year'));
+    $this->assertEquals('1999',$expanded->get('year'));
   }
   
   public function testSICI() {
