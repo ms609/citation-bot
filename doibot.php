@@ -35,7 +35,7 @@
         <div id="bodyContent">
           <h3 id="siteSub">Please wait while the <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> processes the page you requested.</h3>
             <pre><?php
-## Set up - including dotDecode array
+## Set up - including DOT_DECODE array
 define("html_output", TRUE);
 require_once("expandFns.php");
 require_once("login.php");

@@ -71,7 +71,9 @@ if ($edit || isset($_GET["doi"]) || isset($_GET["pmid"])) {
 }
 
 ################ Functions ##############
-
+/**
+ * @codeCoverageIgnore
+ */
 function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
   // if the bot is trying to connect to the defunct toolserver
   if ($dbName == 'yarrow') {
@@ -100,7 +102,7 @@ function countMainLinks($title) {
   global $bot;
   if (preg_match("/\w*:(.*)/", $title, $title))
     $title = $title[1]; //Gets {{PAGENAME}}
-  $url = "https://en.wikipedia.org/w/api.php?action=query&bltitle=" . urlencode($title) . "&list=backlinks&bllimit=500&format=yaml";
+  $url = API_ROOT . "?action=query&bltitle=" . urlencode($title) . "&list=backlinks&bllimit=500&format=yaml";
   $bot->fetch($url);
   $page = $bot->results;
   if (preg_match("~\n\s*blcontinue~", $page))
@@ -117,14 +119,14 @@ function logIn($username, $password) {
   $submit_vars["lgname"] = $username;
   $submit_vars["lgpassword"] = $password;
   // Submit POST variables and retrieve a token
-  $bot->submit(api, $submit_vars);
+  $bot->submit(API_ROOT, $submit_vars);
   if (!$bot->results) {
     exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
   }
   $first_response = json_decode($bot->results);
   $submit_vars["lgtoken"] = $first_response->login->token;
   // Resubmit with new request (which has token added to post vars)
-  $bot->submit(api, $submit_vars);
+  $bot->submit(API_ROOT, $submit_vars);
   $login_result = json_decode($bot->results);
   if ($login_result->login->result == "Success") {
     quiet_echo("\n Using account " . htmlspecialchars($login_result->login->lgusername) . ".");
@@ -141,17 +143,6 @@ function logIn($username, $password) {
     $ON = false;
     return false;
   }
-}
-
-function inputValue($tag, $form) {
-  //Gets the value of an input, if the input's in the right format.
-  preg_match("~value=\"([^\"]*)\" name=\"$tag\"~", $form, $name);
-  if ($name)
-    return $name[1];
-  preg_match("~name=\"$tag\" value=\"([^\"]*)\"~", $form, $name);
-  if ($name)
-    return $name[1];
-  return false;
 }
 
 function format_title_text($title) {
@@ -172,12 +163,6 @@ function format_title_text($title) {
   $title = title_capitalization($title);
   
   return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important!
-}
-
-function remove_accents($input) {
-  $search = explode(",", "ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
-  $replace = explode(",", "c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u");
-  return str_replace($search, $replace, $input);
 }
 
 function under_two_authors($text) {
