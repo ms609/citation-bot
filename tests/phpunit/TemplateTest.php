@@ -146,21 +146,21 @@ class expandFnsTest extends PHPUnit\Framework\TestCase {
   public function testSiciExtraction() {
     $text = "{{cite journal|url=http://fake.url/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('0097-3157', $expanded->issn);
-    $this->assertEquals('2002', $expanded->year);
-    $this->assertEquals('152', $expanded->volume);
-    $this->assertEquals('215', $expanded->pages);
+    $this->assertEquals('0097-3157', $expanded->get('issn'));
+    $this->assertEquals('2002', $expanded->get('year'));
+    $this->assertEquals('152', $expanded->get('volume'));
+    $this->assertEquals('215', $expanded->get('pages'));
     $text = "{{cite journal|date=2002|journal=SET|url=http:/1/fake.url/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}";
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->issn);
-    if (is_null($expanded->date)) {
-      $this->assertEquals('2002', $expanded->year);
+    $this->assertNull($expanded->get('issn'));
+    if (is_null($expanded->get('date'))) {
+      $this->assertEquals('2002', $expanded->get('year'));
     } else {
-      $this->assertEquals('2002', $expanded->date);
-      $this->assertNull($expanded->year);
+      $this->assertEquals('2002', $expanded->get('date'));
+      $this->assertNull($expanded->get('year'));
     }
-    $this->assertEquals('152', $expanded->volume);
-    $this->assertEquals('215', $expanded->pages);
+    $this->assertEquals('152', $expanded->get('volume'));
+    $this->assertEquals('215', $expanded->get('pages'));
   }
   
   public function testMisspeltParameters() {
