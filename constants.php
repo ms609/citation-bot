@@ -20,11 +20,11 @@ const early = 8000;
 const siciRegExp = "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~";
 
 //Common replacements
-const pcDecode = array("[", "]", "<", ">"));
-const pcEncode = array("&#x5B;", "&#x5D;", "&#60;", "&#62;"));
+const pcDecode = array("[", "]", "<", ">");
+const pcEncode = array("&#x5B;", "&#x5D;", "&#60;", "&#62;");
 
-const dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29"));
-const dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")"));
+const dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
+const dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 
 const common_mistakes = array ( // Common mistakes that aren't picked up by the levenshtein approach
   "albumlink"       =>  "titlelink",
