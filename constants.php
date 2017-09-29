@@ -106,24 +106,24 @@ define("common_mistakes", array ( // Common mistakes that aren't picked up by th
 // unCapped is their correct capitalization. Remember to enclose any word in spaces.
 
 
-const unCapped = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ',
+define("unCapped", array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ',
 ' ACM SIGPLAN Notices ', ' ASME AES ', ' ASME MTD ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Neuroforum ', 
 ' Early Modern Japan: an Interdisciplinary Journal ', ' eLife ', ' EMBO J ', ' EMBO J. ', ' EMBO Journal ',
 ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ',
 ' HOAJ biology ', ' ISRN Genetics ', ' iConference ', ' JABS : Journal of Applied Biological Sciences ',
 ' Molecular and Cellular Biology ', ' Ocean Science Journal : OSJ ', ' PALAIOS ', ' PLOS ONE ', ' PNAS ',
 ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', ' The EMBO Journal ', ' Time Out London ',
-' z/Journal ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ');
-const dontCap = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ',
+' z/Journal ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei '));
+define("dontCap", array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ',
 ' Acm Sigplan Notices ', ' Asme Aes ', ' Asme Mtd ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
 ' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', ' Embo J ', ' Embo J. ', ' Embo Journal ', 
 ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ',
 ' Hoaj Biology ', ' Isrn Genetics ', ' Iconference ', ' Jabs : Journal Of Applied Biological Sciences ',
 ' Molecular And Cellular Biology ', ' Ocean Science Journal : Osj ', ' Palaios ', ' Plos One ', ' Pnas ',
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' The Embo Journal ', ' Time Out London ',
-' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ');
+' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei '));
 
-const author_parameters = array(
+define("author_parameters", array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author',
                 'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1', 'authors', 'vauthors'),
     2  => array('surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'coauthors', 'coauthor'),
@@ -224,9 +224,9 @@ const author_parameters = array(
     97 => array('surname97', 'forename97', 'initials97', 'first97', 'last97', 'author97'),
     98 => array('surname98', 'forename98', 'initials98', 'first98', 'last98', 'author98'),
     99 => array('surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99'),
-);
+));
 
-const flattened_author_params = array('surname', 'forename', 'initials', 
+define("flattened_author_params", array('surname', 'forename', 'initials', 
     'first'  , 'last'  , 'author',
     'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1' , 'authors', 'vauthors',
     'surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'coauthors', 'coauthor',
@@ -327,10 +327,10 @@ const flattened_author_params = array('surname', 'forename', 'initials',
     'surname97', 'forename97', 'initials97', 'first97', 'last97', 'author97',
     'surname98', 'forename98', 'initials98', 'first98', 'last98', 'author98',
     'surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99',
-);
+));
 
 
-const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID',
+define("PARAMETER_LIST", array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID',
 'ISBN', 'ISBN13', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR', 'OCLC', 'OL', 'OSTI', 'PMC', 'PMID',
 'RFC', 'SSRN', 'URL', 'ZBL', 'Author', 'DoiBroken', 'Editor', 'EditorGiven', 'EditorSurname',
  'Embargo', 'PPPrefix', 'PPrefix', 'Ref', 'Author1', 'Author2', 'Author3', 'Author4', 'Author5',
@@ -887,7 +887,7 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID'
  'inventor12-first', 'inventor13-first', 'inventor14-first', 'inventor15-first', 'inventor16-first',
  'inventor17-first', 'inventor18-first', 'inventor19-first', 'inventor20-first', 'inventor21-first',
  'inventor22-first', 'inventor23-first', 'inventor24-first', 'inventor25-first', 'inventor26-first',
- 'inventor27-first', 'inventor28-first', 'inventor29-first', 'inventor30-first');
+ 'inventor27-first', 'inventor28-first', 'inventor29-first', 'inventor30-first'));
 
 //define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
 #define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
