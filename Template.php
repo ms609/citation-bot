@@ -325,10 +325,10 @@ class Template extends Item {
       // Don't break here; we want to go straight in to year;
       case "year":
         $in_press = array("in press","pending","published","unpublished","unknown","tba","forthcoming","in the press","na","submitted","tbd","missing");
-        if (   ($this->blank("date") || in_array(trim(strtolower($this->get('date'))),$in_press)
-            && ($this->blank("year") || in_array(trim(strtolower($this->get('year'))),$in_press)
+        if (   ($this->blank("date") || in_array(trim(strtolower($this->get('date'))),$in_press))
+            && ($this->blank("year") || in_array(trim(strtolower($this->get('year'))),$in_press))
           ) {
-          if ($param_name != 'date') $this->unset('date'); // Delete any "in press" dates
+          if ($param_name != 'date') $this->unset('date'); // Delete any "in press" dates.
           if ($param_name != 'year') $this->unset('year');
           return $this->add($param_name, $value);
         }
