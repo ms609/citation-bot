@@ -36,7 +36,8 @@ class Template extends Item {
       $this->name = substr($text, 2, -2);
       $this->param = NULL;
     }
-// extract initial parameters/values from Parameters in $this->param
+
+    // extract initial parameters/values from Parameters in $this->param
     if ($this->param) foreach ($this->param as $p) {
       $this->initial_param[$p->param] = $p->val;
 
