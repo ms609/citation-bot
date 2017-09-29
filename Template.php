@@ -36,7 +36,7 @@ class Template extends Item {
       $this->name = substr($text, 2, -2);
       $this->param = NULL;
     }
-
+// extract initial parameters/values from Parameters in $this->param
     if ($this->param) foreach ($this->param as $p) {
       $this->initial_param[$p->param] = $p->val;
 
@@ -327,7 +327,7 @@ class Template extends Item {
         if (   ($this->blank("date") || in_array(trim(strtolower($this->get('date'))),$in_press)
             && ($this->blank("year") || in_array(trim(strtolower($this->get('year'))),$in_press)
           ) {
-          if ($param_name != 'date') $this->unset('date');
+          if ($param_name != 'date') $this->unset('date'); // Delete any "in press" dates
           if ($param_name != 'year') $this->unset('year');
           return $this->add($param_name, $value);
         }
