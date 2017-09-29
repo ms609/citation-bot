@@ -31,6 +31,12 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $page->expand_text();
     return $page;
   }
+
+  public function testParameterWithNoEquals() {
+    $text = "{{Cite web | text without equals sign  }}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals($text, $expanded_citation->parsed_text());
+  }
   
   public function testUseUnusedData() {
     $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
