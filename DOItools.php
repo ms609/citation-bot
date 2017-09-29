@@ -281,7 +281,8 @@ function authorIsHuman($author) {
 function formatAuthor($author){
 
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
-
+  $surname = NULL;
+  
 	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
 	if ($author == "") {
@@ -289,7 +290,7 @@ function formatAuthor($author){
   }
 
 	$auth = explode(",", $author);
-	if ($auth[1]){
+	if (isset($auth[1])) {
 		/* Possibilities:
 		Smith, A. B.
 		*/

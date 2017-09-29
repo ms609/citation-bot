@@ -184,18 +184,24 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($expanded->get('year'));
   }
   
-  /* Commented out whilst Google server are inaccessible
   public function testGoogleBooksExpansion() {
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
     $expanded_citation = $this->process_citation($text);
     $this->assertEquals('cite book', $expanded_citation->wikiname());
-    $this->assertEquals('http://books.google.com/?id=SjpSkzjIzfsC', $expanded_citation->get('url'));
+    $this->assertEquals('https://books.google.com/?id=SjpSkzjIzfsC', $expanded_citation->get('url'));
     $this->assertEquals('Wonderful Life: The Burgess Shale and the Nature of History',
       $expanded_citation->get('title'));
     $this->assertEquals('9780393307009', $expanded_citation->get('isbn')   );
     $this->assertEquals('Gould'        , $expanded_citation->get('author1'));
     $this->assertEquals('Stephen Jay'  , $expanded_citation->get('first1') );
-    $this->assertEquals('1990'         , $expanded_citation->get('year')   );
+    $this->assertEquals('1990-09-17'   , $expanded_citation->get('date'));
   }
-  */
+  
+  
+  public function testErrantAuthor() {
+    $text = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+  }
+
 }

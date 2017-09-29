@@ -153,6 +153,16 @@ class ParameterTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($parameter->val, "24 April 2008 # # # Citation bot : comment placeholder 0 # # #");
     $this->assertEquals($parameter->post, "");
   }
+  public function testHasProtectedNowikiInValue() {
+    $text = "archivedate= 24 April 2008 # # # Citation bot : no wiki placeholder 0 # # #";
+    $parameter = $this->parameter_parse_text_helper($text);
+
+    $this->assertEquals($parameter->pre, '');
+    $this->assertEquals($parameter->param, 'archivedate');
+    $this->assertEquals($parameter->eq, '= ');
+    $this->assertEquals($parameter->val, "24 April 2008 # # # Citation bot : no wiki placeholder 0 # # #");
+    $this->assertEquals($parameter->post, "");
+  }
   public function testHasUnreplacedCommentInValue() {
     $text = "archivedate= 9 August 2006 <!--DASHBot-->";
     $parameter = $this->parameter_parse_text_helper($text);

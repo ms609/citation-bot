@@ -1095,12 +1095,18 @@ class Template extends Item {
     );
     $xml = simplexml_load_string($simplified_xml);
     if ($xml->dc___title[1]) {
-      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
+      $this->add_if_new("title",  
+               format_title_text(
+                 str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]),
+                 TRUE // $caps_after_punctuation
+               )
+             );
     } else {
       $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->title)));
     }
     // Possibly contains dud information on occasion
     // $this->add_if_new("publisher", str_replace("___", ":", $xml->dc___publisher)); 
+    $isbn = NULL;
     foreach ($xml->dc___identifier as $ident) {
       if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
         $isbn = $match[1];
@@ -1117,6 +1123,11 @@ class Template extends Item {
       }
     }
     $this->add_if_new("date", $xml->dc___date);
+    foreach ($xml->dc___format as $format) {
+      if (preg_match("~([\d\-]+)~", $format, $matches)) {
+        $this->add_if_new("pages", $matches[0]);
+      }
+    }
   }
 
   protected function find_isbn() {
