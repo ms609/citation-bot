@@ -1095,7 +1095,12 @@ class Template extends Item {
     );
     $xml = simplexml_load_string($simplified_xml);
     if ($xml->dc___title[1]) {
-      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
+      $this->add_if_new("title",  
+               format_title_text(
+                 str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]),
+                 TRUE // $caps_after_punctuation
+               )
+             );
     } else {
       $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->title)));
     }

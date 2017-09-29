@@ -195,7 +195,7 @@ function title_case($text) {
  *      If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and allows the letter after any period to remain capitalized.
   *     If not, it will assume it is a journal abbreviation and won't capitalise after periods.
  */
-function title_capitalization($in, $sents = TRUE, $could_be_italics = TRUE) {
+function title_capitalization($in, $caps_after_punctuation = TRUE, $could_be_italics = TRUE) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes($in);
   
@@ -205,6 +205,7 @@ function title_capitalization($in, $sents = TRUE, $could_be_italics = TRUE) {
     // ALL CAPS to Title Case
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
+  $new_case = substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
   
   
   if ($could_be_italics) {
@@ -212,35 +213,38 @@ function title_capitalization($in, $sents = TRUE, $could_be_italics = TRUE) {
     $new_case = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $new_case);
   }
   
-  if ($sents || (substr_count($in, '.') / strlen($in)) > .07) {
+  if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentance ends
     // We should therefore capitalize after each punctuation character.
     $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
-      create_function('$matches','return mb_strtoupper($matches[0]);'),
+      create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
   }
   
   $new_case = preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
     create_function('$matches', 'return mb_strtolower($matches[0]);'),
-    trim($in)
+    trim($new_case)
   );
   // Solitary 'a' should be lowercase
   $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
+  
+  // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
     create_function('$matches', 'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'),
     $new_case);
   
   // Capitalization exceptions, e.g. Elife -> eLife
-  $new_case = str_replace(dontCap, unCapped, " " .  $new_case . " ");
-  
-  $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in dontCap
-  
+  $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
+  $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
+    
+  /* I believe we can do without this now
   if (preg_match("~^(the|into|at?|of)\b~", $new_case)) {
     // If first word is a little word, it should still be capitalized
     $new_case = ucfirst($new_case);
   }
+  */
   return $new_case;
 }
 
