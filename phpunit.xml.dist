@@ -4,7 +4,7 @@
          stopOnError="false">
   <testsuites>
     <testsuite name="TestSuite">
-      <directory>./tests/phpunit</file>
+      <directory>./tests/phpunit</directory>
     </testsuite>
   </testsuites>
   <filter>
