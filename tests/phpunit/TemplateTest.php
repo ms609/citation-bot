@@ -143,6 +143,26 @@ class expandFnsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text, $expanded_page->parsed_text());
   }
   
+  public function testSiciExtraction() {
+    $text = "{{cite journal|url=http://fake.url/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('0097-3157', $expanded->issn);
+    $this->assertEquals('2002', $expanded->year);
+    $this->assertEquals('152', $expanded->volume);
+    $this->assertEquals('215', $expanded->pages);
+    $text = "{{cite journal|date=2002|journal=SET|url=http:/1/fake.url/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->issn);
+    if (is_null($expanded->date)) {
+      $this->assertEquals('2002', $expanded->year);
+    } else {
+      $this->assertEquals('2002', $expanded->date);
+      $this->assertNull($expanded->year);
+    }
+    $this->assertEquals('152', $expanded->volume);
+    $this->assertEquals('215', $expanded->pages);
+  }
+  
   public function testMisspeltParameters() {
     $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
     $expanded = $this->process_citation($text);
