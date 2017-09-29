@@ -1,45 +1,32 @@
 <?php 
 define('HOME', dirname(__FILE__) . '/');
 
-define("editinterval", 10);
-define("PIPE_PLACEHOLDER", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
-define("comment_placeholder", "### Citation bot : comment placeholder %s ###");
-define("to_en_dash", "--?|\&mdash;|\xe2\x80\x94|\?\?\?"); // regexp for replacing to ndashes using mb_ereg_replace
-define("en_dash", "\xe2\x80\x93"); // regexp for replacing to ndashes using mb_ereg_replace
-define("wikiroot", "https://en.wikipedia.org/w/index.php?");
-define("isbnKey", "268OHQMW");
-define("api", "https://en.wikipedia.org/w/api.php"); // wiki's API endpoint
-define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
-define ("BRACESPACE", "!BOTCODE-spaceBeforeTheBrace");
-define("bibcode_regexp", "~^(?:" . str_replace(".", "\.", implode("|", Array(
-                    "http://(?:\w+.)?adsabs.harvard.edu",
-                    "http://ads.ari.uni-heidelberg.de",
-                    "http://ads.inasan.ru",
-                    "http://ads.mao.kiev.ua",
-                    "http://ads.astro.puc.cl",
-                    "http://ads.on.br",
-                    "http://ads.nao.ac.jp",
-                    "http://ads.bao.ac.cn",
-                    "http://ads.iucaa.ernet.in",
-                    "http://ads.lipi.go.id",
-                    "http://cdsads.u-strasbg.fr",
-                    "http://esoads.eso.org",
-                    "http://ukads.nottingham.ac.uk",
-                    "http://www.ads.lipi.go.id",
-                ))) . ")/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~");
+const editinterval = 10;
+const PIPE_PLACEHOLDER = '%%CITATION_BOT_PIPE_PLACEHOLDER%%';
+const comment_placeholder = "### Citation bot : comment placeholder %s ###";
+const to_en_dash = "--?|\&mdash;|\xe2\x80\x94|\?\?\?"; // regexp for replacing to ndashes using mb_ereg_replace
+const en_dash = "\xe2\x80\x93"; // regexp for replacing to ndashes using mb_ereg_replace
+const wikiroot = "https://en.wikipedia.org/w/index.php?";
+const isbnKey = "268OHQMW";
+const api = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
+const template_regexp = "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~";
+const BRACESPACE = "!BOTCODE-spaceBeforeTheBrace";
+const bibcode_regexp = "~^(?:http://(?:\w+.)?adsabs.harvard.edu|http://ads\.ari\.uni-heidelberg\.de|http://ads\.inasan\.ru|http://ads\.mao\.kiev\.ua|http://ads\.astro\.puc\.cl|http://ads\.on\.br|http://ads\.nao\.ac\.jp|http://ads\.bao\.ac\.cn|http://ads\.iucaa\.ernet\.in|http://ads\.lipi\.go\.id|http://cdsads\.u-strasbg\.fr|http://esoads\.eso\.org|http://ukads\.nottingham\.ac\.uk|http://www\.ads\.lipi\.go\.id)/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
                 
-define("doiRegexp", "(10\.\d{4}\d?(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
-define("early", 8000);//Characters into the literated text of an article in which a DOI is considered "early".
-define("siciRegExp", "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~");
+//Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
+const doiRegexp = "(10\.\d{4}\d?(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>))(?=[\s\|\"\?]|</)";
+//Characters into the literated text of an article in which a DOI is considered "early".
+const early = 8000; 
+const siciRegExp = "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~";
 
 //Common replacements
-define("pcDecode", array("[", "]", "<", ">"));
-define("pcEncode", array("&#x5B;", "&#x5D;", "&#60;", "&#62;"));
+const pcDecode = array("[", "]", "<", ">"));
+const pcEncode = array("&#x5B;", "&#x5D;", "&#60;", "&#62;"));
 
-define ("dotEncode", array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29"));
-define ("dotDecode", array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")"));
+const dotEncode = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29"));
+const dotDecode = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")"));
 
-define("common_mistakes", array ( // Common mistakes that aren't picked up by the levenshtein approach
+const common_mistakes = array ( // Common mistakes that aren't picked up by the levenshtein approach
   "albumlink"       =>  "titlelink",
   "artist"          =>  "others",
   "authorurl"       =>  "authorlink",
@@ -99,7 +86,7 @@ define("common_mistakes", array ( // Common mistakes that aren't picked up by th
   "Vol"             =>  "volume",
   "Vol."            =>  "volume",
   "website"         =>  "url",
-));
+);
 
 
 // dontCap is am array of strings that should not be capitalized in their titlecase format; 
@@ -889,6 +876,4 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID'
  'inventor22-first', 'inventor23-first', 'inventor24-first', 'inventor25-first', 'inventor26-first',
  'inventor27-first', 'inventor28-first', 'inventor29-first', 'inventor30-first');
 
-//define("doiRegexp", "(10\.\d{4}/([^\s;\"\?&<])*)(?=[\s;\"\?&]|</)");
-#define("doiRegexp", "(10\.\d{4}(/|%2F)[^\s\"\?&]*)(?=[\s\"\?&]|</)"); //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
 ?>
