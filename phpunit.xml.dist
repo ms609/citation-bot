@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="exampleFns.php">
+  <testsuites>
+    <testsuite name="TestSuite">
+      <file>./tests/phpunit/constantsTest.php</file>
+      <file>./tests/phpunit/expandFnsTest.php</file>
+      <file>./tests/phpunit/TemplateTest.php</file>
+      <file>./tests/phpunit/ParameterTest.php</file>
+    </testsuite>
+  </testsuites>
+</phpunit>
