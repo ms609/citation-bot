@@ -11,6 +11,7 @@
     <whitelist>
       <directory suffix=".php">.</directory>
       <exclude>
+        <file>./constants.php</file>
         <file>./doibot.php</file>
         <file>./gadgetapi.php</file>
         <file>./login.php</file>
