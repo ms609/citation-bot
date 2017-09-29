@@ -194,11 +194,11 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('9780393307009', $expanded_citation->get('isbn')   );
     $this->assertEquals('Gould'        , $expanded_citation->get('author1'));
     $this->assertEquals('Stephen Jay'  , $expanded_citation->get('first1') );
-    $this->assertEquals('1990'         , $expanded_citation->get('year')   );
+    $this->assertEquals('1990-09-17'   , $expanded_citation->get('date'));
   }
   
   
-  public function testErrantGBooksAuthor() {
+  public function testErrantAuthor() {
     $text = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
