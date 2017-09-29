@@ -32,7 +32,7 @@ class doibotTest extends PHPUnit\Framework\TestCase {
   
   public function testJournalCapitalization() {
     $text = "{{Cite journal
-      | pmid = 9858585 }}"
+      | pmid = 9858585 }}";
     $parsed_text = $this->template_parse_text_helper($text);
     $this->assertEquals($parsed_text->expand_text(), '{{Cite journal
       | pmid = 9858585
