@@ -981,7 +981,7 @@ class Template extends Item {
 
   protected function use_sici() {
     if (preg_match(siciRegExp, urldecode($this->parsed_text()), $sici)) {
-      if ($this->blank($journal,"journal")) $this->add_if_new("issn", $sici[1]);
+      $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       $this->add_if_new("year", $sici[2]);
       //if ($this->blank("day") && is("month") && $sici[4]) set ("day", $sici[4]);
@@ -1619,10 +1619,11 @@ class Template extends Item {
             echo "\n    - {{OL}} author parameter not supported: can't convert.";
             break;
           }
+        case "issn":
+           if ($this->set('journal') || $this->set('periodical')) return false; // don't set ISSN if journal present
         case "bibcode":
         case "doi":
         case "isbn":
-        case "issn":
         case "jfm":
         case "jstor":
           if ($parameters["sici"] || $parameters["issn"]) {
