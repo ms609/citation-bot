@@ -985,11 +985,11 @@ class Template extends Item {
     if (preg_match(siciRegExp, urldecode($this->parsed_text()), $sici)) {
       if ($this->blank($journal, "issn")) $this->set("issn", $sici[1]);
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
-      if ($this->blank("year") && $this->blank("date")) $this->set("year", $sici[2]);
+      $this->add_if_new("year", $sici[2]);
       //if ($this->blank("day") && is("month") && $sici[4]) set ("day", $sici[4]);
-      if ($this->blank("volume")) $this->set("volume", 1*$sici[5]);
-      if ($this->blank("issue") && $this->blank('number') && $sici[6]) $this->set("issue", 1*$sici[6]);
-      if ($this->blank("pages", "page")) $this->set("pages", 1*$sici[7]);
+      $this->add_if_new("volume", 1*$sici[5]);
+      if ($sici[6]) $this->add_if_new("issue", 1*$sici[6]);
+      $this->add_if_new("pages", 1*$sici[7]);
       return true;
     } else return false;
   }
