@@ -11,7 +11,8 @@
  *       and side effects as well. Beware!
  *
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
- */
+ * to find information that can be added to existing citations.
+*/
 
 require_once("Item.php");
 require_once("Page.php");
