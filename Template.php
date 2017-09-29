@@ -196,7 +196,7 @@ class Template extends Item {
   }
 
   public function add_if_new($param_name, $value) {
-    if (common_mistakes[$param_name] !== null) {
+    if (array_key_exists($param_name, common_mistakes)) {
       $param_name = common_mistakes[$param_name];
     }
 
