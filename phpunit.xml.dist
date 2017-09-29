@@ -4,14 +4,17 @@
          stopOnError="false">
   <testsuites>
     <testsuite name="TestSuite">
-      <directory>./tests/phpunit</directory>
+      <directory suffix=".php">./tests/phpunit</directory>
     </testsuite>
   </testsuites>
   <filter>
-    <whitelist processUncoveredFilesFromWhitelist="true">
-      <directory suffix=".php">./</directory>
+    <whitelist>
+      <directory suffix=".php">.</directory>
       <exclude>
         <file>./doibot.php</file>
+        <file>./gadgetapi.php</file>
+        <file>./login.php</file>
+        <file>./Snoopy.class.php</file>
       </exclude>
     </whitelist>
   </filter>
