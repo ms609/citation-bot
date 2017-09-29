@@ -327,6 +327,8 @@ class Template extends Item {
         if (   ($this->blank("date") || trim(strtolower($this->get('date'))) == "in press")
             && ($this->blank("year") || trim(strtolower($this->get('year'))) == "in press")
           ) {
+          if (trim(strtolower($this->get('date'))) == "in press" && $param_name == 'year') $this->unset('date');
+          if (trim(strtolower($this->get('year'))) == "in press" && $param_name == 'date') $this->unset('year');
           return $this->add($param_name, $value);
         }
         return false;
@@ -983,11 +985,11 @@ class Template extends Item {
     if (preg_match(siciRegExp, urldecode($this->parsed_text()), $sici)) {
       if ($this->blank($journal, "issn")) $this->set("issn", $sici[1]);
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
-      if ($this->blank("year")) $this->set("year", $sici[2]);
+      $this->add_if_new("year", $sici[2]);
       //if ($this->blank("day") && is("month") && $sici[4]) set ("day", $sici[4]);
-      if ($this->blank("volume")) $this->set("volume", 1*$sici[5]);
-      if ($this->blank("issue") && $this->blank('number') && $sici[6]) $this->set("issue", 1*$sici[6]);
-      if ($this->blank("pages", "page")) $this->set("pages", 1*$sici[7]);
+      $this->add_if_new("volume", 1*$sici[5]);
+      if ($sici[6]) $this->add_if_new("issue", 1*$sici[6]);
+      $this->add_if_new("pages", 1*$sici[7]);
       return true;
     } else return false;
   }
@@ -1446,7 +1448,7 @@ class Template extends Item {
             $this->param[$param_key]->val = $parameter_value;
             $param_recycled = TRUE;
           } else {
-            $this->add($parameter,$parameter_value);
+            $this->add_if_new($parameter,$parameter_value);
           }
           break;
         }
@@ -1490,11 +1492,11 @@ class Template extends Item {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-          $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $this->add('isbn', $match[1]);
+        $this->add_if_new('isbn', $match[1]);
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -1520,7 +1522,7 @@ class Template extends Item {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE; 
             } else {
-              $this->add($p1,implode(" ", $pAll));
+              $this->add_if_new($p1,implode(" ", $pAll));
             }
           }
           break;
@@ -1532,7 +1534,7 @@ class Template extends Item {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('issue',implode(" ", $pAll));
+              $this->add_if_new('issue',implode(" ", $pAll));
             }
           }
           break;
@@ -1544,7 +1546,7 @@ class Template extends Item {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('accessdate',implode(" ", $pAll));
+              $this->add_if_new('accessdate',implode(" ", $pAll));
             }
           }
           break;
