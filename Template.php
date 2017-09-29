@@ -233,10 +233,10 @@ class Template extends Item {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
 
-        if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
+        if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
-            $this->add($param_name, formatSurname($au[0]));
+            $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatSurname($au[0])));
             return $this->add('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
           } else {
             return $this->add($param_name,sanitize_string($value));
