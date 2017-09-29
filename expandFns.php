@@ -71,7 +71,9 @@ if ($edit || isset($_GET["doi"]) || isset($_GET["pmid"])) {
 }
 
 ################ Functions ##############
-
+/**
+ * @codeCoverageIgnore
+ */
 function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
   // if the bot is trying to connect to the defunct toolserver
   if ($dbName == 'yarrow') {
@@ -143,17 +145,6 @@ function logIn($username, $password) {
   }
 }
 
-function inputValue($tag, $form) {
-  //Gets the value of an input, if the input's in the right format.
-  preg_match("~value=\"([^\"]*)\" name=\"$tag\"~", $form, $name);
-  if ($name)
-    return $name[1];
-  preg_match("~name=\"$tag\" value=\"([^\"]*)\"~", $form, $name);
-  if ($name)
-    return $name[1];
-  return false;
-}
-
 function format_title_text($title) {
   $title = html_entity_decode($title, null, "UTF-8");
   $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
@@ -172,12 +163,6 @@ function format_title_text($title) {
   $title = title_capitalization($title);
   
   return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important!
-}
-
-function remove_accents($input) {
-  $search = explode(",", "ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
-  $replace = explode(",", "c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u");
-  return str_replace($search, $replace, $input);
 }
 
 function under_two_authors($text) {
