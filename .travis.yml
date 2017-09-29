@@ -16,4 +16,4 @@ script:
   - phpunit --coverage-clover=coverage.xml --bootstrap expandFns.php tests/phpunit
 
 after_success:
-  bash <(curl -s https://codecov.io/bash) -t e6bb38cc-18e6-4153-b2fc-23bcd681ef73
+  bash <(curl -s https://codecov.io/bash)
