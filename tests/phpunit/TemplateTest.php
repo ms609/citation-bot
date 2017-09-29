@@ -184,12 +184,11 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($expanded->get('year'));
   }
   
-  /* Commented out whilst Google server are inaccessible
   public function testGoogleBooksExpansion() {
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
     $expanded_citation = $this->process_citation($text);
     $this->assertEquals('cite book', $expanded_citation->wikiname());
-    $this->assertEquals('http://books.google.com/?id=SjpSkzjIzfsC', $expanded_citation->get('url'));
+    $this->assertEquals('https://books.google.com/?id=SjpSkzjIzfsC', $expanded_citation->get('url'));
     $this->assertEquals('Wonderful Life: The Burgess Shale and the Nature of History',
       $expanded_citation->get('title'));
     $this->assertEquals('9780393307009', $expanded_citation->get('isbn')   );
@@ -197,5 +196,4 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Stephen Jay'  , $expanded_citation->get('first1') );
     $this->assertEquals('1990'         , $expanded_citation->get('year')   );
   }
-  */
 }
