@@ -150,6 +150,9 @@ class expandFnsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('2002', $expanded->get('year'));
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
+    $expanded = NULL;
+    
+    // Now check that parameters are NOT extracted when certain parameters exist
     $text = "{{cite journal|date=2002|journal=SET|url=http:/1/fake.url/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}";
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('issn'));

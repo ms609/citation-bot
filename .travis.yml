@@ -3,7 +3,7 @@ branches:
 
 language: php
 php:
-  - '5.5.9'
+  - '5.6'
   - '7.0'
 
 git:
@@ -18,7 +18,7 @@ script:
   - phpunit --bootstrap expandFns.php tests/phpunit/TemplateTest.php
   - phpunit --bootstrap constants.php tests/phpunit/constantsTest.php
   - phpunit --bootstrap Parameter.php tests/phpunit/ParameterTest.php
-  - phpunit --coverage-clover=coverage.xml
+  - phpunit --coverage-clover coverage.xml
 
 after_success:
   bash <(curl -s https://codecov.io/bash) -t e6bb38cc-18e6-4153-b2fc-23bcd681ef73
