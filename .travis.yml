@@ -14,7 +14,7 @@ before-script:
   - travis_retry composer install --no-interaction --prefer-source --dev
   
 script:
-  - phpunit --coverage-clover=coverage.xml --bootstrap expandFns.php tests/phpunit
+  - phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
 
 after_success:
-  bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
