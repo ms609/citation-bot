@@ -189,15 +189,20 @@ class Template extends Item {
     return TRUE;
   }
 
+  /* function add_if_new
+   * Adds a parameter to a template if the parameter and its equivalents are blank
+   * If the parameter is useful for expansion (e.g. a doi), immediately uses the new
+   * data to further expand the citation
+   */
   public function add_if_new($param_name, $value) {
-    if (array_key_exists($param_name, COMMON_MISTAKES)) {
-      $param_name = COMMON_MISTAKES[$param_name];
-    }
-
     if (trim($value) == "") {
       return false;
     }
-
+    
+    if (array_key_exists($param_name, COMMON_MISTAKES)) {
+      $param_name = COMMON_MISTAKES[$param_name];
+    }
+    
     // If we already have name parameters for author, don't add more
     if ($this->initial_author_params && in_array($param_name, FLATTENED_AUTHOR_PARAMETERS)) {
       return false;
@@ -553,7 +558,7 @@ class Template extends Item {
     echo "\n - Checking CrossRef database for doi. " . tag();
     $title = $this->get('title');
     $journal = $this->get('journal');
-    $author = $this->first_author();
+    $author = $this->first_surname();
     $year = $this->get('year');
     $volume = $this->get('volume');
     $page_range = $this->page_range();
@@ -758,7 +763,9 @@ class Template extends Item {
           $journal_data = preg_replace("~[\s:,;]*$~", "",
                   str_replace($match[-0], "", $journal_data));
         }
-        if ( strcasecmp( (string) $journal_data, "unknown") !=0 ) $this->add_if_new("journal", format_title_text($journal_data));
+        if (strcasecmp((string) $journal_data, "unknown") !=0 ) {
+          $this->add_if_new("journal", format_title_text($journal_data));
+        }
       } else {
         $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       }
@@ -866,9 +873,16 @@ class Template extends Item {
         }
         $this->add_if_new('series',  format_title_text($crossRef->series_title));
         $this->add_if_new("year", $crossRef->year);
-        if ($this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) && $crossRef->contributors->contributor) {
+        if (   $this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
+            && $crossRef->contributors->contributor
+          ) {
           $au_i = 0;
           $ed_i = 0;
+          // Check to see whether a single author is already set
+          // This might be, for example, a collaboration
+          $existing_author = $this->first_author();
+          $add_authors = ($existing_author && !isHumanAuthor($existing_author)) ? FALSE : TRUE; 
+          
           foreach ($crossRef->contributors->contributor as $author) {
             if ($author["contributor_role"] == 'editor') {
               ++$ed_i;
@@ -876,7 +890,7 @@ class Template extends Item {
                 $this->add_if_new("editor$ed_i-last", formatSurname($author->surname));
                 $this->add_if_new("editor$ed_i-first", formatForename($author->given_name));
               }
-            } elseif ($author['contributor_role'] == 'author') {
+            } elseif ($author['contributor_role'] == 'author' && $add_authors) {
               ++$au_i;
               $this->add_if_new("last$au_i", formatSurname($author->surname));
               $this->add_if_new("first$au_i", formatForename($author->given_name));
@@ -2055,16 +2069,31 @@ class Template extends Item {
     }
     return $max;
   }
-
+  
+  // Retreive author
   public function first_author() {
+    foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
+      $author = $this->get($auth_param);
+      if ($author) return $author;
+    }
+    $forenames = $this->get('first') . $this->get('forename') . $this->get('initials') .
+      $this->get('first1') . $this->get('forename1') . $this->get('initials1');
+    foreach (array('last', 'surname', 'last1') as $surname_param) {
+      $surname = $this->get($surname_param);
+      if ($surname) {
+        return ($surname . ', ' . $forenames);
+      }
+    }
+    return NULL;
+  }
+
+  public function first_surname() {
     // Fetch the surname of the first author only
-    if (preg_match("~[^.,;\s]{2,}~u", implode(' ',
-            array($this->get('author'), $this->get('author1'), $this->get('last'), $this->get('last1')))
-            , $first_author)) {
+    if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
       return $first_author[0];
     } else {
-      return null;
-    }        
+      return NULL;
+    }
   }
 
   public function page() {
