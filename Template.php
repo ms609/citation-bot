@@ -881,8 +881,6 @@ class Template extends Item {
           // Check to see whether a single author is already set
           // This might be, for example, a collaboration
           $existing_author = $this->first_author();
-          var_dump($existing_author);
-          var_dump(authorIsHuman($existing_author));
           $add_authors = is_null($existing_author)
                       || $existing_author = ''
                       || authorIsHuman($existing_author);
@@ -1423,6 +1421,12 @@ class Template extends Item {
             $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
           }
         }
+      }
+      
+      if (preg_match(DOI_REGEXP, $dat, $match)) {
+        $this->add_if_new('doi', $match[0]);
+        $this->name = "Cite journal";
+        $dat = str_replace($match[0], '', $dat);
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
