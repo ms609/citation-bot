@@ -32,8 +32,11 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
-  public function testParameterWithNoEquals() {
+  public function testParameterWithNoParameters() {
     $text = "{{Cite web | text without equals sign  }}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals($text, $expanded_citation->parsed_text());
+    $text = "{{  No pipe  }}";
     $expanded_citation = $this->process_citation($text);
     $this->assertEquals($text, $expanded_citation->parsed_text());
   }
