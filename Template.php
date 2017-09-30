@@ -2224,6 +2224,7 @@ class Template extends Item {
   }
 
   public function forget ($par) {
+    if ($par == 'url') $this->forget('format');
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
       echo "\n   - Dropping parameter " . htmlspecialchars($par) . tag();
