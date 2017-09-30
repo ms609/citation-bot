@@ -89,7 +89,11 @@ function isInitials($str){
 function authorIsHuman($author) {
   $author = trim($author);
   $chars = count_chars($author);
-  if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33) {
+  if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
+    || substr(strtolower($author), 0, 4) == "the " 
+    || stripos($author, 'collaborat') !== NULL
+    || preg_match("~[A-Z]{3}~", $author)
+  ) {
     return false;
   }
   return true;
