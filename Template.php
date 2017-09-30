@@ -867,7 +867,7 @@ class Template extends Item {
         echo "\n - Expanding from crossRef record" . tag();
 
         if ($crossRef->volume_title && $this->blank('journal')) {
-          $this->add_if_new('chapter', format_title_text($crossRef->article_title)); // TODO Check that add_if_new formats the title text already
+          $this->add_if_new('chapter', $crossRef->article_title); // add_if_new formats this value as a title
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
             $this->forget('title');
           }
