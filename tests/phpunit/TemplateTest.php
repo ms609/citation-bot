@@ -138,7 +138,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   */
   
   public function testCommentHandling() {
-    $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3}}";
+    $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}}";
     $expanded_page = $this->process_page($text);
     $this->assertEquals($text, $expanded_page->parsed_text());
   }

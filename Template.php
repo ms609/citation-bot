@@ -2094,7 +2094,7 @@ class Template extends Item {
   public function get($name) {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
-    // $p->param is the parameter name within the Parameter object
+    // $parameter_i->param is the parameter name within the Parameter object
     if ($this->param) {
       foreach ($this->param as $parameter_i) {
         if ($parameter_i->param == $name) {
