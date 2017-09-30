@@ -2,34 +2,6 @@
 global $bot;
 $bot = new Snoopy();
 
-function bubble_p ($a, $b) {
-  return ($a["weight"] > $b["weight"]) ? 1 : -1;
-}
-
-function dbg($array, $key = false) {
-  if(myIP()) {
-    if($key) {
-      echo "<pre>" . htmlspecialchars(print_r(array($key=>$array),1)) . "</pre>";
-    } else {
-      echo "<pre>" . htmlspecialchars(print_r($array,1)) . "</pre>";
-    }
-  } else {
-    echo "<p>Debug mode active</p>";
-  }
-}
-
-function myIP() {
-	switch ($_SERVER["REMOTE_ADDR"]){
-		case "1":
-    case "":
-		case "86.6.164.132":
-		case "99.232.120.132":
-		case "192.75.204.31":
-		return true;
-		default: return false;
-	}
-}
-
 /* jrTest - tests a name for a Junior appelation
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
