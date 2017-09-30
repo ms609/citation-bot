@@ -27,6 +27,7 @@ class Template extends Item {
 
   public function parse_text($text) {
     
+    $this->initial_author_params = null; // Will be populated later if there are any
     $this->rawtext = $text;
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
