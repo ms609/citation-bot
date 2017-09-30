@@ -718,6 +718,7 @@ class Template extends Item {
       );
     }
     if ($xml) {
+      $i = 0;
       foreach ($xml->entry->author as $auth) {
         $i++;
         $name = $auth->name;
