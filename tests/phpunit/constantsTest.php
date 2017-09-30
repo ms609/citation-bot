@@ -28,5 +28,5 @@ class constantsTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
     }
   }
-
+  
 }

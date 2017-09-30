@@ -7,12 +7,12 @@
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 
-if (!defined("html_output")) {
-  define("html_output", -1);
+if (!defined("HTML_OUTPUT")) {
+  define("HTML_OUTPUT", -1);
 }  
 
 function quiet_echo($text, $alternate_text = '') {
-  if (html_output >= 0)
+  if (defined('VERBOSE') || HTML_OUTPUT >= 0)
     echo $text;
   else
     echo $alternate_text;
@@ -55,19 +55,19 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 #ob_start(); //Faster, but output is saved until page finshed.
 ini_set("memory_limit", "256M");
 
-define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : false);
-define("SLOW_MODE", isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : false);
+define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
+define("SLOW_MODE", isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE);
 if (isset($_REQUEST["crossrefonly"])) {
-  $crossRefOnly = true;
+  $crossRefOnly = TRUE;
 } elseif (isset($_REQUEST["turbo"])) {
   $crossRefOnly = $_REQUEST["turbo"];
 } else {
-  $crossRefOnly = false;
+  $crossRefOnly = FALSE;
 }
-$edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : null;
+$edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : NULL;
 
 if ($edit || isset($_GET["doi"]) || isset($_GET["pmid"])) {
-  $ON = true;
+  $ON = TRUE;
 }
 
 ################ Functions ##############
@@ -136,17 +136,55 @@ function logIn($username, $password) {
     $bot->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
     $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
     $bot->cookies[$cookie_prefix . "_session"] = $login_result->login->sessionid;
-    return true;
+    return TRUE;
   } else {
     exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
     global $ON;
-    $ON = false;
-    return false;
+    $ON = FALSE;
+    return FALSE;
   }
 }
 
+function sanitize_doi($doi) {
+  return str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
+}
+
+/* extract_doi
+ * Returns an array containing:
+ * 0 => text containing a DOI, possibly encoded, possibly with additional text
+ * 1 => the decoded DOI
+ */
+function extract_doi($text) {
+  if (preg_match(
+        "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
+        $text, $match)) {
+    $doi = $match[1];
+    if (preg_match(
+          "~^(.*?)(/abstract|/pdf|</span>|[\s\|\"\?]|</).*+$~",
+          $doi, $new_match)
+        ) {
+      $doi = $new_match[1];
+    }
+    return array($match[0], sanitize_doi($doi));
+  }
+  return NULL;
+}
+
 function format_title_text($title) {
-  $title = html_entity_decode($title, null, "UTF-8");
+  $replacement = [];
+  if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
+    $placeholder = [];
+    for ($i = 0; $i < count($matches[0]); $i++) {
+      $replacement[$i] = '<math>' . 
+        str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), 
+          str_replace(['<mml:', '</mml:'], ['<', '</'], $matches[1][$i]))
+        . '</math>';
+      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i); 
+      // Need to use a placeholder to protect contents from URL-safening
+      $title = str_replace($matches[0][$i], $placeholder[$i], $title);
+    }
+  }
+  $title = html_entity_decode($title, NULL, "UTF-8");
   $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
   $title = (mb_substr($title, -1) == ".")
             ? mb_substr($title, 0, -1)
@@ -156,13 +194,22 @@ function format_title_text($title) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $iIn = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
-  $iOut = array("''","''",'','',"");
-  $in = array("&lt;", "&gt;");
-  $out = array("<", ">");
   $title = title_capitalization($title);
   
-  return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important!
+  $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
+  $wikiTags = array("''","''",'','',"");
+  $htmlBraces  = array("&lt;", "&gt;");
+  $angleBraces = array("<", ">");
+  $title = sanitize_string(// order of functions here IS important!
+             str_ireplace($originalTags, $wikiTags, 
+               str_ireplace($htmlBraces, $angleBraces, $title)
+             )
+           );
+  
+  for ($i = 0; $i < count($replacement); $i++) {
+    $title = str_replace($placeholder[$i], $replacement[$i], $title);
+  }
+  return($title); 
 }
 
 function under_two_authors($text) {
@@ -177,8 +224,9 @@ function title_case($text) {
 }
 
 /** Returns a properly capitalised title.
- *      If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and allows the letter after any period to remain capitalized.
-  *     If not, it will assume it is a journal abbreviation and won't capitalise after periods.
+ *      If $caps_after_punctuation is TRUE (or there is an abundance of periods), it allows the 
+ *      letter after colons and other punctuation marks to remain capitalized.
+ *      If not, it won't capitalise after : etc.
  */
 function title_capitalization($in, $caps_after_punctuation = TRUE, $could_be_italics = TRUE) {
   // Use 'straight quotes' per WP:MOS
@@ -250,9 +298,23 @@ function tag($long = FALSE) {
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
   if (trim($str) == 'Science (New York, N.Y.)') return 'Science';
+  $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
+  if ($math_templates_present) {
+    $replacement = [];
+    $placeholder = [];
+    for ($i = 0; $i < count($math_hits[0]); $i++) {
+      $replacement[$i] = $math_hits[0][$i];
+      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
+    }
+    $str = str_replace($replacement, $placeholder, $str);
+  }
   $dirty = array ('[', ']', '|', '{', '}');
   $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;');
-  return trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
+  $str = trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
+  if ($math_templates_present) {
+    $str = str_replace($placeholder, $replacement, $str);
+  }
+  return $str;
 }
 
 function prior_parameters($par, $list=array()) {

@@ -9,6 +9,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_exists('\PHPUnit_Framework_TestCase')) {
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
+if (!defined('VERBOSE')) define('VERBOSE', TRUE);
  
 class TemplateTest extends PHPUnit\Framework\TestCase {
 
@@ -30,6 +31,15 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $page->parse_text($text);
     $page->expand_text();
     return $page;
+  }
+
+  public function testParameterWithNoParameters() {
+    $text = "{{Cite web | text without equals sign  }}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals($text, $expanded_citation->parsed_text());
+    $text = "{{  No pipe  }}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals($text, $expanded_citation->parsed_text());
   }
   
   public function testUseUnusedData() {
@@ -70,6 +80,14 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded_citation = $this->process_citation($text);
     $this->assertEquals('cite journal', $expanded_citation->wikiname());
     $this->assertEquals('0806.0013', $expanded_citation->get('arxiv'));
+    
+    $text = "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded_citation->wikiname());
+    $this->assertEquals('0806.0013', $expanded_citation->get('arxiv'));
+    $this->assertNull($expanded_citation->get('class'));
+    $this->assertNull($expanded_citation->get('eprint'));
+    $this->assertNull($expanded_citation->get('publisher'));
   }
   
   public function testAmazonExpansion() {
@@ -87,9 +105,16 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testGarbageRemovalAndSpacing() {
-    $text = "{{Cite web | pages=10-11| edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
+    // Also tests handling of upper-case parameters
+    $text = "{{Cite web | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
     $expanded_citation = $this->process_citation($text);
+    // ISSN should be retained when journal is originally present
     $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $expanded_citation->parsed_text());
+    
+    $text = "{{Cite web | Journal=My Journal| issn=1234-4321 | publisher=Unwarranted }}";
+    $expanded_citation = $this->process_citation($text);
+    // ISSN is removed when journal is added.  Is this the desired behaviour? ##TODO!
+    $this->assertEquals('{{Cite journal| journal=My Journal}}', $expanded_citation->parsed_text());
   }
   
   public function testJournalCapitalization() {
@@ -105,11 +130,15 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testUnknownJournal() {
     $text = '{{cite journal|bibcode= 1975STIN...7615344H |title= Development of a transmission error model and an error control model  |volume= 76 |author1= Hammond |first1= J. L. |last2= Brown |first2= J. E. |last3= Liu |first3= S. S. S. |year= 1975}}';
-
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   }
 
+  public function testCiteArxivRecognition() {
+    $text = '{{Cite web | eprint=1203.0149}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Cite arxiv', $expanded->name());
+  }
   
   public function testBrokenDoiDetection() {
     $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
@@ -182,7 +211,13 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($expanded->get('journal'));
     $this->assertNotNull($expanded->get('pages'));
     $this->assertNotNull($expanded->get('year'));
-      
+  
+    // test attempt to add a parameter listed in COMMON_MISTAKES
+    $album_link = 'http://album.com';
+    $expanded->add_if_new('albumlink', $album_link);
+    $this->assertEquals($album_link, $expanded->get('titlelink'));    
+     
+    // Double-check pages expansion
     $text = "{{Cite journal|pp. 1-5}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('1–5',$expanded->get('pages'));
@@ -207,6 +242,29 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   }
+  
+  public function testLongAuthorLists() {
+    $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('The ATLAS Collaboration', $expanded->first_author());
+    $this->assertEquals('hep-ex', $expanded->get('class'));
+    
+    // Same paper, but CrossRef records full list of authors instead of collaboration name
+    $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('29', $expanded->get('displayauthors'));
+    $this->assertEquals('Aielli', $expanded->get('last30'));
+    $this->assertEquals("Charged-particle multiplicities in pp interactions at <math>"
+      . '\sqrt{s}=900\text{ GeV}' .
+      "</math> measured with the ATLAS detector at the LHC", $expanded->get('title'));
+    $this->assertNull($expanded->get('last31'));
+  }
+  
+  /* TODO 
+  Test adding a paper with > 4 editors; this should trigger displayeditors
+  Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
+  Test adding a doi-is-broken modifier to a broken DOI.
+  */
 
   public function testInPress() {
     $text = '{{Cite journal|pmid=9858585|date =in press}}';
@@ -226,5 +284,4 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('2007-08-01', $expanded->get('date'));
       $this->assertNull($expanded->get('year'));
   }
-  
 }
