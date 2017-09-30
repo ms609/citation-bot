@@ -505,10 +505,16 @@ class Template extends Item {
           $this->set('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
           $this->expand_by_doi(1);
         }
-      } elseif (preg_match("~\barxiv.org/(?:pdf|abs)/(.+)$~", $url, $match)) {
-        //ARXIV
-        $match[1] = str_replace ( ".pdf" , "" , $match[1] ); // Catch PDFs
-        $this->add_if_new("arxiv", $match[1]);
+      } else if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
+        /* ARXIV
+         * See https://arxiv.org/help/arxiv_identifier for identifier formats
+         */
+        if (   preg_match("~[A-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
+            || preg_match("~\d{4}\.\d{4,5}(?:v\d+)~", $match[1], $arxiv_id) // post-2007
+            ) {
+          $this->add_if_new("arxiv", $arxiv_id[0]);
+          $this->expand_by_arxiv();
+        }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
         if ($this->blank('pmid')) {
