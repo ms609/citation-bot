@@ -158,7 +158,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   */
   
   public function testCommentHandling() {
-    $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3}}";
+    $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}}";
     $expanded_page = $this->process_page($text);
     $this->assertEquals($text, $expanded_page->parsed_text());
   }
@@ -212,7 +212,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Wonderful Life: The Burgess Shale and the Nature of History',
       $expanded_citation->get('title'));
     $this->assertEquals('9780393307009', $expanded_citation->get('isbn')   );
-    $this->assertEquals('Gould'        , $expanded_citation->get('author1'));
+    $this->assertEquals('Gould'        , $expanded_citation->get('last1'));
     $this->assertEquals('Stephen Jay'  , $expanded_citation->get('first1') );
     $this->assertEquals('1990-09-17'   , $expanded_citation->get('date'));
   }

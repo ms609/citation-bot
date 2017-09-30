@@ -233,10 +233,10 @@ class Template extends Item {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
 
-        if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1") && $this->blank("editor") && $this->blank("editor-last") && $this->blank("editor-first")) {
+        if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
-            $this->add($param_name, formatSurname($au[0]));
+            $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatSurname($au[0])));
             return $this->add('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
           } else {
             return $this->add($param_name,sanitize_string($value));
@@ -324,9 +324,11 @@ class Template extends Item {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
-        if (   ($this->blank("date") || trim(strtolower($this->get('date'))) == "in press")
-            && ($this->blank("year") || trim(strtolower($this->get('year'))) == "in press")
+        if (   ($this->blank("date") || in_array(trim(strtolower($this->get('date'))), IN_PRESS_ALIASES))
+            && ($this->blank("year") || in_array(trim(strtolower($this->get('year'))), IN_PRESS_ALIASES))
           ) {
+          if ($param_name != 'date') $this->forget('date'); // Delete any "in press" dates.
+          if ($param_name != 'year') $this->forget('year'); // We only unset the other one so that parameters stay in order as much as possible
           return $this->add($param_name, $value);
         }
         return false;
@@ -487,28 +489,27 @@ class Template extends Item {
       }
     } else {
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
-        if (!$this->get('bibcode')) {
+        if ($this->blank('bibcode')) {
           $this->forget('url');
           $this->set("bibcode", urldecode($bibcode[1]));
         }
       } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-        if (!$this->get('pmc')) {
+        if ($this->blank('pmc')) {
           $this->forget('url');
           $this->set("pmc", $match[1] . $match[2]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
-        if (!$this->get('doi')) {
+        if ($this->blank('doi')) {
           $this->set("doi", urldecode($match[1]));
           $this->expand_by_doi(1);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } elseif (preg_match("~10\.\d{4}/[^&\s\|\?]*~", $url, $match)) {
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
-        if (!$this->get('doi')) {
-
+        if ($this->blank('doi')) {
           $this->set('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
           $this->expand_by_doi(1);
         }
@@ -518,7 +519,7 @@ class Template extends Item {
         $this->add_if_new("arxiv", $match[1]);
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        if (!$this->get('pmid')) {
+        if ($this->blank('pmid')) {
           $this->set('pmid', $match[1]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
@@ -1832,7 +1833,7 @@ class Template extends Item {
             break; // Don't want 'Edition ed.'
           case 'year':
             if (preg_match ("~\d\d*\-\d\d*\-\d\d*~", $p->val)) { // We have more than one dash, must not be range of years.
-               $this->add_if_new('date', $p->val);
+               if ($this->blank('date')) $this->set('date', $p->val);
                $this->forget('year');
                break; 
             }
@@ -2013,7 +2014,7 @@ class Template extends Item {
           if ($i == 1) {
             // then we (probably) have a list of authors joined by commas in our first parameter
             if (under_two_authors($val_base)) {
-              if ($param == 'authors' && !$this->get('author')) {
+              if ($param == 'authors' && $this->blank('author')) {
                 $this->rename('authors', 'author');
               }
             }
@@ -2093,7 +2094,7 @@ class Template extends Item {
   public function get($name) {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
-    // $p->param is the parameter name within the Parameter object
+    // $parameter_i->param is the parameter name within the Parameter object
     if ($this->param) {
       foreach ($this->param as $parameter_i) {
         if ($parameter_i->param == $name) {
