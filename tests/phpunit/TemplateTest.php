@@ -324,3 +324,4 @@ ER -  }}';
        $expanded = $this->process_citation($text);
            //  We need to check this
    }
+}
