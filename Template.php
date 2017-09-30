@@ -105,9 +105,9 @@ class Template extends Item {
         $this->citation_template = TRUE;
 
         // If the et al. is from added parameters, go ahead and handle
-        # if (!$this->initial_author_parameters) { // This property does not seem to be sent anywhere
+        if (count($this->initial_author_parameters) == 0) {
           $this->handle_et_al();
-        #}
+        }
 
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
