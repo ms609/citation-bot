@@ -76,7 +76,7 @@ class Template extends Item {
   public function process() {
     switch ($this->wikiname()) {
       case 'cite web':
-        $this->use_unnamed_params();
+        $this->use_unnamed_params(); 
         $this->get_identifiers_from_url();
         $this->tidy();
         if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
@@ -360,7 +360,7 @@ class Template extends Item {
         return FALSE;
       case 'title':
         if ($this->blank($param_name)) {
-          return $this->format_title(sanitize_string($value));
+          return $this->format_title($value); // format_title will sanitize the string
         }
         return FALSE;
       case 'class':
@@ -373,6 +373,7 @@ class Template extends Item {
           $this->add('doi', $match[0]);
           $this->verify_doi();
           $this->expand_by_doi();
+          
           return TRUE;
         }
         return FALSE;
@@ -740,7 +741,7 @@ class Template extends Item {
           $this->add_if_new("author$i", $name);
         }
       }
-      $this->add_if_new("title", format_title_text((string) $xml->entry->title));
+      $this->add_if_new("title", (string) $xml->entry->title); // Formatted by add_if_new
       $this->add_if_new("class", (string) $xml->entry->category["term"]);
       $this->add_if_new("year", substr($xml->entry->published, 0, 4));
       $this->add_if_new("doi", (string) $xml->entry->arxivdoi);
@@ -816,7 +817,7 @@ class Template extends Item {
         echo tag();
         $this->add_if_new("bibcode", (string) $xml->record->bibcode);
         if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
-            $this->add_if_new("title", format_title_text( (string) $xml->record->title));
+            $this->add_if_new("title", (string) $xml->record->title); // add_if_new will format the title text
         }
         $i = NULL;
         foreach ($xml->record->author as $author) {
@@ -836,7 +837,7 @@ class Template extends Item {
             $this->append_to('id', ' ' . substr($journal_start, 13));
           }
         } else {
-          if (strcasecmp($journal_string[0], "unknown") != 0) $this->add_if_new('journal', format_title_text($journal_string[0])); // Bibcodes titles are sometimes unknown
+          if (strcasecmp($journal_string[0], "unknown") != 0) $this->add_if_new('journal', $journal_string[0]); // Bibcodes titles are sometimes unknown
         }
         if ($this->add_if_new('doi', (string) $xml->record->DOI)) {
           $this->expand_by_doi();
@@ -863,15 +864,17 @@ class Template extends Item {
         echo "\n - Expanding from crossRef record" . tag();
 
         if ($crossRef->volume_title && $this->blank('journal')) {
-          $this->add_if_new('chapter', format_title_text($crossRef->article_title));
+          $this->add_if_new('chapter', format_title_text($crossRef->article_title)); // TODO Check that add_if_new formats the title text already
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
             $this->forget('title');
           }
-          $this->add_if_new('title',  format_title_text($crossRef->volume_title));
+          $this->add_if_new('title', $crossRef->volume_title); // format_title will sanitize the string
         } else {
-          $this->add_if_new('title',  format_title_text($crossRef->article_title));
+          print "\n####st2.2: "; print $this->get('title');
+          $this->add_if_new('title',  $crossRef->article_title); // format_title will sanitize the string
+          print "\n####st2.3: "; print $this->get('title');
         }
-        $this->add_if_new('series',  format_title_text($crossRef->series_title));
+        $this->add_if_new('series',  format_title_text($crossRef->series_title)); // CHECK: Will add_if_new format the title for a series?
         $this->add_if_new("year", $crossRef->year);
         if (   $this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
             && $crossRef->contributors->contributor
@@ -900,7 +903,7 @@ class Template extends Item {
           }
         }
         $this->add_if_new('isbn', $crossRef->isbn);
-        $this->add_if_new('journal',  format_title_text($crossRef->journal_title));
+        $this->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
         if ($crossRef->volume > 0) $this->add_if_new('volume', $crossRef->volume);
         if ((integer) $crossRef->issue > 1) {
         // "1" may refer to a journal without issue numbers,
@@ -946,10 +949,10 @@ class Template extends Item {
         $this->add_if_new('doi', $match[0]);
       }
       switch ($item["Name"]) {
-                case "Title":   $this->add_if_new('title',  format_title_text(str_replace(array("[", "]"), "",(string) $item)));
+                case "Title":   $this->add_if_new('title',  str_replace(array("[", "]"), "",(string) $item)); // add_if_new will format the title
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
                                 $this->add_if_new('year', (string) $match[1]);
-        break;  case "FullJournalName": $this->add_if_new('journal',  format_title_text(ucwords((string) $item)));
+        break;  case "FullJournalName": $this->add_if_new('journal',  ucwords((string) $item)); // add_if_new will format the title
         break;  case "Volume":  $this->add_if_new('volume', (string) $item);
         break;  case "Issue":   $this->add_if_new('issue', (string) $item);
         break;  case "Pages":   $this->add_if_new('pages', (string) $item);
@@ -1423,10 +1426,11 @@ class Template extends Item {
         }
       }
       
-      if (preg_match(DOI_REGEXP, $dat, $match)) {
-        $this->add_if_new('doi', $match[0]);
+      $doi = extract_doi($dat);
+      if (!is_null($doi)) {
+        $this->add_if_new('doi', $doi[1]); 
         $this->name = "Cite journal";
-        $dat = str_replace($match[0], '', $dat);
+        $dat = str_replace($doi[0], '', $dat);
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
@@ -1921,9 +1925,10 @@ class Template extends Item {
     if ($this->has('accessdate') && $this->lacks('url') && $this->lacks('chapter-url') && $this->lacks('chapterurl') && $this->lacks('contribution-url') && $this->lacks('contributionurl')) $this->forget('accessdate');
   }
 
+  /* Note that format_title_text performs a sanitize_string */
   protected function format_title($title = FALSE) {
     if (!$title) $title = $this->get('title');
-    $this->set('title', format_title_text($title)); // order IS important!
+    $this->set('title', format_title_text($title));
   }
 
   protected function sanitize_doi($doi = FALSE) {
@@ -1931,7 +1936,7 @@ class Template extends Item {
       $doi = $this->get('doi');
       if (!$doi) return FALSE;
     }
-    $this->set('doi', str_replace(HTML_ENCODE, HTML_DECODE, str_replace(' ', '+', trim(urldecode($doi)))));
+    $this->set('doi', sanitize_doi($doi));
     return TRUE;
   }
 

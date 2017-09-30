@@ -163,7 +163,6 @@ function extract_doi($text) {
           "~^(.*?)(/abstract|/pdf|</span>|[\s\|\"\?]|</).*+$~",
           $doi, $new_match)
         ) {
-      print "new_match = "; var_dump($new_match);
       $doi = $new_match[1];
     }
     return array($match[0], sanitize_doi($doi));
@@ -172,14 +171,20 @@ function extract_doi($text) {
 }
 
 function format_title_text($title) {
-  if (preg_match_all("~<mml:math[^>]*>(.*?)</mml:math>~", $title, $matches)) {
+  $replacement = [];
+  if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
+    $placeholder = [];
     for ($i = 0; $i < count($matches[0]); $i++) {
-      $replacement = str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), $matches[1][$i]);
-      $title = str_replace($matches[0][$i], $replacement, $title);
+      $replacement[$i] = '<math>' . 
+        str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), 
+          str_replace(['<mml:', '</mml:'], ['<', '</'], $matches[1][$i]))
+        . '</math>';
+      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i); 
+      // Need to use a placeholder to protect contents from URL-safening
+      $title = str_replace($matches[0][$i], $placeholder[$i], $title);
     }
   }
   $title = html_entity_decode($title, NULL, "UTF-8");
-  var_dump($title);
   $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
   $title = (mb_substr($title, -1) == ".")
             ? mb_substr($title, 0, -1)
@@ -189,13 +194,22 @@ function format_title_text($title) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $iIn = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
-  $iOut = array("''","''",'','',"");
-  $in = array("&lt;", "&gt;");
-  $out = array("<", ">");
   $title = title_capitalization($title);
   
-  return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important!
+  $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
+  $wikiTags = array("''","''",'','',"");
+  $htmlBraces  = array("&lt;", "&gt;");
+  $angleBraces = array("<", ">");
+  $title = sanitize_string(// order of functions here IS important!
+             str_ireplace($originalTags, $wikiTags, 
+               str_ireplace($htmlBraces, $angleBraces, $title)
+             )
+           );
+  
+  for ($i = 0; $i < count($replacement); $i++) {
+    $title = str_replace($placeholder[$i], $replacement[$i], $title);
+  }
+  return($title); 
 }
 
 function under_two_authors($text) {
@@ -284,9 +298,23 @@ function tag($long = FALSE) {
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
   if (trim($str) == 'Science (New York, N.Y.)') return 'Science';
+  $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
+  if ($math_templates_present) {
+    $replacement = [];
+    $placeholder = [];
+    for ($i = 0; $i < count($math_hits[0]); $i++) {
+      $replacement[$i] = $math_hits[0][$i];
+      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
+    }
+    $str = str_replace($replacement, $placeholder, $str);
+  }
   $dirty = array ('[', ']', '|', '{', '}');
   $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;');
-  return trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
+  $str = trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
+  if ($math_templates_present) {
+    $str = str_replace($placeholder, $replacement, $str);
+  }
+  return $str;
 }
 
 function prior_parameters($par, $list=array()) {
