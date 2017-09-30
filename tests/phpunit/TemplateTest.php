@@ -284,4 +284,16 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('2007-08-01', $expanded->get('date'));
       $this->assertNull($expanded->get('year'));
   }
+  public function testRIS() {
+      $text = '{{Cite journal  | TY - JOUR
+AU - Shannon, Claude E.
+PY - 1948/07//
+TI - A Mathematical Theory of Communication
+T2 - Bell System Technical Journal
+SP - 379
+EP - 423
+VL - 27
+ER -  }}';
+$expanded = $this->process_citation($text);
+  }
 }
