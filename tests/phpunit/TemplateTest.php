@@ -105,7 +105,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{Cite web | Journal=My Journal| issn=1234-4321 | publisher=Unwarranted }}";
     $expanded_citation = $this->process_citation($text);
     // ISSN is removed when journal is added.  Is this the desired behaviour? ##TODO!
-    $this->assertEquals('{{Cite journal| journal=My Journal }}', $expanded_citation->parsed_text());
+    $this->assertEquals('{{Cite journal| journal=My Journal}}', $expanded_citation->parsed_text());
   }
   
   public function testJournalCapitalization() {
