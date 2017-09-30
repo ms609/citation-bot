@@ -7,12 +7,12 @@
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 
-if (!defined("html_output")) {
-  define("html_output", -1);
+if (!defined("HTML_OUTPUT")) {
+  define("HTML_OUTPUT", -1);
 }  
 
 function quiet_echo($text, $alternate_text = '') {
-  if (html_output >= 0)
+  if (defined('VERBOSE') || HTML_OUTPUT >= 0)
     echo $text;
   else
     echo $alternate_text;

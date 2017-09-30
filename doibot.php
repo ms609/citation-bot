@@ -36,7 +36,7 @@
           <h3 id="siteSub">Please wait while the <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> processes the page you requested.</h3>
             <pre><?php
 ## Set up - including DOT_DECODE array
-define("html_output", TRUE);
+define("HTML_OUTPUT", TRUE);
 require_once("expandFns.php");
 require_once("login.php");
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
@@ -57,7 +57,7 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
       ++$attempts;
     }
     if ($attempts < 3 ) {
-      echo html_output ?
+      echo HTML_OUTPUT ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
         . urlencode(getLastRev($title)) . ">last edit</a></small></i>\n\n<br>"

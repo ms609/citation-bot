@@ -39,7 +39,7 @@ if ($category) {
       while (!$page->write() && $attempts < 2) ++$attempts;
       print htmlspecialchars($page->text);
       if ($attempts < 3 ) {
-        echo html_output ?
+        echo HTML_OUTPUT ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
         . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"

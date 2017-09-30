@@ -84,7 +84,7 @@ class Page {
 
     //this is set to -1 only in text.php, because there's no need to output
     // a buffer of text for the citation-expander gadget
-    if (html_output === -1) {
+    if (HTML_OUTPUT === -1) {
       ob_start();
     }
 
@@ -128,7 +128,7 @@ class Page {
     $this->replace_object($nowiki);
    
     // seems to be set as -1  in text.php and then re-set
-    if (html_output === -1) {
+    if (HTML_OUTPUT === -1) {
       ob_end_clean();
     }
 
@@ -215,7 +215,7 @@ class Page {
       $result = json_decode($bot->results);
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        if (html_output) echo "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
+        if (HTML_OUTPUT) echo "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
         else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
         return TRUE;
       } else if ($result->edit->result) {

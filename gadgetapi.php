@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: *"); //This is ok because the API is not au
 header("Content-Type: text/json");
 
 //Configure setting to suppress buffered output
-define("html_output", -1);
+define("HTML_OUTPUT", -1);
 
 //Set up tool requirements
 require_once __DIR__ . '/expandFns.php';
