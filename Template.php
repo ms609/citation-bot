@@ -752,9 +752,11 @@ class Template extends Item {
         }
         if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
           $this->add_if_new("volume", $match[1]);
-          $this->add_if_new("issue", $match[2]);
+          if (isset($match[2])) {
+            $this->add_if_new("issue", $match[2]);
+          }
           $journal_data = preg_replace("~[\s:,;]*$~", "",
-                  str_replace(array($match[1], $match[2]), "", $journal_data));
+                  str_replace($match[-0], "", $journal_data));
         }
         if ( strcasecmp( (string) $journal_data, "unknown") !=0 ) $this->add_if_new("journal", format_title_text($journal_data));
       } else {
