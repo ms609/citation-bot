@@ -211,12 +211,16 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($expanded->get('journal'));
     $this->assertNotNull($expanded->get('pages'));
     $this->assertNotNull($expanded->get('year'));
-    
+  
     // test attempt to add a parameter listed in COMMON_MISTAKES
     $album_link = 'http://album.com';
     $expanded->add_if_new('albumlink', $album_link);
-    $this->assertEquals($album_link, $expanded->get('titlelink'));
-    
+    $this->assertEquals($album_link, $expanded->get('titlelink'));    
+     
+    // Double-check pages expansion
+    $text = "{{Cite journal|pp. 1-5}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('1–5',$expanded->get('pages'));
   }
   
   public function testGoogleBooksExpansion() {
@@ -261,5 +265,23 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
   Test adding a doi-is-broken modifier to a broken DOI.
   */
+
+  public function testInPress() {
+    $text = '{{Cite journal|pmid=9858585|date =in press}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('date'));
+    $this->assertEquals('1999',$expanded->get('year'));
+
+    $text = '{{cite journal|pmid=9858585|year=in press}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('date'));
+    $this->assertEquals('1999',$expanded->get('year'));
+  }
   
+ public function testISODates() {
+      $text = '{{cite book |author=Me |title=Title |year=2007-08-01 }}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('2007-08-01', $expanded->get('date'));
+      $this->assertNull($expanded->get('year'));
+  }
 }
