@@ -106,7 +106,7 @@ function isRedirect($page) {
     return array ((($xml->query->pages->page["redirect"])?1:0),
                     $xml->query->pages->page["pageid"]);
     } else {
-      return array (-1, null);
+      return array (-1, NULL);
    }
 }
 
@@ -160,7 +160,7 @@ function articleID($page, $namespace = 0) {
   return $results['page_id'];
 }
 
-function getRawWikiText($page, $wait = false, $verbose = false, $use_daniel = true) {
+function getRawWikiText($page, $wait = FALSE, $verbose = FALSE, $use_daniel = TRUE) {
   $encode_page = urlencode($page);
   echo $verbose ? "\n scraping... " : "";
     // Get the text by scraping edit page
@@ -242,7 +242,7 @@ function extract_template($code, $target) {
 
     $code = str_replace($template[$i], sprintf($placeholder, $i), $code);
   }
-  return false;
+  return FALSE;
 }
 
 // Extracts parameters in a Wikipedia template.
@@ -326,7 +326,7 @@ function generate_template ($name, $parameters) {
   return $output . $space_before_the_brace . '}}';
 }
 
-function wikiLink($page, $style = "#036;", $target = null) {
+function wikiLink($page, $style = "#036;", $target = NULL) {
   if (!$target) $target = $page;
   $css = $style?" style='color:$style !important'":"";
   return "<a href='" . WIKI_ROOT . "title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
@@ -334,7 +334,7 @@ function wikiLink($page, $style = "#036;", $target = null) {
 
 function geo_range_ok ($template) {
   $text = parse_wikitext ($template); // TODO check that this function returns the expected output
-  return strpos($text, "Expression error:") ? false : true;
+  return strpos($text, "Expression error:") ? FALSE : TRUE;
 }
 
 function load_xml_via_bot($vars) {
@@ -348,8 +348,8 @@ function touch_page($page) {
   $text = getRawWikiText($page);
   if ($text) {
     write ($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
-    return true;
+    return TRUE;
   } else {
-    return false;
+    return FALSE;
   }
 }

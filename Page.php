@@ -27,7 +27,7 @@ class Page {
       return array ((($xml->query->pages->page["redirect"])?1:0),
                       $xml->query->pages->page["pageid"]);
       } else {
-        return array (-1, null);
+        return array (-1, NULL);
      }
   }
 
@@ -79,7 +79,7 @@ class Page {
     $this->modifications = array();
     if (!$text) {
       echo "\n\n  ! No text retrieved.\n";
-      return false;
+      return FALSE;
     }
 
     //this is set to -1 only in text.php, because there's no need to output
@@ -193,7 +193,7 @@ class Page {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
-      if ( stripos($this->text,"Citation bot : comment placeholder") != false )  {
+      if ( stripos($this->text,"Citation bot : comment placeholder") != FALSE )  {
         echo "\n ! Comment placeholder left escaped. Aborting.";
         return FALSE;
       }
@@ -264,11 +264,11 @@ class Page {
     // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
-      return false;
+      return FALSE;
     if (preg_match('/\{\{(bots\|allow=all|bots\|allow=.*?'.$bot_username.'.*?)\}\}/iS', $this->text))
-      return true;
+      return TRUE;
     if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $this->text))
-      return false;
-    return true;
+      return FALSE;
+    return TRUE;
   }
 }

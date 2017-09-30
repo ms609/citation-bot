@@ -39,7 +39,7 @@
 define("html_output", TRUE);
 require_once("expandFns.php");
 require_once("login.php");
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : null;
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   print "Activated by $user\n";
   $edit_summary_end = " | [[User:$user|$user]]";

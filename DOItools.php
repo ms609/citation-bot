@@ -7,11 +7,11 @@ $bot = new Snoopy();
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
 function jrTest($name) {
-  $junior = (substr($name, -3) == " Jr")?" Jr":false;
+  $junior = (substr($name, -3) == " Jr")?" Jr":FALSE;
   if ($junior) {
     $name = substr($name, 0, -3);
   } else {
-    $junior = (substr($name, -4) == " Jr.")?" Jr.":false;
+    $junior = (substr($name, -4) == " Jr.")?" Jr.":FALSE;
     if ($junior) {
       $name = substr($name, 0, -4);
     }
@@ -66,7 +66,7 @@ function formatForename($forename){
  */
 function formatInitials($str){
 	$str = trim($str);
-	if ($str == "") return false;
+	if ($str == "") return FALSE;
 	if (substr($str, strlen($str)-1) == ";") $end = ";";
 	preg_match_all("~\w~", $str, $match);
 	return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
@@ -75,11 +75,11 @@ function formatInitials($str){
  * @codeCoverageIgnore
  */
 function isInitials($str){
-	if (!$str) return false;
-	if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return false;
-	if (strlen(str_replace(array("-", ".", ";"), "", $str)) ==1) return true;
-	if (mb_strtoupper($str) != $str) return false;
-	return true;
+	if (!$str) return FALSE;
+	if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return FALSE;
+	if (strlen(str_replace(array("-", ".", ";"), "", $str)) ==1) return TRUE;
+	if (mb_strtoupper($str) != $str) return FALSE;
+	return TRUE;
 }
 
 /*
@@ -94,9 +94,9 @@ function authorIsHuman($author) {
     || stripos($author, 'collaborat') !== NULL
     || preg_match("~[A-Z]{3}~", $author)
   ) {
-    return false;
+    return FALSE;
   }
-  return true;
+  return TRUE;
 }
 
 // Returns the author's name formated as Surname, F.I.
@@ -108,7 +108,7 @@ function formatAuthor($author){
 	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
 	if ($author == "") {
-      return false;
+      return FALSE;
   }
 
 	$auth = explode(",", $author);
@@ -170,8 +170,8 @@ function formatAuthor($author){
 	return formatSurname($surname) . ", " . formatForename($fore);
 }
 
-function formatAuthors($authors, $returnAsArray = false){
-	$authors = html_entity_decode($authors, null, "UTF-8");
+function formatAuthors($authors, $returnAsArray = FALSE){
+	$authors = html_entity_decode($authors, NULL, "UTF-8");
 
 	$return = array();
 	## Split the citation into an author by author account
@@ -183,7 +183,7 @@ function formatAuthors($authors, $returnAsArray = false){
 
 	$authors = trim($authors);
 	if ($authors == "") {
-    return false;
+    return FALSE;
   }
 
 	$authors = explode(";", $authors);
@@ -204,7 +204,7 @@ function formatAuthors($authors, $returnAsArray = false){
 			#dbg($bits, '$BITS');
 			if ($bits[1] || $savedChunk) {
 				$return[] = formatAuthor($savedChunk .  ($savedChunk?", ":"") . $chunk);
-				$savedChunk = null;
+				$savedChunk = NULL;
 			} else $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
 		}
 	}
@@ -232,7 +232,7 @@ function straighten_quotes($str) {
 
 function curlSetUp($ch, $url){
 	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);  //This means we can't get stuck.
 	curl_setopt($ch, CURLOPT_TIMEOUT, 5);

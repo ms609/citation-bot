@@ -55,19 +55,19 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 #ob_start(); //Faster, but output is saved until page finshed.
 ini_set("memory_limit", "256M");
 
-define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : false);
-define("SLOW_MODE", isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : false);
+define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
+define("SLOW_MODE", isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE);
 if (isset($_REQUEST["crossrefonly"])) {
-  $crossRefOnly = true;
+  $crossRefOnly = TRUE;
 } elseif (isset($_REQUEST["turbo"])) {
   $crossRefOnly = $_REQUEST["turbo"];
 } else {
-  $crossRefOnly = false;
+  $crossRefOnly = FALSE;
 }
-$edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : null;
+$edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : NULL;
 
 if ($edit || isset($_GET["doi"]) || isset($_GET["pmid"])) {
-  $ON = true;
+  $ON = TRUE;
 }
 
 ################ Functions ##############
@@ -136,12 +136,12 @@ function logIn($username, $password) {
     $bot->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
     $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
     $bot->cookies[$cookie_prefix . "_session"] = $login_result->login->sessionid;
-    return true;
+    return TRUE;
   } else {
     exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
     global $ON;
-    $ON = false;
-    return false;
+    $ON = FALSE;
+    return FALSE;
   }
 }
 
@@ -152,7 +152,7 @@ function format_title_text($title) {
       $title = str_replace($matches[0][$i], $replacement, $title);
     }
   }
-  $title = html_entity_decode($title, null, "UTF-8");
+  $title = html_entity_decode($title, NULL, "UTF-8");
   var_dump($title);
   $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
   $title = (mb_substr($title, -1) == ".")
@@ -184,8 +184,9 @@ function title_case($text) {
 }
 
 /** Returns a properly capitalised title.
- *      If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and allows the letter after any period to remain capitalized.
-  *     If not, it will assume it is a journal abbreviation and won't capitalise after periods.
+ *      If $caps_after_punctuation is TRUE (or there is an abundance of periods), it allows the 
+ *      letter after colons and other punctuation marks to remain capitalized.
+ *      If not, it won't capitalise after : etc.
  */
 function title_capitalization($in, $caps_after_punctuation = TRUE, $could_be_italics = TRUE) {
   // Use 'straight quotes' per WP:MOS

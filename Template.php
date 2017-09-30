@@ -181,7 +181,7 @@ class Template extends Item {
 
   public function blank($param) {
     if (!$param) return ;
-    if (empty($this->param)) return true;
+    if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
       if (in_array($p->param, $param) && trim($p->val) != '') return FALSE;
@@ -196,7 +196,7 @@ class Template extends Item {
    */
   public function add_if_new($param_name, $value) {
     if (trim($value) == "") {
-      return false;
+      return FALSE;
     }
     
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
@@ -205,16 +205,16 @@ class Template extends Item {
     
     // If we already have name parameters for author, don't add more
     if ($this->initial_author_params && in_array($param_name, FLATTENED_AUTHOR_PARAMETERS)) {
-      return false;
+      return FALSE;
     }
 
     if (substr($param_name, -4) > 0 || substr($param_name, -3) > 0 || substr($param_name, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
       if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', 29);
-      return false;
+      return FALSE;
     }
 
-    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : null;        
+    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : NULL;        
 
     switch ($param_name) {
       case "editor": case "editor-last": case "editor-first":
@@ -222,7 +222,7 @@ class Template extends Item {
         if ($this->blank('editor') && $this->blank("editor-last") && $this->blank("editor-first")) {
           return $this->add($param_name, sanitize_string($value));
         } else {
-          return false;
+          return FALSE;
         }
       case 'editor4': case 'editor4-last': case 'editor4-first':
         $this->add_if_new('displayeditors', 29);
@@ -241,12 +241,12 @@ class Template extends Item {
             return $this->add($param_name,sanitize_string($value));
           }
         }
-      return false;
+      return FALSE;
       case "first": case "first1":
        $value = straighten_quotes($value);
        if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
           return $this->add($param_name, sanitize_string($value));
-      return false;
+      return FALSE;
       case "coauthors": //FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
         $value = straighten_quotes($value);
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
@@ -254,7 +254,7 @@ class Template extends Item {
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
           return $this->add($param_name,sanitize_string($value));
           // Note; we shouldn't be using this parameter ever....
-      return false;
+      return FALSE;
       case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
       case "last10": case "last20": case "last30": case "last40": case "last50": case "last60": case "last70": case "last80": case "last90":
       case "last11": case "last21": case "last31": case "last41": case "last51": case "last61": case "last71": case "last81": case "last91":
@@ -294,7 +294,7 @@ class Template extends Item {
             return $this->add($param_name,sanitize_string($value));
           }
         }
-        return false;
+        return FALSE;
       case "first2": case "first3": case "first4": case "first5": case "first6": case "first7": case "first8": case "first9":
       case "first10": case "first11": case "first12": case "first13": case "first14": case "first15": case "first16": case "first17": case "first18": case "first19":
       case "first20": case "first21": case "first22": case "first23": case "first24": case "first25": case "first26": case "first27": case "first28": case "first29":
@@ -312,7 +312,7 @@ class Template extends Item {
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
           return $this->add($param_name,sanitize_string($value));
         }
-        return false;
+        return FALSE;
       case "date":
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
@@ -328,25 +328,25 @@ class Template extends Item {
           if ($param_name != 'year') $this->forget('year'); // We only unset the other one so that parameters stay in order as much as possible
           return $this->add($param_name, $value);
         }
-        return false;
+        return FALSE;
       case "issn":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           // Only add ISSN if journal is unspecified
           return $this->add($param_name, $value);
         }
-        return false;
+        return FALSE;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if (sanitize_string($value) == "ZooKeys" ) $this->blank("volume") ; // No volumes, just issues.
-          if (strcasecmp( (string) $value, "unknown") == 0 ) return false;
+          if (strcasecmp( (string) $value, "unknown") == 0 ) return FALSE;
           return $this->add($param_name, format_title_text(title_case($value)));
         }
-        return false;
+        return FALSE;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
           return $this->add($param_name, format_title_text($value));
         }
-        return false;
+        return FALSE;
       case "page": case "pages":
         if (( $this->blank("pages") && $this->blank("page") && $this->blank("pp")  && $this->blank("p"))
                 || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
@@ -357,35 +357,35 @@ class Template extends Item {
                   && !strpos($this->get('pages'), '-')
                   && !strpos($this->get('pages'), '&ndash;'))
         ) return $this->add($param_name, sanitize_string($value));
-        return false;
+        return FALSE;
       case 'title':
         if ($this->blank($param_name)) {
           return $this->format_title(sanitize_string($value));
         }
-        return false;
+        return FALSE;
       case 'class':
         if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE ) {
           return $this->add($param_name, sanitize_string($value));
         }
-        return false;
+        return FALSE;
       case 'doi':
         if ($this->blank($param_name) &&  preg_match('~(10\..+)$~', $value, $match)) {
           $this->add('doi', $match[0]);
           $this->verify_doi();
           $this->expand_by_doi();
-          return true;
+          return TRUE;
         }
-        return false;
+        return FALSE;
       case 'display-authors': case 'displayauthors':
         if ($this->blank('display-authors') && $this->blank('displayauthors')) {
           return $this->add($param_name, $value);
         }
-      return false;
+      return FALSE;
       case 'display-editors': case 'displayeditors':
         if ($this->blank('display-editors') && $this->blank('displayeditors')) {
           return $this->add($param_name, $value);
         }
-      return false;
+      return FALSE;
       case 'doi-broken-date':
         if ($this->blank('doi_brokendate') &&
             $this->blank('doi-broken-date') &&
@@ -393,7 +393,7 @@ class Template extends Item {
             $this->blank('doi-inactive-date')) {
           return $this->add($param_name, $value);
         }
-      return false;
+      return FALSE;
       case 'pmid':
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
@@ -401,9 +401,9 @@ class Template extends Item {
           if ($this->blank('doi')) {
             $this->get_doi_from_crossref();
           }
-          return true;
+          return TRUE;
         }
-      return false;
+      return FALSE;
       case 'author_separator': case 'author-separator':
         echo "\n ! 'author-separator' is deprecated.";
         if(!trim($value)) {
@@ -411,17 +411,17 @@ class Template extends Item {
         } else {
           echo " Please fix manually.";
         }
-      return false;
+      return FALSE;
       case 'postscript':
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
         }
-      return false;
+      return FALSE;
       case 'issue':
         if ($this->blank("issue") && $this->blank("number")) {        
           return $this->add($param_name, $value);
         } 
-      return false;
+      return FALSE;
       case 'volume':
         if ($this->blank($param_name)) {
           if ($this->get('journal') == "ZooKeys" ) {
@@ -431,7 +431,7 @@ class Template extends Item {
             return $this->add($param_name, $value);
           }
         }
-      return false;
+      return FALSE;
       case 'bibcode':
         if ($this->blank($param_name)) { 
           $bibcode_pad = 19 - strlen($value);
@@ -440,7 +440,7 @@ class Template extends Item {
           }
           return $this->add($param_name, $value);
         } 
-      return false;
+      return FALSE;
       default:
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
@@ -562,20 +562,20 @@ class Template extends Item {
     $year = $this->get('year');
     $volume = $this->get('volume');
     $page_range = $this->page_range();
-    $start_page = isset($page_range[1]) ? $page_range[1] : null;
-    $end_page   = isset($page_range[2]) ? $page_range[2] : null;
+    $start_page = isset($page_range[1]) ? $page_range[1] : NULL;
+    $end_page   = isset($page_range[2]) ? $page_range[2] : NULL;
     $issn = $this->get('issn');
     $url1 = trim($this->get('url'));
     $input = array($title, $journal, $author, $year, $volume, $start_page, $end_page, $issn, $url1);
     global $priorP;
     if ($input == $priorP['crossref']) {
       echo "\n   * Data not changed since last CrossRef search." . tag();
-      return false;
+      return FALSE;
     } else {
       $priorP['crossref'] = $input;
       global $crossRefId;
       if ($journal || $issn) {
-        $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
+        $url = "http://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId"
              . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
              . ($author ? "&aulast=" . urlencode($author) : '')
              . ($start_page ? "&spage=" . urlencode($start_page) : '')
@@ -596,7 +596,7 @@ class Template extends Item {
       if (FAST_MODE || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
       echo "\n   x Full search failed. Dropping author & end_page... ";
-      $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
+      $url = "http://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId";
       if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
       if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
       if ($year) $url .= "&date=" . urlencode($year);
@@ -622,7 +622,7 @@ class Template extends Item {
     } else {
       echo " nothing found.";
       if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
-        // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
+        // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
         echo "\n - Checking for ISBN";
         if ($this->blank('isbn') && $title = $this->get("title")) $this->set("isbn", findISBN( $title, $this->first_author()));
         else echo "\n  Already has an ISBN. ";
@@ -640,7 +640,7 @@ class Template extends Item {
  *
  */
     if ($doi = $this->get('doi')) {
-      $results = $this->do_pumbed_query(array("doi"), true);
+      $results = $this->do_pumbed_query(array("doi"), TRUE);
       if ($results[1] == 1) return $results;
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
@@ -663,13 +663,13 @@ class Template extends Item {
     }
   }
 
-  protected function do_pumbed_query($terms, $check_for_errors = false) {
+  protected function do_pumbed_query($terms, $check_for_errors = FALSE) {
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
    * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
    * return the results as array (first result, # of results)
-   * If $check_for_errors is true, it will return 'fasle' on errors returned by pubmed
+   * If $check_for_errors is TRUE, it will return 'fasle' on errors returned by pubmed
    */
     $query = '';
     foreach ($terms as $term) {
@@ -701,10 +701,10 @@ class Template extends Item {
       echo $xml->ErrorList->PhraseNotFound
               ? " no results."
               : "\n - Errors detected in PMID search (" . htmlspecialchars(print_r($xml->ErrorList, 1)) . "); abandoned.";
-      return array(null, 0);
+      return array(NULL, 0);
     }
 
-    return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(null, 0);// first results; number of results
+    return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(NULL, 0);// first results; number of results
   }
 
   ### Obtain data from external database
@@ -769,9 +769,9 @@ class Template extends Item {
       } else {
         $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       }
-      return true;
+      return TRUE;
     }
-    return false;
+    return FALSE;
   }
 
   public function expand_by_adsabs() {
@@ -792,7 +792,7 @@ class Template extends Item {
                 : levenshtein($inTitle, $dbTitle) > 3
             ) {
           echo "\n   Similar title not found in database";
-          return false;
+          return FALSE;
         }
       }
       if ($xml["retrieved"] != 1 && $journal = $this->get('journal')) {
@@ -809,7 +809,7 @@ class Template extends Item {
           echo "\n   Match for pagination but database journal \"" .
             htmlspecialchars($journal_string[0]) . "\" didn't match \"journal = " .
             htmlspecialchars($journal) . "\"." . tag();
-          return false;
+          return FALSE;
         }
       }
       if ($xml["retrieved"] == 1) {
@@ -818,7 +818,7 @@ class Template extends Item {
         if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
             $this->add_if_new("title", format_title_text( (string) $xml->record->title));
         }
-        $i = null;
+        $i = NULL;
         foreach ($xml->record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
         }
@@ -841,14 +841,14 @@ class Template extends Item {
         if ($this->add_if_new('doi', (string) $xml->record->DOI)) {
           $this->expand_by_doi();
         }
-        return true;
+        return TRUE;
       } else {
         echo ": no record retrieved." . tag();
-        return false;
+        return FALSE;
       }
     } else {
        echo "\n - Skipping AdsAbs database: not in slow mode" . tag();
-       return false;
+       return FALSE;
     }
   }
 
@@ -929,7 +929,7 @@ class Template extends Item {
     if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) $identifier = 'pmid';
     else if ($pm = $this->get('pmc')) $identifier = 'pmc';
-    else return false;
+    else return FALSE;
     if (html_output) {
       echo "\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
         urlencode($pm) . '" target="_blank">' .
@@ -1011,8 +1011,8 @@ class Template extends Item {
       $this->add_if_new("volume", 1*$sici[5]);
       if ($sici[6]) $this->add_if_new("issue", 1*$sici[6]);
       $this->add_if_new("pages", 1*$sici[7]);
-      return true;
-    } else return false;
+      return TRUE;
+    } else return FALSE;
   }
 
   protected function query_crossref($doi = FALSE) {
@@ -1023,18 +1023,18 @@ class Template extends Item {
     if (!$doi) {
       warn('#TODO: crossref lookup with no doi');
     }
-    $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
+    $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=TRUE";
     $xml = @simplexml_load_file($url);
     if ($xml) {
       $result = $xml->query_result->body->query;
       if ($result["status"] == "resolved") {
         return $result;
       } else {
-        return false;
+        return FALSE;
       }
     } else {
        echo "\n   ! Error loading CrossRef file from DOI " . htmlspecialchars($doi) ."!";
-       return false;
+       return FALSE;
     }
   }
 
@@ -1049,21 +1049,21 @@ class Template extends Item {
         $best_location = $oa->best_oa_location;
         if ($best_location->host_type == 'publisher') {
           // The best location is already linked to by the doi link
-          return true;
+          return TRUE;
         }
         $this->add('url', $best_location->url);
         switch ($best_location->version) {
             case 'acceptedVersion': $format = 'Accepted manuscript'; break;
             case 'submittedVersion': $format = 'Submitted manuscript'; break;
             case 'publishedVersion': $format = 'Full text'; break;
-            default: $format = null;
+            default: $format = NULL;
         }
         if ($format) $this->add('format', $format);
-        return true;
+        return TRUE;
       }
     } else {
        echo "\n   ! Could not retrieve open access details from oiDOI API for doi: " . htmlspecialchars($doi);
-       return false;
+       return FALSE;
     }
   }
   
@@ -1100,9 +1100,9 @@ class Template extends Item {
         $this->set('url', $url . $hash);
       }
       $this->google_book_details($gid[1]);
-      return true;
+      return TRUE;
     }
-    return false;
+    return FALSE;
   }
 
   protected function google_book_details ($gid) {
@@ -1131,7 +1131,7 @@ class Template extends Item {
     }
     $this->add_if_new("isbn", $isbn);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
-    $i = null;
+    $i = NULL;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if( $author != "Hearst Magazines" && $author != "Time Inc") {  // Catch common google bad authors
@@ -1159,7 +1159,7 @@ class Template extends Item {
         print "\n\nhttp://isbndb.com/api/books.xml?access_key=$ISBN_KEY&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
         if ($xml->BookList["total_results"] == 1) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
         if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
-        else return false;
+        else return FALSE;
       }
     }
   }
@@ -1193,7 +1193,7 @@ class Template extends Item {
     echo "\n   - Using meta tags...";
     $meta_tags = get_meta_tags($url);
     if ($meta_tags["citation_authors"]) {
-      $new_authors = formatAuthors($meta_tags["citation_authors"], true);
+      $new_authors = formatAuthors($meta_tags["citation_authors"], TRUE);
     }
     if (SLOW_MODE && !$new_pages && !$new_authors) {
       echo "\n   - Now scraping web-page.";
@@ -1232,7 +1232,7 @@ class Template extends Item {
           }
 
           // Authors
-          if (true || !$new_authors) {
+          if (TRUE || !$new_authors) {
             // Check dc.contributor, which isn't correctly handled by get_meta_tags
             if (preg_match_all("~\<meta name=\"dc.Contributor\" +content=\"([^\"]+)\"\>~U", $source, $authors)){
               $new_authors=$authors[1];
@@ -1339,7 +1339,7 @@ class Template extends Item {
                 $endnote_parameter = "issn";
                 break;
               } else {
-                $endnote_parameter = false;
+                $endnote_parameter = FALSE;
               }
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
             case "8": // Date
@@ -1348,7 +1348,7 @@ class Template extends Item {
             case "M": // Object identifier
               $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
             default:
-              $endnote_parameter = false;
+              $endnote_parameter = FALSE;
           }
           if ($endnote_parameter && $this->blank($endnote_parameter)) {
             $to_add[$endnote_parameter] = substr($endnote_line, 1);
@@ -1408,7 +1408,7 @@ class Template extends Item {
             case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
             default:
-              $ris_parameter = false;
+              $ris_parameter = FALSE;
           }
           unset($ris_part[0]);
           if ($ris_parameter
@@ -1450,7 +1450,7 @@ class Template extends Item {
               $matched_parameter = "page";
               break;
             default:
-              $matched_parameter = null;
+              $matched_parameter = NULL;
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
@@ -1492,7 +1492,7 @@ class Template extends Item {
         }
         $test_dat = preg_replace("~\d~", "_$0",
                     preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
-        if ($para_len < 3) break; // minimum length to avoid false positives
+        if ($para_len < 3) break; // minimum length to avoid FALSE positives
         if (preg_match("~\d~", $parameter)) {
           $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
           $para_len++;
@@ -1504,7 +1504,7 @@ class Template extends Item {
           $shortest = 0;
           break;
         } else {
-          $closest = null;
+          $closest = NULL;
         }
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
@@ -1608,7 +1608,7 @@ class Template extends Item {
     if (trim($id)) {
       echo ("\n - Trying to convert ID parameter to parameterized identifiers.");
     } else {
-      return false;
+      return FALSE;
     }
     if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*[^\s\}\{\|]*)~iu", $id, $match)) {
       $this->add_if_new(strtolower($match[1]), $match[2]);
@@ -1679,7 +1679,7 @@ class Template extends Item {
             array_shift($content);
           }
           $this->add_if_new($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))), $parameters["id"] ? $parameters["id"] : $content[0]);
-          $identifier_parameter = null;
+          $identifier_parameter = NULL;
           $id = str_replace($match[0][$i], "", $id);
           break;
         default:
@@ -1732,7 +1732,7 @@ class Template extends Item {
 
       // Check the parameter list to find a likely replacement
       $shortest = -1;
-      $closest = null;
+      $closest = NULL;
       foreach ($unused_parameters as $parameter) {
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
@@ -1892,7 +1892,7 @@ class Template extends Item {
       else $this->forget('issue');
     }
     switch(strtolower(trim($this->get('quotes')))) {
-      case 'yes': case 'y': case 'true': case 'no': case 'n': case 'false': $this->forget('quotes');
+      case 'yes': case 'y': case 'TRUE': case 'no': case 'n': case 'FALSE': $this->forget('quotes');
     }
 
     if ($this->get('doi') == "10.1267/science.040579197") $this->forget('doi'); // This is a bogus DOI from the PMID example file
@@ -1902,11 +1902,11 @@ class Template extends Item {
       $freeDat = explode("|", trim($this->get('unused_data')));
       unset($this->get('unused_data');
       foreach ($freeDat as $dat) {
-        $eraseThis = false;
+        $eraseThis = FALSE;
         foreach ($p as $oP) {
           similar_text(mb_strtolower($oP[0]), mb_strtolower($dat), $percentSim);
           if ($percentSim >= 85)
-            $eraseThis = true;
+            $eraseThis = TRUE;
         }
         if (!$eraseThis)
           $this->!et('unused_data') .= "|" . $dat;
@@ -1929,10 +1929,10 @@ class Template extends Item {
   protected function sanitize_doi($doi = FALSE) {
     if (!$doi) {
       $doi = $this->get('doi');
-      if (!$doi) return false;
+      if (!$doi) return FALSE;
     }
     $this->set('doi', str_replace(PERCENT_ENCODE, PERCENT_DECODE, str_replace(' ', '+', trim(urldecode($doi)))));
-    return true;
+    return TRUE;
   }
 
   protected function verify_doi () {
@@ -1997,11 +1997,11 @@ class Template extends Item {
 
      function assessUrl($url){
         echo "assessing URL ";
-        #if (strpos($url, "abstract") >0 || (strpos($url, "/abs") >0 && strpos($url, "adsabs.") === false)) return "abstract page";
+        #if (strpos($url, "abstract") >0 || (strpos($url, "/abs") >0 && strpos($url, "adsabs.") === FALSE)) return "abstract page";
         $ch = curl_init();
         curlSetUp($ch, str_replace("&amp;", "&", $url));
         curl_setopt($ch, CURLOPT_NOBODY, 1);
-        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_exec($ch);
         switch(curl_getinfo($ch, CURLINFO_HTTP_CODE)){
           case "404":
@@ -2010,7 +2010,7 @@ class Template extends Item {
           #case "403": case "401": return "subscription required"; DOesn't work for, e.g. http://arxiv.org/abs/cond-mat/9909293
         }
         curl_close($ch);
-        return null;
+        return NULL;
       }
      
      if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
@@ -2193,11 +2193,11 @@ class Template extends Item {
           array_slice($this->param, 0, $prior_pos + 1), 
           array($p),
           array_slice($this->param, $prior_pos + 1));
-        return true;
+        return TRUE;
       }
     }
     $this->param[] = $p;
-    return true;
+    return TRUE;
   }
 
   public function append_to($par, $val) {
