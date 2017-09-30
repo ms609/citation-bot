@@ -97,9 +97,15 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
-    $text = "{{Cite web | pages=10-11| edition = 3rd ed. |Journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
+    $text = "{{Cite web | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
     $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $expanded_citation->parsed_text());
+    // ISSN should be removed when journal is present
+    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal }}', $expanded_citation->parsed_text());
+    
+    $text = "{{Cite web | Journal=My Journal| issn=1234-4321 | publisher=Unwarranted }}";
+    $expanded_citation = $this->process_citation($text);
+    // ISSN should be removed when journal is present
+    $this->assertEquals('{{Cite journal| journal=My Journal }}', $expanded_citation->parsed_text());
   }
   
   public function testJournalCapitalization() {
