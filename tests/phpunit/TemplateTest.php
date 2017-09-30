@@ -250,7 +250,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('29', $expanded->get('displayauthors'));
     $this->assertEquals('Aielli', $expanded->get('last30'));
     $this->assertEquals("Charged-particle multiplicities in pp interactions at <math>"
-      . '\sqrt{s}=900\text{GeV}' .
+      . '\sqrt{s}=900\text{ GeV}' .
       "</math> measured with the ATLAS detector at the LHC", $expanded->get('title'));
     $this->assertNull($expanded->get('last31'));
   }
