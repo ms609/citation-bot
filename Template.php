@@ -242,10 +242,7 @@ class Template extends Item {
        if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
           return $this->add($param_name, sanitize_string($value));
       return false;
-      case "coauthor":
-        echo "\n ! The \"coauthor\" parameter is deprecated. Please replace manually.";
-      return false;
-      case "coauthors"://FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
+      case "coauthors": //FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
         $value = straighten_quotes($value);
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
@@ -314,6 +311,7 @@ class Template extends Item {
       case "date":
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
+          // TODO does this still match the current usage practice?
           $param_name = "year";
         }
       // Don't break here; we want to go straight in to year;

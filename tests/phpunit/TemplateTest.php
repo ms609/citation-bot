@@ -223,5 +223,12 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   }
-
+ 
+  /* TODO 
+  Test adding a paper with > 30 authors; should stop at 29.  This should trigger displayauthors
+  Test adding a paper with > 4 editors; this should trigger displayeditors
+  Test finding a DOI and using it to expand a paper
+  Test adding a doi-is-broken modifier to a broken DOI.
+  */
+  
 }
