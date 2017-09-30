@@ -14,7 +14,7 @@ const BIBCODE_REGEXP = "~^(?:http://(?:\w+.)?adsabs.harvard.edu|http://ads\.ari\
 const IN_PRESS_ALIASES = array("in press","inpress", "pending","published","published online", "no-no", "n/a", "online ahead of print", "unpublished","unknown","tba","forthcoming","in the press","na","submitted","tbd","missing");
 const SICI_REGEXP = "~(\d{4}-\d{4})\((\d{4})(\d\d)?(\d\d)?\)(\d+):?([+\d]*)[<\[](\d+)::?\w+[>\]]2\.0\.CO;2~";
 //Note: if a DOI is superceded by a </span>, it will pick up this tag. Workaround: Replace </ with \s</ in string to search.
-const DOI_REGEXP = "~(10\.\d{4}\d?(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~"; //Previously had no plus, but this at the end of the string: (?=[\s\|\"\?]|</)~";
+const DOI_REGEXP = "~(10\.\d{4}\d?(/|%2F)..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)(/abstract|/pdf)?~"; //Previously had no plus, but this at the end of the string: (?=[\s\|\"\?]|</)~";
 
 //Common replacements
 const PERCENT_DECODE = array("[", "]", "<", ">");
