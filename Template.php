@@ -342,6 +342,9 @@ class Template extends Item {
           return $this->add($param_name, format_title_text(title_case($value)));
         }
         return FALSE;
+      case 'series': 
+        return $this->add($param_name, format_title_text($value));
+        return FALSE;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
           return $this->add($param_name, format_title_text($value));
@@ -868,13 +871,11 @@ class Template extends Item {
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
             $this->forget('title');
           }
-          $this->add_if_new('title', $crossRef->volume_title); // format_title will sanitize the string
+          $this->add_if_new('title', $crossRef->volume_title); // add_if_new will format_title and sanitize the string
         } else {
-          print "\n####st2.2: "; print $this->get('title');
-          $this->add_if_new('title',  $crossRef->article_title); // format_title will sanitize the string
-          print "\n####st2.3: "; print $this->get('title');
+          $this->add_if_new('title',  $crossRef->article_title); // add_if_new will format_title and sanitize the string
         }
-        $this->add_if_new('series',  format_title_text($crossRef->series_title)); // CHECK: Will add_if_new format the title for a series?
+        $this->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
         $this->add_if_new("year", $crossRef->year);
         if (   $this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
             && $crossRef->contributors->contributor
