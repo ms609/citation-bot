@@ -96,7 +96,8 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testGarbageRemovalAndSpacing() {
-    $text = "{{Cite web | pages=10-11| edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
+    // Also tests handling of upper-case parameters
+    $text = "{{Cite web | pages=10-11| edition = 3rd ed. |Journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
     $expanded_citation = $this->process_citation($text);
     $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $expanded_citation->parsed_text());
   }
