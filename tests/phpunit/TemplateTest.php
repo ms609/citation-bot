@@ -115,11 +115,15 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testUnknownJournal() {
     $text = '{{cite journal|bibcode= 1975STIN...7615344H |title= Development of a transmission error model and an error control model  |volume= 76 |author1= Hammond |first1= J. L. |last2= Brown |first2= J. E. |last3= Liu |first3= S. S. S. |year= 1975}}';
-
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   }
 
+  public function testCiteArxivRecognition() {
+    $text = '{{Cite web | eprint=1203.0149}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Cite arxiv', $expanded->name());
+  }
   
   public function testBrokenDoiDetection() {
     $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
