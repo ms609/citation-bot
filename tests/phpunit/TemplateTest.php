@@ -79,6 +79,14 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded_citation = $this->process_citation($text);
     $this->assertEquals('cite journal', $expanded_citation->wikiname());
     $this->assertEquals('0806.0013', $expanded_citation->get('arxiv'));
+    
+    $text = "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded_citation->wikiname());
+    $this->assertEquals('0806.0013', $expanded_citation->get('arxiv'));
+    $this->assertNull($expanded_citation->get('class'));
+    $this->assertNull($expanded_citation->get('eprint'));
+    $this->assertNull($expanded_citation->get('publisher'));
   }
   
   public function testAmazonExpansion() {
