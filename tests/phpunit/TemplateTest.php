@@ -210,6 +210,12 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($expanded->get('journal'));
     $this->assertNotNull($expanded->get('pages'));
     $this->assertNotNull($expanded->get('year'));
+    
+    // test attempt to add a parameter listed in COMMON_MISTAKES
+    $album_link = 'http://album.com';
+    $expanded->add_if_new('albumlink', $album_link);
+    $this->assertEquals($album_link, $expanded->get('titlelink'));
+    
   }
   
   public function testGoogleBooksExpansion() {
