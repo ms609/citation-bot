@@ -1331,7 +1331,7 @@ class Template extends Item {
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
         foreach ($endnote_test as $endnote_line) {
-          switch ($endnote_line[0]) {
+          switch (substr($endnote_line,0,1)) {
             case "A": $endnote_authors++; $endnote_parameter = "author$endnote_authors";        break;
             case "D": $endnote_parameter = "date";       break;
             case "I": $endnote_parameter = "publisher";  break;
