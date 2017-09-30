@@ -294,6 +294,33 @@ SP - 379
 EP - 423
 VL - 27
 ER -  }}';
-$expanded = $this->process_citation($text);
+     $expanded = $this->process_citation($text);
+     //  We need to check this
   }
-}
+    
+  public function testEndNote() {
+      $text = '{{Cite journal  |
+%0 Book
+%A Geoffrey Chaucer
+%D 1957
+%T The Works of Geoffrey Chaucer
+%E F.
+%I Houghton
+%C Boston
+%N 2nd
+%0 Journal Article
+%A Herbert H. Clark
+%D 1982
+%T Hearers and Speech Acts
+%B Language
+%V 58
+%P 332-373
+%0 Thesis
+%A Cantucci, Elena
+%T Permian strata in South-East Asia
+%D 1990
+%I University of California, Berkeley
+%9 Dissertation}}';
+       $expanded = $this->process_citation($text);
+           //  We need to check this
+   }
