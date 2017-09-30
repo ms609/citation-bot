@@ -489,28 +489,27 @@ class Template extends Item {
       }
     } else {
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
-        if (!$this->get('bibcode')) {
+        if ($this->blank('bibcode')) {
           $this->forget('url');
           $this->set("bibcode", urldecode($bibcode[1]));
         }
       } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
-        if (!$this->get('pmc')) {
+        if ($this->blank('pmc')) {
           $this->forget('url');
           $this->set("pmc", $match[1] . $match[2]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
-        if (!$this->get('doi')) {
+        if ($this->blank('doi')) {
           $this->set("doi", urldecode($match[1]));
           $this->expand_by_doi(1);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } elseif (preg_match("~10\.\d{4}/[^&\s\|\?]*~", $url, $match)) {
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
-        if (!$this->get('doi')) {
-
+        if ($this->blank('doi')) {
           $this->set('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
           $this->expand_by_doi(1);
         }
@@ -520,7 +519,7 @@ class Template extends Item {
         $this->add_if_new("arxiv", $match[1]);
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        if (!$this->get('pmid')) {
+        if ($this->blank('pmid')) {
           $this->set('pmid', $match[1]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
@@ -2015,7 +2014,7 @@ class Template extends Item {
           if ($i == 1) {
             // then we (probably) have a list of authors joined by commas in our first parameter
             if (under_two_authors($val_base)) {
-              if ($param == 'authors' && !$this->get('author')) {
+              if ($param == 'authors' && $this->blank('author')) {
                 $this->rename('authors', 'author');
               }
             }
