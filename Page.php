@@ -237,9 +237,9 @@ class Page {
   protected function extract_object ($class) {
     $i = 0;
     $text = $this->text;
-    $regexp = $class::regexp;
-    $placeholder_text = $class::placeholder_text;
-    $treat_identical_separately = $class::treat_identical_separately;
+    $regexp = $class::REGEXP;
+    $placeholder_text = $class::PLACEHOLDER_TEXT;
+    $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
     while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
@@ -257,7 +257,7 @@ class Page {
   protected function replace_object ($objects) {
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
-      $this->text = str_ireplace(sprintf($obj::placeholder_text, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
+      $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
 
   public function allow_bots() {
