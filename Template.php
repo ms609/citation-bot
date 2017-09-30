@@ -77,7 +77,7 @@ class Template extends Item {
   public function process() {
     switch ($this->wikiname()) {
       case 'cite web':
-        $this->use_unnamed_params(); 
+        $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->tidy();
         if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
@@ -482,8 +482,10 @@ class Template extends Item {
         #Skip.  We can't do anything more with the plants, unfortunately.
       } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
         if ($this->get('jstor')) {
+          quiet_echo ("\n   - Deleting redundant URL (jstor parameter set)");
           $this->forget('url');
         } else {
+          quiet_echo ("\n   ~ Converting URL to JSTOR parameter");
           $this->forget('url');
           $this->set("jstor", urldecode($match[1]));
         }
@@ -492,12 +494,14 @@ class Template extends Item {
     } else {
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
         if ($this->blank('bibcode')) {
+          quiet_echo("\n   ~ Converting url to bibcode parameter");
           $this->forget('url');
           $this->set("bibcode", urldecode($bibcode[1]));
         }
       } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
         if ($this->blank('pmc')) {
+          quiet_echo("\n   ~ Converting URL to PMC parameter");
           $this->forget('url');
           $this->set("pmc", $match[1] . $match[2]);
         }
@@ -520,8 +524,9 @@ class Template extends Item {
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
          */
         if (   preg_match("~[A-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
-            || preg_match("~\d{4}\.\d{4,5}(?:v\d+)~", $match[1], $arxiv_id) // post-2007
+            || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
             ) {
+          quiet_echo("\n   ~ Converting URL to arXiv parameter");
           $this->add_if_new("arxiv", $arxiv_id[0]);
           $this->expand_by_arxiv();
         }
@@ -935,7 +940,7 @@ class Template extends Item {
     if ($pm = $this->get('pmid')) $identifier = 'pmid';
     else if ($pm = $this->get('pmc')) $identifier = 'pmc';
     else return FALSE;
-    if (html_output) {
+    if (HTML_OUTPUT) {
       echo "\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
         urlencode($pm) . '" target="_blank">' .
         htmlspecialchars(strtoupper($identifier) . ' ' . $pm) . "</a> for more details" .
@@ -1315,6 +1320,7 @@ class Template extends Item {
             $this->process();
           }
         } elseif ($p->param == 'doix') {
+          echo "\n   + Found unincorporated DOI parameter";
           $this->param[$param_key]->param = 'doi';
           $this->param[$param_key]->val = str_replace(DOT_ENCODE, DOT_DECODE, $p->val);
         }
@@ -1436,6 +1442,7 @@ class Template extends Item {
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
+        quiet_echo("\n   + Found URL floating in template; setting url");
         $this->set('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
