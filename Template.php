@@ -881,7 +881,11 @@ class Template extends Item {
           // Check to see whether a single author is already set
           // This might be, for example, a collaboration
           $existing_author = $this->first_author();
-          $add_authors = ($existing_author && !isHumanAuthor($existing_author)) ? FALSE : TRUE; 
+          var_dump($existing_author);
+          var_dump(authorIsHuman($existing_author));
+          $add_authors = is_null($existing_author)
+                      || $existing_author = ''
+                      || authorIsHuman($existing_author);
           
           foreach ($crossRef->contributors->contributor as $author) {
             if ($author["contributor_role"] == 'editor') {
