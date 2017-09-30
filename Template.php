@@ -106,7 +106,7 @@ class Template extends Item {
         $this->citation_template = TRUE;
 
         // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_parameters) == 0) {
+        if (count($this->initial_author_params) == 0) {
           $this->handle_et_al();
         }
 
