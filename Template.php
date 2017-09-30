@@ -1931,7 +1931,7 @@ class Template extends Item {
       $doi = $this->get('doi');
       if (!$doi) return FALSE;
     }
-    $this->set('doi', str_replace(PERCENT_ENCODE, PERCENT_DECODE, str_replace(' ', '+', trim(urldecode($doi)))));
+    $this->set('doi', str_replace(HTML_ENCODE, HTML_DECODE, str_replace(' ', '+', trim(urldecode($doi)))));
     return TRUE;
   }
 

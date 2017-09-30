@@ -145,6 +145,32 @@ function logIn($username, $password) {
   }
 }
 
+function sanitize_doi($doi) {
+  return str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
+}
+
+/* extract_doi
+ * Returns an array containing:
+ * 0 => text containing a DOI, possibly encoded, possibly with additional text
+ * 1 => the decoded DOI
+ */
+function extract_doi($text) {
+  if (preg_match(
+        "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
+        $text, $match)) {
+    $doi = $match[1];
+    if (preg_match(
+          "~^(.*?)(/abstract|/pdf|</span>|[\s\|\"\?]|</).*+$~",
+          $doi, $new_match)
+        ) {
+      print "new_match = "; var_dump($new_match);
+      $doi = $new_match[1];
+    }
+    return array($match[0], sanitize_doi($doi));
+  }
+  return NULL;
+}
+
 function format_title_text($title) {
   if (preg_match_all("~<mml:math[^>]*>(.*?)</mml:math>~", $title, $matches)) {
     for ($i = 0; $i < count($matches[0]); $i++) {

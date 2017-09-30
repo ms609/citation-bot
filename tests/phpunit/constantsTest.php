@@ -29,11 +29,4 @@ class constantsTest extends PHPUnit\Framework\TestCase {
     }
   }
   
-  public function testDoiRegExp() {
-    preg_match(DOI_REGEXP, 'http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract', $match);
-    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $match[1]);
-    preg_match(DOI_REGEXP, ' 10.1016/j.physletb.2010.03.064', $match);
-    $this->assertEquals('10.1016/j.physletb.2010.03.064', $match[1]);
-  }
-
 }
