@@ -13,6 +13,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 class TemplateTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
+    define('VERBOSE', TRUE);
   }
 
   protected function tearDown() {
