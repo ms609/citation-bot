@@ -57,6 +57,7 @@ function formatForename($forename){
 }
 
 /* formatInitials
+ * @codeCoverageIgnore
  *
  * Returns a string of initals, formatted for Cite Doi output
  *
@@ -70,6 +71,9 @@ function formatInitials($str){
 	preg_match_all("~\w~", $str, $match);
 	return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
+/*
+ * @codeCoverageIgnore
+ */
 function isInitials($str){
 	if (!$str) return false;
 	if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return false;
@@ -78,7 +82,10 @@ function isInitials($str){
 	return true;
 }
 
-// Runs some tests to see if the full  name of a single author is unlikely to be the name of a person.
+/*
+ * authorIsHuman
+ * Runs some tests to see if the full name of a single author is unlikely to be the name of a person.
+ */
 function authorIsHuman($author) {
   $author = trim($author);
   $chars = count_chars($author);
