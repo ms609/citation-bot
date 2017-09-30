@@ -6,7 +6,7 @@ require('constants/parameters.php');
 define('HOME', dirname(__FILE__) . '/');
 
 const PIPE_PLACEHOLDER = '%%CITATION_BOT_PIPE_PLACEHOLDER%%';
-const comment_placeholder = "### Citation bot : comment placeholder %s ###";
+const TEMP_PLACEHOLDER = "# # # Citation Bot: Temprorary Placeholder %s # # #";
 const TO_EN_DASH = "--?|\&mdash;|\xe2\x80\x94|\?\?\?"; // regexp for replacing to ndashes using mb_ereg_replace
 const EN_DASH = "\xe2\x80\x93"; // regexp for replacing to ndashes using mb_ereg_replace
 const WIKI_ROOT = "https://en.wikipedia.org/w/index.php?";
