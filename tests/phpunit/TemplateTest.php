@@ -231,11 +231,24 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   }
- 
+  
+  public function testLongAuthorLists() {
+    $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('The ATLAS Collaboration', $expanded->first_author());
+    $this->assertEquals('hep-ex', $expanded->get('class'));
+    
+    // Same paper, but CrossRef records full list of authors instead of collaboration name
+    $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('29', $expanded->get('displayauthors'));
+    $this->assertEquals('Aielli', $expanded->get('last30'));
+    $this->assertNull($expanded->get('last31'));
+  }
+  
   /* TODO 
-  Test adding a paper with > 30 authors; should stop at 29.  This should trigger displayauthors
   Test adding a paper with > 4 editors; this should trigger displayeditors
-  Test finding a DOI and using it to expand a paper
+  Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
   Test adding a doi-is-broken modifier to a broken DOI.
   */
   
