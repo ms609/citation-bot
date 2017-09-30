@@ -731,7 +731,6 @@ class Template extends Item {
       }
       $this->add_if_new("title", format_title_text((string) $xml->entry->title));
       $this->add_if_new("class", (string) $xml->entry->category["term"]);
-      $this->add_if_new("author", substr($authors, 2));
       $this->add_if_new("year", substr($xml->entry->published, 0, 4));
       $this->add_if_new("doi", (string) $xml->entry->arxivdoi);
 
