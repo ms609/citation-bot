@@ -876,4 +876,18 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID'
  'inventor22-first', 'inventor23-first', 'inventor24-first', 'inventor25-first', 'inventor26-first',
  'inventor27-first', 'inventor28-first', 'inventor29-first', 'inventor30-first');
 
-?>
+ const MML_TAGS = array (
+  '<mml:msqrt>'  => "&#8730;(",
+  '<mml:mi>'     => "''",
+  '</mml:mi>'    => "''",
+  '</mml:msqrt>' => ')',
+  '<mml:mo>'     => '',
+  '</mml:mo>'    => '',
+  '<mml:mn>'     => '',
+  '</mml:mn>'    => '',
+  '<mml:mtext>'  => '',
+  '</mml:mtext>' => '',
+  );
+  
+ 
+ ?>

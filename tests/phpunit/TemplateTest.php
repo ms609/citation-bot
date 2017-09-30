@@ -249,6 +249,8 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('29', $expanded->get('displayauthors'));
     $this->assertEquals('Aielli', $expanded->get('last30'));
+    $this->assertEquals("Charged-particle multiplicities in pp interactions at √(''s'')" .
+      "=900 GeV measured with the ATLAS detector at the LHC", $expanded->get('title'));
     $this->assertNull($expanded->get('last31'));
   }
   

@@ -146,7 +146,14 @@ function logIn($username, $password) {
 }
 
 function format_title_text($title) {
+  if (preg_match_all("~<mml:math[^>]*>(.*?)</mml:math>~", $title, $matches)) {
+    for ($i = 0; $i < count($matches[0]); $i++) {
+      $replacement = str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), $matches[1][$i]);
+      $title = str_replace($matches[0][$i], $replacement, $title);
+    }
+  }
   $title = html_entity_decode($title, null, "UTF-8");
+  var_dump($title);
   $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
   $title = (mb_substr($title, -1) == ".")
             ? mb_substr($title, 0, -1)
