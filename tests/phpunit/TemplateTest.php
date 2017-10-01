@@ -366,8 +366,18 @@ ER -  }}';
       $this->assertEquals('Charlie C', $expanded->get('first3'));
       $this->assertEquals('etal', $expanded->get('displayauthors'));
   }
-   
-   public function testLinefeeds(){
+       
+  public function testWebsite2Url() {
+      $text = '{{cite book |website=ttp://example.org }}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('http://example.org', $expanded->get('url'));
+      
+      $text = '{{cite book |website=ttp://jstor.org/pdf/123456 | jstor=123456 }}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+  }
+  
+  public function testLinefeeds(){
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in   contemporary local quantum physics',$expanded->get('title'));
