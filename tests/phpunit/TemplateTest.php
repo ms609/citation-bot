@@ -299,9 +299,8 @@ EP - 423
 VL - 27
 ER -  }}';
      $expanded = $this->process_citation($text);
-     print $expanded->parsed_text();
      $this->assertEquals('A Mathematical Theory of Communication', $expanded->get('title'));
-     $this->assertEquals('1948', $expanded->get('year'));
+     $this->assertEquals('1948-07', $expanded->get('date'));
      $this->assertEquals('Bell System Technical Journal', $expanded->get('journal'));
      $this->assertEquals('Shannon, Claude E', $expanded->first_author());
      $this->assertEquals('Shannon', $expanded->get('last1'));

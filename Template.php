@@ -1390,6 +1390,10 @@ class Template extends Item {
             case "Y1":
               $ris_parameter = "date";
               break;
+            case "PY":
+              $ris_parameter = "date";
+              $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
+              break;
             case "SP":
               $start_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
