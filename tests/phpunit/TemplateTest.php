@@ -265,11 +265,6 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('last31'));
   }
   
-  /* TODO 
-  Test adding a paper with > 4 editors; this should trigger displayeditors
-  Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
-  Test adding a doi-is-broken modifier to a broken DOI.
-  */
 
   public function testInPress() {
     $text = '{{Cite journal|pmid=9858585|date =in press}}';
@@ -361,11 +356,26 @@ ER -  }}';
        $this->assertEquals('1990', $expanded->get('date'));
        $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
-   }    
+   }
+   
+   
+  public function testEtAl() {
+      $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Albertstein, Alfred A', $expanded->first_author());
+      $this->assertEquals('Charlie C', $expanded->get('first3'));
+      $this->assertEquals('etal', $expanded->get('displayauthors'));
+  }
+   
    public function testLinefeeds(){
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in   contemporary local quantum physics',$expanded->get('title'));
    }
-    
+
+  /* TODO 
+  Test adding a paper with > 4 editors; this should trigger displayeditors
+  Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
+  Test adding a doi-is-broken modifier to a broken DOI.
+  */    
 }

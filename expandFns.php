@@ -220,6 +220,15 @@ function under_two_authors($text) {
           );
 }
 
+/* split_authors
+ * Assumes that there is more than one author to start with; 
+ * check this using under_two_authors()
+ */
+function split_authors($str) {
+  if (stripos($str, ';')) return explode(';', $str);
+  return explode(',', $str);
+}
+
 function title_case($text) {
   return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
 }

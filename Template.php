@@ -105,11 +105,6 @@ class Template extends Item {
       case 'cite book':
         $this->citation_template = TRUE;
 
-        // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_params) == 0) {
-          $this->handle_et_al();
-        }
-
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->id_to_param();
@@ -121,6 +116,11 @@ class Template extends Item {
         $this->tidy();
         if ($this->find_isbn()) {
           echo "\n * Found ISBN " . htmlspecialchars($this->get('isbn'));
+        }
+
+        // If the et al. is from added parameters, go ahead and handle
+        if (count($this->initial_author_params) == 0) {
+          $this->handle_et_al();
         }
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
@@ -139,9 +139,9 @@ class Template extends Item {
         // TODO: Check for the doi-inline template in the title
 
         // If the et al. is from added parameters, go ahead and handle
-        #if (!$this->initial_author_params) { // This parameter seems not to be set anywhere
+        if (count($this->initial_author_params) == 0) {
           $this->handle_et_al();
-        #}
+        }
 
         $this->expand_by_pubmed(); //partly to try to find DOI
 
@@ -2061,30 +2061,37 @@ class Template extends Item {
 
 
   }
-
+  
+  /* function handle_et_al
+   * To preserve user-input data, this function will only be called
+   * if no author parameters were specified at the start of the 
+   * expansion process.
+  */
   protected function handle_et_al() {
-    foreach (AUTHOR_PARAMETERS as $i => $group) {
+    foreach (AUTHOR_PARAMETERS as $author_cardinality => $group) {
       foreach ($group as $param) {
         if (strpos($this->get($param), 'et al')) {
           // remove 'et al' from the parameter value if present
           $val_base = preg_replace("~,?\s*'*et al['.]*~", '', $this->get($param));
-          if ($i == 1) {
+          if ($author_cardinality == 1) {
             // then we (probably) have a list of authors joined by commas in our first parameter
             if (under_two_authors($val_base)) {
+              $this->set($param, $val_base);
               if ($param == 'authors' && $this->blank('author')) {
                 $this->rename('authors', 'author');
               }
+            } else {
+              $this->forget($param);
+              $authors = split_authors($val_base);
+              foreach ($authors as $i => $author_name) {
+                $this->add_if_new('author' . ($i + 1), formatAuthor($author_name)); // 
+              }
             }
-            $this->set($param, $val_base);
           }
           if (trim($val_base) == "") {
             $this->forget($param);
           }
-
-// These two lines are most likely a hack to get "et al." to display automatically. Don't do this.
-// If you need to, use "displayauthors = etal" in the template.
-//          $this->add_if_new('author' . ($i + 1), 'and others'); //FIXME: this may overwrite author parameters.
-          $this->add_if_new('displayauthors', $i); //FIXME: doesn't overwrite but may not be a good idea
+          $this->add_if_new('displayauthors', 'etal');
         }
       }
     }
