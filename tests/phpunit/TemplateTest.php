@@ -304,7 +304,7 @@ ER -  }}';
      $this->assertEquals('1948', $expanded->get('year'));
      $this->assertEquals('Bell System Technical Journal', $expanded->get('journal'));
      $this->assertEquals('Shannon, Claude E', $expanded->first_author());
-     $this->assertEquals('Shannon', $expanded->get('last1');
+     $this->assertEquals('Shannon', $expanded->get('last1'));
      $this->assertEquals('Claude E', $expanded->get('first1'));
      $this->assertEquals('379–423', $expanded->get('pages'));
      $this->assertEquals('27', $expanded->get('volume'));   
