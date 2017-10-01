@@ -797,7 +797,7 @@ class Template extends Item {
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($xml->record->title)));
         $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($title)));
         if (
-             (strlen($inTitle) > 254 || strlen(dbTitle) > 254)
+             (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
                 ? strlen($inTitle) != strlen($dbTitle) || similar_text($inTitle, $dbTitle)/strlen($inTitle) < 0.98
                 : levenshtein($inTitle, $dbTitle) > 3
             ) {
