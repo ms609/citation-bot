@@ -311,8 +311,9 @@ ER -  }}';
      $this->assertEquals('27', $expanded->get('volume'));   
   }
     
+
   public function testEndNote() {
-      $text = '{{Cite journal  |
+      $book = '{{Cite book |
 %0 Book
 %A Geoffrey Chaucer
 %D 1957
@@ -321,6 +322,8 @@ ER -  }}';
 %I Houghton
 %C Boston
 %N 2nd
+      }}'; // Not quite clear how %E and %N should be handled here. Needs an assertion.
+      $article = '{{Cite journal |
 %0 Journal Article
 %A Herbert H. Clark
 %D 1982
@@ -328,16 +331,37 @@ ER -  }}';
 %B Language
 %V 58
 %P 332-373
+      }}'; // Not sure how %B should be handled; needs an assertion.
+      $thesis = '{{Citation | 
 %0 Thesis
 %A Cantucci, Elena
 %T Permian strata in South-East Asia
 %D 1990
 %I University of California, Berkeley
+%R 10.1038/ntheses.01928
 %9 Dissertation}}';
-       $expanded = $this->process_citation($text);
-           //  We need to check this
-   }
-    
+       $expanded = $this->process_citation($book);
+       $this->assertEquals('Chaucer, Geoffrey', $expanded->first_author());
+       $this->assertEquals('The Works of Geoffrey Chaucer', $expanded->get('title'));
+       $this->assertEquals('1957', $expanded->get('date'));
+       $this->assertEquals('Houghton', $expanded->get('publisher'));
+       $this->assertEquals('Boston', $expanded->get('location'));
+       
+       $expanded = $this->process_citation($article);
+       $this->assertEquals('Clark, Herbert H', $expanded->first_author());
+       $this->assertEquals('1982', $expanded->get('date'));
+       $this->assertEquals('Hearers and Speech Acts', $expanded->get('title'));
+       $this->assertEquals('58', $expanded->get('volume'));
+       $this->assertEquals('332–373', $expanded->get('pages'));
+       
+       
+       $expanded = $this->process_citation($thesis);
+       $this->assertEquals('Cantucci, Elena', $expanded->first_author());
+       $this->assertEquals('Permian strata in South-East Asia', $expanded->get('title'));
+       $this->assertEquals('1990', $expanded->get('date'));
+       $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
+       $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
+   }    
    public function testLinefeeds(){
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
