@@ -804,6 +804,8 @@ class Template extends Item {
           echo "\n   Similar title not found in database";
           return FALSE;
         }
+      } else {
+        $xml = array("retrieved" => 0);
       }
       if ($xml["retrieved"] != 1 && $journal = $this->get('journal')) {
         // try partial search using bibcode components:
