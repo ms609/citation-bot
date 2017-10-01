@@ -21,9 +21,12 @@ class constantsTest extends PHPUnit\Framework\TestCase {
 
   public function testConstantsDefined() {
     $this->assertEquals(PIPE_PLACEHOLDER, '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
-    for ($i = 1; $i < sizeof(dontCap); $i++) { ## Not 0, which is "and Then"
-      $this->assertEquals(dontCap[$i], mb_convert_case(unCapped[$i], MB_CASE_TITLE, "UTF-8"));
+    for ($i = 0; $i < sizeof(JOURNAL_ACRONYMS); $i++) {
+      $this->assertEquals(UCFIRST_JOURNAL_ACRONYMS[$i], mb_convert_case(JOURNAL_ACRONYMS[$i], MB_CASE_TITLE, "UTF-8"));
+    }
+    for ($i = 1; $i < sizeof(LC_SMALL_WORDS); $i++) { ## Not 0, which is "and Then"
+      $this->assertEquals(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
     }
   }
-
+  
 }

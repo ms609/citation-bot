@@ -31,7 +31,7 @@ function whatTranscludes($template, $namespace=99){
 }
 
 function wikititle_encode($in) {
-  return str_replace(dotDecode, dotEncode, $in);
+  return str_replace(DOT_DECODE, DOT_ENCODE, $in);
 }
 
 function anchorencode($in) {
@@ -106,7 +106,7 @@ function isRedirect($page) {
     return array ((($xml->query->pages->page["redirect"])?1:0),
                     $xml->query->pages->page["pageid"]);
     } else {
-      return array (-1, null);
+      return array (-1, NULL);
    }
 }
 
@@ -131,12 +131,12 @@ function parse_wikitext($text, $title = "API") {
         'text'   => $text,
         'title'  => $title,
     );
-  $bot->submit(api, $vars);
+  $bot->submit(API_ROOT, $vars);
   $a = json_decode($bot->results);
   if (!$a) {
     // Wait a sec and try again
     sleep(2);
-    $bot->submit(api, $vars);
+    $bot->submit(API_ROOT, $vars);
     $a = json_decode($bot->results);
   }
   return $a->parse->text->{"*"};
@@ -160,11 +160,11 @@ function articleID($page, $namespace = 0) {
   return $results['page_id'];
 }
 
-function getRawWikiText($page, $wait = false, $verbose = false, $use_daniel = true) {
+function getRawWikiText($page, $wait = FALSE, $verbose = FALSE, $use_daniel = TRUE) {
   $encode_page = urlencode($page);
   echo $verbose ? "\n scraping... " : "";
     // Get the text by scraping edit page
-    $url = wikiroot . "title=" . $encode_page . "&action=raw";
+    $url = WIKI_ROOT . "title=" . $encode_page . "&action=raw";
     $contents = (string) @file_get_contents($url);
   if (!$contents && $use_daniel) {
     $url = "http://toolserver.org/~daniel/WikiSense/WikiProxy.php?wiki=en&title="
@@ -226,7 +226,7 @@ function whatTranscludes2($template, $namespace = 99) {
 function extract_template($code, $target) {
   $placeholder = "!-TEMPLATE PLACEHOLDER TP%s-!";
   $placeholder_regexp = "~$placeholder~";
-  while (preg_match(template_regexp, $code, $match)) {
+  while (preg_match(TEMPLATE_REGEXP, $code, $match)) {
     ++$i;
     $template[$i] = $match[0];
     $template_name = str_replace("_", " ", trim($match[1]));
@@ -242,7 +242,7 @@ function extract_template($code, $target) {
 
     $code = str_replace($template[$i], sprintf($placeholder, $i), $code);
   }
-  return false;
+  return FALSE;
 }
 
 // Extracts parameters in a Wikipedia template.
@@ -275,9 +275,8 @@ function extract_parameters($template) {
   // Replace templates with placeholders
   $template_placeholder = "!-TEMPLATE PLACEHOLDER TP%s-!";
   $template_placeholder_regexp = "~$template_placeholder~";
-  #$template_regexp = "~\{\{\s*[^\|\}]+([^\{]|\{[^\{]|\{\{[^/}]+\}\})*?\}\}~";
 
-  while (preg_match(template_regexp, $template, $match)) {
+  while (preg_match(TEMPLATE_REGEXP, $template, $match)) {
     $subtemplate[++$i] = $match[0];
     $template = str_replace($subtemplate[$i], sprintf($template_placeholder, $i), $template);
   }
@@ -327,21 +326,21 @@ function generate_template ($name, $parameters) {
   return $output . $space_before_the_brace . '}}';
 }
 
-function wikiLink($page, $style = "#036;", $target = null) {
+function wikiLink($page, $style = "#036;", $target = NULL) {
   if (!$target) $target = $page;
   $css = $style?" style='color:$style !important'":"";
-  return "<a href='" . wikiroot . "title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
+  return "<a href='" . WIKI_ROOT . "title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
 }
 
 function geo_range_ok ($template) {
   $text = parse_wikitext ($template); // TODO check that this function returns the expected output
-  return strpos($text, "Expression error:") ? false : true;
+  return strpos($text, "Expression error:") ? FALSE : TRUE;
 }
 
 function load_xml_via_bot($vars) {
   $snoopy = new Snoopy();
   $snoopy->httpmethod = "POST";
-  $snoopy->submit(api, $vars);
+  $snoopy->submit(API_ROOT, $vars);
   return simplexml_load_string($snoopy->results);
 }
 
@@ -349,8 +348,8 @@ function touch_page($page) {
   $text = getRawWikiText($page);
   if ($text) {
     write ($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
-    return true;
+    return TRUE;
   } else {
-    return false;
+    return FALSE;
   }
 }

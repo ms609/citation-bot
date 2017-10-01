@@ -35,7 +35,7 @@ class Parameter {
         $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
       }
       $this->post  = $post_eq[3];
-      $this->parse_val($post_eq[2]);
+      $this->set_value($post_eq[2]);
     } else if ($pre_eq) {
       $this->pre  = $pre_eq[1];
       $this->val  = $pre_eq[2];
@@ -45,11 +45,10 @@ class Parameter {
     }
   }
 
-  // FIXME: this does not appear to actually parse values, should be renamed.
-  protected function parse_val($value) {
+  protected function set_value($value) {
     switch ($this->param) {
       case 'pages':
-        if (stripos($value, "http") === FALSE) $value = mb_ereg_replace(to_en_dash, en_dash, $value);
+        if (stripos($value, "http") === FALSE) $value = mb_ereg_replace(TO_EN_DASH, EN_DASH, $value);
         $this->val = $value;
       break;
       default: $this->val = $value;

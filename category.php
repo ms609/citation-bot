@@ -22,7 +22,7 @@ foreach ($argv as $arg) {
 $account_suffix='_4'; // Whilst testing
 $account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
-$htmlOutput = false;
+$htmlOutput = FALSE;
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
@@ -39,7 +39,7 @@ if ($category) {
       while (!$page->write() && $attempts < 2) ++$attempts;
       print htmlspecialchars($page->text);
       if ($attempts < 3 ) {
-        echo html_output ?
+        echo HTML_OUTPUT ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
         . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
