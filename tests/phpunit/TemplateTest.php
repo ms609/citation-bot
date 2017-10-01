@@ -287,6 +287,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('2007-08-01', $expanded->get('date'));
       $this->assertNull($expanded->get('year'));
   }
+  
   public function testRIS() {
       $text = '{{Cite journal  | TY - JOUR
 AU - Shannon, Claude E.
@@ -298,7 +299,15 @@ EP - 423
 VL - 27
 ER -  }}';
      $expanded = $this->process_citation($text);
-     //  We need to check this
+     print $expanded->parsed_text();
+     $this->assertEquals('A Mathematical Theory of Communication', $expanded->get('title'));
+     $this->assertEquals('1948', $expanded->get('year'));
+     $this->assertEquals('Bell System Technical Journal', $expanded->get('journal'));
+     $this->assertEquals('Shannon, Claude E', $expanded->first_author());
+     $this->assertEquals('Shannon', $expanded->get('last1');
+     $this->assertEquals('Claude E', $expanded->get('first1'));
+     $this->assertEquals('379–423', $expanded->get('pages'));
+     $this->assertEquals('27', $expanded->get('volume'));   
   }
     
   public function testEndNote() {

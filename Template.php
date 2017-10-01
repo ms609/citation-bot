@@ -1374,6 +1374,7 @@ class Template extends Item {
 
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
         $ris = explode("\n", $dat);
+        $ris_authors = 0;
         foreach ($ris as $ris_line) {
           $ris_part = explode(" - ", $ris_line . " ");
           switch (trim($ris_part[0])) {
@@ -1396,13 +1397,14 @@ class Template extends Item {
             case "EP":
               $end_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              add_if_new("pages", $start_page . "-" . $end_page);
+              $this->add_if_new("pages", $start_page . "-" . $end_page);
               break;
             case "DO":
               $ris_parameter = "doi";
               break;
             case "JO":
             case "JF":
+            case "T2":
               $ris_parameter = "journal";
               break;
             case "VL":
@@ -1427,7 +1429,7 @@ class Template extends Item {
           }
           unset($ris_part[0]);
           if ($ris_parameter
-                  && add_if_new($ris_parameter, trim(implode($ris_part)))
+                  && $this->add_if_new($ris_parameter, trim(implode($ris_part)))
               ) {
             global $auto_summary;
             if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
