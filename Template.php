@@ -813,11 +813,11 @@ class Template extends Item {
         $xml = simplexml_load_file($url_root
                 . "year=" . $this->get('year')
                 . "&volume=" . $this->get('volume')
-                . "&page=" . ($pages = $this->get('pages') ? $pages : $this->get('page'))
+                . "&page=" . $this->page()
                 );
         $journal_string = explode(",", (string) $xml->record->journal);
         $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
-        if (strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
+        if (strlen($journal_string[0]) && strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
                 mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))) === FALSE) {
           echo "\n   Match for pagination but database journal \"" .
             htmlspecialchars($journal_string[0]) . "\" didn't match \"journal = " .
@@ -2078,8 +2078,10 @@ class Template extends Item {
       }
     }
   }
-
-  // Retrieve parameters 
+/********************************************************
+ *   Functions to retrieve values that may be specified 
+ *   in various ways
+ ********************************************************/
   public function display_authors($newval = FALSE) {
     if ($newval && is_int($newval)) {
       $this->forget('displayauthors');

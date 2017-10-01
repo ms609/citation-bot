@@ -126,6 +126,8 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testPageDuplication() {
+     global $SLOW_MODE;
+     $SLOW_MODE = FALSE; // Otherwise we'll find a bibcode
      $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. }}';
      $expanded = $this->process_citation($text);
      $this->assertEquals($text, $expanded->parsed_text());
