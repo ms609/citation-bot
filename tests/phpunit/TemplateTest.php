@@ -284,4 +284,51 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('2007-08-01', $expanded->get('date'));
       $this->assertNull($expanded->get('year'));
   }
+  public function testRIS() {
+      $text = '{{Cite journal  | TY - JOUR
+AU - Shannon, Claude E.
+PY - 1948/07//
+TI - A Mathematical Theory of Communication
+T2 - Bell System Technical Journal
+SP - 379
+EP - 423
+VL - 27
+ER -  }}';
+     $expanded = $this->process_citation($text);
+     //  We need to check this
+  }
+    
+  public function testEndNote() {
+      $text = '{{Cite journal  |
+%0 Book
+%A Geoffrey Chaucer
+%D 1957
+%T The Works of Geoffrey Chaucer
+%E F.
+%I Houghton
+%C Boston
+%N 2nd
+%0 Journal Article
+%A Herbert H. Clark
+%D 1982
+%T Hearers and Speech Acts
+%B Language
+%V 58
+%P 332-373
+%0 Thesis
+%A Cantucci, Elena
+%T Permian strata in South-East Asia
+%D 1990
+%I University of California, Berkeley
+%9 Dissertation}}';
+       $expanded = $this->process_citation($text);
+           //  We need to check this
+   }
+    
+   public function testLinefeeds(){
+       $text = '{{cite arXiv|eprint=hep-th/0303241}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in   contemporary local quantum physics',$expanded->get('title'));
+   }
+    
 }
