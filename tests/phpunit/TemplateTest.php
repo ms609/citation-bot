@@ -379,6 +379,21 @@ ER -  }}';
       $text = '{{cite book |website=ttp://jstor.org/pdf/123456 | jstor=123456 }}';
       $expanded = $this->process_citation($text);
       $this->assertNull($expanded->get('url'));
+      
+      $text = '{{cite book |website=ABC}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('ABC', $expanded->get('website'));
+      
+      $text = '{{cite book |website=ABC XYZ}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('ABC XYZ', $expanded->get('website'));
+      
+      $text = '{{cite book |website=http://ABC/ I have Spaces in Me}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('http://ABC/ I have Spaces in Me', $expanded->get('website'));
   }
   
   public function testLinefeeds(){
