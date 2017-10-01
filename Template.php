@@ -807,10 +807,17 @@ class Template extends Item {
       }
       if ($xml["retrieved"] != 1 && $journal = $this->get('journal')) {
         // try partial search using bibcode components:
+        if ($this->get('pages')) {
+          $pages = $this->get('pages'); 
+        } else if ($this->get('page')) {
+          $pages = $this->get('page'); 
+        } else {
+          $pages = '';
+        }
         $xml = simplexml_load_file($url_root
                 . "year=" . $this->get('year')
                 . "&volume=" . $this->get('volume')
-                . "&page=" . ($pages = $this->get('pages') ? $pages : $this->get('page'))
+                . "&page=" . $pages
                 );
         $journal_string = explode(",", (string) $xml->record->journal);
         $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
