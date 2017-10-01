@@ -64,10 +64,10 @@ function formatForename($forename){
  * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
  *
  */
-function formatInitials($str){
-	$str = trim($str);
+function formatInitials($str) {
+  $str = trim($str);
 	if ($str == "") return FALSE;
-	if (substr($str, strlen($str)-1) == ";") $end = ";";
+	$end = (substr($str, strlen($str)-1) == ";") ? ";" : '';
 	preg_match_all("~\w~", $str, $match);
 	return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
