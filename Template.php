@@ -502,29 +502,23 @@ class Template extends Item {
         if ($this->blank('bibcode')) {
           quiet_echo("\n   ~ Converting url to bibcode parameter");
           $this->forget('url');
-          $this->set("bibcode", urldecode($bibcode[1]));
+          $this->add_if_new("bibcode", urldecode($bibcode[1]));// TODO check: will this automatically expand from bibcode when added?
         }
       } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
         if ($this->blank('pmc')) {
           quiet_echo("\n   ~ Converting URL to PMC parameter");
           $this->forget('url');
-          $this->set("pmc", $match[1] . $match[2]);
+          $this->add_if_new("pmc", $match[1] . $match[2]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
-        if ($this->blank('doi')) {
-          $this->set("doi", urldecode($match[1]));
-          $this->expand_by_doi(1);
-        }
+        $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } elseif (preg_match("~10\.\d{4}/[^&\s\|\?]*~", $url, $match)) {
+      } else if (extract_doi($url)[1]) {
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
-        if ($this->blank('doi')) {
-          $this->set('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
-          $this->expand_by_doi(1);
-        }
+        $this->add_if_new('doi', extract_doi($url)[1]);
       } else if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
@@ -533,14 +527,14 @@ class Template extends Item {
             || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
             ) {
           quiet_echo("\n   ~ Converting URL to arXiv parameter");
+          $this->forget('url');
           $this->add_if_new("arxiv", $arxiv_id[0]);
           $this->expand_by_arxiv();
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        if ($this->blank('pmid')) {
-          $this->set('pmid', $match[1]);
-        }
+        $this->add_if_new('pmid', $match[1]);
+        $this->forget('url');
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
         if ($match['domain'] == ".com") {
@@ -548,12 +542,11 @@ class Template extends Item {
             $this->forget('url');
           } else {
             $this->forget('url');
-            $this->set('asin', $match['id']);
+            $this->add_if_new('asin', $match['id']);
           }
         } else {
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
-          $this->forget('url');
-          $this->forget('accessdate');
+          $this->forget('url'); // will forget accessdate too
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite book';
       }
@@ -2260,7 +2253,11 @@ class Template extends Item {
   }
 
   public function forget ($par) {
-    if ($par == 'url') $this->forget('format');
+    if ($par == 'url') {
+      $this->forget('format');
+      $this->forget('accessdate');
+      $this->forget('access-date');
+    }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
       echo "\n   - Dropping parameter " . htmlspecialchars($par) . tag();
