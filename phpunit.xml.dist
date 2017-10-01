@@ -12,6 +12,7 @@
       <directory suffix=".php">.</directory>
       <exclude>
         <directory>./constants</directory>
+        <directory>./tests</directory>
         <file>./constants.php</file>
         <file>./doibot.php</file>
         <file>./gadgetapi.php</file>
