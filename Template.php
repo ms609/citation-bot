@@ -785,7 +785,8 @@ class Template extends Item {
   }
 
   public function expand_by_adsabs() {
-    if (SLOW_MODE || $this->has('bibcode')) {
+    global $SLOW_MODE;
+    if ($SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
       $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
       if ($bibcode = $this->get("bibcode")) {
@@ -1207,7 +1208,8 @@ class Template extends Item {
     if ($meta_tags["citation_authors"]) {
       $new_authors = formatAuthors($meta_tags["citation_authors"], TRUE);
     }
-    if (SLOW_MODE && !$new_pages && !$new_authors) {
+    global $SLOW_MODE;
+    if ($SLOW_MODE && !$new_pages && !$new_authors) {
       echo "\n   - Now scraping web-page.";
       //Initiate cURL resource
       $ch = curl_init();
@@ -1372,6 +1374,7 @@ class Template extends Item {
 
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
         $ris = explode("\n", $dat);
+        $ris_authors = 0;
         foreach ($ris as $ris_line) {
           $ris_part = explode(" - ", $ris_line . " ");
           switch (trim($ris_part[0])) {
@@ -1387,6 +1390,10 @@ class Template extends Item {
             case "Y1":
               $ris_parameter = "date";
               break;
+            case "PY":
+              $ris_parameter = "date";
+              $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
+              break;
             case "SP":
               $start_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
@@ -1394,13 +1401,14 @@ class Template extends Item {
             case "EP":
               $end_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              add_if_new("pages", $start_page . "-" . $end_page);
+              $this->add_if_new("pages", $start_page . "-" . $end_page);
               break;
             case "DO":
               $ris_parameter = "doi";
               break;
             case "JO":
             case "JF":
+            case "T2":
               $ris_parameter = "journal";
               break;
             case "VL":
@@ -1425,7 +1433,7 @@ class Template extends Item {
           }
           unset($ris_part[0]);
           if ($ris_parameter
-                  && add_if_new($ris_parameter, trim(implode($ris_part)))
+                  && $this->add_if_new($ris_parameter, trim(implode($ris_part)))
               ) {
             global $auto_summary;
             if (!strpos("Converted RIS citation to WP format", $auto_summary)) {

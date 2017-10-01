@@ -9,7 +9,10 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_exists('\PHPUnit_Framework_TestCase')) {
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
+
+// Initialize bot configuration
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
+$SLOW_MODE = TRUE;
  
 class TemplateTest extends PHPUnit\Framework\TestCase {
 
@@ -284,6 +287,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('2007-08-01', $expanded->get('date'));
       $this->assertNull($expanded->get('year'));
   }
+  
   public function testRIS() {
       $text = '{{Cite journal  | TY - JOUR
 AU - Shannon, Claude E.
@@ -295,7 +299,14 @@ EP - 423
 VL - 27
 ER -  }}';
      $expanded = $this->process_citation($text);
-     //  We need to check this
+     $this->assertEquals('A Mathematical Theory of Communication', $expanded->get('title'));
+     $this->assertEquals('1948-07', $expanded->get('date'));
+     $this->assertEquals('Bell System Technical Journal', $expanded->get('journal'));
+     $this->assertEquals('Shannon, Claude E', $expanded->first_author());
+     $this->assertEquals('Shannon', $expanded->get('last1'));
+     $this->assertEquals('Claude E', $expanded->get('first1'));
+     $this->assertEquals('379–423', $expanded->get('pages'));
+     $this->assertEquals('27', $expanded->get('volume'));   
   }
     
   public function testEndNote() {

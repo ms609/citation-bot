@@ -74,7 +74,7 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
   <input type="hidden" name="page" value="<?php echo $title;?>"></input>
   <input type="hidden" name="user" value="<?php echo $user;?>"></input>
   <input type="hidden" name="edit" value="on"></input>
-  <input type="hidden" name="slow" value="<?php echo SLOW_MODE;?>"></input>
+  <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>"></input>
   <input type=submit value="Submit edits"></input>
 </form>
 <?php
