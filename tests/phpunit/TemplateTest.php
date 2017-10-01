@@ -10,6 +10,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
+$SLOW_MODE = TRUE;
  
 class TemplateTest extends PHPUnit\Framework\TestCase {
 

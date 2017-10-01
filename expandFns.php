@@ -56,7 +56,8 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 ini_set("memory_limit", "256M");
 
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
-define("SLOW_MODE", isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE);
+if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
+
 if (isset($_REQUEST["crossrefonly"])) {
   $crossRefOnly = TRUE;
 } elseif (isset($_REQUEST["turbo"])) {

@@ -785,7 +785,8 @@ class Template extends Item {
   }
 
   public function expand_by_adsabs() {
-    if (SLOW_MODE || $this->has('bibcode')) {
+    global $SLOW_MODE;
+    if ($SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
       $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
       if ($bibcode = $this->get("bibcode")) {
@@ -1205,7 +1206,8 @@ class Template extends Item {
     if ($meta_tags["citation_authors"]) {
       $new_authors = formatAuthors($meta_tags["citation_authors"], TRUE);
     }
-    if (SLOW_MODE && !$new_pages && !$new_authors) {
+    global $SLOW_MODE;
+    if ($SLOW_MODE && !$new_pages && !$new_authors) {
       echo "\n   - Now scraping web-page.";
       //Initiate cURL resource
       $ch = curl_init();
