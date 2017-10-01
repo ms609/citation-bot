@@ -1334,9 +1334,16 @@ class Template extends Item {
       $param_recycled = FALSE;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
+        $endnote_authors = 0;
         foreach ($endnote_test as $endnote_line) {
-          switch (substr($endnote_line,0,1)) {
-            case "A": $endnote_authors++; $endnote_parameter = "author$endnote_authors";        break;
+          $endnote_linetype = substr($endnote_line, 0, 1);
+          $endnote_datum = substr($endnote_line, 2); // cut line type and leading space
+          switch ($endnote_linetype) {
+            case "A": 
+              $this->add_if_new("author" . ++$endnote_authors, formatAuthor($endnote_datum));
+              $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
+              $endnote_parameter = FALSE;
+              break;
             case "D": $endnote_parameter = "date";       break;
             case "I": $endnote_parameter = "publisher";  break;
             case "C": $endnote_parameter = "location";   break;
@@ -1357,6 +1364,10 @@ class Template extends Item {
                 $endnote_parameter = FALSE;
               }
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
+              if (extract_doi($endnote_datum)) {
+                $endnote_parameter = 'doi';
+                break;
+              }
             case "8": // Date
             case "0":// Citation type
             case "X": // Abstract
@@ -1366,7 +1377,7 @@ class Template extends Item {
               $endnote_parameter = FALSE;
           }
           if ($endnote_parameter && $this->blank($endnote_parameter)) {
-            $to_add[$endnote_parameter] = substr($endnote_line, 1);
+            $this->add($endnote_parameter, trim(substr($endnote_line, 2)));
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
         }
