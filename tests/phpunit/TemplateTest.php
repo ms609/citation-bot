@@ -372,6 +372,10 @@ ER -  }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('http://example.org', $expanded->get('url'));
       
+      $text = '{{cite book |website=example.org }}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('http://example.org', $expanded->get('url'));
+      
       $text = '{{cite book |website=ttp://jstor.org/pdf/123456 | jstor=123456 }}';
       $expanded = $this->process_citation($text);
       $this->assertNull($expanded->get('url'));
