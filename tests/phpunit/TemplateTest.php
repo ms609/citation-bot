@@ -441,6 +441,12 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('594900', $expanded->get('jstor'));
    }
+    
+   public function testInternalCaps() {
+       $text = '{{cite journal|journal=ZooTimeKids}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
+   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
