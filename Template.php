@@ -510,9 +510,14 @@ class Template extends Item {
     }
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
-      if (strpos($url, "sici")) {
-        #Skip.  We can't do anything more with the SICI, unfortunately.
-      } elseif (strpos($url, "plants.jstor.org")) {
+      if (strpos($url, "sici")) {  //  Outdated
+        $headers_test = get_headers($url, 1);
+        if(!empty($headers_test['Location'])) {
+          $url = $headers_test['Location']; // Redirect
+          $this->set('url',$url); // Save it
+        }
+      }
+      if (strpos($url, "plants.jstor.org")) {
         #Skip.  We can't do anything more with the plants, unfortunately.
       } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
         if ($this->get('jstor')) {
