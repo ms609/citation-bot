@@ -666,7 +666,7 @@ class Template extends Item {
       if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
         // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
         echo "\n - Checking for ISBN";
-        if ($this->blank('isbn') && $title = $this->get("title")) $this->set("isbn", findISBN( $title, $this->first_author()));
+        if ($this->blank('isbn') && $title = $this->get("title")) $this->set("isbn", isbn10Toisbn13(findISBN( $title, $this->first_author())));
         else echo "\n  Already has an ISBN. ";
       }
     }
@@ -944,7 +944,7 @@ class Template extends Item {
             }
           }
         }
-        $this->add_if_new('isbn', $crossRef->isbn);
+        $this->add_if_new('isbn', isbn10Toisbn13($crossRef->isbn));
         $this->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
         if ($crossRef->volume > 0) $this->add_if_new('volume', $crossRef->volume);
         if ((integer) $crossRef->issue > 1) {
@@ -1174,7 +1174,7 @@ class Template extends Item {
         $isbn = $match[1];
       }
     }
-    $this->add_if_new("isbn", $isbn);
+    $this->add_if_new("isbn", isbn10Toisbn13($isbn));
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     $i = NULL;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
@@ -1202,8 +1202,8 @@ class Template extends Item {
       if ($title && !$over_isbn_limit) {
         $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
         print "\n\nhttp://isbndb.com/api/books.xml?access_key=$ISBN_KEY&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
-        if ($xml->BookList["total_results"] == 1) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
-        if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
+        if ($xml->BookList["total_results"] == 1) return $this->set('isbn', isbn10Toisbn13((string) $xml->BookList->BookData["isbn"]));
+        if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', isbn10Toisbn13((string) $xml->BookList->BookData["isbn"]));
         else return FALSE;
       }
     }
@@ -1600,7 +1600,7 @@ class Template extends Item {
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $this->add('isbn', $match[1]);
+        $this->add('isbn', isbn10Toisbn13($match[1]));
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -2342,5 +2342,19 @@ class Template extends Item {
 
   public function is_modified () {
     return (bool) count($this->modifications('modifications'));
+  }
+  
+  public function isbn10Toisbn13 ($isbn10) {
+       $isbn13 = str_replace(array('-', '–',' '), '', $isbn10);  // Remove spaces and dashes
+       if (strlen($isbn13) !== 10) return $isbn10;  // When in doubt, return what we started with.  Might be an ISBN 13 already, or rubbish
+       $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit
+       $sum = 0;
+       for ($count=0; $count<12; $count++ ) {
+          $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
+       }
+       $sum = ((10-$sum%10)%10) ;
+       $isbn13 = $isbn13 . $sum ; // Add the check digit to the end
+       $isbn13 = substr($isbn13,0,3) . '-' . substr($isbn13,3,10); // Add a dash
+       return $isbn13 ;
   }
 }
