@@ -102,20 +102,6 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
   return ($db);
 }
 
-function countMainLinks($title) {
-  // Counts the links to the mainpage
-  global $bot;
-  if (preg_match("/\w*:(.*)/", $title, $title))
-    $title = $title[1]; //Gets {{PAGENAME}}
-  $url = API_ROOT . "?action=query&bltitle=" . urlencode($title) . "&list=backlinks&bllimit=500&format=yaml";
-  $bot->fetch($url);
-  $page = $bot->results;
-  if (preg_match("~\n\s*blcontinue~", $page))
-    return 501;
-  preg_match_all("~\n\s*pageid:~", $page, $matches);
-  return count($matches[0]);
-}
-
 function logIn($username, $password) {
   global $bot; // Snoopy class loaded in DOItools.php
   // Set POST variables to retrieve a token
