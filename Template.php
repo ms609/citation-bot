@@ -44,9 +44,12 @@ class Template extends Item {
     }
     return $text;
   }
-  
+
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
+    if ($this->rawtext) {
+        warning("Template already initialized; call new Template() before calling Template::parse_text()");
+    }
     $this->rawtext = $text;
     $text = '{' . $this->extract_templates(substr($text, 1)); // Split template string, or it'll extract itself
     $pipe_pos = strpos($text, '|');
@@ -1673,8 +1676,8 @@ class Template extends Item {
       $id = str_replace($match[0], '', $id);
     }
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
-      $subtemplate = new Template();
       for ($i = 0; $i < count($matches[1]); $i++) {
+        $subtemplate = new Template();
         $subtemplate->parse_text($this->internal_templates[$i]);
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
@@ -1690,48 +1693,51 @@ class Template extends Item {
             }
             $id = str_replace($matches[0][$i], '', $id);
             break;
-          case "lccn":
-            $this->add_if_new('lccn', trim($subtemplate->param_value(1) . $subtemplate->param_value(3)));
-            $id = str_replace($matches[0][$i], '', $id);
-            break;
-          case "rfcurl":
-            $subtemplate_name = "rfc";
           case "asin":
-            if ($subtemplate->has("country")) {
-              echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
-              break;
-            }
           case "oclc":
-            if (!is_null($subtemplate->param_with_index(2))) {
-              echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              break;
-            }
           case "ol":
-            if ($subtemplate->has('author')) {
-              echo "\n    - {{OL}} author parameter not supported: can't convert.";
-              break;
-            }
           case "bibcode":
           case "doi":
           case "isbn":
           case "issn":
           case "jfm":
           case "jstor":
-            if ($subtemplate->has('sici') || $subtemplate->has('issn')) {
-              echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
-              break;
-            }
+          case "lccn":
           case "mr":
           case "osti":
           case "pmid":
           case "pmc":
           case "ssrn":
           case "zbl":
+          
+            // Specific checks for particular templates:
+            if ($subtemplate_name == 'asin' && $subtemplate->has("country")) {
+              echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
+              break;
+            }
+            if ($subtemplate_name == 'ol' && $subtemplate->has('author')) {
+              echo "\n    - {{OL}} author parameter not supported: can't convert.";
+              break;
+            }
+            if ($subtemplate_name == 'jstor' && $subtemplate->has('sici') || $subtemplate->has('issn')) {
+              echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
+              break;
+            }
+            if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
+              
+              echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
+              print "\n    " . $this->internal_templates[$i];
+              var_dump($subtemplate);
+              break;
+            }
+          
+            // All tests okay; move identifier to suitable parameter
             $subtemplate_identifier = $subtemplate->has('id') ?
                                       $subtemplate->get('id') :
                                       $subtemplate->param_value(0);
+                                      
             $this->add_if_new($subtemplate_name, $subtemplate_identifier);
-            $id = str_replace($matches[0][$i], '', $id);
+            $id = str_replace($matches[0][$i], '', $id); // Could only do this if previous line evaluated to TRUE, but let's be aggressive here.
             break;
           default:
             echo "\n    - No match found for " . $subtemplate_name;
