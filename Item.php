@@ -2,10 +2,11 @@
 /*
  * Item is the base class for:
  *     Comment
+ *     Page
  *     Template
  *
- * It defines variables but doesn't offer much other structure. Implementation details of its
- * child classes vary significantly.
+ * It defines variables and functions but doesn't offer much other structure. 
+ * Implementation details of its child classes vary significantly.
  *
  */
 

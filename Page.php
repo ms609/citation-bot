@@ -10,8 +10,7 @@
 require_once('Comment.php');
 require_once('Template.php');
 
-class Page {
-
+class Page extends Item {
   public $text, $title, $modifications;
 
   public function is_redirect() {
