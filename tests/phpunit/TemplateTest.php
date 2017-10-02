@@ -392,14 +392,34 @@ ER -  }}';
       $text = '{{cite book |website=ttp://jstor.org/pdf/123456 | jstor=123456 }}';
       $expanded = $this->process_citation($text);
       $this->assertNull($expanded->get('url'));
+      
+      $text = '{{cite book |website=ABC}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('ABC', $expanded->get('website'));
+      
+      $text = '{{cite book |website=ABC XYZ}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('ABC XYZ', $expanded->get('website'));
+      
+      $text = '{{cite book |website=http://ABC/ I have Spaces in Me}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('http://ABC/ I have Spaces in Me', $expanded->get('website'));
   }
   
   public function testLinefeeds(){
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in   contemporary local quantum physics',$expanded->get('title'));
+       $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics',$expanded->get('title'));
    }
 
+    public function testJstorSICI() {
+       $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('594900', $expanded->get('jstor'));
+   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
