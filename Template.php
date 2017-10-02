@@ -1209,6 +1209,11 @@ class Template extends Item {
     }
   }
 
+  
+  /*
+   * @codeCoverageIgnore
+   * This function is no longer called, but is retained in case a use case arises in the future
+  */
   protected function find_more_authors() {
   /** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
    *   Send the URL and the first author's SURNAME ONLY as $a1
@@ -1835,6 +1840,7 @@ class Template extends Item {
   }
 }
 
+  // TODO this is not called from anywhere - it used to be.  Where is it useful?
   public function remove_non_ascii() {
     for ($i = 0; $i < count($this->param); $i++) {
       $this->param[$i]->val = preg_replace('/[^\x20-\x7e]/', '', $this->param[$i]->val); // Remove illegal non-ASCII characters such as invisible spaces
