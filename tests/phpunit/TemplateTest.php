@@ -415,6 +415,11 @@ ER -  }}';
        $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics',$expanded->get('title'));
    }
 
+    public function testJstorSICI() {
+       $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
+       $expanded = $this->process_citation($text);
+       $this-assertEquals('594900',$expanded->get('jstor'));
+   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
