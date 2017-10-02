@@ -249,6 +249,19 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
   }
   
+  
+  public function testOrigYearHandling() {
+      $text = '{{cite book |year=2009 | origyear = 2000 }}';
+      $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
+      $this->assertEquals('2000', $expanded->get('origyear'));
+      $this->assertEquals('2009', $expanded->get('year'));
+      
+      $text = '{{cite book | origyear = 2000 }}';
+      $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
+      $this->assertEquals('2000', $expanded->get('year'));
+      $this->assertNull($expanded->get('origyear'));
+  }
+  
   public function testGoogleBooksExpansion() {
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
     $expanded_citation = $this->process_citation($text);
