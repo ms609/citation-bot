@@ -186,7 +186,10 @@ function format_title_text($title) {
     }
   }
   $title = html_entity_decode($title, NULL, "UTF-8");
-  $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
+  $title = str_replace("\r", "\n", $title); // Replace newlines/linefeeds/returns with a linefeed
+  $title = preg_replace("/\s+\n/",'\n', $title);  // Remove all white spaces before
+  $title = preg_replace("/\n\s+/",'\n', $title);  // Remove all white spaces after
+  $title = str_replace("\n", " ", $title); // A single space
   $title = (mb_substr($title, -1) == ".")
             ? mb_substr($title, 0, -1)
             :(
