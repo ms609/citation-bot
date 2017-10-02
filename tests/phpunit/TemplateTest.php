@@ -12,8 +12,9 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 
 // Initialize bot configuration
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
-$SLOW_MODE = TRUE;
- 
+$SLOW_MODE = FALSE;
+$FAST_MODE = TRUE;
+
 class TemplateTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
