@@ -42,6 +42,7 @@ class Template extends Item {
       // Case insensitive, since placeholder might get title case, etc.
       $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
     }
+    return $text;
   }
   
   public function parse_text($text) {
