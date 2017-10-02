@@ -11,6 +11,10 @@ if (!defined("HTML_OUTPUT")) {
   define("HTML_OUTPUT", -1);
 }  
 
+function html_echo($text, $alternate_text='') {
+  echo (HTML_OUTPUT >= 0) ? $text : $alternate_text;
+}
+
 function quiet_echo($text, $alternate_text = '') {
   if (defined('VERBOSE') || HTML_OUTPUT >= 0)
     echo $text;

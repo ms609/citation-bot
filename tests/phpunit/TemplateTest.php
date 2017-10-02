@@ -227,6 +227,19 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('1–5',$expanded->get('pages'));
   }
+       
+  public function testId2Param() {
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} 
+        {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
+      $this->assertEquals('978-1234-9583-068', $expanded->get('isbn'));
+      $this->assertEquals('1234.5678', $expanded->get('arxiv'));
+      $this->assertEquals('10.1234/bashifbjaksn.ch2', $expanded->get('doi'));
+      $this->assertEquals('1234', $expanded->get('oclc'));
+      $this->assertEquals('12345', $expanded->get('ol'));
+      $this->assertNotNull($expanded->get('doi-broken-date'));
+      $this->assertEquals(1, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
+  }
   
   public function testGoogleBooksExpansion() {
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";

@@ -23,12 +23,35 @@ class Template extends Item {
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
 
-  protected $name, $param, $initial_param, $initial_author_params, $citation_template, $mod_dashes;
+  protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
+            $mod_dashes,
+            $internal_templates = array();
+
+  protected function extract_templates($text) {
+    $i = 0;
+    while(preg_match(Template::REGEXP, $text, $match)) {
+      $this->internal_templates[$i] = $match[0];
+      $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
+    }
+    return $text;
+  }
+
+  protected function replace_templates($text) {
+    $i = count($this->internal_templates);
+    foreach (array_reverse($this->internal_templates) as $template) {
+      // Case insensitive, since placeholder might get title case, etc.
+      $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
+    }
+    return $text;
+  }
 
   public function parse_text($text) {
-    
     $this->initial_author_params = null; // Will be populated later if there are any
+    if ($this->rawtext) {
+        warning("Template already initialized; call new Template() before calling Template::parse_text()");
+    }
     $this->rawtext = $text;
+    $text = '{' . $this->extract_templates(substr($text, 1)); // Split template string, or it'll extract itself
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
       $this->name = substr($text, 2, $pipe_pos - 2); # Remove {{ and }}
@@ -47,6 +70,11 @@ class Template extends Item {
         $this->initial_author_params[$p->param] = $p->val;
       }
     }
+  }
+
+  // Re-assemble parsed template into string
+  public function parsed_text() {
+    return $this->replace_templates('{{' . $this->name . $this->join_params() . '}}');
   }
 
   // Parts of each param: | [pre] [param] [eq] [value] [post]
@@ -196,7 +224,7 @@ class Template extends Item {
    * data to further expand the citation
    */
   public function add_if_new($param_name, $value) {
-    if (trim($value) == "") {
+    if (trim($value) == '') {
       return FALSE;
     }
     
@@ -502,29 +530,23 @@ class Template extends Item {
         if ($this->blank('bibcode')) {
           quiet_echo("\n   ~ Converting url to bibcode parameter");
           $this->forget('url');
-          $this->set("bibcode", urldecode($bibcode[1]));
+          $this->add_if_new("bibcode", urldecode($bibcode[1]));// TODO check: will this automatically expand from bibcode when added?
         }
       } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
         if ($this->blank('pmc')) {
           quiet_echo("\n   ~ Converting URL to PMC parameter");
           $this->forget('url');
-          $this->set("pmc", $match[1] . $match[2]);
+          $this->add_if_new("pmc", $match[1] . $match[2]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
-        if ($this->blank('doi')) {
-          $this->set("doi", urldecode($match[1]));
-          $this->expand_by_doi(1);
-        }
+        $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } elseif (preg_match("~10\.\d{4}/[^&\s\|\?]*~", $url, $match)) {
+      } else if (extract_doi($url)[1]) {
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
-        if ($this->blank('doi')) {
-          $this->set('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
-          $this->expand_by_doi(1);
-        }
+        $this->add_if_new('doi', extract_doi($url)[1]);
       } else if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
@@ -533,14 +555,14 @@ class Template extends Item {
             || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
             ) {
           quiet_echo("\n   ~ Converting URL to arXiv parameter");
+          $this->forget('url');
           $this->add_if_new("arxiv", $arxiv_id[0]);
           $this->expand_by_arxiv();
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        if ($this->blank('pmid')) {
-          $this->set('pmid', $match[1]);
-        }
+        $this->add_if_new('pmid', $match[1]);
+        $this->forget('url');
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
         if ($match['domain'] == ".com") {
@@ -548,12 +570,11 @@ class Template extends Item {
             $this->forget('url');
           } else {
             $this->forget('url');
-            $this->set('asin', $match['id']);
+            $this->add_if_new('asin', $match['id']);
           }
         } else {
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
-          $this->forget('url');
-          $this->forget('accessdate');
+          $this->forget('url'); // will forget accessdate too
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite book';
       }
@@ -1650,80 +1671,77 @@ class Template extends Item {
     } else {
       return FALSE;
     }
-    if (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*[^\s\}\{\|]*)~iu", $id, $match)) {
+    while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*+[^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
       $this->add_if_new(strtolower($match[1]), $match[2]);
       $id = str_replace($match[0], '', $id);
     }
-    preg_match_all("~\{\{(?P<content>(?:[^\}]|\}[^\}])+?)\}\}[,. ]*~", $id, $match);
-    foreach ($match["content"] as $i => $content) {
-      $content = explode(PIPE_PLACEHOLDER, $content);
-      unset($parameters);
-      $j = 0;
-      foreach ($content as $fragment) {
-        $content[$j++] = $fragment;
-        $para = explode("=", $fragment);
-        if (trim($para[1])) {
-          $parameters[trim($para[0])] = trim($para[1]);
+    if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
+      for ($i = 0; $i < count($matches[1]); $i++) {
+        $subtemplate = new Template();
+        $subtemplate->parse_text($this->internal_templates[$i]);
+        $subtemplate_name = $subtemplate->wikiname();
+        switch($subtemplate_name) {            
+          case "arxiv":
+            if ($subtemplate->get('id')) {
+              $archive_parameter = trim($subtemplate->get('archive') ? $subtemplate->get('archive') . '/' : '');
+              $this->add_if_new("arxiv", $archive_parameter . $subtemplate->get('id'));
+            } else if (!is_null($subtemplate->param_with_index(1))) {
+              $this->add_if_new("arxiv", trim($subtemplate->param_value(0)) .
+                                "/" . trim($subtemplate->param_value(1)));
+            } else {
+              $this->add_if_new("arxiv", $subtemplate->param_value(0));
+            }
+            $id = str_replace($matches[0][$i], '', $id);
+            break;
+          case "asin":
+          case "oclc":
+          case "ol":
+          case "bibcode":
+          case "doi":
+          case "isbn":
+          case "issn":
+          case "jfm":
+          case "jstor":
+          case "lccn":
+          case "mr":
+          case "osti":
+          case "pmid":
+          case "pmc":
+          case "ssrn":
+          case "zbl":
+          
+            // Specific checks for particular templates:
+            if ($subtemplate_name == 'asin' && $subtemplate->has("country")) {
+              echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
+              break;
+            }
+            if ($subtemplate_name == 'ol' && $subtemplate->has('author')) {
+              echo "\n    - {{OL}} author parameter not supported: can't convert.";
+              break;
+            }
+            if ($subtemplate_name == 'jstor' && $subtemplate->has('sici') || $subtemplate->has('issn')) {
+              echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
+              break;
+            }
+            if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
+              
+              echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
+              print "\n    " . $this->internal_templates[$i];
+              var_dump($subtemplate);
+              break;
+            }
+          
+            // All tests okay; move identifier to suitable parameter
+            $subtemplate_identifier = $subtemplate->has('id') ?
+                                      $subtemplate->get('id') :
+                                      $subtemplate->param_value(0);
+                                      
+            $this->add_if_new($subtemplate_name, $subtemplate_identifier);
+            $id = str_replace($matches[0][$i], '', $id); // Could only do this if previous line evaluated to TRUE, but let's be aggressive here.
+            break;
+          default:
+            echo "\n    - No match found for " . $subtemplate_name;
         }
-      }
-      switch (strtolower(trim($content[0]))) {
-        case "arxiv":
-          array_shift($content);
-          if ($parameters["id"]) {
-            $this->add_if_new("arxiv", ($parameters["archive"] ? trim($parameters["archive"]) . "/" : "") . trim($parameters["id"]));
-          } else if ($content[1]) {
-            $this->add_if_new("arxiv", trim($content[0]) . "/" . trim($content[1]));
-          } else {
-            $this->add_if_new("arxiv", implode(PIPE_PLACEHOLDER, $content));
-          }
-          $id = str_replace($match[0][$i], "", $id);
-          break;
-        case "lccn":
-          $this->add_if_new("lccn", trim($content[1]) . $content[3]);
-          $id = str_replace($match[0][$i], "", $id);
-          break;
-        case "rfcurl":
-          $identifier_parameter = "rfc";
-        case "asin":
-          if ($parameters["country"]) {
-            echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
-            break;
-          }
-        case "oclc":
-          if ($content[2]) {
-            echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-            break;
-          }
-        case "ol":
-          if ($parameters["author"]) {
-            echo "\n    - {{OL}} author parameter not supported: can't convert.";
-            break;
-          }
-        case "bibcode":
-        case "doi":
-        case "isbn":
-        case "issn":
-        case "jfm":
-        case "jstor":
-          if ($parameters["sici"] || $parameters["issn"]) {
-            echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
-            break;
-          }
-        case "mr":
-        case "osti":
-        case "pmid":
-        case "pmc":
-        case "ssrn":
-        case "zbl":
-          if ($identifier_parameter) {
-            array_shift($content);
-          }
-          $this->add_if_new($identifier_parameter ? $identifier_parameter : strtolower(trim(array_shift($content))), $parameters["id"] ? $parameters["id"] : $content[0]);
-          $identifier_parameter = NULL;
-          $id = str_replace($match[0][$i], "", $id);
-          break;
-        default:
-          echo "\n    - No match found for " . htmlspecialchars($content[0]);
       }
     }
     if (trim($id)) $this->set('id', $id); else $this->forget('id');
@@ -2030,7 +2048,6 @@ class Template extends Item {
     }
   }
 
-
   public function check_url() {
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
@@ -2128,7 +2145,7 @@ class Template extends Item {
     return $max;
   }
   
-  // Retreive author
+  // Retreive properties of template
   public function first_author() {
     foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
       $author = $this->get($auth_param);
@@ -2190,6 +2207,14 @@ class Template extends Item {
       }
     }
     return NULL;
+  }
+  
+  public function param_with_index($i) {
+    return (isset($this->param[$i])) ? $this->param[$i] : NULL;
+  }
+  
+  public function param_value($i) { // May return error if no param with index $i
+    return $this->param_with_index($i)->val;
   }
   
   public function get_without_comments($name) {
@@ -2260,7 +2285,11 @@ class Template extends Item {
   }
 
   public function forget ($par) {
-    if ($par == 'url') $this->forget('format');
+    if ($par == 'url') {
+      $this->forget('format');
+      $this->forget('accessdate');
+      $this->forget('access-date');
+    }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
       echo "\n   - Dropping parameter " . htmlspecialchars($par) . tag();
@@ -2308,10 +2337,5 @@ class Template extends Item {
 
   public function is_modified () {
     return (bool) count($this->modifications('modifications'));
-  }
-
-  // Parse initial text
-  public function parsed_text() {
-    return '{{' . $this->name . $this->join_params() . '}}';
   }
 }
