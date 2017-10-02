@@ -240,11 +240,11 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertNotNull($expanded->get('doi-broken-date'));
       $this->assertEquals(1, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
       
-      $text = '{{cite book | id={{arxiv|id=1234.5678}}';
+      $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
       $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
       
-      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}}';
+      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}}}}';
       $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
   }
