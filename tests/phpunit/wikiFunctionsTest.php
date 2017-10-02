@@ -15,15 +15,18 @@ $SLOW_MODE = TRUE;
 class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
+    require('login.php');
   }
 
   protected function tearDown() {
   }
   
   public function testLogin() {
-    require('login.php');
   }
   
+  public function testCategoryMembers() {
+    $this->assertTrue(count(category_members('Stub-Class cricket articles')) > 10);
+  }
  
   
 }

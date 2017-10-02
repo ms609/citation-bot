@@ -1,6 +1,6 @@
 <?php
 
-function categoryMembers($cat){
+function category_members($cat){
   $vars = Array(
     "cmtitle" => "Category:$cat", // Don't URLencode.
     "action" => "query",
@@ -9,11 +9,12 @@ function categoryMembers($cat){
     "list" => "categorymembers",
   );
   $qc = "query-continue";
+  $list = NULL;
 
 	do {
 		set_time_limit(40);
     $res = load_xml_via_bot($vars);
-  	if ($res) {
+    if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
           $list[] = (string) $page["title"];
         }
@@ -21,7 +22,7 @@ function categoryMembers($cat){
       echo 'Error reading API from ' . htmlspecialchars($url) . "\n\n";
     }
 	} while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
-  return $list?$list:Array(" ");
+  return $list ? $list : [' '];
 }
 
 // Returns an array; Array ("title1", "title2" ... );
