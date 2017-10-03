@@ -2354,6 +2354,7 @@ class Template extends Item {
   }
   
   public function isbn10Toisbn13 ($isbn10) {
+       $isbn10 = str_replace(array('-', '–',' '), '-', $isbn10); // standardize dahses
        $isbn13 = str_replace(array('-', '–',' '), '', $isbn10);  // Remove spaces and dashes
        if (strlen($isbn13) !== 10) return $isbn10;  // When in doubt, return what we started with.  Might be an ISBN 13 already, or rubbish
        $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit
@@ -2362,8 +2363,7 @@ class Template extends Item {
           $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
        }
        $sum = ((10-$sum%10)%10) ;
-       $isbn13 = $isbn13 . $sum ; // Add the check digit to the end
-       $isbn13 = substr($isbn13,0,3) . '-' . substr($isbn13,3,10); // Add a dash.  Only one.  Dashes depend upon publisher
+       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum ; // assume existing dashes (if any) are right
        return $isbn13 ;
   }
 }
