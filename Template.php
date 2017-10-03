@@ -2363,7 +2363,7 @@ class Template extends Item {
        }
        $sum = ((10-$sum%10)%10) ;
        $isbn13 = $isbn13 . $sum ; // Add the check digit to the end
-       $isbn13 = substr($isbn13,0,3) . '-' . substr($isbn13,3,10); // Add a dash
+       $isbn13 = substr($isbn13,0,3) . '-' . substr($isbn13,3,10); // Add a dash.  Only one.  Dashes depend upon publisher
        return $isbn13 ;
   }
 }
