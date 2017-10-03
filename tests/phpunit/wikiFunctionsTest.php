@@ -27,6 +27,10 @@ class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testCategoryMembers() {
     $this->assertTrue(count(category_members('Stub-Class cricket articles')) > 10);
   }
+  
+  public function testWhatTranscludes() {
+    $this->assertTrue(count(what_transcludes('Cite journal')) > 10);
+  }
  
   
 }

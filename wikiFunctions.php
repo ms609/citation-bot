@@ -26,9 +26,34 @@ function category_members($cat){
 }
 
 // Returns an array; Array ("title1", "title2" ... );
-function whatTranscludes($template, $namespace=99){
-	$titles = whatTranscludes2($template, $namespace);
+function what_transcludes($template, $namespace=99){
+	$titles = what_transcludes_2($template, $namespace);
 	return $titles["title"];
+}
+
+
+function what_transcludes_2($template, $namespace = 99) {
+	$vars = Array (
+      "action" => "query",
+      "list" => "embeddedin",
+      "eilimit" => "5000",
+      "format" => "xml",
+      "eititle" => "Template:" . $template,
+      "einamespace" => ($namespace==99)?"":$namespace,
+  );
+  $list = ['title' => NULL];
+  
+	do {
+		set_time_limit(20);
+    $res = load_xml_via_bot($vars);
+    if (!$res) {
+      echo 'Error reading API from ' . htmlspecialchars($url) . "\n";
+    } else foreach($res->query->embeddedin->ei as $page) {
+			$list["title"][] = (string) $page["title"];
+			$list["id"][] = (integer) $page["pageid"];
+		}
+	} while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
+	return $list;
 }
 
 function wikititle_encode($in) {
@@ -195,30 +220,6 @@ function getRawWikiText($page, $wait = FALSE, $verbose = FALSE, $use_daniel = TR
 function is_valid_user($user) {
   return ($user && getArticleId("User:$user"));
 }
-
-function whatTranscludes2($template, $namespace = 99) {
-	$vars = Array (
-      "action" => "query",
-      "list" => "embeddedin",
-      "eilimit" => "5000",
-      "format" => "xml",
-      "eititle" => "Template:" . $template,
-      "einamespace" => ($namespace==99)?"":$namespace,
-  );
-	do {
-		set_time_limit(20);
-    $res = load_xml_via_bot($vars);
-    print_r($res->query);
-		if (!$res) {
-      echo 'Error reading API from ' . htmlspecialchars($url) . "\n";
-    } else foreach($res->query->embeddedin->ei as $page) {
-			$list["title"][] = (string) $page["title"];
-			$list["id"][] = (integer) $page["pageid"];
-		}
-	} while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
-	return $list;
-}
-
 #### Functions below were written offline so need testing & debgging
 // TODO: either test these and incorporate them, or take them out.
 
