@@ -82,13 +82,14 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
   do {
 		set_time_limit(10);
     $res = load_xml_via_bot($vars);
-    if ($res) {
+    if ($res && !$res->error) {
       foreach ($res->query->allpages->p as $page) {
         $page_titles[] = (string) $page["title"];
         $page_ids[] = (integer) $page["pageid"];
       }
     } else {
-      echo 'Error reading API from ' . htmlspecialchars($url);
+      echo 'Error reading API with vars '; var_dump($vars);
+      if ($res->error) echo $res->error;
     }
 	} while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
   set_time_limit(45);
@@ -111,7 +112,7 @@ function get_namespace($page) {
       "prop" => "info",
       "titles" => $page,
       ));
-  return $xml->query->pages->page["ns"];
+  return (int) $xml->query->pages->page["ns"];
 }
 
 function is_redirect($page) {
@@ -164,7 +165,7 @@ function parse_wikitext($text, $title = "API") {
 
 function namespace_id($name) {
   $lc_name = strtolower($name);
-  return isset(NAMESPACE_ID[$lc_name]) ?  NAMESPACE_ID[strtolower($name)] : NULL;
+  return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : NULL;
 }
 
 function namespace_name($id) {

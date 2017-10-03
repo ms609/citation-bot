@@ -31,11 +31,12 @@ class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testWhatTranscludes() {
     $this->assertTrue(count(what_transcludes('Cite journal')) > 10);
   }
-  
+    
   public function testGetPrefixIndex() {
-    $namespace_name = get_namespace('Template:Cite journal');
-    $results = get_prefix_index('Cite ', $namespace=);
-    $this->assertTrue(is_int(1 * $results[0]));
+    $namespace = get_namespace('Template:Cite journal');
+    $this->assertEquals(namespace_id('Template'), $namespace);
+    $results = get_prefix_index('Cite j', $namespace); // too many results if we just use 'Cite'
+    $this->assertTrue(array_search('Template:Cite journal', $results) !== FALSE);
   }
   
   public function testRedirects() {
