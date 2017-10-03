@@ -124,7 +124,7 @@ function is_redirect($page) {
   $xml = load_xml_via_bot($url);
 	if ($xml->query->pages->page["pageid"]) {
     // Page exists
-    return array ((($xml->query->pages->page["redirect"])?1:0),
+    return array ((($xml->query->pages->page["redirect"]) ? 1 : 0),
                     $xml->query->pages->page["pageid"]);
     } else {
       return array (-1, NULL);
@@ -139,7 +139,6 @@ function redirect_target($page) {
       "titles" => $page,
       );
   $xml = load_xml_via_bot($url);
-  print_r($xml->query);
   return $xml->pages->page["title"];
 }
 
@@ -171,16 +170,16 @@ function namespace_name($id) {
   return isset(NAMESPACES[$id]) ? NAMESPACES[$id] : NULL;
 }
 
+// TODO mysql login is failing.
 function article_id($page, $namespace = 0) {
-  if (substr(strtolower($page), 0, 9) == 'template:'){
-    $page = substr($page, 9);
-    $namespace = 10;
-  } else if (strpos($page, ':')) {
-    // I'm too lazy to deduce the correct namespace prefix.
-    return article_id($page);
+  if (stripos($page, ':')) {
+    $bits = explode(':', $page);
+    if (isset($bits[2])) return NULL; # Too many colons; improperly formatted page name?
+    $namespace = namespace_id($bits[0]);
+    if (is_null($namespace)) return NULL; # unrecognized namespace
+    $page = $bits[1];
   }
   $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
-  #$enwiki_db = udbconnect('enwiki_p', 'sql-s1');
   $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
   $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
           . "' && page_title='$page'") or die (mysql_error());
