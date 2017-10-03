@@ -163,7 +163,8 @@ function parse_wikitext($text, $title = "API") {
 }
 
 function namespace_id($name) {
-  return isset(NAMESPACE_ID[strtolower($name)]) ?  NAMESPACE_ID[strtolower($name)] : NULL;
+  $lc_name = strtolower($name);
+  return isset(NAMESPACE_ID[$lc_name]) ?  NAMESPACE_ID[strtolower($name)] : NULL;
 }
 
 function namespace_name($id) {
