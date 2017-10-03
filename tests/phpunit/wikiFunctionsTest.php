@@ -32,5 +32,4 @@ class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertTrue(count(what_transcludes('Cite journal')) > 10);
   }
  
-  
 }

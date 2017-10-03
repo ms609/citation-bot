@@ -31,7 +31,6 @@ function what_transcludes($template, $namespace=99){
 	return $titles["title"];
 }
 
-
 function what_transcludes_2($template, $namespace = 99) {
 	$vars = Array (
       "action" => "query",
@@ -60,11 +59,7 @@ function wikititle_encode($in) {
   return str_replace(DOT_DECODE, DOT_ENCODE, $in);
 }
 
-function anchorencode($in) {
-  return wikititle_encode(preg_replace('~<[^>]*>~', '', $in));
-}
-
-function getLastRev($page){
+function get_last_revision($page){
   $xml = load_xml_via_bot(Array(
       "action" => "query",
       "prop" => "revisions",
