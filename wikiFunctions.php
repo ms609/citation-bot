@@ -169,7 +169,7 @@ function namespace_id($name) {
 }
 
 function namespace_name($id) {
-  return isset(NAMESPACES[$id]) ? NAMESPACES[$id] : NULL;
+  return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
 }
 
 // TODO mysql login is failing.
