@@ -474,6 +474,12 @@ class Template extends Item {
           return $this->add($param_name, $value);
         } 
       return FALSE;
+      case 'isbn';
+        if ($this->blank($param_name)) { 
+          $value = $this->isbn10Toisbn13($value);
+          return $this->add($param_name, $value);
+        }
+      return FALSE;
       default:
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
@@ -666,7 +672,7 @@ class Template extends Item {
       if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
         // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
         echo "\n - Checking for ISBN";
-        if ($this->blank('isbn') && $title = $this->get("title")) $this->set("isbn", $this->isbn10Toisbn13(findISBN( $title, $this->first_author())));
+        if ($this->blank('isbn') && $title = $this->get("title")) $this->add_if_new("isbn", $this->(findISBN( $title, $this->first_author()));
         else echo "\n  Already has an ISBN. ";
       }
     }
@@ -944,7 +950,7 @@ class Template extends Item {
             }
           }
         }
-        $this->add_if_new('isbn', $this->isbn10Toisbn13($crossRef->isbn));
+        $this->add_if_new('isbn', $crossRef->isbn);
         $this->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
         if ($crossRef->volume > 0) $this->add_if_new('volume', $crossRef->volume);
         if ((integer) $crossRef->issue > 1) {
@@ -1174,7 +1180,7 @@ class Template extends Item {
         $isbn = $match[1];
       }
     }
-    $this->add_if_new("isbn", $this->isbn10Toisbn13($isbn));
+    $this->add_if_new("isbn", $isbn);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     $i = NULL;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
@@ -1202,8 +1208,8 @@ class Template extends Item {
       if ($title && !$over_isbn_limit) {
         $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
         print "\n\nhttp://isbndb.com/api/books.xml?access_key=$ISBN_KEY&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
-        if ($xml->BookList["total_results"] == 1) return $this->set('isbn', $this->isbn10Toisbn13((string) $xml->BookList->BookData["isbn"]));
-        if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', $this->isbn10Toisbn13((string) $xml->BookList->BookData["isbn"]));
+        if ($xml->BookList["total_results"] == 1) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
+        if ($auth && $xml->BookList["total_results"] > 0) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
         else return FALSE;
       }
     }
@@ -1409,7 +1415,7 @@ class Template extends Item {
               $endnote_parameter = FALSE;
           }
           if ($endnote_parameter && $this->blank($endnote_parameter)) {
-            $this->add($endnote_parameter, trim(substr($endnote_line, 2)));
+            $this->add_if_new($endnote_parameter, trim(substr($endnote_line, 2)));
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
         }
@@ -1600,7 +1606,7 @@ class Template extends Item {
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $this->add('isbn', $this->isbn10Toisbn13($match[1]));
+        $this->add_if_new('isbn', $match[1]);
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
