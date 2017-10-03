@@ -240,11 +240,11 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertNotNull($expanded->get('doi-broken-date'));
       $this->assertEquals(1, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
       
-      $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
+      $text = '{{cite book | id={{arxiv|id=1234.5678}}';
       $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
       
-      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
+      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}}';
       $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
   }
@@ -440,6 +440,12 @@ ER -  }}';
        $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('594900', $expanded->get('jstor'));
+   }
+    
+   public function testInternalCaps() { // checks for title formating in tidy() not breaking things
+       $text = '{{cite journal|journal=ZooTimeKids}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
    }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
