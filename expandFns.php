@@ -127,7 +127,7 @@ function extract_doi($text) {
   return NULL;
 }
 
-function format_title_text($title) {
+function format_title_text($title, $isArticle = TRUE) {
   $replacement = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     $placeholder = [];
@@ -151,7 +151,7 @@ function format_title_text($title) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $title = title_capitalization($title);
+  $title = title_capitalization($title,TRUE,$isArticle); // Do not look for italics in Journal titles
   
   $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
   $wikiTags = array("''","''",'','',"");
