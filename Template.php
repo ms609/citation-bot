@@ -1937,6 +1937,9 @@ class Template extends Item {
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
             break;
+          case 'isbn':
+            $p->val = $this->isbn10Toisbn13($p->val);
+            break;
         }
       }
     }
