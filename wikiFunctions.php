@@ -69,7 +69,7 @@ function get_last_revision($page){
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
-function getPrefixIndex($prefix, $namespace = 0, $start = "") {
+function get_prefix_index($prefix, $namespace = 0, $start = "") {
   global $bot;
   $vars["apfrom"]  = $start;
   $vars = Array ("action" => "query",
@@ -95,7 +95,7 @@ function getPrefixIndex($prefix, $namespace = 0, $start = "") {
   return $page_titles;
 }
 
-function getArticleId($page) {
+function get_article_id($page) {
   $xml = load_xml_via_bot(Array(
       "action" => "query",
       "format" => "xml",
@@ -105,7 +105,7 @@ function getArticleId($page) {
   return $xml->query->pages->page["pageid"];
 }
 
-function getNamespace($page) {
+function get_namespace($page) {
 	$xml = load_xml_via_bot(Array("action" => "query",
       "format" => "xml",
       "prop" => "info",
@@ -114,7 +114,7 @@ function getNamespace($page) {
   return $xml->query->pages->page["ns"];
 }
 
-function isRedirect($page) {
+function is_redirect($page) {
   $url = Array(
       "action" => "query",
       "format" => "xml",
@@ -163,13 +163,21 @@ function parse_wikitext($text, $title = "API") {
   return $a->parse->text->{"*"};
 }
 
-function articleID($page, $namespace = 0) {
+function namespace_id($name) {
+  return isset(NAMESPACE_ID[strtolower($name)]) ?  NAMESPACE_ID[strtolower($name)] : NULL;
+}
+
+function namespace_name($id) {
+  return isset(NAMESPACES[$id]) ? NAMESPACES[$id] : NULL;
+}
+
+function article_id($page, $namespace = 0) {
   if (substr(strtolower($page), 0, 9) == 'template:'){
     $page = substr($page, 9);
     $namespace = 10;
   } else if (strpos($page, ':')) {
     // I'm too lazy to deduce the correct namespace prefix.
-    return getArticleId($page);
+    return article_id($page);
   }
   $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
   #$enwiki_db = udbconnect('enwiki_p', 'sql-s1');
@@ -213,7 +221,7 @@ function getRawWikiText($page, $wait = FALSE, $verbose = FALSE, $use_daniel = TR
 }
 
 function is_valid_user($user) {
-  return ($user && getArticleId("User:$user"));
+  return ($user && article_id("User:$user"));
 }
 #### Functions below were written offline so need testing & debgging
 // TODO: either test these and incorporate them, or take them out.
