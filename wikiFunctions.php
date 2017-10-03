@@ -1,6 +1,6 @@
 <?php
 
-function categoryMembers($cat){
+function category_members($cat){
   $vars = Array(
     "cmtitle" => "Category:$cat", // Don't URLencode.
     "action" => "query",
@@ -9,11 +9,12 @@ function categoryMembers($cat){
     "list" => "categorymembers",
   );
   $qc = "query-continue";
+  $list = NULL;
 
 	do {
 		set_time_limit(40);
     $res = load_xml_via_bot($vars);
-  	if ($res) {
+    if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
           $list[] = (string) $page["title"];
         }
@@ -21,24 +22,44 @@ function categoryMembers($cat){
       echo 'Error reading API from ' . htmlspecialchars($url) . "\n\n";
     }
 	} while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
-  return $list?$list:Array(" ");
+  return $list ? $list : [' '];
 }
 
 // Returns an array; Array ("title1", "title2" ... );
-function whatTranscludes($template, $namespace=99){
-	$titles = whatTranscludes2($template, $namespace);
+function what_transcludes($template, $namespace=99){
+	$titles = what_transcludes_2($template, $namespace);
 	return $titles["title"];
+}
+
+function what_transcludes_2($template, $namespace = 99) {
+	$vars = Array (
+      "action" => "query",
+      "list" => "embeddedin",
+      "eilimit" => "5000",
+      "format" => "xml",
+      "eititle" => "Template:" . $template,
+      "einamespace" => ($namespace==99)?"":$namespace,
+  );
+  $list = ['title' => NULL];
+  
+	do {
+		set_time_limit(20);
+    $res = load_xml_via_bot($vars);
+    if (!$res) {
+      echo 'Error reading API from ' . htmlspecialchars($url) . "\n";
+    } else foreach($res->query->embeddedin->ei as $page) {
+			$list["title"][] = (string) $page["title"];
+			$list["id"][] = (integer) $page["pageid"];
+		}
+	} while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
+	return $list;
 }
 
 function wikititle_encode($in) {
   return str_replace(DOT_DECODE, DOT_ENCODE, $in);
 }
 
-function anchorencode($in) {
-  return wikititle_encode(preg_replace('~<[^>]*>~', '', $in));
-}
-
-function getLastRev($page){
+function get_last_revision($page){
   $xml = load_xml_via_bot(Array(
       "action" => "query",
       "prop" => "revisions",
@@ -48,7 +69,7 @@ function getLastRev($page){
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
-function getPrefixIndex($prefix, $namespace = 0, $start = "") {
+function get_prefix_index($prefix, $namespace = 0, $start = "") {
   global $bot;
   $vars["apfrom"]  = $start;
   $vars = Array ("action" => "query",
@@ -61,20 +82,21 @@ function getPrefixIndex($prefix, $namespace = 0, $start = "") {
   do {
 		set_time_limit(10);
     $res = load_xml_via_bot($vars);
-    if ($res) {
+    if ($res && !$res->error) {
       foreach ($res->query->allpages->p as $page) {
         $page_titles[] = (string) $page["title"];
         $page_ids[] = (integer) $page["pageid"];
       }
     } else {
-      echo 'Error reading API from ' . htmlspecialchars($url);
+      echo 'Error reading API with vars '; var_dump($vars);
+      if ($res->error) echo $res->error;
     }
 	} while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
   set_time_limit(45);
   return $page_titles;
 }
 
-function getArticleId($page) {
+function get_article_id($page) {
   $xml = load_xml_via_bot(Array(
       "action" => "query",
       "format" => "xml",
@@ -84,16 +106,16 @@ function getArticleId($page) {
   return $xml->query->pages->page["pageid"];
 }
 
-function getNamespace($page) {
+function get_namespace($page) {
 	$xml = load_xml_via_bot(Array("action" => "query",
       "format" => "xml",
       "prop" => "info",
       "titles" => $page,
       ));
-  return $xml->query->pages->page["ns"];
+  return (int) $xml->query->pages->page["ns"];
 }
 
-function isRedirect($page) {
+function is_redirect($page) {
   $url = Array(
       "action" => "query",
       "format" => "xml",
@@ -103,7 +125,7 @@ function isRedirect($page) {
   $xml = load_xml_via_bot($url);
 	if ($xml->query->pages->page["pageid"]) {
     // Page exists
-    return array ((($xml->query->pages->page["redirect"])?1:0),
+    return array ((($xml->query->pages->page["redirect"]) ? 1 : 0),
                     $xml->query->pages->page["pageid"]);
     } else {
       return array (-1, NULL);
@@ -118,7 +140,6 @@ function redirect_target($page) {
       "titles" => $page,
       );
   $xml = load_xml_via_bot($url);
-  print_r($xml->query);
   return $xml->pages->page["title"];
 }
 
@@ -142,16 +163,25 @@ function parse_wikitext($text, $title = "API") {
   return $a->parse->text->{"*"};
 }
 
-function articleID($page, $namespace = 0) {
-  if (substr(strtolower($page), 0, 9) == 'template:'){
-    $page = substr($page, 9);
-    $namespace = 10;
-  } else if (strpos($page, ':')) {
-    // I'm too lazy to deduce the correct namespace prefix.
-    return getArticleId($page);
+function namespace_id($name) {
+  $lc_name = strtolower($name);
+  return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : NULL;
+}
+
+function namespace_name($id) {
+  return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
+}
+
+// TODO mysql login is failing.
+function article_id($page, $namespace = 0) {
+  if (stripos($page, ':')) {
+    $bits = explode(':', $page);
+    if (isset($bits[2])) return NULL; # Too many colons; improperly formatted page name?
+    $namespace = namespace_id($bits[0]);
+    if (is_null($namespace)) return NULL; # unrecognized namespace
+    $page = $bits[1];
   }
   $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
-  #$enwiki_db = udbconnect('enwiki_p', 'sql-s1');
   $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
   $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
           . "' && page_title='$page'") or die (mysql_error());
@@ -160,7 +190,7 @@ function articleID($page, $namespace = 0) {
   return $results['page_id'];
 }
 
-function getRawWikiText($page, $wait = FALSE, $verbose = FALSE, $use_daniel = TRUE) {
+function get_raw_wikitext($page, $wait = FALSE, $verbose = FALSE, $use_daniel = TRUE) {
   $encode_page = urlencode($page);
   echo $verbose ? "\n scraping... " : "";
     // Get the text by scraping edit page
@@ -192,149 +222,13 @@ function getRawWikiText($page, $wait = FALSE, $verbose = FALSE, $use_daniel = TR
 }
 
 function is_valid_user($user) {
-  return ($user && getArticleId("User:$user"));
+  return ($user && article_id("User:$user"));
 }
 
-function whatTranscludes2($template, $namespace = 99) {
-	$vars = Array (
-      "action" => "query",
-      "list" => "embeddedin",
-      "eilimit" => "5000",
-      "format" => "xml",
-      "eititle" => "Template:" . $template,
-      "einamespace" => ($namespace==99)?"":$namespace,
-  );
-	do {
-		set_time_limit(20);
-    $res = load_xml_via_bot($vars);
-    print_r($res->query);
-		if (!$res) {
-      echo 'Error reading API from ' . htmlspecialchars($url) . "\n";
-    } else foreach($res->query->embeddedin->ei as $page) {
-			$list["title"][] = (string) $page["title"];
-			$list["id"][] = (integer) $page["pageid"];
-		}
-	} while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
-	return $list;
-}
-
-#### Functions below were written offline so need testing & debgging
-// TODO: either test these and incorporate them, or take them out.
-
-// Extract template
-// Pass the code to find the template in, and the name of the template (with spaces, not underscores, if appropriate)
-function extract_template($code, $target) {
-  $placeholder = "!-TEMPLATE PLACEHOLDER TP%s-!";
-  $placeholder_regexp = "~$placeholder~";
-  while (preg_match(TEMPLATE_REGEXP, $code, $match)) {
-    ++$i;
-    $template[$i] = $match[0];
-    $template_name = str_replace("_", " ", trim($match[1]));
-
-    if (strtolower($template_name) == strtolower($target)) {
-      $return = $template[$i];
-      while (preg_match(sprintf($placeholder_regexp, "(\d+)"), $return, $match)) {
-        $template_n = $match[1];
-        $return = preg_replace(sprintf($placeholder_regexp, $template_n), $template[$template_n], $return);
-      }
-      return $return;
-    }
-
-    $code = str_replace($template[$i], sprintf($placeholder, $i), $code);
-  }
-  return FALSE;
-}
-
-// Extracts parameters in a Wikipedia template.
-// Returns the parameters as an array (
-// "parameter_name" => Array (value, equals sign, pipe)
-// )
-// Test cases should include comments with multiple pipes spanning multiple lines and including wikilinks
-
-function extract_parameters($template) {
-  // First, replace pipes that don't mark parameter boundaries with !-PIPE PLACEHOLDER-!
-  $pipe_placeholder = "!-PIPE PLACEHOLDER pp-!";
-  // This will include pipes in [[Wikilinks|]]:
-  $wikilink_regexp = "~(\[\[[^\]]+)\|([^\]]+\]\])~";
-  //  and in <!-- comments -->
-  $comment_regexp = "~(<!--.*?)\|(.*?-->)~";
-
-  // Remove whitespace and braces from template
-  $template = trim($template);
-  $template = substr($template, 2, -2);
-  if (preg_match ("~\s*$~", $template, $space_before_the_brace)) {
-    $template = preg_replace("~\s*$~", "", $template);
-    $parameters[BRACESPACE] = $space_before_the_brace;
-  }
-  // Replace pipes with placeholders in comments and links
-  $template = preg_replace($wikilink_regexp, "$1$pipe_placeholder$2", $template);
-  while (preg_match($comment_regexp, $template)) {
-    $template = preg_replace($comment_regexp, "$1$pipe_placeholder$2", $template);
-  }
-
-  // Replace templates with placeholders
-  $template_placeholder = "!-TEMPLATE PLACEHOLDER TP%s-!";
-  $template_placeholder_regexp = "~$template_placeholder~";
-
-  while (preg_match(TEMPLATE_REGEXP, $template, $match)) {
-    $subtemplate[++$i] = $match[0];
-    $template = str_replace($subtemplate[$i], sprintf($template_placeholder, $i), $template);
-  }
-  $splits = preg_split("~(\s*\|\s*)~", $template, -1, PREG_SPLIT_DELIM_CAPTURE);
-  // The first line doesn't contain a parameter; it's the template name
-  $i = 0;
-  foreach ($splits as $split) {
-    ++$i;
-    if ($i % 2) {
-      $lines[$i / 2] = $split;
-    } else {
-      $pipe[($i+1) / 2] = $split;
-    }
-  }
-  unset($lines[0]);
-  $unnamed_parameter_count = 0;
-
-  foreach ($lines as $i => $line) {
-    preg_match("~^([^=]*)\b(\s*=\s*)?([\s\S]*)$~", $line, $match);
-    if ($match[2]) {
-      // then an equals sign is present; i.e. we have a named parameter
-      $value = $match[3];
-      $parameter_name = $match[1];
-    } else {
-      $value = $match[1] . $match[3];
-      $parameter_name = "unnamed_parameter_" . ++$unnamed_parameter_count;
-    }
-    // Restore templates that were replaced with placeholders
-    while (preg_match(sprintf($template_placeholder_regexp, "(\d+)"), $value, $sub_match)) {
-      $template_n = $sub_match[1];
-      $value = preg_replace(sprintf($template_placeholder_regexp, $template_n), $subtemplate[$template_n], $value);
-    }
-    $parameters[$parameter_name] = Array(str_replace($pipe_placeholder, "|", $value), $pipe[$i], $match[2]);
-  }
-  return $parameters;
-}
-
-// Transforms an array in "$p format" back into a template
-function generate_template ($name, $parameters) {
-  $output = '{{' . $name;
-  $space_before_the_brace = $parameters[BRACESPACE][0];
-  unset($parameters[BRACESPACE]);
-  foreach ($parameters as $key => $value) {
-    // Array (value, equals, pipe[, weight] )
-    $output .= $value[1] . (substr($key, 0, 18) == "unnamed_parameter_" || $key=="0"?"":$key) . $value[2] . $value[0];
-  }
-  return $output . $space_before_the_brace . '}}';
-}
-
-function wikiLink($page, $style = "#036;", $target = NULL) {
+function wiki_link($page, $style = "#036;", $target = NULL) {
   if (!$target) $target = $page;
   $css = $style?" style='color:$style !important'":"";
   return "<a href='" . WIKI_ROOT . "title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
-}
-
-function geo_range_ok ($template) {
-  $text = parse_wikitext ($template); // TODO check that this function returns the expected output
-  return strpos($text, "Expression error:") ? FALSE : TRUE;
 }
 
 function load_xml_via_bot($vars) {
@@ -345,7 +239,7 @@ function load_xml_via_bot($vars) {
 }
 
 function touch_page($page) {
-  $text = getRawWikiText($page);
+  $text = get_raw_wikitext($page);
   if ($text) {
     write ($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
     return TRUE;
