@@ -368,11 +368,11 @@ class Template extends Item {
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if (strtolower(sanitize_string($value)) == "zookeys" ) $this->blank("volume") ; // No volumes, just issues.
           if (strcasecmp( (string) $value, "unknown") == 0 ) return FALSE;
-          return $this->add($param_name, format_title_text(title_case($value)),FALSE);
+          return $this->add($param_name, format_title_text(title_case($value),FALSE));
         }
         return FALSE;
       case 'series': 
-        return $this->add($param_name, format_title_text($value),FALSE);
+        return $this->add($param_name, format_title_text($value,FALSE));
         return FALSE;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
@@ -806,7 +806,7 @@ class Template extends Item {
                   str_replace($match[-0], "", $journal_data));
         }
         if (strcasecmp((string) $journal_data, "unknown") !=0 ) {
-          $this->add_if_new("journal", format_title_text($journal_data),FALSE);
+          $this->add_if_new("journal", format_title_text($journal_data,FALSE));
         }
       } else {
         $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
