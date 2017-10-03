@@ -151,7 +151,7 @@ function format_title_text($title, $isArticle = TRUE) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $title = title_capitalization($title,$isArticle,$isArticle); // Do not look for italics in Journal titles
+  $title = title_capitalization($title,TRUE,$isArticle); // Do not look for italics in Journal titles
   
   $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
   $wikiTags = array("''","''",'','',"");
