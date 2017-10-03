@@ -2354,10 +2354,14 @@ class Template extends Item {
   }
   
   public function isbn10Toisbn13 ($isbn10) {
-       $isbn10 = str_replace(array('-', '–',' '), '-', $isbn10); // standardize dahses
-       $isbn13 = str_replace(array('-', '–',' '), '', $isbn10);  // Remove spaces and dashes
-       if (strlen($isbn13) !== 10) return $isbn10;  // When in doubt, return what we started with.  Might be an ISBN 13 already, or rubbish
-       $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit
+       $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
+       $isbn10 = str_replace('–', '-', $isbn10); // standardize dahses
+       if (preg_match("/[^0123456789Xx-]/",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
+       if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-"  ) return $isbn10;  // Ends or starts with a dash
+       $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
+       if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
+       $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit - do not need and might be X
+       if (preg_match("/[^0123456789]/",$isbn13) === 1)  return $isbn10;  // Not just numbers
        $sum = 0;
        for ($count=0; $count<12; $count++ ) {
           $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
