@@ -442,7 +442,7 @@ ER -  }}';
        $this->assertEquals('594900', $expanded->get('jstor'));
    }
     
-   public function testInternalCaps() { // checks for tidy() not breaking things
+   public function testInternalCaps() { // checks for title formating in tidy() not breaking things
        $text = '{{cite journal|journal=ZooTimeKids}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
