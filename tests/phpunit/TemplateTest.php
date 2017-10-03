@@ -244,7 +244,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
       
-      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}}}}';
+      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
       $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
   }
