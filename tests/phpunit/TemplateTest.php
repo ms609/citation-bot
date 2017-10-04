@@ -372,13 +372,23 @@ ER -  }}';
        $expanded = $this->process_citation($book);
        $this->assertEquals('Chaucer, Geoffrey', $expanded->first_author());
        $this->assertEquals('The Works of Geoffrey Chaucer', $expanded->get('title'));
-       $this->assertEquals('1957', $expanded->get('date'));
+       if (is_null($expanded->get('date'))) {
+        $this->assertEquals('1957', $expanded->get('year'));
+       } else {
+        $this->assertEquals('1957', $expanded->get('date'));
+        $this->assertNull($expanded->get('year'));
+       }
        $this->assertEquals('Houghton', $expanded->get('publisher'));
        $this->assertEquals('Boston', $expanded->get('location'));
        
        $expanded = $this->process_citation($article);
        $this->assertEquals('Clark, Herbert H', $expanded->first_author());
-       $this->assertEquals('1982', $expanded->get('date'));
+       if (is_null($expanded->get('date'))) {
+        $this->assertEquals('1982', $expanded->get('year'));
+       } else {
+        $this->assertEquals('1982', $expanded->get('date'));
+        $this->assertNull($expanded->get('year'));
+       }
        $this->assertEquals('Hearers and Speech Acts', $expanded->get('title'));
        $this->assertEquals('58', $expanded->get('volume'));
        $this->assertEquals('332–373', $expanded->get('pages'));
@@ -387,7 +397,12 @@ ER -  }}';
        $expanded = $this->process_citation($thesis);
        $this->assertEquals('Cantucci, Elena', $expanded->first_author());
        $this->assertEquals('Permian strata in South-East Asia', $expanded->get('title'));
-       $this->assertEquals('1990', $expanded->get('date'));
+       if (is_null($expanded->get('date'))) {
+        $this->assertEquals('1990', $expanded->get('year'));
+       } else {
+        $this->assertEquals('1990', $expanded->get('date'));
+        $this->assertNull($expanded->get('year'));
+       }
        $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
    }
