@@ -2355,7 +2355,7 @@ class Template extends Item {
   
   public function isbn10Toisbn13 ($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
-       $isbn10 = str_replace('–', '-', $isbn10); // standardize dahses
+       $isbn10 = str_replace(array('—','―','–','−','‒'),'-', $isbn10); // standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
        if (preg_match("/[^0123456789Xx-]/",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
        if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-"  ) return $isbn10;  // Ends or starts with a dash
        $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
