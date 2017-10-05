@@ -2356,8 +2356,9 @@ class Template extends Item {
   public function isbn10Toisbn13 ($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
        $isbn10 = str_replace(array('—','―','–','−','‒'),'-', $isbn10); // standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
-       if (preg_match("/[^0123456789Xx-]/",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
-       if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-"  ) return $isbn10;  // Ends or starts with a dash
+       if (preg_match("/[^0123456789Xx- ]/",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
+       if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-") return $isbn10;  // Ends or starts with a dash
+       $isbn10 = str_replace(' ', '-', preg_replace('!\s+!', ' ', $isbn10));  // Covert spaces to dashes since we are pretty sure things are good and a few people format with spaces, not dashes
        $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
        if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
        $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit - do not need and might be X
