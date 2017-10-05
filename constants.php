@@ -52,7 +52,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Molecular And Cellular Biology ', ' Ocean Science Journal : Osj ', ' Palaios ', ' Plos One ', ' Pnas ',
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' The Embo Journal ', ' Time Out London ',
 ' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ',
-' Zookeys ', ' Journal of the Iest ', ' Tellus a ', ' Zeitschrift Für Geologische Wissenschaften ', ' Journal of Materials Chemistry a ',
+' Zookeys ', ' Journal Of The Iest ', ' Tellus A ', ' Zeitschrift Für Geologische Wissenschaften ', ' Journal Of Materials Chemistry A ',
 ' Bioessays ', ' Plos Biology ', ' Rna ',
 ' Nasa Tech Briefs ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', ' Jama Psychiatry ');
  
