@@ -40,7 +40,8 @@ const JOURNAL_ACRONYMS = array(
 ' HOAJ biology ', ' ISRN Genetics ', ' iConference ', ' JABS : Journal of Applied Biological Sciences ',
 ' Molecular and Cellular Biology ', ' Ocean Science Journal : OSJ ', ' PALAIOS ', ' PLOS ONE ', ' PNAS ',
 ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', ' The EMBO Journal ', ' Time Out London ',
-' z/Journal ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ');
+' z/Journal ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ',
+' ZooKeys ');
 const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Acm Sigplan Notices ', ' Asme Aes ', ' Asme Mtd ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
 ' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', ' Embo J ', ' Embo J. ', ' Embo Journal ', 
@@ -48,6 +49,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Hoaj Biology ', ' Isrn Genetics ', ' Iconference ', ' Jabs : Journal Of Applied Biological Sciences ',
 ' Molecular And Cellular Biology ', ' Ocean Science Journal : Osj ', ' Palaios ', ' Plos One ', ' Pnas ',
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' The Embo Journal ', ' Time Out London ',
-' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ');
+' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ',
+' Zookeys ');
  
  ?>
