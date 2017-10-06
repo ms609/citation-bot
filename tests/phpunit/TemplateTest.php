@@ -434,9 +434,21 @@ ER -  }}';
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics',$expanded->get('title'));
-   }
-
-    public function testJstorSICI() {
+  }
+  
+  public function testSpeciesCaps() {
+    $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals(str_replace(' ', '', "Crypticmammalianspecies:Anewspeciesofwhiskeredbat(''Myotisalcathoe''n.sp.)inEurope"), 
+                        str_replace(' ', '', $expanded->get('title')));
+    $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full}}';
+    // Should be able to drop /full from DOI in URL
+    $expanded = $this->process_citation($text);
+    $this->assertEquals(str_replace(' ', '', "''Cryptosporidiumhominis''n.sp.(Apicomplexa:Cryptosporidiidae)fromHomosapiens"),
+                        str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
+  }   
+  
+  public function testJstorSICI() {
        $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('594900', $expanded->get('jstor'));
