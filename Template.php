@@ -474,6 +474,12 @@ class Template extends Item {
           return $this->add($param_name, $value);
         } 
       return FALSE;
+      case 'isbn';
+        if ($this->blank($param_name)) { 
+          $value = $this->isbn10Toisbn13($value);
+          return $this->add($param_name, $value);
+        }
+      return FALSE;
       default:
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
@@ -666,7 +672,7 @@ class Template extends Item {
       if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
         // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
         echo "\n - Checking for ISBN";
-        if ($this->blank('isbn') && $title = $this->get("title")) $this->set("isbn", findISBN( $title, $this->first_author()));
+        if ($this->blank('isbn') && $title = $this->get("title")) $this->add_if_new("isbn", findISBN( $title, $this->first_author()));
         else echo "\n  Already has an ISBN. ";
       }
     }
@@ -1202,8 +1208,8 @@ class Template extends Item {
       if ($title && !$over_isbn_limit) {
         $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
         print "\n\nhttp://isbndb.com/api/books.xml?access_key=$ISBN_KEY&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
-        if ($xml->BookList["total_results"] == 1) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
-        if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
+        if ($xml->BookList["total_results"] == 1) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
+        if ($auth && $xml->BookList["total_results"] > 0) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
         else return FALSE;
       }
     }
@@ -1414,7 +1420,7 @@ class Template extends Item {
               $endnote_parameter = FALSE;
           }
           if ($endnote_parameter && $this->blank($endnote_parameter)) {
-            $this->add($endnote_parameter, trim(substr($endnote_line, 2)));
+            $this->add_if_new($endnote_parameter, trim(substr($endnote_line, 2)));
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
         }
@@ -1605,7 +1611,7 @@ class Template extends Item {
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $this->add('isbn', $match[1]);
+        $this->add_if_new('isbn', $match[1]);
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -1936,6 +1942,9 @@ class Template extends Item {
                     " parameter" . tag());
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
+            break;
+          case 'isbn':
+            $p->val = $this->isbn10Toisbn13($p->val);
             break;
         }
       }
@@ -2348,5 +2357,23 @@ class Template extends Item {
 
   public function is_modified () {
     return (bool) count($this->modifications('modifications'));
+  }
+  
+  public function isbn10Toisbn13 ($isbn10) {
+       $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
+       $isbn10 = str_replace(array('—','―','–','−','‒'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
+       if (preg_match("~[^0-9Xx\-]~",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
+       if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-") return $isbn10;  // Ends or starts with a dash
+       $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
+       if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
+       $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit - do not need and might be X
+       if (preg_match("~[^0123456789]~",$isbn13) === 1)  return $isbn10;  // Not just numbers
+       $sum = 0;
+       for ($count=0; $count<12; $count++ ) {
+          $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
+       }
+       $sum = ((10-$sum%10)%10) ;
+       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum ; // Assume existing dashes (if any) are right
+       return $isbn13 ;
   }
 }
