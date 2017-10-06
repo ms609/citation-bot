@@ -127,7 +127,7 @@ function extract_doi($text) {
   return NULL;
 }
 
-function format_title_text($title, $isArticle = TRUE) {
+function format_title_text($title, $isArticle = TRUE, $isNew = TRUE) {
   $replacement = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     $placeholder = [];
@@ -157,11 +157,9 @@ function format_title_text($title, $isArticle = TRUE) {
   $wikiTags = array("''","''",'','',"");
   $htmlBraces  = array("&lt;", "&gt;");
   $angleBraces = array("<", ">");
-  $title = sanitize_string(// order of functions here IS important!
-             str_ireplace($originalTags, $wikiTags, 
-               str_ireplace($htmlBraces, $angleBraces, $title)
-             )
-           );
+  $title = str_ireplace($htmlBraces, $angleBraces, $title);
+  $title = str_ireplace($originalTags, $wikiTags, $title);
+  if ($isNew) $title = sanitize_string($title);  // Only remove [[  and ]] in NEW data.  Might be a wikilink
   
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title);
