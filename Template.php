@@ -1,4 +1,4 @@
-c<?php
+<?php
 /*
  * Template extends Item. Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
