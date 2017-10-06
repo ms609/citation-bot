@@ -440,6 +440,14 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
    }
+   public function testWikiText() { // checks for formating in tidy() not breaking things
+       $text = '{{cite journal|journal=[[Zootimeboys]] and Girls}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('[[Zootimeboys]] and Girls', $expanded->get('journal'));
+       $text = '{{cite journal|title=[[Zootimeboys]] and Girls}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('[[Zootimeboys]] and Girls', $expanded->get('title'));
+   }
 
    public function getDateAndYear($input){
        if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
