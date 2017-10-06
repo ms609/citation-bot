@@ -448,6 +448,13 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('[[Zootimeboys]] and Girls', $expanded->get('title'));
    }
+   public function testZooKeys() {
+       $text = '{{Cite journal|doi=10.3897/zookeys.445.777}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('ZooKeys', $expanded->get('journal'));
+       $this->assertEquals('445', $expanded->get('issue'));
+       $this->assertNull($expanded->get('volume'));
+   }
 
    public function getDateAndYear($input){
        if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
