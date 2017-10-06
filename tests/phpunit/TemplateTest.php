@@ -455,6 +455,11 @@ ER -  }}';
        $this->assertEquals('445', $expanded->get('issue'));
        $this->assertNull($expanded->get('volume'));
    }
+   public function testTitleItalics(){
+       $text = '{{cite journal|doi=10.1111/j.1502-3931.1989.tb01679.x}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('The macro- and microfossil record of the Cambrian priapulid \'\'Ottoia\'\'', $expanded->get('title'));
+   }
 
    public function getDateAndYear($input){
        if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
