@@ -227,6 +227,40 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('1–5',$expanded->get('pages'));
   }
+       
+  public function testId2Param() {
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} 
+        {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
+      $this->assertEquals('978-1234-9583-068', $expanded->get('isbn'));
+      $this->assertEquals('1234.5678', $expanded->get('arxiv'));
+      $this->assertEquals('10.1234/bashifbjaksn.ch2', $expanded->get('doi'));
+      $this->assertEquals('1234', $expanded->get('oclc'));
+      $this->assertEquals('12345', $expanded->get('ol'));
+      $this->assertNotNull($expanded->get('doi-broken-date'));
+      $this->assertEquals(1, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
+      
+      $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
+      $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
+      $this->assertEquals('1234.5678', $expanded->get('arxiv'));
+      
+      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
+      $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
+      $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
+  }
+  
+  
+  public function testOrigYearHandling() {
+      $text = '{{cite book |year=2009 | origyear = 2000 }}';
+      $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
+      $this->assertEquals('2000', $expanded->get('origyear'));
+      $this->assertEquals('2009', $expanded->get('year'));
+      
+      $text = '{{cite book | origyear = 2000 }}';
+      $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
+      $this->assertEquals('2000', $expanded->get('year'));
+      $this->assertNull($expanded->get('origyear'));
+  }
   
   public function testGoogleBooksExpansion() {
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
@@ -389,13 +423,59 @@ ER -  }}';
       $this->assertEquals('Charlie C', $expanded->get('first3'));
       $this->assertEquals('etal', $expanded->get('displayauthors'));
   }
-   
-   public function testLinefeeds(){
+       
+  public function testWebsite2Url() {
+      $text = '{{cite book |website=ttp://example.org }}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('http://example.org', $expanded->get('url'));
+      
+      $text = '{{cite book |website=example.org }}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('http://example.org', $expanded->get('url'));
+      
+      $text = '{{cite book |website=ttp://jstor.org/pdf/123456 | jstor=123456 }}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      
+      $text = '{{cite book |website=ABC}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('ABC', $expanded->get('website'));
+      
+      $text = '{{cite book |website=ABC XYZ}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('ABC XYZ', $expanded->get('website'));
+      
+      $text = '{{cite book |website=http://ABC/ I have Spaces in Me}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('http://ABC/ I have Spaces in Me', $expanded->get('website'));
+  }
+  
+  public function testLinefeeds(){
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in   contemporary local quantum physics',$expanded->get('title'));
+       $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics',$expanded->get('title'));
+  }
+  
+  public function testSpeciesCaps() {
+    $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals(str_replace(' ', '', "Crypticmammalianspecies:Anewspeciesofwhiskeredbat(''Myotisalcathoe''n.sp.)inEurope"), 
+                        str_replace(' ', '', $expanded->get('title')));
+    $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full}}';
+    // Should be able to drop /full from DOI in URL
+    $expanded = $this->process_citation($text);
+    $this->assertEquals(str_replace(' ', '', "''Cryptosporidiumhominis''n.sp.(Apicomplexa:Cryptosporidiidae)fromHomosapiens"),
+                        str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
+  }   
+  
+  public function testJstorSICI() {
+       $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('594900', $expanded->get('jstor'));
    }
-
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]

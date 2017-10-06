@@ -1,7 +1,8 @@
 <?php 
-require('constants/math.php');
-require('constants/mistakes.php');
-require('constants/parameters.php');
+$constant_files = glob('constants/*.php');
+foreach ($constant_files as $file) {
+    require($file);   
+}
 
 define('HOME', dirname(__FILE__) . '/');
 

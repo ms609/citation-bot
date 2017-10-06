@@ -11,6 +11,10 @@ if (!defined("HTML_OUTPUT")) {
   define("HTML_OUTPUT", -1);
 }  
 
+function html_echo($text, $alternate_text='') {
+  echo (HTML_OUTPUT >= 0) ? $text : $alternate_text;
+}
+
 function quiet_echo($text, $alternate_text = '') {
   if (defined('VERBOSE') || HTML_OUTPUT >= 0)
     echo $text;
@@ -98,54 +102,6 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
   return ($db);
 }
 
-function countMainLinks($title) {
-  // Counts the links to the mainpage
-  global $bot;
-  if (preg_match("/\w*:(.*)/", $title, $title))
-    $title = $title[1]; //Gets {{PAGENAME}}
-  $url = API_ROOT . "?action=query&bltitle=" . urlencode($title) . "&list=backlinks&bllimit=500&format=yaml";
-  $bot->fetch($url);
-  $page = $bot->results;
-  if (preg_match("~\n\s*blcontinue~", $page))
-    return 501;
-  preg_match_all("~\n\s*pageid:~", $page, $matches);
-  return count($matches[0]);
-}
-
-function logIn($username, $password) {
-  global $bot; // Snoopy class loaded in DOItools.php
-  // Set POST variables to retrieve a token
-  $submit_vars["format"] = "json";
-  $submit_vars["action"] = "login";
-  $submit_vars["lgname"] = $username;
-  $submit_vars["lgpassword"] = $password;
-  // Submit POST variables and retrieve a token
-  $bot->submit(API_ROOT, $submit_vars);
-  if (!$bot->results) {
-    exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
-  }
-  $first_response = json_decode($bot->results);
-  $submit_vars["lgtoken"] = $first_response->login->token;
-  // Resubmit with new request (which has token added to post vars)
-  $bot->submit(API_ROOT, $submit_vars);
-  $login_result = json_decode($bot->results);
-  if ($login_result->login->result == "Success") {
-    quiet_echo("\n Using account " . htmlspecialchars($login_result->login->lgusername) . ".");
-    // Add other cookies, which are necessary to remain logged in.
-    $cookie_prefix = "enwiki";
-    $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
-    $bot->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
-    $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
-    $bot->cookies[$cookie_prefix . "_session"] = $login_result->login->sessionid;
-    return TRUE;
-  } else {
-    exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
-    global $ON;
-    $ON = FALSE;
-    return FALSE;
-  }
-}
-
 function sanitize_doi($doi) {
   return str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
 }
@@ -161,7 +117,7 @@ function extract_doi($text) {
         $text, $match)) {
     $doi = $match[1];
     if (preg_match(
-          "~^(.*?)(/abstract|/pdf|</span>|[\s\|\"\?]|</).*+$~",
+          "~^(.*?)(/abstract|/e?pdf|/full|</span>|[\s\|\"\?]|</).*+$~",
           $doi, $new_match)
         ) {
       $doi = $new_match[1];
@@ -186,7 +142,7 @@ function format_title_text($title) {
     }
   }
   $title = html_entity_decode($title, NULL, "UTF-8");
-  $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
+  $title = preg_replace("/\s+/"," ", $title);  // Remove all white spaces before
   $title = (mb_substr($title, -1) == ".")
             ? mb_substr($title, 0, -1)
             :(

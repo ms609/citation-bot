@@ -27,7 +27,7 @@ $htmlOutput = FALSE;
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
 if ($category) {
-  $pages_in_category = categoryMembers($category);
+  $pages_in_category = category_members($category);
   #print_r($pages_in_category);
   shuffle($pages_in_category);
   $page = new Page();
@@ -42,7 +42,7 @@ if ($category) {
         echo HTML_OUTPUT ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
-        . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
+        . get_last_revision($page) . ">last edit</a></small></i>\n\n<br>"
         : ".";
       } else {
          echo "\n # Failed. \n" . htmlspecialchars($page->text);
