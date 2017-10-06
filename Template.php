@@ -504,10 +504,12 @@ class Template extends Item {
     }
     
     $url = $this->get('url'); // If URL was blank, we'd've returned already.
+    
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
       $url = "h" . $url;
       $this->set('url',$url); // Save it
     }
+    
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {  //  Outdated
@@ -530,15 +532,21 @@ class Template extends Item {
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       }
+      
     } else {
+      
+      var_dump($url);
+      var_dump(extract_doi($url));
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
         if ($this->blank('bibcode')) {
           quiet_echo("\n   ~ Converting url to bibcode parameter");
           $this->forget('url');
           $this->add_if_new("bibcode", urldecode($bibcode[1]));// TODO check: will this automatically expand from bibcode when added?
         }
+        
       } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
+                        
         if ($this->blank('pmc')) {
           quiet_echo("\n   ~ Converting URL to PMC parameter");
           $this->forget('url');
@@ -549,10 +557,14 @@ class Template extends Item {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        
       } else if (extract_doi($url)[1]) {
+        
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
         $this->add_if_new('doi', extract_doi($url)[1]);
+        
       } else if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
+        
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
          */
@@ -565,11 +577,15 @@ class Template extends Item {
           $this->expand_by_arxiv();
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
+        
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
+        
         $this->add_if_new('pmid', $match[1]);
         $this->forget('url');
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        
       } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
+        
         if ($match['domain'] == ".com") {
           if ($this->get('asin')) {
             $this->forget('url');
