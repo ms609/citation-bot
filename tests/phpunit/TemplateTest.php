@@ -440,6 +440,12 @@ ER -  }}';
        if (is_null($input->get('date'))) return $input->get('year') ;
        return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
    }
+    
+   public function testConvertJournalToBook() {
+       $text = '{{Cite journal|doi=10.1007/978-3-540-74735-2_15}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('cite book', $expanded->wikiname());
+   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
