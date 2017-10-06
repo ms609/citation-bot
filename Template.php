@@ -150,7 +150,6 @@ class Template extends Item {
         if (count($this->initial_author_params) == 0) {
           $this->handle_et_al();
         }
-
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
         $this->citation_template = TRUE;
