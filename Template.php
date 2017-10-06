@@ -187,7 +187,7 @@ class Template extends Item {
         $this->find_pmid();
         $this->tidy();
         // Convert from journal to book, if there is a unique chapter name
-        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title')) { 
+        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title'))) { 
           $this->name = 'Cite book';
         }  
     }
