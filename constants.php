@@ -30,8 +30,8 @@ const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 // dontCap is am array of strings that should not be capitalized in their titlecase format; 
 // unCapped is their correct capitalization. Remember to enclose any word in spaces.
 
-const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ');
-const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ');
+const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',' to ',' into ',' with ',' U S A ',' USA ',' et ', ' für ');
+const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',' To ',' Into ',' With ',' U S A ',' Usa ',' Et ', ' Für ');
 
 const JOURNAL_ACRONYMS = array(
 ' ACM SIGPLAN Notices ', ' ASME AES ', ' ASME MTD ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Neuroforum ', 
@@ -40,7 +40,10 @@ const JOURNAL_ACRONYMS = array(
 ' HOAJ biology ', ' ISRN Genetics ', ' iConference ', ' JABS : Journal of Applied Biological Sciences ',
 ' Molecular and Cellular Biology ', ' Ocean Science Journal : OSJ ', ' PALAIOS ', ' PLOS ONE ', ' PNAS ',
 ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', ' The EMBO Journal ', ' Time Out London ',
-' z/Journal ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ');
+' z/Journal ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ',
+' ZooKeys ', ' Journal of the IEST ', ' Tellus A ', ' Zeitschrift für Geologische Wissenschaften ', ' Journal of Materials Chemistry A ',
+' BioEssays ', ' PLOS Biology ', ' RNA ',
+' NASA Tech Briefs ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', ' JAMA Psychiatry ');
 const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Acm Sigplan Notices ', ' Asme Aes ', ' Asme Mtd ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
 ' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', ' Embo J ', ' Embo J. ', ' Embo Journal ', 
@@ -48,6 +51,9 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Hoaj Biology ', ' Isrn Genetics ', ' Iconference ', ' Jabs : Journal Of Applied Biological Sciences ',
 ' Molecular And Cellular Biology ', ' Ocean Science Journal : Osj ', ' Palaios ', ' Plos One ', ' Pnas ',
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' The Embo Journal ', ' Time Out London ',
-' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ');
+' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ',
+' Zookeys ', ' Journal Of The Iest ', ' Tellus A ', ' Zeitschrift Für Geologische Wissenschaften ', ' Journal Of Materials Chemistry A ',
+' Bioessays ', ' Plos Biology ', ' Rna ',
+' Nasa Tech Briefs ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', ' Jama Psychiatry ');
  
  ?>
