@@ -436,8 +436,8 @@ ER -  }}';
    }
     
    public function getDateAndYear($input){
-       if ($this->is_null($input->get('year')) return $input->get('date') ; // Might be null too
-       if ($this->is_null($input->get('date')) return $input->get('year') ;
+       if (is_null($input->get('year')) return $input->get('date') ; // Might be null too
+       if (is_null($input->get('date')) return $input->get('year') ;
        return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy
    }
   /* TODO 
