@@ -2355,7 +2355,7 @@ class Template extends Item {
   
   public function isbn10Toisbn13 ($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
-       $isbn10 = str_replace(array('—','―','–','−','‒'),'-', $isbn10); // standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
+       $isbn10 = str_replace(array('—','―','–','−','‒'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
        if (preg_match("~[^0-9Xx\-]~",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
        if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-") return $isbn10;  // Ends or starts with a dash
        $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
@@ -2367,7 +2367,7 @@ class Template extends Item {
           $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
        }
        $sum = ((10-$sum%10)%10) ;
-       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum ; // assume existing dashes (if any) are right
+       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum ; // Assume existing dashes (if any) are right
        return $isbn13 ;
   }
 }
