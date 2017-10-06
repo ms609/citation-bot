@@ -366,7 +366,7 @@ class Template extends Item {
         return FALSE;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
-          if (strtolower(sanitize_string($value)) == "zookeys" ) $this->blank("volume") ; // No volumes, just issues.
+          if (strtolower(sanitize_string($value)) == "zookeys" ) $this->forget("volume") ; // No volumes, just issues.
           if (strcasecmp( (string) $value, "unknown") == 0 ) return FALSE;
           return $this->add($param_name, format_title_text(title_case($value)));
         }
