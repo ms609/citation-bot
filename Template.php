@@ -1437,6 +1437,7 @@ class Template extends Item {
       }
 
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
+        $ris_authors=0;
         $ris = explode("\n", $dat);
         $ris_authors = 0;
         foreach ($ris as $ris_line) {
