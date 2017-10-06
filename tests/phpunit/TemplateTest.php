@@ -241,7 +241,6 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('1990-09-17'   , $expanded_citation->get('date'));
   }
   
-  
   public function testErrantAuthor() {
     $text = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340}}';
     $expanded = $this->process_citation($text);
@@ -357,7 +356,30 @@ ER -  }}';
        $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
    }
-   
+  
+  public function testISBN() {  // Dashes, no dashes, etc.
+    $text = "{{cite book|isbn=3-902823-24-0}}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('978-3-902823-24-3', $expanded->get('isbn'));  // Convert with dashes
+    $text = "{{cite book|isbn=978-3-902823-24-3}}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('978-3-902823-24-3', $expanded->get('isbn'));  // Unchanged with dashes
+    $text = "{{cite book|isbn=9783902823243}}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('9783902823243', $expanded->get('isbn'));   // Unchanged without dashes
+    $text = "{{cite book|isbn=3902823240}}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('9783902823243', $expanded->get('isbn'));   // Convert without dashes
+    $text = "{{cite book|isbn=1-84309-164-X}}";
+    $expanded_citation = $this->process_citation($text);  
+    $this->assertEquals('978-1-84309-164-6', $expanded->get('isbn'));  // Convert with dashes and a big X
+    $text = "{{cite book|isbn=184309164x}}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('9781843091646', $expanded->get('isbn'));  // Convert without dashes and a tiny x
+    $text = "{{cite book|isbn=Hello Brother}}";
+    $expanded_citation = $this->process_citation($text);
+    $this->assertEquals('Hello Brother', $expanded->get('isbn')); // Rubbish unchanged
+  }
    
   public function testEtAl() {
       $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
