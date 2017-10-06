@@ -1,4 +1,4 @@
-<?php
+c<?php
 /*
  * Template extends Item. Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
@@ -150,6 +150,7 @@ class Template extends Item {
         if (count($this->initial_author_params) == 0) {
           $this->handle_et_al();
         }
+
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
         $this->citation_template = TRUE;
@@ -186,6 +187,10 @@ class Template extends Item {
         $this->get_open_access_url();
         $this->find_pmid();
         $this->tidy();
+        // Convert from journal to book, if there is a unique chapter name
+        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title')) { 
+          $this->name = 'Cite book';
+        }  
     }
     if ($this->citation_template) {
       $this->correct_param_spelling();
