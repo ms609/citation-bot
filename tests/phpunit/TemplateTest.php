@@ -309,7 +309,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite book |author=Me |title=Title |year=2007-08-01 }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('2007-08-01', $expanded->get('date'));
-      $this->assertNull($this->$expanded->get('year'));
+      $this->assertNull($expanded->get('year'));
   }
   
   public function testRIS() {
