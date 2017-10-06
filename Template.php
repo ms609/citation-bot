@@ -1868,7 +1868,7 @@ class Template extends Item {
     if ($this->added('title')) {
       $this->format_title();
     } else if ($this->is_modified() && $this->get('title')) {
-      $this->set('title', format_title_text(straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title'))));
+      $this->set('title', format_title_text(straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')),TRUE,FALSE));
     }
 
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) {
@@ -1917,7 +1917,7 @@ class Template extends Item {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            $p->val = format_title_text(title_capitalization($p->val, FALSE, FALSE),FALSE);
+            $p->val = format_title_text(title_capitalization($p->val, FALSE, FALSE),FALSE,FALSE);
             break;
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
