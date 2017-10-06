@@ -436,9 +436,9 @@ ER -  }}';
    }
     
    public function getDateAndYear($input){
-       if (is_null($input->get('year')) return $input->get('date') ; // Might be null too
-       if (is_null($input->get('date')) return $input->get('year') ;
-       return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy
+       if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
+       if (is_null($input->get('date'))) return $input->get('year') ;
+       return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
    }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
