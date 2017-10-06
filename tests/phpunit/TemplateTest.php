@@ -456,7 +456,7 @@ ER -  }}';
        $this->assertNull($expanded->get('volume'));
    }
    public function testTitleItalics(){
-       $text = '{{cite journal|doi=10.1111/j.1502-3931.1989.tb01679.x}}';
+       $text = '{{cite journal|doi=10.1111/pala.12168}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('The macro- and microfossil record of the Cambrian priapulid \'\'Ottoia\'\'', $expanded->get('title'));
    }
