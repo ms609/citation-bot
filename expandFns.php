@@ -208,7 +208,7 @@ function title_capitalization($in, $caps_after_punctuation = TRUE, $could_be_ita
   if ($could_be_italics) {
     // <em> tags often go missing around species names in CrossRef
     // This finds an internal capital letter and wraps in quotes and adds a space:  xXx to x ''Xx''
-    // Do we have a DOI test case for this?
+    // We have a test case for this
     // If done to a Title, Chapter, Publisher, Location, etc. this causes the second part to be displayed in italics
     // If done to a Work, Journal, trans-title, etc. (which default to italics), this causes the second part to be  displayed in non-italics
     $new_case = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $new_case);
