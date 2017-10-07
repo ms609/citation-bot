@@ -22,7 +22,8 @@ class Template extends Item {
   const PLACEHOLDER_TEXT = '# # # Citation bot : template placeholder %s # # #';
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
-  const BAD_AUTHORS = array("hearst magazines", "time inc"); // use lower case
+  const BAD_AUTHORS = array("unknown"); // use lower case
+  const AUTHORS_ARE_PUBLISHERS = array("hearst magazines", "time inc"); // use lower case
   const HAS_NO_VOLUME = array("zookeys"); // use lower case
   const BAD_TITLES = array("unknown");  // use lower case
 
@@ -1185,8 +1186,12 @@ class Template extends Item {
     $i = NULL;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        if( in_array(strtolower($author), Template::BAD_AUTHORS) === FALSE) {  // Catch common google bad authors
-           $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
+        if( in_array(strtolower($author), Template::BAD_AUTHORS) === FALSE) {
+          if( in_array(strtolower($author), Template::AUTHORS_ARE_PUBLISHERS) === TRUE) {
+            $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
+          } else {
+            $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
+          }
         }
       }
     }
