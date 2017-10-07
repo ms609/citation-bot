@@ -22,8 +22,8 @@ class Template extends Item {
   const PLACEHOLDER_TEXT = '# # # Citation bot : template placeholder %s # # #';
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
-  const BAD_AUTHORS = array("hearst magazines", "time inc"); // lower case
-  const HAS_NO_VOLUME = array("zookeys"); // lower case
+  const BAD_AUTHORS = array("hearst magazines", "time inc"); // use lower case
+  const HAS_NO_VOLUME = array("zookeys"); // use lower case
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
             $mod_dashes,
@@ -368,7 +368,7 @@ class Template extends Item {
         return FALSE;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
-          if (in_array(strtolower(sanitize_string($value)),HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
+          if (in_array(strtolower(sanitize_string($value)), Template::HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (strcasecmp( (string) $value, "unknown") == 0 ) return FALSE;
           return $this->add($param_name, format_title_text(title_case($value)));
         }
@@ -459,7 +459,7 @@ class Template extends Item {
       return FALSE;
       case 'volume':
         if ($this->blank($param_name)) {
-          if (in_array(strtolower($this->get('journal')),HAS_NO_VOLUME) === TRUE ) {
+          if (in_array(strtolower($this->get('journal')), Template::HAS_NO_VOLUME) === TRUE ) {
             // This journal has no volume.  This is really the issue number
             return $this->add_if_new('issue', $value);
           } else {
@@ -1187,7 +1187,7 @@ class Template extends Item {
     $i = NULL;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {  // Catch common google bad authors
+        if( in_array(strtolower($author), Template::BAD_AUTHORS) === FALSE) {  // Catch common google bad authors
            $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
         }
       }
