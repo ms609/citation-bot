@@ -423,6 +423,13 @@ ER -  }}';
       $this->assertEquals('http://ABC/ I have Spaces in Me', $expanded->get('website'));
   }
   
+  public function testHearst () {
+       $text = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 194–197}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Hearst Magazines',$expanded->get('publisher'));
+  }
+    
+    
   public function testLinefeeds(){
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
