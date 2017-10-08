@@ -1881,7 +1881,7 @@ class Template extends Item {
       $this->rename('origyear', 'year');
     }
     
-    if ($this->has('isbn')) $this->set($this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
+    if ($this->has('isbn')) $this->set('isbn',$this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
     
     $authors = $this->get('authors');
     if (!$authors) {
