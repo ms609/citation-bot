@@ -976,12 +976,13 @@ class Template extends Item {
           }
         }
         echo " (ok)";
-      } else {
+      } else if ( stripos( $doi, 'placeholder') === FALSE ) { // Ignore DOIs that are actually comments, etc.
         echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
         $url_test = "http://dx.doi.org/".$doi ;
         $headers_test = get_headers($url_test, 1);
-        if(empty($headers_test['Location']))
+        if(empty($headers_test['Location'])) {
                 $this->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
+        }
       }
     }
   }
@@ -2024,6 +2025,7 @@ class Template extends Item {
 
   protected function verify_doi () {
     $doi = $this->get_without_comments('doi');
+    if (stripos( $doi, 'placeholder') === TRUE) return FALSE ; // Some type of place holder
     if (!$doi) return NULL;
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
@@ -2062,8 +2064,9 @@ class Template extends Item {
       $this->forget("doi_brokendate");
       $url_test = "http://dx.doi.org/".$doi ;
       $headers_test = get_headers($url_test, 1);
-      if(empty($headers_test['Location']))
+      if(empty($headers_test['Location'])) {
          $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if cross-ref fails
+      }
       echo "\n   ! Broken doi: " . htmlspecialchars($doi);
       return FALSE;
     } else {
