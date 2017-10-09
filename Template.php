@@ -2025,7 +2025,6 @@ class Template extends Item {
 
   protected function verify_doi () {
     $doi = $this->get_without_comments('doi');
-    if (stripos( $doi, 'placeholder') === TRUE) return FALSE ; // Some type of place holder
     if (!$doi) return NULL;
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
@@ -2059,6 +2058,7 @@ class Template extends Item {
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
+      if (stripos( $doi, 'placeholder') === TRUE) return FALSE ; // Some type of place holder.  Test here, just in case real DOI has the phrase placehold in it
       $this->forget("doi_inactivedate");
       $this->forget("doi-inactive-date");
       $this->forget("doi_brokendate");
