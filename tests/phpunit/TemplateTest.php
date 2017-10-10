@@ -155,7 +155,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('doi-broken-date'));
 
-    $text = '{{cite journal|doi= <!-- MC Hammer says to not touch this !-->}}';
+    $text = '{{cite journal|doi= <!-- MC Hammer says to not touch this -->}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
   }
