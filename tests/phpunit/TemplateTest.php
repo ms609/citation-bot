@@ -384,7 +384,30 @@ ER -  }}';
        $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
    }
-   
+
+  public function testISBN() {  // Dashes, no dashes, etc.
+    $text = "{{cite book|isbn=3-902823-24-0}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-3-902823-24-3', $expanded->get('isbn'));  // Convert with dashes
+    $text = "{{cite book|isbn=978-3-902823-24-3}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-3-902823-24-3', $expanded->get('isbn'));  // Unchanged with dashes
+    $text = "{{cite book|isbn=9783902823243}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('9783902823243', $expanded->get('isbn'));   // Unchanged without dashes
+    $text = "{{cite book|isbn=3902823240}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('9783902823243', $expanded->get('isbn'));   // Convert without dashes
+    $text = "{{cite book|isbn=1-84309-164-X}}";
+    $expanded = $this->process_citation($text);  
+    $this->assertEquals('978-1-84309-164-6', $expanded->get('isbn'));  // Convert with dashes and a big X
+    $text = "{{cite book|isbn=184309164x}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('9781843091646', $expanded->get('isbn'));  // Convert without dashes and a tiny x
+    $text = "{{cite book|isbn=Hello Brother}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Hello Brother', $expanded->get('isbn')); // Rubbish unchanged
+  }
    
   public function testEtAl() {
       $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
