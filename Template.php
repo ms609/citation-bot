@@ -976,7 +976,7 @@ class Template extends Item {
           }
         }
         echo " (ok)";
-      } else if ( stripos( $doi, 'placeholder') === FALSE ) { // Ignore DOIs that are actually comments, etc.
+      } elseif ( stripos( $doi, 'placeholder') === FALSE ) { // Ignore DOIs that are actually comments, etc.
         echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
         $url_test = "http://dx.doi.org/".$doi ;
         $headers_test = get_headers($url_test, 1);
