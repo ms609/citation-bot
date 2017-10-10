@@ -976,12 +976,13 @@ class Template extends Item {
           }
         }
         echo " (ok)";
-      } else {
+      } elseif ( stripos( $doi, 'placeholder') === FALSE ) { // Ignore DOIs that are actually comments, etc.
         echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
         $url_test = "http://dx.doi.org/".$doi ;
         $headers_test = get_headers($url_test, 1);
-        if(empty($headers_test['Location']))
+        if(empty($headers_test['Location'])) {
                 $this->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
+        }
       }
     }
   }
@@ -2057,13 +2058,15 @@ class Template extends Item {
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
+      if (stripos( $doi, 'placeholder') !== FALSE) return FALSE ; // Some type of place holder.  Test here, just in case real DOI has the phrase placehold in it
       $this->forget("doi_inactivedate");
       $this->forget("doi-inactive-date");
       $this->forget("doi_brokendate");
       $url_test = "http://dx.doi.org/".$doi ;
       $headers_test = get_headers($url_test, 1);
-      if(empty($headers_test['Location']))
+      if(empty($headers_test['Location'])) {
          $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if cross-ref fails
+      }
       echo "\n   ! Broken doi: " . htmlspecialchars($doi);
       return FALSE;
     } else {
