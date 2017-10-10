@@ -22,10 +22,6 @@ class Template extends Item {
   const PLACEHOLDER_TEXT = '# # # Citation bot : template placeholder %s # # #';
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
-  const BAD_AUTHORS = array("unknown"); // use lower case
-  const AUTHORS_ARE_PUBLISHERS = array("hearst magazines", "time inc"); // use lower case
-  const HAS_NO_VOLUME = array("zookeys"); // use lower case
-  const BAD_TITLES = array("unknown");  // use lower case
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
             $mod_dashes,
