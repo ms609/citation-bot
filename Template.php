@@ -366,8 +366,8 @@ class Template extends Item {
         return FALSE;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
-          if (in_array(strtolower(sanitize_string($value)), Template::HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
-          if (in_array(strtolower(sanitize_string($value)), Template::BAD_TITLES ) === TRUE) return FALSE;
+          if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
+          if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           return $this->add($param_name, format_title_text(title_case($value)));
         }
         return FALSE;
@@ -391,7 +391,7 @@ class Template extends Item {
         ) return $this->add($param_name, sanitize_string($value));
         return FALSE;
       case 'title':
-        if (in_array(strtolower(sanitize_string($value)), Template::BAD_TITLES ) === TRUE) return FALSE;
+        if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name)) {
           return $this->format_title($value); // format_title will sanitize the string
         }
@@ -458,7 +458,7 @@ class Template extends Item {
       return FALSE;
       case 'volume':
         if ($this->blank($param_name)) {
-          if (in_array(strtolower($this->get('journal')), Template::HAS_NO_VOLUME) === TRUE ) {
+          if (in_array(strtolower($this->get('journal')), HAS_NO_VOLUME) === TRUE ) {
             // This journal has no volume.  This is really the issue number
             return $this->add_if_new('issue', $value);
           } else {
@@ -1182,8 +1182,8 @@ class Template extends Item {
     $i = NULL;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        if( in_array(strtolower($author), Template::BAD_AUTHORS) === FALSE) {
-          if( in_array(strtolower($author), Template::AUTHORS_ARE_PUBLISHERS) === TRUE) {
+        if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+          if( in_array(strtolower($author), AUTHORS_ARE_PUBLISHERS) === TRUE) {
             $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
           } else {
             $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
