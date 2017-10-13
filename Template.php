@@ -315,7 +315,7 @@ class Template extends Item {
 
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
           && $this->blank("coauthor") && $this->blank("coauthors")
-          && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE
+          && strpos($this->get('author') . $this->get('authors'), ' and ')   FALSE
           && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
         ) {
@@ -970,7 +970,7 @@ class Template extends Item {
           }
         }
         echo " (ok)";
-      } elseif ( stripos( $doi, 'placeholder') === FALSE ) { // Ignore DOIs that are actually comments, etc.
+      } elseif ( stripos( $doi, 'CITATION_BOT_PLACEHOLDER') === FALSE ) { // Ignore DOIs that are actually comments, etc.
         echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
         $url_test = "http://dx.doi.org/".$doi ;
         $headers_test = get_headers($url_test, 1);
@@ -2053,7 +2053,7 @@ class Template extends Item {
     }
     echo "\n   . Checking that DOI " . htmlspecialchars($doi) . " is operational..." . tag();
     if ($this->query_crossref() === FALSE) {
-      if (stripos( $doi, 'placeholder') !== FALSE) return FALSE ; // Some type of place holder.  Test here, just in case real DOI has the phrase placehold in it
+      if (stripos( $doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE ; // Some type of place holder.  Test here, just in case real DOI has the phrase placehold in it
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
       $this->forget("doi_inactivedate");
