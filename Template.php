@@ -1104,13 +1104,16 @@ class Template extends Item {
           return TRUE;
         }
         $this->add('url', $best_location->url);
-        switch ($best_location->version) {
+        $this->get_identifiers_from_url();  // Might be PMC, etc.
+        if ($this->has('url') {  // The above line might have eaten the URL and upgraded it
+          switch ($best_location->version) {
             case 'acceptedVersion': $format = 'Accepted manuscript'; break;
             case 'submittedVersion': $format = 'Submitted manuscript'; break;
             case 'publishedVersion': $format = 'Full text'; break;
             default: $format = NULL;
+          }
+          if ($format) $this->add('format', $format);
         }
-        if ($format) $this->add('format', $format);
         return TRUE;
       }
     } else {
