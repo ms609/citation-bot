@@ -556,14 +556,14 @@ class Template extends Item {
           $this->add_if_new("pmc", $match[1] . $match[2]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
+      } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } else if (extract_doi($url)[1]) {
+      } elseif (extract_doi($url)[1]) {
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
         $this->add_if_new('doi', extract_doi($url)[1]);
-      } else if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
+      } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
          */
@@ -576,11 +576,11 @@ class Template extends Item {
           $this->expand_by_arxiv();
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
-      } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
+      } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
         $this->add_if_new('pmid', $match[1]);
         $this->forget('url');
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-      } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
+      } elseif (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
         if ($match['domain'] == ".com") {
           if ($this->get('asin')) {
             $this->forget('url');
