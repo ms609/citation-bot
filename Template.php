@@ -315,7 +315,7 @@ class Template extends Item {
 
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
           && $this->blank("coauthor") && $this->blank("coauthors")
-          && strpos($this->get('author') . $this->get('authors'), ' and ')   FALSE
+          && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
         ) {
