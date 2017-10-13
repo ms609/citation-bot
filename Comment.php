@@ -6,7 +6,7 @@
 require_once('Item.php');
 
 class Comment extends Item {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENTS %s # # #';
+  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENT %s # # #';
   const REGEXP = '~<!--.*?-->~us';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
 
