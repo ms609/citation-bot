@@ -160,7 +160,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|doi=10.1038/nature12373}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4221854/pdf', $expanded->get('url'));
-    $this->assertEquals('Accepted manuscript', $expanded->get('format'));
+    $this->assertEquals('Full text', $expanded->get('format'));
   }
   
   /* Don't run test until I check the consensus on how such citations should be handled
