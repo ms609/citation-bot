@@ -202,7 +202,7 @@ class Page {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
-      if ( stripos($this->text,"CITATION_BOT_PLACEHOLDER") != FALSE )  {
+      if ( stripos($this->text,"CITATION_BOT_PLACEHOLDER") !== FALSE )  {
         echo "\n ! Citation bot placeholder left escaped. Aborting.";
         return FALSE;
       }
