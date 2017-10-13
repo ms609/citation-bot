@@ -233,7 +233,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('1234', $expanded->get('oclc'));
       $this->assertEquals('12345', $expanded->get('ol'));
       $this->assertNotNull($expanded->get('doi-broken-date'));
-      $this->assertEquals(1, preg_match('~' . sprintf(CITATION_BOT_PLACEHOLDER_TEMPLATE, '\d+') . '~i', $expanded->get('id')));
+      $this->assertEquals(1, preg_match('~' . sprintf(Template::CITATION_BOT_PLACEHOLDER, '\d+') . '~i', $expanded->get('id')));
       
       $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
       $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
