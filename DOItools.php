@@ -252,7 +252,7 @@ function query_adsabs ($options) {
   $return = json_decode(curl_exec($ch));
   curl_close($ch);
   
-  return (is_object($return)) ? $return->response : (object) array('numFound' => 0);
+  return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
 }
 
 function equivUrl ($u){
