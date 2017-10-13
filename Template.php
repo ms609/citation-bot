@@ -863,7 +863,8 @@ class Template extends Item {
     if ($eprint) {
       echo "\n * Getting data from arXiv " . htmlspecialchars($eprint);
       $xml = simplexml_load_string(
-        preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint"))
+        preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", 
+        file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint"))
       );
     }
     if ($xml) {
