@@ -6,7 +6,7 @@
 require_once('Item.php');
 
 class Comment extends Item {
-  const PLACEHOLDER_TEXT = '# # # Citation bot : comment placeholder %s # # #';
+  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENTS %s # # #';
   const REGEXP = '~<!--.*?-->~us';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
 
@@ -20,7 +20,7 @@ class Comment extends Item {
 }
 
 class Nowiki extends Item {
-  const PLACEHOLDER_TEXT = '# # # Citation bot : no wiki placeholder %s # # #';  // Have space in nowiki so that it does not through some crazy bug match itself recursively
+  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_NOWIKI %s # # #';  // Have space in nowiki so that it does not through some crazy bug match itself recursively
   const REGEXP = '~<nowiki>.*?</nowiki>~us'; 
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   
