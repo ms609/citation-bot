@@ -36,7 +36,7 @@ class Parameter {
       }
       $this->post  = $post_eq[3];
       $this->set_value($post_eq[2]);
-    } else if ($pre_eq) {
+    } elseif ($pre_eq) {
       $this->pre  = $pre_eq[1];
       $this->val  = $pre_eq[2];
       $this->post = $pre_eq[3];
