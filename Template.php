@@ -481,6 +481,15 @@ class Template extends Item {
           return TRUE;
         }
         return FALSE;
+      
+      case 'arxiv':
+        if ($this->blank($param_name)) {
+          $this->add('arxiv', $match[0]);
+          $this->expand_by_arxiv();
+          return TRUE;
+        }
+        return FALSE;
+        
       case 'doi-broken-date':
         if ($this->blank('doi_brokendate') &&
             $this->blank('doi-broken-date') &&
@@ -507,7 +516,9 @@ class Template extends Item {
           if ($bibcode_pad > 0) {  // Paranoid, don't want a negative value, if bibcodes get longer
             $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
           }
-          return $this->add($param_name, $value);
+          $this->add($param_name, $value);
+          $this->expand_from_bibcode();
+          return TRUE;
         } 
       return FALSE;
       
@@ -576,7 +587,7 @@ class Template extends Item {
         if(!empty($headers_test['Location'])) {
           $url = $headers_test['Location']; // Redirect
           if (is_null($url_sent)) {
-            $this->set('url',$url); // Save it
+            $this->set('url', $url); // Save it
           }
         }
       }
@@ -593,39 +604,39 @@ class Template extends Item {
           $this->set("jstor", urldecode($match[1]));
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        return TRUE;
       }
       
     } else {
-      
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
         if ($this->blank('bibcode')) {
           quiet_echo("\n   ~ Converting url to bibcode parameter");
           if (is_null($url_sent)) {
             $this->forget('url');
           }
-          $this->add_if_new("bibcode", urldecode($bibcode[1]));// TODO check: will this automatically expand from bibcode when added?
+          return $this->add_if_new("bibcode", urldecode($bibcode[1]));
         }
         
       } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
+                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
                         
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         if ($this->blank('pmc')) {
           quiet_echo("\n   ~ Converting URL to PMC parameter");
           if (is_null($url_sent)) {
             $this->forget('url');
           }
-          $this->add_if_new("pmc", $match[1] . $match[2]);
+          return $this->add_if_new("pmc", $match[1] . $match[2]);
         }
-        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
-        $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         
       } else if (extract_doi($url)[1]) {
         
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
-        $this->add_if_new('doi', extract_doi($url)[1]);
+        return $this->add_if_new('doi', extract_doi($url)[1]);
         
       } else if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         
@@ -639,27 +650,27 @@ class Template extends Item {
           if (is_null($url_sent)) {
             $this->forget('url');
           }
-          $this->add_if_new("arxiv", $arxiv_id[0]);
-          $this->expand_by_arxiv();
+          return $this->add_if_new("arxiv", $arxiv_id[0]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
         
       } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
         
-        $this->add_if_new('pmid', $match[1]);
         if (is_null($url_sent)) {
           $this->forget('url');
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        return $this->add_if_new('pmid', $match[1]);
         
       } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
         
+        if (strpos($this->name, 'web')) $this->name = 'Cite book';
         if ($match['domain'] == ".com") {
           if (is_null($url_sent)) {
             $this->forget('url');
           }
           if ($this->blank('asin')) {
-            $this->add_if_new('asin', $match['id']);
+            return $this->add_if_new('asin', $match['id']);
           }
         } else {
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
@@ -667,7 +678,6 @@ class Template extends Item {
             $this->forget('url'); // will forget accessdate too
           }
         }
-        if (strpos($this->name, 'web')) $this->name = 'Cite book';
       }
     }
   }
