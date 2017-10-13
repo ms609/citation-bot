@@ -38,86 +38,86 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
 
   public function testParameterWithNoParameters() {
     $text = "{{Cite web | text without equals sign  }}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals($text, $expanded_citation->parsed_text());
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
     $text = "{{  No pipe  }}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals($text, $expanded_citation->parsed_text());
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
   }
   
   public function testUseUnusedData() {
     $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite web',          $expanded_citation->wikiname());
-    $this->assertEquals('http://google.com', $expanded_citation->get('url'));
-    $this->assertEquals('I am a title',      $expanded_citation->get('title')); 
-    $this->assertEquals('Other, A. N.',      $expanded_citation->get('author'));
-    $this->assertEquals('9'           ,      $expanded_citation->get('issue'));
-    $this->assertEquals('22'          ,      $expanded_citation->get('volume'));
-    $this->assertEquals('5–6'         ,      $expanded_citation->get('pages'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite web',          $expanded->wikiname());
+    $this->assertEquals('http://google.com', $expanded->get('url'));
+    $this->assertEquals('I am a title',      $expanded->get('title')); 
+    $this->assertEquals('Other, A. N.',      $expanded->get('author'));
+    $this->assertEquals('9'           ,      $expanded->get('issue'));
+    $this->assertEquals('22'          ,      $expanded->get('volume'));
+    $this->assertEquals('5–6'         ,      $expanded->get('pages'));
   }
   
   public function testJstorExpansion() {
     $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true}}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded_citation->wikiname());
-    $this->assertEquals('1701972'     , $expanded_citation->get('jstor'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('1701972'     , $expanded->get('jstor'));
   }
   
   public function testPmidExpansion() {
     $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pubmed/1941451?dopt=AbstractPlus}}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded_citation->wikiname());
-    $this->assertEquals('1941451', $expanded_citation->get('pmid'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('1941451', $expanded->get('pmid'));
   }
   
   public function testPMCExpansion() {
     $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pmc/articles/PMC154623/}}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded_citation->wikiname());
-    $this->assertEquals('154623', $expanded_citation->get('pmc'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('154623', $expanded->get('pmc'));
   }
   
   public function testArxivExpansion() {
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded_citation->wikiname());
-    $this->assertEquals('0806.0013', $expanded_citation->get('arxiv'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('0806.0013', $expanded->get('arxiv'));
     
     $text = "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded_citation->wikiname());
-    $this->assertEquals('0806.0013', $expanded_citation->get('arxiv'));
-    $this->assertNull($expanded_citation->get('class'));
-    $this->assertNull($expanded_citation->get('eprint'));
-    $this->assertNull($expanded_citation->get('publisher'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('0806.0013', $expanded->get('arxiv'));
+    $this->assertNull($expanded->get('class'));
+    $this->assertNull($expanded->get('eprint'));
+    $this->assertNull($expanded->get('publisher'));
   }
   
   public function testAmazonExpansion() {
     $text = "{{Cite web | http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20}}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite book', $expanded_citation->wikiname());
-    $this->assertEquals('0226845494', $expanded_citation->get('asin'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite book', $expanded->wikiname());
+    $this->assertEquals('0226845494', $expanded->get('asin'));
   }
   
   public function testDoiExpansion() {
     $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded_citation->wikiname());
-    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded_citation->get('doi'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
   }
   
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
     $text = "{{Cite web | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
-    $expanded_citation = $this->process_citation($text);
+    $expanded = $this->process_citation($text);
     // ISSN should be retained when journal is originally present
-    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $expanded_citation->parsed_text());
+    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $expanded->parsed_text());
     
     $text = "{{Cite web | Journal=My Journal| issn=1234-4321 | publisher=Unwarranted }}";
-    $expanded_citation = $this->process_citation($text);
+    $expanded = $this->process_citation($text);
     // ISSN is removed when journal is added.  Is this the desired behaviour? ##TODO!
-    $this->assertEquals('{{Cite journal| journal=My Journal}}', $expanded_citation->parsed_text());
+    $this->assertEquals('{{Cite journal| journal=My Journal}}', $expanded->parsed_text());
   }
   
   public function testJournalCapitalization() {
@@ -166,8 +166,8 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   /* Don't run test until I check the consensus on how such citations should be handled
   public function testEtAlHandlingAndSpaceRetention() {
     $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}', $expanded_citation->parsed_text()); 
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}', $expanded->parsed_text()); 
   }
   */
   
@@ -181,7 +181,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{cite journal|url=http://fake.url/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('0097-3157', $expanded->get('issn'));
-    $this->assertEquals('2002', $expanded->get('year'));
+    $this->assertEquals('2002', $this->getDateAndYear($expanded));
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
     $expanded = NULL;
@@ -190,12 +190,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{cite journal|date=2002|journal=SET|url=http:/1/fake.url/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}";
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('issn'));
-    if (is_null($expanded->get('date'))) {
-      $this->assertEquals('2002', $expanded->get('year'));
-    } else {
-      $this->assertEquals('2002', $expanded->get('date'));
-      $this->assertNull($expanded->get('year'));
-    }
+    $this->assertEquals('2002', $this->getDateAndYear($expanded));
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
   }
@@ -207,7 +202,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($expanded->get('title'));
     $this->assertNotNull($expanded->get('journal'));
     $this->assertNotNull($expanded->get('pages'));
-    $this->assertNotNull($expanded->get('year'));
+    $this->assertNotNull($this->getDateAndYear($expanded));
     
     $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutel=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
     $expanded = $this->process_citation($text);
@@ -215,7 +210,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($expanded->get('tutel'));
     $this->assertNotNull($expanded->get('journal'));
     $this->assertNotNull($expanded->get('pages'));
-    $this->assertNotNull($expanded->get('year'));
+    $this->assertNotNull($this->getDateAndYear($expanded));
   
     // test attempt to add a parameter listed in COMMON_MISTAKES
     $album_link = 'http://album.com';
@@ -254,25 +249,25 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
       $this->assertEquals('2000', $expanded->get('origyear'));
-      $this->assertEquals('2009', $expanded->get('year'));
+      $this->assertEquals('2009', $this->getDateAndYear($expanded));
       
       $text = '{{cite book | origyear = 2000 }}';
       $expanded = $this->process_citation($text); // Not process_citation as there's an embedded template
-      $this->assertEquals('2000', $expanded->get('year'));
+      $this->assertEquals('2000', $this->getDateAndYear($expanded));
       $this->assertNull($expanded->get('origyear'));
   }
   
   public function testGoogleBooksExpansion() {
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
-    $expanded_citation = $this->process_citation($text);
-    $this->assertEquals('cite book', $expanded_citation->wikiname());
-    $this->assertEquals('https://books.google.com/?id=SjpSkzjIzfsC', $expanded_citation->get('url'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite book', $expanded->wikiname());
+    $this->assertEquals('https://books.google.com/?id=SjpSkzjIzfsC', $expanded->get('url'));
     $this->assertEquals('Wonderful Life: The Burgess Shale and the Nature of History',
-      $expanded_citation->get('title'));
-    $this->assertEquals('9780393307009', $expanded_citation->get('isbn')   );
-    $this->assertEquals('Gould'        , $expanded_citation->get('last1'));
-    $this->assertEquals('Stephen Jay'  , $expanded_citation->get('first1') );
-    $this->assertEquals('1990-09-17'   , $expanded_citation->get('date'));
+      $expanded->get('title'));
+    $this->assertEquals('9780393307009', $expanded->get('isbn')   );
+    $this->assertEquals('Gould'        , $expanded->get('last1'));
+    $this->assertEquals('Stephen Jay'  , $expanded->get('first1') );
+    $this->assertEquals('1990-09-17'   , $expanded->get('date'));
   }
   
   
@@ -303,13 +298,11 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testInPress() {
     $text = '{{Cite journal|pmid=9858585|date =in press}}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('date'));
-    $this->assertEquals('1999',$expanded->get('year'));
+    $this->assertEquals('1999',$this->getDateAndYear($expanded));
 
     $text = '{{cite journal|pmid=9858585|year=in press}}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('date'));
-    $this->assertEquals('1999',$expanded->get('year'));
+    $this->assertEquals('1999',$this->getDateAndYear($expanded));
   }
   
  public function testISODates() {
@@ -372,13 +365,13 @@ ER -  }}';
        $expanded = $this->process_citation($book);
        $this->assertEquals('Chaucer, Geoffrey', $expanded->first_author());
        $this->assertEquals('The Works of Geoffrey Chaucer', $expanded->get('title'));
-       $this->assertEquals('1957', $expanded->get('date'));
+       $this->assertEquals('1957', $this->getDateAndYear($expanded));
        $this->assertEquals('Houghton', $expanded->get('publisher'));
        $this->assertEquals('Boston', $expanded->get('location'));
        
        $expanded = $this->process_citation($article);
        $this->assertEquals('Clark, Herbert H', $expanded->first_author());
-       $this->assertEquals('1982', $expanded->get('date'));
+       $this->assertEquals('1982', $this->getDateAndYear($expanded));
        $this->assertEquals('Hearers and Speech Acts', $expanded->get('title'));
        $this->assertEquals('58', $expanded->get('volume'));
        $this->assertEquals('332–373', $expanded->get('pages'));
@@ -387,7 +380,7 @@ ER -  }}';
        $expanded = $this->process_citation($thesis);
        $this->assertEquals('Cantucci, Elena', $expanded->first_author());
        $this->assertEquals('Permian strata in South-East Asia', $expanded->get('title'));
-       $this->assertEquals('1990', $expanded->get('date'));
+       $this->assertEquals('1990', $this->getDateAndYear($expanded));
        $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
    }
@@ -475,6 +468,12 @@ ER -  }}';
        $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('594900', $expanded->get('jstor'));
+   }
+    
+   public function getDateAndYear($input){
+       if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
+       if (is_null($input->get('date'))) return $input->get('year') ;
+       return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
    }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
