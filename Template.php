@@ -862,11 +862,18 @@ class Template extends Item {
 
     if ($eprint) {
       echo "\n * Getting data from arXiv " . htmlspecialchars($eprint);
-      $xml = simplexml_load_string(
-        preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", 
-        file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint"))
-      );
+      $context = stream_context_create(array(
+        'http' => array('ignore_errors' => true),
+      ));
+      $arxiv_request = "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
+      $arxiv_response = file_get_contents($arxiv_request, FALSE, $context);
+      if ($arxiv_response) {
+        $xml = simplexml_load_string(
+          preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
+        ); // TODO Explore why this is often failing
+      }
     }
+    
     if ($xml) {
       $i = 0;
       foreach ($xml->entry->author as $auth) {
@@ -921,6 +928,8 @@ class Template extends Item {
         $result = query_adsabs("doi:" . urlencode($this->get('doi')));
       } elseif ($this->has('title')) {
         $result = query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
+        print "\n\n\n\n\n\n\n88888\n";
+        var_dump($result);
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($record->title)));
