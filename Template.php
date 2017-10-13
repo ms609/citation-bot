@@ -484,7 +484,7 @@ class Template extends Item {
       
       case 'arxiv':
         if ($this->blank($param_name)) {
-          $this->add('arxiv', $match[0]);
+          $this->add('arxiv', $value);
           $this->expand_by_arxiv();
           return TRUE;
         }
@@ -517,7 +517,7 @@ class Template extends Item {
             $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
           }
           $this->add($param_name, $value);
-          $this->expand_from_bibcode();
+          $this->expand_by_adsabs();
           return TRUE;
         } 
       return FALSE;
@@ -958,7 +958,7 @@ class Template extends Item {
       if ($result->numFound == 1) {
         $record = $result->docs[0];
         echo tag();
-        $this->add_if_new("bibcode", (string) $record->bibcode);
+        if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
         $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
         $i = NULL;
         foreach ($record->author as $author) {

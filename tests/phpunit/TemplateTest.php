@@ -155,14 +155,23 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('doi-broken-date'));
   }
-  
+
   public function testOpenAccessLookup() {
     $text = '{{cite journal|doi=10.1038/nature12373}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4221854', $expanded->get('url'));
+    $this->assertEquals('4221854', $expanded->get('pmc'));
+    
+    $text = '{{cite journal|doi=10.1038/nature08244}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('0904.1532', $expanded->get('arxiv'));
+    
+    $text = '{{cite journal|doi=10.1038//TODO}}';
+    /*
+    $this->assertEquals('http://some.url', $expanded->get('url'));
     $this->assertEquals('Accepted manuscript', $expanded->get('format'));
+    */
   }
-  
+    
   /* Don't run test until I check the consensus on how such citations should be handled
   public function testEtAlHandlingAndSpaceRetention() {
     $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";
