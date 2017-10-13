@@ -976,7 +976,6 @@ class Template extends Item {
         foreach ($record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
         }
-        var_dump($record);
         if (isset($record->pub)) {
           $journal_string = explode(",", (string) $record->pub);
           $journal_start = mb_strtolower($journal_string[0]);
