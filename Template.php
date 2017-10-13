@@ -943,7 +943,8 @@ class Template extends Item {
                           . "&volume:" . $this->get('volume')
                           . "&page:" . $this->page()
                           );
-        $journal_string = explode(",", (string) $record->journal);
+        if ($result->numFound == 0) return FALSE;
+        $journal_string = explode(",", (string) $result->docs[0]->pub);
         $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
         if (strlen($journal_string[0]) 
         &&  strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
