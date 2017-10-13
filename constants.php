@@ -6,7 +6,7 @@ foreach ($constant_files as $file) {
 
 define('HOME', dirname(__FILE__) . '/');
 
-const PIPE_PLACEHOLDER = '%%CITATION_BOT_PIPE_PLACEHOLDER%%';
+const PIPE_PLACEHOLDER = '%%CITATION_BOT_PLACEHOLDER_PIPE%%';
 const TEMP_PLACEHOLDER = "# # # CCITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 const TO_EN_DASH = "--?|\&mdash;|\xe2\x80\x94|\?\?\?"; // regexp for replacing to ndashes using mb_ereg_replace
 const EN_DASH = "\xe2\x80\x93"; // regexp for replacing to ndashes using mb_ereg_replace
