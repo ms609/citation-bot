@@ -920,6 +920,7 @@ class Template extends Item {
         $result = query_adsabs("doi:" . urlencode($this->get('doi')));
       } elseif ($this->has('title')) {
         $result = query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
+        if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($record->title)));
         $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
