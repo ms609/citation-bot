@@ -11,8 +11,8 @@ function category_members($cat){
   $qc = "query-continue";
   $list = NULL;
 
-	do {
-		set_time_limit(40);
+  do {
+    set_time_limit(40);
     $res = load_xml_via_bot($vars);
     if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
@@ -21,7 +21,7 @@ function category_members($cat){
     } else {
       echo 'Error reading API from ' . htmlspecialchars($url) . "\n\n";
     }
-	} while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
+  } while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
   return $list ? $list : [' '];
 }
 
@@ -32,27 +32,29 @@ function what_transcludes($template, $namespace=99){
 }
 
 function what_transcludes_2($template, $namespace = 99) {
-	$vars = Array (
+    $vars = Array (
       "action" => "query",
       "list" => "embeddedin",
       "eilimit" => "5000",
       "format" => "xml",
       "eititle" => "Template:" . $template,
       "einamespace" => ($namespace==99)?"":$namespace,
-  );
-  $list = ['title' => NULL];
+   );
+   $list = ['title' => NULL];
   
-	do {
-		set_time_limit(20);
-    $res = load_xml_via_bot($vars);
-    if (!$res) {
-      echo 'Error reading API from ' . htmlspecialchars($url) . "\n";
-    } else foreach($res->query->embeddedin->ei as $page) {
-			$list["title"][] = (string) $page["title"];
-			$list["id"][] = (integer) $page["pageid"];
-		}
-	} while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
-	return $list;
+   do {
+        set_time_limit(20);
+        $res = load_xml_via_bot($vars);
+        if (!$res) {
+          echo 'Error reading API from ' . htmlspecialchars($url) . "\n";
+        } else {
+          foreach($res->query->embeddedin->ei as $page) {
+            $list["title"][] = (string) $page["title"];
+            $list["id"][] = (integer) $page["pageid"];
+          }
+        }
+    } while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
+    return $list;
 }
 
 function wikititle_encode($in) {
@@ -80,7 +82,7 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
     "aplimit" => "5000",
   );
   do {
-		set_time_limit(10);
+    set_time_limit(10);
     $res = load_xml_via_bot($vars);
     if ($res && !$res->error) {
       foreach ($res->query->allpages->p as $page) {
@@ -91,7 +93,7 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
       echo 'Error reading API with vars '; var_dump($vars);
       if ($res->error) echo $res->error;
     }
-	} while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
+  } while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
   set_time_limit(45);
   return $page_titles;
 }
@@ -107,7 +109,7 @@ function get_article_id($page) {
 }
 
 function get_namespace($page) {
-	$xml = load_xml_via_bot(Array("action" => "query",
+    $xml = load_xml_via_bot(Array("action" => "query",
       "format" => "xml",
       "prop" => "info",
       "titles" => $page,
@@ -123,13 +125,13 @@ function is_redirect($page) {
       "titles" => $page,
       );
   $xml = load_xml_via_bot($url);
-	if ($xml->query->pages->page["pageid"]) {
+  if ($xml->query->pages->page["pageid"]) {
     // Page exists
     return array ((($xml->query->pages->page["redirect"]) ? 1 : 0),
                     $xml->query->pages->page["pageid"]);
-    } else {
+  } else {
       return array (-1, NULL);
-   }
+  }
 }
 
 function redirect_target($page) {

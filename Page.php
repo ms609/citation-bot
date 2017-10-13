@@ -227,10 +227,10 @@ class Page {
         if (HTML_OUTPUT) echo "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
         else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
         return TRUE;
-      } else if ($result->edit->result) {
+      } elseif ($result->edit->result) {
         echo htmlspecialchars($result->edit->result);
         return TRUE;
-      } else if ($result->error->code) {
+      } elseif ($result->error->code) {
         // Return error code
         echo "\n ! " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
         return FALSE;

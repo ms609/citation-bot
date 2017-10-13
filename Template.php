@@ -628,12 +628,12 @@ class Template extends Item {
           }
           return $this->add_if_new("pmc", $match[1] . $match[2]);
         }
-      } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
+      } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         
-      } else if (extract_doi($url)[1]) {
+      } elseif (extract_doi($url)[1]) {
         
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
         return $this->add_if_new('doi', extract_doi($url)[1]);
@@ -654,7 +654,7 @@ class Template extends Item {
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
         
-      } else if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
+      } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
         
         if (is_null($url_sent)) {
           $this->forget('url');
@@ -662,7 +662,7 @@ class Template extends Item {
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         return $this->add_if_new('pmid', $match[1]);
         
-      } else if (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
+      } elseif (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
         
         if (strpos($this->name, 'web')) $this->name = 'Cite book';
         if ($match['domain'] == ".com") {
