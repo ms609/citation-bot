@@ -845,13 +845,12 @@ class Template extends Item {
     global $SLOW_MODE;
     if ($SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
-      $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
       if ($bibcode = $this->get("bibcode")) {
-        $xml = simplexml_load_file($url_root . "bibcode=" . urlencode($bibcode));
+        $xml = query_adsabs("bibcode:" . urlencode($bibcode));
       } elseif ($doi = $this->get('doi')) {
-        $xml = simplexml_load_file($url_root . "doi=" . urlencode($doi));
+        $xml = query_adsabs("doi:" . urlencode($doi));
       } elseif ($title = $this->get("title")) {
-        $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $title . '"'));
+        $xml = query_adsabs("title:" . urlencode('"' . $title . '"'));
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($xml->record->title)));
         $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($title)));
         if (
@@ -867,11 +866,10 @@ class Template extends Item {
       }
       if ($xml["retrieved"] != 1 && $journal = $this->get('journal')) {
         // try partial search using bibcode components:
-        $xml = simplexml_load_file($url_root
-                . "year=" . $this->get('year')
-                . "&volume=" . $this->get('volume')
-                . "&page=" . $this->page()
-                );
+        $xml = query_adsabs("year:" . $this->get('year')
+                          . "&volume:" . $this->get('volume')
+                          . "&page:" . $this->page()
+                          );
         $journal_string = explode(",", (string) $xml->record->journal);
         $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
         if (strlen($journal_string[0]) && strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
