@@ -186,6 +186,10 @@ class Template extends Item {
         $this->get_open_access_url();
         $this->find_pmid();
         $this->tidy();
+        // Convert from journal to book, if there is a unique chapter name
+        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title'))) { 
+          $this->name = 'Cite book';
+        }  
     }
     if ($this->citation_template) {
       $this->correct_param_spelling();
@@ -366,9 +370,9 @@ class Template extends Item {
         return FALSE;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
-          if (strtolower(sanitize_string($value)) == "zookeys" ) $this->forget("volume") ; // No volumes, just issues.
-          if (strcasecmp( (string) $value, "unknown") == 0 ) return FALSE;
-          return $this->add($param_name, format_title_text(title_case($value),FALSE));
+          if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
+          if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
+          return $this->add($param_name, format_title_text(title_case($value), FALSE));
         }
         return FALSE;
       case 'series': 
@@ -391,6 +395,7 @@ class Template extends Item {
         ) return $this->add($param_name, sanitize_string($value));
         return FALSE;
       case 'title':
+        if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name)) {
           return $this->format_title($value); // format_title will sanitize the string
         }
@@ -457,7 +462,7 @@ class Template extends Item {
       return FALSE;
       case 'volume':
         if ($this->blank($param_name)) {
-          if (strtolower($this->get('journal')) == "zookeys" ) {
+          if (in_array(strtolower($this->get('journal')), HAS_NO_VOLUME) === TRUE ) {
             // This journal has no volume.  This is really the issue number
             return $this->add_if_new('issue', $value);
           } else {
@@ -473,6 +478,12 @@ class Template extends Item {
           }
           return $this->add($param_name, $value);
         } 
+      return FALSE;
+      case 'isbn';
+        if ($this->blank($param_name)) { 
+          $value = $this->isbn10Toisbn13($value);
+          return $this->add($param_name, $value);
+        }
       return FALSE;
       default:
         if ($this->blank($param_name)) {
@@ -666,7 +677,7 @@ class Template extends Item {
       if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
         // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
         echo "\n - Checking for ISBN";
-        if ($this->blank('isbn') && $title = $this->get("title")) $this->set("isbn", findISBN( $title, $this->first_author()));
+        if ($this->blank('isbn') && $title = $this->get("title")) $this->add_if_new("isbn", findISBN( $title, $this->first_author()));
         else echo "\n  Already has an ISBN. ";
       }
     }
@@ -805,9 +816,7 @@ class Template extends Item {
           $journal_data = preg_replace("~[\s:,;]*$~", "",
                   str_replace($match[-0], "", $journal_data));
         }
-        if (strcasecmp((string) $journal_data, "unknown") !=0 ) {
-          $this->add_if_new("journal", format_title_text($journal_data,FALSE));
-        }
+        $this->add_if_new("journal", format_title_text($journal_data));
       } else {
         $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       }
@@ -860,9 +869,7 @@ class Template extends Item {
       if ($xml["retrieved"] == 1) {
         echo tag();
         $this->add_if_new("bibcode", (string) $xml->record->bibcode);
-        if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
-            $this->add_if_new("title", (string) $xml->record->title); // add_if_new will format the title text
-        }
+        $this->add_if_new("title", (string) $xml->record->title); // add_if_new will format the title text and check for unknown
         $i = NULL;
         foreach ($xml->record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
@@ -881,7 +888,7 @@ class Template extends Item {
             $this->append_to('id', ' ' . substr($journal_start, 13));
           }
         } else {
-          if (strcasecmp($journal_string[0], "unknown") != 0) $this->add_if_new('journal', $journal_string[0]); // Bibcodes titles are sometimes unknown
+          $this->add_if_new('journal', $journal_string[0]);
         }
         if ($this->add_if_new('doi', (string) $xml->record->DOI)) {
           $this->expand_by_doi();
@@ -1097,13 +1104,16 @@ class Template extends Item {
           return TRUE;
         }
         $this->add('url', $best_location->url);
-        switch ($best_location->version) {
+        $this->get_identifiers_from_url();  // Might be PMC, etc.
+        if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
+          switch ($best_location->version) {
             case 'acceptedVersion': $format = 'Accepted manuscript'; break;
             case 'submittedVersion': $format = 'Submitted manuscript'; break;
             case 'publishedVersion': $format = 'Full text'; break;
             default: $format = NULL;
+          }
+          if ($format) $this->add('format', $format);
         }
-        if ($format) $this->add('format', $format);
         return TRUE;
       }
     } else {
@@ -1179,8 +1189,12 @@ class Template extends Item {
     $i = NULL;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        if( $author != "Hearst Magazines" && $author != "Time Inc") {  // Catch common google bad authors
-           $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
+        if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+          if( in_array(strtolower($author), AUTHORS_ARE_PUBLISHERS) === TRUE) {
+            $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
+          } else {
+            $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
+          }
         }
       }
     }
@@ -1202,8 +1216,8 @@ class Template extends Item {
       if ($title && !$over_isbn_limit) {
         $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
         print "\n\nhttp://isbndb.com/api/books.xml?access_key=$ISBN_KEY&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
-        if ($xml->BookList["total_results"] == 1) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
-        if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
+        if ($xml->BookList["total_results"] == 1) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
+        if ($auth && $xml->BookList["total_results"] > 0) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
         else return FALSE;
       }
     }
@@ -1414,7 +1428,7 @@ class Template extends Item {
               $endnote_parameter = FALSE;
           }
           if ($endnote_parameter && $this->blank($endnote_parameter)) {
-            $this->add($endnote_parameter, trim(substr($endnote_line, 2)));
+            $this->add_if_new($endnote_parameter, trim(substr($endnote_line, 2)));
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
         }
@@ -1605,7 +1619,7 @@ class Template extends Item {
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
-        $this->add('isbn', $match[1]);
+        $this->add_if_new('isbn', $match[1]);
         $pAll = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
@@ -1874,7 +1888,9 @@ class Template extends Item {
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) {
       $this->rename('origyear', 'year');
     }
-
+    
+    if ($this->has('isbn')) $this->set('isbn',$this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
+    
     $authors = $this->get('authors');
     if (!$authors) {
       $authors = $this->get('author'); # Order _should_ be irrelevant as only one will be set... but prefer 'authors' if not.
@@ -1936,6 +1952,9 @@ class Template extends Item {
                     " parameter" . tag());
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
+            break;
+          case 'isbn':
+            $p->val = $this->isbn10Toisbn13($p->val);
             break;
         }
       }
@@ -2348,5 +2367,23 @@ class Template extends Item {
 
   public function is_modified () {
     return (bool) count($this->modifications('modifications'));
+  }
+  
+  public function isbn10Toisbn13 ($isbn10) {
+       $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
+       $isbn10 = str_replace(array('—','―','–','−','‒'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
+       if (preg_match("~[^0-9Xx\-]~",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
+       if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-") return $isbn10;  // Ends or starts with a dash
+       $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
+       if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
+       $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit - do not need and might be X
+       if (preg_match("~[^0123456789]~",$isbn13) === 1)  return $isbn10;  // Not just numbers
+       $sum = 0;
+       for ($count=0; $count<12; $count++ ) {
+          $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
+       }
+       $sum = ((10-$sum%10)%10) ;
+       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum ; // Assume existing dashes (if any) are right
+       return $isbn13 ;
   }
 }

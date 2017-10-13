@@ -384,7 +384,30 @@ ER -  }}';
        $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
    }
-   
+
+  public function testISBN() {  // Dashes, no dashes, etc.
+    $text = "{{cite book|isbn=3-902823-24-0}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-3-902823-24-3', $expanded->get('isbn'));  // Convert with dashes
+    $text = "{{cite book|isbn=978-3-902823-24-3}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-3-902823-24-3', $expanded->get('isbn'));  // Unchanged with dashes
+    $text = "{{cite book|isbn=9783902823243}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('9783902823243', $expanded->get('isbn'));   // Unchanged without dashes
+    $text = "{{cite book|isbn=3902823240}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-3902823243', $expanded->get('isbn'));   // Convert without dashes
+    $text = "{{cite book|isbn=1-84309-164-X}}";
+    $expanded = $this->process_citation($text);  
+    $this->assertEquals('978-1-84309-164-6', $expanded->get('isbn'));  // Convert with dashes and a big X
+    $text = "{{cite book|isbn=184309164x}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-1843091646', $expanded->get('isbn'));  // Convert without dashes and a tiny x
+    $text = "{{cite book|isbn=Hello Brother}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Hello Brother', $expanded->get('isbn')); // Rubbish unchanged
+  }
    
   public function testEtAl() {
       $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
@@ -423,6 +446,18 @@ ER -  }}';
       $this->assertEquals('http://ABC/ I have Spaces in Me', $expanded->get('website'));
   }
   
+  public function testHearst () {
+       $text = '{{cite book|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Hearst Magazines',$expanded->get('publisher'));
+       $this->assertNull($expanded->get('last1'));
+       $this->assertNull($expanded->get('last'));
+       $this->assertNull($expanded->get('author'));
+       $this->assertNull($expanded->get('author1'));
+       $this->assertNull($expanded->get('authors'));
+  }
+    
+    
   public function testLinefeeds(){
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
@@ -470,6 +505,12 @@ ER -  }}';
        if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
        if (is_null($input->get('date'))) return $input->get('year') ;
        return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
+   }
+    
+   public function testConvertJournalToBook() {
+       $text = '{{Cite journal|doi=10.1007/978-3-540-74735-2_15}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('cite book', $expanded->wikiname());
    }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors

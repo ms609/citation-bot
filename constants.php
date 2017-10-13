@@ -26,6 +26,12 @@ const HTML_ENCODE = array("&#x5B;", "&#x5D;", "&#60;", "&#62;", "+");
 const DOT_ENCODE = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
 const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 
+// Some data we get from outside sources is bad or at least mis-defined
+// Use lower case for all of these, and then compare to a lower cased version
+const BAD_AUTHORS = array("unknown","missing");
+const AUTHORS_ARE_PUBLISHERS = array("hearst magazines", "time inc");
+const HAS_NO_VOLUME = array("zookeys");  // Some journals have issues only, no volume numbers
+const BAD_TITLES = array("unknown","missing");
 
 // dontCap is am array of strings that should not be capitalized in their titlecase format; 
 // unCapped is their correct capitalization. Remember to enclose any word in spaces.
