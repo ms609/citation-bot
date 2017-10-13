@@ -1216,8 +1216,7 @@ class Template extends Item {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        $this->add('url', $best_location->url);
-        $this->get_identifiers_from_url();  // Might be PMC, etc.
+        $this->add_if_new('url', $best_location->url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           switch ($best_location->version) {
             case 'acceptedVersion': $format = 'Accepted manuscript'; break;
