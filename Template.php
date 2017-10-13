@@ -1105,7 +1105,7 @@ class Template extends Item {
         }
         $this->add('url', $best_location->url);
         $this->get_identifiers_from_url();  // Might be PMC, etc.
-        if ($this->has('url') {  // The above line might have eaten the URL and upgraded it
+        if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           switch ($best_location->version) {
             case 'acceptedVersion': $format = 'Accepted manuscript'; break;
             case 'submittedVersion': $format = 'Submitted manuscript'; break;
