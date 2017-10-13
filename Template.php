@@ -1842,7 +1842,6 @@ class Template extends Item {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
               print "\n    " . $this->internal_templates[$i];
-              var_dump($subtemplate);
               break;
             }
           
