@@ -159,7 +159,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testOpenAccessLookup() {
     $text = '{{cite journal|doi=10.1038/nature12373}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4221854', $expanded->get('url'));
+    $this->assertEquals('https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4221854/pdf', $expanded->get('url'));
     $this->assertEquals('Accepted manuscript', $expanded->get('format'));
   }
   
