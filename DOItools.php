@@ -251,7 +251,8 @@ function query_adsabs ($options) {
     . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
   $return = json_decode(curl_exec($ch));
   curl_close($ch);
-  return $return->response;
+  
+  return (is_object($return)) ? $return->response : (object) array('numFound' => 0);
 }
 
 function equivUrl ($u){

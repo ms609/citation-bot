@@ -919,6 +919,7 @@ class Template extends Item {
   }
 
   public function expand_by_adsabs() {
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
     if ($SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
@@ -929,14 +930,13 @@ class Template extends Item {
       } elseif ($this->has('title')) {
         $result = query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
         print "\n\n\n\n\n\n\n88888\n";
-        var_dump($result);
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($record->title)));
         $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
         if (
              (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-                ? (strlen($inTitle) != strlen($dbTitle) 
+                ? (strlen($inTitle) != strlen($dbTitle)
                   || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
                 : levenshtein($inTitle, $dbTitle) > 3
             ) {
@@ -976,23 +976,35 @@ class Template extends Item {
         foreach ($record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
         }
-        $journal_string = explode(",", (string) $record->pub);
-        $journal_start = mb_strtolower($journal_string[0]);
-        $this->add_if_new("volume", (string) $record->volume);
-        $this->add_if_new("issue", (string) $record->issue);
-        $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
-        $this->add_if_new("pages", implode('–', $record->page));
-        if (preg_match("~\bthesis\b~ui", $journal_start)) {}
-        elseif (substr($journal_start, 0, 6) == "eprint") {
-          if (substr($journal_start, 7, 6) == "arxiv:") {
-            if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
+        var_dump($record);
+        if (isset($record->pub)) {
+          $journal_string = explode(",", (string) $record->pub);
+          $journal_start = mb_strtolower($journal_string[0]);
+          if (preg_match("~\bthesis\b~ui", $journal_start)) {
+            // Do nothing
+          } elseif (substr($journal_start, 0, 6) == "eprint") {
+            if (substr($journal_start, 7, 6) == "arxiv:") {
+              if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
+            } else {
+              $this->append_to('id', ' ' . substr($journal_start, 13));
+            }
           } else {
-            $this->append_to('id', ' ' . substr($journal_start, 13));
-          }
-        } else {
-          $this->add_if_new('journal', $journal_string[0]);
+            $this->add_if_new('journal', $journal_string[0]);
+          }          
         }
-        if ($this->add_if_new('doi', (string) $record->doi[0])) {
+        if (isset($record->volume)) {
+          $this->add_if_new("volume", (string) $record->volume);
+        }
+        if (isset($record->issue)) {
+          $this->add_if_new("issue", (string) $record->issue);
+        }
+        if (isset($record->year)) {
+          $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
+        }
+        if (isset($record->page)) {
+          $this->add_if_new("pages", implode('–', $record->page));
+        }
+        if (isset($record->doi) && $this->add_if_new('doi', (string) $record->doi[0])) {
           $this->expand_by_doi();
         }
         return TRUE;
