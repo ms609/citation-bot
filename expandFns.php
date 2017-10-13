@@ -33,7 +33,7 @@ require_once("Parameter.php");
 require_once("Comment.php");
 require_once("wikiFunctions.php");
 
-//require_once(HOME . "credentials/mysql.login");
+require_once(HOME . "credentials/mysql.login");
 /* mysql.login is a php file containing:
   define('MYSQL_DBNAME', ...);
   define('MYSQL_SERVER', ...);
