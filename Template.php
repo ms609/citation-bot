@@ -816,7 +816,7 @@ class Template extends Item {
           $journal_data = preg_replace("~[\s:,;]*$~", "",
                   str_replace($match[-0], "", $journal_data));
         }
-        $this->add_if_new("journal", format_title_text($journal_data));
+        $this->add_if_new("journal", format_title_text($journal_data,FALSE));
       } else {
         $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       }
