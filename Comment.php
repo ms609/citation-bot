@@ -6,9 +6,9 @@
 require_once('Item.php');
 
 class Comment extends Item {
-  const placeholder_text = '# # # Citation bot : comment placeholder %s # # #';
-  const regexp = '~<!--.*?-->~us';
-  const treat_identical_separately = FALSE;
+  const PLACEHOLDER_TEXT = '# # # Citation bot : comment placeholder %s # # #';
+  const REGEXP = '~<!--.*?-->~us';
+  const TREAT_IDENTICAL_SEPARATELY = FALSE;
 
   public function parse_text($text) {
     $this->rawtext = $text;
@@ -20,9 +20,9 @@ class Comment extends Item {
 }
 
 class Nowiki extends Item {
-  const placeholder_text = '# # # Citation bot : no wiki placeholder %s # # #';  // Have space in nowiki so that it does not through some crazy bug match itself recursively
-  const regexp = '~<nowiki>.*?</nowiki>~us'; 
-  const treat_identical_separately = FALSE;
+  const PLACEHOLDER_TEXT = '# # # Citation bot : no wiki placeholder %s # # #';  // Have space in nowiki so that it does not through some crazy bug match itself recursively
+  const REGEXP = '~<nowiki>.*?</nowiki>~us'; 
+  const TREAT_IDENTICAL_SEPARATELY = FALSE;
   
   public function parse_text($text) {
     $this->rawtext = $text;

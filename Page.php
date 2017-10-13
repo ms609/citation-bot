@@ -27,18 +27,18 @@ class Page {
       return array ((($xml->query->pages->page["redirect"])?1:0),
                       $xml->query->pages->page["pageid"]);
       } else {
-        return array (-1, null);
+        return array (-1, NULL);
      }
   }
 
   public function get_text_from($title) {
     global $bot;
-    $bot->fetch(wikiroot . "title=" . urlencode($title) . "&action=raw");
+    $bot->fetch(WIKI_ROOT . "title=" . urlencode($title) . "&action=raw");
     $this->text = $bot->results;
     $this->start_text = $this->text;
     $this->modifications = array();
 
-    $bot->fetch(api . "?action=query&prop=info&format=json&titles=" . urlencode($title));
+    $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&titles=" . urlencode($title));
     $details = json_decode($bot->results);
     foreach ($details->query->pages as $p) {
       $my_details = $p;
@@ -74,17 +74,26 @@ class Page {
   public function expand_text() {
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    quiet_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" . urlencode($this->title) . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title=". urlencode($this->title)."&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title=" . urlencode($this->title) . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>document.title=\"Citation bot: '" . str_replace("+", " ", urlencode($this->title)) ."'\";</script>");
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" 
+      . urlencode($this->title) 
+      . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title="
+      . urlencode($this->title)
+      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title="
+      . urlencode($this->title)
+      . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
+      . "document.title=\"Citation bot: '"
+      . str_replace("+", " ", urlencode($this->title)) ."'\";</script>", 
+      "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
     $text = $this->text;
     $this->modifications = array();
     if (!$text) {
       echo "\n\n  ! No text retrieved.\n";
-      return false;
+      return FALSE;
     }
 
-    //this is set to -1 only in text.php, because there's no need to output
+    //this is set to -1 only in [erstwhile file?] text.php, because there's no need to output
     // a buffer of text for the citation-expander gadget
-    if (html_output === -1) {
+    if (HTML_OUTPUT === -1) {
       ob_start();
     }
 
@@ -128,7 +137,7 @@ class Page {
     $this->replace_object($nowiki);
    
     // seems to be set as -1  in text.php and then re-set
-    if (html_output === -1) {
+    if (HTML_OUTPUT === -1) {
       ob_end_clean();
     }
 
@@ -178,7 +187,7 @@ class Page {
     if ($this->allow_bots()) {
       global $bot;
       // Check that bot is logged in:
-      $bot->fetch(api . "?action=query&prop=info&meta=userinfo&format=json");
+      $bot->fetch(API_ROOT . "?action=query&prop=info&meta=userinfo&format=json");
       $result = json_decode($bot->results);
       if ($result->query->userinfo->id == 0) {
         echo "\n ! LOGGED OUT:  The bot has been logged out from Wikipedia servers";
@@ -186,14 +195,14 @@ class Page {
       }
 
       // FIXME: this is very deprecated, use ?action=query&meta=tokens to get a 'csrf' type token (the default)
-      $bot->fetch(api . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
+      $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
       if ($my_page->lastrevid != $this->lastrevid) {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
-      if ( stripos($this->text,"Citation bot : comment placeholder") != false )  {
+      if ( stripos($this->text,"Citation bot : comment placeholder") != FALSE )  {
         echo "\n ! Comment placeholder left escaped. Aborting.";
         return FALSE;
       }
@@ -211,11 +220,11 @@ class Page {
           "watchlist" => "nochange",
           "format" => "json",
       );
-      $bot->submit(api, $submit_vars);
+      $bot->submit(API_ROOT, $submit_vars);
       $result = json_decode($bot->results);
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        if (html_output) echo "\n <span style='color: #e21'>Written to <a href='" . wikiroot . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
+        if (HTML_OUTPUT) echo "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
         else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
         return TRUE;
       } else if ($result->edit->result) {
@@ -237,9 +246,9 @@ class Page {
   protected function extract_object ($class) {
     $i = 0;
     $text = $this->text;
-    $regexp = $class::regexp;
-    $placeholder_text = $class::placeholder_text;
-    $treat_identical_separately = $class::treat_identical_separately;
+    $regexp = $class::REGEXP;
+    $placeholder_text = $class::PLACEHOLDER_TEXT;
+    $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
     while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
@@ -257,18 +266,18 @@ class Page {
   protected function replace_object ($objects) {
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
-      $this->text = str_ireplace(sprintf($obj::placeholder_text, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
+      $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
 
   public function allow_bots() {
     // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
-      return false;
+      return FALSE;
     if (preg_match('/\{\{(bots\|allow=all|bots\|allow=.*?'.$bot_username.'.*?)\}\}/iS', $this->text))
-      return true;
+      return TRUE;
     if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $this->text))
-      return false;
-    return true;
+      return FALSE;
+    return TRUE;
   }
 }

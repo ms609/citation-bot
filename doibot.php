@@ -35,11 +35,11 @@
         <div id="bodyContent">
           <h3 id="siteSub">Please wait while the <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> processes the page you requested.</h3>
             <pre><?php
-## Set up - including dotDecode array
-define("html_output", TRUE);
+## Set up - including DOT_DECODE array
+define("HTML_OUTPUT", TRUE);
 require_once("expandFns.php");
 require_once("login.php");
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : null;
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   print "Activated by $user\n";
   $edit_summary_end = " | [[User:$user|$user]]";
@@ -57,10 +57,10 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
       ++$attempts;
     }
     if ($attempts < 3 ) {
-      echo html_output ?
+      echo HTML_OUTPUT ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
-        . urlencode(getLastRev($title)) . ">last edit</a></small></i>\n\n<br>"
+        . urlencode(get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
         : ".";
     } else {
       echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
@@ -74,7 +74,7 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
   <input type="hidden" name="page" value="<?php echo $title;?>"></input>
   <input type="hidden" name="user" value="<?php echo $user;?>"></input>
   <input type="hidden" name="edit" value="on"></input>
-  <input type="hidden" name="slow" value="<?php echo SLOW_MODE;?>"></input>
+  <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>"></input>
   <input type=submit value="Submit edits"></input>
 </form>
 <?php

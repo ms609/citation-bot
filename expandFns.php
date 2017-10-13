@@ -7,12 +7,16 @@
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 
-if (!defined("html_output")) {
-  define("html_output", -1);
+if (!defined("HTML_OUTPUT")) {
+  define("HTML_OUTPUT", -1);
 }  
 
+function html_echo($text, $alternate_text='') {
+  echo (HTML_OUTPUT >= 0) ? $text : $alternate_text;
+}
+
 function quiet_echo($text, $alternate_text = '') {
-  if (html_output >= 0)
+  if (defined('VERBOSE') || HTML_OUTPUT >= 0)
     echo $text;
   else
     echo $alternate_text;
@@ -55,23 +59,26 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 #ob_start(); //Faster, but output is saved until page finshed.
 ini_set("memory_limit", "256M");
 
-define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : false);
-define("SLOW_MODE", isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : false);
+define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
+if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
+
 if (isset($_REQUEST["crossrefonly"])) {
-  $crossRefOnly = true;
+  $crossRefOnly = TRUE;
 } elseif (isset($_REQUEST["turbo"])) {
   $crossRefOnly = $_REQUEST["turbo"];
 } else {
-  $crossRefOnly = false;
+  $crossRefOnly = FALSE;
 }
-$edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : null;
+$edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : NULL;
 
 if ($edit || isset($_GET["doi"]) || isset($_GET["pmid"])) {
-  $ON = true;
+  $ON = TRUE;
 }
 
 ################ Functions ##############
-
+/**
+ * @codeCoverageIgnore
+ */
 function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
   // if the bot is trying to connect to the defunct toolserver
   if ($dbName == 'yarrow') {
@@ -95,68 +102,47 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
   return ($db);
 }
 
-function countMainLinks($title) {
-  // Counts the links to the mainpage
-  global $bot;
-  if (preg_match("/\w*:(.*)/", $title, $title))
-    $title = $title[1]; //Gets {{PAGENAME}}
-  $url = "https://en.wikipedia.org/w/api.php?action=query&bltitle=" . urlencode($title) . "&list=backlinks&bllimit=500&format=yaml";
-  $bot->fetch($url);
-  $page = $bot->results;
-  if (preg_match("~\n\s*blcontinue~", $page))
-    return 501;
-  preg_match_all("~\n\s*pageid:~", $page, $matches);
-  return count($matches[0]);
+function sanitize_doi($doi) {
+  return str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
 }
 
-function logIn($username, $password) {
-  global $bot; // Snoopy class loaded in DOItools.php
-  // Set POST variables to retrieve a token
-  $submit_vars["format"] = "json";
-  $submit_vars["action"] = "login";
-  $submit_vars["lgname"] = $username;
-  $submit_vars["lgpassword"] = $password;
-  // Submit POST variables and retrieve a token
-  $bot->submit(api, $submit_vars);
-  if (!$bot->results) {
-    exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
+/* extract_doi
+ * Returns an array containing:
+ * 0 => text containing a DOI, possibly encoded, possibly with additional text
+ * 1 => the decoded DOI
+ */
+function extract_doi($text) {
+  if (preg_match(
+        "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
+        $text, $match)) {
+    $doi = $match[1];
+    if (preg_match(
+          "~^(.*?)(/abstract|/e?pdf|/full|</span>|[\s\|\"\?]|</).*+$~",
+          $doi, $new_match)
+        ) {
+      $doi = $new_match[1];
+    }
+    return array($match[0], sanitize_doi($doi));
   }
-  $first_response = json_decode($bot->results);
-  $submit_vars["lgtoken"] = $first_response->login->token;
-  // Resubmit with new request (which has token added to post vars)
-  $bot->submit(api, $submit_vars);
-  $login_result = json_decode($bot->results);
-  if ($login_result->login->result == "Success") {
-    quiet_echo("\n Using account " . htmlspecialchars($login_result->login->lgusername) . ".");
-    // Add other cookies, which are necessary to remain logged in.
-    $cookie_prefix = "enwiki";
-    $bot->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
-    $bot->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
-    $bot->cookies[$cookie_prefix . "Token"] = $login_result->login->lgtoken;
-    $bot->cookies[$cookie_prefix . "_session"] = $login_result->login->sessionid;
-    return true;
-  } else {
-    exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
-    global $ON;
-    $ON = false;
-    return false;
-  }
-}
-
-function inputValue($tag, $form) {
-  //Gets the value of an input, if the input's in the right format.
-  preg_match("~value=\"([^\"]*)\" name=\"$tag\"~", $form, $name);
-  if ($name)
-    return $name[1];
-  preg_match("~name=\"$tag\" value=\"([^\"]*)\"~", $form, $name);
-  if ($name)
-    return $name[1];
-  return false;
+  return NULL;
 }
 
 function format_title_text($title) {
-  $title = html_entity_decode($title, null, "UTF-8");
-  $title = str_replace(array("\r\n","\n\r","\r","\n"), ' ', $title); // Replace newlines with a single space
+  $replacement = [];
+  if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
+    $placeholder = [];
+    for ($i = 0; $i < count($matches[0]); $i++) {
+      $replacement[$i] = '<math>' . 
+        str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), 
+          str_replace(['<mml:', '</mml:'], ['<', '</'], $matches[1][$i]))
+        . '</math>';
+      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i); 
+      // Need to use a placeholder to protect contents from URL-safening
+      $title = str_replace($matches[0][$i], $placeholder[$i], $title);
+    }
+  }
+  $title = html_entity_decode($title, NULL, "UTF-8");
+  $title = preg_replace("/\s+/"," ", $title);  // Remove all white spaces before
   $title = (mb_substr($title, -1) == ".")
             ? mb_substr($title, 0, -1)
             :(
@@ -165,19 +151,22 @@ function format_title_text($title) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $iIn = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
-  $iOut = array("''","''",'','',"");
-  $in = array("&lt;", "&gt;");
-  $out = array("<", ">");
   $title = title_capitalization($title);
   
-  return(sanitize_string(str_ireplace($iIn, $iOut, str_ireplace($in, $out, $title)))); // order IS important!
-}
-
-function remove_accents($input) {
-  $search = explode(",", "ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
-  $replace = explode(",", "c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u");
-  return str_replace($search, $replace, $input);
+  $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
+  $wikiTags = array("''","''",'','',"");
+  $htmlBraces  = array("&lt;", "&gt;");
+  $angleBraces = array("<", ">");
+  $title = sanitize_string(// order of functions here IS important!
+             str_ireplace($originalTags, $wikiTags, 
+               str_ireplace($htmlBraces, $angleBraces, $title)
+             )
+           );
+  
+  for ($i = 0; $i < count($replacement); $i++) {
+    $title = str_replace($placeholder[$i], $replacement[$i], $title);
+  }
+  return($title); 
 }
 
 function under_two_authors($text) {
@@ -187,15 +176,25 @@ function under_two_authors($text) {
           );
 }
 
+/* split_authors
+ * Assumes that there is more than one author to start with; 
+ * check this using under_two_authors()
+ */
+function split_authors($str) {
+  if (stripos($str, ';')) return explode(';', $str);
+  return explode(',', $str);
+}
+
 function title_case($text) {
   return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
 }
 
 /** Returns a properly capitalised title.
- *      If sents is true (or there is an abundance of periods), it assumes it is dealing with a title made up of sentences, and allows the letter after any period to remain capitalized.
-  *     If not, it will assume it is a journal abbreviation and won't capitalise after periods.
+ *      If $caps_after_punctuation is TRUE (or there is an abundance of periods), it allows the 
+ *      letter after colons and other punctuation marks to remain capitalized.
+ *      If not, it won't capitalise after : etc.
  */
-function title_capitalization($in, $sents = TRUE, $could_be_italics = TRUE) {
+function title_capitalization($in, $caps_after_punctuation = TRUE, $could_be_italics = TRUE) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes($in);
   
@@ -205,6 +204,7 @@ function title_capitalization($in, $sents = TRUE, $could_be_italics = TRUE) {
     // ALL CAPS to Title Case
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
+  $new_case = substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
   
   
   if ($could_be_italics) {
@@ -212,35 +212,38 @@ function title_capitalization($in, $sents = TRUE, $could_be_italics = TRUE) {
     $new_case = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $new_case);
   }
   
-  if ($sents || (substr_count($in, '.') / strlen($in)) > .07) {
+  if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentance ends
     // We should therefore capitalize after each punctuation character.
     $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
-      create_function('$matches','return mb_strtoupper($matches[0]);'),
+      create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
   }
   
   $new_case = preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
     create_function('$matches', 'return mb_strtolower($matches[0]);'),
-    trim($in)
+    trim($new_case)
   );
   // Solitary 'a' should be lowercase
   $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
+  
+  // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
     create_function('$matches', 'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'),
     $new_case);
   
   // Capitalization exceptions, e.g. Elife -> eLife
-  $new_case = str_replace(dontCap, unCapped, " " .  $new_case . " ");
-  
-  $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in dontCap
-  
+  $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
+  $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
+    
+  /* I believe we can do without this now
   if (preg_match("~^(the|into|at?|of)\b~", $new_case)) {
     // If first word is a little word, it should still be capitalized
     $new_case = ucfirst($new_case);
   }
+  */
   return $new_case;
 }
 
@@ -261,9 +264,23 @@ function tag($long = FALSE) {
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
   if (trim($str) == 'Science (New York, N.Y.)') return 'Science';
+  $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
+  if ($math_templates_present) {
+    $replacement = [];
+    $placeholder = [];
+    for ($i = 0; $i < count($math_hits[0]); $i++) {
+      $replacement[$i] = $math_hits[0][$i];
+      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
+    }
+    $str = str_replace($replacement, $placeholder, $str);
+  }
   $dirty = array ('[', ']', '|', '{', '}');
   $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;');
-  return trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
+  $str = trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
+  if ($math_templates_present) {
+    $str = str_replace($placeholder, $replacement, $str);
+  }
+  return $str;
 }
 
 function prior_parameters($par, $list=array()) {

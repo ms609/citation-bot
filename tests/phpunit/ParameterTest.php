@@ -41,6 +41,11 @@ class ParameterTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($parameter->val, '[[:en:Bigwig|SomeoneFamous]]');
     $this->assertEquals($parameter->post, "\n");
   }
+  public function testParameterWithNoParamName() {
+    $text = " = no param name";
+    $parameter = $this->parameter_parse_text_helper($text);
+    $this->assertEquals(' = ', $parameter->eq);
+  }
 
   public function testBlankValueWithSpacesLeadingSpaceTrailingNewline() {
     $text = " first1 = \n";
@@ -153,6 +158,7 @@ class ParameterTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($parameter->val, "24 April 2008 # # # Citation bot : comment placeholder 0 # # #");
     $this->assertEquals($parameter->post, "");
   }
+  
   public function testHasUnreplacedCommentInValue() {
     $text = "archivedate= 9 August 2006 <!--DASHBot-->";
     $parameter = $this->parameter_parse_text_helper($text);
