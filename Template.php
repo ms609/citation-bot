@@ -370,8 +370,8 @@ class Template extends Item {
         return FALSE;
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
-          if (strtolower(sanitize_string($value)) == "zookeys" ) $this->forget("volume") ; // No volumes, just issues.
-          if (strcasecmp( (string) $value, "unknown") == 0 ) return FALSE;
+          if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
+          if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           return $this->add($param_name, format_title_text(title_case($value)));
         }
         return FALSE;
@@ -395,6 +395,7 @@ class Template extends Item {
         ) return $this->add($param_name, sanitize_string($value));
         return FALSE;
       case 'title':
+        if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name)) {
           return $this->format_title($value); // format_title will sanitize the string
         }
@@ -461,7 +462,7 @@ class Template extends Item {
       return FALSE;
       case 'volume':
         if ($this->blank($param_name)) {
-          if (strtolower($this->get('journal')) == "zookeys" ) {
+          if (in_array(strtolower($this->get('journal')), HAS_NO_VOLUME) === TRUE ) {
             // This journal has no volume.  This is really the issue number
             return $this->add_if_new('issue', $value);
           } else {
@@ -815,9 +816,7 @@ class Template extends Item {
           $journal_data = preg_replace("~[\s:,;]*$~", "",
                   str_replace($match[-0], "", $journal_data));
         }
-        if (strcasecmp((string) $journal_data, "unknown") !=0 ) {
-          $this->add_if_new("journal", format_title_text($journal_data));
-        }
+        $this->add_if_new("journal", format_title_text($journal_data));
       } else {
         $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       }
@@ -870,9 +869,7 @@ class Template extends Item {
       if ($xml["retrieved"] == 1) {
         echo tag();
         $this->add_if_new("bibcode", (string) $xml->record->bibcode);
-        if (strcasecmp( (string) $xml->record->title, "unknown") != 0) {  // Returns zero if the same.  Bibcode titles as sometimes "unknown"
-            $this->add_if_new("title", (string) $xml->record->title); // add_if_new will format the title text
-        }
+        $this->add_if_new("title", (string) $xml->record->title); // add_if_new will format the title text and check for unknown
         $i = NULL;
         foreach ($xml->record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
@@ -891,7 +888,7 @@ class Template extends Item {
             $this->append_to('id', ' ' . substr($journal_start, 13));
           }
         } else {
-          if (strcasecmp($journal_string[0], "unknown") != 0) $this->add_if_new('journal', $journal_string[0]); // Bibcodes titles are sometimes unknown
+          $this->add_if_new('journal', $journal_string[0]);
         }
         if ($this->add_if_new('doi', (string) $xml->record->DOI)) {
           $this->expand_by_doi();
@@ -1189,8 +1186,12 @@ class Template extends Item {
     $i = NULL;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        if( $author != "Hearst Magazines" && $author != "Time Inc") {  // Catch common google bad authors
-           $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
+        if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+          if( in_array(strtolower($author), AUTHORS_ARE_PUBLISHERS) === TRUE) {
+            $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
+          } else {
+            $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
+          }
         }
       }
     }

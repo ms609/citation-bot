@@ -423,6 +423,18 @@ ER -  }}';
       $this->assertEquals('http://ABC/ I have Spaces in Me', $expanded->get('website'));
   }
   
+  public function testHearst () {
+       $text = '{{cite book|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Hearst Magazines',$expanded->get('publisher'));
+       $this->assertNull($expanded->get('last1'));
+       $this->assertNull($expanded->get('last'));
+       $this->assertNull($expanded->get('author'));
+       $this->assertNull($expanded->get('author1'));
+       $this->assertNull($expanded->get('authors'));
+  }
+    
+    
   public function testLinefeeds(){
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
