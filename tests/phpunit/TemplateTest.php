@@ -469,7 +469,38 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('594900', $expanded->get('jstor'));
    }
-    
+
+   public function testInternalCaps() { // checks for title formating in tidy() not breaking things
+       $text = '{{cite journal|journal=ZooTimeKids}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
+   }
+   public function testExistingWikiText() { // checks for formating in tidy() not breaking things
+       $text = '{{cite journal|journal=[[Zootimeboys]] and Girls}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('[[Zootimeboys]] and Girls', $expanded->get('journal'));
+       $text = '{{cite journal|title=[[Zootimeboys]] and Girls}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('[[Zootimeboys]] and Girls', $expanded->get('title'));
+   }
+   public function testNewWikiText() { // checks for new information that looks like wiki text and needs escaped
+       $text = '{{Cite journal|doi=10.1021/jm00193a001}}';  // This has greek letters, [, ], (, and ).
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-&#91;2-carboxy-2-(4-hydroxyphenyl)acetamido&#93;-7.alpha.-methoxy-3-&#91;&#91;(1-methyl-1H-tetrazol-5-yl)thio&#93;methyl&#93;-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems', $expanded->get('title'));
+   }
+   public function testZooKeys() {
+       $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('ZooKeys', $expanded->get('journal'));
+       $this->assertEquals('445', $expanded->get('issue'));
+       $this->assertNull($expanded->get('volume'));
+   }
+   public function testTitleItalics(){
+       $text = '{{cite journal|doi=10.1111/pala.12168}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('The macro- and microfossil record of the Cambrian priapulid \'\'Ottoia\'\'', $expanded->get('title'));
+   }
+
    public function getDateAndYear($input){
        if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
        if (is_null($input->get('date'))) return $input->get('year') ;

@@ -128,7 +128,7 @@ function extract_doi($text) {
   return NULL;
 }
 
-function format_title_text($title) {
+function format_title_text($title, $isArticle = TRUE, $isNew = TRUE) {
   $replacement = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     $placeholder = [];
@@ -152,17 +152,15 @@ function format_title_text($title) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $title = title_capitalization($title);
+  $title = title_capitalization($title,TRUE,$isArticle); // Do not look for italics in Journal titles
   
   $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
   $wikiTags = array("''","''",'','',"");
   $htmlBraces  = array("&lt;", "&gt;");
   $angleBraces = array("<", ">");
-  $title = sanitize_string(// order of functions here IS important!
-             str_ireplace($originalTags, $wikiTags, 
-               str_ireplace($htmlBraces, $angleBraces, $title)
-             )
-           );
+  $title = str_ireplace($htmlBraces, $angleBraces, $title);
+  $title = str_ireplace($originalTags, $wikiTags, $title);
+  if ($isNew) $title = sanitize_string($title);  // Only remove [[  and ]] in NEW data.  Might be a wikilink
   
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title);
@@ -210,6 +208,10 @@ function title_capitalization($in, $caps_after_punctuation = TRUE, $could_be_ita
   
   if ($could_be_italics) {
     // <em> tags often go missing around species names in CrossRef
+    // This finds an internal capital letter and wraps in quotes and adds a space:  xXx to x ''Xx''
+    // We have a test case for this
+    // If done to a Title, Chapter, Publisher, Location, etc. this causes the second part to be displayed in italics
+    // If done to a Work, Journal, trans-title, etc. (which default to italics), this causes the second part to be  displayed in non-italics
     $new_case = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $new_case);
   }
   
