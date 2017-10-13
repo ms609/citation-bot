@@ -16,10 +16,11 @@ function html_echo($text, $alternate_text='') {
 }
 
 function quiet_echo($text, $alternate_text = '') {
-  if (defined('VERBOSE') || HTML_OUTPUT >= 0)
+  if (defined('VERBOSE') || HTML_OUTPUT >= 0) {
     echo $text;
-  else
+  } else {
     echo $alternate_text;
+  }
 }
 
 require_once("constants.php");
@@ -92,7 +93,7 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
   // select database
   if ($db && $server == "sql") {
      mysql_select_db(str_replace('-','_',MYSQL_PREFIX . $dbName)) or print "\nDatabase connection failed: " . mysql_error() . "";
-  } else if ($db) {
+  } elseif ($db) {
      mysql_select_db($dbName) or die(mysql_error());
   } else {
     die ("\nNo DB selected!\n");
