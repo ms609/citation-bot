@@ -932,7 +932,7 @@ class Template extends Item {
         print "\n\n\n\n\n\n\n88888\n";
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
-        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($record->title)));
+        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
         $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
         if (
              (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
