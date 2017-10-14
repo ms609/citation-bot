@@ -46,8 +46,8 @@ class Page {
     $details = $my_details;
     $this->title = $details->title;
     $this->namespace = $details->ns;
-    $this->touched = $details->touched;
-    $this->lastrevid = $details->lastrevid;
+    $this->touched = isset($details->touched) ? $details->touched : NULL;
+    $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
 
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
@@ -61,12 +61,6 @@ class Page {
     }
   }
 
-  public function parse_text($text) { // used in testing context.
-    $this->text = $text;
-    $this->start_text = $this->text;
-    $this->modifications = array();
-  }
-  
   public function parsed_text() {
     return $this->text;
   }
@@ -198,6 +192,10 @@ class Page {
       $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
+      if (!isset($my_page->lastrevid)) {
+        echo "\n ! Page seems not to exist. Aborting.";
+        return FALSE;
+      }
       if ($my_page->lastrevid != $this->lastrevid) {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
@@ -222,9 +220,14 @@ class Page {
       );
       $bot->submit(API_ROOT, $submit_vars);
       $result = json_decode($bot->results);
+      var_dump($result);
       if ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        if (HTML_OUTPUT) echo "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
+        if (HTML_OUTPUT) {
+          echo "\n <span style='color: #e21'>Written to <a href='" 
+          . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" 
+          . htmlspecialchars($my_page->title) . '</a></span>';
+        }
         else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
         return TRUE;
       } elseif ($result->edit->result) {
@@ -242,7 +245,7 @@ class Page {
       echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots]} template.";
     }
   }
-
+  
   protected function extract_object ($class) {
     $i = 0;
     $text = $this->text;

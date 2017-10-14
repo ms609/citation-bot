@@ -195,7 +195,6 @@ function article_id($page, $namespace = 0) {
 function get_raw_wikitext($page, $wait = FALSE, $verbose = FALSE) {
   $encode_page = urlencode($page);
   echo $verbose ? "\n scraping... " : "";
-    // Get the text by scraping edit page
     $url = WIKI_ROOT . "title=" . $encode_page . "&action=raw";
     $contents = (string) @file_get_contents($url);
   return $contents;
