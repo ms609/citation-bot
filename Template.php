@@ -970,7 +970,7 @@ class Template extends Item {
           }
         }
         echo " (ok)";
-      } elseif ( stripos( $doi, 'CITATION_BOT_PLACEHOLDER') === FALSE ) { // Ignore DOIs that are actually comments, etc.
+      } else { // Ignore DOIs that are actually comments, etc.
         echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
         $url_test = "http://dx.doi.org/".$doi ;
         $headers_test = get_headers($url_test, 1);
@@ -2054,7 +2054,6 @@ class Template extends Item {
     }
     echo "\n   . Checking that DOI " . htmlspecialchars($doi) . " is operational..." . tag();
     if ($this->query_crossref() === FALSE) {
-      if (stripos( $doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE ; // Some type of place holder.  Test here, just in case real DOI has the phrase placehold in it
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
       $this->forget("doi_inactivedate");
@@ -2246,8 +2245,11 @@ class Template extends Item {
   }
   
   public function get_without_comments($name) {
-    $ret = preg_replace('~<!--.*?-->~su', '', $this->get($name));
-    return (trim($ret) ? $ret : FALSE);
+    $ret = $this->get($name);
+    $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
+    $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
+    $ret = trim($ret);
+    return ($ret ? $ret : FALSE);
   }
 
   protected function get_param_key ($needle) {
