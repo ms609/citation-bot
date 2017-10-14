@@ -46,10 +46,10 @@ class PageTest extends PHPUnit\Framework\TestCase {
 
   public function testReadWrite() {
     $page = new TestPage();
-    $page->get_text_from('User:Blocked testing account/readtest');
+    $page->get_text_from('User:Blocked Testing Tccount/readtest');
     $this->assertEquals('Hello world', $page->parsed_text());
     
-    $writeTestPage = 'User:Blocked testing account/writetest';
+    $writeTestPage = 'User:Blocked Testing Account/writetest';
     $message1 = 'Hello world';
     $message2 = 'Hello world!';
     
