@@ -241,6 +241,20 @@ function curlSetUp($ch, $url){
 	curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
 }
 
+function query_adsabs ($options) {  
+  // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer:' . ADSABSAPIKEY));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_URL, "http://api.adsabs.harvard.edu/v1/search/query"
+    . "?data_type=XML&q=$options&fl="
+    . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
+  $return = json_decode(curl_exec($ch));
+  curl_close($ch);
+  
+  return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
+}
+
 function equivUrl ($u){
 	$db = preg_replace("~;jsessionid=[A-Z0-9]*~", "", str_replace("%2F", "/", str_replace("?journalCode=pdi", "",
 	str_replace("sci;", "", str_replace("/full?cookieSet=1", "", str_replace("scienceonline", "sciencemag", str_replace("/fulltext/", "/abstract/",

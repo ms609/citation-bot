@@ -136,7 +136,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testUnknownJournal() {
     $text = '{{cite journal|bibcode= 1975STIN...7615344H |title= Development of a transmission error model and an error control model  |volume= 76 |author1= Hammond |first1= J. L. |last2= Brown |first2= J. E. |last3= Liu |first3= S. S. S. |year= 1975}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals($text, $expanded->parsed_text());
+    $this->assertTrue($expanded->blank('journal'));
   }
 
   public function testCiteArxivRecognition() {
@@ -155,14 +155,23 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('doi-broken-date'));
   }
-  
+
   public function testOpenAccessLookup() {
     $text = '{{cite journal|doi=10.1038/nature12373}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4221854', $expanded->get('url'));
+    $this->assertEquals('4221854', $expanded->get('pmc'));
+    
+    $text = '{{cite journal|doi=10.1038/nature08244}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('0904.1532', $expanded->get('arxiv'));
+    
+    $text = '{{cite journal|doi=10.1038//TODO}}';
+    /*
+    $this->assertEquals('http://some.url', $expanded->get('url'));
     $this->assertEquals('Accepted manuscript', $expanded->get('format'));
+    */
   }
-  
+    
   /* Don't run test until I check the consensus on how such citations should be handled
   public function testEtAlHandlingAndSpaceRetention() {
     $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";
@@ -383,8 +392,8 @@ ER -  }}';
        $this->assertEquals('1990', $this->getDateAndYear($expanded));
        $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
-   }
-
+  }
+   
   public function testISBN() {  // Dashes, no dashes, etc.
     $text = "{{cite book|isbn=3-902823-24-0}}";
     $expanded = $this->process_citation($text);
@@ -462,9 +471,21 @@ ER -  }}';
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics',$expanded->get('title'));
-   }
-
-    public function testJstorSICI() {
+  }
+  
+  public function testSpeciesCaps() {
+    $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals(str_replace(' ', '', "Crypticmammalianspecies:Anewspeciesofwhiskeredbat(''Myotisalcathoe''n.sp.)inEurope"), 
+                        str_replace(' ', '', $expanded->get('title')));
+    $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full}}';
+    // Should be able to drop /full from DOI in URL
+    $expanded = $this->process_citation($text);
+    $this->assertEquals(str_replace(' ', '', "''Cryptosporidiumhominis''n.sp.(Apicomplexa:Cryptosporidiidae)fromHomosapiens"),
+                        str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
+  }   
+  
+  public function testJstorSICI() {
        $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('594900', $expanded->get('jstor'));

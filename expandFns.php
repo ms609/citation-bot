@@ -118,7 +118,7 @@ function extract_doi($text) {
         $text, $match)) {
     $doi = $match[1];
     if (preg_match(
-          "~^(.*?)(/abstract|/pdf|</span>|[\s\|\"\?]|</).*+$~",
+          "~^(.*?)(/abstract|/e?pdf|/full|</span>|[\s\|\"\?]|</).*+$~",
           $doi, $new_match)
         ) {
       $doi = $new_match[1];

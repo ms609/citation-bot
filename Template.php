@@ -250,6 +250,7 @@ class Template extends Item {
     $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : NULL;        
 
     switch ($param_name) {
+      ### EDITORS
       case "editor": case "editor-last": case "editor-first":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         if ($this->blank('editor') && $this->blank("editor-last") && $this->blank("editor-first")) {
@@ -261,6 +262,8 @@ class Template extends Item {
         $this->add_if_new('displayeditors', 29);
         return $this->add($param_name, sanitize_string($value));
       break;
+      
+      ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
@@ -346,6 +349,29 @@ class Template extends Item {
           return $this->add($param_name,sanitize_string($value));
         }
         return FALSE;
+      
+      case 'display-authors': case 'displayauthors':
+        if ($this->blank('display-authors') && $this->blank('displayauthors')) {
+          return $this->add($param_name, $value);
+        }
+      return FALSE;
+      case 'display-editors': case 'displayeditors':
+        if ($this->blank('display-editors') && $this->blank('displayeditors')) {
+          return $this->add($param_name, $value);
+        }
+      return FALSE;
+      
+      case 'author_separator': case 'author-separator':
+        echo "\n ! 'author-separator' is deprecated.";
+        if(!trim($value)) {
+          $this->forget($param_name);
+        } else {
+          echo " Please fix manually.";
+        }
+      return FALSE;
+      
+      ### DATE AND YEAR ###
+      
       case "date":
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
@@ -362,12 +388,16 @@ class Template extends Item {
           return $this->add($param_name, $value);
         }
         return FALSE;
+      
+      ### JOURNAL IDENTIFIERS ###
+      
       case "issn":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           // Only add ISSN if journal is unspecified
           return $this->add($param_name, $value);
         }
         return FALSE;
+        
       case "periodical": case "journal":
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
@@ -375,6 +405,7 @@ class Template extends Item {
           return $this->add($param_name, format_title_text(title_case($value)));
         }
         return FALSE;
+        
       case 'series': 
         return $this->add($param_name, format_title_text($value));
         return FALSE;
@@ -383,6 +414,35 @@ class Template extends Item {
           return $this->add($param_name, format_title_text($value));
         }
         return FALSE;
+      
+      
+      ###  ARTICLE LOCATORS  ###
+      ### (page, volume etc) ###
+      
+      case 'title':
+        if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
+        if ($this->blank($param_name)) {
+          return $this->format_title($value); // format_title will sanitize the string
+        }
+        return FALSE;
+      
+      case 'volume':
+        if ($this->blank($param_name)) {
+          if (in_array(strtolower($this->get('journal')), HAS_NO_VOLUME) === TRUE ) {
+            // This journal has no volume.  This is really the issue number
+            return $this->add_if_new('issue', $value);
+          } else {
+            return $this->add($param_name, $value);
+          }
+        }
+      return FALSE;      
+      
+      case 'issue':
+        if ($this->blank("issue") && $this->blank("number")) {        
+          return $this->add($param_name, $value);
+        } 
+      return FALSE;
+      
       case "page": case "pages":
         if (( $this->blank("pages") && $this->blank("page") && $this->blank("pp")  && $this->blank("p"))
                 || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
@@ -394,17 +454,24 @@ class Template extends Item {
                   && !strpos($this->get('pages'), '&ndash;'))
         ) return $this->add($param_name, sanitize_string($value));
         return FALSE;
-      case 'title':
-        if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
-        if ($this->blank($param_name)) {
-          return $this->format_title($value); // format_title will sanitize the string
+        
+        
+      ###  ARTICLE IDENTIFIERS  ###
+      ### arXiv, DOI, PMID etc. ###
+      
+      case 'url': 
+        // look for identifiers in URL - might be better to add a PMC parameter, say
+        if (!$this->get_identifiers_from_url($value) && $this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
+      
       case 'class':
         if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE ) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
+        
       case 'doi':
         if ($this->blank($param_name) &&  preg_match('~(10\..+)$~', $value, $match)) {
           $this->add('doi', $match[0]);
@@ -414,16 +481,15 @@ class Template extends Item {
           return TRUE;
         }
         return FALSE;
-      case 'display-authors': case 'displayauthors':
-        if ($this->blank('display-authors') && $this->blank('displayauthors')) {
-          return $this->add($param_name, $value);
+      
+      case 'arxiv':
+        if ($this->blank($param_name)) {
+          $this->add('arxiv', $value);
+          $this->expand_by_arxiv();
+          return TRUE;
         }
-      return FALSE;
-      case 'display-editors': case 'displayeditors':
-        if ($this->blank('display-editors') && $this->blank('displayeditors')) {
-          return $this->add($param_name, $value);
-        }
-      return FALSE;
+        return FALSE;
+        
       case 'doi-broken-date':
         if ($this->blank('doi_brokendate') &&
             $this->blank('doi-broken-date') &&
@@ -432,6 +498,7 @@ class Template extends Item {
           return $this->add($param_name, $value);
         }
       return FALSE;
+      
       case 'pmid':
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
@@ -442,49 +509,33 @@ class Template extends Item {
           return TRUE;
         }
       return FALSE;
-      case 'author_separator': case 'author-separator':
-        echo "\n ! 'author-separator' is deprecated.";
-        if(!trim($value)) {
-          $this->forget($param_name);
-        } else {
-          echo " Please fix manually.";
-        }
-      return FALSE;
-      case 'postscript':
-        if ($this->blank($param_name)) {
-          return $this->add($param_name, $value);
-        }
-      return FALSE;
-      case 'issue':
-        if ($this->blank("issue") && $this->blank("number")) {        
-          return $this->add($param_name, $value);
-        } 
-      return FALSE;
-      case 'volume':
-        if ($this->blank($param_name)) {
-          if (in_array(strtolower($this->get('journal')), HAS_NO_VOLUME) === TRUE ) {
-            // This journal has no volume.  This is really the issue number
-            return $this->add_if_new('issue', $value);
-          } else {
-            return $this->add($param_name, $value);
-          }
-        }
-      return FALSE;
+      
       case 'bibcode':
         if ($this->blank($param_name)) { 
           $bibcode_pad = 19 - strlen($value);
           if ($bibcode_pad > 0) {  // Paranoid, don't want a negative value, if bibcodes get longer
             $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
           }
-          return $this->add($param_name, $value);
+          $this->add($param_name, $value);
+          $this->expand_by_adsabs();
+          return TRUE;
         } 
       return FALSE;
+      
       case 'isbn';
         if ($this->blank($param_name)) { 
           $value = $this->isbn10Toisbn13($value);
           return $this->add($param_name, $value);
         }
       return FALSE;
+      
+      ### POSTSCRIPT... ###
+      case 'postscript':
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, $value);
+        }
+      return FALSE;
+      
       default:
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
@@ -492,78 +543,103 @@ class Template extends Item {
     }
   }
 
-  protected function get_identifiers_from_url() {
-    if ($this->blank('url')) {
-      if ($this->has('website')) { // No URL, but a website
-        $url = trim($this->get('website'));
-        if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
-          $url = "h" . $url;
+  // This is also called when adding a URL with add_if_new, in which case
+  // it looks for a parameter before adding the url.
+  protected function get_identifiers_from_url($url_sent = NULL) {
+    if (is_null($url_sent)) {
+      if ($this->blank('url')) {
+        if ($this->has('website')) { // No URL, but a website
+          $url = trim($this->get('website'));
+          if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+            $url = "h" . $url;
+          }
+          if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
+            $url = "http://" . $url; // Try it with http
+          }
+          if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) === FALSE) return NULL; // PHP does not like it
+          $pattern = '_^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.\\d{1,3}){3})(?!127(?:\\.\\d{1,3}){3})(?!169\\.254(?:\\.\\d{1,3}){2})(?!192\\.168(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)*(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}]{2,})))(?::\\d{2,5})?(?:/[^\\s]*)?$_iuS';
+          if (preg_match ($pattern, $url) !== 1) return NULL;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
+          $this->rename('website', 'url'); // Rename it first, so that parameters stay in same order
+          $this->set('url', $url);
+          quiet_echo("\n   ~ website is actually HTTP URL; converting to use url parameter.");
+        } else {
+          // If no URL or website, nothing to worth with.
+          return NULL;
         }
-        if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
-          $url = "http://" . $url; // Try it with http
-        }
-        if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) === FALSE) return NULL; // PHP does not like it
-        $pattern = '_^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.\\d{1,3}){3})(?!127(?:\\.\\d{1,3}){3})(?!169\\.254(?:\\.\\d{1,3}){2})(?!192\\.168(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)*(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}]{2,})))(?::\\d{2,5})?(?:/[^\\s]*)?$_iuS';
-        if (preg_match ($pattern, $url) !== 1) return NULL;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
-        $this->rename('website', 'url'); // Rename it first, so that parameters stay in same order
-        $this->set('url', $url);
-        quiet_echo("\n   ~ website is actually HTTP URL; converting to use url parameter.");
-      } else {
-        // If no URL or website, nothing to worth with.
-        return NULL;
+      }
+      
+      $url = $this->get('url'); // If URL was blank, we'd've returned already.
+    } else {
+      $url = $url_sent;
+    }
+    
+    if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+      $url = "h" . $url;
+      if (is_null($url_sent)) {
+        $this->set('url', $url); // Save it
       }
     }
     
-    $url = $this->get('url'); // If URL was blank, we'd've returned already.
-    if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
-      $url = "h" . $url;
-      $this->set('url',$url); // Save it
-    }
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {  //  Outdated
         $headers_test = get_headers($url, 1);
         if(!empty($headers_test['Location'])) {
           $url = $headers_test['Location']; // Redirect
-          $this->set('url',$url); // Save it
+          if (is_null($url_sent)) {
+            $this->set('url', $url); // Save it
+          }
         }
       }
       if (strpos($url, "plants.jstor.org")) {
         #Skip.  We can't do anything more with the plants, unfortunately.
       } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
-        if ($this->get('jstor')) {
-          quiet_echo ("\n   - Deleting redundant URL (jstor parameter set)");
+        if (is_null($url_sent)) {
           $this->forget('url');
+        }
+        if ($this->get('jstor')) {
+          quiet_echo ("\n   - Not using redundant URL (jstor parameter set)");
         } else {
           quiet_echo ("\n   ~ Converting URL to JSTOR parameter");
-          $this->forget('url');
           $this->set("jstor", urldecode($match[1]));
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        return TRUE;
       }
+      
     } else {
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
         if ($this->blank('bibcode')) {
           quiet_echo("\n   ~ Converting url to bibcode parameter");
-          $this->forget('url');
-          $this->add_if_new("bibcode", urldecode($bibcode[1]));// TODO check: will this automatically expand from bibcode when added?
+          if (is_null($url_sent)) {
+            $this->forget('url');
+          }
+          return $this->add_if_new("bibcode", urldecode($bibcode[1]));
         }
+        
       } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^http://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
+                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $url, $match)) {
+                        
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         if ($this->blank('pmc')) {
           quiet_echo("\n   ~ Converting URL to PMC parameter");
-          $this->forget('url');
-          $this->add_if_new("pmc", $match[1] . $match[2]);
+          if (is_null($url_sent)) {
+            $this->forget('url');
+          }
+          return $this->add_if_new("pmc", $match[1] . $match[2]);
         }
-        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
-        $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
+        
       } elseif (extract_doi($url)[1]) {
+        
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
-        $this->add_if_new('doi', extract_doi($url)[1]);
-      } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
+        return $this->add_if_new('doi', extract_doi($url)[1]);
+        
+      } else if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
+        
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
          */
@@ -571,28 +647,37 @@ class Template extends Item {
             || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
             ) {
           quiet_echo("\n   ~ Converting URL to arXiv parameter");
-          $this->forget('url');
-          $this->add_if_new("arxiv", $arxiv_id[0]);
-          $this->expand_by_arxiv();
+          if (is_null($url_sent)) {
+            $this->forget('url');
+          }
+          return $this->add_if_new("arxiv", $arxiv_id[0]);
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
+        
       } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        $this->add_if_new('pmid', $match[1]);
-        $this->forget('url');
+        
+        if (is_null($url_sent)) {
+          $this->forget('url');
+        }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        return $this->add_if_new('pmid', $match[1]);
+        
       } elseif (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
+        
+        if (strpos($this->name, 'web')) $this->name = 'Cite book';
         if ($match['domain'] == ".com") {
-          if ($this->get('asin')) {
+          if (is_null($url_sent)) {
             $this->forget('url');
-          } else {
-            $this->forget('url');
-            $this->add_if_new('asin', $match['id']);
+          }
+          if ($this->blank('asin')) {
+            return $this->add_if_new('asin', $match['id']);
           }
         } else {
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
-          $this->forget('url'); // will forget accessdate too
+          if (is_null($url_sent)) {
+            $this->forget('url'); // will forget accessdate too
+          }
         }
-        if (strpos($this->name, 'web')) $this->name = 'Cite book';
       }
     }
   }
@@ -777,10 +862,18 @@ class Template extends Item {
 
     if ($eprint) {
       echo "\n * Getting data from arXiv " . htmlspecialchars($eprint);
-      $xml = simplexml_load_string(
-        preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", file_get_contents("http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint"))
-      );
+      $context = stream_context_create(array(
+        'http' => array('ignore_errors' => true),
+      ));
+      $arxiv_request = "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
+      $arxiv_response = file_get_contents($arxiv_request, FALSE, $context);
+      if ($arxiv_response) {
+        $xml = simplexml_load_string(
+          preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
+        ); // TODO Explore why this is often failing
+      }
     }
+    
     if ($xml) {
       $i = 0;
       foreach ($xml->entry->author as $auth) {
@@ -826,71 +919,91 @@ class Template extends Item {
   }
 
   public function expand_by_adsabs() {
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
     if ($SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
-      $url_root = "http://adsabs.harvard.edu/cgi-bin/abs_connect?data_type=XML&";
-      if ($bibcode = $this->get("bibcode")) {
-        $xml = simplexml_load_file($url_root . "bibcode=" . urlencode($bibcode));
-      } elseif ($doi = $this->get('doi')) {
-        $xml = simplexml_load_file($url_root . "doi=" . urlencode($doi));
-      } elseif ($title = $this->get("title")) {
-        $xml = simplexml_load_file($url_root . "title=" . urlencode('"' . $title . '"'));
-        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($xml->record->title)));
-        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($title)));
+      if ($bibcode = $this->has('bibcode')) {
+        $result = query_adsabs("bibcode:" . urlencode($this->get("bibcode")));
+      } elseif ($this->has('doi')) {
+        $result = query_adsabs("doi:" . urlencode($this->get('doi')));
+      } elseif ($this->has('title')) {
+        $result = query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
+        print "\n\n\n\n\n\n\n88888\n";
+        if ($result->numFound == 0) return FALSE;
+        $record = $result->docs[0];
+        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($record->title)));
+        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
         if (
              (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-                ? strlen($inTitle) != strlen($dbTitle) || similar_text($inTitle, $dbTitle)/strlen($inTitle) < 0.98
+                ? (strlen($inTitle) != strlen($dbTitle)
+                  || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
                 : levenshtein($inTitle, $dbTitle) > 3
             ) {
           echo "\n   Similar title not found in database";
           return FALSE;
         }
       } else {
-        $xml = array("retrieved" => 0);
+        $result = (object) array("numFound" => 0);
       }
-      if ($xml["retrieved"] != 1 && $journal = $this->get('journal')) {
+      if ($result->numFound != 1 && $this->has('journal')) {
+        $journal = $this->get('journal');
         // try partial search using bibcode components:
-        $xml = simplexml_load_file($url_root
-                . "year=" . $this->get('year')
-                . "&volume=" . $this->get('volume')
-                . "&page=" . $this->page()
-                );
-        $journal_string = explode(",", (string) $xml->record->journal);
+        $result = query_adsabs("year:" . $this->get('year')
+                          . "&volume:" . $this->get('volume')
+                          . "&page:" . $this->page()
+                          );
+        if ($result->numFound == 0) return FALSE;
+        $journal_string = explode(",", (string) $result->docs[0]->pub);
         $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
-        if (strlen($journal_string[0]) && strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
-                mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))) === FALSE) {
+        if (strlen($journal_string[0]) 
+        &&  strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
+                   mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))
+                   ) === FALSE
+        ) {
           echo "\n   Match for pagination but database journal \"" .
             htmlspecialchars($journal_string[0]) . "\" didn't match \"journal = " .
             htmlspecialchars($journal) . "\"." . tag();
           return FALSE;
         }
       }
-      if ($xml["retrieved"] == 1) {
+      if ($result->numFound == 1) {
+        $record = $result->docs[0];
         echo tag();
-        $this->add_if_new("bibcode", (string) $xml->record->bibcode);
-        $this->add_if_new("title", (string) $xml->record->title); // add_if_new will format the title text and check for unknown
+        if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+        $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
         $i = NULL;
-        foreach ($xml->record->author as $author) {
+        foreach ($record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
         }
-        $journal_string = explode(",", (string) $xml->record->journal);
-        $journal_start = mb_strtolower($journal_string[0]);
-        $this->add_if_new("volume", (string) $xml->record->volume);
-        $this->add_if_new("issue", (string) $xml->record->issue);
-        $this->add_if_new("year", preg_replace("~\D~", "", (string) $xml->record->pubdate));
-        $this->add_if_new("pages", (string) $xml->record->page);
-        if (preg_match("~\bthesis\b~ui", $journal_start)) {}
-        elseif (substr($journal_start, 0, 6) == "eprint") {
-          if (substr($journal_start, 7, 6) == "arxiv:") {
-            if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
+        if (isset($record->pub)) {
+          $journal_string = explode(",", (string) $record->pub);
+          $journal_start = mb_strtolower($journal_string[0]);
+          if (preg_match("~\bthesis\b~ui", $journal_start)) {
+            // Do nothing
+          } elseif (substr($journal_start, 0, 6) == "eprint") {
+            if (substr($journal_start, 7, 6) == "arxiv:") {
+              if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
+            } else {
+              $this->append_to('id', ' ' . substr($journal_start, 13));
+            }
           } else {
-            $this->append_to('id', ' ' . substr($journal_start, 13));
-          }
-        } else {
-          $this->add_if_new('journal', $journal_string[0]);
+            $this->add_if_new('journal', $journal_string[0]);
+          }          
         }
-        if ($this->add_if_new('doi', (string) $xml->record->DOI)) {
+        if (isset($record->volume)) {
+          $this->add_if_new("volume", (string) $record->volume);
+        }
+        if (isset($record->issue)) {
+          $this->add_if_new("issue", (string) $record->issue);
+        }
+        if (isset($record->year)) {
+          $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
+        }
+        if (isset($record->page)) {
+          $this->add_if_new("pages", implode('–', $record->page));
+        }
+        if (isset($record->doi) && $this->add_if_new('doi', (string) $record->doi[0])) {
           $this->expand_by_doi();
         }
         return TRUE;
@@ -1435,6 +1548,7 @@ class Template extends Item {
       }
 
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
+        $ris_authors=0;
         $ris = explode("\n", $dat);
         $ris_authors = 0;
         foreach ($ris as $ris_line) {
@@ -1751,7 +1865,6 @@ class Template extends Item {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
               print "\n    " . $this->internal_templates[$i];
-              var_dump($subtemplate);
               break;
             }
           
