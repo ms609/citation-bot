@@ -1898,7 +1898,7 @@ class Template extends Item {
 
     if ((strlen($p->param) > 0) && !in_array($p->param, PARAMETER_LIST)) {
      
-      echo "\n  *  Unrecognised parameter " . htmlspecialchars($p->param) . " ";
+      echo "\n   * Unrecognised parameter " . htmlspecialchars($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
         // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
