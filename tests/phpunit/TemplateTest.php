@@ -524,7 +524,7 @@ ER -  }}';
        return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
    }
    
-   public function testTemplatesInCitation {
+   public function testTemplatesInCitation() {
        $text = '{{Cite journal|url={{This is not real}} | doi = {{I am wrong}} |jstor= {{yet another bogus one }}  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('{{This is not real}}', $expanded->get('url'));
