@@ -220,8 +220,7 @@ class Page {
       );
       $bot->submit(API_ROOT, $submit_vars);
       $result = json_decode($bot->results);
-      var_dump($result);
-      if ($result->edit->result == "Success") {
+      if (isset($result->edit) && $result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
           echo "\n <span style='color: #e21'>Written to <a href='" 
@@ -230,7 +229,7 @@ class Page {
         }
         else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
         return TRUE;
-      } elseif ($result->edit->result) {
+      } elseif (isset($result->edit->result)) {
         echo htmlspecialchars($result->edit->result);
         return TRUE;
       } elseif ($result->error->code) {
