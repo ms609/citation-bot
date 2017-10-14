@@ -19,7 +19,7 @@ require_once("Page.php");
 require_once("Parameter.php");
 
 class Template extends Item {
-  const PLACEHOLDER_TEXT = '# # # Citation bot : template placeholder %s # # #';
+  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
 
