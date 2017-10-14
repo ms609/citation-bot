@@ -28,7 +28,7 @@ class Template extends Item {
             $internal_templates = array();
 
   protected function extract_templates($text) {
-    $i = 0;
+    $i = count($this->internal_templates);
     while(preg_match(Template::REGEXP, $text, $match)) {
       $this->internal_templates[$i] = $match[0];
       $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
