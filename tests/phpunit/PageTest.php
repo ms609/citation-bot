@@ -46,12 +46,12 @@ class PageTest extends PHPUnit\Framework\TestCase {
 
   public function testReadWrite() {
     $page = new TestPage();
-    $page->get_text_from('User:Blocked Testing Tccount/readtest');
-    $this->assertEquals('Hello world', $page->parsed_text());
+    $page->get_text_from('User:Blocked Testing Account/readtest');
+    $this->assertEquals('This page tests bots', $page->parsed_text());
     
-    $writeTestPage = 'User:Blocked Testing Account/writetest';
-    $message1 = 'Hello world';
-    $message2 = 'Hello world!';
+    $writeTestPage = 'User talk:Blocked Testing Account';
+    $message1 = 'A bot tried to write to this page';
+    $message2 = 'A bot successfully wrote to this page';
     
     $page = new TestPage();
     $page->get_text_from($writeTestPage);
@@ -65,7 +65,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $page->write("Testing bot write function");
       $page->get_text_from($writeTestPage);
       $this->assertEquals($message1, $page->parsed_text());
-    }
+    }    
   }
    
   public function testRedirects() {
