@@ -24,7 +24,7 @@ class Page {
     $xml = load_xml_via_bot($url);
     if ($xml->query->pages->page["pageid"]) {
       // Page exists
-      return array ((($xml->query->pages->page["redirect"])?1:0),
+      return array ((($xml->query->pages->page["redirect"]) ? 1 : 0),
                       $xml->query->pages->page["pageid"]);
       } else {
         return array (-1, NULL);
