@@ -190,12 +190,17 @@ function title_case($text) {
   return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
 }
 
+function restore_italics ($text) {
+  // <em> tags often go missing around species names in CrossRef
+  return preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
+}
+
 /** Returns a properly capitalised title.
  *      If $caps_after_punctuation is TRUE (or there is an abundance of periods), it allows the 
  *      letter after colons and other punctuation marks to remain capitalized.
  *      If not, it won't capitalise after : etc.
  */
-function title_capitalization($in, $caps_after_punctuation = TRUE, $could_be_italics = TRUE) {
+function title_capitalization($in, $caps_after_punctuation = TRUE) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes($in);
   
@@ -206,13 +211,7 @@ function title_capitalization($in, $caps_after_punctuation = TRUE, $could_be_ita
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
   $new_case = substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
-  
-  
-  if ($could_be_italics) {
-    // <em> tags often go missing around species names in CrossRef
-    $new_case = preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $new_case);
-  }
-  
+    
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentance ends
     // We should therefore capitalize after each punctuation character.

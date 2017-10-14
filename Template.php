@@ -1032,9 +1032,9 @@ class Template extends Item {
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
             $this->forget('title');
           }
-          $this->add_if_new('title', $crossRef->volume_title); // add_if_new will format_title and sanitize the string
+          $this->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will format_title and sanitize the string
         } else {
-          $this->add_if_new('title',  $crossRef->article_title); // add_if_new will format_title and sanitize the string
+          $this->add_if_new('title',  restore_italics($crossRef->article_title)); // add_if_new will format_title and sanitize the string
         }
         $this->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
         $this->add_if_new("year", $crossRef->year);
@@ -2044,7 +2044,7 @@ class Template extends Item {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            $p->val = format_title_text(title_capitalization($p->val, FALSE, FALSE));
+            $p->val = format_title_text(title_capitalization($p->val, FALSE));
             break;
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
