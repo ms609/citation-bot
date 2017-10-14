@@ -200,8 +200,8 @@ class Page {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
-      if ( stripos($this->text,"Citation bot : comment placeholder") != FALSE )  {
-        echo "\n ! Comment placeholder left escaped. Aborting.";
+      if ( stripos($this->text, "CITATION_BOT_PLACEHOLDER") != FALSE )  {
+        echo "\n ! Placeholder left escaped. Aborting.";
         return FALSE;
       }
       $submit_vars = array(
