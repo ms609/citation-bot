@@ -929,10 +929,9 @@ class Template extends Item {
         $result = query_adsabs("doi:" . urlencode($this->get('doi')));
       } elseif ($this->has('title')) {
         $result = query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
-        print "\n\n\n\n\n\n\n88888\n";
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
-        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($record->title)));
+        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
         $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
         if (
              (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
@@ -1216,8 +1215,7 @@ class Template extends Item {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        $this->add('url', $best_location->url);
-        $this->get_identifiers_from_url();  // Might be PMC, etc.
+        $this->add_if_new('url', $best_location->url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           switch ($best_location->version) {
             case 'acceptedVersion': $format = 'Accepted manuscript'; break;
@@ -1328,7 +1326,6 @@ class Template extends Item {
       // TODO: implement over_isbn_limit based on &results=keystats in API
       if ($title && !$over_isbn_limit) {
         $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
-        print "\n\nhttp://isbndb.com/api/books.xml?access_key=$ISBN_KEY&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
         if ($xml->BookList["total_results"] == 1) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
         if ($auth && $xml->BookList["total_results"] > 0) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
         else return FALSE;
