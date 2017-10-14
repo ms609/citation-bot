@@ -1468,8 +1468,7 @@ class Template extends Item {
         echo "\n * Deleting identical duplicate of parameter: " .
           htmlspecialchars($this->param[$duplicated_parameters[$i]]->param) . "\n";
         unset($this->param[$duplicated_parameters[$i]]);
-      }
-      else {
+      } else {
         $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
         echo "\n * Marking duplicate parameter: " .
           htmlspecialchars($duplicated_parameters[$i]->param) . "\n";
@@ -1672,27 +1671,26 @@ class Template extends Item {
 
       $shortest = -1;
       $parameter_list = PARAMETER_LIST;
+      
       foreach ($parameter_list as $parameter) {
-        $para_len = strlen($parameter);
-        if (substr(strtolower($dat), 0, $para_len) == $parameter) {
-          $character_after_parameter = substr(trim(substr($dat, $para_len)), 0, 1);
-          $parameter_value = ($character_after_parameter == "-" || $character_after_parameter == ":")
-            ? substr(trim(substr($dat, $para_len)), 1) : substr($dat, $para_len);
+        if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
+          $parameter_value = trim(substr($dat, strlen($match[1])));
+          quiet_echo("\n   + Found $parameter floating around in template; converted to parameter");
           if (!$param_recycled) {
             $this->param[$param_key]->param = $parameter;
             $this->param[$param_key]->val = $parameter_value;
             $param_recycled = TRUE;
           } else {
-            $this->add($parameter,$parameter_value);
+            $this->add($parameter, $parameter_value);
           }
           break;
         }
+        $para_len = strlen($parameter);
+        if ($para_len < 3) continue; // minimum length to avoid FALSE positives
         $test_dat = preg_replace("~\d~", "_$0",
                     preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
-        if ($para_len < 3) break; // minimum length to avoid FALSE positives
         if (preg_match("~\d~", $parameter)) {
           $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
-          $para_len++;
         } else {
           $lev = levenshtein($test_dat, $parameter);
         }
@@ -1714,7 +1712,6 @@ class Template extends Item {
           $shortish = $lev;
           $comp = $parameter;
         }
-
       }
 
       if (  $shortest < 3
