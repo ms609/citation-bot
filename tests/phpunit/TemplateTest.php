@@ -158,6 +158,12 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|doi= <!-- MC Hammer says to not touch this -->}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
+    $this->assertEquals('<!-- MC Hammer says to not touch this -->', $expanded->get('doi'));
+      
+    $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi-broken-date'));
+    $this->assertEquals('{{MC Hammer says to not touch this}}', $expanded->get('doi'));
   }
   
   public function testOpenAccessLookup() {
