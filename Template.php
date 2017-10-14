@@ -953,6 +953,7 @@ class Template extends Item {
                           . "&page:" . $this->page()
                           );
         if ($result->numFound == 0) return FALSE;
+        if (!isset($result->docs[0]->pub)) return FALSE;
         $journal_string = explode(",", (string) $result->docs[0]->pub);
         $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
         if (strlen($journal_string[0]) 
