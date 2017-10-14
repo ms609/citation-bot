@@ -523,6 +523,14 @@ ER -  }}';
        if (is_null($input->get('date'))) return $input->get('year') ;
        return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
    }
+   
+   public function testTemplatesInCitation {
+       $text = '{{Cite journal|url={{This is not real}} | doi = {{I am wrong}} |jstor= {{yet another bogus one }}  }}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('{{This is not real}}', $expanded->get('url'));
+       $this->assertEquals('{{I am wrong}}', $expanded->get('doi'));
+       $this->assertEquals('{{yet another bogus one }}', $expanded->get('jstor'));  
+   }
     
    public function testConvertJournalToBook() {
        $text = '{{Cite journal|doi=10.1007/978-3-540-74735-2_15}}';
