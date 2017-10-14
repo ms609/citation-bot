@@ -29,30 +29,24 @@ class PageTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
-  public function testReadWrite() {
+  public function testReadExpandWrite() {
     $page = new TestPage();
     $page->get_text_from('User:Blocked Testing Account/readtest');
     $this->assertEquals('This page tests bots', $page->parsed_text());
     
     $writeTestPage = 'User talk:Blocked Testing Account';
-    $message1 = 'A bot will soon overwrite this page.';
-    $message2 = 'Bots overwrite this page frequently.';
+    $trialCitation = '{{Cite journal | title Bot Testing | doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
     
     $page = new TestPage();
     $page->get_text_from($writeTestPage);
-    if ($page->parsed_text() == $message1) {
-      $page->overwrite_text($message2);
-      $page->write("Testing bot write function");
-      $page->get_text_from($writeTestPage);
-      $this->assertEquals($message2, $page->parsed_text());
-    } else {
-      $page->overwrite_text($message1);
-      $page->write("Testing bot write function");
-      $page->get_text_from($writeTestPage);
-      $this->assertEquals($message1, $page->parsed_text());
-    }    
+    $page->overwrite_text($trialCitation);
+    $page->write("Testing bot write function");
+    $page->get_text_from($writeTestPage);
+    $this->assertEquals($trialCitation, $page->parsed_text());
+    $page->expand_text();
+    print $page->parsed_text() . "\n";
+    $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
   }
-   
   public function testRedirects() {
     $page = new Page();
     $page->get_text_from('NoSuchPage:ThereCan-tBe');
