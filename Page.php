@@ -283,3 +283,17 @@ class Page {
     return TRUE;
   }
 }
+
+class TestPage extends Page {
+  // Functions for use in testing context only
+  
+  public function overwrite_text($text) {
+    $this->text = $text;
+  }
+
+  public function parse_text($text) {
+    $this->text = $text;
+    $this->start_text = $this->text;
+    $this->modifications = array();
+  }  
+}

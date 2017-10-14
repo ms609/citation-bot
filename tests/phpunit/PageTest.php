@@ -13,21 +13,6 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 // Initialize bot configuration
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
-
-class TestPage extends Page {
-  
-  public function overwrite_text($text) {
-    // Use in testing context only
-    $this->text = $text;
-  }
-
-  public function parse_text($text) { // used in testing context.
-    $this->text = $text;
-    $this->start_text = $this->text;
-    $this->modifications = array();
-  }
-  
-}
  
 class PageTest extends PHPUnit\Framework\TestCase {
 
@@ -50,8 +35,8 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('This page tests bots', $page->parsed_text());
     
     $writeTestPage = 'User talk:Blocked Testing Account';
-    $message1 = 'A bot tried to write to this page';
-    $message2 = 'A bot successfully wrote to this page';
+    $message1 = 'A bot will soon overwrite this page.';
+    $message2 = 'Bots overwrite this page frequently.';
     
     $page = new TestPage();
     $page->get_text_from($writeTestPage);

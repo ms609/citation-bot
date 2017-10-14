@@ -30,7 +30,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function process_page($text) {
-    $page = new Page();
+    $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
     return $page;
