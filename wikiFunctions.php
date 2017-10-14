@@ -192,34 +192,12 @@ function article_id($page, $namespace = 0) {
   return $results['page_id'];
 }
 
-function get_raw_wikitext($page, $wait = FALSE, $verbose = FALSE, $use_daniel = TRUE) {
+function get_raw_wikitext($page, $wait = FALSE, $verbose = FALSE) {
   $encode_page = urlencode($page);
   echo $verbose ? "\n scraping... " : "";
     // Get the text by scraping edit page
     $url = WIKI_ROOT . "title=" . $encode_page . "&action=raw";
     $contents = (string) @file_get_contents($url);
-  if (!$contents && $use_daniel) {
-    $url = "http://toolserver.org/~daniel/WikiSense/WikiProxy.php?wiki=en&title="
-        . $encode_page . "&rev=&go=Fetch&token=";
-    $contents = (string) file_get_contents($url);
-    if (!$contents) {
-      print $verbose ? "\n <br />Couldn't fetch $page; retrying" : "";
-      // Retry if no response
-      $contents = (string) @file_get_contents($url);
-    }
-    if ($wait && !$contents) {
-      print $verbose ? "\n . " : "";
-      // If still no response, wait & retry
-      sleep(1);
-      $contents = (string) @file_get_contents($url);
-    }
-    if (!$contents && $wait) {
-      // If still no response, wait & retry
-      echo $verbose ? "\n ..... " : "";
-      sleep(3);
-      $contents = (string) @file_get_contents($url);
-    }
-  }
   return $contents;
 }
 
