@@ -38,11 +38,35 @@ class PageTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function process_page($text) {
-    $page = new Page();
+    $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
     return $page;
   }
 
+  public function testReadWrite() {
+    $page = new TestPage();
+    $page->get_text_from('User:Blocked testing account/readtest');
+    $this->assertEquals('Hello world', $page->parsed_text());
+    
+    $writeTestPage = 'User:Blocked testing account/writetest';
+    $message1 = 'Hello world';
+    $message2 = 'Hello world!';
+    
+    $page = new TestPage();
+    $page->get_text_from($writeTestPage);
+    if ($page->parsed_text() == $message1) {
+      $page->overwrite_text($message2);
+      $page->write("Testing bot write function");
+      $page->get_text_from($writeTestPage);
+      $this->assertEquals($message2, $page->parsed_text());
+    } else {
+      $page->overwrite_text($message1);
+      $page->write("Testing bot write function");
+      $page->get_text_from($writeTestPage);
+      $this->assertEquals($message1, $page->parsed_text());
+    }
+  }
+   
   
 }
