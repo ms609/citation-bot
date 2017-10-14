@@ -1990,11 +1990,6 @@ class Template extends Item {
   protected function tidy() {
     $to_add = array();
     $others = '';
-    if ($this->added('title')) {
-      $this->wikify_title();
-    } else if ($this->is_modified() && $this->get('title')) {
-      $this->set('title', straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')));
-    }
 
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) {
       $this->rename('origyear', 'year');
@@ -2118,6 +2113,10 @@ class Template extends Item {
       }
     }*/
     if ($this->has('accessdate') && $this->lacks('url') && $this->lacks('chapter-url') && $this->lacks('chapterurl') && $this->lacks('contribution-url') && $this->lacks('contributionurl')) $this->forget('accessdate');
+
+    if ($this->is_modified() && $this->has('title')) {
+      $this->set('title', straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')));
+    }
   }
 
   protected function sanitize_doi($doi = FALSE) {
