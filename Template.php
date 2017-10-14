@@ -402,16 +402,16 @@ class Template extends Item {
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
-          return $this->add($param_name, format_title_text(title_case($value)));
+          return $this->add($param_name, wikify_external_text(title_case($value)));
         }
         return FALSE;
         
       case 'series': 
-        return $this->add($param_name, format_title_text($value));
+        return $this->add($param_name, wikify_external_text($value));
         return FALSE;
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
-          return $this->add($param_name, format_title_text($value));
+          return $this->add($param_name, wikify_external_text($value));
         }
         return FALSE;
       
@@ -422,7 +422,7 @@ class Template extends Item {
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name)) {
-          return $this->format_title($value); // format_title will sanitize the string
+          return $this->add($param_name, wikify_external_text($value));
         }
         return FALSE;
       
@@ -909,7 +909,7 @@ class Template extends Item {
           $journal_data = preg_replace("~[\s:,;]*$~", "",
                   str_replace($match[-0], "", $journal_data));
         }
-        $this->add_if_new("journal", format_title_text($journal_data));
+        $this->add_if_new("journal", wikify_external_text($journal_data));
       } else {
         $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       }
@@ -1032,9 +1032,9 @@ class Template extends Item {
           if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
             $this->forget('title');
           }
-          $this->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will format_title and sanitize the string
+          $this->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will wikify title and sanitize the string
         } else {
-          $this->add_if_new('title',  restore_italics($crossRef->article_title)); // add_if_new will format_title and sanitize the string
+          $this->add_if_new('title',  restore_italics($crossRef->article_title)); // add_if_new will wikify title and sanitize the string
         }
         $this->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
         $this->add_if_new("year", $crossRef->year);
@@ -1280,13 +1280,13 @@ class Template extends Item {
     $xml = simplexml_load_string($simplified_xml);
     if ($xml->dc___title[1]) {
       $this->add_if_new("title",  
-               format_title_text(
+               wikify_external_text(
                  str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]),
                  TRUE // $caps_after_punctuation
                )
              );
     } else {
-      $this->add_if_new("title",  format_title_text(str_replace("___", ":", $xml->title)));
+      $this->add_if_new("title",  wikify_external_text(str_replace("___", ":", $xml->title)));
     }
     // Possibly contains dud information on occasion
     // $this->add_if_new("publisher", str_replace("___", ":", $xml->dc___publisher)); 
@@ -1991,9 +1991,9 @@ class Template extends Item {
     $to_add = array();
     $others = '';
     if ($this->added('title')) {
-      $this->format_title();
+      $this->wikify_title();
     } else if ($this->is_modified() && $this->get('title')) {
-      $this->set('title', format_title_text(straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title'))));
+      $this->set('title', straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')));
     }
 
     if ($this->blank(array('date', 'year')) && $this->has('origyear')) {
@@ -2044,7 +2044,7 @@ class Template extends Item {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            $p->val = format_title_text(title_capitalization($p->val, FALSE));
+            $p->val = title_capitalization($p->val, FALSE);
             break;
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
@@ -2118,12 +2118,6 @@ class Template extends Item {
       }
     }*/
     if ($this->has('accessdate') && $this->lacks('url') && $this->lacks('chapter-url') && $this->lacks('chapterurl') && $this->lacks('contribution-url') && $this->lacks('contributionurl')) $this->forget('accessdate');
-  }
-
-  /* Note that format_title_text performs a sanitize_string */
-  protected function format_title($title = FALSE) {
-    if (!$title) $title = $this->get('title');
-    $this->set('title', format_title_text($title));
   }
 
   protected function sanitize_doi($doi = FALSE) {

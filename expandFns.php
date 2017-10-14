@@ -128,7 +128,7 @@ function extract_doi($text) {
   return NULL;
 }
 
-function format_title_text($title) {
+function wikify_external_text($title) {
   $replacement = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     $placeholder = [];
