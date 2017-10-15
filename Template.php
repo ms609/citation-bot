@@ -24,7 +24,7 @@ class Template extends Item {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes
+            $mod_dashes;
               
   private static $internal_templates = array();
 
