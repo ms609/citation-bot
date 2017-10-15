@@ -104,10 +104,10 @@ class Template extends Item {
   
   public function process()
   {
-    process_real();
+    $this->process_real();
     $this->text = $this->replace_templates($this->text);
   }
-  public function process_real() {
+  private function process_real() {
     switch ($this->wikiname()) {
       case 'cite web':
         $this->use_unnamed_params();
