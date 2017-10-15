@@ -28,7 +28,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page->expand_text();
     return $page;
   }
-
+/*
   public function testReadExpandWrite() {
     $page = new TestPage();
     $page->get_text_from('User:Blocked Testing Account/readtest');
@@ -47,6 +47,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page->write();
     $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
   }
+  */
   public function testRedirects() {
     $page = new Page();
     $page->get_text_from('NoSuchPage:ThereCan-tBe');
