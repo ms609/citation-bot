@@ -101,8 +101,13 @@ class Template extends Item {
       $this->param = strtolower($this->param);
     }
   }
-
-  public function process() {
+  
+  public function process()
+  {
+    process_real();
+    $this->text = $this->replace_templates($this->text);
+  }
+  private function process_real() {
     switch ($this->wikiname()) {
       case 'cite web':
         $this->use_unnamed_params();
@@ -110,10 +115,10 @@ class Template extends Item {
         $this->tidy();
         if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
           $this->name = 'Cite journal';
-          $this->process();
+          $this->process_real();
         } elseif ($this->has('eprint')) {
           $this->name = 'Cite arxiv';
-          $this->process();
+          $this->process_real();
         }
         $this->citation_template = TRUE;
       break;
@@ -1482,7 +1487,7 @@ class Template extends Item {
           $this->param[$param_key]->param = 'url';
           if (stripos($p->val, 'books.google.') !== FALSE) {
             $this->name = 'Cite book';
-            $this->process();
+            $this->process_real();
           }
         } elseif ($p->param == 'doix') {
           echo "\n   + Found unincorporated DOI parameter";
