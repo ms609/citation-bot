@@ -35,7 +35,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('This page tests bots', $page->parsed_text());
     
     $page = new TestPage();
-    $writeTestPage = 'User talk:Blocked Testing Account';
+    $writeTestPage = 'User:Blocked Testing Account/writetest';
     $page->get_text_from($writeTestPage);
     $trialCitation = '{{Cite journal | title Bot Testing | ' .
       'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
@@ -45,13 +45,14 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page->get_text_from($writeTestPage);
     $this->assertEquals($trialCitation, $page->parsed_text());
     $page->expand_text();
+    $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
+    $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
     $page->write();
-  // TODO Restore this test once we've got a bot account that can make edits 
-  #  $page->get_text_from($writeTestPage);
-  #  $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
-  #  $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
+    
+    $page->get_text_from($writeTestPage);
+    print $page->parsed_text();
+    $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
   }
-  
   
   public function testRedirects() {
     $page = new Page();
