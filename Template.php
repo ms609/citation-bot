@@ -40,7 +40,7 @@ class Template extends Item {
     $i = count($this->internal_templates);
     foreach (array_reverse($this->internal_templates) as $template) {
       // Case insensitive, since placeholder might get title case, etc.
-      $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
+      $text = str_ireplace(trim(sprintf(Template::PLACEHOLDER_TEXT, --$i)), $template, $text);
     }
     return $text;
   }
@@ -74,7 +74,7 @@ class Template extends Item {
 
   // Re-assemble parsed template into string
   public function parsed_text() {
-    return $this->replace_templates('{{' . $this->name . $this->join_params() . '}}');
+    return '{{' . $this->replace_templates($this->name . $this->join_params() ) . '}}';
   }
 
   // Parts of each param: | [pre] [param] [eq] [value] [post]
