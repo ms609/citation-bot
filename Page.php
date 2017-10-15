@@ -140,8 +140,11 @@ class Page {
 
   public function edit_summary() {
     $auto_summary = "";
-    if ($this->modifications["changeonly"]) $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
-    if ($addns = $this->modifications["additions"]) {
+    if (isset($this->modifications["changeonly"])) {
+      $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
+    }
+    if (isset($this->modifications['additions'])) {
+      $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
       $max_au = 0;
@@ -151,26 +154,30 @@ class Page {
           if ($match[1] > $max_au) $max_au = $match[1];
         } else $auto_summary .= $add . ', ';
       }
-      if ($max_au) $auto_summary .= "author pars. $min_au-$max_au. ";
-      else $auto_summary = substr($auto_summary, 0, -2) . '. ';
+      if ($max_au) {
+        $auto_summary .= "author pars. $min_au-$max_au. ";
+      } else {
+        $auto_summary = substr($auto_summary, 0, -2) . '. ';
+      }
     }
-    if ($this->modifications["deletions"] && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE) {
+    if (isset($this->modifications["deletions"])
+    && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE
+    ) {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
-    $auto_summary .= (($this->modifications["deletions"])
-      ? "Removed parameters. "
-      : ""
-      ) . (($this->modifications["cite_type"])
-      ? "Unified citation types. "
-      : ""
-      ) . (($this->modifications["dashes"])
-      ? "Formatted [[WP:ENDASH|dashes]]. "
-      : ""
-      ) . (($this->modifications["arxiv_upgrade"])
-      ? "Updated published arXiv refs. "
-      : ""
-    );
+    $auto_summary .= (isset($this->modifications["deletions"])
+                      ? "Removed parameters. "
+                      : "")
+                  . (isset($this->modifications["cite_type"])
+                      ? "Unified citation types. "
+                      : "")
+                  . (isset($this->modifications["dashes"])
+                      ? "Formatted [[WP:ENDASH|dashes]]. "
+                      : "")
+                  . (isset($this->modifications["arxiv_upgrade"])
+                      ? "Updated published arXiv refs. "
+                      : "");
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
@@ -183,7 +190,7 @@ class Page {
       // Check that bot is logged in:
       $bot->fetch(API_ROOT . "?action=query&prop=info&meta=userinfo&format=json");
       $result = json_decode($bot->results);
-      if ($result->query->userinfo->id == 0) {
+      if ($result->query->userinfo->id == 0 && !log_bot_in()) {
         echo "\n ! LOGGED OUT:  The bot has been logged out from Wikipedia servers";
         return FALSE;
       }
