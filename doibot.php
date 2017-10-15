@@ -38,7 +38,6 @@
 ## Set up - including DOT_DECODE array
 define("HTML_OUTPUT", TRUE);
 require_once("expandFns.php");
-require_once("login.php");
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   print "Activated by $user\n";

@@ -44,7 +44,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page->get_text_from($writeTestPage);
     $this->assertEquals($trialCitation, $page->parsed_text());
     $page->expand_text();
-    print $page->parsed_text() . "\n";
+    $page->write();
     $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
   }
   public function testRedirects() {

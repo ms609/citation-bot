@@ -1,6 +1,7 @@
 <?php
+require_once('WikipediaBot.php');
 global $bot;
-$bot = new Snoopy();
+$bot = new WikipediaBot();
 
 /* jrTest - tests a name for a Junior appelation
  *  Input: $name - the name to be tested
