@@ -6,6 +6,7 @@ $bot = new WikipediaBot();
 /* jrTest - tests a name for a Junior appelation
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
+ * @codeCovIgnore
  */
 function jrTest($name) {
   $junior = (substr($name, -3) == " Jr")?" Jr":FALSE;
@@ -231,6 +232,10 @@ function straighten_quotes($str) {
   return $str;
 }
 
+/*
+* @codeCovIgnore
+* No longer used, but retained for reference in case useful in future
+*/
 function curlSetUp($ch, $url){
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -254,14 +259,6 @@ function query_adsabs ($options) {
   curl_close($ch);
   
   return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
-}
-
-function equivUrl ($u){
-	$db = preg_replace("~;jsessionid=[A-Z0-9]*~", "", str_replace("%2F", "/", str_replace("?journalCode=pdi", "",
-	str_replace("sci;", "", str_replace("/full?cookieSet=1", "", str_replace("scienceonline", "sciencemag", str_replace("/fulltext/", "/abstract/",
-	str_replace("/links/doi/", "/doi/abs/", str_replace("/citation/", "/abstract/", str_replace("/extract/", "/abstract/", $u))))))))));
-	if (preg_match("~(.*&doi=.*)&~Ui", $db, $db2)) $db = $db2[1];
-	return $db;
 }
 
 ?>
