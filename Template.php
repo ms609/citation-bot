@@ -24,9 +24,7 @@ class Template extends Item {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes;
-              
-  private static $internal_templates = array();
+            $mod_dashes, $internal_templates = array();
 
   protected function extract_templates($text) {
     $i = count($this->internal_templates);
@@ -41,7 +39,7 @@ class Template extends Item {
     $i = count($this->internal_templates);
     foreach (array_reverse($this->internal_templates) as $template) {
       // Case insensitive, since placeholder might get title case, etc.
-      $text = str_ireplace(trim(sprintf(Template::PLACEHOLDER_TEXT, --$i)), $template, $text);
+      $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
     }
     return $text;
   }
