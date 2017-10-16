@@ -24,10 +24,12 @@ class Template extends Item {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes, $internal_templates = array();
+            $mod_dashes,
+            $internal_templates = array();
 
   protected function extract_templates($text) {
     $i = count($this->internal_templates);
+    if ($i !== 0 ) echo ' \n Strange: already at index %s \n ', $i ;
     while(preg_match(Template::REGEXP, $text, $match)) {
       $this->internal_templates[$i] = $match[0];
       $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
@@ -73,7 +75,7 @@ class Template extends Item {
 
   // Re-assemble parsed template into string
   public function parsed_text() {
-    return '{{' . $this->replace_templates($this->name . $this->join_params() ) . '}}';
+    return $this->replace_templates('{{' . $this->name . $this->join_params() . '}}');
   }
 
   // Parts of each param: | [pre] [param] [eq] [value] [post]
@@ -100,7 +102,6 @@ class Template extends Item {
       $this->param = strtolower($this->param);
     }
   }
-  
   public function process() {
     switch ($this->wikiname()) {
       case 'cite web':
