@@ -527,7 +527,7 @@ ER -  }}';
    public function testTemplatesInCitation() {
        $text = '{{Cite journal|url={{This is not real}} | doi = {{I am wrong}} |jstor= {{yet another bogus one }}  }}';
        $expanded = $this->process_page($text);
-       $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded);
+       $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
    }
     
    public function testConvertJournalToBook() {
