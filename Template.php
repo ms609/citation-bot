@@ -638,7 +638,7 @@ class Template extends Item {
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
         return $this->add_if_new('doi', extract_doi($url)[1]);
         
-      } else if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
+      } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
@@ -724,10 +724,10 @@ class Template extends Item {
         if (!($result = @simplexml_load_file($url)->query_result->body->query)){
           echo "\n   * Error loading simpleXML file from CrossRef.";
         }
-        else if ($result['status'] == 'malformed') {
+        elseif ($result['status'] == 'malformed') {
           echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
         }
-        else if ($result["status"] == "resolved") {
+        elseif ($result["status"] == "resolved") {
           return $result;
         }
       }
@@ -743,9 +743,9 @@ class Template extends Item {
       if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
         echo "\n   * Error loading simpleXML file from CrossRef." . tag();
       }
-      else if ($result['status'] == 'malformed') {
+      elseif ($result['status'] == 'malformed') {
         echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
-      } else if ($result["status"]=="resolved") {
+      } elseif ($result["status"]=="resolved") {
         echo " Successful!";
         return $result;
       }
@@ -1092,9 +1092,13 @@ class Template extends Item {
 
   public function expand_by_pubmed($force = FALSE) {
     if (!$force && !$this->incomplete()) return;
-    if ($pm = $this->get('pmid')) $identifier = 'pmid';
-    else if ($pm = $this->get('pmc')) $identifier = 'pmc';
-    else return FALSE;
+    if ($pm = $this->get('pmid')) {
+      $identifier = 'pmid';
+    } elseif ($pm = $this->get('pmc')) {
+      $identifier = 'pmc';
+    } else {
+      return FALSE;
+    }
     if (HTML_OUTPUT) {
       echo "\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
         urlencode($pm) . '" target="_blank">' .
@@ -1518,7 +1522,7 @@ class Template extends Item {
               if (preg_match("~@\s*[\d\-]{10,}~", $endnote_line)) {
                 $endnote_parameter = "isbn";
                 break;
-              } else if (preg_match("~@\s*\d{4}\-?\d{4}~", $endnote_line)) {
+              } elseif (preg_match("~@\s*\d{4}\-?\d{4}~", $endnote_line)) {
                 $endnote_parameter = "issn";
                 break;
               } else {
@@ -1818,7 +1822,7 @@ class Template extends Item {
             if ($subtemplate->get('id')) {
               $archive_parameter = trim($subtemplate->get('archive') ? $subtemplate->get('archive') . '/' : '');
               $this->add_if_new("arxiv", $archive_parameter . $subtemplate->get('id'));
-            } else if (!is_null($subtemplate->param_with_index(1))) {
+            } elseif (!is_null($subtemplate->param_with_index(1))) {
               $this->add_if_new("arxiv", trim($subtemplate->param_value(0)) .
                                 "/" . trim($subtemplate->param_value(1)));
             } else {
@@ -1933,7 +1937,7 @@ class Template extends Item {
           $shortest = $lev;
         }
         // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
-        else if ($lev < $shortish) {
+        elseif ($lev < $shortish) {
           $shortish = $lev;
           $comp = $parameter;
         }
