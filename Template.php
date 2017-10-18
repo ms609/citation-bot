@@ -1018,7 +1018,7 @@ class Template extends Item {
   }
 
   public function expand_by_doi($force = FALSE) {
-    $doi = $this->get_without_comments('doi');
+    $doi = $this->get_without_comments_and_placeholders('doi');
     if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $this->add_if_new('jstor', substr($doi, 8));
@@ -1348,7 +1348,7 @@ class Template extends Item {
    *   Send the URL and the first author's SURNAME ONLY as $a1
    *  The function will return an array of authors in the form $new_authors[3] = Author, The Third
    */
-    if ($doi = $this->get_without_comments('doi')) {
+    if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       $this->expand_by_doi(TRUE);
     }
     if ($this->get('pmid')) {
@@ -2130,7 +2130,7 @@ class Template extends Item {
   }
 
   protected function verify_doi () {
-    $doi = $this->get_without_comments('doi');
+    $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return NULL;
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
@@ -2352,9 +2352,12 @@ class Template extends Item {
     return $this->param_with_index($i)->val;
   }
   
-  public function get_without_comments($name) {
-    $ret = preg_replace('~<!--.*?-->~su', '', $this->get($name));
-    return (trim($ret) ? $ret : FALSE);
+  public function get_without_comments_and_placeholders($name) {
+    $ret = $this->get($name);
+    $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
+    $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
+    $ret = trim($ret);
+    return ($ret ? $ret : FALSE);
   }
 
   protected function get_param_key ($needle) {

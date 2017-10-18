@@ -154,6 +154,19 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|doi=10.3265/Nefrologia.NOTAREALDOI.broken|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('doi-broken-date'));
+    
+    $text = '{{cite journal|doi= <!-- MC Hammer says to not touch this -->}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi-broken-date'));
+    $this->assertEquals('<!-- MC Hammer says to not touch this -->', $expanded->get('doi'));
+      
+    $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi-broken-date'));
+    // $this->assertEquals('{{MC Hammer says to not touch this}}', $expanded->get('doi')); This does not work right because we are not doing a "PAGE"
+    $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
+    $expanded = $this->process_page($text);
+    $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
   }
 
   public function testOpenAccessLookup() {
