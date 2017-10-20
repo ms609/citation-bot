@@ -14,7 +14,7 @@ $editSummary = $_POST['summary'];
 //Expand text from postvars
 $page = new Page();
 $page->text = $originalText;
-$page->expand_text();
+$page->expand_text( FALSE );
 
 //Modify edit summary to identify bot-assisted edits
 if ($editSummary) {
