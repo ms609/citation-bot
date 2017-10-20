@@ -71,10 +71,11 @@ class Page {
     return $this->text;
   }
   
-  public function expand_text() {
+  public function expand_text($echo_html = TRUE) {
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" 
+    if( $echo_html === TRUE ) {
+     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" 
       . urlencode($this->title) 
       . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title="
       . urlencode($this->title)
@@ -84,6 +85,7 @@ class Page {
       . "document.title=\"Citation bot: '"
       . str_replace("+", " ", urlencode($this->title)) ."'\";</script>", 
       "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
+    }
     $text = $this->text;
     $this->modifications = array();
     if (!$text) {
