@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: *"); //This is ok because the API is not au
 header("Content-Type: text/json");
 
 //Configure setting to suppress buffered output
-define("HTML_OUTPUT", -1);
+define("HTML_OUTPUT", FALSE);
 
 //Set up tool requirements
 require_once __DIR__ . '/expandFns.php';
@@ -14,7 +14,7 @@ $editSummary = $_POST['summary'];
 //Expand text from postvars
 $page = new Page();
 $page->text = $originalText;
-$page->expand_text( FALSE );
+$page->expand_text( HTML_OUTPUT );
 
 //Modify edit summary to identify bot-assisted edits
 if ($editSummary) {
