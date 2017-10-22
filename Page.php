@@ -71,11 +71,15 @@ class Page {
     return $this->text;
   }
   
-  public function expand_text($introduce_yourself = TRUE) {
+  public function expand_text() {
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    if( $introduce_yourself === TRUE ) {
-     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" 
+    //this is set to -1 only in [erstwhile file?] text.php, because there's no need to output
+    // a buffer of text for the citation-expander gadget
+    if (HTML_OUTPUT === -1) {
+      ob_start();
+    }
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" 
       . urlencode($this->title) 
       . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title="
       . urlencode($this->title)
@@ -85,18 +89,11 @@ class Page {
       . "document.title=\"Citation bot: '"
       . str_replace("+", " ", urlencode($this->title)) ."'\";</script>", 
       "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
-    }
     $text = $this->text;
     $this->modifications = array();
     if (!$text) {
       echo "\n\n  ! No text retrieved.\n";
       return FALSE;
-    }
-
-    //this is set to -1 only in [erstwhile file?] text.php, because there's no need to output
-    // a buffer of text for the citation-expander gadget
-    if (HTML_OUTPUT === -1) {
-      ob_start();
     }
 
     // COMMENTS //
