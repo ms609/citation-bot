@@ -223,7 +223,7 @@ class Page {
       $bot->submit(API_ROOT, $submit_vars);
       $result = json_decode($bot->results);
       if ($result->edit->result == "Success") {
-        // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
+        // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) echo "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
         else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
         return TRUE;
