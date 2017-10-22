@@ -1628,7 +1628,7 @@ class Template extends Item {
         $dat = str_replace($doi[0], '', $dat);
       }
       
-      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
+      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tentative matches
         quiet_echo("\n   + Found URL floating in template; setting url");
         $this->set('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
@@ -2200,7 +2200,7 @@ class Template extends Item {
           case "404":
             global $p;
             return "{{dead link|date=" . date("F Y") . "}}";
-          #case "403": case "401": return "subscription required"; DOesn't work for, e.g. http://arxiv.org/abs/cond-mat/9909293
+          #case "403": case "401": return "subscription required"; Does not work for, e.g. http://arxiv.org/abs/cond-mat/9909293
         }
         curl_close($ch);
         return NULL;
