@@ -71,10 +71,10 @@ class Page {
     return $this->text;
   }
   
-  public function expand_text($echo_html = TRUE) {
+  public function expand_text($introduce_yourself = TRUE) {
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    if( $echo_html === TRUE ) {
+    if( $introduce_yourself === TRUE ) {
      html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" 
       . urlencode($this->title) 
       . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title="
