@@ -74,8 +74,10 @@ class Page {
   public function expand_text() {
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    //this is set to -1 only in [erstwhile file?] text.php, because there's no need to output
+    // this is set to -1 only in [erstwhile file?] text.php, because there's no need to output
     // a buffer of text for the citation-expander gadget
+    // This is needed because the Gadget API expects only JSON back, and nothing else.
+    // This buffer is later closed with ob_end_clean() which deletes the buffer without printing it
     if (HTML_OUTPUT === -1) {
       ob_start();
     }
