@@ -2,8 +2,6 @@
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/json");
 
-define("HTML_OUTPUT", -1);
-
 //Set up tool requirements
 require_once __DIR__ . '/expandFns.php';
 
