@@ -41,14 +41,14 @@ require_once("expandFns.php");
 require_once("login.php");
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
-  print " Activated by $user.\n";
+  echo " Activated by $user.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
 } else {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
 $title = trim(ucfirst(strip_tags($_REQUEST["page"])));
-print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
+echo "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
 $my_page = new Page();
 if ($my_page->get_text_from($_REQUEST["page"])) {
   $text_expanded = $my_page->expand_text();
