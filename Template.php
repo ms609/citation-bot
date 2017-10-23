@@ -1099,15 +1099,12 @@ class Template extends Item {
     } else {
       return FALSE;
     }
-    if (HTML_OUTPUT) {
-      echo "\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
+    html_echo ("\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
         urlencode($pm) . '" target="_blank">' .
         htmlspecialchars(strtoupper($identifier) . ' ' . $pm) . "</a> for more details" .
-        tag();
-    } else {
-      echo "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
-        . ' for more details' . tag();
-    }
+        tag(),
+        "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
+        . ' for more details' . tag());
     $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
     if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
