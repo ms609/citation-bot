@@ -37,7 +37,7 @@ if ($category) {
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       echo "\n # Writing to " . htmlspecialchars($page->title) . '... ';
       while (!$page->write() && $attempts < 2) ++$attempts;
-      print htmlspecialchars($page->text);
+      echo htmlspecialchars($page->text);
       if ($attempts < 3 ) {
         echo HTML_OUTPUT ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
