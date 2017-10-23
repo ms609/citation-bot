@@ -203,12 +203,12 @@ function get_raw_wikitext($page, $wait = FALSE, $verbose = FALSE, $use_daniel = 
         . $encode_page . "&rev=&go=Fetch&token=";
     $contents = (string) file_get_contents($url);
     if (!$contents) {
-      print $verbose ? "\n <br />Couldn't fetch $page; retrying" : "";
+      echo $verbose ? "\n <br />Couldn't fetch $page; retrying" : "";
       // Retry if no response
       $contents = (string) @file_get_contents($url);
     }
     if ($wait && !$contents) {
-      print $verbose ? "\n . " : "";
+      echo $verbose ? "\n . " : "";
       // If still no response, wait & retry
       sleep(1);
       $contents = (string) @file_get_contents($url);
