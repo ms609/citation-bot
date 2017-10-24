@@ -725,7 +725,7 @@ class Template extends Item {
           echo "\n   * Error loading simpleXML file from CrossRef.";
         }
         elseif ($result['status'] == 'malformed') {
-          echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
+          print "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
         }
         elseif ($result["status"] == "resolved") {
           return $result;
@@ -744,7 +744,7 @@ class Template extends Item {
         echo "\n   * Error loading simpleXML file from CrossRef." . tag();
       }
       elseif ($result['status'] == 'malformed') {
-        echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
+        print "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
       } elseif ($result["status"]=="resolved") {
         echo " Successful!";
         return $result;
@@ -836,7 +836,7 @@ class Template extends Item {
     $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
     $xml = simplexml_load_file($url);
     if ($check_for_errors && $xml->ErrorList) {
-      echo $xml->ErrorList->PhraseNotFound
+      print $xml->ErrorList->PhraseNotFound
               ? " no results."
               : "\n - Errors detected in PMID search (" . htmlspecialchars(print_r($xml->ErrorList, 1)) . "); abandoned.";
       return array(NULL, 0);
@@ -1860,7 +1860,7 @@ class Template extends Item {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              print "\n    " . $this->internal_templates[$i];
+              echo "\n    " . $this->internal_templates[$i];
               break;
             }
           
