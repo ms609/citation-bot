@@ -6,7 +6,7 @@ header("Content-Type: text/json");
 // This buffer is later deleted without printing it by ob_end_clean() 
 // Just to be clear, ALL output from the citation bot is throw away and lost forever other than the JSON output
 // This needs to be the absolute first thing done (Other than the header lines that must be the absolute zeroth thing done)
-// This code is not tested currently, since we trust the ob_* functions, the try block, and the json_encode function to do their jobs
+// This exact code is not tested currently since it requires running a webserver etc., but we have a copy of this code in the tests
 ob_start();
 
 try {  // This just exists to block any output to STDERR about uncaught exceptions being passed back to Wikipedia
