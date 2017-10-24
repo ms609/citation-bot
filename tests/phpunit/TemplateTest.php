@@ -545,12 +545,12 @@ ER -  }}';
     
    public function testGadgetAPI() {
        // This does not really test API right now, but it does emulate it without firing up a webserver etc.
-       $originalText = 'This is a page.  {{Cite web|url=http://apple.com}}.  Indeed it is';
+       $originalText = 'This is a page.  {{Cite web|website=apple.com/phones/buy_android}}.  Indeed it is';
        $editSummary  = 'I made this page';
 
        $page = new Page();
        $page->text = $originalText;
-
+       $this->start_text = $originalText; // Only in test environment.  Not in GadgetAPI
        $page->expand_text();
 
        //Modify edit summary to identify bot-assisted edits
