@@ -550,7 +550,7 @@ ER -  }}';
 
        $page = new Page();
        $page->text = $originalText;
-       $this->start_text = $originalText; // Only in test environment.  Not in GadgetAPI
+       $page->start_text = $originalText; // Only in test environment.  Not in GadgetAPI
        $page->expand_text();
 
        //Modify edit summary to identify bot-assisted edits
