@@ -70,18 +70,18 @@ class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     /*
     // If the above assertions are throwing an error, you can generate an updated 
     // version of constants/namespace.php by running the below and pasting the content:
-    print "\n\n! Namespaces are out of date. Please update constants/namespace.php with the below:\n\n";
-    print "<?php\nconst NAMESPACES = Array(";
+    echo "\n\n! Namespaces are out of date. Please update constants/namespace.php with the below:\n\n";
+    echo "<?php\nconst NAMESPACES = Array(";
     foreach ($namespaces->query->namespaces as $ns) {
       $ns_name = isset($ns->canonical)? $ns->canonical : '';
-      print ("\n  " . (string) $ns->id . " => '" . $ns_name . "',");
+      echo ("\n  " . (string) $ns->id . " => '" . $ns_name . "',");
     }
-    print ");\n\nconst NAMESPACE_ID = Array(";
+    echo ");\n\nconst NAMESPACE_ID = Array(";
     foreach ($namespaces->query->namespaces as $ns) {
       $ns_name = isset($ns->canonical)? $ns->canonical : '';
-      print ("\n  '" . strtolower($ns_name) . "' => " . (string) $ns->id . ",");
+      echo ("\n  '" . strtolower($ns_name) . "' => " . (string) $ns->id . ",");
     }
-    print "\n);\n?>\n";
+    echo "\n);\n?>\n";
     die;
     */
   }
