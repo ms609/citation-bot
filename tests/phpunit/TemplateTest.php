@@ -564,7 +564,7 @@ ER -  }}';
            'editsummary' => $editSummary,
        );
        $expanded = json_encode($result);
-       $this->assertEquals('{"expandedtext":"This is a page. {{Cite web|url=http:\/\/apple.com\/phones\/buy_android}}. Indeed it is","editsummary":"I made this page | [[WP:UCB|Assisted by Citation bot]]"}',$expanded);
+       $this->assertEquals(base64_encode('{"expandedtext":"This is a page. {{Cite web|url=http:\/\/apple.com\/phones\/buy_android}}. Indeed it is","editsummary":"I made this page | [[WP:UCB|Assisted by Citation bot]]"}'),base64_encode($expanded));
    }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
