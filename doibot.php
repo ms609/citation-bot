@@ -41,7 +41,7 @@ require_once("expandFns.php");
 require_once("login.php");
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
-  print " Activated by $user.\n";
+  echo " Activated by $user.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
 } else {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
@@ -63,7 +63,7 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
         . urlencode(get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
         , ".");
     } else {
-      echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
+      print "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
     }
   } elseif (!$ON) {
     echo "\n # Proposed code for " . htmlspecialchars($my_page->title) . ', which you have asked the bot to commit with edit summary ' . htmlspecialchars($my_page->edit_summary()) . "<br><pre>";
