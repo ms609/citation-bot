@@ -3,11 +3,14 @@ header("Access-Control-Allow-Origin: *"); //This is ok because the API is not au
 header("Content-Type: text/json");
 
 // This is needed because the Gadget API expects only JSON back, and nothing else.
-// This buffer is later closed with ob_end_clean() which deletes the buffer without printing it
-// This needs to be the absolute first thing done (Other than the header lines that must be the zeroth thing done)
+// This buffer is later deleted without printing it by ob_end_clean() 
+// Just to be clear, ALL output from the citation bot is throw away and lost forever other than the JSON output
+// This needs to be the absolute first thing done (Other than the header lines that must be the absolute zeroth thing done)
+// This code is not tested currently, since we trust the ob_* functions, the try block, and the json_encode function to do their jobs
 ob_start();
 
-try {
+try {  // This just exists to block any output to STDERR about uncaught exceptions being passed back to Wikipedia
+  
   //Set up tool requirements
   require_once __DIR__ . '/expandFns.php';
 
@@ -32,7 +35,7 @@ try {
   );
 } catch (Exception $e) {
    ob_end_clean();
-   exit(0);  // This just exists to block any output to STDERR about uncaught exceptions being passed back to Wikipedia
+   exit(0); 
 }
 
 // Throw away all output
