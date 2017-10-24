@@ -7,18 +7,18 @@
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 
-define("HTML_OUTPUT", 1);  // Change this as wanted
+define("HTML_OUTPUT", TRUE);  // Change this as wanted
 
 if (!defined("HTML_OUTPUT")) {  // Fail safe code
-  define("HTML_OUTPUT", -1);
+  define("HTML_OUTPUT", TRUE);
 }  
 
 function html_echo($text, $alternate_text='') {
-  echo (HTML_OUTPUT >= 0) ? $text : $alternate_text;
+  echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
 function quiet_echo($text, $alternate_text = '') {
-  if (defined('VERBOSE') || HTML_OUTPUT >= 0) {
+  if (defined('VERBOSE') || HTML_OUTPUT ) {
     echo $text;
   } else {
     echo $alternate_text;
