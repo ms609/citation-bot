@@ -19,7 +19,7 @@ function category_members($cat){
           $list[] = (string) $page["title"];
         }
     } else {
-      echo 'Error reading API from ' . htmlspecialchars($url) . "\n\n";
+      print 'Error reading API from ' . htmlspecialchars($url) . "\n\n";
     }
   } while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
   return $list ? $list : [' '];
@@ -46,7 +46,7 @@ function what_transcludes_2($template, $namespace = 99) {
         set_time_limit(20);
         $res = load_xml_via_bot($vars);
         if (!$res) {
-          echo 'Error reading API from ' . htmlspecialchars($url) . "\n";
+          print 'Error reading API from ' . htmlspecialchars($url) . "\n";
         } else {
           foreach($res->query->embeddedin->ei as $page) {
             $list["title"][] = (string) $page["title"];
@@ -90,8 +90,8 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
         $page_ids[] = (integer) $page["pageid"];
       }
     } else {
-      echo 'Error reading API with vars '; var_dump($vars);
-      if ($res->error) echo $res->error;
+      print 'Error reading API with vars '; var_dump($vars);
+      if ($res->error) print $res->error;
     }
   } while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
   set_time_limit(45);
