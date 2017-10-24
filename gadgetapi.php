@@ -31,6 +31,7 @@ try {
     'editsummary' => $editSummary,
   );
 } catch (Exception $e) {
+   ob_end_clean();
    exit(0);  // This just exists to block any output to STDERR about uncaught exceptions being passed back to Wikipedia
 }
 
