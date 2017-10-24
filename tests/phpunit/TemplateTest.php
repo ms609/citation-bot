@@ -542,6 +542,30 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('cite book', $expanded->wikiname());
    }
+    
+   public function testGadgetAPI() {
+       // This does not really test API right now, but it does emulate it without firing up a webserver etc.
+       $originalText = 'This is a page.  {{Cite web|url=http://apple.com}}.  Indeed it is';
+       $editSummary  = 'I made this page';
+
+       $page = new Page();
+       $page->text = $originalText;
+
+       $page->expand_text();
+
+       //Modify edit summary to identify bot-assisted edits
+       if ($editSummary) {
+          $editSummary .= " | ";
+       }
+       $editSummary .= "[[WP:UCB|Assisted by Citation bot]]";
+
+       $result = array(
+           'expandedtext' => $page->text,
+           'editsummary' => $editSummary,
+       );
+       $expanded = json_encode($result);
+       $this->assertEquals('WANTED',$expanded);
+   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
