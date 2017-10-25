@@ -1,6 +1,6 @@
 <?php
 if (!defined("FAST_MODE")) {
-  exit("expandFns.php must be called before login.php");
+  die("expandFns.php must be called before login.php");
 }
 
 require_once(HOME . "credentials/doiBot.login");
@@ -15,7 +15,7 @@ $submit_vars["lgpassword"] = PASSWORD;
 // Submit POST variables and retrieve a token
 $bot->submit(API_ROOT, $submit_vars);
 if (!$bot->results) {
-  exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
+  die("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
 }
 $first_response = json_decode($bot->results);
 $submit_vars["lgtoken"] = $first_response->login->token;
