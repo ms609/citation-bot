@@ -237,7 +237,12 @@ function title_capitalization($in, $caps_after_punctuation = TRUE) {
   // Capitalization exceptions, e.g. Elife -> eLife
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
   $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
-    
+  // And now with wikilinked names, e.g. [[Elife]] -> [[eLife]]
+  if(substr($new_case,0,2) === "[[" && substr($new_case,-2) === "]]") {
+    $new_case = substr(substr($new_case,2),0,-2); // Remove [[ and ]]
+    $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
+    $new_case = '[[' . substr($new_case, 1, strlen($new_case) - 2) . ']]';
+  }
   /* I believe we can do without this now
   if (preg_match("~^(the|into|at?|of)\b~", $new_case)) {
     // If first word is a little word, it should still be capitalized
