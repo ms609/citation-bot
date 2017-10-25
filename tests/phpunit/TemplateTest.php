@@ -506,6 +506,11 @@ ER -  }}';
       $this->assertEquals('ZooKeys', $expanded->get('journal'));
       $this->assertEquals('445', $expanded->get('issue'));
       $this->assertNull($expanded->get('volume'));
+      $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[zookeys]]}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('[[ZooKeys]]', $expanded->get('journal'));
+      $this->assertEquals('445', $expanded->get('issue'));
+      $this->assertNull($expanded->get('volume'));
   }
   public function testTitleItalics(){
       $text = '{{cite journal|doi=10.1111/pala.12168}}';
