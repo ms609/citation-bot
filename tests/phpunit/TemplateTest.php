@@ -500,14 +500,7 @@ ER -  }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-&#91;2-carboxy-2-(4-hydroxyphenyl)acetamido&#93;-7.alpha.-methoxy-3-&#91;&#91;(1-methyl-1H-tetrazol-5-yl)thio&#93;methyl&#93;-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems', $expanded->get('title'));
   }
-   
-      
-  public function testWikiJournalsWikilinked() {
-      $text = '{{cite journal | author = Welch J. J. | year = 2010 | title = The "Island Rule" and Deep-Sea Gastropods: Re-Examining the Evidence | journal = [[PLOS ONE]] | volume = 5 | issue = 1| page = e8776 | doi = 10.1371/journal.pone.0008776 |bibcode = 2010PLoSO...5.8776W | pmid=20098740 | pmc=2808249}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('[[PLOS ONE]]', $expanded->get('journal'));
-  }
-    
+
   public function testZooKeys() {
       $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
       $expanded = $this->process_citation($text);
@@ -516,17 +509,17 @@ ER -  }}';
       $this->assertNull($expanded->get('volume'));
       $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[Zookeys]]}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('[[Zookeys]]', $expanded->get('journal'));  // We do not fix existing stuff
+      $this->assertEquals('[[ZooKeys]]', $expanded->get('journal'));
       $this->assertEquals('445', $expanded->get('issue'));
       $this->assertNull($expanded->get('volume'));
   }
-    
+
   public function testTitleItalics(){
       $text = '{{cite journal|doi=10.1111/pala.12168}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals("The macro- and microfossil record of the Cambrian priapulid ''Ottoia''", $expanded->get('title'));
   }
- 
+
   public function testSpeciesCaps() {
     $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
     $expanded = $this->process_citation($text);
