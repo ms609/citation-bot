@@ -428,7 +428,11 @@ class Template extends Item {
       
       case 'volume':
         if ($this->blank($param_name)) {
-          if (in_array(strtolower($this->get('journal')), HAS_NO_VOLUME) === TRUE ) {
+          $temp_string = strtolower($this->get('journal')) ;
+          if(substr($temp_string,0,2) === "[[" && substr($temp_string,-2) === "]]") {  // Wikilinked journal title 
+               $temp_string = substr(substr($temp_string,2),0,-2); // Remove [[ and ]]
+          }
+          if (in_array($temp_string, HAS_NO_VOLUME) === TRUE ) {
             // This journal has no volume.  This is really the issue number
             return $this->add_if_new('issue', $value);
           } else {
