@@ -35,7 +35,7 @@ try {  // This just exists to block any output to STDERR about uncaught exceptio
   );
 } catch (Exception $e) {
    ob_end_clean();
-   exit(0); 
+   die(0); 
 }
 
 // Throw away all output
