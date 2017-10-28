@@ -25,5 +25,4 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We ALWAYS put spaces after list items and method parameters (`[1, 2, 3]`, not `[1,2,3]`) and around operators (`x += 1`, not `x+=1`)
   * Regular expressions are defined using the symbol `~` in place of `/`, to reduce escaping and improve legibility when handling URLs.
   * We prefer `elseif` to `else if`
-  * We use `echo` for normal print out, and `print` for output that the user should only see if there is a problem. The distinction between a problem and normal behaviour is somewhat arbitrary: for example, a failure of a CrossRef search might be either the bot's fault or a CrossRef error
-  * We use `exit` for normal exit and `die` for exiting in response to errors.
+  * We use `echo` and `exit` for normal events, and `print` and `die` if there is a problem. The distinction is somewhat arbitrary: for example, a failure of a CrossRef search might be either the bot's fault or a CrossRef error
