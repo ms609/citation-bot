@@ -129,7 +129,7 @@ class Page {
 
     $this->replace_object($comments);
     $this->replace_object($nowiki);
-  
+
     return strcasecmp($this->text, $this->start_text) != 0;
   }
 
