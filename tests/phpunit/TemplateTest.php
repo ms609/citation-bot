@@ -565,7 +565,7 @@ ER -  }}';
    public function testPagesDash() {
        $text = '{{cite journal|pages=1-2|title=do change}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('1-2',$expanded->get('pages'));
+       $this->assertEquals('1–2',$expanded->get('pages'));
        $text = '{{cite journal|at=1-2|title=do not change}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('1-2',$expanded->get('at'));
