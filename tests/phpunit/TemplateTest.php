@@ -577,20 +577,20 @@ ER -  }}';
    public function testDoNotAddYearIfDate() {
        $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
        $expanded = $this->process_citation($text);
-       $this->assertNull($expanded->get('year');
+       $this->assertNull($expanded->get('year'));
    }
                          
    public function testAccessDates() {
        $text = '{{cite book |last1=Tanimoto |first1=Toshiro |editor=Thomas J. Ahrens |date=1995 |chapter=Crustal Structure of the Earth |title=Global Earth Physics: A Handbook of Physical Constants |chapter-url=http://www.agu.org/reference/gephys/15_tanimoto.pdf |access-date=16 October 2006}}';
        $expanded = $this->process_citation($text);
-       $this->assertNotNull($expanded->get('access-date');
+       $this->assertNotNull($expanded->get('access-date'));
    }
                             
    public function testUseLastNotAuthor() {
        $text='{{cite journal|pmid=12858711}}';
        $expanded = $this->process_citation($text);
-       $this->assertNotNull($expanded->get('last1');
-       $this->assertNull($expanded->get('author1');
+       $this->assertNotNull($expanded->get('last1'));
+       $this->assertNull($expanded->get('author1'));
    }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
