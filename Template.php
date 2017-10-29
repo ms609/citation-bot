@@ -637,6 +637,7 @@ class Template extends Item {
         return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         
       } elseif (extract_doi($url)[1]) {
+        
         quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
         return $this->add_if_new('doi', extract_doi($url)[1]);
         
