@@ -565,7 +565,7 @@ ER -  }}';
    public function testPagesDash() {
        $text = '{{cite journal|pages=1-2|title=do change}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('1-2',$expanded->get('at'));
+       $this->assertEquals('1-2',$expanded->get('pages'));
        $text = '{{cite journal|at=1-2|title=do not change}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('1-2',$expanded->get('at'));
@@ -581,17 +581,11 @@ ER -  }}';
    }
                          
    public function testAccessDates() {
-       $text = '{{cite book |last1=Tanimoto |first1=Toshiro |editor=Thomas J. Ahrens |date=1995 |chapter=Crustal Structure of the Earth |title=Global Earth Physics: A Handbook of Physical Constants |chapter-url=http://www.agu.org/reference/gephys/15_tanimoto.pdf |access-date=16 October 2006}}';
+       $text = '{{cite book |last1=Tanimoto |first1=Toshiro |editor=Thomas J. Ahrens |date=1995 |chapter=Crustal Structure of the Earth |title=Global Earth Physics: A Handbook of Physical Constants |chapter-url=http://www.agu.org/reference/gephys/15_tanimoto.pdf |accessdate=16 October 2006}}';
        $expanded = $this->process_citation($text);
-       $this->assertNotNull($expanded->get('access-date'));
+       $this->assertNotNull($expanded->get('accessdate'));
    }
-                            
-   public function testUseLastNotAuthor() {
-       $text='{{cite journal|pmid=12858711}}';
-       $expanded = $this->process_citation($text);
-       $this->assertNotNull($expanded->get('last1'));
-       $this->assertNull($expanded->get('author1'));
-   }
+
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
