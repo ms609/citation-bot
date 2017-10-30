@@ -107,6 +107,13 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
   }
   
+  public function testDoiExpansionBook() {
+    $text = "{{cite book|doi=10.1007/978-981-10-3180-9_1}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite book', $expanded->wikiname());
+    $this->assertEquals('978-981-10-3179-3', $expanded->get('isbn'));
+  }
+  
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
     $text = "{{Cite web | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
