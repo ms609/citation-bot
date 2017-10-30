@@ -82,7 +82,7 @@ class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
       print ("\n  '" . strtolower($ns_name) . "' => " . (string) $ns->id . ",");
     }
     print "\n);\n?>\n";
-    die;
+    die(0);
     */
   }
   
