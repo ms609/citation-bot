@@ -2,11 +2,10 @@
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/json");
 
-// This is needed because the Gadget API expects only JSON back, and nothing else.
-// This buffer is later deleted without printing it by ob_end_clean() 
-// Just to be clear, ALL output from the citation bot is throw away and lost forever other than the JSON output
-// This needs to be the absolute first thing done (Other than the header lines that must be the absolute zeroth thing done)
-// This exact code is not tested currently since it requires running a webserver etc., but we have a copy of this code in the tests
+// This code is not tested, but we have a copy of this code in the tests
+
+// This is needed because the Gadget API expects only JSON back
+// ALL output from the citation bot is throw away
 ob_start();
   
 //Set up tool requirements
@@ -18,7 +17,6 @@ $editSummary = $_POST['summary'];
 //Expand text from postvars
 $page = new Page();
 $page->text = $originalText;
-
 $page->expand_text();
 
 //Modify edit summary to identify bot-assisted edits
