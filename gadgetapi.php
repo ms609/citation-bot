@@ -8,35 +8,29 @@ header("Content-Type: text/json");
 // This needs to be the absolute first thing done (Other than the header lines that must be the absolute zeroth thing done)
 // This exact code is not tested currently since it requires running a webserver etc., but we have a copy of this code in the tests
 ob_start();
-
-try {  // This just exists to block any output to STDERR about uncaught exceptions being passed back to Wikipedia
   
-  //Set up tool requirements
-  require_once __DIR__ . '/expandFns.php';
+//Set up tool requirements
+require_once __DIR__ . '/expandFns.php';
 
-  $originalText = $_POST['text'];
-  $editSummary = $_POST['summary'];
+$originalText = $_POST['text'];
+$editSummary = $_POST['summary'];
 
-  //Expand text from postvars
-  $page = new Page();
-  $page->text = $originalText;
+//Expand text from postvars
+$page = new Page();
+$page->text = $originalText;
 
-  $page->expand_text();
+$page->expand_text();
 
-  //Modify edit summary to identify bot-assisted edits
-  if ($editSummary) {
-    $editSummary .= " | ";
-  }
-  $editSummary .= "[[WP:UCB|Assisted by Citation bot]]";
-
-  $result = array(
-    'expandedtext' => $page->text,
-    'editsummary' => $editSummary,
-  );
-} catch (Exception $e) {
-   ob_end_clean();
-   die(0); 
+//Modify edit summary to identify bot-assisted edits
+if ($editSummary) {
+  $editSummary .= " | ";
 }
+$editSummary .= "[[WP:UCB|Assisted by Citation bot]]";
+
+$result = array(
+  'expandedtext' => $page->text,
+  'editsummary' => $editSummary,
+);
 
 // Throw away all output
 ob_end_clean();
