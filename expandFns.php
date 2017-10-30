@@ -7,8 +7,6 @@
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 
-define("HTML_OUTPUT", TRUE);  // Change this as wanted
-
 if (!defined("HTML_OUTPUT")) {  // Fail safe code
   define("HTML_OUTPUT", TRUE);
 }  
