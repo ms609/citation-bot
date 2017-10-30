@@ -2,7 +2,7 @@
 global $bot;
 $bot = new Snoopy();
 
-/* jrTest - tests a name for a Junior appelation
+/* jrTest - tests a name for a Junior appellation
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
@@ -105,7 +105,7 @@ function authorIsHuman($author) {
   return TRUE;
 }
 
-// Returns the author's name formated as Surname, F.I.
+// Returns the author's name formatted as Surname, F.I.
 function formatAuthor($author){
 
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.

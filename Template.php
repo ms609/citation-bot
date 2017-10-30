@@ -631,6 +631,9 @@ class Template extends Item {
       } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        if (is_null($url_sent)) {
+          $this->forget('url');
+        }
         return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
         
       } elseif (extract_doi($url)[1]) {
@@ -973,8 +976,10 @@ class Template extends Item {
         if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
         $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
         $i = NULL;
-        foreach ($record->author as $author) {
+        if (isset($record->author)) {
+         foreach ($record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
+         }
         }
         if (isset($record->pub)) {
           $journal_string = explode(",", (string) $record->pub);
@@ -1099,15 +1104,12 @@ class Template extends Item {
     } else {
       return FALSE;
     }
-    if (HTML_OUTPUT) {
-      echo "\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
+    html_echo ("\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
         urlencode($pm) . '" target="_blank">' .
         htmlspecialchars(strtoupper($identifier) . ' ' . $pm) . "</a> for more details" .
-        tag();
-    } else {
-      echo "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
-        . ' for more details' . tag();
-    }
+        tag(),
+        "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
+        . ' for more details' . tag());
     $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
     if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
@@ -1628,7 +1630,7 @@ class Template extends Item {
         $dat = str_replace($doi[0], '', $dat);
       }
       
-      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tenative matches
+      if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tentative matches
         quiet_echo("\n   + Found URL floating in template; setting url");
         $this->set('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
@@ -2200,7 +2202,7 @@ class Template extends Item {
           case "404":
             global $p;
             return "{{dead link|date=" . date("F Y") . "}}";
-          #case "403": case "401": return "subscription required"; DOesn't work for, e.g. http://arxiv.org/abs/cond-mat/9909293
+          #case "403": case "401": return "subscription required"; Does not work for, e.g. http://arxiv.org/abs/cond-mat/9909293
         }
         curl_close($ch);
         return NULL;
