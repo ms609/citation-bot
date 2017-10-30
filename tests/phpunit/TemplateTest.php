@@ -130,7 +130,9 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
      $SLOW_MODE = FALSE; // Otherwise we'll find a bibcode
      $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. }}';
      $expanded = $this->process_citation($text);
+     $SLOW_MODE = TRUE;  // Reset it
      $this->assertEquals($text, $expanded->parsed_text());
+     
    }
   
   public function testUnknownJournal() {
@@ -537,11 +539,55 @@ ER -  }}';
        return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
    }
     
+   public function testOverwriteBlanks() {
+       $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
+       $expanded = $this->process_page($text);
+       $this->assertEquals('{{cite journal|jstor=1234567890}}', $expanded->parsed_text());
+   }
+
+   public function testIgnoreJstorPlants() {
+       $text='{{Cite journal| url=http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972 |title=Holotype of Persoonia terminalis L.A.S.Johnson & P.H.Weston [family PROTEACEAE]}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972',$expanded->get('url'));
+       $this->assertNull($expanded->get('jstor'));
+   }
+    
+   public function testBibcodeDotEnding() {
+       $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('1932Natur.129Q..18.',$expanded->get('bibcode'));
+   }
+
    public function testConvertJournalToBook() {
        $text = '{{Cite journal|doi=10.1007/978-3-540-74735-2_15}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('cite book', $expanded->wikiname());
    }
+    
+   public function testPagesDash() {
+       $text = '{{cite journal|pages=1-2|title=do change}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('1–2',$expanded->get('pages'));
+       $text = '{{cite journal|at=1-2|title=do not change}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('1-2',$expanded->get('at'));
+       $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]',$expanded->get('pages'));
+   }
+   
+   public function testDoNotAddYearIfDate() {
+       $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
+       $expanded = $this->process_citation($text);
+       $this->assertNull($expanded->get('year'));
+   }
+                         
+   public function testAccessDates() {
+       $text = '{{cite book |last1=Tanimoto |first1=Toshiro |editor=Thomas J. Ahrens |date=1995 |chapter=Crustal Structure of the Earth |title=Global Earth Physics: A Handbook of Physical Constants |chapter-url=http://www.agu.org/reference/gephys/15_tanimoto.pdf |accessdate=16 October 2006}}';
+       $expanded = $this->process_citation($text);
+       $this->assertNotNull($expanded->get('accessdate'));
+   }
+
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]

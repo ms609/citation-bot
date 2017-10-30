@@ -973,8 +973,10 @@ class Template extends Item {
         if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
         $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
         $i = NULL;
-        foreach ($record->author as $author) {
+        if (isset($record->author)) {
+         foreach ($record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
+         }
         }
         if (isset($record->pub)) {
           $journal_string = explode(",", (string) $record->pub);
