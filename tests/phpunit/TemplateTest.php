@@ -588,6 +588,11 @@ ER -  }}';
        $this->assertNotNull($expanded->get('accessdate'));
    }
 
+   public functions testJustAnISBN() {
+       $text = '{{cite book |isbn=0471186368}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Explosives Engineering',$expanded->get('title'));
+   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
