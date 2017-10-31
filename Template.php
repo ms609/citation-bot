@@ -1243,11 +1243,6 @@ class Template extends Item {
   protected function expand_by_google_books() {
     $url = $this->get('url');
     $isbn= $this->get('isbn');
-    if($isbn) { // Can fake it, if no URL or non-google URL
-      if (!$url || ! preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ) {
-        $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn ;
-      }
-    }
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $removed_redundant = 0;
       $hash = '';
@@ -1280,6 +1275,8 @@ class Template extends Item {
       }
       $this->google_book_details($gid[1]);
       return TRUE;
+    } else if ($isbn) {
+      $this->google_book_details('?q=isbn:' . $isbn);
     }
     return FALSE;
   }
