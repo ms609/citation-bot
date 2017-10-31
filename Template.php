@@ -1245,7 +1245,7 @@ class Template extends Item {
     $isbn= $this->get('isbn');
     if($isbn) { // Can fake it, if no URL or non-google URL
       if (!$url || ! preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ) {
-        $url = "https://books.google.com/books?id=to0yXzq_EkQC&printsec=frontcover&dq=isbn:" . $isbn ;
+        $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn ;
       }
     }
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
