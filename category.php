@@ -44,7 +44,7 @@ if ($category) {
         . get_last_revision($page) . ">last edit</a></small></i>\n\n<br>"
         , ".");
       } else {
-         print "\n # Failed. \n" . htmlspecialchars($page->text);
+         echo "\n # Failed. \n" . htmlspecialchars($page->text);
       }
     } else {
       echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
