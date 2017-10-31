@@ -563,30 +563,6 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('cite book', $expanded->wikiname());
    }
-    
-   public function testGadgetAPI() {
-       // This does not really test API right now, but it does emulate it without firing up a webserver etc.
-       $originalText = 'This is a page.  {{Cite web|website=apple.com/phones/buy_android}}.  Indeed it is';
-       $editSummary  = 'I made this page';
-
-       $page = new Page();
-       $page->text = $originalText;
-       $page->start_text = $originalText; // Only in test environment.  Not in GadgetAPI
-       $page->expand_text();
-
-       //Modify edit summary to identify bot-assisted edits
-       if ($editSummary) {
-          $editSummary .= " | ";
-       }
-       $editSummary .= "[[WP:UCB|Assisted by Citation bot]]";
-
-       $result = array(
-           'expandedtext' => $page->text,
-           'editsummary' => $editSummary,
-       );
-       $expanded = json_encode($result);
-       $this->assertEquals('{"expandedtext":"This is a page.  {{Cite web|url=http:\/\/apple.com\/phones\/buy_android}}.  Indeed it is","editsummary":"I made this page | [[WP:UCB|Assisted by Citation bot]]"}',$expanded);
-   }
 
    public function testPagesDash() {
        $text = '{{cite journal|pages=1-2|title=do change}}';
