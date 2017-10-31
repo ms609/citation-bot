@@ -91,12 +91,6 @@ class Page {
       return FALSE;
     }
 
-    //this is set to -1 only in [erstwhile file?] text.php, because there's no need to output
-    // a buffer of text for the citation-expander gadget
-    if (HTML_OUTPUT === -1) {
-      ob_start();
-    }
-
     // COMMENTS //
     $comments = $this->extract_object('Comment');
     $nowiki   = $this->extract_object('Nowiki');
@@ -135,11 +129,6 @@ class Page {
 
     $this->replace_object($comments);
     $this->replace_object($nowiki);
-   
-    // seems to be set as -1  in text.php and then re-set
-    if (HTML_OUTPUT === -1) {
-      ob_end_clean();
-    }
 
     return strcasecmp($this->text, $this->start_text) != 0;
   }
