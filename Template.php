@@ -1277,6 +1277,7 @@ class Template extends Item {
       return TRUE;
     } else if ($isbn) {
       $this->google_book_details('?q=isbn:' . $isbn);
+      return TRUE;
     }
     return FALSE;
   }
