@@ -1276,7 +1276,11 @@ class Template extends Item {
       $this->google_book_details($gid[1]);
       return TRUE;
     } else if ($isbn) {
-      $this->google_book_details('?q=isbn:' . $isbn);
+      $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
+      $string = file_get_contents($url); 
+      $result = json_decode($string, true);
+      $gid=$result[0]['id'];
+      $this->google_book_details($gid);
       return TRUE;
     }
     return FALSE;
