@@ -2,10 +2,7 @@
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/json");
 
-// This code is not tested, but we have a copy of this code in the tests
-
-// This is needed because the Gadget API expects only JSON back
-// ALL output from the citation bot is throw away
+// This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
 ob_start();
   
 //Set up tool requirements
