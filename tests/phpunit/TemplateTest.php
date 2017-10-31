@@ -563,7 +563,7 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('cite book', $expanded->wikiname());
    }
-
+    
    public function testPagesDash() {
        $text = '{{cite journal|pages=1-2|title=do change}}';
        $expanded = $this->process_citation($text);
