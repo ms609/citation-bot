@@ -1275,8 +1275,10 @@ class Template extends Item {
       }
       $this->google_book_details($gid[1]);
       return TRUE;
-    } else if ($isbn) {
-      if (preg_match("~[^0-9Xx\-]~",$isbn) === 1) return FALSE ;
+    } else if () {
+      $isbn = str_replace(array(" ","-"), "", $isbn);
+      if (strlen($isbn) !== 13 && strlen($isbn) !== 10) return FALSE ;
+      if (preg_match("~[^0-9Xx]~",$isbn) === 1) return FALSE ;
       $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
       $string = file_get_contents($url); 
       if ($string === FALSE) return FALSE;
