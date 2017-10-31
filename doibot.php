@@ -63,7 +63,7 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
         . urlencode(get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
         , ".");
     } else {
-      print "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
+      echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
     }
   } elseif (!$ON) {
     echo "\n # Proposed code for " . htmlspecialchars($my_page->title) . ', which you have asked the bot to commit with edit summary ' . htmlspecialchars($my_page->edit_summary()) . "<br><pre>";
