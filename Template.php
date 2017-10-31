@@ -20,7 +20,6 @@ require_once("Parameter.php");
 
 class Template extends Item {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
-  const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
@@ -1276,8 +1275,10 @@ class Template extends Item {
       $this->google_book_details($gid[1]);
       return TRUE;
     } else if ($isbn) {
+      if (preg_match("~[^0-9Xx\-]~",$isbn) === 1) return FALSE ;
       $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
       $string = file_get_contents($url); 
+      if ($string === FALSE) return FALSE;
       $result = json_decode($string, false);
       if ($result->totalItems === 1) {
         $gid=$result->items[0]->id;
