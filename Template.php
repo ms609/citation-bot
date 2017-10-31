@@ -1242,6 +1242,10 @@ class Template extends Item {
   
   protected function expand_by_google_books() {
     $url = $this->get('url');
+    $isbn= $this->get('isbn');
+    if( !$url && $isbn) { // Fake it.
+      $url = "https://books.google.com/books?id=to0yXzq_EkQC&printsec=frontcover&dq=isbn:" . $isbn ;
+    }
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $removed_redundant = 0;
       $hash = '';
