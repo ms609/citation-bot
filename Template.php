@@ -1281,7 +1281,7 @@ class Template extends Item {
       $result = json_decode($string, false);
       if ($result->totalItems === 1) {
         $result = json_decode($string, false);
-        $gid=$result->$result->items[0]->id;
+        $gid=$result->items[0]->id;
         $this->google_book_details($gid);
         return TRUE;
       }
