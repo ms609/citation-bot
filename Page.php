@@ -190,7 +190,7 @@ class Page {
       $bot->fetch(API_ROOT . "?action=query&prop=info&meta=userinfo&format=json");
       $result = json_decode($bot->results);
       if ($result->query->userinfo->id == 0) {
-        print "\n ! LOGGED OUT:  The bot has been logged out from Wikipedia servers";
+        echo "\n ! LOGGED OUT:  The bot has been logged out from Wikipedia servers";
         return FALSE;
       }
 
@@ -199,11 +199,11 @@ class Page {
       $result = json_decode($bot->results);
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
       if ($my_page->lastrevid != $this->lastrevid) {
-        print "\n ! Possible edit conflict detected. Aborting.";
+        echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
       if ( stripos($this->text,"CITATION_BOT_PLACEHOLDER") !== FALSE )  {
-        print "\n ! Citation bot placeholder left escaped. Aborting.";
+        echo "\n ! Citation bot placeholder left escaped. Aborting.";
         return FALSE;
       }
       $submit_vars = array(
