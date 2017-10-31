@@ -588,7 +588,7 @@ ER -  }}';
        $this->assertNotNull($expanded->get('accessdate'));
    }
 
-   public functions testJustAnISBN() {
+   public function testJustAnISBN() {
        $text = '{{cite book |isbn=0471186368}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Explosives Engineering',$expanded->get('title'));
