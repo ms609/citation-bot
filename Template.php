@@ -725,7 +725,7 @@ class Template extends Item {
           echo "\n   * Error loading simpleXML file from CrossRef.";
         }
         elseif ($result['status'] == 'malformed') {
-          print "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
+          echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
         }
         elseif ($result["status"] == "resolved") {
           return $result;
@@ -744,7 +744,7 @@ class Template extends Item {
         echo "\n   * Error loading simpleXML file from CrossRef." . tag();
       }
       elseif ($result['status'] == 'malformed') {
-        print "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
+        echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
       } elseif ($result["status"]=="resolved") {
         echo " Successful!";
         return $result;
@@ -836,7 +836,7 @@ class Template extends Item {
     $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
     $xml = simplexml_load_file($url);
     if ($check_for_errors && $xml->ErrorList) {
-      print $xml->ErrorList->PhraseNotFound
+      echo $xml->ErrorList->PhraseNotFound
               ? " no results."
               : "\n - Errors detected in PMID search (" . htmlspecialchars(print_r($xml->ErrorList, 1)) . "); abandoned.";
       return array(NULL, 0);
