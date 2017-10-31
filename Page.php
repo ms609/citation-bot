@@ -235,7 +235,7 @@ class Page {
         echo "\n ! " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
         return FALSE;
       } else {
-        echo "\n ! Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
+        echo "\n ! Unhandled error.  Please copy this output and <a href=https://en.wikipedia.org/wiki/User_talk:Citation_bot>Report a bug.</a>";
         return FALSE;
       }
     } else {
