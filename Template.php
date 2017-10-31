@@ -1279,7 +1279,7 @@ class Template extends Item {
       $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
       $string = file_get_contents($url); 
       $result = json_decode($string, true);
-      if ($results->totalItems) {
+      if ($result->totalItems) {
         $gid=$result->items[0]['id'];
         $this->google_book_details($gid);
         return TRUE;
