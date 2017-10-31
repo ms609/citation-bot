@@ -1281,9 +1281,12 @@ class Template extends Item {
       if (preg_match("~[^0-9Xx]~",$isbn) === 1) return FALSE ;
       $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
       $string = file_get_contents($url); 
-      if ($string === FALSE) return FALSE;
+      if ($string === FALSE) {
+        echo "\n Google APIs search failed for ISBN : " . $isbn . "\n";
+        return FALSE;
+      }
       $result = json_decode($string, false);
-      if ($result->totalItems === 1) {
+      if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
         $gid=$result->items[0]->id;
         $this->google_book_details($gid);
         return TRUE;
