@@ -34,6 +34,7 @@ class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     
   public function testGetPrefixIndex() {
     $namespace = get_namespace('Template:Cite journal');
+    $this->assertEquals(namespace_id('Template'), $namespace);
     $results = get_prefix_index('Cite j', $namespace); // too many results if we just use 'Cite'
     $this->assertTrue(array_search('Template:Cite journal', $results) !== FALSE);
   }
