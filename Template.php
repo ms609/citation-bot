@@ -1111,7 +1111,8 @@ class Template extends Item {
   }
   
   public function expand_by_jstor() {
-    if ($this->empty('jstor')) return FALSE;
+    if ($this->blank('jstor')) return FALSE;
+    if (preg_match("~[^0-9]~",$jstor) === 1) return FALSE ;
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
     $data=file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $this->get('jstor'));
     $json = json_decode($data,false);
