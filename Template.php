@@ -1118,7 +1118,8 @@ class Template extends Item {
     if ( !$this->incompleteJournal()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
     $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
     if ($json === FALSE) return FALSE;
-    $data = json_decode($json,false);
+    $data = @json_decode($json,false);
+    if (!isset($data)) return FALSE;
     if (!isset($data[0])) return FALSE;
     if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  ,$data[0]->{'title'});
     if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  ,$data[0]->{'issue'});
