@@ -1125,8 +1125,8 @@ class Template extends Item {
     $this->add_if_new('doi',$json[0]->{'DOI'});
     $i = 0;
     while (isset($json[0]->{'author'}[$i])) {
-        $this->add_if_new('first' . ($i+1) . $json[0]->{'author'}[$i][0] . " ";
-        $this->add_if_new('last'  . ($i+1) . $json[0]->{'author'}[$i][1] . " ";
+        $this->add_if_new('first' . ($i+1), $json[0]->{'author'}[$i][0]);
+        $this->add_if_new('last'  . ($i+1), $json[0]->{'author'}[$i][1]);
         $i++;
     }
     return TRUE;
