@@ -535,10 +535,10 @@ ER -  }}';
   }   
   
   public function testJstorSICI() {
-       $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
+       $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0002-8762(193207)37:4<750:ITI1>2.0.CO;2-5}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('594900', $expanded->get('jstor'));
-      $this->assertEquals('Western Loanwords in Modern Pashto', $expanded->get('title'));
+       $this->assertEquals('1843352', $expanded->get('jstor'));
+      $this->assertEquals('37', $expanded->get('volume'));
    }
     
    public function getDateAndYear($input){
