@@ -8,7 +8,7 @@
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 
 if (!defined("HTML_OUTPUT")) {  // Fail safe code
-  define("HTML_OUTPUT", TRUE);
+  define("HTML_OUTPUT", FALSE);
 }  
 
 function html_echo($text, $alternate_text='') {
