@@ -1112,9 +1112,10 @@ class Template extends Item {
   
   public function expand_by_jstor() {
     if ($this->blank('jstor')) return FALSE;
-    if (preg_match("~[^0-9]~",$jstor) === 1) return FALSE ;
+    $jstor = $this->get('jstor')
+    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ;
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
-    $data=file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $this->get('jstor'));
+    $data=file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
     $json = json_decode($data,false);
     if ( !isset($json[0])) return FALSE;  // We need to test Rubbish and real JSTOR
     $this->add_if_new('title',$json[0]->{'title'});
