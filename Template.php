@@ -180,7 +180,9 @@ class Template extends Item {
         if ($this->expand_by_google_books()) {
           echo "\n * Expanded from Google Books API";
         }
-        $this->expand_by_jstor();
+        if ($this->expand_by_jstor()) {
+          echo "\n * Expanded from Citoid JSTOR API";
+        }
         $this->sanitize_doi();
         if ($this->verify_doi()) {
           $this->expand_by_doi();
@@ -217,7 +219,7 @@ class Template extends Item {
     ));
   }
 
-    protected function incompletBook() {
+    protected function incompleteBook() {
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
     return (!(
               $this->has("isbn")
