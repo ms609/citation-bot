@@ -884,7 +884,7 @@ class Template extends Item {
         'http' => array('ignore_errors' => true),
       ));
       $arxiv_request = "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
-      $arxiv_response = file_get_contents($arxiv_request, FALSE, $context);
+      $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
       if ($arxiv_response) {
         $xml = simplexml_load_string(
           preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
@@ -1115,21 +1115,21 @@ class Template extends Item {
     $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ;
     if ( !$this->incompleteJournal()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
-    $data=file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
-    if ($data === FALSE) return FALSE;
-    $json = json_decode($data,false);
-    if ( !isset($json[0])) return FALSE;  // We need to test Rubbish and real JSTOR
-    $this->add_if_new('title',$json[0]->{'title'});
-    $this->add_if_new('issue', $json[0]->{'issue'});
-    $this->add_if_new('pages',$json[0]->{'pages'});
-    $this->add_if_new('journal',$json[0]->{'publicationTitle'});
-    $this->add_if_new('volume',$json[0]->{'volume'});
-    $this->add_if_new('date',$json[0]->{'date'});
-    $this->add_if_new('doi',$json[0]->{'DOI'});
+    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
+    if ($json === FALSE) return FALSE;
+    $data = json_decode($json,false);
+    if (!isset($data[0])) return FALSE;
+    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  ,$data[0]->{'title'});
+    if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  ,$data[0]->{'issue'});
+    if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  ,$data[0]->{'pages'});
+    if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal',$data[0]->{'publicationTitle'});
+    if ( isset($data[0]->{'volume'}))           $this->add_if_new('volume' ,$data[0]->{'volume'});
+    if ( isset($data[0]->{'date'}))             $this->add_if_new('date'   ,$data[0]->{'date'});
+    if ( isset($data[0]->{'DOI'}))              $this->add_if_new('doi'    ,$data[0]->{'DOI'});
     $i = 0;
-    while (isset($json[0]->{'author'}[$i])) {
-        $this->add_if_new('first' . ($i+1), $json[0]->{'author'}[$i][0]);
-        $this->add_if_new('last'  . ($i+1), $json[0]->{'author'}[$i][1]);
+    while (isset($data[0]->{'author'}[$i])) {
+        if ( isset($data[0]->{'author'}[$i][0])) $this->add_if_new('first' . ($i+1), $data[0]->{'author'}[$i][0]);
+        if ( isset($data[0]->{'author'}[$i][1])) $this->add_if_new('last'  . ($i+1), $data[0]->{'author'}[$i][1]);
         $i++;
     }
     return TRUE;
