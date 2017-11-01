@@ -1112,7 +1112,7 @@ class Template extends Item {
   
   public function expand_by_jstor() {
     if ($this->blank('jstor')) return FALSE;
-    $jstor = $this->get('jstor')
+    $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ;
     if ( !$this->incompleteJournal()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
     $data=file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
