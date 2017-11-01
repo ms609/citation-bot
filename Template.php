@@ -103,6 +103,7 @@ class Template extends Item {
   }
 
   public function process() {
+    ini_set('user_agent','The Wikipedia Citation Bot');  // This gets passed in HTTP headers
     switch ($this->wikiname()) {
       case 'cite web':
         $this->use_unnamed_params();
@@ -179,6 +180,7 @@ class Template extends Item {
         if ($this->expand_by_google_books()) {
           echo "\n * Expanded from Google Books API";
         }
+        $this->expand_by_jstor();
         $this->sanitize_doi();
         if ($this->verify_doi()) {
           $this->expand_by_doi();
@@ -200,7 +202,7 @@ class Template extends Item {
     }
   }
 
-  protected function incomplete() {
+  protected function incompleteJournal() {
     if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
       return TRUE;
     }
@@ -215,6 +217,16 @@ class Template extends Item {
     ));
   }
 
+    protected function incompletBook() {
+    if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
+    return (!(
+          &&  $this->has("isbn")
+          &&  $this->has("title")
+          && ($this->has("date") || $this->has("year"))
+          && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
+    ));
+  }
+  
   public function blank($param) {
     if (!$param) return ;
     if (empty($this->param)) return TRUE;
@@ -1027,7 +1039,7 @@ class Template extends Item {
 
   public function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
-    if ($doi && ($force || $this->incomplete())) {
+    if ($doi && ($force || $this->incompleteJournal())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $this->add_if_new('jstor', substr($doi, 8));
       }
@@ -1097,9 +1109,31 @@ class Template extends Item {
       }
     }
   }
+  
+  public function expand_by_jstor() {
+    if ($this->empty('jstor')) return FALSE;
+    if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
+    $data=file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $this->get('jstor'));
+    $json = json_decode($data,false);
+    if ( !isset($json[0])) return FALSE;  // We need to test Rubbish and real JSTOR
+    $this->add_if_new('title',$json[0]->{'title'});
+    $this->add_if_new('issue', $json[0]->{'issue'});
+    $this->add_if_new('pages',$json[0]->{'pages'});
+    $this->add_if_new('journal',$json[0]->{'publicationTitle'});
+    $this->add_if_new('volume',$json[0]->{'volume'});
+    $this->add_if_new('date',$json[0]->{'date'});
+    $this->add_if_new('doi',$json[0]->{'DOI'});
+    $i = 0;
+    while (isset($json[0]->{'author'}[$i])) {
+        $this->add_if_new('first' . ($i+1) . $json[0]->{'author'}[$i][0] . " ";
+        $this->add_if_new('last'  . ($i+1) . $json[0]->{'author'}[$i][1] . " ";
+        $i++;
+    }
+    return TRUE;
+  }
 
   public function expand_by_pubmed($force = FALSE) {
-    if (!$force && !$this->incomplete()) return;
+    if (!$force && !$this->incompleteJournal()) return;
     if ($pm = $this->get('pmid')) {
       $identifier = 'pmid';
     } elseif ($pm = $this->get('pmc')) {
