@@ -220,7 +220,7 @@ class Template extends Item {
     protected function incompletBook() {
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
     return (!(
-          &&  $this->has("isbn")
+              $this->has("isbn")
           &&  $this->has("title")
           && ($this->has("date") || $this->has("year"))
           && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
