@@ -103,7 +103,6 @@ class Template extends Item {
   }
 
   public function process() {
-    ini_set('user_agent','The Wikipedia Citation Bot');  // This gets passed in HTTP headers
     switch ($this->wikiname()) {
       case 'cite web':
         $this->use_unnamed_params();
