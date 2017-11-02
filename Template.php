@@ -872,7 +872,7 @@ class Template extends Item {
         'http' => array('ignore_errors' => true),
       ));
       $arxiv_request = "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
-      $arxiv_response = file_get_contents($arxiv_request, FALSE, $context);
+      $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
       if ($arxiv_response) {
         $xml = simplexml_load_string(
           preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
@@ -1285,9 +1285,10 @@ class Template extends Item {
   protected function google_book_details ($gid) {
     $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
-      str_replace(":", "___", file_get_contents($google_book_url))
+      str_replace(":", "___", @file_get_contents($google_book_url))
     );
-    $xml = simplexml_load_string($simplified_xml);
+    $xml = @simplexml_load_string($simplified_xml);
+    if ($xml === FALSE) return ;
     if ($xml->dc___title[1]) {
       $this->add_if_new("title",  
                wikify_external_text(
