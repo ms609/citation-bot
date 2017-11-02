@@ -1296,7 +1296,7 @@ class Template extends Item {
       if ($oclc) $url = $url . "+oclc:" . $oclc;
       if ($url === '') return FALSE;
       $url = "https://www.googleapis.com/books/v1/volumes?q=" . $url ;
-      if ( GOOGLE_KEY != '' )) $url = $url . "&key=" . GOOGLE_KEY ;
+      if ( GOOGLE_KEY != '' ) $url = $url . "&key=" . GOOGLE_KEY ;
       $string = @file_get_contents($url); 
       if ($string === FALSE) {
         echo "\n Google APIs search failed for" ;
