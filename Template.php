@@ -881,6 +881,7 @@ class Template extends Item {
     }
     
     if ($xml) {
+      if ((string)$xml->entry->title === "Error") return FALSE;
       $i = 0;
       foreach ($xml->entry->author as $auth) {
         $i++;
