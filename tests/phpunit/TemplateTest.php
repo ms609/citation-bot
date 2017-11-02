@@ -70,9 +70,9 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('1941451', $expanded->get('pmid'));
       
-    $text = "{{cite journal|pmid=1234567890}}";
+    $text = "{{cite journal|pmid=1234567890}}"; //Rubbish
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('year'));
+    $this->assertNull($expanded->get('title'));
   }
   
   public function testPMCExpansion() {
@@ -81,9 +81,9 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('154623', $expanded->get('pmc'));
       
-    $text = "{{cite journal|pmc=1234567890}}";
+    $text = "{{cite journal|pmc=1234567890}}";  // Rubbish
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('year'));
+    $this->assertNull($expanded->get('title'));
   }
   
   public function testArxivExpansion() {
@@ -100,9 +100,9 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('eprint'));
     $this->assertNull($expanded->get('publisher'));
       
-    $text = "{{Cite arxiv | eprint = 0806wrong.0013fake | class=forgetit}}";
+    $text = "{{Cite arxiv | eprint = 0806wrong.0013fake | class=forgetit}}"; // Rubbish
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('year'));
+    $this->assertNull($expanded->get('title'));
   }
   
   public function testAmazonExpansion() {
@@ -311,6 +311,10 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Gould'        , $expanded->get('last1'));
     $this->assertEquals('Stephen Jay'  , $expanded->get('first1') );
     $this->assertEquals('1990-09-17'   , $expanded->get('date'));
+      
+    $text = "{{Cite book | url=https://books.google.com/books?id=drNrNMSkq6MD }}" ; // Rubbish ID
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('title'));
   }
   
   
