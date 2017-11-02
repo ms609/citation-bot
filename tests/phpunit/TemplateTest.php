@@ -69,6 +69,10 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('1941451', $expanded->get('pmid'));
+      
+    $text = "{{cite journal|pmid=1234567890}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('year'));
   }
   
   public function testPMCExpansion() {
@@ -76,6 +80,10 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('154623', $expanded->get('pmc'));
+      
+    $text = "{{cite journal|pmc=1234567890}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('year'));
   }
   
   public function testArxivExpansion() {
@@ -91,6 +99,10 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('class'));
     $this->assertNull($expanded->get('eprint'));
     $this->assertNull($expanded->get('publisher'));
+      
+    $text = "{{Cite arxiv | eprint = 0806wrong.0013fake | class=forgetit}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('year'));
   }
   
   public function testAmazonExpansion() {
