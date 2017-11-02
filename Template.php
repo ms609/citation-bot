@@ -1243,6 +1243,8 @@ class Template extends Item {
   protected function expand_by_google_books() {
     $url = $this->get('url');
     $isbn= $this->get('isbn');
+    $lccn= $this->get('lccn');
+    $oclc= $this->get('oclc');
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $removed_redundant = 0;
       $hash = '';
@@ -1275,14 +1277,32 @@ class Template extends Item {
       }
       $this->google_book_details($gid[1]);
       return TRUE;
-    } else if ($isbn) {
-      $isbn = str_replace(array(" ","-"), "", $isbn);
-      if (strlen($isbn) !== 13 && strlen($isbn) !== 10) return FALSE ;
-      if (preg_match("~[^0-9Xx]~",$isbn) === 1) return FALSE ;
-      $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
-      $string = file_get_contents($url); 
+    } else if ($isbn || $lccn || $oclc) {
+      if ($isbn) {
+        $isbn = str_replace(array(" ","-"), "", $isbn);
+        if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
+        if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
+      }
+      if ($lccn) {
+        $lccn = str_replace(array(" ","-"), "", $lccn);
+        if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
+      }
+      if ($oclc) {
+        if ( !ctype_alnum($oclc) ) $oclc='' ;
+      }
+      $url = '';
+      if ($isbn) $url = $url . "+isbn:" . $isbn;
+      if ($lccn) $url = $url . "+lccn:" . $lccn;
+      if ($oclc) $url = $url . "+oclc:" . $oclc;
+      if ($url === '') return FALSE;
+      $url = "https://www.googleapis.com/books/v1/volumes?q=" . $url ;
+      $string = @file_get_contents($url); 
       if ($string === FALSE) {
-        echo "\n Google APIs search failed for ISBN : " . $isbn . "\n";
+        echo "\n Google APIs search failed for" ;
+        if ($isbn) echo " ISBN: " . $isbn . "   " ;
+        if ($lccn) echo " LCCN: " . $lccn . "   " ;
+        if ($oclc) echo " OCLC: " . $oclc ;
+        echo "\n";
         return FALSE;
       }
       $result = json_decode($string, false);
