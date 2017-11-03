@@ -1290,12 +1290,16 @@ class Template extends Item {
       if ($oclc) {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
       }
-      $url = '';
-      if ($isbn) $url = $url . "+isbn:" . $isbn;
-      if ($lccn) $url = $url . "+lccn:" . $lccn;
-      if ($oclc) $url = $url . "+oclc:" . $oclc;
-      if ($url === '') return FALSE;
-      $url = "https://www.googleapis.com/books/v1/volumes?q=" . $url ;
+      $url = "https://www.googleapis.com/books/v1/volumes?q=" ;
+      if ($isbn) {
+        $url = $url . "isbn:" . $isbn;
+      } elseif ($oclc) {
+        $url = $url . "oclc:" . $oclc;
+      } elseif ($lccn) {
+        $url = $url . "lccn:" . $lccn;
+      } else {
+        return FALSE;
+      }
       if (stripos(gethostname(),'travis') === FALSE ) { // Do not use on testing servers
         $url = $url . "&key=" . GOOGLE_KEY ;
       }
