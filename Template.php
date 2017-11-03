@@ -1316,6 +1316,7 @@ class Template extends Item {
       if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
         $gid=$result->items[0]->id;
         $this->google_book_details($gid);
+        if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
         return TRUE;
       }
     }
