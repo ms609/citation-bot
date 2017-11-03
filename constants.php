@@ -13,7 +13,7 @@ const EN_DASH = "\xe2\x80\x93"; // regexp for replacing to ndashes using mb_ereg
 const WIKI_ROOT = "https://en.wikipedia.org/w/index.php?";
 const ISBN_KEY = "268OHQMW";
 const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
-const GOOGLE_KEY = "" ; // Not gotten yet
+const GOOGLE_KEY = "AIzaSyBNhyC5a5EirreJEDQ1muw0ZBAmSMs8R4E" ; // only works from tool labs
 const TEMPLATE_REGEXP = "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~";
 const BRACESPACE = "!BOTCODE-spaceBeforeTheBrace";
 const BIBCODE_REGEXP = "~^(?:http://(?:\w+.)?adsabs.harvard.edu|http://ads\.ari\.uni-heidelberg\.de|http://ads\.inasan\.ru|http://ads\.mao\.kiev\.ua|http://ads\.astro\.puc\.cl|http://ads\.on\.br|http://ads\.nao\.ac\.jp|http://ads\.bao\.ac\.cn|http://ads\.iucaa\.ernet\.in|http://ads\.lipi\.go\.id|http://cdsads\.u-strasbg\.fr|http://esoads\.eso\.org|http://ukads\.nottingham\.ac\.uk|http://www\.ads\.lipi\.go\.id)/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
