@@ -1304,9 +1304,13 @@ class Template extends Item {
       $string = @file_get_contents($url); 
       if ($string === FALSE) {
         echo "\n Google APIs search failed for" ;
-        if ($isbn) echo " ISBN: " . $isbn . "   " ;
-        if ($lccn) echo " LCCN: " . $lccn . "   " ;
-        if ($oclc) echo " OCLC: " . $oclc ;
+        if ($isbn) {
+          echo " ISBN: " . $isbn . "   " ;
+        } elseif ($oclc) {
+          echo " OCLC: " . $oclc ;
+        } elseif ($lccn) {
+          echo " LCCN: " . $lccn . "   " ;
+        }
         echo "\n";
         return FALSE;
       }
