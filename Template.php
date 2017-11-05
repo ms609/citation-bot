@@ -223,9 +223,8 @@ class Template extends Item {
           && ($this->has("date") || $this->has("year"))
           && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
     ));
-    
   }
-  
+
   public function blank($param) {
     if (!$param) return ;
     if (empty($this->param)) return TRUE;
