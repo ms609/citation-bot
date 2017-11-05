@@ -200,7 +200,7 @@ class Template extends Item {
     }
   }
 
-  protected function incomplete() {
+  protected function incompleteJournal() {
     if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
       return TRUE;
     }
@@ -1027,7 +1027,7 @@ class Template extends Item {
 
   public function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
-    if ($doi && ($force || $this->incomplete())) {
+    if ($doi && ($force || $this->incompleteJournal())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $this->add_if_new('jstor', substr($doi, 8));
       }
@@ -1099,7 +1099,7 @@ class Template extends Item {
   }
 
   public function expand_by_pubmed($force = FALSE) {
-    if (!$force && !$this->incomplete()) return;
+    if (!$force && !$this->incompleteJournal()) return;
     if ($pm = $this->get('pmid')) {
       $identifier = 'pmid';
     } elseif ($pm = $this->get('pmc')) {
