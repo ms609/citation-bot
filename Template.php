@@ -215,6 +215,16 @@ class Template extends Item {
     ));
   }
 
+  protected function incompleteBook() {
+    if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
+    return (!(
+              $this->has("isbn")
+          &&  $this->has("title")
+          && ($this->has("date") || $this->has("year"))
+          && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
+    ));
+  }
+  
   public function blank($param) {
     if (!$param) return ;
     if (empty($this->param)) return TRUE;
