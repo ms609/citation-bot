@@ -875,8 +875,10 @@ class Template extends Item {
       $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
       if ($arxiv_response) {
         $xml = @simplexml_load_string(
-          if ($xml !== FALSE) preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response);
+          preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response);
         ); // TODO Explore why this is often failing
+      } else {
+        return FALSE;
       }
     }
     
