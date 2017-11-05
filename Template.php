@@ -203,7 +203,7 @@ class Template extends Item {
     }
   }
 
-  protected function incompleteJournal() {
+  protected function incomplete() {
     if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
       return TRUE;
     }
@@ -212,16 +212,6 @@ class Template extends Item {
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
           &&  ($this->has("issue") || $this->has('number'))
-          &&  $this->has("title")
-          && ($this->has("date") || $this->has("year"))
-          && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
-    ));
-  }
-
-    protected function incompleteBook() {
-    if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
-    return (!(
-              $this->has("isbn")
           &&  $this->has("title")
           && ($this->has("date") || $this->has("year"))
           && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
@@ -1040,7 +1030,7 @@ class Template extends Item {
 
   public function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
-    if ($doi && ($force || $this->incompleteJournal())) {
+    if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $this->add_if_new('jstor', substr($doi, 8));
       }
@@ -1115,7 +1105,7 @@ class Template extends Item {
     if ($this->blank('jstor')) return FALSE;
     $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ;
-    if ( !$this->incompleteJournal()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
+    if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
     $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
     if ($json === FALSE) return FALSE;
     $data = @json_decode($json,false);
@@ -1138,7 +1128,7 @@ class Template extends Item {
   }
 
   public function expand_by_pubmed($force = FALSE) {
-    if (!$force && !$this->incompleteJournal()) return;
+    if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) {
       $identifier = 'pmid';
     } elseif ($pm = $this->get('pmc')) {
