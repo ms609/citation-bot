@@ -1300,9 +1300,7 @@ class Template extends Item {
       } else {
         return FALSE;
       }
-      if (stripos(gethostname(),'travis') === FALSE ) { // Do not use on testing servers
-        $url = $url . "&key=" . GOOGLE_KEY ;
-      }
+      $url = $url . "&key=" . GOOGLE_KEY ;
       $string = @file_get_contents($url); 
       if ($string === FALSE) {
         echo "\n Google APIs search failed for" ;
