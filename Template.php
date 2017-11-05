@@ -201,7 +201,7 @@ class Template extends Item {
   }
 
   protected function incomplete() {
-    if ($subtemplate->wikiname() =='cite book' || ($subtemplate->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
+    if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
     return (!(
               $this->has("isbn")
