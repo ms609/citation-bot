@@ -875,7 +875,7 @@ class Template extends Item {
         'http' => array('ignore_errors' => true),
       ));
       $arxiv_request = "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
-      $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
+      $arxiv_response = file_get_contents($arxiv_request, FALSE, $context);
       if ($arxiv_response) {
         $xml = simplexml_load_string(
           preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
