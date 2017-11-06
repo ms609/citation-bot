@@ -161,10 +161,6 @@ function parse_wikitext($text, $title = "API") {
     sleep(2);
     $bot->submit(API_ROOT, $vars);
     $a = @json_decode($bot->results);
-    if ($a === FALSE) {
-       echo '\n Error in parse_wikitext \n' ;
-	   exit(1);
-	}
   }
   return $a->parse->text->{"*"};
 }
