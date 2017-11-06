@@ -1318,7 +1318,7 @@ class Template extends Item {
           if( in_array(strtolower($author), AUTHORS_ARE_PUBLISHERS) === TRUE  || substr(strtolower($author),-4) === " inc" || substr(strtolower($author),-5) === " inc.") {
             $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
           } else {
-            $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
+            $this->add_if_new("author" . ++$i, format_author(str_replace("___", ":", $author)));
           }
         }
       }
@@ -1381,7 +1381,7 @@ class Template extends Item {
     echo "\n   - Using meta tags...";
     $meta_tags = get_meta_tags($url);
     if ($meta_tags["citation_authors"]) {
-      $new_authors = formatAuthors($meta_tags["citation_authors"], TRUE);
+      $new_authors = format_multiple_authors($meta_tags["citation_authors"], TRUE);
     }
     global $SLOW_MODE;
     if ($SLOW_MODE && !$new_pages && !$new_authors) {
@@ -1514,7 +1514,7 @@ class Template extends Item {
           $endnote_datum = substr($endnote_line, 2); // cut line type and leading space
           switch ($endnote_linetype) {
             case "A": 
-              $this->add_if_new("author" . ++$endnote_authors, formatAuthor($endnote_datum));
+              $this->add_if_new("author" . ++$endnote_authors, format_author($endnote_datum));
               $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
               $endnote_parameter = FALSE;
               break;
@@ -1571,7 +1571,7 @@ class Template extends Item {
             case "AU":
               $ris_authors++;
               $ris_parameter = "author$ris_authors";
-              $ris_part[1] = formatAuthor($ris_part[1]);
+              $ris_part[1] = format_author($ris_part[1]);
               break;
             case "Y1":
               $ris_parameter = "date";
@@ -2251,7 +2251,7 @@ class Template extends Item {
               $this->forget($param);
               $authors = split_authors($val_base);
               foreach ($authors as $i => $author_name) {
-                $this->add_if_new('author' . ($i + 1), formatAuthor($author_name)); // 
+                $this->add_if_new('author' . ($i + 1), format_author($author_name)); // 
               }
             }
           }
