@@ -1221,8 +1221,8 @@ class Template extends Item {
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
-      $oa = json_decode($json);
-      if (isset($oa->best_oa_location)) {
+      $oa = @json_decode($json);
+      if ($oa !== FALSE && isset($oa->best_oa_location)) {
         $best_location = $oa->best_oa_location;
         if ($best_location->host_type == 'publisher') {
           // The best location is already linked to by the doi link
