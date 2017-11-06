@@ -29,7 +29,7 @@ const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 // Some data we get from outside sources is bad or at least mis-defined
 // Use lower case for all of these, and then compare to a lower cased version
 const BAD_AUTHORS = array("unknown","missing");
-const AUTHORS_ARE_PUBLISHERS = array("hearst magazines", "time inc");
+const AUTHORS_ARE_PUBLISHERS = array("hearst magazines", "time inc", "nielsen business media, inc");
 const HAS_NO_VOLUME = array("zookeys");  // Some journals have issues only, no volume numbers
 const BAD_TITLES = array("unknown","missing");
 
