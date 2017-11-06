@@ -268,22 +268,22 @@ class Template extends Item {
       
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
-        echo '\n TESTING 1 $value \n';
-        echo '\n TESTING 2 md5sum($value) \n';
+        echo "\n TESTING 1 $value \n";
+        echo "\n TESTING 2 md5sum($value) \n";
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        echo '\n TESTING 3 $value\n';
+        echo "\n TESTING 3 $value\n";
         $value = straighten_quotes($value);
-        echo '\n TESTING 4 $value\n';
+        echo "\n TESTING 4 $value\n";
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
           if (strpos($value, ',')) {
-            echo '\n TESTING 5 $value\n';
+            echo "\n TESTING 5 $value\n";
             $au = explode(',', $value);
             print_r($au);
-            echo '\n';
+            echo "\n";
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatSurname($au[0])));
             return $this->add('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
           } else {
-            echo '\n TESTING 6 $value\n';
+            echo "\n TESTING 6 $value\n";
             return $this->add($param_name,sanitize_string($value));
           }
         }
