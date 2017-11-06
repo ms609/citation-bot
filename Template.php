@@ -268,15 +268,21 @@ class Template extends Item {
       
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
+        echo "\n TESTING 1 $value \n";
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
+        echo "\n TESTING 3 $value\n";
         $value = straighten_quotes($value);
-
+        echo "\n TESTING 4 $value\n";
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
           if (strpos($value, ',')) {
+            echo "\n TESTING 5 $value\n";
             $au = explode(',', $value);
+            print_r($au);
+            echo "\n";
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatSurname($au[0])));
             return $this->add_if_new('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
           } else {
+            echo "\n TESTING 6 $value\n";
             return $this->add($param_name,sanitize_string($value));
           }
         }
@@ -1135,6 +1141,12 @@ class Template extends Item {
           $i = 0;
           foreach ($item->Item as $subItem) {
             $i++;
+            if ($i === 1) {
+              echo "\nTESTER\n";
+              print_r(authorIsHuman((string) $subItem));
+              print_r((string) $subItem);
+              echo "\n";
+            }
             if (authorIsHuman((string) $subItem)) {
               $jr_test = jrTest($subItem);
               $subItem = $jr_test[0];
