@@ -93,11 +93,11 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('publisher'));
   }
   
-  public function testLastVSauthor() {
+  public function testLastVersusAuthor() {
     $text = "{{cite journal|pmid=12858711}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('Lovallo', $expanded->get('last1'));
     $this->assertNull($expanded->get('author1'));
+    $this->assertEquals('Lovallo', $expanded->get('last1'));
   }
     
   public function testAmazonExpansion() {
