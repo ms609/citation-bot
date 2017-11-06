@@ -2,11 +2,11 @@
 global $bot;
 $bot = new Snoopy();
 
-/* jr_test - tests a name for a Junior appellation
+/* junior_test - tests a name for a Junior appellation
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
-function jr_test($name) {
+function junior_test($name) {
   $junior = (substr($name, -3) == " Jr")?" Jr":FALSE;
   if ($junior) {
     $name = substr($name, 0, -3);
@@ -89,10 +89,10 @@ function is_initials($str){
 }
 
 /*
- * author_is_Human
+ * author_is_human
  * Runs some tests to see if the full name of a single author is unlikely to be the name of a person.
  */
-function author_is_Human($author) {
+function author_is_human($author) {
   $author = trim($author);
   $chars = count_chars($author);
   if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
