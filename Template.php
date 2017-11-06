@@ -269,7 +269,6 @@ class Template extends Item {
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         echo "\n TESTING 1 $value \n";
-        echo "\n TESTING 2 md5sum($value) \n";
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         echo "\n TESTING 3 $value\n";
         $value = straighten_quotes($value);
@@ -1139,6 +1138,12 @@ class Template extends Item {
           $i = 0;
           foreach ($item->Item as $subItem) {
             $i++;
+            if ($i === 1) {
+              echo "\nTESTER\n";
+              print_r(authorIsHuman((string) $subItem));
+              print_r((string) $subItem);
+              echo "\n";
+            }
             if (authorIsHuman((string) $subItem)) {
               $jr_test = jrTest($subItem);
               $subItem = $jr_test[0];
