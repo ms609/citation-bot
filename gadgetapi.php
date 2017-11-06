@@ -30,4 +30,4 @@ $result = array(
 // Throw away all output
 ob_end_clean();
 
-echo json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
+echo @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE

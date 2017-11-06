@@ -280,7 +280,7 @@ class Template extends Item {
             print_r($au);
             echo "\n";
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatSurname($au[0])));
-            return $this->add('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
+            return $this->add_if_new('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
           } else {
             echo "\n TESTING 6 $value\n";
             return $this->add($param_name,sanitize_string($value));
@@ -878,15 +878,18 @@ class Template extends Item {
         'http' => array('ignore_errors' => true),
       ));
       $arxiv_request = "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
-      $arxiv_response = file_get_contents($arxiv_request, FALSE, $context);
+      $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
       if ($arxiv_response) {
-        $xml = simplexml_load_string(
+        $xml = @simplexml_load_string(
           preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
         ); // TODO Explore why this is often failing
+      } else {
+        return FALSE;
       }
     }
     
     if ($xml) {
+      if ((string)$xml->entry->title === "Error") return FALSE;
       $i = 0;
       foreach ($xml->entry->author as $auth) {
         $i++;
@@ -1230,8 +1233,8 @@ class Template extends Item {
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
-      $oa = json_decode($json);
-      if (isset($oa->best_oa_location)) {
+      $oa = @json_decode($json);
+      if ($oa !== FALSE && isset($oa->best_oa_location)) {
         $best_location = $oa->best_oa_location;
         if ($best_location->host_type == 'publisher') {
           // The best location is already linked to by the doi link
@@ -1296,9 +1299,10 @@ class Template extends Item {
   protected function google_book_details ($gid) {
     $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
-      str_replace(":", "___", file_get_contents($google_book_url))
+      str_replace(":", "___", @file_get_contents($google_book_url))
     );
-    $xml = simplexml_load_string($simplified_xml);
+    $xml = @simplexml_load_string($simplified_xml);
+    if ($xml === FALSE) return FALSE;
     if ($xml->dc___title[1]) {
       $this->add_if_new("title",  
                wikify_external_text(
@@ -1323,7 +1327,7 @@ class Template extends Item {
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
-          if( in_array(strtolower($author), AUTHORS_ARE_PUBLISHERS) === TRUE) {
+          if( in_array(strtolower($author), AUTHORS_ARE_PUBLISHERS) === TRUE  || substr(strtolower($author),-4) === " inc" || substr(strtolower($author),-5) === " inc.") {
             $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
           } else {
             $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));

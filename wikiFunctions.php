@@ -155,12 +155,12 @@ function parse_wikitext($text, $title = "API") {
         'title'  => $title,
     );
   $bot->submit(API_ROOT, $vars);
-  $a = json_decode($bot->results);
+  $a = @json_decode($bot->results);
   if (!$a) {
     // Wait a sec and try again
     sleep(2);
     $bot->submit(API_ROOT, $vars);
-    $a = json_decode($bot->results);
+    $a = @json_decode($bot->results);
   }
   return $a->parse->text->{"*"};
 }

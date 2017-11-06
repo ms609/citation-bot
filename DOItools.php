@@ -96,9 +96,11 @@ function authorIsHuman($author) {
   $author = trim($author);
   $chars = count_chars($author);
   if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
-    || substr(strtolower($author), 0, 4) == "the " 
+    || substr(strtolower($author), 0, 4) === "the " 
     || stripos($author, 'collaborat') !== FALSE
     || preg_match("~[A-Z]{3}~", $author)
+    || substr(strtolower($author),-4) === " inc"
+    || substr(strtolower($author),-5) === " inc."
   ) {
     return FALSE;
   }
@@ -255,7 +257,7 @@ function query_adsabs ($options) {
   curl_setopt($ch, CURLOPT_URL, "http://api.adsabs.harvard.edu/v1/search/query"
     . "?data_type=XML&q=$options&fl="
     . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
-  $return = json_decode(curl_exec($ch));
+  $return = @json_decode(curl_exec($ch));
   curl_close($ch);
   
   return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
