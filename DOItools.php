@@ -99,6 +99,8 @@ function authorIsHuman($author) {
     || substr(strtolower($author), 0, 4) == "the " 
     || stripos($author, 'collaborat') !== NULL
     || preg_match("~[A-Z]{3}~", $author)
+    || substr(strtolower($author),-4) == " inc"
+    || substr(strtolower($author),-5) == " inc."
   ) {
     return FALSE;
   }
