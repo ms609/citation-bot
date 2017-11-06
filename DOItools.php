@@ -143,18 +143,18 @@ function format_author($author){
 			if (!$auth[$countAuth-1]) {
 				$i = array();
 				// it ends in a .
-				if (isInitials($auth[$countAuth-1])) {
+				if (is_initials($auth[$countAuth-1])) {
 					// it's Conway Morris S.C.
 					foreach (explode(" ", $auth[0]) as $bit){
-						if (isInitials($bit)) $i[] = formatInitials($bit); else $surname .= "$bit ";
+						if (is_initials($bit)) $i[] = format_initials($bit); else $surname .= "$bit ";
 					}
 					unset($auth[0]);
 					foreach ($auth as $bit){
-						if (isInitials($bit)) $i[] = formatInitials($bit);
+						if (is_initials($bit)) $i[] = format_initials($bit);
 					}
 				} else {
 					foreach ($auth as $A){
-						if (isInitials($A)) $i[] = formatInitials($A);
+						if (is_initials($A)) $i[] = format_initials($A);
 					}
 				}
 				$fore = mb_strtoupper(implode(".", $i));
@@ -169,13 +169,13 @@ function format_author($author){
 			$chunks = array_reverse(explode(" ", $author));
 			$i = array();
 			foreach ($chunks as $chunk){
-				if (!$surname && !isInitials($chunk)) $surname = $chunk;
-				else array_unshift($i, isInitials($chunk)?formatInitials($chunk):$chunk);
+				if (!$surname && !is_initials($chunk)) $surname = $chunk;
+				else array_unshift($i, is_initials($chunk)?format_initials($chunk):$chunk);
 			}
 			$fore = implode(" ", $i);
 		}
 	}
-	return formatSurname($surname) . ", " . formatForename($fore);
+	return format_surname($surname) . ", " . format_forename($fore);
 }
 
 function format_multiple_authors($authors, $returnAsArray = FALSE){
@@ -221,7 +221,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 	$frags = explode(" ", $return);
 	$return = array();
 	foreach ($frags as $frag){
-		$return[] = isInitials($frag)?formatInitials($frag):$frag;
+		$return[] = is_initials($frag)?format_initials($frag):$frag;
 	}
 		$returnString = preg_replace("~;$~", "", trim(implode(" ", $return)));
 	if ($returnAsArray){
