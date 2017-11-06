@@ -17,15 +17,12 @@ $bot->submit(API_ROOT, $submit_vars);
 if (!$bot->results) {
   exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
 }
-$first_response = @json_decode($bot->results);
-if ($first_response === FALSE) {
-  exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
-}
+$first_response = json_decode($bot->results);
 $submit_vars["lgtoken"] = $first_response->login->token;
 // Resubmit with new request (which has token added to post vars)
 $bot->submit(API_ROOT, $submit_vars);
-$login_result = @json_decode($bot->results);
-if ($login_result && $login_result->login->result == "Success") {
+$login_result = json_decode($bot->results);
+if ($login_result->login->result == "Success") {
   quiet_echo("\n Using account " . htmlspecialchars($login_result->login->lgusername) . ".");
   // Add other cookies, which are necessary to remain logged in.
   $cookie_prefix = "enwiki";
@@ -40,6 +37,9 @@ if ($login_result && $login_result->login->result == "Success") {
   return TRUE;
 } else {
   exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
+  global $ON;
+  $ON = FALSE;
+  return FALSE;
 }
 
 ?>
