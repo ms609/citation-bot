@@ -1242,9 +1242,6 @@ class Template extends Item {
   
   protected function expand_by_google_books() {
     $url = $this->get('url');
-    $isbn= $this->get('isbn');
-    $lccn= $this->get('lccn');
-    $oclc= $this->get('oclc');
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $removed_redundant = 0;
       $hash = '';
@@ -1277,32 +1274,37 @@ class Template extends Item {
       }
       $this->google_book_details($gid[1]);
       return TRUE;
-    } else if ($isbn || $lccn || $oclc) {
-      if ($isbn) {
+    }
+    // Use Google API to get GID instead based upon ISBN, LCCN, or OCLC
+    $isbn= $this->get('isbn');
+    $lccn= $this->get('lccn');
+    $oclc= $this->get('oclc');
+    if ($isbn) {
         $isbn = str_replace(array(" ","-"), "", $isbn);
         if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
         if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
-      }
-      if ($lccn) {
+    }
+    if ($lccn) {
         $lccn = str_replace(array(" ","-"), "", $lccn);
         if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
-      }
-      if ($oclc) {
+    }
+    if ($oclc) {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
-      }
-      $url = "https://www.googleapis.com/books/v1/volumes?q=" ;
-      if ($isbn) {
+    }
+    $url = "https://www.googleapis.com/books/v1/volumes?q=" ;
+    if ($isbn) {
         $url = $url . "isbn:" . $isbn;
-      } elseif ($oclc) {
+    } elseif ($oclc) {
         $url = $url . "oclc:" . $oclc;
-      } elseif ($lccn) {
+    } elseif ($lccn) {
         $url = $url . "lccn:" . $lccn;
-      } else {
-        return FALSE;
-      }
-      $url = $url . "&key=" . GOOGLE_KEY_TESTING ; // Switch to GOOGLE_KEY_WIKI on wikipedia servers.  Each on is restricted differenently
-      $string = @file_get_contents($url); 
-      if ($string === FALSE) {
+    } else {
+        return FALSE; // No data to use
+    }
+
+    $url = $url . "&key=" . GOOGLE_KEY_TESTING ; // Switch to GOOGLE_KEY_WIKI on wikipedia servers.  Each on is restricted differenently
+    $string = @file_get_contents($url); 
+    if ($string === FALSE) {
         echo "\n Google APIs search failed for" ;
         if ($isbn) {
           echo " ISBN: " . $isbn . "   " ;
@@ -1313,14 +1315,13 @@ class Template extends Item {
         }
         echo "\n";
         return FALSE;
-      }
-      $result = @json_decode($string, false);
-      if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
+    }
+    $result = @json_decode($string, false);
+    if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
         $gid=$result->items[0]->id;
         $this->google_book_details($gid);
         if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
         return TRUE;
-      }
     }
     return FALSE;
   }
