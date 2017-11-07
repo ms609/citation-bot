@@ -1302,7 +1302,7 @@ class Template extends Item {
         return FALSE; // No data to use
     }
 
-    $url = $url . "&key=" . GOOGLE_KEY_TESTING ; // Switch to GOOGLE_KEY_WIKI on wikipedia servers.  Each on is restricted differenently
+    $url = $url . "&key=" . GOOGLE_KEY;
     $string = @file_get_contents($url); 
     if ($string === FALSE) {
         echo "\n Google APIs search failed for" ;
