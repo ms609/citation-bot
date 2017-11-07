@@ -201,6 +201,16 @@ class Template extends Item {
   }
 
   protected function incomplete() {
+    if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
+      if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
+    return (!(
+              $this->has("isbn")
+          &&  $this->has("title")
+          && ($this->has("date") || $this->has("year"))
+          && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
+    ));
+    }
+    
     if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
       return TRUE;
     }
