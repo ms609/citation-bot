@@ -112,6 +112,9 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-981-10-3179-3', $expanded->get('isbn'));
+    $text = $expanded;
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($test, $expanded);
   }
   
   public function testGarbageRemovalAndSpacing() {
