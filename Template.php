@@ -586,6 +586,7 @@ class Template extends Item {
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {  //  Outdated
+        $this->use_sici() ;  // Grab what we can before getting rid off it
         $headers_test = get_headers($url, 1);
         if(!empty($headers_test['Location'])) {
           $url = $headers_test['Location']; // Redirect
