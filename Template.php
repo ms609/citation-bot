@@ -274,8 +274,8 @@ class Template extends Item {
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
-            $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatSurname($au[0])));
-            return $this->add_if_new('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(formatForename(trim($au[1]))));
+            $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(format_Surname($au[0])));
+            return $this->add_if_new('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(format_forename(trim($au[1]))));
           } else {
             return $this->add($param_name,sanitize_string($value));
           }
@@ -327,8 +327,8 @@ class Template extends Item {
         ) {
           if (strpos($value, ',') && substr($param_name, 0, 3) == 'aut') {
             $au = explode(',', $value);
-            $this->add('last' . $auNo, formatSurname($au[0]));
-            return $this->add_if_new('first' . $auNo, formatForename(trim($au[1])));
+            $this->add('last' . $auNo, format_surname($au[0]));
+            return $this->add_if_new('first' . $auNo, format_forename(trim($au[1])));
           } else {
             return $this->add($param_name,sanitize_string($value));
           }
@@ -720,13 +720,13 @@ class Template extends Item {
       global $crossRefId;
       if ($journal || $issn) {
         $url = "http://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId"
-             . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
+             . ($title ? "&atitle=" . urlencode(de_wikify($title)) : "")
              . ($author ? "&aulast=" . urlencode($author) : '')
              . ($start_page ? "&spage=" . urlencode($start_page) : '')
              . ($end_page > $start_page ? "&epage=" . urlencode($end_page) : '')
              . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')
              . ($volume ? "&volume=" . urlencode($volume) : '')
-             . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(deWikify($journal)) : ''));
+             . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(de_wikify($journal)) : ''));
         if (!($result = @simplexml_load_file($url)->query_result->body->query)){
           echo "\n   * Error loading simpleXML file from CrossRef.";
         }
@@ -741,8 +741,8 @@ class Template extends Item {
       // If fail, try again with fewer constraints...
       echo "\n   x Full search failed. Dropping author & end_page... ";
       $url = "http://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId";
-      if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
-      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
+      if ($title) $url .= "&atitle=" . urlencode(de_wikify($title));
+      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(de_wikify($journal));
       if ($year) $url .= "&date=" . urlencode($year);
       if ($volume) $url .= "&volume=" . urlencode($volume);
       if ($start_page) $url .= "&spage=" . urlencode($start_page);
@@ -1059,19 +1059,19 @@ class Template extends Item {
           $existing_author = $this->first_author();
           $add_authors = is_null($existing_author)
                       || $existing_author = ''
-                      || authorIsHuman($existing_author);
+                      || author_is_human($existing_author);
           
           foreach ($crossRef->contributors->contributor as $author) {
             if ($author["contributor_role"] == 'editor') {
               ++$ed_i;
               if ($ed_i < 31 && $crossRef->journal_title === NULL) {
-                $this->add_if_new("editor$ed_i-last", formatSurname($author->surname));
-                $this->add_if_new("editor$ed_i-first", formatForename($author->given_name));
+                $this->add_if_new("editor$ed_i-last", format_surname($author->surname));
+                $this->add_if_new("editor$ed_i-first", format_forename($author->given_name));
               }
             } elseif ($author['contributor_role'] == 'author' && $add_authors) {
               ++$au_i;
-              $this->add_if_new("last$au_i", formatSurname($author->surname));
-              $this->add_if_new("first$au_i", formatForename($author->given_name));
+              $this->add_if_new("last$au_i", format_surname($author->surname));
+              $this->add_if_new("first$au_i", format_forename($author->given_name));
             }
           }
         }
@@ -1135,8 +1135,8 @@ class Template extends Item {
           $i = 0;
           foreach ($item->Item as $subItem) {
             $i++;
-            if (authorIsHuman((string) $subItem)) {
-              $jr_test = jrTest($subItem);
+            if (author_is_human((string) $subItem)) {
+              $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
               $junior = $jr_test[1];
               if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
@@ -1318,7 +1318,7 @@ class Template extends Item {
           if( in_array(strtolower($author), AUTHORS_ARE_PUBLISHERS) === TRUE  || substr(strtolower($author),-4) === " inc" || substr(strtolower($author),-5) === " inc.") {
             $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
           } else {
-            $this->add_if_new("author" . ++$i, formatAuthor(str_replace("___", ":", $author)));
+            $this->add_if_new("author" . ++$i, format_author(str_replace("___", ":", $author)));
           }
         }
       }
@@ -1381,7 +1381,7 @@ class Template extends Item {
     echo "\n   - Using meta tags...";
     $meta_tags = get_meta_tags($url);
     if ($meta_tags["citation_authors"]) {
-      $new_authors = formatAuthors($meta_tags["citation_authors"], TRUE);
+      $new_authors = format_multiple_authors($meta_tags["citation_authors"], TRUE);
     }
     global $SLOW_MODE;
     if ($SLOW_MODE && !$new_pages && !$new_authors) {
@@ -1514,7 +1514,7 @@ class Template extends Item {
           $endnote_datum = substr($endnote_line, 2); // cut line type and leading space
           switch ($endnote_linetype) {
             case "A": 
-              $this->add_if_new("author" . ++$endnote_authors, formatAuthor($endnote_datum));
+              $this->add_if_new("author" . ++$endnote_authors, format_author($endnote_datum));
               $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
               $endnote_parameter = FALSE;
               break;
@@ -1571,7 +1571,7 @@ class Template extends Item {
             case "AU":
               $ris_authors++;
               $ris_parameter = "author$ris_authors";
-              $ris_part[1] = formatAuthor($ris_part[1]);
+              $ris_part[1] = format_author($ris_part[1]);
               break;
             case "Y1":
               $ris_parameter = "date";
@@ -2201,7 +2201,7 @@ class Template extends Item {
         echo "assessing URL ";
         #if (strpos($url, "abstract") >0 || (strpos($url, "/abs") >0 && strpos($url, "adsabs.") === FALSE)) return "abstract page";
         $ch = curl_init();
-        curlSetUp($ch, str_replace("&amp;", "&", $url));
+        curl_setup($ch, str_replace("&amp;", "&", $url));
         curl_setopt($ch, CURLOPT_NOBODY, 1);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_exec($ch);
@@ -2251,7 +2251,7 @@ class Template extends Item {
               $this->forget($param);
               $authors = split_authors($val_base);
               foreach ($authors as $i => $author_name) {
-                $this->add_if_new('author' . ($i + 1), formatAuthor($author_name)); // 
+                $this->add_if_new('author' . ($i + 1), format_author($author_name)); // 
               }
             }
           }
