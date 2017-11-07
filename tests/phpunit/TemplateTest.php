@@ -508,7 +508,7 @@ ER -  }}';
       $this->assertNull($expanded->get('volume'));
       $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[Zookeys]]}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('[[Zookeys]]', $expanded->get('journal'));
+      $this->assertEquals('[[Zookeys]]', $expanded->get('journal'));  // This is wrong capitalization, but because of [[ ]], we leave alone, not wanting to break links
       $this->assertEquals('445', $expanded->get('issue'));
       $this->assertNull($expanded->get('volume'));
   }
