@@ -10,6 +10,7 @@ require_once __DIR__ . '/expandFns.php';
 
 $originalText = $_POST['text'];
 $editSummary = $_POST['summary'];
+$debug_mode = isset($_REQUEST['debug']) && $_REQUEST['debug']==='1';
 
 //Expand text from postvars
 $page = new Page();
@@ -22,10 +23,19 @@ if ($editSummary) {
 }
 $editSummary .= "[[WP:UCB|Assisted by Citation bot]]";
 
-$result = array(
+if ($debug_mode) {
+ $debug_text = ob_get_contents();
+ $result = array(
   'expandedtext' => $page->text,
   'editsummary' => $editSummary,
-);
+  'debug' => $debug_text;
+ );
+} else {
+ $result = array(
+  'expandedtext' => $page->text,
+  'editsummary' => $editSummary,
+ );
+}
 
 // Throw away all output
 ob_end_clean();
