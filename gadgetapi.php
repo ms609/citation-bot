@@ -25,15 +25,14 @@ $editSummary .= "[[WP:UCB|Assisted by Citation bot]]";
 
 if ($debug_mode) {
  $debug_text = ob_get_contents();
- $result = array(
+} else {
+  $debug_text = '';
+}
+
+$result = array(
   'expandedtext' => $page->text,
   'editsummary' => $editSummary,
   'debug' => $debug_text;
- );
-} else {
- $result = array(
-  'expandedtext' => $page->text,
-  'editsummary' => $editSummary,
  );
 }
 
