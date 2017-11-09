@@ -1291,29 +1291,20 @@ class Template extends Item {
     if ($oclc) {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
     }
-    $url = "https://www.googleapis.com/books/v1/volumes?q=" ;
+
     if ($isbn) {
-        $url = $url . "isbn:" . $isbn;
+        $url_token = "isbn:" . $isbn;
     } elseif ($oclc) {
-        $url = $url . "oclc:" . $oclc;
+        $url_token = "oclc:" . $oclc;
     } elseif ($lccn) {
-        $url = $url . "lccn:" . $lccn;
+        $url_token = "lccn:" . $lccn;
     } else {
         return FALSE; // No data to use
     }
 
-    $url = $url . "&key=" . GOOGLE_KEY;
-    $string = @file_get_contents($url); 
+    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . GOOGLE_KEY); 
     if ($string === FALSE) {
-        echo "\n Google APIs search failed for" ;
-        if ($isbn) {
-          echo " ISBN: " . $isbn . "   " ;
-        } elseif ($oclc) {
-          echo " OCLC: " . $oclc ;
-        } elseif ($lccn) {
-          echo " LCCN: " . $lccn . "   " ;
-        }
-        echo "\n";
+        echo "\n Google APIs search failed for $url_token \n";
         return FALSE;
     }
     $result = @json_decode($string, false);
