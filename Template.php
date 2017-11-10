@@ -1316,7 +1316,15 @@ class Template extends Item {
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
-          if( in_array(strtolower($author), AUTHORS_ARE_PUBLISHERS) === TRUE  || substr(strtolower($author),-4) === " inc" || substr(strtolower($author),-5) === " inc.") {
+          if( in_array(strtolower($author), AUTHORS_ARE_PUBLISHERS) === TRUE  ||
+             substr(strtolower($author),-4)  === " inc" || 
+             substr(strtolower($author),-5)  === " inc." ||
+             substr(strtolower($author),-10) === " magazines" || 
+             substr(strtolower($author),-6)  === " press" ||
+             substr(strtolower($author),-6)  === " books" ||
+             substr(strtolower($author),-11) === " publishing" ||
+             substr(strtolower($author),-11) === " publishers" ||
+             substr(strtolower($author),-12) === " corporation") {
             $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
           } else {
             $this->add_if_new("author" . ++$i, format_author(str_replace("___", ":", $author)));
