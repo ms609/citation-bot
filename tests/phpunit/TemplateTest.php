@@ -306,6 +306,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Gould'        , $expanded->get('last1'));
     $this->assertEquals('Stephen Jay'  , $expanded->get('first1') );
     $this->assertEquals('1990-09-17'   , $expanded->get('date'));
+    $this->assertNull($expanded->get('pages')); // Do not expand pages.  Google might give total pages to us
   }
   
   
