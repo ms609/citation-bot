@@ -1969,7 +1969,7 @@ class Template extends Item {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              print "\n    " . $this->internal_templates[$i];
+              echo "\n    " . $this->internal_templates[$i];
               break;
             }
           

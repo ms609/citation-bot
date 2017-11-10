@@ -186,7 +186,8 @@ function article_id($page, $namespace = 0) {
   $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
   $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
   $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
-          . "' && page_title='$page'") or die (mysql_error());
+          . "' && page_title='$page'");
+  if (!$result) exit(mysql_error());
   $results = mysql_fetch_array($result, MYSQL_ASSOC);
   mysql_close($enwiki_db);
   return $results['page_id'];
@@ -203,12 +204,12 @@ function get_raw_wikitext($page, $wait = FALSE, $verbose = FALSE, $use_daniel = 
         . $encode_page . "&rev=&go=Fetch&token=";
     $contents = (string) file_get_contents($url);
     if (!$contents) {
-      print $verbose ? "\n <br />Couldn't fetch $page; retrying" : "";
+      echo $verbose ? "\n <br />Couldn't fetch $page; retrying" : "";
       // Retry if no response
       $contents = (string) @file_get_contents($url);
     }
     if ($wait && !$contents) {
-      print $verbose ? "\n . " : "";
+      echo $verbose ? "\n . " : "";
       // If still no response, wait & retry
       sleep(1);
       $contents = (string) @file_get_contents($url);
