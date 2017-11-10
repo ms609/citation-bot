@@ -179,6 +179,9 @@ class Template extends Item {
         if ($this->expand_by_google_books()) {
           echo "\n * Expanded from Google Books API";
         }
+        if ($this->expand_by_jstor()) {
+          echo "\n * Expanded from Citoid JSTOR API";
+        }
         $this->sanitize_doi();
         if ($this->verify_doi()) {
           $this->expand_by_doi();
@@ -1100,6 +1103,32 @@ class Template extends Item {
                 $this->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
       }
     }
+  }
+  
+  public function expand_by_jstor() {
+    if ($this->blank('jstor')) return FALSE;
+    $jstor = $this->get('jstor');
+    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ;
+    if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
+    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
+    if ($json === FALSE) return FALSE;
+    $data = @json_decode($json,false);
+    if (!isset($data)) return FALSE;
+    if (!isset($data[0])) return FALSE;
+    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  ,$data[0]->{'title'});
+    if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  ,$data[0]->{'issue'});
+    if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  ,$data[0]->{'pages'});
+    if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal',$data[0]->{'publicationTitle'});
+    if ( isset($data[0]->{'volume'}))           $this->add_if_new('volume' ,$data[0]->{'volume'});
+    if ( isset($data[0]->{'date'}))             $this->add_if_new('date'   ,$data[0]->{'date'});
+    if ( isset($data[0]->{'DOI'}))              $this->add_if_new('doi'    ,$data[0]->{'DOI'});
+    $i = 0;
+    while (isset($data[0]->{'author'}[$i])) {
+        if ( isset($data[0]->{'author'}[$i][0])) $this->add_if_new('first' . ($i+1), $data[0]->{'author'}[$i][0]);
+        if ( isset($data[0]->{'author'}[$i][1])) $this->add_if_new('last'  . ($i+1), $data[0]->{'author'}[$i][1]);
+        $i++;
+    }
+    return TRUE;
   }
 
   public function expand_by_pubmed($force = FALSE) {
