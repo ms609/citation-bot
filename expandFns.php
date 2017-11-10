@@ -54,7 +54,12 @@ require_once(HOME . "credentials/crossref.login");
 */
 
 $crossRefId = CROSSREFUSERNAME;
+
 mb_internal_encoding('UTF-8'); // Avoid ??s
+
+require_once(HOME . "credentials/isbndb.login");  // Key for ISBN DB database
+
+require_once(HOME . "credentials/google.login");  // Key for Google Books API
 
 //Optimisation
 #ob_start(); //Faster, but output is saved until page finshed.
