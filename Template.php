@@ -1138,14 +1138,16 @@ class Template extends Item {
     if ( isset($data[0]->{'title'})) {
       $the_title_data = trim($data[0]->{'title'});
       if (strtolower(substr($the_title_data,-9)) === ' on jstor') {
-         $the_title_data = substr($the_title_data, 0, -9); // Citoid did not pick up that it was a journal.  Nothing else is probably found
+         $the_title_data = substr($the_title_data, 0, -9); // Citoid did not pick up that it was a journal
          $this->add_if_new('title'  , $the_title_data);
          sleep(2); // try again
-         $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('https://www.jstor.org/stable/') . $jstor);
+         $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('https://www.jstor.org/stable/') . $jstor . urlencode('?seq=1#page_scan_tab_contents')); // Make URL a little different this time, in case of caching
          if ($json === FALSE) return FALSE;
          $data = @json_decode($json,false);
          if (!isset($data)) return FALSE;
          if (!isset($data[0])) return FALSE;
+         if (!isset($data[0]->{'title'})) return FALSE;
+         if (stripos($data[0]->{'title'},  'jstor') !== false) return FALSE; // Still a website
       } else {
          $this->add_if_new('title'  , $the_title_data);
       }
