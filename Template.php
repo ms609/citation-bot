@@ -141,7 +141,7 @@ class Template extends Item {
         if ($this->expand_by_google_books()) {
           echo "\n * Expanded from Google Books API";
         }
-        $no_isbn_before_doi = $this->empty("isbn");
+        $no_isbn_before_doi = $this->blank("isbn");
         if ($this->verify_doi()) {
           $this->expand_by_doi();
         }
