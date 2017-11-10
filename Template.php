@@ -141,12 +141,18 @@ class Template extends Item {
         if ($this->expand_by_google_books()) {
           echo "\n * Expanded from Google Books API";
         }
+        $no_isbn_before_doi = $this->empty("isbn");
         if ($this->verify_doi()) {
           $this->expand_by_doi();
         }
         $this->tidy();
         if ($this->find_isbn()) {
           echo "\n * Found ISBN " . htmlspecialchars($this->get('isbn'));
+        }
+        if ($no_isbn_before_doi && $this->has("isbn")) {
+          if ($this->expand_by_google_books()) {
+             echo "\n * Expanded from Google Books API";
+          }
         }
 
         // If the et al. is from added parameters, go ahead and handle
