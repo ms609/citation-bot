@@ -22,9 +22,16 @@ if ($editSummary) {
 }
 $editSummary .= "[[WP:UCB|Assisted by Citation bot]]";
 
+if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
+  $debug_text = ob_get_contents();
+} else {
+  $debug_text = '';
+}
+
 $result = array(
   'expandedtext' => $page->text,
   'editsummary' => $editSummary,
+  'debug' => $debug_text;
 );
 
 // Throw away all output
