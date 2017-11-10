@@ -1389,7 +1389,7 @@ class Template extends Item {
       foreach ($xml->dc___creator as $author) {
         if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
           $author_parts  = explode(" ",$author);
-          $author_ending = ' ' . end($author_parts);
+          $author_ending = end($author_parts);
           if( in_array(strtolower($author),       AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
               in_array(strtolower($author_ending),AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
             $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
