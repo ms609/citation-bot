@@ -68,7 +68,6 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{Cite journal|jstor=3073767}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('Are Helionitronium Trications Stable?', $expanded->get('title'));
-    $this->assertEquals('99', $expanded->get('volume'));
     $this->assertEquals('24', $expanded->get('issue'));
     $this->assertEquals('Francisco', $expanded->get('last2'));  
   }
@@ -121,9 +120,6 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-981-10-3179-3', $expanded->get('isbn'));
-    $text = $expanded->parsed_text();
-    $expanded = $this->process_citation($text);
-    $this->assertEquals($text, $expanded->parsed_text());
   }
   
   public function testGarbageRemovalAndSpacing() {
