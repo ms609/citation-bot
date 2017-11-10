@@ -1329,7 +1329,7 @@ class Template extends Item {
     $this->add_if_new("date", $xml->dc___date);
     foreach ($xml->dc___format as $format) {
       if (preg_match("~([\d\-]+)~", $format, $matches) && $has_pages) {
-        i$this->add_if_new("pages", $matches[0]);
+        $this->add_if_new("pages", $matches[0]);
       }
     }
   }
