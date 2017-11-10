@@ -64,7 +64,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('1701972'     , $expanded->get('jstor'));
   }
     
-  public function testCitoidJstorExpansion() {
+  public function testCitoidJstorExpansion() { // This sometimes fails when Citoid treats it as just a webpage and not a journal
     $text = "{{Cite journal|jstor=3073767}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('Are Helionitronium Trications Stable?', $expanded->get('title'));
