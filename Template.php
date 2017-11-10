@@ -1282,7 +1282,46 @@ class Template extends Item {
       $this->google_book_details($gid[1]);
       return TRUE;
     }
-    return FALSE;
+    // Use Google API to get GID instead based upon ISBN, LCCN, or OCLC
+    $isbn= $this->get('isbn');
+    $lccn= $this->get('lccn');
+    $oclc= $this->get('oclc');
+    if ($isbn) {
+        $isbn = str_replace(array(" ","-"), "", $isbn);
+        if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
+        if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
+    }
+    if ($lccn) {
+        $lccn = str_replace(array(" ","-"), "", $lccn);
+        if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
+    }
+    if ($oclc) {
+        if ( !ctype_alnum($oclc) ) $oclc='' ;
+    }
+    if ($isbn) {
+        $url_token = "isbn:" . $isbn;
+    } elseif ($oclc) {
+        $url_token = "oclc:" . $oclc;
+    } elseif ($lccn) {
+        $url_token = "lccn:" . $lccn;
+    } else {
+        return FALSE; // No data to use
+    }
+    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . GOOGLE_KEY); 
+    if ($string === FALSE) {
+        echo "\n Google APIs search failed for $url_token \n";
+        return FALSE;
+    }
+    $result = @json_decode($string, false);
+    if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
+        $gid=$result->items[0]->id;
+        $this->google_book_details($gid);
+        if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
+        return TRUE;
+    } else {
+      echo "\n Google APIs search failed with $url_token \n";
+      return FALSE;
+    }
   }
 
   protected function google_book_details ($gid) {
