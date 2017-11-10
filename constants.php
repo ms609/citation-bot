@@ -11,7 +11,6 @@ const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 const TO_EN_DASH = "--?|\&mdash;|\xe2\x80\x94|\?\?\?"; // regexp for replacing to ndashes using mb_ereg_replace
 const EN_DASH = "\xe2\x80\x93"; // regexp for replacing to ndashes using mb_ereg_replace
 const WIKI_ROOT = "https://en.wikipedia.org/w/index.php?";
-const ISBN_KEY = "268OHQMW";
 const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
 const TEMPLATE_REGEXP = "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~";
 const BRACESPACE = "!BOTCODE-spaceBeforeTheBrace";
