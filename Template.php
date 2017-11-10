@@ -1311,8 +1311,6 @@ class Template extends Item {
       }
     }
     $this->add_if_new("isbn", $isbn);
-    // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
-    $use_pages = FALSE;
     $i = NULL;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
@@ -1327,8 +1325,8 @@ class Template extends Item {
     }
     $this->add_if_new("date", $xml->dc___date);
     foreach ($xml->dc___format as $format) {
-      if (preg_match("~([\d\-]+)~", $format, $matches) && $use_pages) {
-        $this->add_if_new("pages", $matches[0]);
+      if (preg_match("~([\d\-]+)~", $format, $matches)) {
+        // $this->add_if_new("pages", '1–' . (string) $matches[0]); // If we add the total pages, then we should include the whole range
       }
     }
   }
