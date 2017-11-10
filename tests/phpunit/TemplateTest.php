@@ -594,16 +594,16 @@ ER -  }}';
        $this->assertEquals('Explosives engineering',$expanded->get('title'));
    }
     
-   public function testJustAnOCLS() {
+   public function testJustAnOCLC() {
        $text = '{{cite book | oclc=70810440}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('Growing up on memory lane',$expanded->get('title'));
+       $this->assertEquals('Growing up on Memory Lane',$expanded->get('title'));
    }
 
    public function testJustAnLCCN() {
        $text = '{{cite book | lccn=2009925036}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('Alternative energy for fummies',$expanded->get('title'));
+       $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
    }
     
   /* TODO 
