@@ -1388,8 +1388,8 @@ class Template extends Item {
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
-          $author_ends   = explode(" ",$author);
-          $author_ending = ' ' . end($author_ends);
+          $author_parts  = explode(" ",$author);
+          $author_ending = ' ' . end($author_parts);
           if( in_array(strtolower($author),       AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
               in_array(strtolower($author_ending),AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
             $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
