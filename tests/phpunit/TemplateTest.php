@@ -68,8 +68,6 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{Cite journal|jstor=3073767}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('Are Helionitronium Trications Stable?', $expanded->get('title'));
-    $this->assertEquals('24', $expanded->get('issue'));
-    $this->assertEquals('Francisco', $expanded->get('last2'));  
   }
   
   public function testPmidExpansion() {
