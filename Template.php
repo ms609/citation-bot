@@ -1132,7 +1132,7 @@ class Template extends Item {
     if ( isset($data[0]->{'title'})) {
       $the_title_data = trim($data[0]->{'title'});
       if (strtolower(substr($the_title_data,-9)) === ' on jstor') {
-         $the_title_data = substr($the_title_data, 0, -9);
+         $the_title_data = substr($the_title_data, 0, -9); // Citoid did not pick up that it was a journal.  Nothing else is probably found
       }
       $this->add_if_new('title'  , $the_title_data);
     }
