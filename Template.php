@@ -1313,8 +1313,10 @@ class Template extends Item {
         $this->google_book_details($gid);
         if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
         return TRUE;
+    } else {
+      echo "\n Google APIs search failed with $url_token \n";
+      return FALSE;
     }
-    return FALSE;
   }
 
   protected function google_book_details ($gid) {
