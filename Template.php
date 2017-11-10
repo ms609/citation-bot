@@ -1251,6 +1251,7 @@ class Template extends Item {
     $url = $this->get('url');
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $removed_redundant = 0;
+      $has_pages=FALSE;
       $hash = '';
       
       if (strpos($url, "#")) {
@@ -1264,6 +1265,7 @@ class Template extends Item {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq":
+            $has_pages=TRUE;
             $url .= "&" . $part;
           // TODO: vq takes precedence over dq > q.  Only use one of the above.
           case "id":
@@ -1279,13 +1281,13 @@ class Template extends Item {
       if ($removed_redundant > 1) { // http:// is counted as 1 parameter
         $this->set('url', $url . $hash);
       }
-      $this->google_book_details($gid[1]);
+      $this->google_book_details($gid[1],$has_pages);
       return TRUE;
     }
     return FALSE;
   }
 
-  protected function google_book_details ($gid) {
+  protected function google_book_details ($gid, $has_pages=FALSE) {
     $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", @file_get_contents($google_book_url))
@@ -1326,8 +1328,8 @@ class Template extends Item {
     }
     $this->add_if_new("date", $xml->dc___date);
     foreach ($xml->dc___format as $format) {
-      if (preg_match("~([\d\-]+)~", $format, $matches)) {
-        $this->add_if_new("pages", $matches[0]);
+      if (preg_match("~([\d\-]+)~", $format, $matches) && $has_pages) {
+        i$this->add_if_new("pages", $matches[0]);
       }
     }
   }
