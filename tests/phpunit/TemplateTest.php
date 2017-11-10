@@ -594,13 +594,13 @@ ER -  }}';
        $this->assertEquals('Explosives engineering',$expanded->get('title'));
    }
     
-   public fuction testJustAnOCLS() {
+   public function testJustAnOCLS() {
        $text = '{{cite book | oclc=70810440}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Growing up on memory lane',$expanded->get('title'));
    }
 
-   public fuction testJustAnLCCN() {
+   public function testJustAnLCCN() {
        $text = '{{cite book | lccn=2009925036}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Alternative energy for fummies',$expanded->get('title'));
