@@ -609,6 +609,24 @@ ER -  }}';
        $this->assertNotNull($expanded->get('accessdate'));
    }
 
+   public function testJustAnISBN() {
+       $text = '{{cite book |isbn=0471186368}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Explosives engineering',$expanded->get('title'));
+   }
+    
+   public function testJustAnOCLC() {
+       $text = '{{cite book | oclc=9334453}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport',$expanded->get('title'));
+   }
+
+   public function testJustAnLCCN() {
+       $text = '{{cite book | lccn=2009925036}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
+   }
+
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
