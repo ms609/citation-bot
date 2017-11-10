@@ -595,9 +595,9 @@ ER -  }}';
    }
     
    public function testJustAnOCLC() {
-       $text = '{{cite book | oclc=70810440}}';
+       $text = '{{cite book | oclc=9334453}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('Growing up on Memory Lane',$expanded->get('title'));
+       $this->assertEquals('The Shreveport Plan',$expanded->get('title'));
    }
 
    public function testJustAnLCCN() {
