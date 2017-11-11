@@ -19,7 +19,7 @@ class Comment {
   }
 }
 
-class Nowiki extends Item {
+class Nowiki {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_NOWIKI %s # # #';  // Have space in nowiki so that it does not through some crazy bug match itself recursively
   const REGEXP = '~<nowiki>.*?</nowiki>~us'; 
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
