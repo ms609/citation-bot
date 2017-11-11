@@ -27,10 +27,11 @@ const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 
 // Some data we get from outside sources is bad or at least mis-defined
 // Use lower case for all of these, and then compare to a lower cased version
-const BAD_AUTHORS = array("unknown","missing");
+const BAD_AUTHORS = array("unknown", "missing");
 const AUTHORS_ARE_PUBLISHERS = array(); // Things from google like "hearst magazines", "time inc", "nielsen business media, inc" that the catch alls do not detect
+const AUTHORS_ARE_PUBLISHERS_ENDINGS = array("inc.", "inc", "magazines", "press", "publishing", "publishers", "books", "corporation");
 const HAS_NO_VOLUME = array("zookeys");  // Some journals have issues only, no volume numbers
-const BAD_TITLES = array("unknown","missing");
+const BAD_TITLES = array("unknown", "missing");
 
 // dontCap is am array of strings that should not be capitalized in their titlecase format; 
 // unCapped is their correct capitalization. Remember to enclose any word in spaces.
