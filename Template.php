@@ -1,6 +1,6 @@
 <?php
 /*
- * Template extends Item. Template has methods to handle most aspects of citation template
+ * Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
  *
  * Of particular note:
@@ -14,14 +14,15 @@
  * to find information that can be added to existing citations.
  */
 
-require_once("Item.php");
 require_once("Page.php");
 require_once("Parameter.php");
 
-class Template extends Item {
+class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
+  protected $rawtext;
+  public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
             $mod_dashes,
