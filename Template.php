@@ -22,7 +22,7 @@ class Template {
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   protected $rawtext;
-  public $page;
+  public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
             $mod_dashes,
