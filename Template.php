@@ -1135,10 +1135,10 @@ class Template extends Item {
     $data = @json_decode($json,false);
     if (!isset($data)) return FALSE;
     if (!isset($data[0])) return FALSE;
-    if (!isset($data[0]->{'title'}) return FALSE;
+    if (!isset($data[0]->{'title'})) return FALSE;
     if (strtolower(trim($data[0]->{'title'})) === 'not found.') return FALSE; // This is what it currently sends back
     if (strtolower(trim($data[0]->{'title'})) === 'not found') return FALSE;  // In case jstor drops the period
-    // Verify that Citoid did not thing that this was a website and not a journal
+    // Verify that Citoid did not think that this was a website and not a journal
     if (strtolower(substr(trim($data[0]->{'title'}),-9)) === ' on jstor') {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
          sleep(2); // try citoid again
