@@ -649,7 +649,12 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
    }
-
+    
+   public function testEmptyCitations() {
+       $text = 'bad things like {{cite journal}}{{cite book|||}} should not crahs bot';
+       $expanded = $this->process_page($text);
+       $this->assertEquals($text, $expanded->parsed_text());
+   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
