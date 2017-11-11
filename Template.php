@@ -1152,7 +1152,7 @@ class Template extends Item {
          if ($json === FALSE) return FALSE;
          $data = @json_decode($json,false);
          if (!isset($data) ||
-             !isset($data[0])) ||
+             !isset($data[0]) ||
              !isset($data[0]->{'title'}) ||
              stripos($data[0]->{'title'},  'on jstor') !== false) {
              echo "\n Citoid API failed to parse journal data for JSTOR ". $jstor . "\n";
