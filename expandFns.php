@@ -28,7 +28,6 @@ require_once("constants.php");
 require_once("Snoopy.class.php");
 require_once("DOItools.php");
 require_once("Page.php");
-require_once("Item.php");
 require_once("Template.php");
 require_once("Parameter.php");
 require_once("Comment.php");
