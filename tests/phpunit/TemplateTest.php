@@ -64,10 +64,21 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('1701972'     , $expanded->get('jstor'));
   }
     
-  public function testCitoidJstorExpansion() { // This sometimes fails when Citoid treats it as just a webpage and not a journal
+   public function testCitoidJstorExpansion() { // This sometimes fails when Citoid treats it as just a webpage and not a journal
     $text = "{{Cite journal|jstor=3073767}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('Are Helionitronium Trications Stable?', $expanded->get('title'));
+    if (!$expanded->get('volume')) {
+        echo 'Citoid let us down again.  Minor Failure';
+    } else { // If we are getting data, then it had better be right
+      $this->assertEquals('99', $expanded->get('volume'));
+      $this->assertEquals('24', $expanded->get('issue'));
+      $this->assertEquals('Francisco', $expanded->get('last2')); 
+      $this->assertEquals('Eisfeld', $expanded->get('last1')); 
+      $this->assertEquals('10.2307/3073767', $expanded->get('doi')); 
+      $this->assertEquals('Proceedings of the National Academy of Sciences of the United States of America', $expanded->get('journal')); 
+      $this->assertEquals('15303–15307', $expanded->get('pages'));
+    }
   }
   
   public function testPmidExpansion() {
