@@ -1128,20 +1128,38 @@ class Template extends Item {
   public function expand_by_jstor() {
     if ($this->blank('jstor')) return FALSE;
     $jstor = $this->get('jstor');
-    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ;
+    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
-    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
-    if ($json === FALSE) return FALSE;
-    $data = @json_decode($json,false);
-    if (!isset($data)) return FALSE;
-    if (!isset($data[0])) return FALSE;
-    if ( isset($data[0]->{'title'})) {
-      $the_title_data = trim($data[0]->{'title'});
-      if (strtolower(substr($the_title_data,-9)) === ' on jstor') {
-         $the_title_data = substr($the_title_data, 0, -9); // Citoid did not pick up that it was a journal.  Nothing else is probably found
-      }
-      $this->add_if_new('title'  , $the_title_data);
+    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor . urlencode('?seq=1#page_scan_tab_contents'));
+    if ($json === FALSE) {
+      echo "\n Citoid API returned nothing for JSTOR ". $jstor . "\n";
+      return FALSE;
     }
+    $data = @json_decode($json,false);
+    if (!isset($data) || !isset($data[0]) || !isset($data[0]->{'title'})) {
+      echo "\n Citoid API returned invalid json for JSTOR ". $jstor . "\n";
+      return FALSE;
+    }
+    if (strtolower(trim($data[0]->{'title'})) === 'not found.' || strtolower(trim($data[0]->{'title'})) === 'not found') {
+      echo "\n Citoid API could not resolve JSTOR ". $jstor . "\n";
+      return FALSE;
+    }
+    // Verify that Citoid did not think that this was a website and not a journal
+    if (strtolower(substr(trim($data[0]->{'title'}),-9)) === ' on jstor') {
+         $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
+         sleep(2); // try citoid again
+         $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor . urlencode('?seq=1')); // Make URL a little different this time, in case of caching
+         if ($json === FALSE) return FALSE;
+         $data = @json_decode($json,false);
+         if (!isset($data) ||
+             !isset($data[0]) ||
+             !isset($data[0]->{'title'}) ||
+             stripos($data[0]->{'title'},  'on jstor') !== false) {
+             echo "\n Citoid API failed to parse journal data for JSTOR ". $jstor . "\n";
+             return FALSE;
+         }
+    }
+    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  ,$data[0]->{'title'});
     if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  ,$data[0]->{'issue'});
     if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  ,$data[0]->{'pages'});
     if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal',$data[0]->{'publicationTitle'});
