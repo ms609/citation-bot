@@ -52,7 +52,7 @@ print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "w
 $my_page = new Page();
 if ($my_page->get_text_from($_REQUEST["page"])) {
   $text_expanded = $my_page->expand_text();
-  if ($text_expanded and $ON) {
+  if ($text_expanded && $ON) {
     while (!$my_page->write() && $attempts < 2) {
       ++$attempts;
     }
