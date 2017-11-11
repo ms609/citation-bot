@@ -1159,7 +1159,7 @@ class Template extends Item {
              return FALSE;
          }
     }
-    if ( isset($data[0]->{'title'}))            $this->add_if_new('issue'  ,$data[0]->{'title'});
+    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  ,$data[0]->{'title'});
     if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  ,$data[0]->{'issue'});
     if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  ,$data[0]->{'pages'});
     if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal',$data[0]->{'publicationTitle'});
