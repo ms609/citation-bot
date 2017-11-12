@@ -2013,6 +2013,7 @@ class Template extends Item {
   // It will correct any that appear to be mistyped.
   $mistake_corrections = array_values(COMMON_MISTAKES);
   $mistake_keys = array_keys(COMMON_MISTAKES);
+  $parameters_used = array();
   if ($this->param) {
     foreach ($this->param as $p) {
       $parameters_used[] = $p->param;
