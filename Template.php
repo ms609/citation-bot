@@ -35,7 +35,7 @@ class Template extends Item {
     }
     return $text;
   }
-  
+
   protected function replace_templates($text) {
     $i = count($this->internal_templates);
     foreach (array_reverse($this->internal_templates) as $template) {
