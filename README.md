@@ -54,13 +54,12 @@ A quick tour of the main files:
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
   `get_text_from`, `expand_text`, and `write`.
-* `Item.php`: Item is the parent class for Template and Comment.
-  * `Template.php`: most of the actual expansion happens here.
-    `Template::process()` handles most of template expansion and checking;
-    `Template::add_if_new()` is generally (but not always) used to add
-     parameters to the updated template; `Template::tidy()` cleans up the
-     template, but may add parameters as well and have side effects.
-  * `Comment.php`: Handles comments, such as those forbidding bot activity.
+* `Template.php`: most of the actual expansion happens here.
+  `Template::process()` handles most of template expansion and checking;
+  `Template::add_if_new()` is generally (but not always) used to add
+   parameters to the updated template; `Template::tidy()` cleans up the
+   template, but may add parameters as well and have side effects.
+* `Comment.php`: Handles comments, such as those forbidding bot activity.
 * `Parameter.php`: contains information about template parameter names, values,
    and metadata, and methods to parse template parameters.
 
