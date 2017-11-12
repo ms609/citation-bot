@@ -4,7 +4,7 @@
  * from templates.
  */
 
-class Parameter {
+final class Parameter {
   public $pre, $param, $eq, $val, $post;
 
 /*
