@@ -23,7 +23,6 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function process_citation($text) {
-    $this->process_page($text);
     $template = new Template();
     $template->parse_text($text);
     $template->process();
@@ -290,6 +289,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('12345', $expanded->get('ol'));
       $this->assertNotNull($expanded->get('doi-broken-date'));
       $this->assertEquals(1, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
+      $this->process_page($text);//caused undefined access
       
       $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
       $expanded = $this->process_citation($text);
