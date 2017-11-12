@@ -115,7 +115,9 @@ class Page {
     }
 
     for ($i = 0; $i < count($templates); $i++) {
+      $templates[$i]->extract_my_templates();
       $templates[$i]->process();
+      $templates[$i]->replace_my_templates();
       $template_mods = $templates[$i]->modifications();
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
