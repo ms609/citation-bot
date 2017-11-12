@@ -10,7 +10,7 @@
 require_once('Comment.php');
 require_once('Template.php');
 
-class Page {
+final class Page {
 
   public $text, $title, $modifications;
 
