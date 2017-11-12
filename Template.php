@@ -17,7 +17,7 @@
 require_once("Page.php");
 require_once("Parameter.php");
 
-class Template {
+final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
