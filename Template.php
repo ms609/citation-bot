@@ -2011,6 +2011,7 @@ class Template extends Item {
   protected function correct_param_spelling() {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
+  if (!isset($this->param)) return ;
   $mistake_corrections = array_values(COMMON_MISTAKES);
   $mistake_keys = array_keys(COMMON_MISTAKES);
   $parameters_used = array();
