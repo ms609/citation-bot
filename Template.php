@@ -51,7 +51,7 @@ class Template extends Item {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
     }
     $this->rawtext = $text;
-    $text = '{' . $this->extract_templates(substr($text, 1)); // Split template string, or it'll extract itself
+    $text = '{{' . $this->extract_templates(substr($text, 2)); // Split template string, or it'll extract itself
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
       $this->name = substr($text, 2, $pipe_pos - 2); # Remove {{ and }}
