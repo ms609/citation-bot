@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 // $Id$
-// error_reporting(E_ALL^E_NOTICE);
+error_reporting(E_ALL^E_NOTICE);
 $argument["cat"]=NULL;
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
