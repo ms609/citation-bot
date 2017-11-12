@@ -633,7 +633,7 @@ ER -  }}';
    }
 
    public function testIgnoreUnkownCiteTemplates() {
-    $text = "{{Cite headcheese| http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
+    $text = "{{Cite headcheese| http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.bad/bad }}";
     $expanded = $this->process_page($text);
     $this->assertEquals($text, $expanded->parsed_text());
   } 
