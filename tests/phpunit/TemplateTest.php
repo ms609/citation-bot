@@ -289,7 +289,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('12345', $expanded->get('ol'));
       $this->assertNotNull($expanded->get('doi-broken-date'));
       $this->assertEquals(1, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
-      $this->assertEquals('What shall I find', $expanded->parsed_text());
+      // {{cite book |id={{oclc|12354|4567}}   |isbn=978-1234-9583-068 |doi=10.1234/bashifbjaksn.ch2 |doi-broken-date=2017-11-12 |arxiv=1234.5678 |year=1970 |oclc=1234 |ol=12345 }}
       error_reporting(E_ALL^E_NOTICE);
       $expanded = $this->process_page($text);//caused undefined access
       $this->assertEquals('What should this text be', $expanded->parsed_text());
