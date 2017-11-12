@@ -35,6 +35,10 @@ class Template extends Item {
     }
     return $text;
   }
+  
+  protected function extract_my_templates() {
+     $this->text = extract_templates($this->text)
+  }
 
   protected function replace_templates($text) {
     $i = count($this->internal_templates);
@@ -43,6 +47,10 @@ class Template extends Item {
       $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
     }
     return $text;
+  }
+  
+  protected function replace_my_templates() {
+    $this->text = replace_templates($this->text)
   }
 
   public function parse_text($text) {
