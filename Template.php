@@ -37,7 +37,7 @@ class Template extends Item {
   }
   
   protected function extract_my_templates() {
-     $this->text = extract_templates($this->text)
+     $this->text = extract_templates($this->text);
   }
 
   protected function replace_templates($text) {
@@ -50,7 +50,7 @@ class Template extends Item {
   }
   
   protected function replace_my_templates() {
-    $this->text = replace_templates($this->text)
+    $this->text = replace_templates($this->text);
   }
 
   public function parse_text($text) {
