@@ -36,10 +36,6 @@ class Template extends Item {
     return $text;
   }
   
-  function extract_my_templates() {
-     $this->rawtext = $this->extract_templates($this->rawtext);
-  }
-
   protected function replace_templates($text) {
     $i = count($this->internal_templates);
     foreach (array_reverse($this->internal_templates) as $template) {
@@ -47,10 +43,6 @@ class Template extends Item {
       $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
     }
     return $text;
-  }
-  
-  function replace_my_templates() {
-    $this->rawtext = $this->replace_templates($this->rawtext);
   }
 
   public function parse_text($text) {
