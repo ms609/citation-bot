@@ -300,12 +300,12 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testId2ParamPage() {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, {{ol|12345}} }}';
       $expanded = $this->process_page($text);//caused undefined access
   }
     
   public function testId2ParamPageSuppressErrors() {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, {{ol|12345}} }}';
       error_reporting(E_ALL^E_NOTICE);
       $expanded_page = $this->process_page($text);
       error_reporting(E_ALL);
