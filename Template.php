@@ -25,7 +25,7 @@ final class Template {
   public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes
+            $mod_dashes;
   public    $internal_templates = array();
 
   protected function extract_templates($text) {
