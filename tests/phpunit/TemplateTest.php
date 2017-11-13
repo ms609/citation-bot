@@ -279,8 +279,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
        
   public function testId2Param() {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} 
-        {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}}  {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('978-1234-9583-068', $expanded->get('isbn'));
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
@@ -289,7 +288,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('12345', $expanded->get('ol'));
       $this->assertNotNull($expanded->get('doi-broken-date'));
       $this->assertEquals(1, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
-      
+      // {{cite book |id={{oclc|12354|4567}}   |isbn=978-1234-9583-068 |doi=10.1234/bashifbjaksn.ch2 |doi-broken-date=2017-11-12 |arxiv=1234.5678 |year=1970 |oclc=1234 |ol=12345 }}
+
       $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
@@ -299,7 +299,20 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
   }
   
-  
+  public function testId2ParamPage() {
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, {{ol|12345}} }}';
+      $expanded = $this->process_page($text);//caused undefined access
+  }
+    
+  public function testId2ParamPageSuppressErrors() {
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, {{ol|12345}} }}';
+      error_reporting(E_ALL^E_NOTICE);
+      $expanded_page = $this->process_page($text);
+      error_reporting(E_ALL);
+      $expanded_cite = $this->process_citation($text);
+      $this->assertEquals($expanded_cite->parsed_text(), $expanded_page->parsed_text());
+  }
+    
   public function testOrigYearHandling() {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $expanded = $this->process_citation($text);
