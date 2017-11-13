@@ -309,7 +309,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
       error_reporting(E_ALL^E_NOTICE);
       $expanded_page = $this->process_page($text);
       error_reporting(E_ALL);
-      $expanded_citr = $this->process_citation($text);
+      $expanded_cite = $this->process_citation($text);
       $this->assertEquals($expanded_cite->parsed_text(), $expanded_page->parsed_text());
   }
     
