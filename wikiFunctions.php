@@ -73,6 +73,8 @@ function get_last_revision($page){
 
 function get_prefix_index($prefix, $namespace = 0, $start = "") {
   global $bot;
+  $page_titles = array();
+  $page_ids=array();
   $vars["apfrom"]  = $start;
   $vars = Array ("action" => "query",
     "list" => "allpages",
