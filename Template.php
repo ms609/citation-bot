@@ -25,8 +25,8 @@ final class Template {
   public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes,
-            $internal_templates = array();
+            $mod_dashes
+  public    $internal_templates = array();
 
   protected function extract_templates($text) {
     $i = 0;
@@ -44,10 +44,6 @@ final class Template {
       $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
     }
     return $text;
-  }
-
-  public function set_internal_templates(&$incoming) {
-    $internal_templates = &$incoming;
   }
   
   public function parse_text($text) {
