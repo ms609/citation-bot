@@ -301,7 +301,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} {{arxiv|astr.ph|1234.5678}} }}'; // Two of the same thing
       $expanded = $this->process_citation($text);
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));
-      $this->assertNull($expanded-->parsed_text());  // This is wrong, but I want to see what it gives me
+      $this->assertNull($expanded->parsed_text());  // This is wrong, but I want to see what it gives me
   }
   
   public function testId2ParamPage() {
