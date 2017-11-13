@@ -115,6 +115,7 @@ final class Page {
     }
 
     for ($i = 0; $i < count($templates); $i++) {
+      $templates[$i]->page_templates = &$templates; // REFERENCE!!!!!!
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
       foreach (array_keys($template_mods) as $key) {
