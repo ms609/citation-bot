@@ -11,7 +11,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 }
 
 
-class constantsTest extends PHPUnit\Framework\TestCase {
+final class constantsTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
   }
