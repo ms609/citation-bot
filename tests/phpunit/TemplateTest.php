@@ -14,7 +14,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
  
-class TemplateTest extends PHPUnit\Framework\TestCase {
+final class TemplateTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
   }
