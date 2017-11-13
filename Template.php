@@ -46,6 +46,10 @@ final class Template {
     return $text;
   }
 
+  public function set_internal_templates(&$incoming) {
+    internal_templates = &$incoming;
+  }
+  
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
     if ($this->rawtext) {
