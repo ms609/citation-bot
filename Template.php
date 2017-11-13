@@ -47,7 +47,7 @@ final class Template {
   }
 
   public function set_internal_templates(&$incoming) {
-    internal_templates = &$incoming;
+    $internal_templates = &$incoming;
   }
   
   public function parse_text($text) {
