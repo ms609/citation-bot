@@ -74,11 +74,11 @@ final class Page {
   public function expand_text() {
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" 
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=" 
       . urlencode($this->title) 
-      . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title="
+      . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title="
       . urlencode($this->title)
-      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title="
+      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title="
       . urlencode($this->title)
       . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
       . "document.title=\"Citation bot: '"
@@ -259,7 +259,7 @@ final class Page {
   }
 
   public function allow_bots() {
-    // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
+    // from https://en.wikipedia.org/wiki/Template:Nobots example implementation
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
       return FALSE;
