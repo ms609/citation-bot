@@ -279,8 +279,7 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   }
        
   public function testId2Param() {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} 
-        {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}}  {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('978-1234-9583-068', $expanded->get('isbn'));
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
@@ -301,16 +300,17 @@ class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testId2ParamPage() {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{ol|12345}} }}';
       $expanded = $this->process_page($text);//caused undefined access
   }
     
   public function testId2ParamPageSuppressErrors() {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{ol|12345}} }}';
       error_reporting(E_ALL^E_NOTICE);
-      $expanded = $this->process_page($text);
+      $expanded_page = $this->process_page($text);
       error_reporting(E_ALL);
-      $this->assertEquals('This does not expand enough stuff -- put right text here when it works', $expanded->parsed_text());
+      $expanded_temp = $this->process_template($text);
+      $this->assertEquals($expanded_temp->parsed_text(), $expanded_page->parsed_text());
   }
     
   public function testOrigYearHandling() {
