@@ -91,7 +91,7 @@ final class Page {
       return FALSE;
     }
 
-    // COMMENTS //
+    // COMMENTS AND NOWIKI //
     $comments = $this->extract_object('Comment');
     $nowiki   = $this->extract_object('Nowiki');
     if (!$this->allow_bots()) {
@@ -101,19 +101,6 @@ final class Page {
 
     // TEMPLATES //
     $templates = $this->extract_object('Template');
-    $start_templates = $templates;
-    $citation_templates = 0;
-
-    if ($templates) {
-      foreach ($templates as $template) {
-        if ($template->wikiname() == 'citation') {
-          $citation_templates++;
-        } elseif (stripos($template->wikiname(), 'harv') === 0) {
-          $harvard_templates++;
-        }
-      }
-    }
-
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
