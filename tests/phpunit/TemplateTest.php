@@ -299,6 +299,19 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
   }
   
+  public function testId2ParamPage() {
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, {{ol|12345}} }}';
+      $expanded = $this->process_page($text);//caused undefined access
+  }
+    
+  public function testId2ParamPageSuppressErrors() {
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, {{ol|12345}} }}';
+      error_reporting(E_ALL^E_NOTICE);
+      $expanded_page = $this->process_page($text);
+      error_reporting(E_ALL);
+      $expanded_cite = $this->process_citation($text);
+      $this->assertEquals($expanded_cite->parsed_text(), $expanded_page->parsed_text());
+  }
   
   public function testOrigYearHandling() {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
