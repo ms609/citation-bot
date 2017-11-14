@@ -198,9 +198,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
-    // $this->assertEquals('{{MC Hammer says to not touch this}}', $expanded->get('doi')); This does not work right because we are not doing a "PAGE"
     $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
-    $expanded = $this->process_page($text);
+    $expanded = $this->process_citation($text);
     $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
   }
 
@@ -230,7 +229,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testCommentHandling() {
     $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}}";
-    $expanded_page = $this->process_page($text);
+    $expanded_page = $this->process_citation($text);
     $this->assertEquals($text, $expanded_page->parsed_text());
   }
   
@@ -587,7 +586,7 @@ ER -  }}';
     
    public function testOverwriteBlanks() {
        $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
-       $expanded = $this->process_page($text);
+       $expanded = $this->process_citation($text);
        $this->assertEquals('{{cite journal|jstor=1234567890}}', $expanded->parsed_text());
    }
 
@@ -636,7 +635,7 @@ ER -  }}';
 
    public function testIgnoreUnkownCiteTemplates() {
     $text = "{{Cite headcheese| http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.bad/bad }}";
-    $expanded = $this->process_page($text);
+    $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   } 
   
@@ -669,3 +668,4 @@ ER -  }}';
   Test adding a doi-is-broken modifier to a broken DOI.
   */    
 }
+proc
