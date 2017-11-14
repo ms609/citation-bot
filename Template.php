@@ -46,7 +46,7 @@ final class Template {
     return $text;
   }
 
-  public function parse_text($text) {
+  protected function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
@@ -74,7 +74,7 @@ final class Template {
   }
 
   // Re-assemble parsed template into string
-  public function parsed_text() {
+  protected function parsed_text() {
     return $this->replace_templates('{{' . $this->name . $this->join_params() . '}}');
   }
 
@@ -92,7 +92,7 @@ final class Template {
     }
   }
 
-  public function parameter_names_to_lowercase() {
+  protected function parameter_names_to_lowercase() {
     if (is_array($this->param)) {
       $keys = array_keys($this->param);
       for ($i=0; $i < count($keys); $i++) {
@@ -235,7 +235,7 @@ final class Template {
     ));
   }
 
-  public function blank($param) {
+  protected function blank($param) {
     if (!$param) return ;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
@@ -250,7 +250,7 @@ final class Template {
    * If the parameter is useful for expansion (e.g. a doi), immediately uses the new
    * data to further expand the citation
    */
-  public function add_if_new($param_name, $value) {
+  protected function add_if_new($param_name, $value) {
     if (trim($value) == '') {
       return FALSE;
     }
@@ -877,7 +877,7 @@ final class Template {
   }
 
   ### Obtain data from external database
-  public function expand_by_arxiv() {
+  protected function expand_by_arxiv() {
     if ($this->wikiname() == 'cite arxiv') {
       $arxiv_param = 'eprint';
       $this->rename('arxiv', 'eprint');
@@ -1053,7 +1053,7 @@ final class Template {
     }
   }
 
-  public function expand_by_doi($force = FALSE) {
+  protected function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
@@ -1126,7 +1126,7 @@ final class Template {
     }
   }
   
-  public function expand_by_jstor() {
+  protected function expand_by_jstor() {
     if ($this->blank('jstor')) return FALSE;
     $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
@@ -1176,7 +1176,7 @@ final class Template {
     return TRUE;
   }
 
-  public function expand_by_pubmed($force = FALSE) {
+  protected function expand_by_pubmed($force = FALSE) {
     if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) {
       $identifier = 'pmid';
@@ -2111,7 +2111,7 @@ final class Template {
     return $ret;
   }
 
-  public function wikiname() {
+  protected function wikiname() {
     return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
   }
 
@@ -2386,7 +2386,7 @@ final class Template {
  *   Functions to retrieve values that may be specified 
  *   in various ways
  ********************************************************/
-  public function display_authors($newval = FALSE) {
+  protected function display_authors($newval = FALSE) {
     if ($newval && is_int($newval)) {
       $this->forget('displayauthors');
       echo "\n ~ Setting display-authors to $newval" . tag();
@@ -2399,7 +2399,7 @@ final class Template {
     return is_int(1 * $da) ? $da : FALSE;
   }
 
-  public function number_of_authors() {
+  protected function number_of_authors() {
     $max = 0;
     if ($this->param) foreach ($this->param as $p) {
       if (preg_match('~(?:author|last|first|forename|initials|surname)(\d+)~', $p->param, $matches))
@@ -2409,7 +2409,7 @@ final class Template {
   }
   
   // Retreive properties of template
-  public function first_author() {
+  protected function first_author() {
     foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
       $author = $this->get($auth_param);
       if ($author) return $author;
@@ -2425,7 +2425,7 @@ final class Template {
     return NULL;
   }
 
-  public function first_surname() {
+  protected function first_surname() {
     // Fetch the surname of the first author only
     if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
       return $first_author[0];
@@ -2447,7 +2447,7 @@ final class Template {
   }
 
   // Amend parameters
-  public function rename($old_param, $new_param, $new_value = FALSE) {
+  protected function rename($old_param, $new_param, $new_value = FALSE) {
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
@@ -2472,15 +2472,15 @@ final class Template {
     return NULL;
   }
   
-  public function param_with_index($i) {
+  protected function param_with_index($i) {
     return (isset($this->param[$i])) ? $this->param[$i] : NULL;
   }
   
-  public function param_value($i) { // May return error if no param with index $i
+  protected function param_value($i) { // May return error if no param with index $i
     return $this->param_with_index($i)->val;
   }
   
-  public function get_without_comments_and_placeholders($name) {
+  protected function get_without_comments_and_placeholders($name) {
     $ret = $this->get($name);
     $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
     $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
@@ -2502,12 +2502,12 @@ final class Template {
   public function has($par) {return (bool) strlen($this->get($par));}
   public function lacks($par) {return !$this->has($par);}
 
-  public function add($par, $val) {
+  protected function add($par, $val) {
     echo "\n   + Adding $par" .tag();
     return $this->set($par, $val);
   }
   
-  public function set($par, $val) {
+  protected function set($par, $val) {
     if (($pos = $this->get_param_key($par)) !== NULL) {
       return $this->param[$pos]->val = $val;
     }
@@ -2541,7 +2541,7 @@ final class Template {
     return TRUE;
   }
 
-  public function append_to($par, $val) {
+  protected function append_to($par, $val) {
     $pos = $this->get_param_key($par);
     if ($pos) {
       return $this->param[$pos]->val = $this->param[$pos]->val . $val;
@@ -2550,7 +2550,7 @@ final class Template {
     }
   }
 
-  public function forget ($par) {
+  protected function forget ($par) {
     if ($par == 'url') {
       $this->forget('format');
       $this->forget('accessdate');
