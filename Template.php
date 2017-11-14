@@ -2458,7 +2458,7 @@ final class Template {
     }
   }
 
-  protected function get($name) {
+  public function get($name) {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
