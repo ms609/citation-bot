@@ -245,7 +245,7 @@ final class Page {
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
 
-  public function allow_bots() {
+  protected function allow_bots() {
     // from https://en.wikipedia.org/wiki/Template:Nobots example implementation
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
