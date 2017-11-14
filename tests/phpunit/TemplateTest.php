@@ -208,6 +208,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|doi=10.1038/nature12373}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('4221854', $expanded->get('pmc'));
+    
     $text = '{{cite journal|doi=10.1038/nature08244}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('0904.1532', $expanded->get('arxiv'));
