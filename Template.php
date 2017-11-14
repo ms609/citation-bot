@@ -46,7 +46,7 @@ final class Template {
     return $text;
   }
 
-  protected function parse_text($text) {
+  public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
@@ -952,7 +952,7 @@ final class Template {
     return FALSE;
   }
 
-  public function expand_by_adsabs() {
+  protected function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
     if ($SLOW_MODE || $this->has('bibcode')) {
@@ -2095,7 +2095,7 @@ final class Template {
 }
 
   // TODO this is not called from anywhere - it used to be.  Where is it useful?
-  public function remove_non_ascii() {
+  protected function remove_non_ascii() {
     for ($i = 0; $i < count($this->param); $i++) {
       $this->param[$i]->val = preg_replace('/[^\x20-\x7e]/', '', $this->param[$i]->val); // Remove illegal non-ASCII characters such as invisible spaces
     }
@@ -2311,7 +2311,7 @@ final class Template {
     }
   }
 
-  public function check_url() {
+  protected function check_url() {
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
@@ -2434,14 +2434,14 @@ final class Template {
     }
   }
 
-  public function page() {
+  protected function page() {
     $page = $this->get('pages');
     return ($page ? $page : $this->get('page'));
   }
 
-  public function name() {return trim($this->name);}
+  protected function name() {return trim($this->name);}
 
-  public function page_range() {
+  protected function page_range() {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
     return $pagenos;
   }
@@ -2458,7 +2458,7 @@ final class Template {
     }
   }
 
-  public function get($name) {
+  protected function get($name) {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
@@ -2499,8 +2499,8 @@ final class Template {
     return NULL;
   }
 
-  public function has($par) {return (bool) strlen($this->get($par));}
-  public function lacks($par) {return !$this->has($par);}
+  protected function has($par) {return (bool) strlen($this->get($par));}
+  protected function lacks($par) {return !$this->has($par);}
 
   protected function add($par, $val) {
     echo "\n   + Adding $par" .tag();
@@ -2605,7 +2605,7 @@ final class Template {
     return (bool) count($this->modifications('modifications'));
   }
   
-  public function isbn10Toisbn13 ($isbn10) {
+  protected function isbn10Toisbn13 ($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
        $isbn10 = str_replace(array('—','―','–','−','‒'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
        if (preg_match("~[^0-9Xx\-]~",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
