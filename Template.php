@@ -46,6 +46,10 @@ final class Template {
     return $text;
   }
 
+  public function __toString() {
+    return $rawtext;  // ??????
+  }
+  
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
     if ($this->rawtext) {
