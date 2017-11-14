@@ -235,7 +235,7 @@ final class Template {
     ));
   }
 
-  protected function blank($param) {
+  public function blank($param) {
     if (!$param) return ;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
@@ -250,7 +250,7 @@ final class Template {
    * If the parameter is useful for expansion (e.g. a doi), immediately uses the new
    * data to further expand the citation
    */
-  protected function add_if_new($param_name, $value) {
+  public function add_if_new($param_name, $value) {
     if (trim($value) == '') {
       return FALSE;
     }
@@ -2409,7 +2409,7 @@ final class Template {
   }
   
   // Retreive properties of template
-  protected function first_author() {
+  public function first_author() {
     foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
       $author = $this->get($auth_param);
       if ($author) return $author;
@@ -2439,7 +2439,7 @@ final class Template {
     return ($page ? $page : $this->get('page'));
   }
 
-  protected function name() {return trim($this->name);}
+  public function name() {return trim($this->name);}
 
   protected function page_range() {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
