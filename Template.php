@@ -92,7 +92,7 @@ final class Template {
     }
   }
 
-  public function parameter_names_to_lowercase() {
+  protected function parameter_names_to_lowercase() {
     if (is_array($this->param)) {
       $keys = array_keys($this->param);
       for ($i=0; $i < count($keys); $i++) {
@@ -877,7 +877,7 @@ final class Template {
   }
 
   ### Obtain data from external database
-  public function expand_by_arxiv() {
+  protected function expand_by_arxiv() {
     if ($this->wikiname() == 'cite arxiv') {
       $arxiv_param = 'eprint';
       $this->rename('arxiv', 'eprint');
@@ -952,7 +952,7 @@ final class Template {
     return FALSE;
   }
 
-  public function expand_by_adsabs() {
+  protected function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
     if ($SLOW_MODE || $this->has('bibcode')) {
@@ -1053,7 +1053,7 @@ final class Template {
     }
   }
 
-  public function expand_by_doi($force = FALSE) {
+  protected function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
@@ -1126,7 +1126,7 @@ final class Template {
     }
   }
   
-  public function expand_by_jstor() {
+  protected function expand_by_jstor() {
     if ($this->blank('jstor')) return FALSE;
     $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
@@ -1176,7 +1176,7 @@ final class Template {
     return TRUE;
   }
 
-  public function expand_by_pubmed($force = FALSE) {
+  protected function expand_by_pubmed($force = FALSE) {
     if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) {
       $identifier = 'pmid';
@@ -2095,7 +2095,7 @@ final class Template {
 }
 
   // TODO this is not called from anywhere - it used to be.  Where is it useful?
-  public function remove_non_ascii() {
+  protected function remove_non_ascii() {
     for ($i = 0; $i < count($this->param); $i++) {
       $this->param[$i]->val = preg_replace('/[^\x20-\x7e]/', '', $this->param[$i]->val); // Remove illegal non-ASCII characters such as invisible spaces
     }
@@ -2311,7 +2311,7 @@ final class Template {
     }
   }
 
-  public function check_url() {
+  protected function check_url() {
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
@@ -2386,7 +2386,7 @@ final class Template {
  *   Functions to retrieve values that may be specified 
  *   in various ways
  ********************************************************/
-  public function display_authors($newval = FALSE) {
+  protected function display_authors($newval = FALSE) {
     if ($newval && is_int($newval)) {
       $this->forget('displayauthors');
       echo "\n ~ Setting display-authors to $newval" . tag();
@@ -2399,7 +2399,7 @@ final class Template {
     return is_int(1 * $da) ? $da : FALSE;
   }
 
-  public function number_of_authors() {
+  protected function number_of_authors() {
     $max = 0;
     if ($this->param) foreach ($this->param as $p) {
       if (preg_match('~(?:author|last|first|forename|initials|surname)(\d+)~', $p->param, $matches))
@@ -2425,7 +2425,7 @@ final class Template {
     return NULL;
   }
 
-  public function first_surname() {
+  protected function first_surname() {
     // Fetch the surname of the first author only
     if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
       return $first_author[0];
@@ -2434,20 +2434,20 @@ final class Template {
     }
   }
 
-  public function page() {
+  protected function page() {
     $page = $this->get('pages');
     return ($page ? $page : $this->get('page'));
   }
 
   public function name() {return trim($this->name);}
 
-  public function page_range() {
+  protected function page_range() {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
     return $pagenos;
   }
 
   // Amend parameters
-  public function rename($old_param, $new_param, $new_value = FALSE) {
+  protected function rename($old_param, $new_param, $new_value = FALSE) {
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
@@ -2472,15 +2472,15 @@ final class Template {
     return NULL;
   }
   
-  public function param_with_index($i) {
+  protected function param_with_index($i) {
     return (isset($this->param[$i])) ? $this->param[$i] : NULL;
   }
   
-  public function param_value($i) { // May return error if no param with index $i
+  protected function param_value($i) { // May return error if no param with index $i
     return $this->param_with_index($i)->val;
   }
   
-  public function get_without_comments_and_placeholders($name) {
+  protected function get_without_comments_and_placeholders($name) {
     $ret = $this->get($name);
     $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
     $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
@@ -2499,15 +2499,15 @@ final class Template {
     return NULL;
   }
 
-  public function has($par) {return (bool) strlen($this->get($par));}
-  public function lacks($par) {return !$this->has($par);}
+  protected function has($par) {return (bool) strlen($this->get($par));}
+  protected function lacks($par) {return !$this->has($par);}
 
-  public function add($par, $val) {
+  protected function add($par, $val) {
     echo "\n   + Adding $par" .tag();
     return $this->set($par, $val);
   }
   
-  public function set($par, $val) {
+  protected function set($par, $val) {
     if (($pos = $this->get_param_key($par)) !== NULL) {
       return $this->param[$pos]->val = $val;
     }
@@ -2541,7 +2541,7 @@ final class Template {
     return TRUE;
   }
 
-  public function append_to($par, $val) {
+  protected function append_to($par, $val) {
     $pos = $this->get_param_key($par);
     if ($pos) {
       return $this->param[$pos]->val = $this->param[$pos]->val . $val;
@@ -2550,7 +2550,7 @@ final class Template {
     }
   }
 
-  public function forget ($par) {
+  protected function forget ($par) {
     if ($par == 'url') {
       $this->forget('format');
       $this->forget('accessdate');
@@ -2605,7 +2605,7 @@ final class Template {
     return (bool) count($this->modifications('modifications'));
   }
   
-  public function isbn10Toisbn13 ($isbn10) {
+  protected function isbn10Toisbn13 ($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
        $isbn10 = str_replace(array('—','―','–','−','‒'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
        if (preg_match("~[^0-9Xx\-]~",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
