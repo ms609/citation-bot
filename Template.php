@@ -29,7 +29,7 @@ final class Template {
   public    $internal_templates = array();
 
   protected function extract_templates($text) {
-    $i = 0;
+    $i = count($this->internal_templates); // Should always be zero, but paranoid
     while(preg_match(Template::REGEXP, $text, $match)) {
       $this->internal_templates[$i] = $match[0];
       $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
@@ -1993,7 +1993,7 @@ final class Template {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              echo "\n    " . $this->internal_templates[$i];
+              echo "\n    " . $this->internal_templates[$matches[1][$i]];
               break;
             }
           
