@@ -62,4 +62,3 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Bioessays ', ' Plos Biology ', ' Rna ',
 ' Nasa Tech Briefs ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', ' Jama Psychiatry ', ' Ifac-Papersonline ');
  
- ?>

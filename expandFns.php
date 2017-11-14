@@ -307,4 +307,3 @@ function prior_parameters($par, $list=array()) {
     default: return $list;
   }
 }
-?>

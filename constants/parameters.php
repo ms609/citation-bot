@@ -764,5 +764,4 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID'
  'inventor17-first', 'inventor18-first', 'inventor19-first', 'inventor20-first', 'inventor21-first',
  'inventor22-first', 'inventor23-first', 'inventor24-first', 'inventor25-first', 'inventor26-first',
  'inventor27-first', 'inventor28-first', 'inventor29-first', 'inventor30-first');
-  
- ?>
+
