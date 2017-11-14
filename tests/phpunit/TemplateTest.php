@@ -199,7 +199,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
     $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->process_page($text);
     $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
   }
 
@@ -586,7 +586,7 @@ ER -  }}';
     
    public function testOverwriteBlanks() {
        $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
-       $expanded = $this->process_citation($text);
+       $expanded = $this->process_page($text);
        $this->assertEquals('{{cite journal|jstor=1234567890}}', $expanded->parsed_text());
    }
 
@@ -635,7 +635,7 @@ ER -  }}';
 
    public function testIgnoreUnkownCiteTemplates() {
     $text = "{{Cite headcheese| http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.bad/bad }}";
-    $expanded = $this->process_citation($text);
+    $expanded = $this->process_page($text);
     $this->assertEquals($text, $expanded->parsed_text());
   } 
   
