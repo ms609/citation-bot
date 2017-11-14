@@ -74,7 +74,7 @@ final class Template {
   }
 
   // Re-assemble parsed template into string
-  protected function parsed_text() {
+  public function parsed_text() {
     return $this->replace_templates('{{' . $this->name . $this->join_params() . '}}');
   }
 
