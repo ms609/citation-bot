@@ -71,4 +71,3 @@ const NAMESPACE_ID = Array(
   'gadget definition' => 2302,
   'gadget definition talk' => 2303,
 );
-?>

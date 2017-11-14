@@ -41,5 +41,3 @@ if ($login_result && $login_result->login->result == "Success") {
 } else {
   exit("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
 }
-
-?>

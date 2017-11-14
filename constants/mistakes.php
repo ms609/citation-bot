@@ -60,6 +60,3 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "Vol."            =>  "volume",
   "website"         =>  "url",
 );
-
- 
- ?>

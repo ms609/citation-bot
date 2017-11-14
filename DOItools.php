@@ -270,5 +270,3 @@ function equiv_url ($u){
 	if (preg_match("~(.*&doi=.*)&~Ui", $db, $db2)) $db = $db2[1];
 	return $db;
 }
-
-?>
