@@ -2111,7 +2111,7 @@ final class Template {
     return $ret;
   }
 
-  protected function wikiname() {
+  public function wikiname() {
     return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
   }
 
