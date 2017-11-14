@@ -669,4 +669,3 @@ ER -  }}';
   Test adding a doi-is-broken modifier to a broken DOI.
   */    
 }
-
