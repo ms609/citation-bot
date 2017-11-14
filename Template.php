@@ -47,7 +47,7 @@ final class Template {
   }
 
   public function __toString() {
-    return $rawtext;  // ??????
+    return $this->rawtext;  // ??????
   }
   
   public function parse_text($text) {
