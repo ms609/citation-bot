@@ -32,9 +32,9 @@ final class Template {
   public function get_rawtext() {
     $text = $this->parsed_text();
     $i = count($this->internal_templates);
-    foreach (array_reverse($this->internal_templates) as $template) {		
-      // Case insensitive, since placeholder might get title case, etc.		
-      $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);		
+    foreach (array_reverse($this->internal_templates) as $template) {
+      // Case insensitive, since placeholder might get title case, etc.
+      $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template->get_rawtext(), $text);
     }
     return $text;
   }
