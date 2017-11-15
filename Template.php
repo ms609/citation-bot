@@ -27,18 +27,7 @@ final class Template {
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
             $mod_dashes;
   public    $internal_templates = array();
-
- 
-  public function get_rawtext() {
-    $text = $this->parsed_text();
-    $i = count($this->internal_templates);
-    foreach (array_reverse($this->internal_templates) as $template) {
-      // Case insensitive, since placeholder might get title case, etc.
-      $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template->get_rawtext(), $text);
-    }
-    return $text;
-  }
-
+  
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
     if ($this->rawtext) {
@@ -1934,7 +1923,7 @@ final class Template {
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
         $subtemplate = new Template();
-        $subtemplate->parse_text($this->internal_templates[$matches[1][$i]]->get_rawtext());
+        $subtemplate->parse_text($this->internal_templates[$matches[1][$i]]->parsed_text());
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
@@ -1982,7 +1971,7 @@ final class Template {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              echo "\n    " . $this->internal_templates[$matches[1][$i]]->get_rawtext();
+              echo "\n    " . $this->internal_templates[$matches[1][$i]]->parsed_text();
               break;
             }
           
