@@ -28,6 +28,10 @@ final class Template {
             $mod_dashes;
   public    $internal_templates = array();
   
+  public get_rawtext() {
+    return $this->rawtext;
+  }
+  
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
     if ($this->rawtext) {
@@ -1923,7 +1927,7 @@ final class Template {
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
         $subtemplate = new Template();
-        $subtemplate->parse_text($this->internal_templates[$matches[1][$i]]->parsed_text());
+        $subtemplate->parse_text($this->internal_templates[$matches[1][$i]]->get_rawtext());
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
@@ -1971,7 +1975,7 @@ final class Template {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              echo "\n    " . $this->internal_templates[$matches[1][$i]]->parsed_text();
+              echo "\n    " . $this->internal_templates[$matches[1][$i]]->get_rawtext();
               break;
             }
           
