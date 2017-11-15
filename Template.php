@@ -28,7 +28,7 @@ final class Template {
             $mod_dashes;
   public    $internal_templates = array();
   
-  public get_rawtext() {
+  public function get_rawtext() {
     return $this->rawtext;
   }
   
