@@ -102,6 +102,7 @@ final class Page {
     // TEMPLATES //
     $templates = $this->extract_object('Template');
     for ($i = 0; $i < count($templates); $i++) {
+      $templates[$i]->internal_templates = &$templates;
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
       foreach (array_keys($template_mods) as $key) {
