@@ -30,8 +30,7 @@ final class Template {
 
   protected function extract_templates($text) {
     if (count($this->internal_templates) !==0) {
-      echo "\n Attemping to extract templates twice\n";
-      exit(1);
+      exit("Attemping to extract templates twice");
     }
     $i = 0;
     while(preg_match(Template::REGEXP, $text, $match)) {
@@ -43,8 +42,7 @@ final class Template {
   
   public function set_internal_templates(&$templates_in) {
     if (count($this->internal_templates) !==0) {
-      echo "\n Attemping to extract templates again\n";
-      exit(1);
+      exit("Attemping to set templates again");
     }
     $internal_templates = &$templates_in ;
   }
