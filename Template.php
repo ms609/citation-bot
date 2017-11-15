@@ -41,7 +41,7 @@ final class Template {
     return $text;
   }
   
-  public fuction set_internal_templates(&$templates_in) {
+  public function set_internal_templates(&$templates_in) {
     if (count($this->internal_templates) !==0) {
       echo "\n Attemping to extract templates again\n";
       exit(1);
