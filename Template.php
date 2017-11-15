@@ -25,16 +25,27 @@ final class Template {
   public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes;
-  public    $internal_templates = array();
+            $mod_dashes, $internal_templates = array();
 
   protected function extract_templates($text) {
-    $i = count($this->internal_templates); // Should always be zero, but paranoid
+    if (count($this->internal_templates) !==0) {
+      echo "\n Attemping to extract templates twice\n";
+      exit(1);
+    }
+    $i = 0;
     while(preg_match(Template::REGEXP, $text, $match)) {
       $this->internal_templates[$i] = $match[0];
       $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
     }
     return $text;
+  }
+  
+  public fuction set_internal_templates(&$templates_in) {
+    if (count($this->internal_templates) !==0) {
+      echo "\n Attemping to extract templates again\n";
+      exit(1);
+    }
+    $internal_templates = &$$templates_in ;
   }
 
   protected function replace_templates($text) {
