@@ -46,7 +46,7 @@ final class Template {
       echo "\n Attemping to extract templates again\n";
       exit(1);
     }
-    $internal_templates = &$$templates_in ;
+    $internal_templates = &$templates_in ;
   }
 
   protected function replace_templates($text) {
