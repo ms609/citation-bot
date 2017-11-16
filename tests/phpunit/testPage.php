@@ -29,7 +29,7 @@ public function testPageTextFromTitle() { // Not a great test. Mostly just verif
 
 public function testEditSummary() {  // Not a great test. Mostly just verifies no crashes in code
     if(!isset($bot)) $bot = new Snoopy();
-    $text = "{{Cite journal|pmid=9858586}}"
+    $text = "{{Cite journal|pmid=9858586}}";
     $page->parse_text($text);
     $page->expand_text();
     $this->assertNotNull($page->edit_summary());
