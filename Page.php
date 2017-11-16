@@ -118,7 +118,9 @@ final class Page {
       if (count($templates[$i]->internal_templates) !==0) {
         exit("Attemping to set internal_templates twice");
       }
-      $templates[$i]->internal_templates = &$templates;   
+      $templates[$i]->internal_templates = &$templates;  // All templates have to see all other templates 
+    }
+    for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
       foreach (array_keys($template_mods) as $key) {
