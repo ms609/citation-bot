@@ -35,6 +35,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $page->expand_text();
     return $page;
   }
+  
+    public function testBigAssPage() {
+      $text =file_get_contents("https://en.wikipedia.org/wiki/Neil_deGrasse_Tyson");
+     $page=$this->process_page($text);
+        $this->assertNotNull($page->parsed_text());
+      
+    }
 
   public function testParameterWithNoParameters() {
     $text = "{{Cite web | text without equals sign  }}";
