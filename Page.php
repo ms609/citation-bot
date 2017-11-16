@@ -115,7 +115,10 @@ final class Page {
     }
 
     for ($i = 0; $i < count($templates); $i++) {
-      $templates[$i]->set_internal_templates($templates);   
+      if (count($templates[$i]->internal_templates) !==0) {
+       exit("Attemping to set internal_templates twice");
+      }
+      $templates[$i]->internal_templates = &$templates;   
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
       foreach (array_keys($template_mods) as $key) {
