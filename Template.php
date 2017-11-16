@@ -1439,7 +1439,17 @@ final class Template {
         }
       }
     }
-    $this->add_if_new("date", $xml->dc___date);
+    $google_date=sanitize_strings(trim( (string) $xml->dc___date )); // Google often sends us YYYY-MM
+    if (substr_count($google_date, "-") === 1) {
+        $date=@date_create($google_date);
+        if ($date !== FALSE) {
+          $date = @date_format($date,"F Y");
+          if ($date !== FALSE) {
+            $google_date = $date;
+          }
+        }
+    }
+    $this->add_if_new("date",$google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     // foreach ($xml->dc___format as $format) {
     //   if (preg_match("~([\d\-]+)~", $format, $matches)) {
