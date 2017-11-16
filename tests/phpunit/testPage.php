@@ -34,3 +34,5 @@ public function testEditSummary() {  // Not a great test. Mostly just verifies n
     $page->expand_text();
     $this->assertNotNull($page->edit_summary());
 }
+
+}
