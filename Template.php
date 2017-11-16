@@ -25,8 +25,8 @@ final class Template {
   public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes,
-            $internal_templates = array();
+            $mod_dashes;
+  public    $internal_templates = array();
 
   protected function extract_templates($text) {
     if (count($this->internal_templates) !==0) {
@@ -38,13 +38,6 @@ final class Template {
       $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
     }
     return $text;
-  }
-  
-  public function set_internal_templates(&$templates_in) {
-    if (count($this->internal_templates) !==0) {
-      exit("Attemping to set templates again");
-    }
-    $internal_templates = &$templates_in ;
   }
 
   protected function replace_templates($text) {
