@@ -49,7 +49,7 @@ final class Template {
     return $text;
   }
 
-  public function __toString() {
+  protected function __toString() { // protected becuase kind of evil
     return $this->rawtext;
   }
   
