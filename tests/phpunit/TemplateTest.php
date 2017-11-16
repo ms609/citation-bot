@@ -32,13 +32,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   protected function process_page($text) {
     $page = new Page();
     $page->parse_text($text);
-    $page->expand_text("https://en.wikipedia.org/wiki/Neil_deGrasse_Tyson");
+    $page->expand_text();
     return $page;
   }
   
     public function testBigAssPage() {
-        $text =file_get_contents();
-         $this->process_page($text);
+      $text =file_get_contents("https://en.wikipedia.org/wiki/Neil_deGrasse_Tyson");
+      $this->process_page($text);
     }
 
   public function testParameterWithNoParameters() {
