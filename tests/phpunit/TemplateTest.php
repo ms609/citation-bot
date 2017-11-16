@@ -38,7 +38,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
     public function testBigAssPage() {
       $text =file_get_contents("https://en.wikipedia.org/wiki/Neil_deGrasse_Tyson");
-      $this->process_page($text);
+     $page=$this->process_page($text);
+        $this->assertNotNull($page->parsed_text());
+      
     }
 
   public function testParameterWithNoParameters() {
