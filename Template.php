@@ -1439,13 +1439,13 @@ final class Template {
         }
       }
     }
-    $google_date=sanitize_strings(trim( (string) $xml->dc___date )); // Google often sends us YYYY-MM
+    $google_date=sanitize_string(trim( (string) $xml->dc___date )); // Google often sends us YYYY-MM
     if (substr_count($google_date, "-") === 1) {
         $date=@date_create($google_date);
         if ($date !== FALSE) {
           $date = @date_format($date,"F Y");
           if ($date !== FALSE) {
-            $google_date = $date;
+            $google_date = $date; // only now change data
           }
         }
     }
