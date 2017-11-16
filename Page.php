@@ -116,8 +116,7 @@ final class Page {
 
     for ($i = 0; $i < count($templates); $i++) {
       if (count($templates[$i]->internal_templates) !==0) {
-        echo "Attemping to set internal_templates twice";
-        return FALSE;
+        exit("Attemping to set internal_templates twice");
       }
       $templates[$i]->internal_templates = &$templates;   
       $templates[$i]->process();
