@@ -118,7 +118,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   
    // no claim this right, just what it does now 
   public function testFormatMultipleAuthors1() {
-    $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith';
+    $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways
     $result=format_multiple_authors($authors,FALSE);
     $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result); // WRONG, but that input is pretty inconsistent
   }
