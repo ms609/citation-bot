@@ -198,7 +198,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 	#dbg(array("IN"=>$authors));
 	if (isset($authors[1])) {
 		foreach ($authors as $A){
-			if (trim($A) != "")	$return[] = formatAuthor($A);
+			if (trim($A) != "")	$return[] = format_author($A);
 		}
 	} else {
 		//Use commas as delimiters
@@ -211,7 +211,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 			$bits = $bitts; unset($bitts);
 			#dbg($bits, '$BITS');
 			if ($bits[1] || $savedChunk) {
-				$return[] = formatAuthor($savedChunk .  ($savedChunk?", ":"") . $chunk);
+				$return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
 				$savedChunk = NULL;
 			} else $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
 		}
