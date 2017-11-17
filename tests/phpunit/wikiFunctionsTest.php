@@ -87,7 +87,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     exit(0);
     */
   }
-    
+
   public function testGetLastRevision() {
     $this->assertTrue(is_int(1 * get_last_revision('User talk:Citation bot')));
   }
@@ -115,17 +115,49 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   }
    
     // DOItools tests
-    
+  
+   // no claim this right, just what it does now 
   public function testFormatMultipleAuthors() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith';
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result); // no claim this right, just what it does now 
+    $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result);
   }
-
-  public function testFormatAuthor() {
-    $authors = "Conway Morris S.C.";
-    $result=format_author($authors,FALSE);
+    
+  // I do not claim that these are correct, just that this is what the code does right now
+  public function testFormatAuthor1() {  
+    $author = "Conway Morris S.C.";
+    $result=format_author($author,FALSE);
     $this->assertEquals('c, Conway Morris S', $result);
+  }
+  public function testFormatAuthor2() {  
+    $author = "M.A. Smith";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('M.A., Smith', $result);
+  }
+  public function testFormatAuthor3() {  
+    $author = "Smith M.A";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('M.A., Smith', $result);
+  }
+  public function testFormatAuthor4() {  
+    $author = "Smith MA.";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('M.A., Smith', $result);
+  }
+  public function testFormatAuthor5() {  
+    $author = "Martin A.";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('A., Martin', $result);
+  }
+  public function testFormatAuthor6() {  
+    $author = "MA Smith";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('M.A., Smith', $result);
+  }
+  public function testFormatAuthor7() {  
+    $author = "Martin Smith";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('martin, Smith', $result);
   }
 
   public function testCurlSetup() {
