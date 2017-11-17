@@ -136,6 +136,10 @@ function is_redirect($page) {
   }
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function redirect_target($page) {
   $url = Array(
       "action" => "query",
@@ -147,6 +151,10 @@ function redirect_target($page) {
   return $xml->pages->page["title"];
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function parse_wikitext($text, $title = "API") {
   $bot = new Snoopy();
   $bot->httpmethod="POST";
@@ -176,6 +184,11 @@ function namespace_name($id) {
   return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
+
 // TODO mysql login is failing.
 function article_id($page, $namespace = 0) {
   if (stripos($page, ':')) {
@@ -194,6 +207,11 @@ function article_id($page, $namespace = 0) {
   mysql_close($enwiki_db);
   return $results['page_id'];
 }
+
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 
 function get_raw_wikitext($page, $wait = FALSE, $verbose = FALSE, $use_daniel = TRUE) {
   $encode_page = urlencode($page);
@@ -243,6 +261,10 @@ function load_xml_via_bot($vars) {
   return simplexml_load_string($snoopy->results);
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function touch_page($page) {
   $text = get_raw_wikitext($page);
   if ($text) {
