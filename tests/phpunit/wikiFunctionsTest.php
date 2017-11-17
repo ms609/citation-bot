@@ -132,12 +132,11 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $result=format_multiple_authors($authors,FALSE);
     $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
   }
-    
-  // I do not claim that these are correct, just that this is what the code does right now
+ 
   public function testFormatAuthor1() {  
     $author = "Conway Morris S.C.";
     $result=format_author($author,FALSE);
-    $this->assertEquals('c, Conway Morris S', $result); // WRONG, but that input is pretty odd
+    $this->assertEquals('Conway Morris, S.C.', $result); // Was c, Conway Morris S 
   }
   public function testFormatAuthor2() {  
     $author = "M.A. Smith";
@@ -147,7 +146,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatAuthor3() {  
     $author = "Smith M.A.";
     $result=format_author($author,FALSE);
-    $this->assertEquals('a, Smith M', $result); // WRONG
+    $this->assertEquals('Smith, M.A.', $result); // Was a, Smith M
   }
   public function testFormatAuthor4() {  
     $author = "Smith MA.";
@@ -172,7 +171,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatAuthor8() {  
     $author = "Conway Morris S.C..";
     $result=format_author($author,FALSE);
-    $this->assertEquals('c, Conway Morris S', $result); //WRONG, but odd input
+    $this->assertEquals('Conway Morris, S.C.', $result); //Was c, Conway Morris S
   }
 
   public function testCurlSetup() {
