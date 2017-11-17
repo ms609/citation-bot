@@ -179,7 +179,7 @@ function format_author($author){
 			$fore = implode(" ", $i);
 		}
 	}
-	return format_surname($surname) . ", " . format_forename($fore);
+	return str_replace("..", ".", format_surname($surname) . ", " . format_forename($fore)); // Sometimes add period after period
 }
 
 function format_multiple_authors($authors, $returnAsArray = FALSE){
