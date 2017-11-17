@@ -196,7 +196,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 
 	$authors = explode(";", $authors);
 	#dbg(array("IN"=>$authors));
-	savedChunk = NULL;
+	$savedChunk = NULL;
 	if (isset($authors[1])) {
 		foreach ($authors as $A){
 			if (trim($A) != "")	$return[] = format_author($A);
