@@ -112,7 +112,11 @@ function format_author($author){
 
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = NULL;
-  
+  if (substr($author, -1) === ".") {
+     $ends_with_period = TRUE;
+  } else {
+	 $ends_with_period = FALSE;
+  }
 	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
 	if ($author == "") {
@@ -140,7 +144,7 @@ function format_author($author){
 			Martin Smith.
 			*/
 			$countAuth = count($auth);
-			if (!$auth[$countAuth-1]) {
+			if ($ends_with_period) {
 				$i = array();
 				// it ends in a .
 				if (is_initials($auth[$countAuth-1])) {
