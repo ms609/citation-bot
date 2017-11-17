@@ -146,9 +146,6 @@ final class Page {
       ) . (($this->modifications["dashes"])
       ? "Formatted [[WP:ENDASH|dashes]]. "
       : ""
-      ) . (($this->modifications["arxiv_upgrade"])
-      ? "Updated published arXiv refs. "
-      : ""
     );
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
