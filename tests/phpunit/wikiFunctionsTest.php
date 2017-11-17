@@ -88,6 +88,15 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     */
   }
   
+  public function testIsValidUser() {
+      $result = is_valid_user('Smith609');
+      $this->assertEquals(TRUE, $result);
+      $result = is_valid_user('Stanlha'); // Random user who at this point (Nov 2017) does not have page, but does exists
+      $this->assertEquals(TRUE, $result);
+      $result = is_valid_user('Stfasdfdsfadsfadsfdsfdsfadsfsafdsfadsfdsafanlha'); // Random user who at this point (Nov 2017) does not exist
+      $this->assertEquals(FALSE, $result);
+  }
+    
   public function testGetLastRevision() {
     $this->assertTrue(is_int(1 * get_last_revision('User talk:Citation bot')));
   }
