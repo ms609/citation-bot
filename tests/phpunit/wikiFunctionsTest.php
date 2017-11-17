@@ -181,9 +181,4 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertNull(NULL); // Just looking for code coverage and access of unset variables, etc.
   }
     
-  public function testIsValidUser() {
-      $result = is_valid_user('Smith609');
-      $this->assertEquals(TRUE,$result);
-  }
-    
 }
