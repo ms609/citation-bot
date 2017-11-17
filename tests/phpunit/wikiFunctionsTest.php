@@ -107,6 +107,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   }
   public function testEditSummary() {  // Not a great test. Mostly just verifies no crashes in code
     if(!isset($bot)) $bot = new Snoopy();
+    $page = new Page();
     $text = "{{Cite journal|pmid=9858586}}";
     $page->parse_text($text);
     $page->expand_text();
@@ -124,7 +125,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatAuthor() {
     $authors = "Conway Morris S.C.";
     $result=format_author($authors,FALSE);
-    $this->assertNull($result);  // Not sure what it will be 
+    $this->assertEquals('c, Conway Morris S', $result);
   }
 
   public function testCurlSetup() {
