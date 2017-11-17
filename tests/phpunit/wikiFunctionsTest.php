@@ -145,7 +145,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Smith, M.A', $result);
   }
   public function testFormatAuthor3() {  
-    $author = "Smith M.A";
+    $author = "Smith M.A.";
     $result=format_author($author,FALSE);
     $this->assertEquals('a, Smith M', $result); // WRONG
   }
@@ -157,7 +157,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatAuthor5() {  
     $author = "Martin A. Smith";
     $result=format_author($author,FALSE);
-    $this->assertEquals('Smith, Martin A.', $result);
+    $this->assertEquals('Smith, Martin A', $result);
   }
   public function testFormatAuthor6() {  
     $author = "MA Smith";
