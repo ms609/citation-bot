@@ -87,7 +87,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     exit(0);
     */
   }
-
+  
   public function testGetLastRevision() {
     $this->assertTrue(is_int(1 * get_last_revision('User talk:Citation bot')));
   }
@@ -132,32 +132,32 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatAuthor2() {  
     $author = "M.A. Smith";
     $result=format_author($author,FALSE);
-    $this->assertEquals('M.A., Smith', $result);
+    $this->assertEquals('Smith, M.A', $result);
   }
   public function testFormatAuthor3() {  
     $author = "Smith M.A";
     $result=format_author($author,FALSE);
-    $this->assertEquals('M.A., Smith', $result);
+    $this->assertEquals('a, Smith M', $result);
   }
   public function testFormatAuthor4() {  
     $author = "Smith MA.";
     $result=format_author($author,FALSE);
-    $this->assertEquals('M.A., Smith', $result);
+    $this->assertEquals('a, Smith M', $result);
   }
   public function testFormatAuthor5() {  
     $author = "Martin A.";
     $result=format_author($author,FALSE);
-    $this->assertEquals('A., Martin', $result);
+    $this->assertEquals('Martin, A.', $result);
   }
   public function testFormatAuthor6() {  
     $author = "MA Smith";
     $result=format_author($author,FALSE);
-    $this->assertEquals('M.A., Smith', $result);
+    $this->assertEquals('Smith, M.A.', $result);
   }
   public function testFormatAuthor7() {  
     $author = "Martin Smith";
     $result=format_author($author,FALSE);
-    $this->assertEquals('martin, Smith', $result);
+    $this->assertEquals('Smith, Martin', $result);
   }
 
   public function testCurlSetup() {
