@@ -120,7 +120,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatMultipleAuthors1() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith';
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result);
+    $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result); // WRONG, but that input is pretty inconsistent
   }
   public function testFormatMultipleAuthors2() {
     $authors = 'M.A. Smith; M.A. Smith';
@@ -137,7 +137,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatAuthor1() {  
     $author = "Conway Morris S.C.";
     $result=format_author($author,FALSE);
-    $this->assertEquals('c, Conway Morris S', $result);
+    $this->assertEquals('c, Conway Morris S', $result); // WRONG, but that input is pretty odd
   }
   public function testFormatAuthor2() {  
     $author = "M.A. Smith";
@@ -147,7 +147,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatAuthor3() {  
     $author = "Smith M.A";
     $result=format_author($author,FALSE);
-    $this->assertEquals('a, Smith M', $result);
+    $this->assertEquals('a, Smith M', $result); // WRONG
   }
   public function testFormatAuthor4() {  
     $author = "Smith MA.";
@@ -155,9 +155,9 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Smith, M.A.', $result);
   }
   public function testFormatAuthor5() {  
-    $author = "Martin A.";
+    $author = "Martin A. Smith";
     $result=format_author($author,FALSE);
-    $this->assertEquals('Martin, A.', $result);
+    $this->assertEquals('Smith, Martin A.', $result);
   }
   public function testFormatAuthor6() {  
     $author = "MA Smith";
@@ -172,7 +172,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatAuthor8() {  
     $author = "Conway Morris S.C..";
     $result=format_author($author,FALSE);
-    $this->assertEquals('c, Conway Morris S', $result);
+    $this->assertEquals('c, Conway Morris S', $result); //WRONG, but odd input
   }
 
   public function testCurlSetup() {
