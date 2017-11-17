@@ -117,10 +117,20 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     // DOItools tests
   
    // no claim this right, just what it does now 
-  public function testFormatMultipleAuthors() {
+  public function testFormatMultipleAuthors1() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith';
     $result=format_multiple_authors($authors,FALSE);
     $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result);
+  }
+  public function testFormatMultipleAuthors2() {
+    $authors = 'M.A. Smith; M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('m.a. Smith, m.a. Smith', $result);
+  }
+  public function testFormatMultipleAuthors3() {
+    $authors = 'M.A. Smith  M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('m.a. Smith, m.a. Smith', $result);
   }
     
   // I do not claim that these are correct, just that this is what the code does right now
@@ -159,12 +169,17 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $result=format_author($author,FALSE);
     $this->assertEquals('Smith, Martin', $result);
   }
+  public function testFormatAuthor8() {  
+    $author = "Conway Morris S.C..";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('c, Conway Morris S', $result);
+  }
 
   public function testCurlSetup() {
     $ch = curl_init();
     $url = "http://www.apple.com/";
     curl_setup($ch, $url);
-    $this->assertNull(NULL); // Just looking for segmentation faults
+    $this->assertNull(NULL); // Just looking for code coverage and access of unset variables, etc.
   }
     
 }
