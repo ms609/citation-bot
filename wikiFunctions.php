@@ -57,6 +57,10 @@ function what_transcludes_2($template, $namespace = 99) {
     return $list;
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function wikititle_encode($in) {
   return str_replace(DOT_DECODE, DOT_ENCODE, $in);
 }
@@ -100,6 +104,10 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
   return $page_titles;
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function get_article_id($page) {
   $xml = load_xml_via_bot(Array(
       "action" => "query",
