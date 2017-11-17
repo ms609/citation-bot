@@ -87,9 +87,51 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     exit(0);
     */
   }
-  
+    
   public function testGetLastRevision() {
     $this->assertTrue(is_int(1 * get_last_revision('User talk:Citation bot')));
   }
  
+  // Tests for Page()
+    
+  public function testPageRedirect() {
+    $page = new page();
+    $page->title = 'WP:UCB';
+    $this->assertEquals(1, $page->is_redirect()[0]);
+  }
+  public function testPageTextFromTitle() { // Not a great test. Mostly just verifies no crashes in code
+    if(!isset($bot)) $bot = new Snoopy();
+    $page = new page();
+    $result = $page->get_text_from('User:Citation_bot');
+    $this->assertNotNull($result);
+  }
+  public function testEditSummary() {  // Not a great test. Mostly just verifies no crashes in code
+    if(!isset($bot)) $bot = new Snoopy();
+    $text = "{{Cite journal|pmid=9858586}}";
+    $page->parse_text($text);
+    $page->expand_text();
+    $this->assertNotNull($page->edit_summary());
+  }
+   
+    // DOItools tests
+    
+  public function testFormatMultipleAuthors() {
+    $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertNull($result);  // Not sure what it will be 
+  }
+
+  public function testFormatAuthor() {
+    $authors = "Conway Morris S.C.";
+    $result=format_author($authors,FALSE);
+    $this->assertNull($result);  // Not sure what it will be 
+  }
+
+  public function testCurlSetup() {
+    $ch = curl_init();
+    $url = "http://www.apple.com/";
+    curl_setup($ch, $url);
+    $this->assertNull(NULL); // Just looking for segmentation faults
+  }
+    
 }
