@@ -112,7 +112,7 @@ function format_author($author){
 
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = NULL;
-  if (substr($author, -1) === ".") {
+  if (substr(trim($author), -1) === ".") {
      $ends_with_period = TRUE;
   } else {
 	 $ends_with_period = FALSE;
