@@ -185,11 +185,10 @@ function namespace_name($id) {
 }
 
 /**
+ * TODO mysql login is failing
  * Unused
  * @codeCoverageIgnore
  */
-
-// TODO mysql login is failing.
 function article_id($page, $namespace = 0) {
   if (stripos($page, ':')) {
     $bits = explode(':', $page);
@@ -212,7 +211,6 @@ function article_id($page, $namespace = 0) {
  * Unused
  * @codeCoverageIgnore
  */
-
 function get_raw_wikitext($page, $verbose = FALSE) {
   $encode_page = urlencode($page);
   echo $verbose ? "\n scraping... " : "";
