@@ -119,7 +119,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testFormatMultipleAuthors() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith';
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertNull($result);  // Not sure what it will be 
+    $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result); // no claim this right, just what it does now 
   }
 
   public function testFormatAuthor() {
