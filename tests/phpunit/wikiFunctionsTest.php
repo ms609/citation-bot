@@ -24,7 +24,6 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testLogin() {
   }
   */
-
   public function testCategoryMembers() {
     $this->assertTrue(count(category_members('Stub-Class cricket articles')) > 10);
   }
