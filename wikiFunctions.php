@@ -192,11 +192,7 @@ function namespace_name($id) {
   return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
 }
 
-/**
- * TODO mysql login is failing
- * Unused
- * @codeCoverageIgnore
- */
+//TODO mysql login is failing
 function article_id($page, $namespace = 0) {
   if (stripos($page, ':')) {
     $bits = explode(':', $page);
@@ -232,6 +228,10 @@ function is_valid_user($user) {
   return ($user && article_id("User:$user"));
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function wiki_link($page, $style = "#036;", $target = NULL) {
   if (!$target) $target = $page;
   $css = $style?" style='color:$style !important'":"";
