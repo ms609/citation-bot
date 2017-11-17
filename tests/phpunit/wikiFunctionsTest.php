@@ -24,6 +24,12 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testLogin() {
   }
   */
+    
+  public function testUserName() {
+      $result = is_valid_user('Smith609');
+      $this->asserEquals(TRUE,$result);
+  }
+    
   public function testCategoryMembers() {
     $this->assertTrue(count(category_members('Stub-Class cricket articles')) > 10);
   }
