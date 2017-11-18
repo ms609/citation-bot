@@ -143,8 +143,14 @@ final class Page {
     $auto_summary .= (($this->modifications["deletions"])
       ? "Removed parameters. "
       : ""
+      ) . (($this->modifications["cite_type"])
+      ? "Unified citation types. "
+      : ""
       ) . (($this->modifications["dashes"])
       ? "Formatted [[WP:ENDASH|dashes]]. "
+      : ""
+      ) . (($this->modifications["arxiv_upgrade"])
+      ? "Updated published arXiv refs. "
       : ""
     );
     if (!$auto_summary) {
