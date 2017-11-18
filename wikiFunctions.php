@@ -192,7 +192,7 @@ function namespace_name($id) {
   return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
 }
 
-//TODO mysql login is failing
+// TODO mysql login is failing.
 function article_id($page, $namespace = 0) {
   if (stripos($page, ':')) {
     $bits = explode(':', $page);
