@@ -94,19 +94,23 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
    
     // DOItools tests
   
-   // no claim this right, just what it does now 
   public function testFormatMultipleAuthors1() {
-    $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways
+    $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result); // WRONG, but that input is pretty inconsistent
+    $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result);
   }
-  public function testFormatMultipleAuthors2() {
+  public function testFormatMultipleAuthors2() {  // Semi-colon
     $authors = 'M.A. Smith; M.A. Smith';
     $result=format_multiple_authors($authors,FALSE);
     $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
   }
-  public function testFormatMultipleAuthors3() {
+  public function testFormatMultipleAuthors3() { // Spaces
     $authors = 'M.A. Smith  M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+  }
+  public function testFormatMultipleAuthors4() { // Commas
+    $authors = 'M.A. Smith,  M.A. Smith';
     $result=format_multiple_authors($authors,FALSE);
     $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
   }
