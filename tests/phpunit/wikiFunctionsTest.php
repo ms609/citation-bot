@@ -90,7 +90,6 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
 
  
   // Tests for Page()
-    
   public function testPageRedirect() {
     $page = new page();
     $page->title = 'WP:UCB';
