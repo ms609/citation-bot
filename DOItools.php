@@ -195,8 +195,8 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 
 	$authors = trim($authors);
 	if ($authors == "") {
-		return FALSE;
-	}
+    return FALSE;
+  }
 
 	$authors = explode(";", $authors);
 	#dbg(array("IN"=>$authors));
