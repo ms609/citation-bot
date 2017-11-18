@@ -1475,9 +1475,9 @@ final class Template {
   }
 
   
- /*
-  * This function is no longer called, but is retained in case a use case arises in the future
-  * @codeCoverageIgnore
+  /*
+   * @codeCoverageIgnore
+   * This function is no longer called, but is retained in case a use case arises in the future
   */
   protected function find_more_authors() {
   /** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
