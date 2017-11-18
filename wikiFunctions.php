@@ -177,6 +177,10 @@ function namespace_name($id) {
 }
 
 // TODO mysql login is failing.
+/*
+ * unused
+ * @codeCoverageIgnore
+ */
 function article_id($page, $namespace = 0) {
   if (stripos($page, ':')) {
     $bits = explode(':', $page);
