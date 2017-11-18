@@ -200,7 +200,7 @@ function article_id($page, $namespace = 0) {
   }
   $results = @mysql_fetch_array($result, MYSQL_ASSOC);
   @mysql_close($enwiki_db);
-  if (!results) return NULL;
+  if (!$results) return NULL;
   return $results['page_id'];
 }
 
