@@ -210,7 +210,7 @@ function get_raw_wikitext($page, $verbose = FALSE) {
 
 function is_valid_user($user) {
   if (!$user) return FALSE;
-  $headers_test = @get_headers('https://en.wikipedia.org/wiki/User:' . $user, 1);
+  $headers_test = @get_headers('https://en.wikipedia.org/wiki/User:' . htmlspecialchars($user), 1);
   if ($headers_test === FALSE) return FALSE;
   if (strpos((string) $headers_test[0], '404')) return FALSE;  // Even non-existant pages for valid users do exist.  They redirect, but do exist
   return TRUE;
