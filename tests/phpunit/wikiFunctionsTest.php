@@ -100,6 +100,11 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $page = new page();
     $result = $page->get_text_from('User:Citation_bot');
     $this->assertNotNull($result);
+    $page = new page();
+    $result = $page->get_text_from('User:AManWithNoPlan/sandbox2');
+    $this->assertNotNull($result);
+    $page->expand_text();
+    $page->write();
   }
   public function testEditSummary() {  // Not a great test. Mostly just verifies no crashes in code
     if(!isset($bot)) $bot = new Snoopy();
