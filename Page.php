@@ -171,6 +171,10 @@ final class Page {
       // FIXME: this is very deprecated, use ?action=query&meta=tokens to get a 'csrf' type token (the default)
       $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
+      if (!isset($result->query->pages)) {
+        echo "\n ! No page to write too.  Aborting.";
+        return FALSE;
+      }
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
       if ($my_page->lastrevid !== $this->lastrevid) {
         echo "\n ! Possible edit conflict detected. Aborting.";
