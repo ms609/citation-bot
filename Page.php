@@ -45,7 +45,7 @@ final class Page {
     }
     $details = $my_details;
     if ( !isset($details->touched) || !isset($details->lastrevid)) {
-       echo "Could not even get the page.";
+       echo "\n Could not even get the page.  Perhaps non-existent? ";
        return FALSE; 
     }
     $this->title = $details->title;
@@ -61,7 +61,7 @@ final class Page {
     if ($this->text) {
       return TRUE;
     } else{
-      return NULL;
+      return FALSE;
     }
   }
 
