@@ -193,7 +193,7 @@ final class Page {
       $bot->submit(API_ROOT, $submit_vars);
       $result = json_decode($bot->results);
       
-      if (isset($result->edit->result) && $result->edit->result == "Success") {
+      if (isset($result->edit->result) && $result->edit->result === "Success") {
         // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         html_echo( "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>',
                    "\n Written to " . htmlspecialchars($my_page->title) . '.  ');
