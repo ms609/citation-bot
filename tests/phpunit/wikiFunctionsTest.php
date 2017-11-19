@@ -53,18 +53,25 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testWrite() {
     $bot = new Snoopy();
     $page = new page();
-    $result = $page->get_text_from('https://en.wikipedia.org/wiki/User:AManWithNoPlan/bot_test_page');
+    $result = $page->get_text_from('User:AManWithNoPlan/bot_test_page');
     $this->assertNotNull($result);
     $page->expand_text();
     $result = $page->write();
     $this->assertEquals(FALSE, $result);  // test uses blocked account
     $bot = new Snoopy();
     $page = new page();
-    $result = $page->get_text_from('https://en.wikipedia.org/wiki/User_talk:Blocked_Testing_Account');
+    $result = $page->get_text_from('User_talk:Blocked_Testing_Account');
     $this->assertNotNull($result);
     $page->expand_text();
     $result = $page->write();
     $this->assertEquals(FALSE, $result);  // test uses blocked account
+    $bot = new Snoopy();
+    $page = new page();
+    $result = $page->get_text_from('dsafasdfdsfa34f34fsfrasdfdsafsdfasddsafadsafsdfasfd');
+    $this->assertNotNull($result);
+    $page->expand_text();
+    $result = $page->write();
+    $this->assertEquals(FALSE, $result);  // Rubbish page
  }
   
   public function testNamespaces() {
