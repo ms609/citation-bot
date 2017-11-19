@@ -187,11 +187,20 @@ function article_id($page, $namespace = 0) {
   }
   $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
   $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
-  $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
+  if (defined('PHP_VERSION_ID') && (PHP_VERSION_ID >= 50600)) { 
+     $result = NULL; // mysql_query does not exist in PHP 7
+  } else {
+     $result = @mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
           . "' && page_title='$page'");
-  if (!$result) exit(mysql_error());
-  $results = mysql_fetch_array($result, MYSQL_ASSOC);
-  mysql_close($enwiki_db);
+  }
+  if (!$result) {
+	  echo @mysql_error();
+	  @mysql_close($enwiki_db);
+	  return NULL;
+  }
+  $results = @mysql_fetch_array($result, MYSQL_ASSOC);
+  @mysql_close($enwiki_db);
+  if (!$results) return NULL;
   return $results['page_id'];
 }
 
