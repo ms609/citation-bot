@@ -44,6 +44,10 @@ final class Page {
       $my_details = $p;
     }
     $details = $my_details;
+    if ( !isset($details->touched) || !isset($details->lastrevid)) {
+       echo "\n Could not even get the page.  Perhaps non-existent? ";
+       return FALSE; 
+    }
     $this->title = $details->title;
     $this->namespace = $details->ns;
     $this->touched = $details->touched;
@@ -57,7 +61,7 @@ final class Page {
     if ($this->text) {
       return TRUE;
     } else{
-      return NULL;
+      return FALSE;
     }
   }
 
@@ -167,8 +171,12 @@ final class Page {
       // FIXME: this is very deprecated, use ?action=query&meta=tokens to get a 'csrf' type token (the default)
       $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
+      if (!isset($result->query->pages)) {
+        echo "\n ! No page to write to.  Aborting.";
+        return FALSE;
+      }
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
-      if ($my_page->lastrevid != $this->lastrevid) {
+      if ($my_page->lastrevid !== $this->lastrevid) {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
@@ -192,15 +200,16 @@ final class Page {
       );
       $bot->submit(API_ROOT, $submit_vars);
       $result = json_decode($bot->results);
-      if ($result->edit->result == "Success") {
+      
+      if (isset($result->edit->result) && $result->edit->result === "Success") {
         // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         html_echo( "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>',
                    "\n Written to " . htmlspecialchars($my_page->title) . '.  ');
         return TRUE;
-      } elseif ($result->edit->result) {
+      } elseif (isset($result->edit->result) && $result->edit->result) {
         echo htmlspecialchars($result->edit->result);
         return TRUE;
-      } elseif ($result->error->code) {
+      } elseif (isset($result->error->code) && $result->error->code) {
         // Return error code
         echo "\n ! " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
         return FALSE;
@@ -209,7 +218,8 @@ final class Page {
         return FALSE;
       }
     } else {
-      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots]} template.";
+      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots}} template.";
+      return FALSE;
     }
   }
 

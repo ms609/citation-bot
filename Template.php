@@ -1476,8 +1476,8 @@ final class Template {
 
   
   /*
-   * @codeCoverageIgnore
    * This function is no longer called, but is retained in case a use case arises in the future
+   * @codeCoverageIgnore
   */
   protected function find_more_authors() {
   /** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
@@ -2302,11 +2302,15 @@ final class Template {
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
+      $url_test = "http://dx.doi.org/".$doi ;
+      $headers_test = @get_headers($url_test, 1);
+      if ($headers_test === FALSE) {
+        echo "\n   ! DOI status unkown.  dx.doi.org failed to respond at all to: " . htmlspecialchars($doi);
+        return FALSE;
+      }
       $this->forget("doi_inactivedate");
       $this->forget("doi-inactive-date");
       $this->forget("doi_brokendate");
-      $url_test = "http://dx.doi.org/".$doi ;
-      $headers_test = get_headers($url_test, 1);
       if(empty($headers_test['Location']))
          $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if cross-ref fails
       echo "\n   ! Broken doi: " . htmlspecialchars($doi);

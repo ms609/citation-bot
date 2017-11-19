@@ -112,7 +112,11 @@ function format_author($author){
 
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = NULL;
-  
+  if (substr(trim($author), -1) === ".") {
+     $ends_with_period = TRUE;
+  } else {
+	 $ends_with_period = FALSE;
+  }
 	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
 	if ($author == "") {
@@ -140,7 +144,7 @@ function format_author($author){
 			Martin Smith.
 			*/
 			$countAuth = count($auth);
-			if (!$auth[$countAuth-1]) {
+			if ($ends_with_period) {
 				$i = array();
 				// it ends in a .
 				if (is_initials($auth[$countAuth-1])) {
@@ -175,7 +179,7 @@ function format_author($author){
 			$fore = implode(" ", $i);
 		}
 	}
-	return format_surname($surname) . ", " . format_forename($fore);
+	return str_replace("..", ".", format_surname($surname) . ", " . format_forename($fore)); // Sometimes add period after period
 }
 
 function format_multiple_authors($authors, $returnAsArray = FALSE){
@@ -196,9 +200,10 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 
 	$authors = explode(";", $authors);
 	#dbg(array("IN"=>$authors));
+	$savedChunk = NULL;
 	if (isset($authors[1])) {
 		foreach ($authors as $A){
-			if (trim($A) != "")	$return[] = formatAuthor($A);
+			if (trim($A) != "")	$return[] = format_author($A);
 		}
 	} else {
 		//Use commas as delimiters
@@ -211,7 +216,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 			$bits = $bitts; unset($bitts);
 			#dbg($bits, '$BITS');
 			if ($bits[1] || $savedChunk) {
-				$return[] = formatAuthor($savedChunk .  ($savedChunk?", ":"") . $chunk);
+				$return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
 				$savedChunk = NULL;
 			} else $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
 		}

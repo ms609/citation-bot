@@ -57,6 +57,10 @@ function what_transcludes_2($template, $namespace = 99) {
     return $list;
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function wikititle_encode($in) {
   return str_replace(DOT_DECODE, DOT_ENCODE, $in);
 }
@@ -100,6 +104,10 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
   return $page_titles;
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function get_article_id($page) {
   $xml = load_xml_via_bot(Array(
       "action" => "query",
@@ -136,6 +144,10 @@ function is_redirect($page) {
   }
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function redirect_target($page) {
   $url = Array(
       "action" => "query",
@@ -147,6 +159,10 @@ function redirect_target($page) {
   return $xml->pages->page["title"];
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function parse_wikitext($text, $title = "API") {
   $bot = new Snoopy();
   $bot->httpmethod="POST";
@@ -177,6 +193,10 @@ function namespace_name($id) {
 }
 
 // TODO mysql login is failing.
+/*
+ * unused
+ * @codeCoverageIgnore
+ */
 function article_id($page, $namespace = 0) {
   if (stripos($page, ':')) {
     $bits = explode(':', $page);
@@ -187,14 +207,27 @@ function article_id($page, $namespace = 0) {
   }
   $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
   $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
-  $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
+  if (defined('PHP_VERSION_ID') && (PHP_VERSION_ID >= 50600)) { 
+     $result = NULL; // mysql_query does not exist in PHP 7
+  } else {
+     $result = @mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
           . "' && page_title='$page'");
-  if (!$result) exit(mysql_error());
-  $results = mysql_fetch_array($result, MYSQL_ASSOC);
-  mysql_close($enwiki_db);
+  }
+  if (!$result) {
+	  echo @mysql_error();
+	  @mysql_close($enwiki_db);
+	  return NULL;
+  }
+  $results = @mysql_fetch_array($result, MYSQL_ASSOC);
+  @mysql_close($enwiki_db);
+  if (!$results) return NULL;
   return $results['page_id'];
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function get_raw_wikitext($page, $verbose = FALSE) {
   $encode_page = urlencode($page);
   echo $verbose ? "\n scraping... " : "";
@@ -205,9 +238,17 @@ function get_raw_wikitext($page, $verbose = FALSE) {
 }
 
 function is_valid_user($user) {
-  return ($user && article_id("User:$user"));
+  if (!$user) return FALSE;
+  $headers_test = @get_headers('https://en.wikipedia.org/wiki/User:' . urlencode($user), 1);
+  if ($headers_test === FALSE) return FALSE;
+  if (strpos((string) $headers_test[0], '404')) return FALSE;  // Even non-existant pages for valid users do exist.  They redirect, but do exist
+  return TRUE;
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function wiki_link($page, $style = "#036;", $target = NULL) {
   if (!$target) $target = $page;
   $css = $style?" style='color:$style !important'":"";
@@ -221,6 +262,10 @@ function load_xml_via_bot($vars) {
   return simplexml_load_string($snoopy->results);
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function touch_page($page) {
   $text = get_raw_wikitext($page);
   if ($text) {
