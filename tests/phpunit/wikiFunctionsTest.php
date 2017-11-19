@@ -60,13 +60,6 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals(FALSE, $result);  // test uses blocked account
     $bot = new Snoopy();
     $page = new page();
-    $result = $page->get_text_from('User_talk:Blocked_Testing_Account');
-    $this->assertNotNull($result);
-    $page->expand_text();
-    $result = $page->write();
-    $this->assertEquals(FALSE, $result);  // test uses blocked account
-    $bot = new Snoopy();
-    $page = new page();
     $result = $page->get_text_from('dsafasdfdsfa34f34fsfrasdfdsafsdfasddsafadsafsdfasfd');
     $this->assertNotNull($result);
     $page->expand_text();
