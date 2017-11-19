@@ -53,10 +53,11 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testWrite() {
     $bot = new Snoopy();
     $page = new page();
-    $result = $page->get_text_from('User:AManWithNoPlan/sandbox2');
+    $result = $page->get_text_from('User:AManWithNoPlan/bot_test_page');
     $this->assertNotNull($result);
     $page->expand_text();
-    $page->write();
+    $result = $page->write();
+    $this->assertEquals(FALSE, $result);  // test is blocked account
   }
   
   public function testNamespaces() {
