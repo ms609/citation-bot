@@ -57,7 +57,14 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($result);
     $page->expand_text();
     $result = $page->write();
-    $this->assertEquals(FALSE, $result);  // test is blocked accoun   
+    $this->assertEquals(FALSE, $result);  // test uses blocked account
+    $bot = new Snoopy();
+    $page = new page();
+    $result = $page->get_text_from('https://en.wikipedia.org/wiki/User_talk:Blocked_Testing_Account');
+    $this->assertNotNull($result);
+    $page->expand_text();
+    $result = $page->write();
+    $this->assertEquals(FALSE, $result);  // test uses blocked account
  }
   
   public function testNamespaces() {
