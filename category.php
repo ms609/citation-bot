@@ -19,32 +19,29 @@ foreach ($argv as $arg) {
   }
 }
 
-$account_suffix='_4'; // Whilst testing
-$account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
-if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
+
 if ($category) {
   $pages_in_category = category_members($category);
-  #print_r($pages_in_category);
   shuffle($pages_in_category);
-  $page = new Page();
-  #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
+    $page = new Page();
     if ($page->get_text_from($page_title) && $page->expand_text()) {
-      echo "\n # Writing to " . htmlspecialchars($page->title) . '... ';
+      echo "\n # Writing to " . htmlspecialchars($page_title) . '... ';
+      $attempts = 0;
       while (!$page->write() && $attempts < 2) ++$attempts;
       echo htmlspecialchars($page->text);
       if ($attempts < 3 ) {
         html_echo(
-        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
-        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
-        . get_last_revision($page) . ">last edit</a></small></i>\n\n<br>"
+        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
+        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br>"
         , ".");
       } else {
-         echo "\n # Failed. \n" . htmlspecialchars($page->text);
+         echo "\n # Failed. \n";
       }
     } else {
       echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
