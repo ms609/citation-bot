@@ -57,6 +57,10 @@ function what_transcludes_2($template, $namespace = 99) {
     return $list;
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function wikititle_encode($in) {
   return str_replace(DOT_DECODE, DOT_ENCODE, $in);
 }
@@ -100,6 +104,10 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
   return $page_titles;
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function get_article_id($page) {
   $xml = load_xml_via_bot(Array(
       "action" => "query",
@@ -136,6 +144,10 @@ function is_redirect($page) {
   }
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function redirect_target($page) {
   $url = Array(
       "action" => "query",
@@ -147,6 +159,10 @@ function redirect_target($page) {
   return $xml->pages->page["title"];
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function parse_wikitext($text, $title = "API") {
   $bot = new Snoopy();
   $bot->httpmethod="POST";
@@ -208,6 +224,10 @@ function article_id($page, $namespace = 0) {
   return $results['page_id'];
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function get_raw_wikitext($page, $verbose = FALSE) {
   $encode_page = urlencode($page);
   echo $verbose ? "\n scraping... " : "";
@@ -225,6 +245,10 @@ function is_valid_user($user) {
   return TRUE;
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function wiki_link($page, $style = "#036;", $target = NULL) {
   if (!$target) $target = $page;
   $css = $style?" style='color:$style !important'":"";
@@ -238,6 +262,10 @@ function load_xml_via_bot($vars) {
   return simplexml_load_string($snoopy->results);
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
 function touch_page($page) {
   $text = get_raw_wikitext($page);
   if ($text) {
