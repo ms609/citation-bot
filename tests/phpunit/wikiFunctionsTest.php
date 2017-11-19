@@ -49,6 +49,23 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     // TODO fix article_id before restoring this test:
     #$this->assertEquals(article_id(redirect_target('WP:UCB')), is_redirect('WP:UCB')[1]);
   }  
+    
+  public function testWrite() {
+    $bot = new Snoopy();
+    $page = new page();
+    $result = $page->get_text_from('User:AManWithNoPlan/bot_test_page');
+    $this->assertNotNull($result);
+    $page->expand_text();
+    $result = $page->write();
+    $this->assertEquals(FALSE, $result);  // test uses blocked account
+    $bot = new Snoopy();
+    $page = new page();
+    $result = $page->get_text_from('dsafasdfdsfa34f34fsfrasdfdsafsdfasddsafadsafsdfasfd');
+    $this->assertNotNull($result);
+    $page->expand_text();
+    $result = $page->write();
+    $this->assertEquals(FALSE, $result);  // Rubbish page
+ }
   
   public function testNamespaces() {
     $bot = new Snoopy();
