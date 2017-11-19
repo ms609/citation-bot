@@ -91,5 +91,76 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testGetLastRevision() {
     $this->assertTrue(is_int(1 * get_last_revision('User talk:Citation bot')));
   }
+   
+    // DOItools tests
+  
+  public function testFormatMultipleAuthors1() {
+    $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result);
+  }
+  public function testFormatMultipleAuthors2() {  // Semi-colon
+    $authors = 'M.A. Smith; M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+  }
+  public function testFormatMultipleAuthors3() { // Spaces
+    $authors = 'M.A. Smith  M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+  }
+  public function testFormatMultipleAuthors4() { // Commas
+    $authors = 'M.A. Smith,  M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+  }
  
+  public function testFormatAuthor1() {  
+    $author = "Conway Morris S.C.";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('Conway Morris, S.C.', $result); // Was c, Conway Morris S 
+  }
+  public function testFormatAuthor2() {  
+    $author = "M.A. Smith";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('Smith, M.A', $result);
+  }
+  public function testFormatAuthor3() {  
+    $author = "Smith M.A.";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('Smith, M.A.', $result); // Was a, Smith M
+  }
+  public function testFormatAuthor4() {  
+    $author = "Smith MA.";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('Smith, M.A.', $result);
+  }
+  public function testFormatAuthor5() {  
+    $author = "Martin A. Smith";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('Smith, Martin A', $result);
+  }
+  public function testFormatAuthor6() {  
+    $author = "MA Smith";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('Smith, M.A.', $result);
+  }
+  public function testFormatAuthor7() {  
+    $author = "Martin Smith";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('Smith, Martin', $result);
+  }
+  public function testFormatAuthor8() {  
+    $author = "Conway Morris S.C..";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('Conway Morris, S.C.', $result); //Was c, Conway Morris S
+  }
+
+  public function testCurlSetup() {
+    $ch = curl_init();
+    $url = "http://www.apple.com/";
+    curl_setup($ch, $url);
+    $this->assertNull(NULL); // Just looking for code coverage and access of unset variables, etc.
+  }
+    
 }
