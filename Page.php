@@ -172,7 +172,7 @@ final class Page {
       $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
       if (!isset($result->query->pages)) {
-        echo "\n ! No page to write too.  Aborting.";
+        echo "\n ! No page to write to.  Aborting.";
         return FALSE;
       }
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
