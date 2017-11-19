@@ -30,14 +30,14 @@ if ($category) {
   foreach ($pages_in_category as $page_title) {
     echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title) && $page->expand_text()) {
-      echo "\n # Writing to " . htmlspecialchars($page->title) . '... ';
+      echo "\n # Writing to " . htmlspecialchars($page_title) . '... ';
       while (!$page->write() && $attempts < 2) ++$attempts;
       echo htmlspecialchars($page->text);
       if ($attempts < 3 ) {
         html_echo(
-        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page->title) . "&action=history>history</a> / "
-        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page->title) . "&diff=prev&oldid="
-        . get_last_revision($page->title) . ">last edit</a></small></i>\n\n<br>"
+        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
+        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br>"
         , ".");
       } else {
          echo "\n # Failed. \n";
