@@ -46,7 +46,7 @@ final class Page {
     $details = $my_details;
     $this->title = $details->title;
     $this->namespace = $details->ns;
-    $this->touched = isset($details->touched) : $details->touched ? '' ); //Sometimes do not get this, strange
+    $this->touched = isset($details->touched) ? $details->touched : '' ); //Sometimes do not get this, strange
     $this->lastrevid = $details->lastrevid;
 
     if (stripos($this->text, '#redirect') !== FALSE) {
