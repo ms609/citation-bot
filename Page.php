@@ -43,11 +43,11 @@ final class Page {
     foreach ($details->query->pages as $p) {
       $my_details = $p;
     }
+    $details = $my_details;
     if ( !isset($details->touched) || !isset($details->lastrevid)) {
        echo "Could not even get the page.";
        return FALSE; 
     }
-    $details = $my_details;
     $this->title = $details->title;
     $this->namespace = $details->ns;
     $this->touched = $details->touched;
