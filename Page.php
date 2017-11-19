@@ -43,11 +43,15 @@ final class Page {
     foreach ($details->query->pages as $p) {
       $my_details = $p;
     }
+    if ( !isset($details->touched) || !isset($details->lastrevid)) {
+       echo "Could not even get the page.";
+       return FALSE; 
+    }
     $details = $my_details;
     $this->title = $details->title;
     $this->namespace = $details->ns;
-    $this->touched = isset($details->touched) ? $details->touched : 'missing' ; //Sometimes do not get this, strange
-    $this->lastrevid = isset($details->lastrevid) ?$details->lastrevid: 'missing' ; //Sometimes do not get this, strange
+    $this->touched = $details->touched;
+    $this->lastrevid = $details->lastrevid;
 
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
