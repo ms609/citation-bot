@@ -210,7 +210,7 @@ final class Page {
         return FALSE;
       }
     } else {
-      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots]} template.";
+      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots}} template.";
       return FALSE;
     }
   }
