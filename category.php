@@ -26,11 +26,12 @@ $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if ($category) {
   $pages_in_category = category_members($category);
   shuffle($pages_in_category);
-  $page = new Page();
   foreach ($pages_in_category as $page_title) {
     echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
+    $page = new Page();
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       echo "\n # Writing to " . htmlspecialchars($page_title) . '... ';
+      $attempts = 0;
       while (!$page->write() && $attempts < 2) ++$attempts;
       echo htmlspecialchars($page->text);
       if ($attempts < 3 ) {
