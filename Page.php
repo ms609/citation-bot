@@ -46,8 +46,8 @@ final class Page {
     $details = $my_details;
     $this->title = $details->title;
     $this->namespace = $details->ns;
-    $this->touched = isset($details->touched) ? $details->touched : '' ; //Sometimes do not get this, strange
-    $this->lastrevid = $details->lastrevid;
+    $this->touched = isset($details->touched) ? $details->touched : 'missing' ; //Sometimes do not get this, strange
+    $this->lastrevid = isset($details->lastrevid) ?$details->lastrevid: 'missing' ; //Sometimes do not get this, strange
 
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
@@ -168,7 +168,7 @@ final class Page {
       $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
-      if ($my_page->lastrevid != $this->lastrevid) {
+      if ($my_page->lastrevid !== $this->lastrevid) {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
