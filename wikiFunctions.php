@@ -177,6 +177,10 @@ function namespace_name($id) {
 }
 
 // TODO mysql login is failing.
+/*
+ * unused
+ * @codeCoverageIgnore
+ */
 function article_id($page, $namespace = 0) {
   if (stripos($page, ':')) {
     $bits = explode(':', $page);
@@ -214,7 +218,11 @@ function get_raw_wikitext($page, $verbose = FALSE) {
 }
 
 function is_valid_user($user) {
-  return ($user && article_id("User:$user"));
+  if (!$user) return FALSE;
+  $headers_test = @get_headers('https://en.wikipedia.org/wiki/User:' . urlencode($user), 1);
+  if ($headers_test === FALSE) return FALSE;
+  if (strpos((string) $headers_test[0], '404')) return FALSE;  // Even non-existant pages for valid users do exist.  They redirect, but do exist
+  return TRUE;
 }
 
 function wiki_link($page, $style = "#036;", $target = NULL) {
