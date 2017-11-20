@@ -29,10 +29,10 @@ if ($category) {
   $pages_in_category = category_members($category);
   #print_r($pages_in_category);
   shuffle($pages_in_category);
-  $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
+    $page = new Page();
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       echo "\n # Writing to " . htmlspecialchars($page->title) . '... ';
       while (!$page->write() && $attempts < 2) ++$attempts;
