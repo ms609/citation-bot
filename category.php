@@ -19,18 +19,14 @@ foreach ($argv as $arg) {
   }
 }
 
-$account_suffix='_4'; // Whilst testing
-$account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
-if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
+
 if ($category) {
   $pages_in_category = category_members($category);
-  #print_r($pages_in_category);
   shuffle($pages_in_category);
   $page = new Page();
-  #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title) && $page->expand_text()) {
