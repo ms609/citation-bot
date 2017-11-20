@@ -26,6 +26,7 @@ include("expandFns.php");
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
 if ($category) {
+  $attempts = 0;
   $pages_in_category = category_members($category);
   #print_r($pages_in_category);
   shuffle($pages_in_category);
