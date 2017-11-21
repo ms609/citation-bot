@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-// $Id$
+
 error_reporting(E_ALL^E_NOTICE);
 $argument["cat"]=NULL;
 foreach ($argv as $arg) {
