@@ -40,9 +40,9 @@ if ($category) {
       echo htmlspecialchars($page->text);
       if ($attempts < 3 ) {
         html_echo(
-        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
-        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
-        . get_last_revision($page) . ">last edit</a></small></i>\n\n<br>"
+        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page->title) . "&action=history>history</a> / "
+        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page->title) . "&diff=prev&oldid="
+        . get_last_revision($page->title) . ">last edit</a></small></i>\n\n<br>"
         , ".");
       } else {
          echo "\n # Failed. \n" . htmlspecialchars($page->text);
