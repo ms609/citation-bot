@@ -8,7 +8,7 @@ We use phpunit in Travis CI to test code; please write testcase examples for new
 
 ## Submitting changes
 
-Please send a [GitHub Pull Request](https://github.com/ms609/citation-bot/pull/new/master) with a clear list of what you've done (read more about [pull requests](http://help.github.com/pull-requests/)).
+Please send a [GitHub Pull Request](https://github.com/ms609/citation-bot/pull/new/master) with a clear list of what you've done (read more about [pull requests](https://help.github.com/articles/about-pull-requests/)).
 Including a test case that demonstrates the bug you are trying to fix in the pull request would be much appreciated, to avoid errors resurfacing.
 Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
 
@@ -22,6 +22,8 @@ Always write a clear log message for your commits. One-line messages are fine fo
 
   * We indent using two spaces (soft tabs)
   * Constants are named using CAPITALS, functions and variables using under_scores()
+  * All new code should use underscores in function names.  CamelCase is only used for test functions in new code
   * We ALWAYS put spaces after list items and method parameters (`[1, 2, 3]`, not `[1,2,3]`) and around operators (`x += 1`, not `x+=1`)
   * Regular expressions are defined using the symbol `~` in place of `/`, to reduce escaping and improve legibility when handling URLs.
   * We prefer `elseif` to `else if`
+  * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later

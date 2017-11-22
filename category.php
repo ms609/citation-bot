@@ -2,7 +2,7 @@
 <?php
 // $Id$
 error_reporting(E_ALL^E_NOTICE);
-
+$argument["cat"]=NULL;
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
@@ -22,11 +22,11 @@ foreach ($argv as $arg) {
 $account_suffix='_4'; // Whilst testing
 $account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
-$htmlOutput = FALSE;
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
 if ($category) {
+  $attempts = 0;
   $pages_in_category = category_members($category);
   #print_r($pages_in_category);
   shuffle($pages_in_category);
@@ -37,13 +37,13 @@ if ($category) {
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       echo "\n # Writing to " . htmlspecialchars($page->title) . '... ';
       while (!$page->write() && $attempts < 2) ++$attempts;
-      print htmlspecialchars($page->text);
+      echo htmlspecialchars($page->text);
       if ($attempts < 3 ) {
-        echo HTML_OUTPUT ?
+        html_echo(
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
         . get_last_revision($page) . ">last edit</a></small></i>\n\n<br>"
-        : ".";
+        , ".");
       } else {
          echo "\n # Failed. \n" . htmlspecialchars($page->text);
       }

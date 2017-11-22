@@ -10,7 +10,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
 
-class expandFnsTest extends PHPUnit\Framework\TestCase {
+final class expandFnsTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
   }

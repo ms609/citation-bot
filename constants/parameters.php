@@ -253,7 +253,7 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID'
  'conferenceurl', 'conference-url', 'contribution', 'contributionurl', 'contribution-url', 'date',
  'deadurl', 'degree', 'department', 'dictionary', 'displayauthors', 'display-authors',
  'displayeditors', 'display-editors', 'docket', 'doi', 'doi_brokendate', 'doi_inactivedate',
- 'doi-broken-date',
+ 'doi-broken-date', 'name-list-format', 'chapterformat', 'chapter-format',
  'edition', 'editor', 'editor-first', 'editorformat', 'editor-format', 'editor-last',
  'editorlink', 'editor-link', 'editormask', 'editor-mask', 'editor-name-separator',
  'editors', 'editor-separator', 'embargo', 'encyclopaedia', 'encyclopedia', 'entry',
@@ -764,5 +764,4 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID'
  'inventor17-first', 'inventor18-first', 'inventor19-first', 'inventor20-first', 'inventor21-first',
  'inventor22-first', 'inventor23-first', 'inventor24-first', 'inventor25-first', 'inventor26-first',
  'inventor27-first', 'inventor28-first', 'inventor29-first', 'inventor30-first');
-  
- ?>
+

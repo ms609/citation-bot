@@ -10,7 +10,7 @@
 require_once('Comment.php');
 require_once('Template.php');
 
-class Page {
+final class Page {
 
   public $text, $title, $modifications;
 
@@ -44,6 +44,10 @@ class Page {
       $my_details = $p;
     }
     $details = $my_details;
+    if ( !isset($details->touched) || !isset($details->lastrevid)) {
+       echo "\n Could not even get the page.  Perhaps non-existent? ";
+       return FALSE; 
+    }
     $this->title = $details->title;
     $this->namespace = $details->ns;
     $this->touched = $details->touched;
@@ -57,7 +61,7 @@ class Page {
     if ($this->text) {
       return TRUE;
     } else{
-      return NULL;
+      return FALSE;
     }
   }
 
@@ -74,11 +78,11 @@ class Page {
   public function expand_text() {
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" 
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=" 
       . urlencode($this->title) 
-      . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title="
+      . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title="
       . urlencode($this->title)
-      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title="
+      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title="
       . urlencode($this->title)
       . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
       . "document.title=\"Citation bot: '"
@@ -91,13 +95,7 @@ class Page {
       return FALSE;
     }
 
-    //this is set to -1 only in [erstwhile file?] text.php, because there's no need to output
-    // a buffer of text for the citation-expander gadget
-    if (HTML_OUTPUT === -1) {
-      ob_start();
-    }
-
-    // COMMENTS //
+    // COMMENTS AND NOWIKI //
     $comments = $this->extract_object('Comment');
     $nowiki   = $this->extract_object('Nowiki');
     if (!$this->allow_bots()) {
@@ -107,19 +105,6 @@ class Page {
 
     // TEMPLATES //
     $templates = $this->extract_object('Template');
-    $start_templates = $templates;
-    $citation_templates = 0;
-
-    if ($templates) {
-      foreach ($templates as $template) {
-        if ($template->wikiname() == 'citation') {
-          $citation_templates++;
-        } elseif (stripos($template->wikiname(), 'harv') === 0) {
-          $harvard_templates++;
-        }
-      }
-    }
-
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
@@ -135,11 +120,6 @@ class Page {
 
     $this->replace_object($comments);
     $this->replace_object($nowiki);
-   
-    // seems to be set as -1  in text.php and then re-set
-    if (HTML_OUTPUT === -1) {
-      ob_end_clean();
-    }
 
     return strcasecmp($this->text, $this->start_text) != 0;
   }
@@ -167,14 +147,8 @@ class Page {
     $auto_summary .= (($this->modifications["deletions"])
       ? "Removed parameters. "
       : ""
-      ) . (($this->modifications["cite_type"])
-      ? "Unified citation types. "
-      : ""
       ) . (($this->modifications["dashes"])
       ? "Formatted [[WP:ENDASH|dashes]]. "
-      : ""
-      ) . (($this->modifications["arxiv_upgrade"])
-      ? "Updated published arXiv refs. "
       : ""
     );
     if (!$auto_summary) {
@@ -197,13 +171,17 @@ class Page {
       // FIXME: this is very deprecated, use ?action=query&meta=tokens to get a 'csrf' type token (the default)
       $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
       $result = json_decode($bot->results);
+      if (!isset($result->query->pages)) {
+        echo "\n ! No page to write to.  Aborting.";
+        return FALSE;
+      }
       foreach ($result->query->pages as $i_page) $my_page = $i_page;
-      if ($my_page->lastrevid != $this->lastrevid) {
+      if ($my_page->lastrevid !== $this->lastrevid) {
         echo "\n ! Possible edit conflict detected. Aborting.";
         return FALSE;
       }
-      if ( stripos($this->text,"Citation bot : comment placeholder") != FALSE )  {
-        echo "\n ! Comment placeholder left escaped. Aborting.";
+      if ( stripos($this->text,"CITATION_BOT_PLACEHOLDER") !== FALSE )  {
+        echo "\n ! Citation bot placeholder left escaped. Aborting.";
         return FALSE;
       }
       $submit_vars = array(
@@ -222,24 +200,26 @@ class Page {
       );
       $bot->submit(API_ROOT, $submit_vars);
       $result = json_decode($bot->results);
-      if ($result->edit->result == "Success") {
-        // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        if (HTML_OUTPUT) echo "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>';
-        else echo "\n Written to " . htmlspecialchars($my_page->title) . '.  ';
+      
+      if (isset($result->edit->result) && $result->edit->result === "Success") {
+        // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
+        html_echo( "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>',
+                   "\n Written to " . htmlspecialchars($my_page->title) . '.  ');
         return TRUE;
-      } elseif ($result->edit->result) {
+      } elseif (isset($result->edit->result) && $result->edit->result) {
         echo htmlspecialchars($result->edit->result);
         return TRUE;
-      } elseif ($result->error->code) {
+      } elseif (isset($result->error->code) && $result->error->code) {
         // Return error code
         echo "\n ! " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
         return FALSE;
       } else {
-        echo "\n ! Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
+        echo "\n ! Unhandled error.  Please copy this output and <a href=https://en.wikipedia.org/wiki/User_talk:Citation_bot>Report a bug.</a>";
         return FALSE;
       }
     } else {
-      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots]} template.";
+      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots}} template.";
+      return FALSE;
     }
   }
 
@@ -269,8 +249,8 @@ class Page {
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
 
-  public function allow_bots() {
-    // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
+  protected function allow_bots() {
+    // from https://en.wikipedia.org/wiki/Template:Bots
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
       return FALSE;

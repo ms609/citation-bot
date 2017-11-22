@@ -2,11 +2,11 @@
 global $bot;
 $bot = new Snoopy();
 
-/* jrTest - tests a name for a Junior appelation
+/* junior_test - tests a name for a Junior appellation
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
-function jrTest($name) {
+function junior_test($name) {
   $junior = (substr($name, -3) == " Jr")?" Jr":FALSE;
   if ($junior) {
     $name = substr($name, 0, -3);
@@ -22,23 +22,29 @@ function jrTest($name) {
   return array($name, $junior);
 }
 
-function deWikify($string){
+function de_wikify($string){
 	return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
-function truncatePublisher($p){
+function truncate_publisher($p){
 	return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
 }
 
-function formatSurname($surname) {
+function format_surname($surname) {
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
-  if (mb_substr($surname, 0, 2) == "o'") return "O'" . fmtSurname2(mb_substr($surname, 2));
-	else if (mb_substr($surname, 0, 2) == "mc") return "Mc" . fmtSurname2(mb_substr($surname, 2));
-	else if (mb_substr($surname, 0, 3) == "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) != "h") return "Mac" . fmtSurname2(mb_substr($surname, 3));
-	else if (mb_substr($surname, 0, 1) == "&") return "&" . fmtSurname2(mb_substr($surname, 1));
-	else return fmtSurname2($surname); // Case of surname
+  if (mb_substr($surname, 0, 2) == "o'") {
+	  return "O'" . format_surname_2(mb_substr($surname, 2));
+  } elseif (mb_substr($surname, 0, 2) == "mc") {
+	  return "Mc" . format_surname_2(mb_substr($surname, 2));
+  } elseif (mb_substr($surname, 0, 3) == "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) != "h") {
+	  return "Mac" . format_surname_2(mb_substr($surname, 3));
+  } elseif (mb_substr($surname, 0, 1) == "&") {
+	  return "&" . format_surname_2(mb_substr($surname, 1));
+  } else {
+	  return format_surname_2($surname); // Case of surname
+  }
 }
-function fmtSurname2($surname) {
+function format_surname_2($surname) {
   $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u", 
           create_function('$matches',
                   'return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);'
@@ -49,14 +55,14 @@ function fmtSurname2($surname) {
   return $ret;
 }
 
-function formatForename($forename){
+function format_forename($forename){
   return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  create_function(
             '$matches',
             'return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);'
         ), $forename)));
 }
 
-/* formatInitials
+/* format_initials
  * @codeCoverageIgnore
  *
  * Returns a string of initals, formatted for Cite Doi output
@@ -64,7 +70,7 @@ function formatForename($forename){
  * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
  *
  */
-function formatInitials($str) {
+function format_initials($str) {
   $str = trim($str);
 	if ($str == "") return FALSE;
 	$end = (substr($str, strlen($str)-1) == ";") ? ";" : '';
@@ -74,7 +80,7 @@ function formatInitials($str) {
 /*
  * @codeCoverageIgnore
  */
-function isInitials($str){
+function is_initials($str){
 	if (!$str) return FALSE;
 	if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return FALSE;
 	if (strlen(str_replace(array("-", ".", ";"), "", $str)) ==1) return TRUE;
@@ -83,28 +89,34 @@ function isInitials($str){
 }
 
 /*
- * authorIsHuman
+ * author_is_human
  * Runs some tests to see if the full name of a single author is unlikely to be the name of a person.
  */
-function authorIsHuman($author) {
+function author_is_human($author) {
   $author = trim($author);
   $chars = count_chars($author);
   if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
-    || substr(strtolower($author), 0, 4) == "the " 
-    || stripos($author, 'collaborat') !== NULL
+    || substr(strtolower($author), 0, 4) === "the " 
+    || stripos($author, 'collaborat') !== FALSE
     || preg_match("~[A-Z]{3}~", $author)
+    || substr(strtolower($author),-4) === " inc"
+    || substr(strtolower($author),-5) === " inc."
   ) {
     return FALSE;
   }
   return TRUE;
 }
 
-// Returns the author's name formated as Surname, F.I.
-function formatAuthor($author){
+// Returns the author's name formatted as Surname, F.I.
+function format_author($author){
 
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = NULL;
-  
+  if (substr(trim($author), -1) === ".") {
+     $ends_with_period = TRUE;
+  } else {
+	 $ends_with_period = FALSE;
+  }
 	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
 	if ($author == "") {
@@ -132,21 +144,21 @@ function formatAuthor($author){
 			Martin Smith.
 			*/
 			$countAuth = count($auth);
-			if (!$auth[$countAuth-1]) {
+			if ($ends_with_period) {
 				$i = array();
 				// it ends in a .
-				if (isInitials($auth[$countAuth-1])) {
+				if (is_initials($auth[$countAuth-1])) {
 					// it's Conway Morris S.C.
 					foreach (explode(" ", $auth[0]) as $bit){
-						if (isInitials($bit)) $i[] = formatInitials($bit); else $surname .= "$bit ";
+						if (is_initials($bit)) $i[] = format_initials($bit); else $surname .= "$bit ";
 					}
 					unset($auth[0]);
 					foreach ($auth as $bit){
-						if (isInitials($bit)) $i[] = formatInitials($bit);
+						if (is_initials($bit)) $i[] = format_initials($bit);
 					}
 				} else {
 					foreach ($auth as $A){
-						if (isInitials($A)) $i[] = formatInitials($A);
+						if (is_initials($A)) $i[] = format_initials($A);
 					}
 				}
 				$fore = mb_strtoupper(implode(".", $i));
@@ -161,16 +173,16 @@ function formatAuthor($author){
 			$chunks = array_reverse(explode(" ", $author));
 			$i = array();
 			foreach ($chunks as $chunk){
-				if (!$surname && !isInitials($chunk)) $surname = $chunk;
-				else array_unshift($i, isInitials($chunk)?formatInitials($chunk):$chunk);
+				if (!$surname && !is_initials($chunk)) $surname = $chunk;
+				else array_unshift($i, is_initials($chunk)?format_initials($chunk):$chunk);
 			}
 			$fore = implode(" ", $i);
 		}
 	}
-	return formatSurname($surname) . ", " . formatForename($fore);
+	return str_replace("..", ".", format_surname($surname) . ", " . format_forename($fore)); // Sometimes add period after period
 }
 
-function formatAuthors($authors, $returnAsArray = FALSE){
+function format_multiple_authors($authors, $returnAsArray = FALSE){
 	$authors = html_entity_decode($authors, NULL, "UTF-8");
 
 	$return = array();
@@ -188,9 +200,10 @@ function formatAuthors($authors, $returnAsArray = FALSE){
 
 	$authors = explode(";", $authors);
 	#dbg(array("IN"=>$authors));
+	$savedChunk = NULL;
 	if (isset($authors[1])) {
 		foreach ($authors as $A){
-			if (trim($A) != "")	$return[] = formatAuthor($A);
+			if (trim($A) != "")	$return[] = format_author($A);
 		}
 	} else {
 		//Use commas as delimiters
@@ -203,7 +216,7 @@ function formatAuthors($authors, $returnAsArray = FALSE){
 			$bits = $bitts; unset($bitts);
 			#dbg($bits, '$BITS');
 			if ($bits[1] || $savedChunk) {
-				$return[] = formatAuthor($savedChunk .  ($savedChunk?", ":"") . $chunk);
+				$return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
 				$savedChunk = NULL;
 			} else $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
 		}
@@ -213,7 +226,7 @@ function formatAuthors($authors, $returnAsArray = FALSE){
 	$frags = explode(" ", $return);
 	$return = array();
 	foreach ($frags as $frag){
-		$return[] = isInitials($frag)?formatInitials($frag):$frag;
+		$return[] = is_initials($frag)?format_initials($frag):$frag;
 	}
 		$returnString = preg_replace("~;$~", "", trim(implode(" ", $return)));
 	if ($returnAsArray){
@@ -230,7 +243,7 @@ function straighten_quotes($str) {
   return $str;
 }
 
-function curlSetUp($ch, $url){
+function curl_setup($ch, $url){
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
@@ -249,18 +262,16 @@ function query_adsabs ($options) {
   curl_setopt($ch, CURLOPT_URL, "http://api.adsabs.harvard.edu/v1/search/query"
     . "?data_type=XML&q=$options&fl="
     . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
-  $return = json_decode(curl_exec($ch));
+  $return = @json_decode(curl_exec($ch));
   curl_close($ch);
   
   return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
 }
 
-function equivUrl ($u){
+function equiv_url ($u){
 	$db = preg_replace("~;jsessionid=[A-Z0-9]*~", "", str_replace("%2F", "/", str_replace("?journalCode=pdi", "",
 	str_replace("sci;", "", str_replace("/full?cookieSet=1", "", str_replace("scienceonline", "sciencemag", str_replace("/fulltext/", "/abstract/",
 	str_replace("/links/doi/", "/doi/abs/", str_replace("/citation/", "/abstract/", str_replace("/extract/", "/abstract/", $u))))))))));
 	if (preg_match("~(.*&doi=.*)&~Ui", $db, $db2)) $db = $db2[1];
 	return $db;
 }
-
-?>
