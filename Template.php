@@ -37,7 +37,7 @@ final class Template {
     return $text;
   }
 
-  protected function __toString() { // protected becuase kind of evil
+  public function __toString() {
     return $this->rawtext;
   }
 
