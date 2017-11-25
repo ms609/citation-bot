@@ -306,6 +306,11 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('{{cite book | arxiv=astr.ph/1234.5678 }}',$expanded->parsed_text());
   }
   
+  public function testNestedTemplates() { // Should not crash, and should return what we got untouched
+      $text = '{{cite book | {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }} |  cool stuff | not cool}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals($text,$expanded->parsed_text());
+  }
   
   public function testOrigYearHandling() {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
