@@ -25,11 +25,11 @@ final class Template {
   public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes,
-            $internal_templates = array();
+            $mod_dashes;
+  public    $internal_templates = array();
 
   protected function extract_templates($text) {
-    $i = 0;
+    $i = count($this->internal_templates); // Should always be zero, since if already done at Page() level this function is not called
     while(preg_match(Template::REGEXP, $text, $match)) {
       $this->internal_templates[$i] = $match[0];
       $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
@@ -46,6 +46,10 @@ final class Template {
     return $text;
   }
 
+  protected function __toString() { // protected becuase kind of evil
+    return $this->rawtext;
+  }
+  
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
     if ($this->rawtext) {
@@ -1967,7 +1971,7 @@ final class Template {
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
         $subtemplate = new Template();
-        $subtemplate->parse_text($this->internal_templates[$i]);
+        $subtemplate->parse_text($this->internal_templates[$matches[1][$i]]);
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
@@ -2015,7 +2019,7 @@ final class Template {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              echo "\n    " . $this->internal_templates[$i];
+              echo "\n    " . $this->internal_templates[$matches[1][$i]];
               break;
             }
           
