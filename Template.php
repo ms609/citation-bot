@@ -2019,7 +2019,7 @@ final class Template {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              echo "\n    " . $this->internal_templates[$matches[1][$i]]];
+              echo "\n    " . $this->internal_templates[$matches[1][$i]];
               break;
             }
           
