@@ -107,19 +107,16 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
 
   // Tests for Page()
   public function testPageRedirect() {
-    $bot = new Snoopy();
     $page = new page();
     $page->title = 'WP:UCB';
     $this->assertEquals(1, $page->is_redirect()[0]); // Different code than non-class function is_redirect($text)
   }
   public function testPageTextFromTitle() { // Not a great test. Mostly just verifies no crashes in code
-    $bot = new Snoopy();
     $page = new page();
     $result = $page->get_text_from('User:Citation_bot');
     $this->assertNotNull($result);
   }
   public function testEditSummary() {  // Not a great test. Mostly just verifies no crashes in code
-    $bot = new Snoopy();
     $page = new Page();
     $text = "{{Cite journal|pmid=9858586}}";
     $page->parse_text($text);
