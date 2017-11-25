@@ -37,7 +37,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testParameterWithNoParameters() {
-    $text = "{{Cite jorunal|pmid= 28120229  }}";
+    $text = "{{Cite journal|pmid= 28120229  }}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('Nope', $expanded->parsed_text());
   }
