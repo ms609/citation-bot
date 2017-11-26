@@ -28,24 +28,17 @@ final class Template {
             $mod_dashes;
   public    $internal_templates = array();
 
-  protected function extract_templates($text) {
-    $i = 0;
-    while(preg_match(Template::REGEXP, $text, $match)) {
-      $this->internal_templates[$i] = $match[0];
-      $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
-    }
-    return $text;
-  }
-
   public function __toString() {
-    return $this->rawtext;
+    return $this->parsed_text();
   }
 
   protected function replace_templates($text) {
     $i = count($this->internal_templates);
     foreach (array_reverse($this->internal_templates) as $template) {
       // Case insensitive, since placeholder might get title case, etc.
-      $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
+      if (stripos($text, sprintf(Template::PLACEHOLDER_TEXT, --$i)) !== FALSE) { // Avoid infinite loop in __toString function
+         $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
+      }
     }
     return $text;
   }
@@ -56,7 +49,6 @@ final class Template {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
     }
     $this->rawtext = $text;
-    $text = '{' . $this->extract_templates(substr($text, 1)); // Split template string, or it'll extract itself
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
       $this->name = substr($text, 2, $pipe_pos - 2); # Remove {{ and }}
