@@ -321,7 +321,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
       $this->assertEquals($text,$expanded->parsed_text());
   }
-    
+  
+  
   public function testOrigYearHandling() {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $expanded = $this->process_citation($text);
