@@ -106,7 +106,6 @@ final class Page {
     // TEMPLATES //
     $templates = $this->extract_object('Template');
     for ($i = 0; $i < count($templates); $i++) {
-      if (count($templates[$i]->internal_templates) !==0) exit("internal_templates already set.  Aborting");
       $templates[$i]->internal_templates = &$templates;  // All templates have to see all other templates -- because some are internal
     }
     for ($i = 0; $i < count($templates); $i++) {
