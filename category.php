@@ -3,6 +3,9 @@
 
 error_reporting(E_ALL^E_NOTICE);
 $argument["cat"]=NULL;
+$argument["pages"]=NULL;
+$pages_in_category=NULL;
+
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
@@ -22,9 +25,12 @@ foreach ($argv as $arg) {
 include("expandFns.php");
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
+if ($catagory) $pages_in_category = category_members($category);
+foreach ($argument["pages"]) as $page_name) { // Add on pages
+  $pages_in_category[] = $page_name;
+}
 
-if ($category) {
-  $pages_in_category = category_members($category);
+if ($pages_in_category) {
   shuffle($pages_in_category);
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
