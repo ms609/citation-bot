@@ -55,5 +55,5 @@ if ($pages_in_category) {
 
   exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL.");
+  exit ("You must specify a category with items in it.  Try appending ?cat=Blah+blah to the URL.");
 }
