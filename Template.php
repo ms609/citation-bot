@@ -1950,7 +1950,7 @@ final class Template {
         print "\n  nebraska" ;
         print "\n " . intval($matches[1][$i]) ;
         print "\n  Texas" ;
-        $subtemplate = $this->page->templates[$matches[1][$i]];
+        $subtemplate = $this->page->templates[intval($matches[1][$i])];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
