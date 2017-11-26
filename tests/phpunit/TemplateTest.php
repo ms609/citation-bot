@@ -282,7 +282,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
        
   public function testId2Param() {
-      return ; //  This test does not work yet!! You will get a "test makes not assertions" warning to remind you of that.
       $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('978-1234-9583-068', $expanded->get('isbn'));
@@ -291,7 +290,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('1234', $expanded->get('oclc'));
       $this->assertEquals('12345', $expanded->get('ol'));
       $this->assertNotNull($expanded->get('doi-broken-date'));
-      $this->assertEquals(1, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
+      $this->assertEquals(0, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
       
       $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
       $expanded = $this->process_citation($text);
@@ -300,6 +299,27 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
+      
+      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} {{arxiv|astr.ph|1234.5678}} }}'; // Two of the same thing
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));
+      $this->assertEquals('{{cite book | arxiv=astr.ph/1234.5678 }}',$expanded->parsed_text());
+      
+      $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different tempalates
+      $expanded = $this->process_page($text);
+      $this->assertEquals('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678}}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678}}',$expanded->parsed_text());
+  }
+  
+  public function testNestedTemplates() {
+      $text = '{{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }} |  cool stuff | not cool}}';
+      $expanded = $this->process_citation($text);
+      $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
+      $this->assertEquals($text,$expanded->parsed_text());
+      
+      $text = '{{cite book|quote=See {{cite book|pages=1-2}}|pages=1-3}}';
+      $expanded = $this->process_citation($text);
+      $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
+      $this->assertEquals($text,$expanded->parsed_text());
   }
   
   
