@@ -199,10 +199,26 @@ final class Template {
         $this->get_open_access_url();
         $this->find_pmid();
         $this->tidy();
-        // Convert from journal to book, if there is a unique chapter name
-        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title'))) { 
+        // Convert from journal to book, if there is a unique chapter name or has an ISBN
+        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
           $this->name = 'Cite book';
-        }  
+        }
+        // Sometimes title and chapter come from different databases
+        if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
+          if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+              $this->forget('title');
+          } elseif ($this->wikiname() === 'cite journal') {
+            $this->forget('chapter');
+          }
+        }
+        // Sometimes series and journal come from different databases
+        if ($this->has('series') && ($this->get('series') === $this->get('journal'))) {  // Leave only one
+          if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+              $this->forget('journal');
+          } elseif ($this->wikiname() === 'cite journal') {
+            $this->forget('series');
+          }
+        }
     }
     if ($this->citation_template) {
       $this->correct_param_spelling();
