@@ -1945,6 +1945,7 @@ final class Template {
       $id = str_replace($match[0], '', $id);
     }
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
+      print_r($matches);
       for ($i = 0; $i < count($matches[1]); $i++) {
         $subtemplate = $this->page->templates[$matches[1][$i]];
         $subtemplate_name = $subtemplate->wikiname();
