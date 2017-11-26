@@ -299,10 +299,20 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       
       $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
+      $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));
+
+      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} {{arxiv|astr.ph|1234.5678}} }}'; // Two of the same thing
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));
+      $this->assertEquals('{{cite book | arxiv=astr.ph/1234.5678 }}',$expanded->parsed_text());
   }
-  
-  
+ 
+  public function testDuplicateTemplates() {
+      $text = '{{cite book | {{fadsfsdafdsfdsfa}} {{fadsfsdafdsfdsfa}} }}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals($text,$expanded->parsed_text());
+      return; // The one below does not work yet.
+  }
   public function testOrigYearHandling() {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $expanded = $this->process_citation($text);
