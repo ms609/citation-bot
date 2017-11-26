@@ -1946,10 +1946,6 @@ final class Template {
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       print_r($matches);
       for ($i = 0; $i < count($matches[1]); $i++) {
-        print "\n  jobby $i";
-        if (isset($this->page)) print "\n karen";
-        if (isset($this->page->templates)) print "\n karen love";
-        if (isset($this->page->templates[$i])) print "\n patty";
         $subtemplate = $this->page->templates[$i];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
