@@ -31,6 +31,7 @@ foreach ($argument["pages"]) as $page_name) { // Add on pages
 }
 
 if ($pages_in_category) {
+  $attempts = 0;
   shuffle($pages_in_category);
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
