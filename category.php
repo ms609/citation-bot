@@ -25,7 +25,11 @@ foreach ($argv as $arg) {
 include("expandFns.php");
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
-if ($catagory) $pages_in_category = category_members($category);
+if ($catagory) {
+  $pages_in_category = category_members($category);
+} else {
+  $category=' of pages picked by hand';
+}
 foreach ($argument["pages"]) as $page_name) { // Add on pages
   $pages_in_category[] = $page_name;
 }
