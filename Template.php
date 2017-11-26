@@ -25,26 +25,7 @@ final class Template {
   public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes,
-            $internal_templates = array();
-
-  protected function extract_templates($text) {
-    $i = 0;
-    while(preg_match(Template::REGEXP, $text, $match)) {
-      $this->internal_templates[$i] = $match[0];
-      $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
-    }
-    return $text;
-  }
-
-  protected function replace_templates($text) {
-    $i = count($this->internal_templates);
-    foreach (array_reverse($this->internal_templates) as $template) {
-      // Case insensitive, since placeholder might get title case, etc.
-      $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
-    }
-    return $text;
-  }
+            $mod_dashes;
 
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
@@ -52,7 +33,6 @@ final class Template {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
     }
     $this->rawtext = $text;
-    $text = '{' . $this->extract_templates(substr($text, 1)); // Split template string, or it'll extract itself
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
       $this->name = substr($text, 2, $pipe_pos - 2); # Remove {{ and }}
@@ -75,7 +55,7 @@ final class Template {
 
   // Re-assemble parsed template into string
   public function parsed_text() {
-    return $this->replace_templates('{{' . $this->name . $this->join_params() . '}}');
+    return'{{' . $this->name . $this->join_params() . '}}';
   }
 
   // Parts of each param: | [pre] [param] [eq] [value] [post]
@@ -1967,7 +1947,7 @@ final class Template {
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
         $subtemplate = new Template();
-        $subtemplate->parse_text($this->internal_templates[$i]);
+        $subtemplate->parse_text($this->page->templates[$i]->parsed_text());
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
@@ -2015,7 +1995,7 @@ final class Template {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              echo "\n    " . $this->internal_templates[$i];
+              echo "\n    " . $this->page->templates[$i]->parsed_text();
               break;
             }
           
