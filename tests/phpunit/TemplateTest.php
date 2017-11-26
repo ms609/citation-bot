@@ -304,14 +304,24 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $expanded = $this->process_citation($text);
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));
       $this->assertEquals('{{cite book | arxiv=astr.ph/1234.5678 }}',$expanded->parsed_text());
+      
+      $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different tempalates
+      $expanded = $this->process_page($text);
+      $this->assertEquals('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678}}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678}}',$expanded->parsed_text());
   }
   
-  public function testNestedTemplates() { // Should not crash, and should return what we got untouched
-      $text = '{{cite book | {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }} |  cool stuff | not cool}}';
+  public function testNestedTemplates() {
+      $text = '{{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }} |  cool stuff | not cool}}';
       $expanded = $this->process_citation($text);
+      $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
+      $this->assertEquals($text,$expanded->parsed_text());
+      
+      $text = '{{cite book|quote=See {{cite book|pages=1-2}}|pages=1-3}}';
+      $expanded = $this->process_citation($text);
+      $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
       $this->assertEquals($text,$expanded->parsed_text());
   }
-  
+    
   public function testOrigYearHandling() {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $expanded = $this->process_citation($text);
