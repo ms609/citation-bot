@@ -1946,8 +1946,7 @@ final class Template {
     }
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
-        $subtemplate = new Template();
-        $subtemplate->parse_text($this->page->templates[$matches[1][$i]]->parsed_text());
+        $subtemplate = $this->page->templates[$matches[1][$i]];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
@@ -1995,7 +1994,7 @@ final class Template {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              echo "\n    " . $this->page->templates[$matches[1][$i]]->parsed_text();
+              echo "\n    " . $subtemplate->parsed_text();
               break;
             }
           
