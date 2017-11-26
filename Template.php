@@ -2004,7 +2004,7 @@ final class Template {
                                       $subtemplate->param_value(0);
                                       
             $this->add_if_new($subtemplate_name, $subtemplate_identifier);
-            $id = str_replace($matches[1][$i], '', $id); // Could only do this if previous line evaluated to TRUE, but let's be aggressive here.
+            $id = str_replace($matches[0][$i], '', $id); // Could only do this if previous line evaluated to TRUE, but let's be aggressive here.
             break;
           default:
             echo "\n    - No match found for " . $subtemplate_name;
