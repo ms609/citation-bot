@@ -881,7 +881,11 @@ final class Template {
     }
     $query = substr($query, 5);
     $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
-    $xml = simplexml_load_file($url);
+    $xml = @simplexml_load_file($url);
+    if ($xml === FALSE) {
+      echo "\n - Unable to do PMID search";
+      return array(NULL, 0);
+    }
     if ($check_for_errors && $xml->ErrorList) {
       echo $xml->ErrorList->PhraseNotFound
               ? " no results."
@@ -1207,7 +1211,11 @@ final class Template {
         tag(),
         "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
         . ' for more details' . tag());
-    $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
+    $xml = @simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
+    if ($xml === FALSE) {
+      echo "\n - Unable to do PubMed search";
+      return;
+    }
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
     if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
@@ -1482,7 +1490,11 @@ final class Template {
       global $over_isbn_limit;
       // TODO: implement over_isbn_limit based on &results=keystats in API
       if ($title && !$over_isbn_limit) {
-        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
+        $xml = @simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
+        if ($xml === FALSE) {
+          echo "\n - Unable to do ISBN DB search";
+          return FALSE;
+        }
         if ($xml->BookList["total_results"] == 1) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
         if ($auth && $xml->BookList["total_results"] > 0) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
         else return FALSE;
