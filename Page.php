@@ -107,8 +107,6 @@ final class Page {
     $templates = $this->extract_object('Template');
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->internal_templates = &$templates;  // All templates have to see all other templates -- because some are internal
-    }
-    for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
       foreach (array_keys($template_mods) as $key) {
