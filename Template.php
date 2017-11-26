@@ -38,7 +38,7 @@ final class Template {
   }
 
   public function __toString() {
-    return $this->parsed_text();
+    return $this->rawtext;
   }
 
   protected function replace_templates($text) {
