@@ -1945,7 +1945,7 @@ final class Template {
     }
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
-        $subtemplate = $all_templates[intval($matches[1][$i])];
+        $subtemplate = $this->all_templates[intval($matches[1][$i])];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
