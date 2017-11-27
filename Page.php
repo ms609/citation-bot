@@ -106,9 +106,7 @@ final class Page {
     // TEMPLATES //
     $templates = $this->extract_object('Template');
     for ($i = 0; $i < count($templates); $i++) {
-      for ($j = 0; $j < count($templates); $j++) {
-       $templates[$i]->all_templates[$j] = &$templates[$j] ; // Has to be pointer
-      }
+       $templates[$i]->all_templates = &$templates ; // Has to be pointer
     }
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
