@@ -6,6 +6,7 @@
  * Of particular note:
  *     process() is what handles the different cite/Cite templates differently.
  *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
+ *     switch statement handles various parameters differently.
  *     tidy() cleans up citations and the templates, but it includes various other functions
  *       and side effects as well. Beware!
  *
