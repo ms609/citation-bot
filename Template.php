@@ -1944,12 +1944,7 @@ final class Template {
       $id = str_replace($match[0], '', $id);
     }
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
-      print_r($matches);
       for ($i = 0; $i < count($matches[1]); $i++) {
-        print_r($matches[1][$i]);
-        print "\n  nebraska" ;
-        print "\n " . intval($matches[1][$i]) ;
-        print "\n  Texas" ;
         $subtemplate = $all_templates[intval($matches[1][$i])];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
