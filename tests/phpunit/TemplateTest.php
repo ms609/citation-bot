@@ -311,12 +311,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testNestedTemplates() {
-      $text = '{{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }} |  cool stuff | not cool}}';
+      $text = '{{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} | id={{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }}  }} |  cool stuff | not cool}}';
       $expanded = $this->process_citation($text);
       $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
       $this->assertEquals($text,$expanded->parsed_text());
       
-      $text = '{{cite book|quote=See {{cite book|pages=1-2}}|pages=1-3}}';
+      $text = '{{cite book|quote=See {{cite book|pages=1-2|quote=See {{cite book|pages=1-4}}}}|pages=1-3}}';
       $expanded = $this->process_citation($text);
       $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
       $this->assertEquals($text,$expanded->parsed_text());
