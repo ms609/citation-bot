@@ -21,7 +21,7 @@ final class Template {
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   protected $rawtext;
-  public $occurrences, $page;
+  public $occurrences, $page, $all_templates;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
             $mod_dashes;
@@ -1950,7 +1950,7 @@ final class Template {
         print "\n  nebraska" ;
         print "\n " . intval($matches[1][$i]) ;
         print "\n  Texas" ;
-        $subtemplate = $this->page->templates[intval($matches[1][$i])];
+        $subtemplate = $all_templates[intval($matches[1][$i])];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
