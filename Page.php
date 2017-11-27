@@ -237,7 +237,7 @@ final class Page {
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $obj->occurrences = count($exploded) - 1;
       $obj->page = &$this; // POINTER NEEDED HERE, OTHERWISE IT IS USELESS
-      $objects[] = &$obj;
+      $objects[] = $obj;
     }
     $this->text = $text;
     return $objects;
