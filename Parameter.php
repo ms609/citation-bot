@@ -5,7 +5,8 @@
  */
 
 final class Parameter {
-  public $pre, $param, $eq, $val, $post;
+  public $param, $val; 
+  protected $pre, $post, $eq;
 
 /*
  * Breaks a citation template down to component parts.
