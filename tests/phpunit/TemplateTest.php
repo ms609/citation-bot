@@ -300,7 +300,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
-   }
+  }
   
   
   public function testOrigYearHandling() {
