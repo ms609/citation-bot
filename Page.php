@@ -12,7 +12,7 @@ require_once('Template.php');
 
 final class Page {
 
-  public $text, $title, $modifications, $templates;
+  public $text, $title, $modifications;
 
   public function is_redirect() {
     $url = Array(
@@ -105,6 +105,9 @@ final class Page {
 
     // TEMPLATES //
     $templates = $this->extract_object('Template');
+    for ($i = 0; $i < count($templates); $i++) {
+       $templates[$i]->all_templates = &$templates ; // I think that this has to be pointer
+    }
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
