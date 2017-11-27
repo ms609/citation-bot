@@ -235,8 +235,6 @@ final class Page {
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
-      $obj->occurrences = count($exploded) - 1;
-      $obj->page = $this;
       $objects[] = $obj;
     }
     $this->text = $text;
