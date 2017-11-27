@@ -240,7 +240,7 @@ final class Page {
       $objects[] = &$obj;
     }
     $this->text = $text;
-    return &$objects;
+    return $objects;
   }
 
   protected function replace_object ($objects) {
