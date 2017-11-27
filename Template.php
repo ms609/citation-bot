@@ -21,8 +21,9 @@ final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
+  public $all_templates;  // Points to list of all the Template() on the Page() including this one
   protected $rawtext;
-  public $occurrences, $page, $all_templates;
+  public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
             $mod_dashes;
