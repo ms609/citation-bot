@@ -1980,20 +1980,20 @@ final class Template {
           
             // Specific checks for particular templates:
             if ($subtemplate_name == 'asin' && $subtemplate->has("country")) {
-              echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
+              echo "\n    - {{ASIN}} country parameter not supported: cannot convert.";
               break;
             }
             if ($subtemplate_name == 'ol' && $subtemplate->has('author')) {
-              echo "\n    - {{OL}} author parameter not supported: can't convert.";
+              echo "\n    - {{OL}} author parameter not supported: cannot convert.";
               break;
             }
             if ($subtemplate_name == 'jstor' && $subtemplate->has('sici') || $subtemplate->has('issn')) {
-              echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
+              echo "\n    - {{JSTOR}} named parameters are not supported: cannot convert.";
               break;
             }
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
-              echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
+              echo "\n    - {{OCLC}} has multiple parameters: cannot convert.";
               echo "\n    " . $subtemplate->parsed_text();
               break;
             }
