@@ -239,7 +239,7 @@ final class Page {
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $obj->occurrences = count($exploded) - 1;
-      $obj->page = &$this; // pointer needed here, otherwise pointless
+      $obj->page = $this;
       $objects[] = $obj;
     }
     $this->text = $text;
