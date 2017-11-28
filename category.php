@@ -1,11 +1,15 @@
 #!/usr/bin/php
 <?php
-// $Id$
+
 error_reporting(E_ALL^E_NOTICE);
 $argument["cat"]=NULL;
+$argument["pages"]=NULL;
+$pages_in_category=NULL;
+
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
+    echo "\n Ignoring $arg \n";  // We have no double dash options
   } elseif (substr($arg, 0, 1) == "-") {
     $oArg = substr($arg, 1);
   } else {
@@ -19,19 +23,22 @@ foreach ($argv as $arg) {
   }
 }
 
-$account_suffix='_4'; // Whilst testing
-$account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
-if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
-if ($category) {
-  $attempts = 0;
+if ($catagory) {
   $pages_in_category = category_members($category);
-  #print_r($pages_in_category);
+} else {
+  $category=' of pages picked by hand';
+}
+foreach ($argument["pages"]) as $page_name) { // Add on pages
+  $pages_in_category[] = $page_name;
+}
+
+if ($pages_in_category) {
+  $attempts = 0;
   shuffle($pages_in_category);
   $page = new Page();
-  #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title) && $page->expand_text()) {
@@ -54,5 +61,5 @@ if ($category) {
 
   exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL.");
+  exit ("You must specify a category with items in it.  Try appending ?cat=Blah+blah to the URL.");
 }
