@@ -15,20 +15,7 @@ final class Page {
   protected $text, $title, $modifications;
 
   public function is_redirect() {
-    $url = Array(
-        "action" => "query",
-        "format" => "xml",
-        "prop" => "info",
-        "titles" => $this->title,
-        );
-    $xml = load_xml_via_bot($url);
-    if ($xml->query->pages->page["pageid"]) {
-      // Page exists
-      return array ((($xml->query->pages->page["redirect"])?1:0),
-                      $xml->query->pages->page["pageid"]);
-      } else {
-        return array (-1, NULL);
-     }
+    return is_redirect($this->title);
   }
 
   public function get_text_from($title) {
