@@ -12,7 +12,7 @@ require_once('Template.php');
 
 final class Page {
 
-  public $text, $title, $modifications;
+  protected $text, $title, $modifications;
 
   public function is_redirect() {
     $url = Array(
