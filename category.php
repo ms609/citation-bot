@@ -9,6 +9,7 @@ $pages_in_category=NULL;
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
+    echo "\n Ignoring $arg \n";  // We have no double dash options
   } elseif (substr($arg, 0, 1) == "-") {
     $oArg = substr($arg, 1);
   } else {
