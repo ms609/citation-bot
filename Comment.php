@@ -8,7 +8,6 @@ final class Comment {
   const REGEXP = '~<!--.*?-->~us';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   protected $rawtext;
-  public $occurrences, $page;
 
   public function parse_text($text) {
     $this->rawtext = $text;
@@ -24,7 +23,6 @@ final class Nowiki {
   const REGEXP = '~<nowiki>.*?</nowiki>~us'; 
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   protected $rawtext;
-  public $occurrences, $page;
   
   public function parse_text($text) {
     $this->rawtext = $text;
