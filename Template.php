@@ -56,7 +56,7 @@ final class Template {
 
   // Re-assemble parsed template into string
   public function parsed_text() {
-    return'{{' . $this->name . $this->join_params() . '}}';
+    return '{{' . $this->name . $this->join_params() . '}}';
   }
 
   // Parts of each param: | [pre] [param] [eq] [value] [post]
