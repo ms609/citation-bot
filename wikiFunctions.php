@@ -9,7 +9,7 @@ function category_members($cat){
     "list" => "categorymembers",
   );
   $qc = "query-continue";
-  $list = NULL;
+  $list = array();
 
   do {
     set_time_limit(40);
@@ -22,7 +22,7 @@ function category_members($cat){
       echo 'Error reading API from ' . htmlspecialchars($url) . "\n\n";
     }
   } while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
-  return $list ? $list : [' '];
+  return $list;
 }
 
 // Returns an array; Array ("title1", "title2" ... );
