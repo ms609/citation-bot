@@ -189,11 +189,6 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertNull(NULL); // Just looking for code coverage and access of unset variables, etc.
   }
 
-  public function testPageTextFromTitle() { // Not a great test. Mostly just verifies no crashes in code
-    $page = new page();
-    $result = $page->get_text_from('User:Citation_bot');
-    $this->assertNotNull($result);
-  }
   public function testEditSummary() {  // Not a great test. Mostly just verifies no crashes in code
     $page = new Page();
     $text = "{{Cite journal|pmid=9858586}}";
