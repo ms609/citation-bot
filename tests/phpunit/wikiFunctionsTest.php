@@ -220,6 +220,10 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
        $result = junior_test($text);
        $this->assertEquals("Smith", $result[0]);
        $this->assertEquals(" Jr", $result[1]);
+       $text = "Ewing JR"; // My name is J.R. Ewing, but you can call me J.R.
+       $result = junior_test($text);
+       $this->assertEquals("Ewing JR", $result[0]);
+       $this->assertEquals(FALSE, $result[1]);
    }
     
   public function testCurlSetup() {
