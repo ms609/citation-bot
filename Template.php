@@ -467,6 +467,7 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
+        if (stripos($value, 'arxiv') !== FALSE) return FALSE; // Reject pages that are arXiv:1711.02260 and such
         if (( $this->blank("pages") && $this->blank("page") && $this->blank("pp")  && $this->blank("p"))
                 || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
                 || (strpos($value, chr(2013)) || (strpos($value, '-'))
