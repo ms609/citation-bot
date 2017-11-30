@@ -12,23 +12,10 @@ require_once('Template.php');
 
 final class Page {
 
-  public $text, $title, $modifications;
+  protected $text, $title, $modifications;
 
   public function is_redirect() {
-    $url = Array(
-        "action" => "query",
-        "format" => "xml",
-        "prop" => "info",
-        "titles" => $this->title,
-        );
-    $xml = load_xml_via_bot($url);
-    if ($xml->query->pages->page["pageid"]) {
-      // Page exists
-      return array ((($xml->query->pages->page["redirect"])?1:0),
-                      $xml->query->pages->page["pageid"]);
-      } else {
-        return array (-1, NULL);
-     }
+    return is_redirect($this->title);
   }
 
   public function get_text_from($title) {
@@ -105,6 +92,9 @@ final class Page {
 
     // TEMPLATES //
     $templates = $this->extract_object('Template');
+    for ($i = 0; $i < count($templates); $i++) {
+       $templates[$i]->all_templates = &$templates ; // Has to be pointer
+    }
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
@@ -235,8 +225,6 @@ final class Page {
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
-      $obj->occurrences = count($exploded) - 1;
-      $obj->page = $this;
       $objects[] = $obj;
     }
     $this->text = $text;

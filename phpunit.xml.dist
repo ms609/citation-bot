@@ -18,6 +18,7 @@
         <file>./gadgetapi.php</file>
         <file>./login.php</file>
         <file>./Snoopy.class.php</file>
+        <file>./category.php</file>
       </exclude>
     </whitelist>
   </filter>

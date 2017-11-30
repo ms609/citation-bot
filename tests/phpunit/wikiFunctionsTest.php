@@ -26,6 +26,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   */
   public function testCategoryMembers() {
     $this->assertTrue(count(category_members('Stub-Class cricket articles')) > 10);
+    $this->assertEquals(0,count(category_members('Stub-Class cricket zero tastic articles should be empty')));
   }
   
   public function testWhatTranscludes() {
@@ -182,11 +183,48 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Conway Morris, S.C.', $result); //Was c, Conway Morris S
   }
 
+   public function testJunior() {
+       $text = ""; // Empty string should work
+       $result = junior_test($text);
+       $this->assertEquals("", $result[1]);
+       $this->assertEquals(FALSE $result[2]);
+       $text = "Smith";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[1]);
+       $this->assertEquals(FALSE, $result[2]);
+       $text = "Smith Jr.";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[1]);
+       $this->assertEquals("Jr.", $result[2]);
+       $text = "Smith Jr";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[1]);
+       $this->assertEquals("Jr", $result[2]);
+   }
+    
   public function testCurlSetup() {
     $ch = curl_init();
     $url = "http://www.apple.com/";
     curl_setup($ch, $url);
     $this->assertNull(NULL); // Just looking for code coverage and access of unset variables, etc.
+  }
+
+  public function testEditSummary() {  // Not a great test. Mostly just verifies no crashes in code
+    $page = new Page();
+    $text = "{{Cite journal|pmid=9858586}}";
+    $page->parse_text($text);
+    $page->expand_text();
+    $this->assertNotNull($page->edit_summary());
+  }
+  
+  public function testMathInTitle() {
+    // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
+    // $text_math is the correct final output
+    $text_math = 'Spectroscopic analysis of the candidate <math><mrow>β</mrow></math> Cephei star <math><mrow>σ</mrow></math> Cas: Atmospheric characterization and line-profile variability';
+    $text_mml  = 'Spectroscopic analysis of the candidate <mml:math altimg="si37.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>β</mml:mi></mml:mrow></mml:math> Cephei star <mml:math altimg="si38.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>σ</mml:mi></mml:mrow></mml:math> Cas: Atmospheric characterization and line-profile variability';
+    $this->assertEquals($text_math,sanitize_string($text_math));      // Should not change
+    $this->assertEquals($text_math,wikify_external_text($text_math)); // Should not change
+    $this->assertEquals($text_math,wikify_external_text($text_mml));  // The most important test: mml converstion to <math>
   }
     
 }
