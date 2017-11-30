@@ -159,7 +159,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
      $expanded = $this->process_citation($text);
      $SLOW_MODE = TRUE;  // Reset it
      $this->assertEquals($text, $expanded->parsed_text());
-     
    }
 
   public function testLastVersusAuthor() {
