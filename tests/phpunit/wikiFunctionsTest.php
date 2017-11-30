@@ -207,7 +207,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
        $text = ""; // Empty string should work
        $result = junior_test($text);
        $this->assertEquals("", $result[1]);
-       $this->assertEquals(FALSE $result[2]);
+       $this->assertEquals(FALSE, $result[2]);
        $text = "Smith";
        $result = junior_test($text);
        $this->assertEquals("Smith", $result[1]);
