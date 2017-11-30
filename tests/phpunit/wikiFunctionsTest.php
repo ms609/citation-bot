@@ -206,20 +206,20 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
    public function testJunior() {
        $text = ""; // Empty string should work
        $result = junior_test($text);
-       $this->assertEquals("", $result[1]);
-       $this->assertEquals(FALSE, $result[2]);
+       $this->assertEquals("", $result[0]);
+       $this->assertEquals(FALSE, $result[1]);
        $text = "Smith";
        $result = junior_test($text);
-       $this->assertEquals("Smith", $result[1]);
-       $this->assertEquals(FALSE, $result[2]);
+       $this->assertEquals("Smith", $result[0]);
+       $this->assertEquals(FALSE, $result[1]);
        $text = "Smith Jr.";
        $result = junior_test($text);
-       $this->assertEquals("Smith", $result[1]);
-       $this->assertEquals("Jr.", $result[2]);
+       $this->assertEquals("Smith", $result[0]);
+       $this->assertEquals("Jr.", $result[1]);
        $text = "Smith Jr";
        $result = junior_test($text);
-       $this->assertEquals("Smith", $result[1]);
-       $this->assertEquals("Jr", $result[2]);
+       $this->assertEquals("Smith", $result[0]);
+       $this->assertEquals("Jr", $result[1]);
    }
     
   public function testCurlSetup() {
