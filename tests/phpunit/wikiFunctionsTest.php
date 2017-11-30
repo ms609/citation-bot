@@ -183,6 +183,25 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Conway Morris, S.C.', $result); //Was c, Conway Morris S
   }
 
+   public function testJunior() {
+       $text = ""; // Empty string should work
+       $result = junior_test($text);
+       $this->assertEquals("", $result[1]);
+       $this->assertEquals(FALSE $result[2]);
+       $text = "Smith";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[1]);
+       $this->assertEquals(FALSE, $result[2]);
+       $text = "Smith Jr.";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[1]);
+       $this->assertEquals("Jr.", $result[2]);
+       $text = "Smith Jr";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[1]);
+       $this->assertEquals("Jr", $result[2]);
+   }
+    
   public function testCurlSetup() {
     $ch = curl_init();
     $url = "http://www.apple.com/";
