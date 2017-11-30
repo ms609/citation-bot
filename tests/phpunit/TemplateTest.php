@@ -691,13 +691,12 @@ ER -  }}';
    }
     
    public function testBadBibcodeARXIVPages() { // Some bibcodes have pages set to arXiv:1711.02260
-       $text = "{{cite journal|last1=Laughlin|first1=Gregory|last2=Batygin|first2=Konstantin|title=On the Consequences of the Detection of an Interstellar Asteroid|bibcode=2017arXiv171102260L}}';
+       $text = "{{cite journal|bibcode=2017arXiv171102260L}}';
        $expanded = $this->process_citation($text);
-       $pages = $expanded->get('pages')
-       $this->assertEquals(FALSE, stripos($pages, 'arxiv');  // If they fix their database, this test will still "work", but not test anything
+       $pages = $expanded->get('pages');
+       $this->assertEquals(FALSE, stripos($pages, 'arxiv'));  // If they fix their database, this test will still "work", but not test anything
    }
   
-       
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
