@@ -691,10 +691,10 @@ ER -  }}';
    }
     
    public function testBadBibcodeARXIVPages() { // Some bibcodes have pages set to arXiv:1711.02260
-       $text = "{{cite journal|bibcode=2017arXiv171102260L}}';
+       $text = '{{cite journal|bibcode=2017arXiv171102260L}}';
        $expanded = $this->process_citation($text);
        $pages = $expanded->get('pages');
-       $this->assertEquals(FALSE, stripos($pages, 'arxiv'));  // If they fix their database, this test will still "work", but not test anything
+       $this->assertEquals(FALSE, stripos($pages, 'arxiv'));  // If they fix their database, this test will still report Okay, but not test anything
    }
   
   /* TODO 
