@@ -141,7 +141,22 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $result=format_multiple_authors($authors,FALSE);
     $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
   }
- 
+  public function testFormatMultipleAuthors5() { // Commas, no space
+    $authors = 'M.A. Smith,M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+  }
+  public function testFormatMultipleAuthors6() { // & symbol
+    $authors = 'M.A. Smith & M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+  }
+  public function testFormatMultipleAuthors7() { // The word "and"
+    $authors = 'M.A. Smith and M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+  }
+    
   public function testFormatAuthor1() {  
     $author = "Conway Morris S.C.";
     $result=format_author($author,FALSE);
@@ -182,7 +197,43 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $result=format_author($author,FALSE);
     $this->assertEquals('Conway Morris, S.C.', $result); //Was c, Conway Morris S
   }
+  public function testFormatAuthor9() {  
+    $author = "Smith MA";
+    $result=format_author($author,FALSE);
+    $this->assertEquals('Smith, M.A.', $result);
+  }
 
+   public function testJunior() {
+       $text = ""; // Empty string should work
+       $result = junior_test($text);
+       $this->assertEquals("", $result[0]);
+       $this->assertEquals(FALSE, $result[1]);
+       $text = "Smith";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[0]);
+       $this->assertEquals(FALSE, $result[1]);
+       $text = "Smith Jr.";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[0]);
+       $this->assertEquals(" Jr.", $result[1]);
+       $text = "Smith Jr";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[0]);
+       $this->assertEquals(" Jr", $result[1]);
+       $text = "Smith, Jr.";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[0]);
+       $this->assertEquals(" Jr.", $result[1]);
+       $text = "Smith, Jr";
+       $result = junior_test($text);
+       $this->assertEquals("Smith", $result[0]);
+       $this->assertEquals(" Jr", $result[1]);
+       $text = "Ewing JR"; // My name is J.R. Ewing, but you can call me J.R.
+       $result = junior_test($text);
+       $this->assertEquals("Ewing JR", $result[0]);
+       $this->assertEquals(FALSE, $result[1]);
+   }
+    
   public function testCurlSetup() {
     $ch = curl_init();
     $url = "http://www.apple.com/";
