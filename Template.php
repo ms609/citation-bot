@@ -1027,7 +1027,7 @@ final class Template {
             $this->add_if_new('journal', $journal_string[0]);
           }          
         }
-        if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE) {  // Bad data
+        if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
            unset($record->page);
            unset($record->volume);
            unset($record->issue);
