@@ -1006,7 +1006,7 @@ final class Template {
         echo tag();
         if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
         $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
-        $i = NULL;
+        $i = 0;
         if (isset($record->author)) {
          foreach ($record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
@@ -1020,6 +1020,7 @@ final class Template {
           } elseif (substr($journal_start, 0, 6) == "eprint") {
             if (substr($journal_start, 7, 6) == "arxiv:") {
               if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
+              if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
             } else {
               $this->append_to('id', ' ' . substr($journal_start, 13));
             }
@@ -1039,11 +1040,11 @@ final class Template {
         if (isset($record->page)) {
           $this->add_if_new("pages", implode('–', $record->page));
         }
-        if (isset($record->identifier)) {
+        if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), somtimes here in identifier
           foreach ($record->identifier as $recid) {
             if(strtolower(substr($recid,0,6)) === 'arxiv:') {
-               $this->add_if_new("arxiv", substr($recid,6));
                if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
+               if ($this->add_if_new("arxiv", substr($recid,6))) $this->expand_by_arxiv();
             }
           }
         }
