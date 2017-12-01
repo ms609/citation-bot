@@ -1039,6 +1039,10 @@ final class Template {
         if (isset($record->page)) {
           $this->add_if_new("pages", implode('–', $record->page));
         }
+        if (isset($record->archivePrefix && $record->archivePrefix === 'arXiv' && isset($record->eprint)) {
+          $this->add_if_new("arxiv", $record->eprint);
+          if (isset($record->primaryClass)) $this->add_if_new("class", $record->primaryClass);
+        }
         if (isset($record->doi) && $this->add_if_new('doi', (string) $record->doi[0])) {
           $this->expand_by_doi();
         }
