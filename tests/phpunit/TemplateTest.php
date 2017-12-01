@@ -683,7 +683,14 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
    }
-    
+   
+   public function testBibcode2Arxiv() {
+       $text = '{{ cite journal|bincode=2017arXiv171102260L}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('1711.02260',$expanded->get('arxiv'));
+       $this->assertEquals('astro-ph.EP',$expanded->get('class'));
+   }
+   
    public function testEmptyCitations() {
        $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
        $expanded = $this->process_page($text);
