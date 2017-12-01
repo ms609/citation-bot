@@ -418,6 +418,7 @@ final class Template {
         return FALSE;
         
       case "periodical": case "journal":
+        if (strtolower($this->get('journal')) === 'arxiv e-prints') $this->forget('journal'); // Update to real data
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
