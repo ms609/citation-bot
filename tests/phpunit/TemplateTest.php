@@ -685,7 +685,7 @@ ER -  }}';
    }
    
    public function testBibcode2Arxiv() {
-       $text = '{{ cite journal|bincode=2017arXiv171102260L}}';
+       $text = '{{cite journal|bibcode=2017arXiv171102260L}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('1711.02260',$expanded->get('arxiv'));
        $this->assertEquals('astro-ph.EP',$expanded->get('class'));
