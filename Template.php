@@ -1033,7 +1033,7 @@ final class Template {
              unset($record->volume);
              unset($record->issue);
           } else {
-          $this->add_if_new("pages", implode('–', $record->page));
+             $this->add_if_new("pages", implode('–', $record->page));
           }
         }
         if (isset($record->volume)) {
