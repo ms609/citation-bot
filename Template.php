@@ -1019,8 +1019,8 @@ final class Template {
             // Do nothing
           } elseif (substr($journal_start, 0, 6) == "eprint") {
             if (substr($journal_start, 7, 6) == "arxiv:") {
-              if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
               if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
+              if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
             } else {
               $this->append_to('id', ' ' . substr($journal_start, 13));
             }
