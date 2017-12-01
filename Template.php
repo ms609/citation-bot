@@ -21,30 +21,11 @@ final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~s';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
+  public $all_templates;  // Points to list of all the Template() on the Page() including this one
   protected $rawtext;
-  public $occurrences, $page;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes,
-            $internal_templates = array();
-
-  protected function extract_templates($text) {
-    $i = 0;
-    while(preg_match(Template::REGEXP, $text, $match)) {
-      $this->internal_templates[$i] = $match[0];
-      $text = str_replace($match[0], sprintf(Template::PLACEHOLDER_TEXT, $i++), $text);
-    }
-    return $text;
-  }
-
-  protected function replace_templates($text) {
-    $i = count($this->internal_templates);
-    foreach (array_reverse($this->internal_templates) as $template) {
-      // Case insensitive, since placeholder might get title case, etc.
-      $text = str_ireplace(sprintf(Template::PLACEHOLDER_TEXT, --$i), $template, $text);
-    }
-    return $text;
-  }
+            $mod_dashes;
 
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
@@ -52,7 +33,6 @@ final class Template {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
     }
     $this->rawtext = $text;
-    $text = '{' . $this->extract_templates(substr($text, 1)); // Split template string, or it'll extract itself
     $pipe_pos = strpos($text, '|');
     if ($pipe_pos) {
       $this->name = substr($text, 2, $pipe_pos - 2); # Remove {{ and }}
@@ -75,7 +55,7 @@ final class Template {
 
   // Re-assemble parsed template into string
   public function parsed_text() {
-    return $this->replace_templates('{{' . $this->name . $this->join_params() . '}}');
+    return '{{' . $this->name . $this->join_params() . '}}';
   }
 
   // Parts of each param: | [pre] [param] [eq] [value] [post]
@@ -199,10 +179,26 @@ final class Template {
         $this->get_open_access_url();
         $this->find_pmid();
         $this->tidy();
-        // Convert from journal to book, if there is a unique chapter name
-        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title'))) { 
+        // Convert from journal to book, if there is a unique chapter name or has an ISBN
+        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
           $this->name = 'Cite book';
-        }  
+        }
+        // Sometimes title and chapter come from different databases
+        if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
+          if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+              $this->forget('title');
+          } elseif ($this->wikiname() === 'cite journal') {
+            $this->forget('chapter');
+          }
+        }
+        // Sometimes series and journal come from different databases
+        if ($this->has('series') && ($this->get('series') === $this->get('journal'))) {  // Leave only one
+          if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+              $this->forget('journal');
+          } elseif ($this->wikiname() === 'cite journal') {
+            $this->forget('series');
+          }
+        }
     }
     if ($this->citation_template) {
       $this->correct_param_spelling();
@@ -865,7 +861,11 @@ final class Template {
     }
     $query = substr($query, 5);
     $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
-    $xml = simplexml_load_file($url);
+    $xml = @simplexml_load_file($url);
+    if ($xml === FALSE) {
+      echo "\n - Unable to do PMID search";
+      return array(NULL, 0);
+    }
     if ($check_for_errors && $xml->ErrorList) {
       echo $xml->ErrorList->PhraseNotFound
               ? " no results."
@@ -1191,7 +1191,11 @@ final class Template {
         tag(),
         "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
         . ' for more details' . tag());
-    $xml = simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
+    $xml = @simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
+    if ($xml === FALSE) {
+      echo "\n - Unable to do PubMed search";
+      return;
+    }
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
     if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
@@ -1466,7 +1470,11 @@ final class Template {
       global $over_isbn_limit;
       // TODO: implement over_isbn_limit based on &results=keystats in API
       if ($title && !$over_isbn_limit) {
-        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
+        $xml = @simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
+        if ($xml === FALSE) {
+          echo "\n - Unable to do ISBN DB search";
+          return FALSE;
+        }
         if ($xml->BookList["total_results"] == 1) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
         if ($auth && $xml->BookList["total_results"] > 0) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
         else return FALSE;
@@ -1950,8 +1958,7 @@ final class Template {
     }
     if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
-        $subtemplate = new Template();
-        $subtemplate->parse_text($this->internal_templates[$i]);
+        $subtemplate = $this->all_templates[$matches[1][$i]];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
@@ -1985,21 +1992,21 @@ final class Template {
           
             // Specific checks for particular templates:
             if ($subtemplate_name == 'asin' && $subtemplate->has("country")) {
-              echo "\n    - {{ASIN}} country parameter not supported: can't convert.";
+              echo "\n    - {{ASIN}} country parameter not supported: cannot convert.";
               break;
             }
             if ($subtemplate_name == 'ol' && $subtemplate->has('author')) {
-              echo "\n    - {{OL}} author parameter not supported: can't convert.";
+              echo "\n    - {{OL}} author parameter not supported: cannot convert.";
               break;
             }
             if ($subtemplate_name == 'jstor' && $subtemplate->has('sici') || $subtemplate->has('issn')) {
-              echo "\n    - {{JSTOR}} named parameters are not supported: can't convert.";
+              echo "\n    - {{JSTOR}} named parameters are not supported: cannot convert.";
               break;
             }
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
-              echo "\n    - {{OCLC}} has multiple parameters: can't convert.";
-              echo "\n    " . $this->internal_templates[$i];
+              echo "\n    - {{OCLC}} has multiple parameters: cannot convert.";
+              echo "\n    " . $subtemplate->parsed_text();
               break;
             }
           

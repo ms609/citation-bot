@@ -63,8 +63,6 @@ function format_forename($forename){
 }
 
 /* format_initials
- * @codeCoverageIgnore
- *
  * Returns a string of initals, formatted for Cite Doi output
  *
  * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
@@ -77,9 +75,7 @@ function format_initials($str) {
 	preg_match_all("~\w~", $str, $match);
 	return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
-/*
- * @codeCoverageIgnore
- */
+
 function is_initials($str){
 	if (!$str) return FALSE;
 	if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return FALSE;
@@ -268,6 +264,10 @@ function query_adsabs ($options) {
   return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
 }
 
+/*
+ * unused
+ * @codeCoverageIgnore
+ */
 function equiv_url ($u){
 	$db = preg_replace("~;jsessionid=[A-Z0-9]*~", "", str_replace("%2F", "/", str_replace("?journalCode=pdi", "",
 	str_replace("sci;", "", str_replace("/full?cookieSet=1", "", str_replace("scienceonline", "sciencemag", str_replace("/fulltext/", "/abstract/",

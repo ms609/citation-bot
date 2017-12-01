@@ -9,7 +9,7 @@ function category_members($cat){
     "list" => "categorymembers",
   );
   $qc = "query-continue";
-  $list = NULL;
+  $list = array();
 
   do {
     set_time_limit(40);
@@ -22,7 +22,7 @@ function category_members($cat){
       echo 'Error reading API from ' . htmlspecialchars($url) . "\n\n";
     }
   } while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
-  return $list ? $list : [' '];
+  return $list;
 }
 
 // Returns an array; Array ("title1", "title2" ... );
@@ -72,6 +72,10 @@ function get_last_revision($page){
       "format" => "xml",
       "titles" => $page,
     ));
+  if ($xml === FALSE) {
+      echo "\n Failed to get article last revision \n";
+      return FALSE;
+  }
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
@@ -115,6 +119,10 @@ function get_article_id($page) {
       "prop" => "info",
       "titles" => $page,
       ));
+  if ($xml === FALSE) {
+      echo "\n Failed to get article ID \n";
+      return FALSE;
+  }
   return $xml->query->pages->page["pageid"];
 }
 
@@ -124,6 +132,10 @@ function get_namespace($page) {
       "prop" => "info",
       "titles" => $page,
       ));
+  if ($xml === FALSE) {
+      echo "\n Failed to get article namespace \n";
+      return FALSE;
+  }
   return (int) $xml->query->pages->page["ns"];
 }
 
@@ -135,6 +147,10 @@ function is_redirect($page) {
       "titles" => $page,
       );
   $xml = load_xml_via_bot($url);
+  if ($xml === FALSE) {
+      echo "\n Failed to get redirect status \n";
+      return array (-1, NULL);
+  }
   if ($xml->query->pages->page["pageid"]) {
     // Page exists
     return array ((($xml->query->pages->page["redirect"]) ? 1 : 0),
@@ -156,6 +172,10 @@ function redirect_target($page) {
       "titles" => $page,
       );
   $xml = load_xml_via_bot($url);
+  if ($xml === FALSE) {
+      echo "\n Failed to get redirect target \n";
+      return FALSE;
+  }
   return $xml->pages->page["title"];
 }
 
@@ -259,7 +279,7 @@ function load_xml_via_bot($vars) {
   $snoopy = new Snoopy();
   $snoopy->httpmethod = "POST";
   $snoopy->submit(API_ROOT, $vars);
-  return simplexml_load_string($snoopy->results);
+  return @simplexml_load_string($snoopy->results);
 }
 
 /**

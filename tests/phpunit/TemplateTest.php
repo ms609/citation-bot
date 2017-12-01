@@ -23,13 +23,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function process_citation($text) {
+    $page = new Page();
+    $page->parse_text($text);
+    $page->expand_text();
+    $expanded_text = $page->parsed_text();
     $template = new Template();
-    $template->parse_text($text);
-    $template->process();
+    $template->parse_text($expanded_text);
     return $template;
   }
   
-  protected function process_page($text) {
+  protected function process_page($text) {  // Only used if more than just a citation template
     $page = new Page();
     $page->parse_text($text);
     $page->expand_text();
@@ -198,7 +201,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('doi-broken-date'));
     // $this->assertEquals('{{MC Hammer says to not touch this}}', $expanded->get('doi')); This does not work right because we are not doing a "PAGE"
     $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
-    $expanded = $this->process_page($text);
+    $expanded = $this->process_citation($text);
     $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
   }
 
@@ -279,8 +282,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
        
   public function testId2Param() {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} 
-        {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('978-1234-9583-068', $expanded->get('isbn'));
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
@@ -288,7 +290,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('1234', $expanded->get('oclc'));
       $this->assertEquals('12345', $expanded->get('ol'));
       $this->assertNotNull($expanded->get('doi-broken-date'));
-      $this->assertEquals(1, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
+      $this->assertEquals(0, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
       
       $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
       $expanded = $this->process_citation($text);
@@ -297,9 +299,30 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));     
+      
+      $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} {{arxiv|astr.ph|1234.5678}} }}'; // Two of the same thing
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));
+      $this->assertEquals('{{cite book | arxiv=astr.ph/1234.5678 }}',$expanded->parsed_text());
+      
+      $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different tempalates
+      $expanded = $this->process_page($text);
+      $this->assertEquals('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678}}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678}}',$expanded->parsed_text());
   }
   
+  public function testNestedTemplates() {
+      $text = '{{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} | id={{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }}  }} |  cool stuff | not cool}}';
+      $expanded = $this->process_citation($text);
+      $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
+      $this->assertEquals($text,$expanded->parsed_text());
+      
+      $text = '{{cite book|quote=See {{cite book|pages=1-2|quote=See {{cite book|pages=1-4}}}}|pages=1-3}}';
+      $expanded = $this->process_citation($text);
+      $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
+      $this->assertEquals($text,$expanded->parsed_text());
+  }
   
+   
   public function testOrigYearHandling() {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $expanded = $this->process_citation($text);
@@ -590,7 +613,7 @@ ER -  }}';
     
    public function testOverwriteBlanks() {
        $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
-       $expanded = $this->process_page($text);
+       $expanded = $this->process_citation($text);
        $this->assertEquals('{{cite journal|jstor=1234567890}}', $expanded->parsed_text());
    }
 
@@ -639,7 +662,7 @@ ER -  }}';
 
    public function testIgnoreUnkownCiteTemplates() {
     $text = "{{Cite headcheese| http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.bad/bad }}";
-    $expanded = $this->process_page($text);
+    $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   } 
   
