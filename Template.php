@@ -418,6 +418,7 @@ final class Template {
         return FALSE;
         
       case "periodical": case "journal":
+        if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
@@ -1026,6 +1027,11 @@ final class Template {
           } else {
             $this->add_if_new('journal', $journal_string[0]);
           }          
+        }
+        if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
+           unset($record->page);
+           unset($record->volume);
+           unset($record->issue);
         }
         if (isset($record->volume)) {
           $this->add_if_new("volume", (string) $record->volume);
