@@ -1038,11 +1038,11 @@ final class Template {
         if (isset($record->issue)) {
           $this->add_if_new("issue", (string) $record->issue);
         }
-        if (isset($record->page)) {
-          $this->add_if_new("pages", implode('–', $record->page));
-        }
         if (isset($record->year)) {
           $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
+        }
+        if (isset($record->page)) {
+          $this->add_if_new("pages", implode('–', $record->page));
         }
         if (isset($record->doi) && $this->add_if_new('doi', (string) $record->doi[0])) {
           $this->expand_by_doi();
