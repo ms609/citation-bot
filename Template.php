@@ -1039,7 +1039,11 @@ final class Template {
         if (isset($record->page)) {
           $this->add_if_new("pages", implode('–', $record->page));
         }
+          echo "\n TESTING1 \n";
+          print_r($record->pub);
         if (isset($record->identifier)) {
+          echo "\n TESTING2 \n";
+          print_r($record->identifier);
           foreach ($record->identifier as $recid) {
             if(substr($recid,0,6) === 'arxiv:') {
                $this->add_if_new("arxiv", substr($recid,6));
