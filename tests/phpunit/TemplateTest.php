@@ -683,7 +683,7 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
    }
-   
+    
    public function testEmptyCitations() {
        $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
        $expanded = $this->process_page($text);
