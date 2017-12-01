@@ -1027,20 +1027,19 @@ final class Template {
             $this->add_if_new('journal', $journal_string[0]);
           }          
         }
-        if (isset($record->page)) {
-          if (stripos(implode('–', $record->page), 'arxiv') !== FALSE) {  // Bad data
-             unset($record->page);
-             unset($record->volume);
-             unset($record->issue);
-          } else {
-             $this->add_if_new("pages", implode('–', $record->page));
-          }
+        if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE) {  // Bad data
+           unset($record->page);
+           unset($record->volume);
+           unset($record->issue);
         }
         if (isset($record->volume)) {
           $this->add_if_new("volume", (string) $record->volume);
         }
         if (isset($record->issue)) {
           $this->add_if_new("issue", (string) $record->issue);
+        }
+        if (isset($record->page)) {
+          $this->add_if_new("pages", implode('–', $record->page));
         }
         if (isset($record->year)) {
           $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
