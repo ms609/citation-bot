@@ -245,15 +245,11 @@ function straighten_quotes($str) {
   return $str;
 }
 
-<<<<<<< HEAD
 /*
 * @codeCovIgnore
 * No longer used, but retained for reference in case useful in future
 */
-function curlSetUp($ch, $url){
-=======
 function curl_setup($ch, $url){
->>>>>>> refs/remotes/origin/development
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
