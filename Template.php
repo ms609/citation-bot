@@ -609,7 +609,7 @@ final class Template {
       if (strpos($url, "sici")) {  //  Outdated
         $this->use_sici() ;  // Grab what we can before getting rid off it
         $headers_test = get_headers($url, 1);
-        if(!empty($headers_test['Location'])) {
+        if(!empty($headers_test['Location']) && strpos($headers_test['Location'],"jstor.org/stable/") !== FALSE) {
           $url = $headers_test['Location']; // Redirect
           if (is_null($url_sent)) {
             $this->set('url', $url); // Save it
