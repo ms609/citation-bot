@@ -11,7 +11,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 }
 
 
-class constantsTest extends PHPUnit\Framework\TestCase {
+final class constantsTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
   }
@@ -20,7 +20,7 @@ class constantsTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testConstantsDefined() {
-    $this->assertEquals(PIPE_PLACEHOLDER, '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
+    $this->assertEquals(PIPE_PLACEHOLDER, '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #');
     for ($i = 0; $i < sizeof(JOURNAL_ACRONYMS); $i++) {
       $this->assertEquals(UCFIRST_JOURNAL_ACRONYMS[$i], mb_convert_case(JOURNAL_ACRONYMS[$i], MB_CASE_TITLE, "UTF-8"));
     }

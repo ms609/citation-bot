@@ -10,25 +10,12 @@
 require_once('Comment.php');
 require_once('Template.php');
 
-class Page {
+final class Page {
 
-  public $text, $title, $modifications;
+  protected $text, $title, $modifications;
 
   public function is_redirect() {
-    $url = Array(
-        "action" => "query",
-        "format" => "xml",
-        "prop" => "info",
-        "titles" => $this->title,
-        );
-    $xml = load_xml_via_bot($url);
-    if ($xml->query->pages->page["pageid"]) {
-      // Page exists
-      return array ((($xml->query->pages->page["redirect"]) ? 1 : 0),
-                      $xml->query->pages->page["pageid"]);
-      } else {
-        return array (-1, NULL);
-     }
+    return is_redirect($this->title);
   }
 
   public function get_text_from($title) {
@@ -44,6 +31,10 @@ class Page {
       $my_details = $p;
     }
     $details = $my_details;
+    if ( !isset($details->touched) || !isset($details->lastrevid)) {
+       echo "\n Could not even get the page.  Perhaps non-existent? ";
+       return FALSE; 
+    }
     $this->title = $details->title;
     $this->namespace = $details->ns;
     $this->touched = isset($details->touched) ? $details->touched : NULL;
@@ -57,7 +48,7 @@ class Page {
     if ($this->text) {
       return TRUE;
     } else{
-      return NULL;
+      return FALSE;
     }
   }
 
@@ -68,11 +59,11 @@ class Page {
   public function expand_text() {
     $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='http://en.wikipedia.org/?title=" 
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=" 
       . urlencode($this->title) 
-      . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='http://en.wikipedia.org/?title="
+      . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title="
       . urlencode($this->title)
-      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='http://en.wikipedia.org/?title="
+      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title="
       . urlencode($this->title)
       . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
       . "document.title=\"Citation bot: '"
@@ -85,13 +76,7 @@ class Page {
       return FALSE;
     }
 
-    //this is set to -1 only in [erstwhile file?] text.php, because there's no need to output
-    // a buffer of text for the citation-expander gadget
-    if (HTML_OUTPUT === -1) {
-      ob_start();
-    }
-
-    // COMMENTS //
+    // COMMENTS AND NOWIKI //
     $comments = $this->extract_object('Comment');
     $nowiki   = $this->extract_object('Nowiki');
     if (!$this->allow_bots()) {
@@ -101,19 +86,9 @@ class Page {
 
     // TEMPLATES //
     $templates = $this->extract_object('Template');
-    $start_templates = $templates;
-    $citation_templates = 0;
-
-    if ($templates) {
-      foreach ($templates as $template) {
-        if ($template->wikiname() == 'citation') {
-          $citation_templates++;
-        } elseif (stripos($template->wikiname(), 'harv') === 0) {
-          $harvard_templates++;
-        }
-      }
+    for ($i = 0; $i < count($templates); $i++) {
+       $templates[$i]->all_templates = &$templates ; // Has to be pointer
     }
-
     for ($i = 0; $i < count($templates); $i++) {
       $templates[$i]->process();
       $template_mods = $templates[$i]->modifications();
@@ -129,11 +104,6 @@ class Page {
 
     $this->replace_object($comments);
     $this->replace_object($nowiki);
-   
-    // seems to be set as -1  in text.php and then re-set
-    if (HTML_OUTPUT === -1) {
-      ob_end_clean();
-    }
 
     return strcasecmp($this->text, $this->start_text) != 0;
   }
@@ -166,18 +136,13 @@ class Page {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
-    $auto_summary .= (isset($this->modifications["deletions"])
-                      ? "Removed parameters. "
-                      : "")
-                  . (isset($this->modifications["cite_type"])
-                      ? "Unified citation types. "
-                      : "")
-                  . (isset($this->modifications["dashes"])
-                      ? "Formatted [[WP:ENDASH|dashes]]. "
-                      : "")
-                  . (isset($this->modifications["arxiv_upgrade"])
-                      ? "Updated published arXiv refs. "
-                      : "");
+    $auto_summary .= (($this->modifications["deletions"])
+      ? "Removed parameters. "
+      : ""
+      ) . (($this->modifications["dashes"])
+      ? "Formatted [[WP:ENDASH|dashes]]. "
+      : ""
+    );
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
@@ -191,7 +156,8 @@ class Page {
               $edit_summary ? $edit_summary : $this->edit_summary(),
               $this->lastrevid);
     } else {
-      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots]} template.";
+      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots}} template.";
+      return FALSE;
     }
   }
   
@@ -207,8 +173,6 @@ class Page {
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
-      $obj->occurrences = count($exploded) - 1;
-      $obj->page = $this;
       $objects[] = $obj;
     }
     $this->text = $text;
@@ -221,8 +185,8 @@ class Page {
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
 
-  public function allow_bots() {
-    // from http://en.wikipedia.org/wiki/Template:Nobots example implementation
+  protected function allow_bots() {
+    // from https://en.wikipedia.org/wiki/Template:Bots
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
       return FALSE;
