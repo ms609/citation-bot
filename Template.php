@@ -1394,22 +1394,7 @@ final class Template {
     } else {
         return FALSE; // No data to use
     }
-    if (GOOGLE_KEY === "AIzaSyC7Sx7pAK5MsYY1yxeEHKmnU-P4WxGQPj4") { // Special travis code
-     $header[] = "Accept: text/xml,application/xml,application/json,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5";
-     $header[] = "Cache-Control: max-age=0";
-     $header[] = "Connection: keep-alive";
-     $header[] = "Keep-Alive: 300";
-     $header[] = "Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7";
-     $header[] = "Accept-Language: en-us,en;q=0.5";
-     $referer = "travis-ci.org";
-     $google_opts = array('http'=>array(
-                            'header'=>implode('\r\n',$header)."\r\n".
-                            "Referer: $referer\r\n"));
-     $google_context = stream_context_create($google_opts);
-     $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . GOOGLE_KEY, false, $google_context);
-    } else {
-     $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . GOOGLE_KEY);
-    }
+    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY, FALSE, GOOGLE_CONTEXT);
     if ($string === FALSE) {
         echo "\n Google APIs search failed for $url_token \n";
         return FALSE;
