@@ -20,19 +20,25 @@ class Page {
 
   public function get_text_from($title) {
     global $bot;
-    $bot->fetch(WIKI_ROOT . "title=" . urlencode($title) . "&action=raw");
-    $this->text = $bot->results;
-    $this->start_text = $this->text;
-    $this->modifications = array();
-
-    $bot->fetch(API_ROOT . "action=query&prop=info&titles=" . urlencode($title));
-    $details = json_decode($bot->results);
+    
+    $details = json_decode($bot->fetch(API_ROOT, array(
+      'action'=>'query', 'prop'=>'info', 'titles'=> $title)));
+    
+    if (!isset($details->query)) {
+      echo "\n ! Error: Could not fetch page. \n";
+      if (isset($details->error)) echo "   - " . $details->error->info;
+      return FALSE;
+    }
     foreach ($details->query->pages as $p) {
       $my_details = $p;
     }
     $details = $my_details;
+    if (isset($details->invalid)) {
+      echo "\n ! Page invalid: ". $details->invalidreason;
+      return FALSE;
+    }
     if ( !isset($details->touched) || !isset($details->lastrevid)) {
-       echo "\n Could not even get the page.  Perhaps non-existent? ";
+       echo "\n ! Could not even get the page.  Perhaps non-existent? ";
        return FALSE; 
     }
     $this->title = $details->title;
@@ -40,6 +46,10 @@ class Page {
     $this->touched = isset($details->touched) ? $details->touched : NULL;
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
 
+    $this->text = $bot->fetch(WIKI_ROOT, array('title' => $title, 'action' =>'raw'));
+    $this->start_text = $this->text;
+    $this->modifications = array();
+    
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
       return FALSE;

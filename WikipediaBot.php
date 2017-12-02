@@ -3,23 +3,22 @@ require_once("credentials/wiki.php");
 
 class WikipediaBot {
   
-  private $header;
+  private $oauth;
   
   function __construct() {
-    quiet_echo("\n Establishing connection to Wikipedia servers via OAuth... ");
-    $oauth = new OAuth(OAUTH_CONSUMER_TOKEN, OAUTH_CONSUMER_SECRET);
-    $oauth->setToken(OAUTH_ACCESS_TOKEN, OAUTH_ACCESS_SECRET);
+    $this->oauth = new OAuth(OAUTH_CONSUMER_TOKEN, OAUTH_CONSUMER_SECRET, 
+                             OAUTH_SIG_METHOD_HMACSHA1, OAUTH_AUTH_TYPE_AUTHORIZATION);
+    $this->oauth->setToken(OAUTH_ACCESS_TOKEN, OAUTH_ACCESS_SECRET);
+    $this->oauth->enableDebug();
+    $this->oauth->setSSLChecks(0);
     
-    $this->header = "Accept-language: en\r\n" .
-                    "Cookie: foo=bar\r\n" .
-                    "User-agent: Citation-bot\r\n" .
-                    'Authorization: ' . 
-                         $oauth->getRequestHeader('GET', API_ROOT, array(
-                           'action'=>'query',
-                           'meta'=>'tokens',
-                           'type'=>'login')
-                         ) . "\r\n";
     
+    $auth = $this->oauth->getRequestHeader('GET', API_ROOT);
+    var_dump($auth);
+#    
+#    return "Accept-language: en\r\n" .
+#           "User-agent: Citation-bot\r\n" .
+#           'Authorization: ' $auth;
   }
   
   private function post($url, $content) {
@@ -27,25 +26,28 @@ class WikipediaBot {
       'http' => array(
         'method' => "POST",
         'query' => http_build_query($content),
-        'header' => $header
+        'header' => oauth_header($content)
       )
     );
     return @file_get_contents($url, FALSE, stream_context_create($opts));
   }
   
-  private function get($url) {
-    $opts = array(
-      'http' => array(
-        'method' => "GET",
-        'header' => $header
-      )
-    );
-    return @file_get_contents($url, FALSE, stream_context_create($opts));
+  public function fetch($url, $params) {
+    try {
+      $this->oauth->fetch($url, $params, 'GET', array('User-agent' => "Citation bot\r\n"));
+      return $this->oauth->getLastResponse();
+    } catch(OAuthException $E) {
+      echo " ! Exception caught!\n";
+      echo "   Response: ". $E->lastResponse . "\n";
+    }
   }
-    
+  
   public function write_page($page, $text, $editSummary, $lastRevId = NULL) {
-    $response = json_decode($this->get(API_ROOT . 'action=query&prop=info|revisions&titles=' .
-                    urlencode($page)));
+    $response = json_decode($this->oauth->fetch(API_ROOT, array(
+            'action' => 'query',
+            'prop' => 'info|revisions',
+            'titles' => urlencode($page)
+          )));
     if (isset($response->error)) {
       trigger_error((string) $response->error->info, E_USER_ERROR);
       return FALSE;
@@ -85,7 +87,7 @@ class WikipediaBot {
         "watchlist" => "nochange",
         "format" => "json",
     );
-    $result = json_decode($this->submit(API_ROOT, $submit_vars));
+    $result = json_decode($this->post(API_ROOT, $submit_vars));
     if (isset($result->edit) && $result->edit->result == "Success") {
       // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
       if (HTML_OUTPUT) {
@@ -98,7 +100,7 @@ class WikipediaBot {
     } elseif (isset($result->edit->result)) {
       echo htmlspecialchars($result->edit->result);
       return TRUE;
-    } elseif ($result->error->code) {
+    } elseif (isset($result->error)) {
       // Return error code
       echo "\n ! Write error: " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
       return FALSE;
