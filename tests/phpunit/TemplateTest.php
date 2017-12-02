@@ -575,6 +575,7 @@ ER -  }}';
       $this->assertEquals('ZooKeys', $expanded->get('journal'));
       $this->assertEquals('445', $expanded->get('issue'));
       $this->assertNull($expanded->get('volume'));
+      sleep(1);
       $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[Zookeys]]}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('[[Zookeys]]', $expanded->get('journal'));  // This is wrong capitalization, but because of [[ ]], we leave alone, not wanting to break links
@@ -690,18 +691,21 @@ ER -  }}';
   } 
   
    public function testJustAnISBN() {
+       sleep(1);
        $text = '{{cite book |isbn=0471186368}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Explosives engineering',$expanded->get('title'));
    }
     
    public function testJustAnOCLC() {
+       sleep(1);
        $text = '{{cite book | oclc=9334453}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport',$expanded->get('title'));
    }
 
    public function testJustAnLCCN() {
+       sleep(1);
        $text = '{{cite book | lccn=2009925036}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
