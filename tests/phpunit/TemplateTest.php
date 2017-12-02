@@ -39,6 +39,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
+  public functions testDisableParallelBuilds() { // This test should be first one in file
+     if (defined('PHP_VERSION_ID') && !(PHP_VERSION_ID >= 50600)) { 
+         sleep(30);  // Delay the non-7 build for 30 seconds to keep us from hitting the API wall
+     }
+     $this->assertNull(NULL); // Make Travis happy
+  }
+    
   public function testParameterWithNoParameters() {
     $text = "{{Cite web | text without equals sign  }}";
     $expanded = $this->process_citation($text);
