@@ -607,20 +607,23 @@ final class Template {
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {  //  Outdated
-        $this->use_sici() ;  // Grab what we can before getting rid off it
+        $sici_url = TRUE;
+        $this->use_sici();         // Grab what we can before getting rid off it
         $headers_test = get_headers($url, 1);
         if(!empty($headers_test['Location']) && strpos($headers_test['Location'],"jstor.org/stable/")) {
           $url = $headers_test['Location']; // Redirect
           if (is_null($url_sent)) {
             $this->set('url', $url); // Save it
+            $sici_url = FALSE;
           }
         } else {
           return FALSE;
         }
       }
       if (strpos($url, "plants.jstor.org")) {
-        return FALSE; #Skip.  We can't do anything more with the plants, unfortunately.
-      } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
+
+        return FALSE; # We can't do anything more with the plants, unfortunately.
+      } elseif (!$sici_url && preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget('url');
         }
@@ -1268,6 +1271,7 @@ final class Template {
 
   protected function use_sici() {
     if (preg_match(SICI_REGEXP, urldecode($this->parsed_text()), $sici)) {
+      quiet_echo(" * Extracting information from SICI");
       $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       $this->add_if_new("year", $sici[2]);
