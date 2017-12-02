@@ -8,9 +8,11 @@ php:
 
 git:
   depth: 3
-  
-before-script:  
+
+before-install:
   - pecl install oauth
+
+  before-script:  
   - travis_retry composer self-update
   - travis_retry composer install --no-interaction --prefer-source --dev
   
