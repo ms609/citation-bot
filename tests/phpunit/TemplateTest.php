@@ -40,7 +40,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testDisableParallelBuilds() { // This test should be first one in file
-     if (defined('PHP_VERSION_ID') && !(PHP_VERSION_ID >= 50600)) { 
+     if (PHP_VERSION_ID < 60000) {  // Either 5.* or 7.*
          sleep(30);  // Delay the non-7 build for 30 seconds to keep us from hitting the API wall
      }
      $this->assertNull(NULL); // Make Travis happy
