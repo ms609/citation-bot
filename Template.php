@@ -615,11 +615,11 @@ final class Template {
             $this->set('url', $url); // Save it
           }
         } else {
-          return FALSE;
+          return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
         }
       }
       if (strpos($url, "plants.jstor.org")) {
-        return FALSE; # We can't do anything more with the plants, unfortunately.
+        return FALSE; # We can't do anything with the plants
       } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget('url');
@@ -632,8 +632,9 @@ final class Template {
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         return TRUE;
+      } else {
+        return FALSE; // Jstor URL yielded nothing
       }
-      return FALSE; 
     } else {
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
         if ($this->blank('bibcode')) {
