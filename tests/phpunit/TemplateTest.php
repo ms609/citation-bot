@@ -39,6 +39,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
+  public function testDisableParallelBuilds() { // This test should be first one in file
+     if (PHP_VERSION_ID < 60000) {  // Either 5.* or 7.*
+         echo "\n Sleeping PHP 6 build for 120 seconds \n";
+         sleep(120);  // Delay the non-7 build for 30 seconds to keep us from hitting the API wall
+     }
+     $this->assertNull(NULL); // Make Travis happy
+  }
+    
   public function testParameterWithNoParameters() {
     $text = "{{Cite web | text without equals sign  }}";
     $expanded = $this->process_citation($text);
