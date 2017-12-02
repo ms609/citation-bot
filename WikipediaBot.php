@@ -137,7 +137,6 @@ class WikipediaBot extends Snoopy {
         echo "\n ! Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
         return FALSE;
       }
-  }
-  
+  }  
 }
-?>
+
