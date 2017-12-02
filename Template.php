@@ -606,7 +606,7 @@ final class Template {
     
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
-      if (strpos($url, "sici")) {  //  Outdated
+      if (strpos($url, "sici")) {  //  Outdated url style
         $this->use_sici();         // Grab what we can before getting rid off it
         $headers_test = get_headers($url, 1);
         if(!empty($headers_test['Location']) && strpos($headers_test['Location'], "jstor.org/stable/")) {
@@ -633,7 +633,7 @@ final class Template {
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         return TRUE;
       }
-      
+      return FALSE; 
     } else {
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
         if ($this->blank('bibcode')) {
