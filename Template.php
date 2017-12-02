@@ -614,6 +614,8 @@ final class Template {
           if (is_null($url_sent)) {
             $this->set('url', $url); // Save it
           }
+        } else {
+          return FALSE;
         }
       }
       if (strpos($url, "plants.jstor.org")) {
