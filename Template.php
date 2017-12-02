@@ -1006,7 +1006,7 @@ final class Template {
         echo tag();
         if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
         $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
-        $i = 0;
+        $i = NULL;
         if (isset($record->author)) {
          foreach ($record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
