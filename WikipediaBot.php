@@ -11,49 +11,75 @@ class WikipediaBot {
     $this->oauth->setToken(OAUTH_ACCESS_TOKEN, OAUTH_ACCESS_SECRET);
     $this->oauth->enableDebug();
     $this->oauth->setSSLChecks(0);
-    
-    
-    $auth = $this->oauth->getRequestHeader('GET', API_ROOT);
-    var_dump($auth);
-#    
-#    return "Accept-language: en\r\n" .
-#           "User-agent: Citation-bot\r\n" .
-#           'Authorization: ' $auth;
   }
   
-  private function post($url, $content) {
-    $post_opts = array(
-      'http' => array(
-        'method' => "POST",
-        'query' => http_build_query($content),
-        'header' => oauth_header($content)
-      )
-    );
-    return @file_get_contents($url, FALSE, stream_context_create($opts));
-  }
   
-  public function fetch($url, $params) {
+  public function fetch($url, $params, $method='GET') {
     try {
-      $this->oauth->fetch($url, $params, 'GET', array('User-agent' => "Citation bot\r\n"));
-      return $this->oauth->getLastResponse();
+      switch (strtolower($method)) {
+        
+        case 'get':
+          $this->oauth->fetch($url, $params, OAUTH_HTTP_METHOD_GET, array('User-agent' => "Citation bot\r\n"));
+          return $this->oauth->getLastResponse();
+          
+        case 'post':
+        
+          #$this->oauth->fetch($url, http_build_query($params), OAUTH_HTTP_METHOD_POST, array('User-agent' => "Citation bot\r\n"));
+          
+          $header = 'Authorization: ' . 
+          $this->oauth->getRequestHeader(OAUTH_HTTP_METHOD_POST, API_ROOT, $params);
+
+          $ch = curl_init();
+          curl_setopt( $ch, CURLOPT_POST, true );
+          curl_setopt( $ch, CURLOPT_URL, API_ROOT);
+          curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $params ));
+          #curl_setopt( $ch, CURLOPT_HTTPHEADER, array( $header ) );
+          //curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+          curl_setopt( $ch, CURLOPT_USERAGENT, 'Citation bot');
+          curl_setopt( $ch, CURLOPT_HEADER, 0 );
+          curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+          $data = curl_exec( $ch );
+          if ( !$data ) {
+            echo "\n ! Curl error: " . htmlspecialchars( curl_error( $ch ) );
+            exit(0);
+          }
+          $ret = $data;
+          if ( $ret === null ) {
+            echo "\n ! Unparsable API response: <pre>" . htmlspecialchars( $data ) . '</pre>';
+            exit(0);
+          }
+          return $ret;
+          
+          return $this->oauth->getLastResponse();
+        
+        echo " ! Unrecognized method."; // @codecov ignore - will only be hit if error in our code
+        return NULL;
+      }
     } catch(OAuthException $E) {
       echo " ! Exception caught!\n";
       echo "   Response: ". $E->lastResponse . "\n";
     }
   }
   
-  public function write_page($page, $text, $editSummary, $lastRevId = NULL) {
-    $response = json_decode($this->oauth->fetch(API_ROOT, array(
+  public function write_page($page, $text, $editSummary, $lastRevId = NULL, $startedEditing=NULL) {
+    $response = json_decode($this->fetch(API_ROOT, array(
             'action' => 'query',
             'prop' => 'info|revisions',
-            'titles' => urlencode($page)
+            'rvprop' => 'timestamp',
+            'meta' => 'tokens',
+            'titles' => $page
           )));
     if (isset($response->error)) {
       trigger_error((string) $response->error->info, E_USER_ERROR);
       return FALSE;
     }
     if (isset($response->warnings)) {
-      trigger_error((string) $response->warnings->info->{'*'}, E_USER_WARNING);
+      if (isset($response->warnings->prop)) {
+        trigger_error((string) $response->warnings->prop->{'*'}, E_USER_WARNING);
+      }
+      if (isset($response->warnings->info)) {
+        trigger_error((string) $response->warnings->info->{'*'}, E_USER_WARNING);
+      }
     }
     if (!isset($response->batchcomplete)) {
       trigger_error("Write request triggered no response from server", E_USER_WARNING);
@@ -61,11 +87,15 @@ class WikipediaBot {
     }
     
     $myPage = reset($response->query->pages); // reset gives first element in list
+    
     if (!isset($myPage->lastrevid)) {
       trigger_error(" ! Page seems not to exist. Aborting.", E_USER_WARNING);
       return FALSE;
     }
-    if (!is_null($lastRevId) && $myPage->lastrevid != $lastRevId) {
+    $baseTimeStamp = $myPage->revisions[0]->timestamp;
+    
+    if ((!is_null($lastRevId) && $myPage->lastrevid != $lastRevId)
+     || (!is_null($startedEditing) && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
       echo "\n ! Possible edit conflict detected. Aborting.";
       return FALSE;
     }
@@ -82,30 +112,37 @@ class WikipediaBot {
         "summary" => $editSummary,
         "minor" => "1",
         "bot" => "1",
-        "basetimestamp" => $myPage->touched,
+        "basetimestamp" => $baseTimeStamp,
+        "starttimestamp" => $startedEditing,
         #"md5"       => hash('md5', $data), // removed by MS because I can't figure out how to make the hash of the UTF-8 encoded string that I send match that generated by the server.
         "watchlist" => "nochange",
         "format" => "json",
+        'token' => $response->query->tokens->csrftoken,
     );
-    $result = json_decode($this->post(API_ROOT, $submit_vars));
-    if (isset($result->edit) && $result->edit->result == "Success") {
-      // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-      if (HTML_OUTPUT) {
-        echo "\n <span style='color: #e21'>Written to <a href='" 
-        . WIKI_ROOT . "title=" . urlencode($myPage->title) . "'>" 
-        . htmlspecialchars($myPage->title) . '</a></span>';
-      }
-      else echo "\n Written to " . htmlspecialchars($myPage->title) . '.  ';
-      return TRUE;
-    } elseif (isset($result->edit->result)) {
-      echo htmlspecialchars($result->edit->result);
-      return TRUE;
-    } elseif (isset($result->error)) {
-      // Return error code
+    $result = json_decode($this->fetch(API_ROOT, $submit_vars, 'POST'));
+    
+    if (isset($result->error)) {
       echo "\n ! Write error: " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
       return FALSE;
+    } elseif (isset($result->edit)) {
+      if (isset($result->edit->captcha)) {
+        echo "\n ! Write error: We encountered a captcha, so can't be properly logged in.";
+        return FALSE;
+      } elseif ($result->edit->result == "Success") {
+        // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
+        if (HTML_OUTPUT) {
+          echo "\n <span style='color: #e21'>Written to <a href='" 
+          . WIKI_ROOT . "title=" . urlencode($myPage->title) . "'>" 
+          . htmlspecialchars($myPage->title) . '</a></span>';
+        }
+        else echo "\n Written to " . htmlspecialchars($myPage->title) . '.  ';
+        return TRUE;
+      } elseif (isset($result->edit->result)) {
+        echo "\n ! " . htmlspecialchars($result->edit->result);
+        return FALSE;
+      }
     } else {
-      echo "\n ! Unhandled error.  Please copy this output and <a href=http://code.google.com/p/citation-bot/issues/list>report a bug.</a>";
+      echo "\n ! Unhandled write error.  Please copy this output and <a href=https://github.com/ms609/citation-bot/issues/new>report a bug.</a>";
       return FALSE;
     }
   }  

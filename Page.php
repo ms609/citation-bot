@@ -22,7 +22,7 @@ class Page {
     global $bot;
     
     $details = json_decode($bot->fetch(API_ROOT, array(
-      'action'=>'query', 'prop'=>'info', 'titles'=> $title)));
+      'action'=>'query', 'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true')));
     
     if (!isset($details->query)) {
       echo "\n ! Error: Could not fetch page. \n";
@@ -32,6 +32,8 @@ class Page {
     foreach ($details->query->pages as $p) {
       $my_details = $p;
     }
+    $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : NULL;
+    
     $details = $my_details;
     if (isset($details->invalid)) {
       echo "\n ! Page invalid: ". $details->invalidreason;
@@ -41,6 +43,7 @@ class Page {
        echo "\n ! Could not even get the page.  Perhaps non-existent? ";
        return FALSE; 
     }
+    
     $this->title = $details->title;
     $this->namespace = $details->ns;
     $this->touched = isset($details->touched) ? $details->touched : NULL;
@@ -49,7 +52,7 @@ class Page {
     $this->text = $bot->fetch(WIKI_ROOT, array('title' => $title, 'action' =>'raw'));
     $this->start_text = $this->text;
     $this->modifications = array();
-    
+
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
       return FALSE;
@@ -164,7 +167,7 @@ class Page {
       global $bot;
       return $bot->write_page($this->title, $this->text,
               $edit_summary ? $edit_summary : $this->edit_summary(),
-              $this->lastrevid);
+              $this->lastrevid, $this->read_at);
     } else {
       echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots}} template.";
       return FALSE;
