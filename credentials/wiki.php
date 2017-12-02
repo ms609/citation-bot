@@ -2,3 +2,8 @@
 const WP_USERNAME = "Citation_bot_test";
 const WP_PASSWORD = "Citation_bot@fo5emk0eu278dklof4l8407v0rfe8umj";
 
+const OAUTH_CONSUMER_TOKEN  = 'f2fa783bf1691cfcf60894642400644b';
+const OAUTH_CONSUMER_SECRET = '94308008bb32c03b2103461d8dfe920ba9bc5415';
+const OAUTH_ACCESS_TOKEN    = 'e6203e5103409a97409baa314e633767';
+const OAUTH_ACCESS_SECRET   = '386279d54bfd00664d7a62ca68ea9612ac50d4ec';
+
