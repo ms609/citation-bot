@@ -26,7 +26,7 @@
  * The latest version of Snoopy can be obtained from:
  * http://snoopy.sourceforge.net/
  *************************************************/
-final class Snoopy
+class Snoopy
 {
     /**** Public variables ****/
 
