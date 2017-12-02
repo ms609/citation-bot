@@ -609,6 +609,9 @@ final class Template {
       if (strpos($url, "sici")) {  //  Outdated
         $this->use_sici() ;  // Grab what we can before getting rid off it
         $headers_test = get_headers($url, 1);
+        print "\n TESTING2\n";
+        print_r($headers_test);
+        
         if(!empty($headers_test['Location'])) {
           $url = $headers_test['Location']; // Redirect
           if (is_null($url_sent)) {
