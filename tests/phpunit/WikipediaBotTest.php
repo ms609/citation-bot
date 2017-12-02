@@ -26,5 +26,31 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
     $test_bot->log_in();
     $this->assertTrue($test_bot->logged_in());
   }
+  
+  public function testReadExpandWrite() {
+    $page = new TestPage();
+    $page->get_text_from('User:Blocked Testing Account/readtest');
+    $this->assertEquals('This page tests bots', $page->parsed_text());
     
+    $page = new TestPage();
+    $writeTestPage = 'User:Blocked Testing Account/writetest';
+    $page->get_text_from($writeTestPage);
+    $trialCitation = '{{Cite journal | title Bot Testing | ' .
+      'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
+    $page->overwrite_text($trialCitation);
+    $page->write("Testing bot write function");
+    
+    $page->get_text_from($writeTestPage);
+    $this->assertEquals($trialCitation, $page->parsed_text());
+    $page->expand_text();
+    $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
+    $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
+    $page->write();
+    
+    $page->get_text_from($writeTestPage);
+    print $page->parsed_text();
+    $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
+  }
+  
 }
+
