@@ -12,7 +12,7 @@ git:
 before-script:  
   - travis_retry composer self-update
   - travis_retry composer install --no-interaction --prefer-source --dev
-  - composer require mediawiki/oauthclient
+  - pecl install oauth
   
 script:
   - phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
