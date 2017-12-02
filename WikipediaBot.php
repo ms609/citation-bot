@@ -1,72 +1,20 @@
 <?php
-require_once(HOME . "credentials/doiBot.login");
-use MediaWiki\OAuthClient\Consumer;
-use MediaWiki\OAuthClient\Token;
-use MediaWiki\OAuthClient\Request;
-use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
+require_once("credentials/wiki.php");
 
 class WikipediaBot extends Snoopy {
   
-  private $editToken;
+  private $authHeader;
   
-  public function logged_in() {
-    $this->fetch(API_ROOT . 'action=query&assert=user');
-    $response = json_decode($this->results);
-    if (isset($response->error)) {
-      return FALSE;
-    } elseif(isset($response->batchcomplete)) {
-      return TRUE;
-    } else {
-      warning("Unexpected response from API: ");
-      print_r($response);
-      return NULL;
-    }
-  }
-  
-  public function log_in() {
-    quiet_echo("\n Establishing connection to Wikipedia servers with username " . USERNAME . "... ");
-    # $consumer = new Consumer( OAUTH_CONSUMER_TOKEN, OAUTH_SECRET_TOKEN );
-    # $accessToken = new Token( $accessToken, $accessSecret );
-    # $request = Request::fromConsumerAndToken( $consumer, $accessToken, 'GET', 'https://en.wikipedia.org/w/api.php', $apiParams );
-    # $request->signRequest( new HmacSha1(), $consumer, $accessToken );
-    # $authorizationHeader = $request->toHeader();
-    
-    $this->fetch(API_ROOT . 'action=query&meta=tokens&type=login');
-    $response = json_decode($this->results);
-    if (!isset($response->batchcomplete)) {
-      trigger_error("Login to Wikipedia servers failed", E_USER_WARNING);
-      return FALSE;
-    }
-    $submit_vars["format"] = "json";
-    $submit_vars["action"] = "login";
-    $submit_vars["lgname"] = BOT_LOGIN;
-    $submit_vars["lgpassword"] = BOT_PASSWORD;
-    $loginToken = $response->query->tokens->logintoken;
-    $submit_vars["lgtoken"] = $loginToken;
-    $this->submit(API_ROOT, $submit_vars);
-    $login_result = json_decode($this->results);
-    
-    if (isset($login_result->login->result) && $login_result->login->result == "Success") {
-      quiet_echo("\n Using account " . htmlspecialchars($login_result->login->lgusername) . ".");
-      // Add other cookies, which are necessary to remain logged in.
-      $cookie_prefix = "enwiki";
-      $this->cookies[$cookie_prefix . "UserName"] = $login_result->login->lgusername;
-      $this->cookies[$cookie_prefix . "UserID"] = $login_result->login->lguserid;
-      $this->fetch(API_ROOT . 'action=query&meta=tokens');
-      $tokenResponse = json_decode($this->results);
-      if (isset($tokenResponse->query->tokens->csrftoken)) {
-        $this->editToken = $tokenResponse->query->tokens->csrftoken;
-        return TRUE;
-      } else {        
-        trigger_error("Didn't receive edit tokens after login", E_USER_WARNING);
-        return FALSE;
-      }
-    } else {
-      echo("\n Could not log in to Wikipedia servers.  Edits will not be committed.\n");
-      global $ON;
-      $ON = FALSE;
-      return FALSE;
-    }
+  function __construct() {
+    quiet_echo("\n Establishing connection to Wikipedia servers via OAuth... ");
+    $oauth = new OAuth(OAUTH_CONSUMER_TOKEN, OAUTH_CONSUMER_SECRET);
+    $oauth->setToken(OAUTH_ACCESS_TOKEN, OAUTH_ACCESS_SECRET);
+    $this->$authHeader = 'Auhorization: ' . 
+                         $oauth->getRequestHeader('GET', API_ROOT, array(
+                           'action'=>'query',
+                           'meta'=>'tokens',
+                           'type'=>'login')
+                         );
   }
   
   public function write_page($page, $text, $editSummary, $lastRevId = NULL) {
