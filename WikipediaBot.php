@@ -3,7 +3,7 @@ require_once("credentials/wiki.php");
 
 class WikipediaBot {
   
-  private $oauth;
+  private $ch, $oauth;
   
   function __construct() {
     $this->oauth = new OAuth(OAUTH_CONSUMER_TOKEN, OAUTH_CONSUMER_SECRET, 
@@ -11,47 +11,114 @@ class WikipediaBot {
     $this->oauth->setToken(OAUTH_ACCESS_TOKEN, OAUTH_ACCESS_SECRET);
     $this->oauth->enableDebug();
     $this->oauth->setSSLChecks(0);
+    $this->oauth->setRequestEngine(OAUTH_REQENGINE_CURL);
+    $this->ch = curl_init(API_ROOT);
   }
   
+  function __destruct() {
+    #curl_close($this->ch);
+  }
   
-  public function fetch($url, $params, $method='GET') {
+  private function reset_curl() {
+    return curl_setopt_array($this->ch, [
+      CURLOPT_FAILONERROR => TRUE, // #TODO Remove this line once debugging complete
+      // CURLOPT_VERBOSE => TRUE, // #TODO Remove this line once debugging complete
+      CURLOPT_FOLLOWLOCATION => TRUE,
+      CURLOPT_MAXREDIRS => 5,
+      CURLOPT_HEADER => FALSE, // Don't include header in output
+      CURLOPT_HTTPGET => TRUE, // Reset to default GET
+      CURLOPT_RETURNTRANSFER => TRUE,
+      
+      CURLOPT_CONNECTTIMEOUT_MS => 2000,
+      
+      CURLOPT_COOKIEFILE => 'cookie.txt',
+      CURLOPT_COOKIEJAR => 'cookiejar.txt',
+      CURLOPT_URL => API_ROOT,
+      CURLOPT_USERAGENT => 'Citation bot',
+      #CURLOPT_XOAUTH2_BEARER => OAUTH_ACCESS_TOKEN,
+      #CURLOPT_HTTPHEADER => ###,
+    ]);
+  }
+  
+  public function log_in() {
+    $response = $this->fetch(array('action' => 'query', 'meta'=>'tokens', 'type'=>'login'));
+    if (!isset($response->batchcomplete)) return FALSE;
+    if (!isset($response->query->tokens->logintoken)) return FALSE;
+    
+    $lgVars = ['action' => 'login',
+               'lgname' => WP_USERNAME, 'lgpassword' => WP_PASSWORD,
+               'lgtoken' => $response->query->tokens->logintoken,
+              ];
+              
+    $response = $this->fetch($lgVars, 'POST');
+    if (!isset($response->login->result)) return FALSE;
+    if ($response->login->result == "Success") return TRUE;
+    trigger_error($response->login->reason, E_USER_WARNING);
+    return FALSE;
+  }
+  
+  private function ret_okay($response) {
+    if (isset($response->error)) {
+      trigger_error((string) $response->error->info, E_USER_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  public function fetch($params, $method='GET') {
+    if (!$this->reset_curl()) {
+      trigger_error('Could not initialize CURL resource: ' . curl_error($this->ch));
+      return FALSE;
+    }
+    
+    $check_logged_in = ((isset($params['type']) && $params['type'] == 'login') 
+      || (isset($params['action']) && $params['action'] == 'login')) ? FALSE : TRUE;
+    if ($check_logged_in) $params['assert'] = 'user';
+    $params['format'] = 'json';
     try {
       switch (strtolower($method)) {
         
         case 'get':
-          $this->oauth->fetch($url, $params, OAUTH_HTTP_METHOD_GET, array('User-agent' => "Citation bot\r\n"));
-          return $this->oauth->getLastResponse();
-          
-        case 'post':
-        
-          #$this->oauth->fetch($url, http_build_query($params), OAUTH_HTTP_METHOD_POST, array('User-agent' => "Citation bot\r\n"));
-          
-          $header = 'Authorization: ' . 
-          $this->oauth->getRequestHeader(OAUTH_HTTP_METHOD_POST, API_ROOT, $params);
-
-          $ch = curl_init();
-          curl_setopt( $ch, CURLOPT_POST, true );
-          curl_setopt( $ch, CURLOPT_URL, API_ROOT);
-          curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $params ));
-          #curl_setopt( $ch, CURLOPT_HTTPHEADER, array( $header ) );
-          //curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-          curl_setopt( $ch, CURLOPT_USERAGENT, 'Citation bot');
-          curl_setopt( $ch, CURLOPT_HEADER, 0 );
-          curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-          $data = curl_exec( $ch );
+          $url = API_ROOT . '?' . http_build_query($params);
+          $header = 'Authentication: ' . 
+            $this->oauth->getRequestHeader(OAUTH_HTTP_METHOD_POST, $url);
+          curl_setopt_array($this->ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_HTTPHEADER => [$header],
+          ]);
+          $ret = json_decode($data = curl_exec($this->ch));
           if ( !$data ) {
             echo "\n ! Curl error: " . htmlspecialchars( curl_error( $ch ) );
             exit(0);
           }
-          $ret = $data;
-          if ( $ret === null ) {
-            echo "\n ! Unparsable API response: <pre>" . htmlspecialchars( $data ) . '</pre>';
+          if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+            $this->log_in();
+            return $this->fetch($params, $method);
+          }
+          return ($this->ret_okay($ret)) ? $ret : FALSE;
+          
+        case 'post':
+        
+          $header = 'Authentication: ' . $this->oauth->getRequestHeader(
+            OAUTH_HTTP_METHOD_POST, API_ROOT, http_build_query($params));
+          curl_setopt_array($this->ch, [
+            CURLOPT_POST => TRUE,
+            CURLOPT_POSTFIELDS => http_build_query($params),
+            CURLOPT_HTTPHEADER => [$header],
+          ]);
+          
+          $ret = json_decode($data = curl_exec($this->ch));
+          if ( !$data ) {
+            echo "\n ! Curl error: " . htmlspecialchars( curl_error( $ch ) );
             exit(0);
           }
-          return $ret;
           
-          return $this->oauth->getLastResponse();
-        
+          if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+            $this->log_in();
+            return $this->fetch($params, $method);
+          }
+          return ($this->ret_okay($ret)) ? $ret : FALSE;
+          
         echo " ! Unrecognized method."; // @codecov ignore - will only be hit if error in our code
         return NULL;
       }
@@ -61,18 +128,16 @@ class WikipediaBot {
     }
   }
   
-  public function write_page($page, $text, $editSummary, $lastRevId = NULL, $startedEditing=NULL) {
-    $response = json_decode($this->fetch(API_ROOT, array(
+  public function write_page($page, $text, $editSummary, $lastRevId = NULL, $startedEditing = NULL) {
+    $response = $this->fetch(array(
             'action' => 'query',
             'prop' => 'info|revisions',
             'rvprop' => 'timestamp',
             'meta' => 'tokens',
             'titles' => $page
-          )));
-    if (isset($response->error)) {
-      trigger_error((string) $response->error->info, E_USER_ERROR);
-      return FALSE;
-    }
+          ));
+    
+    if (!$response) return FALSE;
     if (isset($response->warnings)) {
       if (isset($response->warnings->prop)) {
         trigger_error((string) $response->warnings->prop->{'*'}, E_USER_WARNING);
@@ -89,7 +154,7 @@ class WikipediaBot {
     $myPage = reset($response->query->pages); // reset gives first element in list
     
     if (!isset($myPage->lastrevid)) {
-      trigger_error(" ! Page seems not to exist. Aborting.", E_USER_WARNING);
+      trigger_error("Page seems not to exist. Aborting.", E_USER_WARNING);
       return FALSE;
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
@@ -119,20 +184,20 @@ class WikipediaBot {
         "format" => "json",
         'token' => $response->query->tokens->csrftoken,
     );
-    $result = json_decode($this->fetch(API_ROOT, $submit_vars, 'POST'));
+    $result = $this->fetch($submit_vars, 'POST');
     
     if (isset($result->error)) {
       echo "\n ! Write error: " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
       return FALSE;
     } elseif (isset($result->edit)) {
       if (isset($result->edit->captcha)) {
-        echo "\n ! Write error: We encountered a captcha, so can't be properly logged in.";
+        echo "\n ! Write error: We encountered a captcha, so can't be properly logged in.\n";
         return FALSE;
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
           echo "\n <span style='color: #e21'>Written to <a href='" 
-          . WIKI_ROOT . "title=" . urlencode($myPage->title) . "'>" 
+          . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
           . htmlspecialchars($myPage->title) . '</a></span>';
         }
         else echo "\n Written to " . htmlspecialchars($myPage->title) . '.  ';

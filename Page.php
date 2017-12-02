@@ -21,8 +21,8 @@ class Page {
   public function get_text_from($title) {
     global $bot;
     
-    $details = json_decode($bot->fetch(API_ROOT, array(
-      'action'=>'query', 'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true')));
+    $details = $bot->fetch(['action'=>'query', 
+      'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
     if (!isset($details->query)) {
       echo "\n ! Error: Could not fetch page. \n";
@@ -49,7 +49,7 @@ class Page {
     $this->touched = isset($details->touched) ? $details->touched : NULL;
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
 
-    $this->text = $bot->fetch(WIKI_ROOT, array('title' => $title, 'action' =>'raw'));
+    $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     $this->start_text = $this->text;
     $this->modifications = array();
 

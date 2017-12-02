@@ -241,19 +241,6 @@ function article_id($page, $namespace = 0) {
   return $results['page_id'];
 }
 
-/**
- * Unused
- * @codeCoverageIgnore
- */
-function get_raw_wikitext($page, $verbose = FALSE) {
-  $encode_page = urlencode($page);
-  echo $verbose ? "\n scraping... " : "";
-  // Get the text by scraping edit page
-  $url = WIKI_ROOT . "title=" . $encode_page . "&action=raw";
-  $contents = (string) @file_get_contents($url);
-  return $contents;
-}
-
 function is_valid_user($user) {
   if (!$user) return FALSE;
   $headers_test = @get_headers('https://en.wikipedia.org/wiki/User:' . urlencode($user), 1);
@@ -269,7 +256,7 @@ function is_valid_user($user) {
 function wiki_link($page, $style = "#036;", $target = NULL) {
   if (!$target) $target = $page;
   $css = $style?" style='color:$style !important'":"";
-  return "<a href='" . WIKI_ROOT . "title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
+  return "<a href='" . WIKI_ROOT . "?title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
 }
 
 function load_xml_via_bot($vars) {
