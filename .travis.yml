@@ -9,7 +9,7 @@ php:
 git:
   depth: 3
 
-before-install:
+install:
   - pecl install oauth
 
   before-script:  
