@@ -1,7 +1,7 @@
 <?php
 /*
- * expandFns.php sets up most of the page expansion. HTTP handing takes place using an instance 
- * of the Snoopy class. Most of the page expansion depends on the classes in objects.php, 
+ * expandFns.php sets up most of the page expansion. 
+ * Most of the page expansion depends on the classes in objects.php, 
  * particularly Template and Page.
  */
 
@@ -24,8 +24,7 @@ function quiet_echo($text, $alternate_text = '') {
 }
 
 require_once("constants.php");
-# Snoopy's ini files should be modified so the host name is en.wikipedia.org.
-require_once("Snoopy.class.php");
+require_once("WikipediaBot.php");
 require_once("DOItools.php");
 require_once("Page.php");
 require_once("Template.php");

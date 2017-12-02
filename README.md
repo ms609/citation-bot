@@ -36,16 +36,11 @@ Basic structure of a Citation bot script:
 
 A quick tour of the main files:
 * `credentials/doibot.login`: on-wiki login credentials
-* `Snoopy.class.php`: 2000s-era http client/scraper. The scraper functions are
-   not really used here and it could probably be fairly easily replaced with an
-   updated library or a dedicated MediaWiki API client libary. Note that it
-   appears to use curl only for https, so the path to curl on Labs must be
-   correct or the bot will fail to log in because the request can't reach the
-   server.
 * `constants.php`: constants defined
-* `wikifunctions.php`: functions related to Wikipedia ineractions, including some marked
+* `wikiFunctions.php`: functions related to Wikipedia ineractions, including some marked
    as "untested".
-* `DOItools.php`: defines `$bot` (the Snoopy instance) and Crossref-related functions
+* `WikipediaBot.php: functions to facilitate HTTP access to the Wikipedia API.
+* `DOItools.php`: defines Crossref-related functions
 * `expandFns.php`: sets up needed functions and global variables, requires most
   of the other files listed here
 * `credentials/crossref.login` allows crossref searches.

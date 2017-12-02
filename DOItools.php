@@ -245,21 +245,6 @@ function straighten_quotes($str) {
   return $str;
 }
 
-/*
-* @codeCovIgnore
-* No longer used, but retained for reference in case useful in future
-*/
-function curl_setup($ch, $url){
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
-	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);  //This means we can't get stuck.
-	curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
-	curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
-	curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
-}
-
 function query_adsabs ($options) {  
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
   $ch = curl_init();

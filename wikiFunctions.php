@@ -184,21 +184,18 @@ function redirect_target($page) {
  * @codeCoverageIgnore
  */
 function parse_wikitext($text, $title = "API") {
-  $bot = new Snoopy();
-  $bot->httpmethod="POST";
+  $bot = new WikipediaBot();
   $vars = array(
         'format' => 'json',
         'action' => 'parse',
         'text'   => $text,
         'title'  => $title,
     );
-  $bot->submit(API_ROOT, $vars);
-  $a = @json_decode($bot->results);
+  $a = @json_decode($bot->post(API_ROOT, $vars));
   if (!$a) {
     // Wait a sec and try again
     sleep(2);
-    $bot->submit(API_ROOT, $vars);
-    $a = @json_decode($bot->results);
+    $a = @json_decode($bot->post(API_ROOT, $vars));
   }
   return $a->parse->text->{"*"};
 }
@@ -276,10 +273,8 @@ function wiki_link($page, $style = "#036;", $target = NULL) {
 }
 
 function load_xml_via_bot($vars) {
-  $snoopy = new Snoopy();
-  $snoopy->httpmethod = "POST";
-  $snoopy->submit(API_ROOT, $vars);
-  return @simplexml_load_string($snoopy->results);
+  $bot = new WikipediaBot();
+  return @simplexml_load_string($bot->post(API_ROOT, $vars));
 }
 
 /**
