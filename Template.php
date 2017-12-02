@@ -1405,8 +1405,8 @@ final class Template {
      $google_opts = array('http'=>array(
                             'header'=>implode('\r\n',$header)."\r\n".
                             "Referer: $referer\r\n"));
-     $context = stream_context_create($opts);
-     $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . GOOGLE_KEY, false, $context);
+     $google_context = stream_context_create($google_opts);
+     $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . GOOGLE_KEY, false, $google_context);
     } else {
      $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . GOOGLE_KEY);
     }
