@@ -1,6 +1,7 @@
 <?php
-
-global $api = new WikipediaBot();
+require_once('WikipediaBot.php');
+global $api;
+$api = new WikipediaBot();
 $api->log_in();
 
 function category_members($cat){
@@ -121,7 +122,7 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
  */
 function get_article_id($page) {
   global $api;
-  $res = $api->fetch((Array(
+  $res = $api->fetch(Array(
       "action" => "query",
       "format" => "xml",
       "prop" => "info",
@@ -204,7 +205,7 @@ function parse_wikitext($text, $title = "API") {
   if (!$res) {
     // Wait a sec and try again
     sleep(2);
-    $res = $api->fetch($vars), 'POST');
+    $res = $api->fetch($vars, 'POST');
   }
   if (!isset($res->parse->text)) {
     trigger_error("Could not parse text of $title.", E_USER_WARNING);
