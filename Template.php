@@ -1040,7 +1040,7 @@ final class Template {
         if (isset($record->page)) {
           $this->add_if_new("pages", implode('–', $record->page));
         }
-        if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), somtimes here in identifier
+        if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
           foreach ($record->identifier as $recid) {
             if(strtolower(substr($recid,0,6)) === 'arxiv:') {
                if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
