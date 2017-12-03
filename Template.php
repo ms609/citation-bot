@@ -619,7 +619,7 @@ final class Template {
         }
       }
       if (strpos($url, "plants.jstor.org")) {
-        return FALSE; # We can't do anything with the plants
+        return FALSE; # Plants database, not journal
       } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget('url');
