@@ -11,7 +11,6 @@ function category_members($cat){
     "cmtitle" => "Category:$cat", // Don't URLencode.
     "action" => "query",
     "cmlimit" => "500",
-    "format" => "xml",
     "list" => "categorymembers",
   ];
   
@@ -43,7 +42,6 @@ function what_transcludes_2($template, $namespace = 99) {
     "action" => "query",
     "list" => "embeddedin",
     "eilimit" => "5000",
-    "format" => "xml",
     "eititle" => "Template:" . $template,
     "einamespace" => ($namespace==99)?"":$namespace,
   );
@@ -78,7 +76,6 @@ function get_last_revision($page) {
   $res = $api->fetch(Array(
       "action" => "query",
       "prop" => "revisions",
-      "format" => "xml",
       "titles" => $page,
     ));
   if (!isset($api->query->pages->page->revisions->rev)) {
@@ -95,7 +92,6 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
   $vars["apfrom"] = $start;
   $vars = ["action" => "query",
     "list" => "allpages",
-    "format" => "xml",
     "apnamespace" => $namespace,
     "apprefix" => $prefix,
     "aplimit" => "500",
@@ -127,7 +123,6 @@ function get_article_id($page) {
   global $api;
   $res = $api->fetch([
       "action" => "query",
-      "format" => "xml",
       "prop" => "info",
       "titles" => $page,
       ], 'POST');
@@ -143,7 +138,6 @@ function get_namespace($page) {
   global $api;
   $res = $api->fetch([
       "action" => "query",
-      "format" => "xml",
       "prop" => "info",
       "titles" => $page,
       ]); 
@@ -158,7 +152,6 @@ function is_redirect($page) {
   global $api;
   $res = $api->fetch(Array(
       "action" => "query",
-      "format" => "xml",
       "prop" => "info",
       "titles" => $page,
       ), 'POST');
@@ -179,7 +172,6 @@ function redirect_target($page) {
   global $api;
   $res = $api->fetch(Array(
       "action" => "query",
-      "format" => "xml",
       "redirects" => "1",
       "titles" => $page,
       ), 'POST');
