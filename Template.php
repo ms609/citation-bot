@@ -606,21 +606,20 @@ final class Template {
     
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
-      if (strpos($url, "sici")) {  //  Outdated
+      if (strpos($url, "sici")) {  //  Outdated url style
         $this->use_sici();         // Grab what we can before getting rid off it
         $headers_test = get_headers($url, 1);
-        if(!empty($headers_test['Location'])) {
+        if(!empty($headers_test['Location']) && strpos($headers_test['Location'], "jstor.org/stable/")) {
           $url = $headers_test['Location']; // Redirect
           if (is_null($url_sent)) {
             $this->set('url', $url); // Save it
-          } else {
-            return FALSE;
           }
+        } else {
+          return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
         }
       }
       if (strpos($url, "plants.jstor.org")) {
-        # Skip.  We can't do anything more with the plants, unfortunately.
-        return FALSE;
+        return FALSE; # Plants database, not journal
       } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget('url');
@@ -633,8 +632,9 @@ final class Template {
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         return TRUE;
+      } else {
+        return FALSE; // Jstor URL yielded nothing
       }
-      
     } else {
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
         if ($this->blank('bibcode')) {
