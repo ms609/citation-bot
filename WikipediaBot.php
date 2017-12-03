@@ -19,7 +19,7 @@ class WikipediaBot {
   }
       
   public function log_in() {
-    $response = $this->fetch(array('action' => 'query', 'meta'=>'tokens', 'type'=>'login'));
+    $response = $this->fetch(['action' => 'query', 'meta'=>'tokens', 'type'=>'login']);
     if (!isset($response->batchcomplete)) return FALSE;
     if (!isset($response->query->tokens->logintoken)) return FALSE;
     
@@ -81,7 +81,7 @@ class WikipediaBot {
         htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
       return FALSE;
     }
-    $check_logged_in = ((isset($params['type']) && $params['type'] == 'login') 
+    $check_logged_in = ((isset($params['type']) && $params['type'] == 'login')
       || (isset($params['action']) && $params['action'] == 'login')) ? FALSE : TRUE;
     if ($check_logged_in) $params['assert'] = 'user';
     $params['format'] = 'json';
@@ -105,7 +105,7 @@ class WikipediaBot {
             trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
           }
-          if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+          if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
             $this->log_in();
             return $this->fetch($params, $method);
           }
