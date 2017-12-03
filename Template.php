@@ -92,9 +92,12 @@ final class Template {
         if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
           $this->name = 'Cite journal';
           $this->process();
+          
+            print "TESTH96";
         } elseif ($this->has('eprint')) {
           $this->name = 'Cite arxiv';
           $this->process();
+            print "TESTH100";
         }
         $this->citation_template = TRUE;
       break;
@@ -178,9 +181,8 @@ final class Template {
         $this->get_doi_from_crossref();
         $this->get_open_access_url();
         $this->find_pmid();
-        print "Found.";
         $this->tidy();
-        print "Tidied.";
+        print "We are okay at this point.";
         // Convert from journal to book, if there is a unique chapter name or has an ISBN
         if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
           $this->name = 'Cite book';
@@ -202,10 +204,12 @@ final class Template {
           }
         }
     }
+    print "\n Are we okay at this point?";
     if ($this->citation_template) {
       $this->correct_param_spelling();
       $this->check_url();
     }
+    print "\n Are we okay at this point?";
   }
 
   protected function incomplete() {
@@ -798,7 +802,6 @@ final class Template {
         if ($this->blank('isbn') && $title = $this->get("title")) $this->add_if_new("isbn", findISBN( $title, $this->first_author()));
         else echo "\n  Already has an ISBN. ";
       }
-      echo " Really.";
     }
   }
 
@@ -1539,6 +1542,7 @@ final class Template {
           if (stripos($p->val, 'books.google.') !== FALSE) {
             $this->name = 'Cite book';
             $this->process();
+            print "TESTH1542";
           }
         } elseif ($p->param == 'doix') {
           echo "\n   + Found unincorporated DOI parameter";
