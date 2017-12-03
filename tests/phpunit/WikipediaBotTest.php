@@ -20,13 +20,6 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
   protected function tearDown() {
   }
     
-  public function testLogIn() {
-    $test_bot = new WikipediaBot();
-    $this->assertFalse($test_bot->logged_in());
-    $test_bot->log_in();
-    $this->assertTrue($test_bot->logged_in());
-  }
-  
   public function testReadExpandWrite() {
     $page = new TestPage();
     $page->get_text_from('User:Blocked Testing Account/readtest');
