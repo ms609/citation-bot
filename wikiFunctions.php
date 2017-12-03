@@ -5,28 +5,30 @@ $api = new WikipediaBot();
 $api->log_in();
 
 function category_members($cat){
-  $vars = Array(
+  global $api;
+  
+  $list = [];
+  $vars = [
     "cmtitle" => "Category:$cat", // Don't URLencode.
     "action" => "query",
     "cmlimit" => "500",
     "format" => "xml",
     "list" => "categorymembers",
-  );
-  $qc = "query-continue";
-  $list = array();
-
-  global $api;
+  ];
+  
   do {
     set_time_limit(40);
-    $res = $api->fetch($vars, 'POST');
-    if ($res) {
-      foreach ($res->query->categorymembers->cm as $page) {
-          $list[] = (string) $page["title"];
-        }
+    $res = $api->fetch($vars);
+    if (isset($res->query->categorymembers)) {
+      foreach ($res->query->categorymembers as $page) {
+        $list[] = (string) $page->title;
+      }
     } else {
-      echo 'Error reading API from ' . htmlspecialchars($url) . "\n\n";
+      trigger_error('Error reading API from ' . htmlspecialchars($url) . "\n\n", E_USER_WARNING);
     }
-  } while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
+    $res->query = NULL;
+  } while ($vars["cmcontinue"] = (string) $res->continue->cmcontinue);
+  
   return $list;
 }
 

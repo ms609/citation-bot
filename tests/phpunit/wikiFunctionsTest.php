@@ -19,13 +19,10 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
 
   protected function tearDown() {
   }
-/*  
-  public function testLogin() {
-  }
-  */
+  
   public function testCategoryMembers() {
     $this->assertTrue(count(category_members('Stub-Class cricket articles')) > 10);
-    $this->assertEquals(0,count(category_members('Stub-Class cricket zero tastic articles should be empty')));
+    $this->assertEquals(0, count(category_members('Stub-Class cricket zero tastic articles should be empty')));
   }
   
   public function testWhatTranscludes() {
