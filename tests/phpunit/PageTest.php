@@ -54,15 +54,4 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
   }
   
-  public function testRedirects() {
-    $page = new Page();
-    $page->get_text_from('NoSuchPage:ThereCan-tBe');
-    $this->assertEquals(-1, $page->is_redirect()[0]);
-    $page->get_text_from('User:Citation_bot/use');
-    $cbu = $page->is_redirect();
-    $this->assertEquals(0, $cbu[0]);
-    $page->get_text_from('WP:UCB');
-    $this->assertEquals(1,  $page->is_redirect()[0]);
-  }
-  
 }
