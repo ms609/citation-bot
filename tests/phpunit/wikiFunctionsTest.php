@@ -34,7 +34,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals(namespace_id('Template'), $namespace);
     $results = get_prefix_index('Cite j', $namespace); // too many results if we just use 'Cite'
     $this->assertTrue(array_search('Template:Cite journal', $results) !== FALSE);
-    $results = get_prefix_index('blah blah blah blah blah Martin', $namespace); // if we get anything thats wrong
+    $results = get_prefix_index("If we retrieve anything here, it's an error", $namespace);
     $this->assertTrue(empty($results));
   }
   
