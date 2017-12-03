@@ -15,6 +15,7 @@ $SLOW_MODE = TRUE;
 final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
+    echo "\n\n === Running wikiFunctionsTest.php === \n\n";
   }
 
   protected function tearDown() {
