@@ -2,7 +2,6 @@
 require_once('WikipediaBot.php');
 global $api;
 $api = new WikipediaBot();
-$api->log_in();
 
 function category_members($cat){
   global $api;
@@ -17,7 +16,7 @@ function category_members($cat){
   ];
   
   do {
-    set_time_limit(40);
+    set_time_limit(8);
     $res = $api->fetch($vars);
     if (isset($res->query->categorymembers)) {
       foreach ($res->query->categorymembers as $page) {
@@ -28,17 +27,19 @@ function category_members($cat){
     }
     $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
   } while ($vars["cmcontinue"]);
-  
+  var_dump($api);
   return $list;
 }
 
 // Returns an array; Array ("title1", "title2" ... );
-function what_transcludes($template, $namespace=99){
+function what_transcludes($template, $namespace = 99){
 	$titles = what_transcludes_2($template, $namespace);
 	return $titles["title"];
 }
 
 function what_transcludes_2($template, $namespace = 99) {
+  global $api;
+  
   $vars = Array (
     "action" => "query",
     "list" => "embeddedin",
@@ -49,19 +50,19 @@ function what_transcludes_2($template, $namespace = 99) {
   );
   $list = ['title' => NULL];
   
-  global $api;  
   do {
     set_time_limit(20);
     $res = $api->fetch($vars, 'POST');
-    if (!$res) {
-      echo 'Error reading API from ' . htmlspecialchars($url) . "\n";
+    if (isset($res->query->embeddedin->ei)) {
+      trigger_error('Error reading API from ' . htmlspecialchars($url), E_USER_NOTICE);
     } else {
-      foreach($res->query->embeddedin->ei as $page) {
-        $list["title"][] = (string) $page["title"];
-        $list["id"][] = (integer) $page["pageid"];
+      foreach($res->query->embeddedin as $page) {
+        $list["title"][] = $page->title;
+        $list["id"][] = $page->pageid;
+      }
     }
-    }
-  } while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
+    $vars["eicontinue"] = isset($res->continue) ? (string) $res->continue->eicontinue : FALSE;
+  } while ($vars["eicontinue"]);
   return $list;
 }
 
