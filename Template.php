@@ -999,7 +999,7 @@ final class Template {
                    ) === FALSE
         ) {
           echo "\n   Match for pagination but database journal \"" .
-            htmlspecialchars($journal_string[0]) . "\" didn't match \"journal = " .
+            htmlspecialchars($journal_string[0]) . "\" didn't match \"" .
             htmlspecialchars($journal) . "\"." . tag();
           return FALSE;
         }
@@ -1394,7 +1394,7 @@ final class Template {
     } else {
         return FALSE; // No data to use
     }
-    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . GOOGLE_KEY); 
+    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
     if ($string === FALSE) {
         echo "\n Google APIs search failed for $url_token \n";
         return FALSE;
