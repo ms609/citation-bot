@@ -621,7 +621,7 @@ final class Template {
       if (strpos($url, "plants.jstor.org")) {
         # Skip.  We can't do anything more with the plants, unfortunately.
         return FALSE;
-      } elseif (!$sici_url && preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
+      } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget('url');
         }
