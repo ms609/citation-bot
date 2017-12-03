@@ -40,7 +40,13 @@ class WikipediaBot {
       trigger_error("Curl encountered HTTP response error", E_USER_ERROR);
     }
     if (isset($response->error)) {
-      trigger_error($response->error->code . ':' . $response->error->info, E_USER_ERROR);
+      if ($response->error->code == 'blocked') {
+        $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
+        $loggedinName = (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : "UNKNOWN USER";
+        trigger_error('Account ' . $loggedinName . ' blocked: ' . $response->error->info, E_USER_ERROR);
+      } else {
+        trigger_error('API call failed: ' . $response->error->info, E_USER_ERROR);
+      }
       return FALSE;
     }
     return TRUE;
