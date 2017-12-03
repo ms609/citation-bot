@@ -607,19 +607,20 @@ final class Template {
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {  //  Outdated
-        $sici_url = TRUE;
         $this->use_sici();         // Grab what we can before getting rid off it
         $headers_test = get_headers($url, 1);
         if(!empty($headers_test['Location'])) {
           $url = $headers_test['Location']; // Redirect
           if (is_null($url_sent)) {
             $this->set('url', $url); // Save it
-            $sici_url = FALSE;
+          } else {
+            return FALSE;
           }
         }
       }
       if (strpos($url, "plants.jstor.org")) {
         # Skip.  We can't do anything more with the plants, unfortunately.
+        return FALSE;
       } elseif (!$sici_url && preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget('url');
