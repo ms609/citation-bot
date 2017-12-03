@@ -178,7 +178,9 @@ final class Template {
         $this->get_doi_from_crossref();
         $this->get_open_access_url();
         $this->find_pmid();
+        print "Found.";
         $this->tidy();
+        print "Tidied.";
         // Convert from journal to book, if there is a unique chapter name or has an ISBN
         if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
           $this->name = 'Cite book';
