@@ -3,7 +3,7 @@ require_once("credentials/wiki.php");
 
 class WikipediaBot {
   
-  private $ch, $oauth;
+  private $oauth, $ch;
   
   function __construct() {
     $this->oauth = new OAuth(OAUTH_CONSUMER_TOKEN, OAUTH_CONSUMER_SECRET, 
@@ -12,34 +12,12 @@ class WikipediaBot {
     $this->oauth->enableDebug();
     $this->oauth->setSSLChecks(0);
     $this->oauth->setRequestEngine(OAUTH_REQENGINE_CURL);
-    $this->ch = curl_init(API_ROOT);
   }
   
   function __destruct() {
-    #curl_close($this->ch);
+    if ($this->ch) curl_close($this->ch);
   }
-  
-  private function reset_curl() {
-    return curl_setopt_array($this->ch, [
-      CURLOPT_FAILONERROR => TRUE, // #TODO Remove this line once debugging complete
-      // CURLOPT_VERBOSE => TRUE, // #TODO Remove this line once debugging complete
-      CURLOPT_FOLLOWLOCATION => TRUE,
-      CURLOPT_MAXREDIRS => 5,
-      CURLOPT_HEADER => FALSE, // Don't include header in output
-      CURLOPT_HTTPGET => TRUE, // Reset to default GET
-      CURLOPT_RETURNTRANSFER => TRUE,
       
-      CURLOPT_CONNECTTIMEOUT_MS => 2000,
-      
-      CURLOPT_COOKIEFILE => 'cookie.txt',
-      CURLOPT_COOKIEJAR => 'cookiejar.txt',
-      CURLOPT_URL => API_ROOT,
-      CURLOPT_USERAGENT => 'Citation bot',
-      #CURLOPT_XOAUTH2_BEARER => OAUTH_ACCESS_TOKEN,
-      #CURLOPT_HTTPHEADER => ###,
-    ]);
-  }
-  
   public function log_in() {
     $response = $this->fetch(array('action' => 'query', 'meta'=>'tokens', 'type'=>'login'));
     if (!isset($response->batchcomplete)) return FALSE;
@@ -58,6 +36,9 @@ class WikipediaBot {
   }
   
   private function ret_okay($response) {
+    if ($response === CURLE_HTTP_RETURNED_ERROR) {
+      trigger_error("Curl encountered HTTP response error", E_USER_ERROR);
+    }
     if (isset($response->error)) {
       trigger_error((string) $response->error->info, E_USER_ERROR);
       return FALSE;
@@ -65,16 +46,46 @@ class WikipediaBot {
     return TRUE;
   }
   
-  public function fetch($params, $method='GET') {
+  private function reset_curl() {
+    if (!$this->ch) {
+      $this->ch = curl_init();
+      if (!$this->log_in()) {
+        curl_close($this->ch);
+        trigger_error("Could not log in to Wikipedia servers", E_USER_ERROR);
+      }        
+    }
+    return curl_setopt_array($this->ch, [
+        CURLOPT_FAILONERROR => TRUE, // #TODO Remove this line once debugging complete
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_HEADER => FALSE, // Don't include header in output
+        CURLOPT_HTTPGET => TRUE, // Reset to default GET
+        CURLOPT_RETURNTRANSFER => TRUE,
+        
+        CURLOPT_CONNECTTIMEOUT_MS => 1200,
+        
+        CURLOPT_COOKIESESSION => TRUE,
+        CURLOPT_COOKIEFILE => 'cookie.txt',
+        CURLOPT_COOKIEJAR => 'cookiejar.txt',
+        CURLOPT_URL => API_ROOT,
+        CURLOPT_USERAGENT => 'Citation bot',
+        #CURLOPT_XOAUTH2_BEARER => OAUTH_ACCESS_TOKEN,
+        #CURLOPT_HTTPHEADER => ###,
+      ]);
+  }
+  
+  public function fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
-      trigger_error('Could not initialize CURL resource: ' . curl_error($this->ch));
+      curl_close($this->ch);
+      trigger_error('Could not initialize CURL resource: ' .
+        htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
       return FALSE;
     }
-    
     $check_logged_in = ((isset($params['type']) && $params['type'] == 'login') 
       || (isset($params['action']) && $params['action'] == 'login')) ? FALSE : TRUE;
     if ($check_logged_in) $params['assert'] = 'user';
     $params['format'] = 'json';
+    
     try {
       switch (strtolower($method)) {
         
@@ -82,14 +93,17 @@ class WikipediaBot {
           $url = API_ROOT . '?' . http_build_query($params);
           $header = 'Authentication: ' . 
             $this->oauth->getRequestHeader(OAUTH_HTTP_METHOD_POST, $url);
+            
           curl_setopt_array($this->ch, [
             CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => [$header],
           ]);
+          
+          print "\n - $url";
           $ret = json_decode($data = curl_exec($this->ch));
-          if ( !$data ) {
-            echo "\n ! Curl error: " . htmlspecialchars( curl_error( $ch ) );
-            exit(0);
+          if (!$data) {
+            trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
+            return FALSE;
           }
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
             $this->log_in();
@@ -109,7 +123,7 @@ class WikipediaBot {
           
           $ret = json_decode($data = curl_exec($this->ch));
           if ( !$data ) {
-            echo "\n ! Curl error: " . htmlspecialchars( curl_error( $ch ) );
+            echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
             exit(0);
           }
           
@@ -117,6 +131,7 @@ class WikipediaBot {
             $this->log_in();
             return $this->fetch($params, $method);
           }
+          
           return ($this->ret_okay($ret)) ? $ret : FALSE;
           
         echo " ! Unrecognized method."; // @codecov ignore - will only be hit if error in our code
