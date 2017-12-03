@@ -468,7 +468,7 @@ ER -  }}';
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
   }
    
-  public function testCovertingISBN10intoISBN13() {
+  public function testConvertingISBN10intoISBN13() {
     $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-0-9749009-0-2', $expanded->get('isbn'));  // Convert with dashes
