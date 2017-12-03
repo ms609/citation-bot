@@ -99,7 +99,6 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$header],
           ]);
           
-          print "\n - $url";
           $ret = json_decode($data = curl_exec($this->ch));
           if (!$data) {
             trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
