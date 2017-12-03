@@ -17,7 +17,7 @@ function category_members($cat){
   
   do {
     set_time_limit(8);
-    $res = $api->fetch($vars);
+    $res = $api->fetch($vars, 'POST');
     if (isset($res->query->categorymembers)) {
       foreach ($res->query->categorymembers as $page) {
         $list[] = (string) $page->title;
