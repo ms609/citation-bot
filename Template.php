@@ -796,6 +796,7 @@ final class Template {
         if ($this->blank('isbn') && $title = $this->get("title")) $this->add_if_new("isbn", findISBN( $title, $this->first_author()));
         else echo "\n  Already has an ISBN. ";
       }
+      echo " Really.";
     }
   }
 
