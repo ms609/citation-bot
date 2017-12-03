@@ -148,6 +148,7 @@ function get_namespace($page) {
   return (int) reset($res->query->pages)->ns;
 }
 
+# @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.
 function is_redirect($page) {
   global $api;
   $res = $api->fetch(Array(
@@ -161,7 +162,7 @@ function is_redirect($page) {
       return -1;
   }
   $res = reset($res->query->pages);
-  return (isset($res->pageid)) ? $res->pageid : -1;
+  return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
 }
 
 /**
