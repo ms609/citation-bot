@@ -14,10 +14,6 @@ class Page {
 
   protected $text, $title, $modifications;
 
-  public function is_redirect() {
-    return is_redirect($this->title);
-  }
-
   public function get_text_from($title) {
     global $bot;
     
