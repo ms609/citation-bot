@@ -89,31 +89,32 @@ function get_last_revision($page) {
 }
 
 function get_prefix_index($prefix, $namespace = 0, $start = "") {
-  global $bot;
-  $page_titles = array();
-  $page_ids=array();
-  $vars["apfrom"]  = $start;
-  $vars = Array ("action" => "query",
+  global $api;
+  $page_titles = [];
+  $page_ids = [];
+  $vars["apfrom"] = $start;
+  $vars = ["action" => "query",
     "list" => "allpages",
     "format" => "xml",
     "apnamespace" => $namespace,
     "apprefix" => $prefix,
-    "aplimit" => "5000",
-  );
-  global $api;
+    "aplimit" => "500",
+  ];
+  
   do {
     set_time_limit(10);
     $res = $api->fetch($vars, 'POST');
-    if ($res && !$res->error) {
-      foreach ($res->query->allpages->p as $page) {
-        $page_titles[] = (string) $page["title"];
-        $page_ids[] = (integer) $page["pageid"];
+    if ($res && !$res->error && isset($res->query->allpages)) {
+      foreach ($res->query->allpages as $page) {
+        $page_titles[] = $page->title;
+        $page_ids[] = $page->pageid;
       }
     } else {
       trigger_error('Error reading API with vars ' . var_dump($vars), E_USER_NOTICE);
       if ($res->error) echo $res->error;
     }
-  } while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
+    $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
+  } while ($vars["apfrom"]);
   set_time_limit(45);
   return $page_titles;
 }
@@ -124,31 +125,33 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
  */
 function get_article_id($page) {
   global $api;
-  $res = $api->fetch(Array(
+  $res = $api->fetch([
       "action" => "query",
       "format" => "xml",
       "prop" => "info",
       "titles" => $page,
-      ), 'POST');
-  if (!isset($xml->query->pages->page)) {
+      ], 'POST');
+  var_dump($res); die;
+  if (!isset($res->query->pages->page)) {
       echo "\n Failed to get article ID \n";
       return FALSE;
   }
-  return $xml->query->pages->page["pageid"];
+  return $res->query->pages->page["pageid"];
 }
 
 function get_namespace($page) {
   global $api;
-  $res = $api->fetch(Array("action" => "query",
+  $res = $api->fetch([
+      "action" => "query",
       "format" => "xml",
       "prop" => "info",
       "titles" => $page,
-      ));
-  if (!isset($res->query->pages->page)) {
+      ]); 
+  if (!isset($res->query->pages)) {
       echo "\n Failed to get article namespace \n";
       return FALSE;
   }
-  return (int) $xml->query->pages->page["ns"];
+  return (int) reset($res->query->pages)->ns;
 }
 
 function is_redirect($page) {
