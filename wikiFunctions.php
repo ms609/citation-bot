@@ -26,8 +26,8 @@ function category_members($cat){
     } else {
       trigger_error('Error reading API from ' . htmlspecialchars($url) . "\n\n", E_USER_WARNING);
     }
-    $res->query = NULL;
-  } while ($vars["cmcontinue"] = (string) $res->continue->cmcontinue);
+    $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
+  } while ($vars["cmcontinue"]);
   
   return $list;
 }
