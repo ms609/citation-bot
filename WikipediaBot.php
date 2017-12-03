@@ -43,7 +43,7 @@ class WikipediaBot {
       if ($response->error->code == 'blocked') {
         $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
         $loggedinName = (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : "UNKNOWN USER";
-        trigger_error('Account ' . $loggedinName . ' blocked: ' . $response->error->info, E_USER_ERROR);
+        trigger_error('Account "' . $loggedinName . '" blocked from IP ' . $_SERVER['REMOTE_ADDR'], E_USER_ERROR);
       } else {
         trigger_error('API call failed: ' . $response->error->info, E_USER_ERROR);
       }
