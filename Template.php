@@ -1394,7 +1394,7 @@ final class Template {
     } else {
         return FALSE; // No data to use
     }
-    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY, FALSE, $GOOGLE_CONTEXT);
+    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY, FALSE, NULL);
     if ($string === FALSE) {
         echo "\n Google APIs search failed for $url_token \n";
         return FALSE;
