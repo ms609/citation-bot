@@ -2,15 +2,14 @@ branches:
   except: release
 
 language: php
-php:
-  - '7.0'
-  - '5.6'
-
+matrix:
+  include:
+    - php: 5.6
+      install: pecl install oauth-1.2.3
+    - php: 7.0
+      install: pecl install oauth
 git:
   depth: 3
-
-install:
-  - pecl install oauth
 
 before-script:  
   - travis_retry composer self-update
