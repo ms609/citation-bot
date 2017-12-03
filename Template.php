@@ -999,7 +999,7 @@ final class Template {
                    ) === FALSE
         ) {
           echo "\n   Match for pagination but database journal \"" .
-            htmlspecialchars($journal_string[0]) . "\" didn't match \"journal = " .
+            htmlspecialchars($journal_string[0]) . "\" didn't match \"" .
             htmlspecialchars($journal) . "\"." . tag();
           return FALSE;
         }
