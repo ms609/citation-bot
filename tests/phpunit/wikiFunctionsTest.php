@@ -39,12 +39,9 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testRedirects() {
-    $this->assertEquals(-1, is_redirect('NoSuchPage:ThereCan-tBe')[0]);
-    $this->assertEquals(0, is_redirect('User:Citation_bot')[0]);
-    $this->assertEquals(1, is_redirect('WP:UCB')[0]);
-    
-    // TODO fix article_id before restoring this test:
-    #$this->assertEquals(article_id(redirect_target('WP:UCB')), is_redirect('WP:UCB')[1]);
+    $this->assertEquals(-1, is_redirect('NoSuchPage:ThereCan-tBe'));
+    $this->assertEquals( 0, is_redirect('User:Citation_bot'));
+    $this->assertEquals( 1, is_redirect('WP:UCB'));
   }  
     
   public function testWrite() {
