@@ -580,15 +580,15 @@ final class Template {
           if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
             $url = "http://" . $url; // Try it with http
           }
-          if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) === FALSE) return NULL; // PHP does not like it
+          if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) === FALSE) return FALSE; // PHP does not like it
           $pattern = '_^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.\\d{1,3}){3})(?!127(?:\\.\\d{1,3}){3})(?!169\\.254(?:\\.\\d{1,3}){2})(?!192\\.168(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)*(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}]{2,})))(?::\\d{2,5})?(?:/[^\\s]*)?$_iuS';
-          if (preg_match ($pattern, $url) !== 1) return NULL;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
+          if (preg_match ($pattern, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
           $this->rename('website', 'url'); // Rename it first, so that parameters stay in same order
           $this->set('url', $url);
           quiet_echo("\n   ~ website is actually HTTP URL; converting to use url parameter.");
         } else {
           // If no URL or website, nothing to worth with.
-          return NULL;
+          return FALSE;
         }
       }
       
@@ -1010,7 +1010,7 @@ final class Template {
         echo tag();
         if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
         $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
-        $i = NULL;
+        $i = 0;
         if (isset($record->author)) {
          foreach ($record->author as $author) {
           $this->add_if_new("author" . ++$i, $author);
@@ -1447,7 +1447,7 @@ final class Template {
       }
     }
     $this->add_if_new("isbn", $isbn);
-    $i = NULL;
+    $i = 0;
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
@@ -1509,7 +1509,7 @@ final class Template {
   protected function find_more_authors() {
   /** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
    *   Send the URL and the first author's SURNAME ONLY as $a1
-   *  The function will return an array of authors in the form $new_authors[3] = Author, The Third
+   *  The function will use add_if_new to set authors
    */
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       $this->expand_by_doi(TRUE);
@@ -1529,7 +1529,7 @@ final class Template {
     }
     $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
     if (!$url) {
-      return NULL;
+      return;
     }
     echo "\n  * Looking for more authors @ " . htmlspecialchars($url) . ":";
     echo "\n   - Using meta tags...";
@@ -2090,7 +2090,7 @@ final class Template {
 
       // Check the parameter list to find a likely replacement
       $shortest = -1;
-      $closest = NULL;
+      $closest = 0;
       foreach ($unused_parameters as $parameter) {
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
@@ -2295,7 +2295,7 @@ final class Template {
 
   protected function verify_doi () {
     $doi = $this->get_without_comments_and_placeholders('doi');
-    if (!$doi) return NULL;
+    if (!$doi) return FALSE;
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
       case ".":
