@@ -1290,18 +1290,22 @@ final class Template {
       warn('#TODO: crossref lookup with no doi');
     }
     $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=TRUE";
-    $xml = @simplexml_load_file($url);
-    if ($xml) {
-      $result = $xml->query_result->body->query;
-      if ($result["status"] == "resolved") {
-        return $result;
+    for ($i = 0; $i < 2; $i++) {
+      $xml = @simplexml_load_file($url);
+      if ($xml) {
+        $result = $xml->query_result->body->query;
+        if ($result["status"] == "resolved") {
+          return $result;
+        } else {
+          return FALSE;
+        }
       } else {
-        return FALSE;
+        sleep(1);
+        // Keep trying...
       }
-    } else {
-       echo "\n   ! Error loading CrossRef file from DOI " . htmlspecialchars($doi) ."!";
-       return FALSE;
     }
+    echo "\n   ! Error loading CrossRef file from DOI " . htmlspecialchars($doi) ."!";
+    return FALSE;
   }
 
   protected function get_open_access_url() {
