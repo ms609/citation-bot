@@ -27,7 +27,6 @@ function category_members($cat){
     }
     $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
   } while ($vars["cmcontinue"]);
-  var_dump($api);
   return $list;
 }
 
@@ -111,7 +110,7 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
         $page_ids[] = (integer) $page["pageid"];
       }
     } else {
-      echo 'Error reading API with vars '; var_dump($vars);
+      trigger_error('Error reading API with vars ' . var_dump($vars), E_USER_NOTICE);
       if ($res->error) echo $res->error;
     }
   } while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
@@ -160,17 +159,13 @@ function is_redirect($page) {
       "prop" => "info",
       "titles" => $page,
       ), 'POST');
-  if (!isset($res->query->pages->page)) {
+  
+  if (!isset($res->query->pages)) {
       echo "\n Failed to get redirect status \n";
-      return array (-1, NULL);
+      return -1;
   }
-  if ($res->query->pages->page["pageid"]) {
-    // Page exists
-    return array ((($res->query->pages->page["redirect"]) ? 1 : 0),
-                    $res->query->pages->page["pageid"]);
-  } else {
-      return array (-1, NULL);
-  }
+  $res = reset($res->query->pages);
+  return (isset($res->pageid)) ? $res->pageid : -1;
 }
 
 /**
