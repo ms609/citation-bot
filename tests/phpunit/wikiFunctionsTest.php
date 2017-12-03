@@ -51,7 +51,6 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   }  
     
   public function testWrite() {
-    $bot = new WikipediaBot();
     $page = new Page();
     $result = $page->get_text_from('User:AManWithNoPlan/bot_test_page');
     $this->assertNotNull($result);
@@ -59,7 +58,6 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $result = $page->write();
     $this->assertEquals(FALSE, $result);  // test uses blocked account
     
-    $bot = new WikipediaBot();
     $page = new Page();
     $result = $page->get_text_from('dsafasdfdsfa34f34fsfrasdfdsafsdfasddsafadsafsdfasfd');
     $this->assertNotNull($result);
@@ -70,15 +68,13 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   
   public function testNamespaces() {
     $bot = new WikipediaBot();
-    $bot->httpmethod="POST";
     $vars = array(
           'format' => 'json',
           'action' => 'query',
           'meta'   => 'siteinfo',
           'siprop'  => 'namespaces',
       );
-    $bot->submit(API_ROOT, $vars);
-    $namespaces = json_decode($bot->results);
+    $namespaces = $bot->fetch($vars, 'POST');
     
     foreach ($namespaces->query->namespaces as $ns) {
       $ns_name = isset($ns->canonical)? $ns->canonical : '';
@@ -232,17 +228,10 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
        $result = junior_test($text);
        $this->assertEquals("Ewing JR", $result[0]);
        $this->assertEquals(FALSE, $result[1]);
-   }
-    
-  public function testCurlSetup() {
-    $ch = curl_init();
-    $url = "http://www.apple.com/";
-    curl_setup($ch, $url);
-    $this->assertNull(NULL); // Just looking for code coverage and access of unset variables, etc.
   }
-
+  
   public function testEditSummary() {  // Not a great test. Mostly just verifies no crashes in code
-    $page = new Page();
+    $page = new TestPage();
     $text = "{{Cite journal|pmid=9858586}}";
     $page->parse_text($text);
     $page->expand_text();
@@ -258,5 +247,5 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text_math,wikify_external_text($text_math)); // Should not change
     $this->assertEquals($text_math,wikify_external_text($text_mml));  // The most important test: mml converstion to <math>
   }
-    
+  
 }
