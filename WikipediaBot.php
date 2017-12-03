@@ -40,7 +40,7 @@ class WikipediaBot {
       trigger_error("Curl encountered HTTP response error", E_USER_ERROR);
     }
     if (isset($response->error)) {
-      trigger_error((string) $response->error->info, E_USER_ERROR);
+      trigger_error($response->error->code . ':' . $response->error->info, E_USER_ERROR);
       return FALSE;
     }
     return TRUE;
