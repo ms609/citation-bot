@@ -19,7 +19,7 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
 
   protected function tearDown() {
   }
-    
+  
   public function testReadExpandWrite() {
     $page = new TestPage();
     $page->get_text_from('User:Blocked Testing Account/readtest');
