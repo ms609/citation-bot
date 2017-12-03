@@ -182,7 +182,7 @@ final class Template {
         $this->get_open_access_url();
         $this->find_pmid();
         $this->tidy();
-        print "We are okay at this point.";
+        
         // Convert from journal to book, if there is a unique chapter name or has an ISBN
         if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
           $this->name = 'Cite book';
@@ -204,12 +204,11 @@ final class Template {
           }
         }
     }
-    print "\n Are we okay at this point?";
     if ($this->citation_template) {
       $this->correct_param_spelling();
       $this->check_url();
     }
-    print "\n Are we okay at this point?";
+    print "\n A segmentation fault occurs shortly after this point.";
   }
 
   protected function incomplete() {
@@ -1275,7 +1274,7 @@ final class Template {
 
   protected function use_sici() {
     if (preg_match(SICI_REGEXP, urldecode($this->parsed_text()), $sici)) {
-      quiet_echo(" * Extracting information from SICI");
+      quiet_echo("\n * Extracting information from SICI");
       $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       $this->add_if_new("year", $sici[2]);
