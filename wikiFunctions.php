@@ -91,7 +91,7 @@ function get_last_revision($page) {
 function get_prefix_index($prefix, $namespace = 0, $start = "") {
   global $api;
   $page_titles = [];
-  $page_ids = [];
+  # $page_ids = [];
   $vars["apfrom"] = $start;
   $vars = ["action" => "query",
     "list" => "allpages",
@@ -104,14 +104,14 @@ function get_prefix_index($prefix, $namespace = 0, $start = "") {
   do {
     set_time_limit(10);
     $res = $api->fetch($vars, 'POST');
-    if ($res && !$res->error && isset($res->query->allpages)) {
+    if ($res && !isset($res->error) && isset($res->query->allpages)) {
       foreach ($res->query->allpages as $page) {
         $page_titles[] = $page->title;
-        $page_ids[] = $page->pageid;
+        # $page_ids[] = $page->pageid;
       }
     } else {
-      trigger_error('Error reading API with vars ' . var_dump($vars), E_USER_NOTICE);
-      if ($res->error) echo $res->error;
+      trigger_error('Error reading API with vars ' . http_build_query($vars), E_USER_NOTICE);
+      if (isset($res->error)) echo $res->error;
     }
     $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
   } while ($vars["apfrom"]);
