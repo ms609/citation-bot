@@ -469,22 +469,22 @@ ER -  }}';
   }
    
   public function testCovertingISBN10intoISBN13() {
-    $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC&printsec=frontcover&dq=isbn:0974900907#v=onepage&q&f=false}}";
+    $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-0-9749009-0-2', $expanded->get('isbn'));  // Convert with dashes
-    $text = "{{cite book|isbn=978-0-9749009-0-2|url=https://books.google.com/books?id=to0yXzq_EkQC&printsec=frontcover&dq=isbn:0974900907#v=onepage&q&f=false}}";
+    $text = "{{cite book|isbn=978-0-9749009-0-2|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-0-9749009-0-2', $expanded->get('isbn'));  // Unchanged with dashes
-    $text = "{{cite book|isbn=9780974900902|url=https://books.google.com/books?id=to0yXzq_EkQC&printsec=frontcover&dq=isbn:0974900907#v=onepage&q&f=false}}";
+    $text = "{{cite book|isbn=9780974900902|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('9780974900902', $expanded->get('isbn'));   // Unchanged without dashes
-    $text = "{{cite book|isbn=0974900907|url=https://books.google.com/books?id=to0yXzq_EkQC&printsec=frontcover&dq=isbn:0974900907#v=onepage&q&f=false}}";
+    $text = "{{cite book|isbn=0974900907|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-0974900902', $expanded->get('isbn'));   // Convert without dashes
-    $text = "{{cite book|isbn=1-84309-164-X|url=https://books.google.com/books?id=GvjwAQAACAAJ&dq=1-84309-164-X&hl=en&sa=X&ved=0ahUKEwixgvfujOnXAhXmwVQKHYWpDesQ6AEIJjAA}}";
+    $text = "{{cite book|isbn=1-84309-164-X|url=https://books.google.com/books?id=GvjwAQAACAAJ}}";
     $expanded = $this->process_citation($text);  
     $this->assertEquals('978-1-84309-164-6', $expanded->get('isbn'));  // Convert with dashes and a big X
-    $text = "{{cite book|isbn=184309164x|url=https://books.google.com/books?id=GvjwAQAACAAJ&dq=1-84309-164-X&hl=en&sa=X&ved=0ahUKEwixgvfujOnXAhXmwVQKHYWpDesQ6AEIJjAA}}";
+    $text = "{{cite book|isbn=184309164x|url=https://books.google.com/books?id=GvjwAQAACAAJ}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-1843091646', $expanded->get('isbn'));  // Convert without dashes and a tiny x
     $text = "{{cite book|isbn=Hello Brother}}";
