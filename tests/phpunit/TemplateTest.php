@@ -627,24 +627,24 @@ ER -  }}';
        return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
    }
     
-   public function testOverwriteBlanks() {
-       $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('{{cite journal|jstor=1234567890}}', $expanded->parsed_text());
-   }
+  public function testOverwriteBlanks() {
+    $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{cite journal|jstor=1234567890}}', $expanded->parsed_text());
+  }
 
-   public function testIgnoreJstorPlants() {
-       $text='{{Cite journal| url=http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972 |title=Holotype of Persoonia terminalis L.A.S.Johnson & P.H.Weston [family PROTEACEAE]}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972',$expanded->get('url'));
-       $this->assertNull($expanded->get('jstor'));
-   }
-    
-   public function testBibcodeDotEnding() {
-       $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('1932Natur.129Q..18.',$expanded->get('bibcode'));
-   }
+  public function testIgnoreJstorPlants() {
+    $text='{{Cite journal| url=http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972 |title=Holotype of Persoonia terminalis L.A.S.Johnson & P.H.Weston [family PROTEACEAE]}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972',$expanded->get('url'));
+    $this->assertNull($expanded->get('jstor'));
+  }
+   
+  public function testBibcodeDotEnding() {
+     $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('1932Natur.129Q..18.', $expanded->get('bibcode'));
+  }
 
    public function testConvertJournalToBook() {
        $text = '{{Cite journal|doi=10.1007/978-3-540-74735-2_15}}';
