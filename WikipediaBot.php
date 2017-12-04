@@ -3,7 +3,7 @@ require_once("credentials/wiki.php");
 
 class WikipediaBot {
   
-  private $oauth, $ch;
+  protected $oauth, $ch;
   
   function __construct() {
     $this->oauth = new OAuth(OAUTH_CONSUMER_TOKEN, OAUTH_CONSUMER_SECRET, 

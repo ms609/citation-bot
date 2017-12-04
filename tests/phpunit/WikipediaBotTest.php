@@ -15,17 +15,14 @@ $SLOW_MODE = TRUE;
 class WikipediaBotTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
-    global $api;
     $api = new WikipediaBot();
+    $page = new TestPage();
   }
 
   protected function tearDown() {
-    global $api;
-    unset($api);
   }
   
   public function testReadExpandWrite() {
-    $page = new TestPage();
     $page->get_text_from('User:Blocked Testing Account/readtest');
     $this->assertEquals('This page tests bots', $page->parsed_text());
     

@@ -10,7 +10,6 @@ $SLOW_MODE = TRUE;
  
 final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   
-  private $api;
   protected function setUp() {
   }
 
