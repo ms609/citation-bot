@@ -90,4 +90,3 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
   }
    
 }
-
