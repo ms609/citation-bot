@@ -15,6 +15,8 @@ $SLOW_MODE = TRUE;
 class WikipediaBotTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
+    global $api;
+    $api = new WikipediaBot();
   }
 
   protected function tearDown() {
