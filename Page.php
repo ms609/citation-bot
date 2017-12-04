@@ -167,7 +167,8 @@ class Page {
               $edit_summary ? $edit_summary : $this->edit_summary(),
               $this->lastrevid, $this->read_at);
     } else {
-      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots}} template.";
+      trigger_error("Can't write to " . htmlspecialchars($this->title) . 
+        " - prohibited by {{bots}} template.", E_USER_NOTICE);
       return FALSE;
     }
   }

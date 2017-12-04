@@ -48,7 +48,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page->expand_text();
     $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
     $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
-    $page->write($api);
+    $this->assertFalse(@$page->write($api)); // Travis can't write as its IPs are blocked.
     
     $page->get_text_from($writeTestPage, $api);
     $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);

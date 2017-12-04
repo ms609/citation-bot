@@ -187,11 +187,11 @@ class WikipediaBot {
     
     if ((!is_null($lastRevId) && $myPage->lastrevid != $lastRevId)
      || (!is_null($startedEditing) && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-      echo "\n ! Possible edit conflict detected. Aborting.";
+      triggeer_error("Possible edit conflict detected. Aborting.", E_USER_WARNING);
       return FALSE;
     }
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
-      trigger_error("\n ! Placeholder left escaped in text. Aborting.", E_USER_WARNING);
+      trigger_error("\n ! Placeholder left escaped in text. Aborting.", E_USER_ERROR);
       return FALSE;
     }
     
@@ -213,11 +213,14 @@ class WikipediaBot {
     $result = $this->fetch($submit_vars, 'POST');
     
     if (isset($result->error)) {
-      echo "\n ! Write error: " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
+      trigger_error("Write error: " . 
+                    htmlspecialchars(strtoupper($result->error->code)) . ": " . 
+                    str_replace(array("You ", " have "), array("This bot ", " has "), 
+                    htmlspecialchars($result->error->info)), E_USER_ERROR);
       return FALSE;
     } elseif (isset($result->edit)) {
       if (isset($result->edit->captcha)) {
-        echo "\n ! Write error: We encountered a captcha, so can't be properly logged in.\n";
+        trigger_error("Write error: We encountered a captcha, so can't be properly logged in.", E_USER_ERROR);
         return FALSE;
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
@@ -233,7 +236,9 @@ class WikipediaBot {
         return FALSE;
       }
     } else {
-      echo "\n ! Unhandled write error.  Please copy this output and <a href=https://github.com/ms609/citation-bot/issues/new>report a bug.</a>";
+      trigger_error("Unhandled write error.  Please copy this output and " .
+                    "<a href='https://github.com/ms609/citation-bot/issues/new'>" .
+                    "report a bug.</a>", E_USER_ERROR);
       return FALSE;
     }
   }
