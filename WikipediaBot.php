@@ -50,7 +50,6 @@ class WikipediaBot {
       if ($response->error->code == 'blocked') {
         $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
         $loggedinName = (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : "UNKNOWN USER";
-        print_r($_SERVER);
         trigger_error('Account "' . $loggedinName . 
           '" blocked from IP ' . getenv('SERVER_ADDR') . // getHostByName(getHostName()) is a server's local (internal) IP
           "; if using a BotPassword, is this IP permitted?", E_USER_ERROR);
