@@ -1406,18 +1406,36 @@ final class Template {
     }
     $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
     if ($string === FALSE) {
-        echo "\n Google APIs search failed for $url_token \n";
-        return FALSE;
-    }
-    $result = @json_decode($string, false);
-    if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
-        $gid=$result->items[0]->id;
-        $this->google_book_details($gid);
-        if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
-        return TRUE;
+        if ($isbn) {
+          $google_book_url='https://books.google.com/books?isbn='.$isbn;
+          $google_content = @file_get_contents($google_book_url);
+          if ($google_content === FALSE) {
+            echo "\n Google APIs search failed for $url_token \n";
+            return FALSE;
+          }
+          preg_match_all('~books.google.com/books\?id=............&amp~',$google_content,$google_results);
+          $google_results = $google_results[0];
+          $google_results = array_unique($google_results);
+          if (count($google_results) !== 1) {
+            echo "\n Google APIs search failed for $url_token \n";
+            return FALSE;
+          }
+          $google_results = $google_results[0];
+          $gid = substr($google_results,26,-4);
+          $this->google_book_details($gid);
+          if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
+          return TRUE;
     } else {
-      echo "\n Google APIs search failed with $url_token \n";
-      return FALSE;
+      $result = @json_decode($string, false);
+        if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
+          $gid=$result->items[0]->id;
+          $this->google_book_details($gid);
+          if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
+          return TRUE;
+      } else {
+        echo "\n Google APIs search failed with $url_token \n";
+        return FALSE;
+      }
     }
   }
 
