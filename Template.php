@@ -179,6 +179,7 @@ final class Template {
         $this->get_open_access_url();
         $this->find_pmid();
         $this->tidy();
+        
         // Convert from journal to book, if there is a unique chapter name or has an ISBN
         if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
           $this->name = 'Cite book';
@@ -1278,7 +1279,7 @@ final class Template {
 
   protected function use_sici() {
     if (preg_match(SICI_REGEXP, urldecode($this->parsed_text()), $sici)) {
-      quiet_echo(" * Extracting information from SICI");
+      quiet_echo("\n * Extracting information from SICI");
       $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       $this->add_if_new("year", $sici[2]);
@@ -1299,18 +1300,22 @@ final class Template {
       warn('#TODO: crossref lookup with no doi');
     }
     $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=TRUE";
-    $xml = @simplexml_load_file($url);
-    if ($xml) {
-      $result = $xml->query_result->body->query;
-      if ($result["status"] == "resolved") {
-        return $result;
+    for ($i = 0; $i < 2; $i++) {
+      $xml = @simplexml_load_file($url);
+      if ($xml) {
+        $result = $xml->query_result->body->query;
+        if ($result["status"] == "resolved") {
+          return $result;
+        } else {
+          return FALSE;
+        }
       } else {
-        return FALSE;
+        sleep(1);
+        // Keep trying...
       }
-    } else {
-       echo "\n   ! Error loading CrossRef file from DOI " . htmlspecialchars($doi) ."!";
-       return FALSE;
     }
+    echo "\n   ! Error loading CrossRef file from DOI " . htmlspecialchars($doi) ."!";
+    return FALSE;
   }
 
   protected function get_open_access_url() {
@@ -1500,115 +1505,6 @@ final class Template {
       }
     }
   }
-
-  
-  /*
-   * This function is no longer called, but is retained in case a use case arises in the future
-   * @codeCoverageIgnore
-  */
-  protected function find_more_authors() {
-  /** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
-   *   Send the URL and the first author's SURNAME ONLY as $a1
-   *  The function will use add_if_new to set authors
-   */
-    if ($doi = $this->get_without_comments_and_placeholders('doi')) {
-      $this->expand_by_doi(TRUE);
-    }
-    if ($this->get('pmid')) {
-      $this->expand_by_pubmed(TRUE);
-    }
-    $pages = $this->page_range();
-    $pages = $pages[0];
-    if (preg_match("~\d\D+\d~", $pages)) {
-      $new_pages = $pages;
-    }
-    if ($doi) {
-      $url = "http://dx.doi.org/" . urlencode($doi);
-    } else {
-      $url = urlencode($this->get('url'));
-    }
-    $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
-    if (!$url) {
-      return;
-    }
-    echo "\n  * Looking for more authors @ " . htmlspecialchars($url) . ":";
-    echo "\n   - Using meta tags...";
-    $meta_tags = get_meta_tags($url);
-    if ($meta_tags["citation_authors"]) {
-      $new_authors = format_multiple_authors($meta_tags["citation_authors"], TRUE);
-    }
-    global $SLOW_MODE;
-    if ($SLOW_MODE && !$new_pages && !$new_authors) {
-      echo "\n   - Now scraping web-page.";
-      //Initiate cURL resource
-      $ch = curl_init();
-      curlSetup($ch, $url);
-
-      curl_setopt($ch, CURLOPT_MAXREDIRS, 7);  //This means we can't get stuck.
-      if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
-        echo "404 returned from URL.<br>";
-      } elseif (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {
-        echo "501 returned from URL.<br>";
-      } else {
-        $source = str_ireplace(
-                    array('&nbsp;', '<p ',          '<DIV '),
-                    array(' ',     "\r\n    <p ", "\r\n    <DIV "),
-                    curl_exec($ch)
-                   ); // Spaces before '<p ' fix cases like 'Title' <p>authors</p> - otherwise 'Title' gets picked up as an author's initial.
-        $source = preg_replace(
-                    "~<sup>.*</sup>~U",
-                    "",
-                    str_replace("\n", "\n  ", $source)
-                  );
-        curl_close($ch);
-        if (strlen($source)<1280000) {
-
-          // Pages - only check if we don't already have a range
-          if (!$new_pages && preg_match("~^[\d\w]+$~", trim($pages), $page)) {
-            // find an end page number first
-            $firstPageForm = preg_replace('~d\?([^?]*)$~U', "d$1", preg_replace('~\d~', '\d?', preg_replace('~[a-z]~i', '[a-zA-Z]?', $page[0])));
-            #echo "\n Searching for page number with form $firstPageForm:";
-            if (preg_match("~{$page[0]}[^\d\w\.]{1,5}?(\d?$firstPageForm)~", trim($source), $pages)) { // 13 leaves enough to catch &nbsp;
-              $new_pages = $page[0] . '-' . $pages[1];
-             # echo " found range [$page[0] to $pages[1]]";
-            } #else echo " not found.";
-          }
-
-          // Authors
-          if (TRUE || !$new_authors) {
-            // Check dc.contributor, which isn't correctly handled by get_meta_tags
-            if (preg_match_all("~\<meta name=\"dc.Contributor\" +content=\"([^\"]+)\"\>~U", $source, $authors)){
-              $new_authors=$authors[1];
-            }
-          }
-        } else {
-          echo "\n   x File size was too large. Abandoned.";
-        }
-      }
-    }
-
-    $count_new_authors = count($new_authors) - 1;
-    if ($count_new_authors > 0) {
-      $this->forget('author');
-      for ($j = 0; $j < $count_new_authors; ++$j) {
-        $au = explode(', ', $new_authors[$j - 1]);
-        if ($au[1]) {
-          $this->add_if_new('last' . $j, $au[0]);
-          $this->add_if_new('first' . $j, preg_replace("~(\p{L})\p{L}*\.? ?~", "$1.", $au[1]));
-          $this->forget('author' . $j);
-        } else {
-          if ($au[0]) {
-            $this->add_if_new ("author$j", $au[0]);
-          }
-        }
-      }
-    }
-    if ($new_pages) {
-      $this->set('pages', $new_pages);
-      echo " [completed page range]";
-    }
-  }
-
 
   ### parameter processing
   protected function use_unnamed_params() {
@@ -2066,7 +1962,7 @@ final class Template {
 
     if ((strlen($p->param) > 0) && !in_array($p->param, PARAMETER_LIST)) {
      
-      echo "\n  *  Unrecognised parameter " . htmlspecialchars($p->param) . " ";
+      echo "\n   * Unrecognised parameter " . htmlspecialchars($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
         // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)

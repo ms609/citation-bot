@@ -9,36 +9,48 @@
 
 require_once('Comment.php');
 require_once('Template.php');
+require_once('WikipediaBot.php');
 
-final class Page {
+class Page {
 
   protected $text, $title, $modifications;
 
-  public function is_redirect() {
-    return is_redirect($this->title);
+  function __construct() {
+    $this->api = new WikipediaBot();
   }
-
-  public function get_text_from($title) {
-    global $bot;
-    $bot->fetch(WIKI_ROOT . "title=" . urlencode($title) . "&action=raw");
-    $this->text = $bot->results;
-    $this->start_text = $this->text;
-    $this->modifications = array();
-
-    $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&titles=" . urlencode($title));
-    $details = json_decode($bot->results);
+    
+  public function get_text_from($title, $api) {    
+    $details = $api->fetch(['action'=>'query', 
+      'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
+    
+    if (!isset($details->query)) {
+      echo "\n ! Error: Could not fetch page. \n";
+      if (isset($details->error)) echo "   - " . $details->error->info;
+      return FALSE;
+    }
     foreach ($details->query->pages as $p) {
       $my_details = $p;
     }
+    $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : NULL;
+    
     $details = $my_details;
+    if (isset($details->invalid)) {
+      echo "\n ! Page invalid: ". $details->invalidreason;
+      return FALSE;
+    }
     if ( !isset($details->touched) || !isset($details->lastrevid)) {
-       echo "\n Could not even get the page.  Perhaps non-existent? ";
+       echo "\n ! Could not even get the page.  Perhaps non-existent? ";
        return FALSE; 
     }
+    
     $this->title = $details->title;
     $this->namespace = $details->ns;
-    $this->touched = $details->touched;
-    $this->lastrevid = $details->lastrevid;
+    $this->touched = isset($details->touched) ? $details->touched : NULL;
+    $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
+
+    $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
+    $this->start_text = $this->text;
+    $this->modifications = array();
 
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
@@ -52,12 +64,6 @@ final class Page {
     }
   }
 
-  public function parse_text($text) { // used in testing context.
-    $this->text = $text;
-    $this->start_text = $this->text;
-    $this->modifications = array();
-  }
-  
   public function parsed_text() {
     return $this->text;
   }
@@ -116,8 +122,11 @@ final class Page {
 
   public function edit_summary() {
     $auto_summary = "";
-    if ($this->modifications["changeonly"]) $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
-    if ($addns = $this->modifications["additions"]) {
+    if (isset($this->modifications["changeonly"])) {
+      $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
+    }
+    if (isset($this->modifications['additions'])) {
+      $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
       $max_au = 0;
@@ -127,10 +136,15 @@ final class Page {
           if ($match[1] > $max_au) $max_au = $match[1];
         } else $auto_summary .= $add . ', ';
       }
-      if ($max_au) $auto_summary .= "author pars. $min_au-$max_au. ";
-      else $auto_summary = substr($auto_summary, 0, -2) . '. ';
+      if ($max_au) {
+        $auto_summary .= "author pars. $min_au-$max_au. ";
+      } else {
+        $auto_summary = substr($auto_summary, 0, -2) . '. ';
+      }
     }
-    if ($this->modifications["deletions"] && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE) {
+    if (isset($this->modifications["deletions"])
+    && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE
+    ) {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
@@ -147,72 +161,18 @@ final class Page {
     return $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
 
-  public function write($edit_summary = NULL) {
+  public function write($api, $edit_summary = NULL) {
     if ($this->allow_bots()) {
-      global $bot;
-      // Check that bot is logged in:
-      $bot->fetch(API_ROOT . "?action=query&prop=info&meta=userinfo&format=json");
-      $result = json_decode($bot->results);
-      if ($result->query->userinfo->id == 0) {
-        echo "\n ! LOGGED OUT:  The bot has been logged out from Wikipedia servers";
-        return FALSE;
-      }
-
-      // FIXME: this is very deprecated, use ?action=query&meta=tokens to get a 'csrf' type token (the default)
-      $bot->fetch(API_ROOT . "?action=query&prop=info&format=json&intoken=edit&titles=" . urlencode($this->title));
-      $result = json_decode($bot->results);
-      if (!isset($result->query->pages)) {
-        echo "\n ! No page to write to.  Aborting.";
-        return FALSE;
-      }
-      foreach ($result->query->pages as $i_page) $my_page = $i_page;
-      if ($my_page->lastrevid !== $this->lastrevid) {
-        echo "\n ! Possible edit conflict detected. Aborting.";
-        return FALSE;
-      }
-      if ( stripos($this->text,"CITATION_BOT_PLACEHOLDER") !== FALSE )  {
-        echo "\n ! Citation bot placeholder left escaped. Aborting.";
-        return FALSE;
-      }
-      $submit_vars = array(
-          "action" => "edit",
-          "title" => $my_page->title,
-          "text" => $this->text,
-          "token" => $my_page->edittoken, // from $result above
-          "summary" => $edit_summary ? $edit_summary : $this->edit_summary(),
-          "minor" => "1",
-          "bot" => "1",
-          "basetimestamp" => $my_page->touched,
-          "starttimestamp" => $my_page->starttimestamp,
-          #"md5"       => hash('md5', $data), // removed because I can't figure out how to make the hash of the UTF-8 encoded string that I send match that generated by the server.
-          "watchlist" => "nochange",
-          "format" => "json",
-      );
-      $bot->submit(API_ROOT, $submit_vars);
-      $result = json_decode($bot->results);
-      
-      if (isset($result->edit->result) && $result->edit->result === "Success") {
-        // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
-        html_echo( "\n <span style='color: #e21'>Written to <a href='" . WIKI_ROOT . "title=" . urlencode($my_page->title) . "'>" . htmlspecialchars($my_page->title) . '</a></span>',
-                   "\n Written to " . htmlspecialchars($my_page->title) . '.  ');
-        return TRUE;
-      } elseif (isset($result->edit->result) && $result->edit->result) {
-        echo htmlspecialchars($result->edit->result);
-        return TRUE;
-      } elseif (isset($result->error->code) && $result->error->code) {
-        // Return error code
-        echo "\n ! " . htmlspecialchars(strtoupper($result->error->code)) . ": " . str_replace(array("You ", " have "), array("This bot ", " has "), htmlspecialchars($result->error->info));
-        return FALSE;
-      } else {
-        echo "\n ! Unhandled error.  Please copy this output and <a href=https://en.wikipedia.org/wiki/User_talk:Citation_bot>Report a bug.</a>";
-        return FALSE;
-      }
+      return $api->write_page($this->title, $this->text,
+              $edit_summary ? $edit_summary : $this->edit_summary(),
+              $this->lastrevid, $this->read_at);
     } else {
-      echo "\n - Can't write to " . htmlspecialchars($this->title) . " - prohibited by {{bots}} template.";
+      trigger_error("Can't write to " . htmlspecialchars($this->title) . 
+        " - prohibited by {{bots}} template.", E_USER_NOTICE);
       return FALSE;
     }
   }
-
+  
   protected function extract_object ($class) {
     $i = 0;
     $text = $this->text;
@@ -248,4 +208,24 @@ final class Page {
       return FALSE;
     return TRUE;
   }
+}
+
+class TestPage extends Page {
+  // Functions for use in testing context only
+  
+  function __construct() {
+    $trace = debug_backtrace();
+    $name = $trace[2]['function'];
+    $this->title = empty($name) ? 'global' : $name;
+  }
+  
+  public function overwrite_text($text) {
+    $this->text = $text;
+  }
+
+  public function parse_text($text) {
+    $this->text = $text;
+    $this->start_text = $this->text;
+    $this->modifications = array();
+  }  
 }

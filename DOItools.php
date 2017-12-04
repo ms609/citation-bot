@@ -1,10 +1,10 @@
 <?php
-global $bot;
-$bot = new Snoopy();
+require_once('WikipediaBot.php');
 
 /* junior_test - tests a name for a Junior appellation
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
+ * @codeCovIgnore
  */
 function junior_test($name) {
   $junior = (substr($name, -3) == " Jr")?" Jr":FALSE;
@@ -243,17 +243,6 @@ function straighten_quotes($str) {
   return $str;
 }
 
-function curl_setup($ch, $url){
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  //This means we can get stuck.
-	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);  //This means we can't get stuck.
-	curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
-	curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
-	curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
-}
-
 function query_adsabs ($options) {  
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
   $ch = curl_init();
@@ -266,16 +255,4 @@ function query_adsabs ($options) {
   curl_close($ch);
   
   return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
-}
-
-/*
- * unused
- * @codeCoverageIgnore
- */
-function equiv_url ($u){
-	$db = preg_replace("~;jsessionid=[A-Z0-9]*~", "", str_replace("%2F", "/", str_replace("?journalCode=pdi", "",
-	str_replace("sci;", "", str_replace("/full?cookieSet=1", "", str_replace("scienceonline", "sciencemag", str_replace("/fulltext/", "/abstract/",
-	str_replace("/links/doi/", "/doi/abs/", str_replace("/citation/", "/abstract/", str_replace("/extract/", "/abstract/", $u))))))))));
-	if (preg_match("~(.*&doi=.*)&~Ui", $db, $db2)) $db = $db2[1];
-	return $db;
 }
