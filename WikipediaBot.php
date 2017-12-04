@@ -111,7 +111,7 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$header],
           ]);
           
-          $ret = json_decode($data = curl_exec($this->ch));
+          $ret = FALSE;
           if (!$data) {
             trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
@@ -132,7 +132,7 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$header],
           ]);
           
-          $ret = json_decode($data = curl_exec($this->ch));
+          $ret = FALSE;
           if ( !$data ) {
             echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
             exit(0);
@@ -444,12 +444,11 @@ class WikipediaBot {
       $page = $bits[1];
     }
     $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
-    $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
+    $enwiki_db = FALSE;
     if (defined('PHP_VERSION_ID') && (PHP_VERSION_ID >= 50600)) { 
        $result = NULL; // mysql_query does not exist in PHP 7
     } else {
-       $result = @mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
-            . "' && page_title='$page'");
+       $result = FALSE;
     }
     if (!$result) {
       echo @mysql_error();
