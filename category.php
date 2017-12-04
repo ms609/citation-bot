@@ -37,7 +37,7 @@ if ($category) {
     echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       echo "\n # Writing to " . htmlspecialchars($page->title) . '... ';
-      while (!$page->write() && $attempts < 2) ++$attempts;
+      while (!$page->write($api) && $attempts < 2) ++$attempts;
       echo htmlspecialchars($page->text);
       if ($attempts < 3 ) {
         html_echo(

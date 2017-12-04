@@ -13,14 +13,14 @@ require_once('WikipediaBot.php');
 
 class Page {
 
-  protected $api, $text, $title, $modifications;
+  protected $text, $title, $modifications;
 
   function __construct() {
     $this->api = new WikipediaBot();
   }
     
-  public function get_text_from($title) {    
-    $details = $this->api->fetch(['action'=>'query', 
+  public function get_text_from($title, $api) {    
+    $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
     if (!isset($details->query)) {
@@ -161,9 +161,9 @@ class Page {
     return $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
 
-  public function write($edit_summary = NULL) {
+  public function write($api, $edit_summary = NULL) {
     if ($this->allow_bots()) {
-      return $this->api->write_page($this->title, $this->text,
+      return $api->write_page($this->title, $this->text,
               $edit_summary ? $edit_summary : $this->edit_summary(),
               $this->lastrevid, $this->read_at);
     } else {

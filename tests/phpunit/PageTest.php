@@ -41,14 +41,14 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $trialCitation = '{{Cite journal | title Bot Testing | ' .
       'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
     $page->overwrite_text($trialCitation);
-    $page->write("Testing bot write function");
+    $page->write($api, "Testing bot write function");
     
     $page->get_text_from($writeTestPage, $api);
     $this->assertEquals($trialCitation, $page->parsed_text());
     $page->expand_text();
     $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
     $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
-    $page->write();
+    $page->write($api);
     
     $page->get_text_from($writeTestPage, $api);
     print $page->parsed_text();
