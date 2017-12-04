@@ -268,7 +268,7 @@ class WikipediaBot {
     return $titles["title"];
   }
 
-  private function what_transcludes_2($template, $namespace = 99) {
+  protected function what_transcludes_2($template, $namespace = 99) {
     
     $vars = Array (
       "action" => "query",
