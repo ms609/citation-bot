@@ -98,7 +98,8 @@ class WikipediaBot {
       return FALSE;
     }
     $check_logged_in = ((isset($params['type']) && $params['type'] == 'login')
-      || (isset($params['action']) && $params['action'] == 'login')) ? FALSE : TRUE;
+      || (isset($params['action']) && $params['action'] == 'login')
+      || (isset($params['meta']) && $params['meta'] == 'userinfo')) ? FALSE : TRUE;
     if ($check_logged_in) $params['assert'] = 'user';
     $params['format'] = 'json';
     
