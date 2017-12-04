@@ -20,7 +20,7 @@ class Page {
   }
     
   public function get_text_from($title) {    
-    $details = $api->fetch(['action'=>'query', 
+    $details = $this->api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
     if (!isset($details->query)) {
@@ -163,7 +163,7 @@ class Page {
 
   public function write($edit_summary = NULL) {
     if ($this->allow_bots()) {
-      return $api->write_page($this->title, $this->text,
+      return $this->api->write_page($this->title, $this->text,
               $edit_summary ? $edit_summary : $this->edit_summary(),
               $this->lastrevid, $this->read_at);
     } else {
