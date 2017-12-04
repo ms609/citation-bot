@@ -314,11 +314,12 @@ class WikipediaBot {
         "prop" => "revisions",
         "titles" => $page,
       ));
-    if (!isset($this->query->pages->page->revisions->rev)) {
-        echo "\n Failed to get article last revision \n";
+    if (!isset($res->query->pages)) {
+        trigger_error("Failed to get article's last revision", E_USER_NOTICE);
         return FALSE;
     }
-    return $this->query->pages->page->revisions->rev["revid"];
+    $page = reset($res->query->pages);
+    return  (isset($page->revisions[0]->revid) ? $page->revisions[0]->revid : FALSE);
   }
 
   public function get_prefix_index($prefix, $namespace = 0, $start = "") {
