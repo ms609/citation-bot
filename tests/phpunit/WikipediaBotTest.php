@@ -35,7 +35,7 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
     $trialCitation = '{{Cite journal | title Bot Testing | ' .
       'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
     $page->overwrite_text($trialCitation);
-    $page->write("Testing bot write function");
+    $this->assertFalse(@$page->write("Testing bot write function")); // False because Travis IPs are blocked from editing
     
     $page->get_text_from($writeTestPage);
     $this->assertEquals($trialCitation, $page->parsed_text());
