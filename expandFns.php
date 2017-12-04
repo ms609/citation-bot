@@ -24,7 +24,6 @@ function quiet_echo($text, $alternate_text = '') {
 }
 
 require_once("constants.php");
-require_once("WikipediaBot.php");
 require_once("DOItools.php");
 require_once("Page.php");
 require_once("Template.php");
