@@ -62,7 +62,6 @@ class WikipediaBot {
       $this->ch = curl_init();
       if (!$this->log_in()) {
         curl_close($this->ch);
-        trigger_error("Could not log in to Wikipedia servers", E_USER_ERROR);
       }        
     }
     return curl_setopt_array($this->ch, [
@@ -88,8 +87,7 @@ class WikipediaBot {
   public function fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
       curl_close($this->ch);
-      trigger_error('Could not initialize CURL resource: ' .
-        htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
+
       return FALSE;
     }
     $check_logged_in = ((isset($params['type']) && $params['type'] == 'login')
@@ -113,7 +111,6 @@ class WikipediaBot {
           
           $ret = FALSE; $data=FALSE;
           if (!$data) {
-            // trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
           }
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
@@ -135,7 +132,7 @@ class WikipediaBot {
           $ret = FALSE; $data=FALSE;
           if ( !$data ) {
             echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
-            exit(0);
+             return FALSE;
           }
           
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
