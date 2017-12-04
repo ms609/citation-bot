@@ -169,9 +169,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
     
   public function testUnknownJournal() {
-    $text = '{{cite journal |title= Development of a transmission error model and an error control model  |volume= 76 |author1= Hammond |first1= J. L. |last2= Brown |first2= J. E. |last3= Liu |first3= S. S. S. |year= 1975}}';
+    $text = '{{cite journal }}';
     $expanded = $this->process_citation($text);
-    $expanded->add_if_new('journal','Unknown');  // The above now returns a journal from bibcode
+    $expanded->add_if_new('journal','Unknown');
     $this->assertTrue($expanded->blank('journal'));
   }
 
