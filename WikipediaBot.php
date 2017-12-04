@@ -264,7 +264,7 @@ class WikipediaBot {
   
   // Returns an array; Array ("title1", "title2" ... );
   public function what_transcludes($template, $namespace = 99){
-    $titles = what_transcludes_2($template, $namespace);
+    $titles = $this->what_transcludes_2($template, $namespace);
     return $titles["title"];
   }
 
