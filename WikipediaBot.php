@@ -44,7 +44,7 @@ class WikipediaBot {
         $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
         $loggedinName = (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : "UNKNOWN USER";
         trigger_error('Account "' . $loggedinName . 
-          '" blocked from IP ' . getHostByName(getHostName()) . ' /' . $_SERVER['SERVER_ADDR'] . 
+          '" blocked from IP ' . getHostByName(getHostName()) .
           "; if using a BotPassword, is this IP permitted?", E_USER_ERROR);
       } else {
         trigger_error('API call failed: ' . $response->error->info, E_USER_ERROR);
