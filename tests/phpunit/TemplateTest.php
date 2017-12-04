@@ -3,7 +3,7 @@
 /*
  * Tests for Template.php, called from expandFns.php.
  */
-/*
+
 // backward compatibility
 if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_exists('\PHPUnit_Framework_TestCase')) {
@@ -15,7 +15,7 @@ if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
  
 final class TemplateTest extends PHPUnit\Framework\TestCase {
-
+/*
   protected function setUp() {
   }
 
@@ -720,6 +720,5 @@ ER -  }}';
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
   Test adding a doi-is-broken modifier to a broken DOI.
-  *//*
+  */
 }
-*/
