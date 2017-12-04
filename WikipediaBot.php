@@ -113,7 +113,7 @@ class WikipediaBot {
           
           $ret = FALSE; $data=FALSE;
           if (!$data) {
-            trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
+            // trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
           }
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
