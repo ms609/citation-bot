@@ -25,15 +25,18 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testCategoryMembers() {
+    print "tcm\n";
     $this->assertTrue(count(category_members('GA-Class cricket articles')) > 10);
     $this->assertEquals(0, count(category_members('A category we expect to be empty')));
   }
   
   public function testWhatTranscludes() {
+    print "whatTra\n";
     $this->assertTrue(count(what_transcludes('Graphical timeline')) > 10);
   }
     
   public function testGetPrefixIndex() {
+    print "getPI\n";
     $namespace = get_namespace('Template:Cite journal');
     $this->assertEquals(namespace_id('Template'), $namespace);
     $results = get_prefix_index('Cite jo', $namespace); // too many results if we just use 'Cite'
@@ -43,12 +46,14 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testRedirects() {
+    print "TRed\n";
     $this->assertEquals(-1, is_redirect('NoSuchPage:ThereCan-tBe'));
     $this->assertEquals( 0, is_redirect('User:Citation_bot'));
     $this->assertEquals( 1, is_redirect('WP:UCB'));
   }  
   
   public function testNamespaces() {
+    global $api;
     $vars = array(
           'format' => 'json',
           'action' => 'query',
