@@ -1364,20 +1364,20 @@ final class Template {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
       }
       if ($isbn) {  // Try Books.Google.Com
-          $google_book_url='https://books.google.com/books?isbn='.$isbn;
-          $google_content = @file_get_contents($google_book_url);
-          if ($google_content !== FALSE) {
-            preg_match_all('~books.google.com/books\?id=............&amp~',$google_content,$google_results);
+        $google_book_url='https://books.google.com/books?isbn='.$isbn;
+        $google_content = @file_get_contents($google_book_url);
+        if ($google_content !== FALSE) {
+          preg_match_all('~books.google.com/books\?id=............&amp~',$google_content,$google_results);
+          $google_results = $google_results[0];
+          $google_results = array_unique($google_results);
+          if (count($google_results) === 1) {
             $google_results = $google_results[0];
-            $google_results = array_unique($google_results);
-            if (count($google_results) === 1) {
-              $google_results = $google_results[0];
-              $gid = substr($google_results,26,-4);
-              $url = 'https://books.google.com/books?id=' . $gid;
-              if ($this->blank('url')) $this->add('url', $url);
-              $google_books_worked = TRUE;
-            }
-         }
+            $gid = substr($google_results,26,-4);
+            $url = 'https://books.google.com/books?id=' . $gid;
+            if ($this->blank('url')) $this->add('url', $url);
+            $google_books_worked = TRUE;
+          }
+        }
       }
       if ( !$google_books_worked ) { // Try Google API instead 
         if ($isbn) {
