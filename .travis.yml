@@ -1,6 +1,8 @@
 branches:
   except: release
 
+sudo: false 
+dist: trusty
 language: php
 matrix:
   include:
