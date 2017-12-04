@@ -47,22 +47,6 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals( 0, is_redirect('User:Citation_bot'));
     $this->assertEquals( 1, is_redirect('WP:UCB'));
   }  
-    
-  public function testWrite() {
-    $page = new Page();
-    $result = $page->get_text_from('User:AManWithNoPlan/bot_test_page');
-    $this->assertNotNull($result);
-    $page->expand_text();
-    $result = $page->write();
-    $this->assertEquals(FALSE, $result);  // test uses blocked account
-    
-    $page = new Page();
-    $result = $page->get_text_from('dsafasdfdsfa34f34fsfrasdfdsafsdfasddsafadsafsdfasfd');
-    $this->assertNotNull($result);
-    $page->expand_text();
-    $result = $page->write();
-    $this->assertEquals(FALSE, $result);  // Rubbish page
- }
   
   public function testNamespaces() {
     $bot = new WikipediaBot();
