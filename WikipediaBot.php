@@ -20,10 +20,6 @@ class WikipediaBot {
   }
       
   public function log_in() {
-    # # Uncomment the following to verify what IP is requesting the login
-    # $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
-    # print "\n -- Logging in from IP: " . (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : "UNKNOWN USER";
-    
     $response = $this->fetch(['action' => 'query', 'meta'=>'tokens', 'type'=>'login']);
     if (!isset($response->batchcomplete)) return FALSE;
     if (!isset($response->query->tokens->logintoken)) return FALSE;
@@ -40,17 +36,19 @@ class WikipediaBot {
     return FALSE;
   }
   
+  private function username() {
+    $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
+    return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : FALSE;
+  }
+  
   private function ret_okay($response) {
     if ($response === CURLE_HTTP_RETURNED_ERROR) {
       trigger_error("Curl encountered HTTP response error", E_USER_ERROR);
     }
     if (isset($response->error)) {
       if ($response->error->code == 'blocked') {
-        $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
-        $loggedinName = (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : "UNKNOWN USER";
-        trigger_error('Account "' . $loggedinName . 
-          '" blocked from IP ' . getenv('SERVER_ADDR') . // getHostByName(getHostName()) is a server's local (internal) IP
-          "; if using a BotPassword, is this IP permitted?", E_USER_ERROR);
+        trigger_error('Account "' . $this->username() . 
+        '" or this IP is blocked from editing.', E_USER_ERROR); // Yes, Travis CI IPs are blocked, even to logged in users.
       } else {
         trigger_error('API call failed: ' . $response->error->info, E_USER_ERROR);
       }
