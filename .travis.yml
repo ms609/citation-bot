@@ -7,7 +7,9 @@ language: php
 matrix:
   include:
     - php: 7.0
-      install: pecl install oauth
+      install:
+        - pecl channel-update pecl.php.net
+        - pecl install oauth
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
       after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6
