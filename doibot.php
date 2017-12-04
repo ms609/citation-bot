@@ -38,30 +38,30 @@
 ## Set up - including DOT_DECODE array
 define("HTML_OUTPUT", TRUE);
 require_once("expandFns.php");
-require_once("login.php");
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
-  print "Activated by $user\n";
+  echo " Activated by $user.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
 } else {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
 $title = trim(ucfirst(strip_tags($_REQUEST["page"])));
-print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
+echo "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
 $my_page = new Page();
-if ($my_page->get_text_from($_REQUEST["page"])) {
+$api = new WikipediaBot();
+if ($my_page->get_text_from($_REQUEST["page"], $api)) {
   $text_expanded = $my_page->expand_text();
-  if ($text_expanded and $ON) {
-    while (!$my_page->write() && $attempts < 2) {
+  if ($text_expanded && $ON) {
+    while (!$my_page->write($api) && $attempts < 2) {
       ++$attempts;
     }
     if ($attempts < 3 ) {
-      echo HTML_OUTPUT ?
+      html_echo(
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
         . urlencode(get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
-        : ".";
+        , ".");
     } else {
       echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
     }

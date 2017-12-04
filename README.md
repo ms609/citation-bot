@@ -4,7 +4,7 @@
 
 # Citation bot
 
-## Github repository details
+## GitHub repository details
 There are two main branches of the bot: the **master** code is (should be) implemented at https://tools.wmflabs.org/citations/doibot.php, whereas the **development** branch is implemented at https://tools.wmflabs.org/citations-dev/doibot.php .  Edits should be made first to the development
 branch, then – once fully tested – pulled to the master branch.
 
@@ -29,24 +29,18 @@ Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_t
 ## Structure
 
 Basic structure of a Citation bot script:
-* define configuration constants (for instance, `html_output` will allow or suppress
-  buffered output)
+* define configuration constants
 * require `expandFns.php`, which will set up the rest of the needed functions
 * use Page functions to fetch/expand/post the page's text
 
 
 A quick tour of the main files:
 * `credentials/doibot.login`: on-wiki login credentials
-* `Snoopy.class.php`: 2000s-era http client/scraper. The scraper functions are
-   not really used here and it could probably be fairly easily replaced with an
-   updated library or a dedicated MediaWiki API client libary. Note that it
-   appears to use curl only for https, so the path to curl on Labs must be
-   correct or the bot will fail to log in because the request can't reach the
-   server.
 * `constants.php`: constants defined
-* `wikifunctions.php`: functions related to Wikipedia ineractions, including some marked
+* `wikiFunctions.php`: functions related to Wikipedia ineractions, including some marked
    as "untested".
-* `DOItools.php`: defines `$bot` (the Snoopy instance) and Crossref-related functions
+* `WikipediaBot.php: functions to facilitate HTTP access to the Wikipedia API.
+* `DOItools.php`: defines Crossref-related functions
 * `expandFns.php`: sets up needed functions and global variables, requires most
   of the other files listed here
 * `credentials/crossref.login` allows crossref searches.
@@ -55,13 +49,12 @@ A quick tour of the main files:
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
   `get_text_from`, `expand_text`, and `write`.
-* `Item.php`: Item is the parent class for Template and Comment.
-  * `Template.php`: most of the actual expansion happens here.
-    `Template::process()` handles most of template expansion and checking;
-    `Template::add_if_new()` is generally (but not always) used to add
-     parameters to the updated template; `Template::tidy()` cleans up the
-     template, but may add parameters as well and have side effects.
-  * `Comment.php`: Handles comments, such as those forbidding bot activity.
+* `Template.php`: most of the actual expansion happens here.
+  `Template::process()` handles most of template expansion and checking;
+  `Template::add_if_new()` is generally (but not always) used to add
+   parameters to the updated template; `Template::tidy()` cleans up the
+   template, but may add parameters as well and have side effects.
+* `Comment.php`: Handles comments and nokwiki tags
 * `Parameter.php`: contains information about template parameter names, values,
    and metadata, and methods to parse template parameters.
 
