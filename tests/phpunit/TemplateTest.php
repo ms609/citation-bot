@@ -29,7 +29,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded_text = $page->parsed_text();
     $template = new Template();
     $template->parse_text($expanded_text);
-    return $template;
   }
   
   protected function process_page($text) {  // Only used if more than just a citation template
@@ -468,7 +467,7 @@ ER -  }}';
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
   }
    
-  public function testConvertingISBN10intoISBN13() {
+  public function testConvertingISBN10intoISBN13() { // URLS present just to speed up tests
     $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-0-9749009-0-2', $expanded->get('isbn'));  // Convert with dashes
