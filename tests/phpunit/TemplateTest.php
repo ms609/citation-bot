@@ -15,7 +15,7 @@ if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
  
 final class TemplateTest extends PHPUnit\Framework\TestCase {
-/*
+
   protected function setUp() {
   }
 
@@ -218,7 +218,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     /*
     $this->assertEquals('http://some.url', $expanded->get('url'));
     $this->assertEquals('Accepted manuscript', $expanded->get('format'));
-    *//*
+    */
   }
     
   /* Don't run test until I check the consensus on how such citations should be handled
@@ -227,7 +227,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}', $expanded->parsed_text()); 
   }
-  *//*
+  */
   
   public function testCommentHandling() {
     $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}}";
@@ -720,5 +720,5 @@ ER -  }}';
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
   Test adding a doi-is-broken modifier to a broken DOI.
-  */
+  */    
 }
