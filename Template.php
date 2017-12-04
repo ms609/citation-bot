@@ -1404,7 +1404,7 @@ final class Template {
     } else {
         return FALSE; // No data to use
     }
-    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
+    $string = FALSE ; /////   TESTING  @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
     if ($string === FALSE) {
         if ($isbn) {
           $google_book_url='https://books.google.com/books?isbn='.$isbn;
