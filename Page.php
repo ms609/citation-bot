@@ -48,7 +48,7 @@ class Page {
     $this->touched = isset($details->touched) ? $details->touched : NULL;
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
 
-    $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
+    $this->text = FALSE;
     $this->start_text = $this->text;
     $this->modifications = array();
 
