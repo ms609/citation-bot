@@ -5,6 +5,8 @@ Thanks for contributing to the maintenance of Citation Bot.
 ## Testing
 
 We use phpunit in Travis CI to test code; please write testcase examples for new code you create.
+It is helpful if each testcase example describes the specific function that it is trying
+to test.
 
 ## Submitting changes
 
