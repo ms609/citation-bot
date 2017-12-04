@@ -29,6 +29,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded_text = $page->parsed_text();
     $template = new Template();
     $template->parse_text($expanded_text);
+    return $template;
   }
   
   protected function process_page($text) {  // Only used if more than just a citation template
