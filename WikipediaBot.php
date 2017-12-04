@@ -16,11 +16,7 @@ class WikipediaBot {
   }
   
   function __destruct() {
-    if ($this->ch) {
-      var_dump($this->ch);
-      print "\n\n\n";
-      curl_close($this->ch);
-    }
+    if ($this->ch) curl_close($this->ch);
   }
       
   public function log_in() {
