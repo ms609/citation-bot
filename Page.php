@@ -9,15 +9,18 @@
 
 require_once('Comment.php');
 require_once('Template.php');
+require_once('WikipediaBot.php');
 
 class Page {
 
-  protected $text, $title, $modifications;
+  protected $api, $text, $title, $modifications;
 
-  public function get_text_from($title) {
-    global $bot;
+  function __construct() {
+    $this->api = new WikipediaBot();
+  }
     
-    $details = $bot->fetch(['action'=>'query', 
+  public function get_text_from($title) {    
+    $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
     if (!isset($details->query)) {
@@ -160,8 +163,7 @@ class Page {
 
   public function write($edit_summary = NULL) {
     if ($this->allow_bots()) {
-      global $bot;
-      return $bot->write_page($this->title, $this->text,
+      return $api->write_page($this->title, $this->text,
               $edit_summary ? $edit_summary : $this->edit_summary(),
               $this->lastrevid, $this->read_at);
     } else {
