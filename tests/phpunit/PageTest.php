@@ -36,10 +36,10 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('This page tests bots', $page->parsed_text());
   }
   
-  public function testBotExpandWrite() {
     /*
-    * This test is commented out as Travis CI servers are blocked.
-    * I've asked User:Slakr whether we can get them unblocked for logged-in users.
+     * This test is commented out as Travis CI servers are blocked.
+     * I've asked User:Slakr whether we can get them unblocked for logged-in users.
+  public function testBotExpandWrite() {
     $api = new WikipediaBot();
     $page = new TestPage();
     $writeTestPage = 'User:Blocked Testing Account/writetest';
@@ -58,7 +58,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
     
     $page->get_text_from($writeTestPage, $api);
     $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
-    */
   }
+    */
   
 }
