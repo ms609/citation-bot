@@ -12,6 +12,7 @@ class WikipediaBot {
     $this->oauth->enableDebug();
     $this->oauth->setSSLChecks(0);
     $this->oauth->setRequestEngine(OAUTH_REQENGINE_CURL);
+
   }
   
   function __destruct() {
@@ -23,6 +24,8 @@ class WikipediaBot {
   }
       
   public function log_in() {
+    $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
+    print "\n -- Logging in from IP: " (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : "UNKNOWN USER";
     $response = $this->fetch(['action' => 'query', 'meta'=>'tokens', 'type'=>'login']);
     if (!isset($response->batchcomplete)) return FALSE;
     if (!isset($response->query->tokens->logintoken)) return FALSE;
