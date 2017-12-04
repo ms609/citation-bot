@@ -41,14 +41,14 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $trialCitation = '{{Cite journal | title Bot Testing | ' .
       'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
     $page->overwrite_text($trialCitation);
-    $this->assertFalse(@$page->write($api, "Testing bot write function")); // Travis CI servers blocked on Wikipedia.
+    #$this->assertFalse(@$page->write($api, "Testing bot write function")); // Travis CI servers blocked on Wikipedia.
     
     $page->get_text_from($writeTestPage, $api);
     $this->assertEquals($trialCitation, $page->parsed_text());
     $page->expand_text();
     $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
     $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
-    $this->assertFalse(@$page->write($api)); // Travis can't write as its IPs are blocked.
+    #$this->assertFalse(@$page->write($api)); // Travis can't write as its IPs are blocked.
     
     $page->get_text_from($writeTestPage, $api);
     $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
