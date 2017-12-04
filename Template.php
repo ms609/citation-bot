@@ -609,7 +609,7 @@ final class Template {
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {  //  Outdated url style
         $this->use_sici();         // Grab what we can before getting rid off it
-        $headers_test = get_headers($url, 1);
+        $headers_test = FALSE;
         if(!empty($headers_test['Location']) && strpos($headers_test['Location'], "jstor.org/stable/")) {
           $url = $headers_test['Location']; // Redirect
           if (is_null($url_sent)) {
@@ -753,7 +753,7 @@ final class Template {
              . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')
              . ($volume ? "&volume=" . urlencode($volume) : '')
              . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(de_wikify($journal)) : ''));
-        if (!($result = @simplexml_load_file($url)->query_result->body->query)){
+        if (!($result = FALSE)){
           echo "\n   * Error loading simpleXML file from CrossRef.";
         }
         elseif ($result['status'] == 'malformed') {
@@ -772,7 +772,7 @@ final class Template {
       if ($year) $url .= "&date=" . urlencode($year);
       if ($volume) $url .= "&volume=" . urlencode($volume);
       if ($start_page) $url .= "&spage=" . urlencode($start_page);
-      if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
+      if (!($result =FALSE)) {
         echo "\n   * Error loading simpleXML file from CrossRef." . tag();
       }
       elseif ($result['status'] == 'malformed') {
@@ -866,7 +866,7 @@ final class Template {
     }
     $query = substr($query, 5);
     $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
-    $xml = @simplexml_load_file($url);
+    $xml = FALSE;
     if ($xml === FALSE) {
       echo "\n - Unable to do PMID search";
       return array(NULL, 0);
@@ -902,7 +902,7 @@ final class Template {
         'http' => array('ignore_errors' => true),
       ));
       $arxiv_request = "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
-      $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
+      $arxiv_response = FALSE;
       if ($arxiv_response) {
         $xml = @simplexml_load_string(
           preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
@@ -1138,7 +1138,7 @@ final class Template {
       } else {
         echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
         $url_test = "http://dx.doi.org/".$doi ;
-        $headers_test = get_headers($url_test, 1);
+        $headers_test = FALSE;
         if(empty($headers_test['Location']))
                 $this->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
       }
@@ -1150,12 +1150,12 @@ final class Template {
     $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
-    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor . urlencode('?seq=1#page_scan_tab_contents'));
+    $json=FALSE;
     if ($json === FALSE) {
       echo "\n Citoid API returned nothing for JSTOR ". $jstor . "\n";
       return FALSE;
     }
-    $data = @json_decode($json,false);
+    $data = FALSE;
     if (!isset($data) || !isset($data[0]) || !isset($data[0]->{'title'})) {
       echo "\n Citoid API returned invalid json for JSTOR ". $jstor . "\n";
       return FALSE;
@@ -1168,9 +1168,9 @@ final class Template {
     if (strtolower(substr(trim($data[0]->{'title'}),-9)) === ' on jstor') {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
          sleep(2); // try citoid again
-         $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor . urlencode('?seq=1')); // Make URL a little different this time, in case of caching
+         $json=FALSE;
          if ($json === FALSE) return FALSE;
-         $data = @json_decode($json,false);
+         $data = FALSE;
          if (!isset($data) ||
              !isset($data[0]) ||
              !isset($data[0]->{'title'}) ||
@@ -1210,7 +1210,7 @@ final class Template {
         tag(),
         "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
         . ' for more details' . tag());
-    $xml = @simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
+    $xml =FALSE;
     if ($xml === FALSE) {
       echo "\n - Unable to do PubMed search";
       return;
@@ -1301,7 +1301,7 @@ final class Template {
     }
     $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=TRUE";
     for ($i = 0; $i < 2; $i++) {
-      $xml = @simplexml_load_file($url);
+      $xml = FALSE;
       if ($xml) {
         $result = $xml->query_result->body->query;
         if ($result["status"] == "resolved") {
@@ -1322,9 +1322,9 @@ final class Template {
     $doi = $this->get('doi');
     if (!$doi || $this->get('url')) return;
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
-    $json = @file_get_contents($url);
+    $json = FALSE;
     if ($json) {
-      $oa = @json_decode($json);
+      $oa = FALSE;
       if ($oa !== FALSE && isset($oa->best_oa_location)) {
         $best_location = $oa->best_oa_location;
         if ($best_location->host_type == 'publisher') {
@@ -1409,12 +1409,12 @@ final class Template {
     } else {
         return FALSE; // No data to use
     }
-    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
+    $string = FALSE;
     if ($string === FALSE) {
         echo "\n Google APIs search failed for $url_token \n";
         return FALSE;
     }
-    $result = @json_decode($string, false);
+    $result = FALSE;
     if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
         $gid=$result->items[0]->id;
         $this->google_book_details($gid);
@@ -1429,9 +1429,9 @@ final class Template {
   protected function google_book_details ($gid) {
     $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
-      str_replace(":", "___", @file_get_contents($google_book_url))
+      str_replace(":", "___", FALSE)
     );
-    $xml = @simplexml_load_string($simplified_xml);
+    $xml =FALSE;
     if ($xml === FALSE) return FALSE;
     if ($xml->dc___title[1]) {
       $this->add_if_new("title",  
@@ -1494,7 +1494,7 @@ final class Template {
       global $over_isbn_limit;
       // TODO: implement over_isbn_limit based on &results=keystats in API
       if ($title && !$over_isbn_limit) {
-        $xml = @simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
+        $xml = FALSE;
         if ($xml === FALSE) {
           echo "\n - Unable to do ISBN DB search";
           return FALSE;
@@ -2225,7 +2225,7 @@ final class Template {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
       $url_test = "http://dx.doi.org/".$doi ;
-      $headers_test = @get_headers($url_test, 1);
+      $headers_test = FALSE;
       if ($headers_test === FALSE) {
         echo "\n   ! DOI status unkown.  dx.doi.org failed to respond at all to: " . htmlspecialchars($doi);
         return FALSE;

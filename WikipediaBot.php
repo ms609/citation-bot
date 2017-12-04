@@ -62,7 +62,6 @@ class WikipediaBot {
       $this->ch = curl_init();
       if (!$this->log_in()) {
         curl_close($this->ch);
-        trigger_error("Could not log in to Wikipedia servers", E_USER_ERROR);
       }        
     }
     return curl_setopt_array($this->ch, [
@@ -88,8 +87,7 @@ class WikipediaBot {
   public function fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
       curl_close($this->ch);
-      trigger_error('Could not initialize CURL resource: ' .
-        htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
+
       return FALSE;
     }
     $check_logged_in = ((isset($params['type']) && $params['type'] == 'login')
@@ -111,9 +109,8 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$header],
           ]);
           
-          $ret = json_decode($data = curl_exec($this->ch));
+          $ret = FALSE; $data=FALSE;
           if (!$data) {
-            trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
           }
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
@@ -132,10 +129,10 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$header],
           ]);
           
-          $ret = json_decode($data = curl_exec($this->ch));
+          $ret = FALSE; $data=FALSE;
           if ( !$data ) {
             echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
-            exit(0);
+             return FALSE;
           }
           
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
@@ -444,12 +441,11 @@ class WikipediaBot {
       $page = $bits[1];
     }
     $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
-    $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
+    $enwiki_db = FALSE;
     if (defined('PHP_VERSION_ID') && (PHP_VERSION_ID >= 50600)) { 
        $result = NULL; // mysql_query does not exist in PHP 7
     } else {
-       $result = @mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
-            . "' && page_title='$page'");
+       $result = FALSE;
     }
     if (!$result) {
       echo @mysql_error();
