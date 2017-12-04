@@ -108,15 +108,6 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
     exit(0);
     */
   }
-  
-  public function testIsValidUser() {
-      $result = is_valid_user('Smith609');
-      $this->assertEquals(TRUE, $result);
-      $result = is_valid_user('Stanlha'); // Random user who at this point (Nov 2017) does not have page, but does exists
-      $this->assertEquals(TRUE, $result);
-      $result = is_valid_user('Not_a_valid_user_at_Dec_2017'); 
-      $this->assertEquals(FALSE, $result);
-  }
     
   public function testGetLastRevision() {
     $this->assertTrue(is_int(1 * get_last_revision('User talk:Citation bot')));
