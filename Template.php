@@ -1425,6 +1425,10 @@ final class Template {
           $this->google_book_details($gid);
           if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
           return TRUE;
+        } else {
+            echo "\n Google APIs search failed for $url_token \n";
+            return FALSE;
+        }
     } else {
       $result = @json_decode($string, false);
         if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
