@@ -1,7 +1,5 @@
 <?php
 require_once('WikipediaBot.php');
-global $api;
-$api = new WikipediaBot();
 
 function category_members($cat){
   global $api;
