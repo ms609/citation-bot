@@ -27,6 +27,7 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testWhatTranscludes() {
+    $api = new WikipediaBot();
     $this->assertTrue(count($api->what_transcludes('Graphical timeline')) > 10);
   }
     
