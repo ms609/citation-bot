@@ -20,6 +20,8 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
   }
 
   protected function tearDown() {
+    global $api;
+    unset($api);
   }
   
   public function testReadExpandWrite() {

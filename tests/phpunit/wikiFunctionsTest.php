@@ -17,10 +17,11 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   protected function setUp() {
     global $api;
     $api = new WikipediaBot();
-    echo "\n\n === Running wikiFunctionsTest.php === \n\n";
   }
 
   protected function tearDown() {
+    global $api;
+    unset($api);
   }
   
   public function testCategoryMembers() {
