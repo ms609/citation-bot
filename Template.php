@@ -92,12 +92,9 @@ final class Template {
         if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
           $this->name = 'Cite journal';
           $this->process();
-          
-            print "TESTH96";
         } elseif ($this->has('eprint')) {
           $this->name = 'Cite arxiv';
           $this->process();
-            print "TESTH100";
         }
         $this->citation_template = TRUE;
       break;
@@ -1549,7 +1546,6 @@ final class Template {
           if (stripos($p->val, 'books.google.') !== FALSE) {
             $this->name = 'Cite book';
             $this->process();
-            print "TESTH1542";
           }
         } elseif ($p->param == 'doix') {
           echo "\n   + Found unincorporated DOI parameter";

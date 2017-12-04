@@ -47,7 +47,7 @@ if (is_valid_user($user)) {
 }
 
 $title = trim(ucfirst(strip_tags($_REQUEST["page"])));
-print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
+echo "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
 $my_page = new Page();
 $api = new WikipediaBot();
 if ($my_page->get_text_from($_REQUEST["page"], $api)) {

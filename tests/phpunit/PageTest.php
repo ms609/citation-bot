@@ -51,7 +51,6 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page->write($api);
     
     $page->get_text_from($writeTestPage, $api);
-    print $page->parsed_text();
     $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
   }
   
