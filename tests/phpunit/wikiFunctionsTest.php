@@ -25,18 +25,18 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testCategoryMembers() {
-    $this->assertTrue(count(category_members('Stub-Class cricket articles')) > 10);
-    $this->assertEquals(0, count(category_members('Stub-Class cricket zero tastic articles should be empty')));
+    $this->assertTrue(count(category_members('GA-Class cricket articles')) > 10);
+    $this->assertEquals(0, count(category_members('A category we expect to be empty')));
   }
   
   public function testWhatTranscludes() {
-    $this->assertTrue(count(what_transcludes('Cite journal')) > 10);
+    $this->assertTrue(count(what_transcludes('Graphical timeline')) > 10);
   }
     
   public function testGetPrefixIndex() {
     $namespace = get_namespace('Template:Cite journal');
     $this->assertEquals(namespace_id('Template'), $namespace);
-    $results = get_prefix_index('Cite j', $namespace); // too many results if we just use 'Cite'
+    $results = get_prefix_index('Cite jo', $namespace); // too many results if we just use 'Cite'
     $this->assertTrue(array_search('Template:Cite journal', $results) !== FALSE);
     $results = get_prefix_index("If we retrieve anything here, it's an error", $namespace);
     $this->assertTrue(empty($results));
