@@ -29,12 +29,16 @@ class PageTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
-  public function testReadExpandWrite() {
+  public function testBotRead() {
     $page = new TestPage();
     $api = new WikipediaBot();
     $page->get_text_from('User:Blocked Testing Account/readtest', $api);
     $this->assertEquals('This page tests bots', $page->parsed_text());
-    
+  }
+  
+  public function testBotExpandWrite() {
+    /*
+    $api = new WikipediaBot();
     $page = new TestPage();
     $writeTestPage = 'User:Blocked Testing Account/writetest';
     $page->get_text_from($writeTestPage, $api);
@@ -52,6 +56,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
     
     $page->get_text_from($writeTestPage, $api);
     $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
+    */
   }
   
 }
