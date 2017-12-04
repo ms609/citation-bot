@@ -236,6 +236,239 @@ class WikipediaBot {
       echo "\n ! Unhandled write error.  Please copy this output and <a href=https://github.com/ms609/citation-bot/issues/new>report a bug.</a>";
       return FALSE;
     }
-  }  
+  }
+  
+  public function category_members($cat){
+    $list = [];
+    $vars = [
+      "cmtitle" => "Category:$cat", // Don't URLencode.
+      "action" => "query",
+      "cmlimit" => "500",
+      "list" => "categorymembers",
+    ];
+    
+    do {
+      set_time_limit(8);
+      $res = $this->fetch($vars, 'POST');
+      if (isset($res->query->categorymembers)) {
+        foreach ($res->query->categorymembers as $page) {
+          $list[] = (string) $page->title;
+        }
+      } else {
+        trigger_error('Error reading API from ' . htmlspecialchars($url) . "\n\n", E_USER_WARNING);
+      }
+      $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
+    } while ($vars["cmcontinue"]);
+    return $list;
+  }
+  
+  // Returns an array; Array ("title1", "title2" ... );
+  public function what_transcludes($template, $namespace = 99){
+    $titles = what_transcludes_2($template, $namespace);
+    return $titles["title"];
+  }
+
+  private function what_transcludes_2($template, $namespace = 99) {
+    
+    $vars = Array (
+      "action" => "query",
+      "list" => "embeddedin",
+      "eilimit" => "5000",
+      "eititle" => "Template:" . $template,
+      "einamespace" => ($namespace==99)?"":$namespace,
+    );
+    $list = ['title' => NULL];
+    
+    do {
+      set_time_limit(20);
+      $res = $this->fetch($vars, 'POST');
+      if (isset($res->query->embeddedin->ei)) {
+        trigger_error('Error reading API from ' . htmlspecialchars($url), E_USER_NOTICE);
+      } else {
+        foreach($res->query->embeddedin as $page) {
+          $list["title"][] = $page->title;
+          $list["id"][] = $page->pageid;
+        }
+      }
+      $vars["eicontinue"] = isset($res->continue) ? (string) $res->continue->eicontinue : FALSE;
+    } while ($vars["eicontinue"]);
+    return $list;
+  }
+
+  /**
+   * Unused
+   * @codeCoverageIgnore
+   */
+  public function wikititle_encode($in) {
+    return str_replace(DOT_DECODE, DOT_ENCODE, $in);
+  }
+
+  public function get_last_revision($page) {
+    $res = $this->fetch(Array(
+        "action" => "query",
+        "prop" => "revisions",
+        "titles" => $page,
+      ));
+    if (!isset($this->query->pages->page->revisions->rev)) {
+        echo "\n Failed to get article last revision \n";
+        return FALSE;
+    }
+    return $this->query->pages->page->revisions->rev["revid"];
+  }
+
+  public function get_prefix_index($prefix, $namespace = 0, $start = "") {
+    $page_titles = [];
+    # $page_ids = [];
+    $vars["apfrom"] = $start;
+    $vars = ["action" => "query",
+      "list" => "allpages",
+      "apnamespace" => $namespace,
+      "apprefix" => $prefix,
+      "aplimit" => "500",
+    ];
+    
+    do {
+      set_time_limit(10);
+      $res = $this->fetch($vars, 'POST');
+      if ($res && !isset($res->error) && isset($res->query->allpages)) {
+        foreach ($res->query->allpages as $page) {
+          $page_titles[] = $page->title;
+          # $page_ids[] = $page->pageid;
+        }
+      } else {
+        trigger_error('Error reading API with vars ' . http_build_query($vars), E_USER_NOTICE);
+        if (isset($res->error)) echo $res->error;
+      }
+      $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
+    } while ($vars["apfrom"]);
+    set_time_limit(45);
+    return $page_titles;
+  }
+
+  public function get_namespace($page) {
+    $res = $this->fetch([
+        "action" => "query",
+        "prop" => "info",
+        "titles" => $page,
+        ]); 
+    if (!isset($res->query->pages)) {
+        echo "\n Failed to get article namespace \n";
+        return FALSE;
+    }
+    return (int) reset($res->query->pages)->ns;
+  }
+
+  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.
+  public function is_redirect($page) {
+    $res = $this->fetch(Array(
+        "action" => "query",
+        "prop" => "info",
+        "titles" => $page,
+        ), 'POST');
+    
+    if (!isset($res->query->pages)) {
+        echo "\n Failed to get redirect status \n";
+        return -1;
+    }
+    $res = reset($res->query->pages);
+    return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
+  }
+
+  /**
+   * Unused
+   * @codeCoverageIgnore
+   */
+  public function redirect_target($page) {
+    $res = $this->fetch(Array(
+        "action" => "query",
+        "redirects" => "1",
+        "titles" => $page,
+        ), 'POST');
+    if (!isset($res->pages->page)) {
+        echo "\n Failed to get redirect target \n";
+        return FALSE;
+    }
+    return $xml->pages->page["title"];
+  }
+
+  /**
+   * Unused
+   * @codeCoverageIgnore
+   */
+  public function parse_wikitext($text, $title = "API") {
+    $vars = array(
+          'format' => 'json',
+          'action' => 'parse',
+          'text'   => $text,
+          'title'  => $title,
+      );
+    $res = $this->fetch($vars, 'POST');
+    if (!$res) {
+      // Wait a sec and try again
+      sleep(2);
+      $res = $this->fetch($vars, 'POST');
+    }
+    if (!isset($res->parse->text)) {
+      trigger_error("Could not parse text of $title.", E_USER_WARNING);
+      return FALSE;
+    }
+    return $res->parse->text->{"*"};
+  }
+
+  public function namespace_id($name) {
+    $lc_name = strtolower($name);
+    return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : NULL;
+  }
+
+  public function namespace_name($id) {
+    return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
+  }
+
+  // TODO mysql login is failing.
+    /*
+     * unused
+   * @codeCoverageIgnore
+   */
+  public function article_id($page, $namespace = 0) {
+    if (stripos($page, ':')) {
+      $bits = explode(':', $page);
+      if (isset($bits[2])) return NULL; # Too many colons; improperly formatted page name?
+      $namespace = namespace_id($bits[0]);
+      if (is_null($namespace)) return NULL; # unrecognized namespace
+      $page = $bits[1];
+    }
+    $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
+    $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
+    if (defined('PHP_VERSION_ID') && (PHP_VERSION_ID >= 50600)) { 
+       $result = NULL; // mysql_query does not exist in PHP 7
+    } else {
+       $result = @mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
+            . "' && page_title='$page'");
+    }
+    if (!$result) {
+      echo @mysql_error();
+      @mysql_close($enwiki_db);
+      return NULL;
+    }
+    $results = @mysql_fetch_array($result, MYSQL_ASSOC);
+    @mysql_close($enwiki_db);
+    if (!$results) return NULL;
+    return $results['page_id'];
+  }
+
+  /**
+   * Unused
+   * @codeCoverageIgnore
+   */
+  public function touch_page($page) {
+    $text = $this->get_raw_wikitext($page);
+    if ($text) {
+      $this->write ($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
+      return TRUE;
+    } else {
+      return FALSE;
+    }
+  }
+
 }
 
