@@ -772,7 +772,7 @@ final class Template {
       if ($year) $url .= "&date=" . urlencode($year);
       if ($volume) $url .= "&volume=" . urlencode($volume);
       if ($start_page) $url .= "&spage=" . urlencode($start_page);
-      if (!($result =FALSE;
+      if (!($result =FALSE)) {
         echo "\n   * Error loading simpleXML file from CrossRef." . tag();
       }
       elseif ($result['status'] == 'malformed') {
