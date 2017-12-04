@@ -208,7 +208,6 @@ final class Template {
       $this->correct_param_spelling();
       $this->check_url();
     }
-    print "\n A segmentation fault occurs shortly after this point.";
   }
 
   protected function incomplete() {
