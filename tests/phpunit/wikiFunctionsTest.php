@@ -49,14 +49,13 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   }  
   
   public function testNamespaces() {
-    $bot = new WikipediaBot();
     $vars = array(
           'format' => 'json',
           'action' => 'query',
           'meta'   => 'siteinfo',
           'siprop'  => 'namespaces',
       );
-    $namespaces = $bot->fetch($vars, 'POST');
+    $namespaces = $api->fetch($vars, 'POST');
     
     foreach ($namespaces->query->namespaces as $ns) {
       $ns_name = isset($ns->canonical)? $ns->canonical : '';
