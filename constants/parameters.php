@@ -263,7 +263,7 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'ID'
  'lastauthoramp', 'laydate', 'laysource', 'laysummary', 'layurl', 'lccn', 'location',
  'magazine', 'medium', 'minutes', 'mr', 'name-separator', 'network', 'newspaper', 'nocat',
  'nopp', 'notracking', 'no-tracking', 'number', 'oclc', 'ol', 'origyear', 'osti', 'others',
- 'p', 'page', 'pages', 'people', 'periodical', 'place', 'pmc', 'pmc-embargo-date', 'pmid',
+ 'p', 'page', 'pages', 'people', 'periodical', 'place', 'pmc', 'pmc-embargo-date', 'pmid', 'hdl',
  'postscript', 'pp', 'program', 'publicationdate', 'publication-date', 'publicationplace',
  'publication-place', 'publisher', 'quotation', 'quote', 'ref', 'registration', 'rfc',
  'scale', 'season', 'section', 'sectionurl', 'separator', 'series', 'serieslink', 'seriesno',
