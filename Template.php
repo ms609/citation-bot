@@ -1351,6 +1351,66 @@ final class Template {
   
   protected function expand_by_google_books() {
     $url = $this->get('url');
+    if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) { // No Google URL yet.
+      $google_books_worked = FALSE ;
+      $isbn= $this->get('isbn');
+      $lccn= $this->get('lccn');
+      $oclc= $this->get('oclc');
+      if ($isbn) {
+        $isbn = str_replace(array(" ","-"), "", $isbn);
+        if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
+        if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
+      }
+      if ($lccn) {
+        $lccn = str_replace(array(" ","-"), "", $lccn);
+        if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
+      }
+      if ($oclc) {
+        if ( !ctype_alnum($oclc) ) $oclc='' ;
+      }
+      if ($isbn) {  // Try Books.Google.Com
+        $google_book_url='https://books.google.com/books?isbn='.$isbn;
+        $google_content = @file_get_contents($google_book_url);
+        if ($google_content !== FALSE) {
+          preg_match_all('~books.google.com/books\?id=............&amp~',$google_content,$google_results);
+          $google_results = $google_results[0];
+          $google_results = array_unique($google_results);
+          if (count($google_results) === 1) {
+            $google_results = $google_results[0];
+            $gid = substr($google_results,26,-4);
+            $url = 'https://books.google.com/books?id=' . $gid;
+            if ($this->blank('url')) $this->add('url', $url);
+            $google_books_worked = TRUE;
+          }
+        }
+      }
+      if ( !$google_books_worked ) { // Try Google API instead 
+        if ($isbn) {
+          $url_token = "isbn:" . $isbn;
+        } elseif ($oclc) {
+          $url_token = "oclc:" . $oclc;
+        } elseif ($lccn) {
+          $url_token = "lccn:" . $lccn;
+        } else {
+          return FALSE; // No data to use
+        }
+        $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
+        if ($string === FALSE) {
+            echo "\n Google APIs search failed for $url_token \n";
+            return FALSE;
+        }
+        $result = @json_decode($string, false);
+        if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
+          $gid=$result->items[0]->id;
+          $url = 'https://books.google.com/books?id=' . $gid;
+          if ($this->blank('url')) $this->add('url', $url );
+        } else {
+          echo "\n Google APIs search failed with $url_token \n";
+          return FALSE;
+        }
+      }
+    }
+    // Now we parse a Google Books URL
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $removed_redundant = 0;
       $hash = '';
@@ -1383,46 +1443,6 @@ final class Template {
       }
       $this->google_book_details($gid[1]);
       return TRUE;
-    }
-    // Use Google API to get GID instead based upon ISBN, LCCN, or OCLC
-    $isbn= $this->get('isbn');
-    $lccn= $this->get('lccn');
-    $oclc= $this->get('oclc');
-    if ($isbn) {
-        $isbn = str_replace(array(" ","-"), "", $isbn);
-        if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
-        if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
-    }
-    if ($lccn) {
-        $lccn = str_replace(array(" ","-"), "", $lccn);
-        if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
-    }
-    if ($oclc) {
-        if ( !ctype_alnum($oclc) ) $oclc='' ;
-    }
-    if ($isbn) {
-        $url_token = "isbn:" . $isbn;
-    } elseif ($oclc) {
-        $url_token = "oclc:" . $oclc;
-    } elseif ($lccn) {
-        $url_token = "lccn:" . $lccn;
-    } else {
-        return FALSE; // No data to use
-    }
-    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
-    if ($string === FALSE) {
-        echo "\n Google APIs search failed for $url_token \n";
-        return FALSE;
-    }
-    $result = @json_decode($string, false);
-    if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
-        $gid=$result->items[0]->id;
-        $this->google_book_details($gid);
-        if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
-        return TRUE;
-    } else {
-      echo "\n Google APIs search failed with $url_token \n";
-      return FALSE;
     }
   }
 
