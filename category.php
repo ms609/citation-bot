@@ -38,7 +38,7 @@ if ($category) {
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       echo "\n # Writing to " . htmlspecialchars($page_title) . '... ';
       while (!$page->write($api) && $attempts < 2) ++$attempts;
-      echo htmlspecialchars($page->text);
+      echo htmlspecialchars($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
@@ -49,7 +49,7 @@ if ($category) {
          echo "\n # Failed. \n";
       }
     } else {
-      echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
+      echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
     }
   }
 
