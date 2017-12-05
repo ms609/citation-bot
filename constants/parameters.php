@@ -206,7 +206,9 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
 );
 
 
-const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI','EISSN', 'HDL', 'ID',
+// Parameter sort order: Capitals then lowercase; single parameters then those repeated for each
+// subsequent author or editor; Alphabetical.
+const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EISSN', 'HDL', 'ID',
 'ISBN', 'ISBN13', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR', 'OCLC', 'OL', 'OSTI', 'PMC', 'PMID',
 'RFC', 'SSRN', 'URL', 'ZBL', 'Author', 'DoiBroken', 'Editor', 'EditorGiven', 'EditorSurname',
  'Embargo', 'PPPrefix', 'PPrefix', 'Ref', 'Author1', 'Author2', 'Author3', 'Author4', 'Author5',
@@ -249,15 +251,16 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI','EISS
  'article', 'arxiv', 'asin', 'asin-tld', 'at', 'author', 'author-first', 'authorformat',
  'author-format', 'author-last', 'authorlink', 'author-link', 'authormask', 'author-mask',
  'author-name-separator', 'authors', 'author-separator', 'bibcode', 'biorxiv', 'booktitle', 'callsign',
- 'cartography', 'chapter', 'chapter-format', 'chapterformat', 'chapterlink', 'chapterurl', 'chapter-url', 'citeseerx', 'city', 'class', 'collaboration', 'conference',
+ 'cartography', 'chapter', 'chapter-format', 'chapterformat', 'chapterlink', 'chapterurl', 'chapter-url', 
+ 'citeseerx', 'city', 'class', 'collaboration', 'conference',
  'conferenceurl', 'conference-url', 'contribution', 'contributionurl', 'contribution-url', 'date',
  'deadurl', 'degree', 'department', 'df', 'dictionary', 'displayauthors', 'display-authors',
  'displayeditors', 'display-editors', 'docket', 'doi', 'doi_brokendate', 'doi_inactivedate',
  'doi-broken-date', 'name-list-format', 'chapterformat', 'chapter-format',
  'edition', 'editor', 'editor-first', 'editorformat', 'editor-format', 'editor-last',
  'editorlink', 'editor-link', 'editormask', 'editor-mask', 'editor-name-separator',
- 'editors', 'editor-separator', 'embargo', 'encyclopaedia', 'encyclopedia', 'entry',
- 'episodelink', 'eprint', 'event', 'eventurl', 'first', 'format', 'given', 'hdl', 'hdl-access', 'host', 'eissn', 'id',
+ 'editors', 'editor-separator', 'eissn', 'embargo', 'encyclopaedia', 'encyclopedia', 'entry',
+ 'episodelink', 'eprint', 'event', 'eventurl', 'first', 'format', 'given', 'hdl', 'hdl-access', 'host', 'id',
  'ignoreisbnerror', 'ignore-isbn-error', 'in', 'inset', 'institution', 'interviewer',
  'isbn', 'isbn13', 'issn', 'issue', 'jfm', 'journal', 'jstor', 'language', 'last',
  'lastauthoramp', 'laydate', 'laysource', 'laysummary', 'layurl', 'lccn', 'location',
