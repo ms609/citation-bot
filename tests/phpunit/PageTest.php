@@ -35,7 +35,14 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page->get_text_from('User:Blocked Testing Account/readtest', $api);
     $this->assertEquals('This page tests bots', $page->parsed_text());
   }
-  
+    
+   public function testBotReadFailedPage() {
+    $page = new TestPage();
+    $api = new WikipediaBot();
+    $page->get_text_from('Mexican_standoff', $api);
+    $page->expand_text();
+  }
+    
     /*
      * This test is commented out as Travis CI servers are blocked.
      * I've asked User:Slakr whether we can get them unblocked for logged-in users.
