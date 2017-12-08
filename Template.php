@@ -793,9 +793,12 @@ final class Template {
       echo " nothing found.";
       if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
         // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
-        echo "\n - Checking for ISBN";
-        if ($this->blank('isbn') && $title = $this->get("title")) $this->add_if_new("isbn", $this->find_isbn( $title, $this->first_author()));
-        else echo "\n  Already has an ISBN. ";
+        if ($this->blank('isbn') && $title = $this->get("title")) { 
+          echo "\n - Checking for ISBN";
+          $this->add_if_new("isbn", $this->find_isbn());
+        } else {
+          else echo "\n  Already has an ISBN. ";
+        }
       }
     }
   }
