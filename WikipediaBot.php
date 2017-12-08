@@ -187,7 +187,7 @@ class WikipediaBot {
     
     if ((!is_null($lastRevId) && $myPage->lastrevid != $lastRevId)
      || (!is_null($startedEditing) && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-      triggeer_error("Possible edit conflict detected. Aborting.", E_USER_WARNING);
+      trigger_error("Possible edit conflict detected. Aborting.", E_USER_WARNING);
       return FALSE;
     }
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
