@@ -40,7 +40,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page = new TestPage();
     $api = new WikipediaBot();
     $page->get_text_from('Mexican_standoff', $api);
-    $this->expand_text();
+    $page->expand_text();
   }
     
     /*
