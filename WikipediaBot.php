@@ -1,7 +1,7 @@
 <?php
 require_once("credentials/wiki.php");
 
-final class WikipediaBot {
+class WikipediaBot {
   
   protected $oauth, $ch;
   
