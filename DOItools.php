@@ -4,7 +4,6 @@ require_once('WikipediaBot.php');
 /* junior_test - tests a name for a Junior appellation
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
- * @codeCovIgnore
  */
 function junior_test($name) {
   $junior = (substr($name, -3) == " Jr")?" Jr":FALSE;
@@ -241,18 +240,4 @@ function straighten_quotes($str) {
   $str = preg_replace('~&#821[679];|[\x{2039}\x{203A}\x{2018}-\x{201B}`]|&[rl]s?[ab]?quo;~u', "'", $str);
   $str = preg_replace('~&#822[013];|[\x{00AB}\x{00BB}\x{201C}-\x{201F}]|&[rlb][ad]?quo;~u', '"', $str);
   return $str;
-}
-
-function query_adsabs ($options) {  
-  // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer:' . ADSABSAPIKEY));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($ch, CURLOPT_URL, "http://api.adsabs.harvard.edu/v1/search/query"
-    . "?data_type=XML&q=$options&fl="
-    . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
-  $return = @json_decode(curl_exec($ch));
-  curl_close($ch);
-  
-  return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
 }
