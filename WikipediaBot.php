@@ -439,7 +439,7 @@ class WikipediaBot {
     if (stripos($page, ':')) {
       $bits = explode(':', $page);
       if (isset($bits[2])) return NULL; # Too many colons; improperly formatted page name?
-      $namespace = namespace_id($bits[0]);
+      $namespace = $this->namespace_id($bits[0]);
       if (is_null($namespace)) return NULL; # unrecognized namespace
       $page = $bits[1];
     }
