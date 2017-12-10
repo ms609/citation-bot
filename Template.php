@@ -963,11 +963,11 @@ final class Template {
     if ($SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
       if ($bibcode = $this->has('bibcode')) {
-        $result = query_adsabs("bibcode:" . urlencode($this->get("bibcode")));
+        $result = $this->query_adsabs("bibcode:" . urlencode($this->get("bibcode")));
       } elseif ($this->has('doi')) {
-        $result = query_adsabs("doi:" . urlencode($this->get('doi')));
+        $result = $this->query_adsabs("doi:" . urlencode($this->get('doi')));
       } elseif ($this->has('title')) {
-        $result = query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
+        $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
@@ -987,7 +987,7 @@ final class Template {
       if ($result->numFound != 1 && $this->has('journal')) {
         $journal = $this->get('journal');
         // try partial search using bibcode components:
-        $result = query_adsabs("year:" . $this->get('year')
+        $result = $this->query_adsabs("year:" . $this->get('year')
                           . "&volume:" . $this->get('volume')
                           . "&page:" . $this->page()
                           );
