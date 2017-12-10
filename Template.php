@@ -1145,6 +1145,8 @@ final class Template {
     }
   }
   
+  // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
+  // For the specific implementation that we use, search fot citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
   protected function expand_by_jstor() {
     if ($this->blank('jstor')) return FALSE;
     $jstor = $this->get('jstor');
