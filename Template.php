@@ -1072,6 +1072,21 @@ final class Template {
     }
   }
 
+  protected function query_adsabs ($options) {  
+  // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer:' . ADSABSAPIKEY));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_URL, "http://api.adsabs.harvard.edu/v1/search/query"
+    . "?data_type=XML&q=$options&fl="
+    . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
+  $return = @json_decode(curl_exec($ch));
+  curl_close($ch);
+  
+  return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
+}
+
+  
   protected function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if ($doi && ($force || $this->incomplete())) {
