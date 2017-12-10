@@ -60,7 +60,7 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
       html_echo(
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
-        . urlencode(get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
+        . urlencode($api->get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
         , ".");
     } else {
       echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
