@@ -2034,7 +2034,7 @@ final class Template {
       
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
-        echo " replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+        echo " replaced with $closest (likelihood " . (24 - $shortest) . "/24)";
       } else {
         $similarity = similar_text($p->param, $closest) / strlen($p->param);
         if ($similarity > 0.6) {
