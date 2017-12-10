@@ -23,6 +23,16 @@ function quiet_echo($text, $alternate_text = '') {
   }
 }
 
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
+function wiki_link_echo($page, $style = "#036;", $target = NULL) {
+  if (!$target) $target = $page;
+  $css = $style?" style='color:$style !important'":"";
+  return "<a href='" . WIKI_ROOT . "?title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
+}
+
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
