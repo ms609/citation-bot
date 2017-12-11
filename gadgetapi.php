@@ -13,7 +13,7 @@ $editSummary = $_POST['summary'];
 
 //Expand text from postvars
 $page = new Page();
-$page->text = $originalText;
+$page->parse_text($originalText);
 $page->expand_text();
 
 //Modify edit summary to identify bot-assisted edits
@@ -29,7 +29,7 @@ if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
 }
 
 $result = array(
-  'expandedtext' => $page->text,
+  'expandedtext' => $page->parsed_text(),
   'editsummary' => $editSummary,
   'debug' => $debug_text;
 );
