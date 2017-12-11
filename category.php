@@ -27,11 +27,11 @@ $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
 if ($category) {
   $attempts = 0;
-  $pages_in_category = category_members($category);
+  $api = new WikipediaBot();
+  $pages_in_category = $api->category_members($category);
   #print_r($pages_in_category);
   shuffle($pages_in_category);
   $page = new Page();
-  $api = new WikipediaBot();
   #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
