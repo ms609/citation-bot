@@ -26,12 +26,12 @@ include("expandFns.php");
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
 if ($category) {
+  $api = new WikipediaBot();
   $attempts = 0;
-  $pages_in_category = category_members($category);
+  $pages_in_category = $api->category_members($category);
   #print_r($pages_in_category);
   shuffle($pages_in_category);
   $page = new Page();
-  $api = new WikipediaBot();
   #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     echo ("\n\n\n*** Processing page '{" . htmlspecialchars($page_title) . "}' : " . date("H:i:s") . "\n");
@@ -41,9 +41,9 @@ if ($category) {
       echo htmlspecialchars($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
-        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
-        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br>"
+        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page->title) . "&action=history>history</a> / "
+        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page->title) . "&diff=prev&oldid="
+        . $api->get_last_revision($page->title) . ">last edit</a></small></i>\n\n<br>"
         , ".");
       } else {
          echo "\n # Failed. \n";
