@@ -791,11 +791,11 @@ final class Template {
       $this->add_if_new('pmid', $results[0]);
     } else {
       echo " nothing found.";
-      if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
+      if ($this->wikiname() == "citation" && $this->blank('journal')) {
         // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
-        echo "\n - Checking for ISBN";
-        if ($this->blank('isbn') && $title = $this->get("title")) $this->add_if_new("isbn", findISBN( $title, $this->first_author()));
-        else echo "\n  Already has an ISBN. ";
+        if ($this->find_isbn()) {
+          echo "\n * Found ISBN " . htmlspecialchars($this->get('isbn'));
+        }
       }
     }
   }
