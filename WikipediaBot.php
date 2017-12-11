@@ -111,7 +111,7 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$header],
           ]);
           
-          $ret = json_decode($data = curl_exec($this->ch));
+          $ret = @json_decode($data = curl_exec($this->ch));
           if (!$data) {
             trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
@@ -132,7 +132,7 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$header],
           ]);
           
-          $ret = json_decode($data = curl_exec($this->ch));
+          $ret = @json_decode($data = curl_exec($this->ch));
           if ( !$data ) {
             echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
             exit(0);
