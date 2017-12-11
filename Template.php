@@ -609,8 +609,8 @@ final class Template {
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {  //  Outdated url style
         $this->use_sici();         // Grab what we can before getting rid off it
-        $headers_test = get_headers($url, 1);
-        if(!empty($headers_test['Location']) && strpos($headers_test['Location'], "jstor.org/stable/")) {
+        $headers_test = @get_headers($url, 1);
+        if($headers_test !==FALSE && !empty($headers_test['Location']) && strpos($headers_test['Location'], "jstor.org/stable/")) {
           $url = $headers_test['Location']; // Redirect
           if (is_null($url_sent)) {
             $this->set('url', $url); // Save it
@@ -791,11 +791,11 @@ final class Template {
       $this->add_if_new('pmid', $results[0]);
     } else {
       echo " nothing found.";
-      if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
+      if ($this->wikiname() == "citation" && $this->blank('journal')) {
         // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
-        echo "\n - Checking for ISBN";
-        if ($this->blank('isbn') && $title = $this->get("title")) $this->add_if_new("isbn", findISBN( $title, $this->first_author()));
-        else echo "\n  Already has an ISBN. ";
+        if ($this->find_isbn()) {
+          echo "\n * Found ISBN " . htmlspecialchars($this->get('isbn'));
+        }
       }
     }
   }
@@ -1138,8 +1138,8 @@ final class Template {
       } else {
         echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
         $url_test = "http://dx.doi.org/".$doi ;
-        $headers_test = get_headers($url_test, 1);
-        if(empty($headers_test['Location']))
+        $headers_test = @get_headers($url_test, 1);
+        if($headers_test !==FALSE && empty($headers_test['Location']))
                 $this->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
       }
     }
