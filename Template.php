@@ -1749,7 +1749,9 @@ final class Template {
       // Match vol(iss):pp
       if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) {
         $this->add_if_new('volume', $match[1]);
-        $this->add_if_new('issue' , $match[2]);
+        if($match[2] > 2100 || $match[2] < 1500) { // if between 1500 and 2100, might be year or issue
+             $this->add_if_new('issue' , $match[2]);
+        }
         $this->add_if_new('pages' , $match[3]);
         $dat = trim(str_replace($match[0], '', $dat));
       }
