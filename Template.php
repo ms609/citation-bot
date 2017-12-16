@@ -1182,10 +1182,6 @@ final class Template {
             case "TI":
               $ris_parameter = "title";
               break;
-            case "RI":  // Use reviewed works title
-              $ris_review = "Reviewed work: " . trim($ris_part[1]);
-              $ris_parameter = FALSE;
-              break;
             case "AU":
               $ris_authors++;
               $ris_parameter = "author$ris_authors";
@@ -1221,15 +1217,17 @@ final class Template {
             case "IS":
               $ris_parameter = "issue";
               break;
-            case "SN":
-              $ris_parameter = "issn";
-              break;
-            case "UR":
-              $ris_parameter = "url";
-              break;
-            case "PB":
-              $ris_parameter = "publisher";
-              break;
+            case "RI":  // Use reviewed works title.  Only use if no real title when done
+              $ris_review = "Reviewed work: " . trim($ris_part[1]);
+            case "SN":  // Ignore since we have journal title and a JSTOR ID already
+              //$ris_parameter = "issn";
+              //break;
+            case "UR":  // Ignore since it will be JSTOR
+              //$ris_parameter = "url";
+              //break;
+            case "PB":  // Ignore for journals
+              //$ris_parameter = "publisher";
+              //break;
             case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
             default:
@@ -1246,6 +1244,7 @@ final class Template {
   }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search fot citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
+  // This is just an API that calls the JSTOR RIS system above
  /**
  * Unused
  * @codeCoverageIgnore
