@@ -1172,7 +1172,6 @@ final class Template {
       return FALSE;
     }
         $ris_review=FALSE;
-        $ris_authors=0;
         $ris = explode("\n", $dat);
         $ris_authors = 0;
         foreach ($ris as $ris_line) {
@@ -1732,7 +1731,6 @@ final class Template {
       }
 
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
-        $ris_authors=0;
         $ris = explode("\n", $dat);
         $ris_authors = 0;
         foreach ($ris as $ris_line) {
