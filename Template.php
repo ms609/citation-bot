@@ -167,7 +167,7 @@ final class Template {
           echo "\n * Expanded from Google Books API";
         }
         if ($this->expand_by_jstor()) {
-          echo "\n * Expanded from Citoid JSTOR API";
+          echo "\n * Expanded from JSTOR API";
         }
         $this->sanitize_doi();
         if ($this->verify_doi()) {
@@ -1158,9 +1158,93 @@ final class Template {
     }
   }
   
+  protected function expand_by_jstor() {
+    if ($this->blank('jstor')) return FALSE;
+    $jstor = $this->get('jstor');
+    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
+    $dat=@file_get_contents('https://www.jstor.org/citation/ris/' . $jstor ;
+    if ($dat === FALSE) {
+      echo "\n JSTOR API returned nothing for JSTOR ". $jstor . "\n";
+      return FALSE;
+    }
+    if (stripos($dat, 'No RIS data found for') !== false) {
+      echo "\n JSTOR API found nothing for JSTOR ". $jstor . "\n";
+      return FALSE;
+    }
+        $ris_authors=0;
+        $ris = explode("\n", $dat);
+        $ris_authors = 0;
+        foreach ($ris as $ris_line) {
+          $ris_part = explode(" - ", $ris_line . " ");
+          switch (trim($ris_part[0])) {
+            case "T1":
+            case "TI":
+              $ris_parameter = "title";
+              break;
+            case "AU":
+              $ris_authors++;
+              $ris_parameter = "author$ris_authors";
+              $ris_part[1] = format_author($ris_part[1]);
+              break;
+            case "Y1":
+              $ris_parameter = "date";
+              break;
+            case "PY":
+              $ris_parameter = "date";
+              $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
+              break;
+            case "SP":
+              $start_page = trim($ris_part[1]);
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              break;
+            case "EP":
+              $end_page = trim($ris_part[1]);
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $this->add_if_new("pages", $start_page . "-" . $end_page);
+              break;
+            case "DO":
+              $ris_parameter = "doi";
+              break;
+            case "JO":
+            case "JF":
+            case "T2":
+              $ris_parameter = "journal";
+              break;
+            case "VL":
+              $ris_parameter = "volume";
+              break;
+            case "IS":
+              $ris_parameter = "issue";
+              break;
+            case "SN":
+              $ris_parameter = "issn";
+              break;
+            case "UR":
+              $ris_parameter = "url";
+              break;
+            case "PB":
+              $ris_parameter = "publisher";
+              break;
+            case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+            default:
+              $ris_parameter = FALSE;
+          }
+          unset($ris_part[0]);
+          if ($ris_parameter
+                  && $this->add_if_new($ris_parameter, trim(implode($ris_part)))
+              ) {
+            $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+          }
+        }
+  }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search fot citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
-  protected function expand_by_jstor() {
+ /**
+ * Unused
+ * @codeCoverageIgnore
+ */
+  protected function expand_by_jstor_citoid() {
     if ($this->blank('jstor')) return FALSE;
     $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
