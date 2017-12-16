@@ -1200,7 +1200,6 @@ final class Template {
             case "EP":
               $end_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              $this->add_if_new("pages", $start_page . "-" . $end_page);
               break;
             case "DO":
               $ris_parameter = "doi";
@@ -1240,6 +1239,14 @@ final class Template {
           }
         }
         if ($ris_review) $this->add_if_new('title', trim($ris_review));
+        if (isset($start_page)) { 
+          if (isset($end_page)) {
+             $this->add_if_new("pages", $start_page . "-" . $end_page);
+          } else {
+             $this->add_if_new("pages", $start_page);
+          }
+        }
+
   }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search fot citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
