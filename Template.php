@@ -1162,7 +1162,7 @@ final class Template {
     if ($this->blank('jstor')) return FALSE;
     $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
-    $dat=@file_get_contents('https://www.jstor.org/citation/ris/' . $jstor ;
+    $dat=@file_get_contents('https://www.jstor.org/citation/ris/' . $jstor) ;
     if ($dat === FALSE) {
       echo "\n JSTOR API returned nothing for JSTOR ". $jstor . "\n";
       return FALSE;
@@ -1171,6 +1171,7 @@ final class Template {
       echo "\n JSTOR API found nothing for JSTOR ". $jstor . "\n";
       return FALSE;
     }
+        $ris_review=FALSE;
         $ris_authors=0;
         $ris = explode("\n", $dat);
         $ris_authors = 0;
@@ -1181,6 +1182,10 @@ final class Template {
             case "TI":
               $ris_parameter = "title";
               break;
+            case "RI":  // Use reviewed works title
+              $ris_review = "Reviewed work: " . trim($ris_part[1]);
+              $ris_parameter = FALSE;
+              break 
             case "AU":
               $ris_authors++;
               $ris_parameter = "author$ris_authors";
@@ -1237,6 +1242,7 @@ final class Template {
             $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
           }
         }
+        if ($ris_review) $this->add_if_new('title', trim($ris_review));
   }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search fot citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
