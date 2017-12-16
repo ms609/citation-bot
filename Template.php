@@ -1185,7 +1185,7 @@ final class Template {
             case "RI":  // Use reviewed works title
               $ris_review = "Reviewed work: " . trim($ris_part[1]);
               $ris_parameter = FALSE;
-              break 
+              break;
             case "AU":
               $ris_authors++;
               $ris_parameter = "author$ris_authors";
