@@ -1740,6 +1740,8 @@ final class Template {
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
         $ris = explode("\n", $dat);
         $ris_authors = 0;
+        unset($start_page);
+        unset($end_page);
         foreach ($ris as $ris_line) {
           $ris_part = explode(" - ", $ris_line . " ");
           switch (trim($ris_part[0])) {
@@ -1766,7 +1768,6 @@ final class Template {
             case "EP":
               $end_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              $this->add_if_new("pages", $start_page . "-" . $end_page);
               break;
             case "DO":
               $ris_parameter = "doi";
@@ -1805,6 +1806,13 @@ final class Template {
               $auto_summary .= "Converted RIS citation to WP format. ";
             }
             $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+          }
+        }
+        if (isset($start_page)) { // Sometimes people put end page before start page in reference
+          if (isset($end_page)) {
+             $this->add_if_new("pages", $start_page . "-" . $end_page);
+          } else {
+             $this->add_if_new("pages", $start_page);
           }
         }
       }
