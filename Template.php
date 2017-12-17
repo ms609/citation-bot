@@ -1077,7 +1077,7 @@ final class Template {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . ADSABSAPIKEY));
   	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_URL, "http://api.adsabs.harvard.edu/v1/search/query"
+    curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
       . "?data_type=XML&q=$options&fl="
       . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
     $return = @json_decode(curl_exec($ch));
