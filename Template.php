@@ -1811,7 +1811,7 @@ final class Template {
         }
         if (isset($start_page)) { // Sometimes people put end page before start page in reference
           if (isset($end_page)) {
-             $this->add_if_new("pages", $start_page . "-" . $end_page);
+             $this->add_if_new("pages", $start_page . "–" . $end_page);
           } else {
              $this->add_if_new("pages", $start_page);
           }
