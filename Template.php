@@ -1761,7 +1761,7 @@ final class Template {
       }
 
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
-        expand_by_RIS($dat);
+        $this->expand_by_RIS($dat);
       }
       
       $doi = extract_doi($dat);
