@@ -77,6 +77,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Eisfeld', $expanded->get('last1')); 
     $this->assertEquals('Proceedings of the National Academy of Sciences of the United States of America', $expanded->get('journal')); 
     $this->assertEquals('15303–15307', $expanded->get('pages'));
+    // JSTOR gives up these, but we do not add since we get journal title and URL is simply jstor stable
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertNull($expanded->get('issn'));
+    $this->assertNull($expanded->get('url'));
   }
   
   public function testPmidExpansion() {
