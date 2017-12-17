@@ -1261,7 +1261,7 @@ final class Template {
         if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
         if (isset($start_page)) { // Have to do at end since might get end pages before start pages
           if (isset($end_page)) {
-             $this->add_if_new("pages", $start_page . "-" . $end_page);
+             $this->add_if_new("pages", $start_page . EN_DASH . $end_page);
           } else {
              $this->add_if_new("pages", $start_page);
           }
