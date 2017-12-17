@@ -1083,7 +1083,7 @@ final class Template {
     $return = @json_decode(curl_exec($ch));
     print_r("query_adsabs1"); // DEBUG BLOCK
     print_r($options);
-    print_r("query_adsabs2");
+    print_r("query_adsabs2");  // DEBUG FORMATTING
     print_r($return);
     print_r("query_adsabs3"); // END DEBUG BLOCK
     curl_close($ch);
