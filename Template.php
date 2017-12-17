@@ -1085,7 +1085,7 @@ final class Template {
     print_r($options);
     print_r("query_adsabs2");
     print_r($return);
-    print_r("query_adsabs3");
+    print_r("query_adsabs3"); // END DEBUG BLOCK
     curl_close($ch);
     return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
   }
