@@ -1161,7 +1161,7 @@ final class Template {
   protected function expand_by_jstor() {
     if ($this->incomplete() === FALSE) return FALSE;
     if ($this->blank('jstor')) return FALSE;
-    $jstor = $this->get('jstor');
+    $jstor = timr($this->get('jstor'));
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
     $dat=@file_get_contents('https://www.jstor.org/citation/ris/' . $jstor) ;
     if ($dat === FALSE) {
