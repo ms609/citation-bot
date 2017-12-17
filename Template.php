@@ -1174,7 +1174,7 @@ final class Template {
     }
     $has_a_url = $this->has('url');
     $this->expand_by_RIS($dat);
-    if (! $has_a_url) $this->forget($url); // Do not add JSTOR URL
+    if (! $has_a_url) $this->forget('url'); // Do not add JSTOR URL
     return TRUE;
   }
   
