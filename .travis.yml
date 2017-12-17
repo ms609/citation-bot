@@ -11,9 +11,6 @@ matrix:
       install: pecl install oauth
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
       after_success: bash <(curl -s https://codecov.io/bash)
-    - php: 5.6
-      install: pecl install oauth-1.2.3
-      script: phpunit --bootstrap expandFns.php tests/phpunit
 
 git:
   depth: 3
