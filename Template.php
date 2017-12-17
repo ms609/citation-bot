@@ -1174,7 +1174,10 @@ final class Template {
     }
     $has_a_url = $this->has('url');
     $this->expand_by_RIS($dat);
-    if (! $has_a_url) $this->forget('url'); // Do not add JSTOR URL
+    if ($this->has('url') && !$has_a_url) { // added http://www.jstor.org/stable/12345, so remove (do not use forget, since that echos)
+        $pos = $this->get_param_key('url');
+        unset($this->param[$pos]);
+    }
     return TRUE;
   }
   
