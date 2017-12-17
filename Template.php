@@ -1161,8 +1161,8 @@ final class Template {
   protected function expand_by_jstor() {
     if ($this->incomplete() === FALSE) return FALSE;
     if ($this->blank('jstor')) return FALSE;
-    $jstor = timr($this->get('jstor'));
-    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
+    $jstor = trim($this->get('jstor'));
+    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors.  We do not want i12342 kind
     $dat=@file_get_contents('https://www.jstor.org/citation/ris/' . $jstor) ;
     if ($dat === FALSE) {
       echo "\n JSTOR API returned nothing for JSTOR ". $jstor . "\n";
@@ -1172,7 +1172,16 @@ final class Template {
       echo "\n JSTOR API found nothing for JSTOR ". $jstor . "\n";
       return FALSE;
     }
-        $ris_review=FALSE;
+    $has_a_url = $this->has('url');
+    $this->expand_by_RIS($dat);
+    if (! $has_a_url) $this->forget($url); // Do not add JSTOR URL
+    return TRUE;
+  }
+  
+  protected function expand_by_RIS(&$dat) { // Pass by pointer to wipe this data when called from use_unnamed_params()
+        $ris_review    = FALSE;
+        $ris_issn      = FALSE;
+        $ris_publisher = FALSE;
         $ris = explode("\n", $dat);
         $ris_authors = 0;
         foreach ($ris as $ris_line) {
@@ -1197,10 +1206,12 @@ final class Template {
             case "SP":
               $start_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with start pages later
               break;
             case "EP":
               $end_page = trim($ris_part[1]);
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with end pages later
               break;
             case "DO":
               $ris_parameter = "doi";
@@ -1216,19 +1227,27 @@ final class Template {
             case "IS":
               $ris_parameter = "issue";
               break;
-            case "RI":  // Use reviewed works title.  Only use if no real title when done
-              $ris_review = "Reviewed work: " . trim($ris_part[1]);
-            case "SN":  // Ignore since we have journal title and a JSTOR ID already
-              //$ris_parameter = "issn";
-              //break;
-            case "UR":  // Ignore since it will be JSTOR
-              //$ris_parameter = "url";
-              //break;
-            case "PB":  // Ignore for journals
-              //$ris_parameter = "publisher";
-              //break;
-            case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
+            case "RI":
+              $ris_review = "Reviewed work: " . trim($ris_part[1]);  // Get these from JSTOR
               $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with review titles later
+              break;
+            case "SN":
+              $ris_parameter = "issn";
+              $ris_issn = trim($ris_part[1]);
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with ISSN later
+              break;
+            case "UR":
+              $ris_parameter = "url";
+              break;
+            case "PB":
+              $ris_publisher = trim($ris_part[1]);  // Get these from JSTOR
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with publisher later
+              break;
+            case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
             default:
               $ris_parameter = FALSE;
           }
@@ -1239,15 +1258,18 @@ final class Template {
             $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
           }
         }
-        if ($ris_review) $this->add_if_new('title', trim($ris_review));
-        if (isset($start_page)) { 
+        if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
+        if (isset($start_page)) { // Have to do at end since might get end pages before start pages
           if (isset($end_page)) {
              $this->add_if_new("pages", $start_page . "-" . $end_page);
           } else {
              $this->add_if_new("pages", $start_page);
           }
         }
-
+        if($this->blank('journal')) { // doing at end avoids adding if we have journal title
+          if ($ris_issn) $this->add_if_new('issn', $ris_issn);
+          if ($ris_publisher) $this->add_if_new('publisher', $ris_publisher);
+        }
   }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search fot citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
@@ -1739,83 +1761,7 @@ final class Template {
       }
 
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
-        $ris = explode("\n", $dat);
-        $ris_authors = 0;
-        unset($start_page);
-        unset($end_page);
-        foreach ($ris as $ris_line) {
-          $ris_part = explode(" - ", $ris_line . " ");
-          switch (trim($ris_part[0])) {
-            case "T1":
-            case "TI":
-              $ris_parameter = "title";
-              break;
-            case "AU":
-              $ris_authors++;
-              $ris_parameter = "author$ris_authors";
-              $ris_part[1] = format_author($ris_part[1]);
-              break;
-            case "Y1":
-              $ris_parameter = "date";
-              break;
-            case "PY":
-              $ris_parameter = "date";
-              $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
-              break;
-            case "SP":
-              $start_page = trim($ris_part[1]);
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              break;
-            case "EP":
-              $end_page = trim($ris_part[1]);
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              break;
-            case "DO":
-              $ris_parameter = "doi";
-              break;
-            case "JO":
-            case "JF":
-            case "T2":
-              $ris_parameter = "journal";
-              break;
-            case "VL":
-              $ris_parameter = "volume";
-              break;
-            case "IS":
-              $ris_parameter = "issue";
-              break;
-            case "SN":
-              $ris_parameter = "issn";
-              break;
-            case "UR":
-              $ris_parameter = "url";
-              break;
-            case "PB":
-              $ris_parameter = "publisher";
-              break;
-            case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-            default:
-              $ris_parameter = FALSE;
-          }
-          unset($ris_part[0]);
-          if ($ris_parameter
-                  && $this->add_if_new($ris_parameter, trim(implode($ris_part)))
-              ) {
-            global $auto_summary;
-            if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
-              $auto_summary .= "Converted RIS citation to WP format. ";
-            }
-            $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          }
-        }
-        if (isset($start_page)) { // Sometimes people put end page before start page in reference
-          if (isset($end_page)) {
-             $this->add_if_new("pages", $start_page . "–" . $end_page);
-          } else {
-             $this->add_if_new("pages", $start_page);
-          }
-        }
+        expand_by_RIS($dat);
       }
       
       $doi = extract_doi($dat);
