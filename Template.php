@@ -745,7 +745,7 @@ final class Template {
       $priorP['crossref'] = $input;
       global $crossRefId;
       if ($journal || $issn) {
-        $url = "http://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId"
+        $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId"
              . ($title ? "&atitle=" . urlencode(de_wikify($title)) : "")
              . ($author ? "&aulast=" . urlencode($author) : '')
              . ($start_page ? "&spage=" . urlencode($start_page) : '')
@@ -766,7 +766,7 @@ final class Template {
       if (FAST_MODE || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
       echo "\n   x Full search failed. Dropping author & end_page... ";
-      $url = "http://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId";
+      $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId";
       if ($title) $url .= "&atitle=" . urlencode(de_wikify($title));
       if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(de_wikify($journal));
       if ($year) $url .= "&date=" . urlencode($year);
@@ -865,7 +865,7 @@ final class Template {
       }
     }
     $query = substr($query, 5);
-    $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
+    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
     $xml = @simplexml_load_file($url);
     if ($xml === FALSE) {
       echo "\n - Unable to do PMID search";
@@ -901,7 +901,7 @@ final class Template {
       $context = stream_context_create(array(
         'http' => array('ignore_errors' => true),
       ));
-      $arxiv_request = "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
+      $arxiv_request = "https://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
       $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
       if ($arxiv_response) {
         $xml = @simplexml_load_string(
@@ -1150,7 +1150,7 @@ final class Template {
         echo " (ok)";
       } else {
         echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
-        $url_test = "http://dx.doi.org/".$doi ;
+        $url_test = "https://dx.doi.org/".$doi ;
         $headers_test = @get_headers($url_test, 1);
         if($headers_test !==FALSE && empty($headers_test['Location']))
                 $this->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
@@ -1225,7 +1225,7 @@ final class Template {
         tag(),
         "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
         . ' for more details' . tag());
-    $xml = @simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
+    $xml = @simplexml_load_file("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
     if ($xml === FALSE) {
       echo "\n - Unable to do PubMed search";
       return;
@@ -1314,7 +1314,7 @@ final class Template {
     if (!$doi) {
       warn('#TODO: crossref lookup with no doi');
     }
-    $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=TRUE";
+    $url = "https://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=TRUE";
     for ($i = 0; $i < 2; $i++) {
       $xml = @simplexml_load_file($url);
       if ($xml) {
@@ -1462,7 +1462,7 @@ final class Template {
   }
 
   protected function google_book_details ($gid) {
-    $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
+    $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", @file_get_contents($google_book_url))
     );
@@ -1529,7 +1529,7 @@ final class Template {
       global $over_isbn_limit;
       // TODO: implement over_isbn_limit based on &results=keystats in API
       if ($title && !$over_isbn_limit) {
-        $xml = @simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
+        $xml = @simplexml_load_file("https://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
         if ($xml === FALSE) {
           echo "\n - Unable to do ISBN DB search";
           return FALSE;
@@ -2261,7 +2261,7 @@ final class Template {
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
-      $url_test = "http://dx.doi.org/".$doi ;
+      $url_test = "https://dx.doi.org/".$doi ;
       $headers_test = @get_headers($url_test, 1);
       if ($headers_test === FALSE) {
         echo "\n   ! DOI status unkown.  dx.doi.org failed to respond at all to: " . htmlspecialchars($doi);
