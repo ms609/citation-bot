@@ -1165,7 +1165,7 @@ final class Template {
     $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
-    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor . urlencode('?seq=1#page_scan_tab_contents'));
+    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('https://www.jstor.org/stable/') . $jstor . urlencode('?seq=1#page_scan_tab_contents'));
     if ($json === FALSE) {
       echo "\n Citoid API returned nothing for JSTOR ". $jstor . "\n";
       return FALSE;
@@ -1183,7 +1183,7 @@ final class Template {
     if (strtolower(substr(trim($data[0]->{'title'}),-9)) === ' on jstor') {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
          sleep(2); // try citoid again
-         $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor . urlencode('?seq=1')); // Make URL a little different this time, in case of caching
+         $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('https://www.jstor.org/stable/') . $jstor . urlencode('?seq=1')); // Make URL a little different this time, in case of caching
          if ($json === FALSE) return FALSE;
          $data = @json_decode($json,false);
          if (!isset($data) ||
