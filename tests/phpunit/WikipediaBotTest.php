@@ -86,7 +86,7 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
     
   public function testGetLastRevision() {
     $api = new WikipediaBot();
-    $this->assertEqual(805321380, 1 * $api->get_last_revision('User:Blocked testing account/readtest'));
+    $this->assertEquals(805321380, 1 * $api->get_last_revision('User:Blocked testing account/readtest'));
   }
    
 }

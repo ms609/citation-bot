@@ -67,21 +67,20 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('1701972'     , $expanded->get('jstor'));
   }
     
-   public function testCitoidJstorExpansion() { // This sometimes fails when Citoid treats it as just a webpage and not a journal
+   public function testRISJstorExpansion() {
     $text = "{{Cite journal|jstor=3073767}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('Are Helionitronium Trications Stable?', $expanded->get('title'));
-    if (!$expanded->get('volume')) {
-        echo 'Citoid let us down again.  Minor Failure';
-    } else { // If we are getting data, then it had better be right
-      $this->assertEquals('99', $expanded->get('volume'));
-      $this->assertEquals('24', $expanded->get('issue'));
-      $this->assertEquals('Francisco', $expanded->get('last2')); 
-      $this->assertEquals('Eisfeld', $expanded->get('last1')); 
-      $this->assertEquals('10.2307/3073767', $expanded->get('doi')); 
-      $this->assertEquals('Proceedings of the National Academy of Sciences of the United States of America', $expanded->get('journal')); 
-      $this->assertEquals('15303–15307', $expanded->get('pages'));
-    }
+    $this->assertEquals('99', $expanded->get('volume'));
+    $this->assertEquals('24', $expanded->get('issue'));
+    $this->assertEquals('Francisco', $expanded->get('last2')); 
+    $this->assertEquals('Eisfeld', $expanded->get('last1')); 
+    $this->assertEquals('Proceedings of the National Academy of Sciences of the United States of America', $expanded->get('journal')); 
+    $this->assertEquals('15303–15307', $expanded->get('pages'));
+    // JSTOR gives up these, but we do not add since we get journal title and URL is simply jstor stable
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertNull($expanded->get('issn'));
+    $this->assertNull($expanded->get('url'));
   }
   
   public function testPmidExpansion() {
@@ -469,23 +468,23 @@ ER -  }}';
        $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
   }
    
-  public function testISBN() {  // Dashes, no dashes, etc.
-    $text = "{{cite book|isbn=3-902823-24-0}}";
+  public function testConvertingISBN10intoISBN13() { // URLS present just to speed up tests
+    $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('978-3-902823-24-3', $expanded->get('isbn'));  // Convert with dashes
-    $text = "{{cite book|isbn=978-3-902823-24-3}}";
+    $this->assertEquals('978-0-9749009-0-2', $expanded->get('isbn'));  // Convert with dashes
+    $text = "{{cite book|isbn=978-0-9749009-0-2|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('978-3-902823-24-3', $expanded->get('isbn'));  // Unchanged with dashes
-    $text = "{{cite book|isbn=9783902823243}}";
+    $this->assertEquals('978-0-9749009-0-2', $expanded->get('isbn'));  // Unchanged with dashes
+    $text = "{{cite book|isbn=9780974900902|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('9783902823243', $expanded->get('isbn'));   // Unchanged without dashes
-    $text = "{{cite book|isbn=3902823240}}";
+    $this->assertEquals('9780974900902', $expanded->get('isbn'));   // Unchanged without dashes
+    $text = "{{cite book|isbn=0974900907|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('978-3902823243', $expanded->get('isbn'));   // Convert without dashes
-    $text = "{{cite book|isbn=1-84309-164-X}}";
+    $this->assertEquals('978-0974900902', $expanded->get('isbn'));   // Convert without dashes
+    $text = "{{cite book|isbn=1-84309-164-X|url=https://books.google.com/books?id=GvjwAQAACAAJ}}";
     $expanded = $this->process_citation($text);  
     $this->assertEquals('978-1-84309-164-6', $expanded->get('isbn'));  // Convert with dashes and a big X
-    $text = "{{cite book|isbn=184309164x}}";
+    $text = "{{cite book|isbn=184309164x|url=https://books.google.com/books?id=GvjwAQAACAAJ}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-1843091646', $expanded->get('isbn'));  // Convert without dashes and a tiny x
     $text = "{{cite book|isbn=Hello Brother}}";
@@ -714,6 +713,12 @@ ER -  }}';
     $this->assertEquals(FALSE, stripos($pages, 'arxiv'));
     $this->assertEquals(FALSE, stripos('1711', $volume));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the the data is updated and test probably no longer gets bad data
+ }
+    
+ public function testCitationTemplateWithoutJournal() {
+    $text = '{{citation|url=http://www.word-detective.com/2011/03/mexican-standoff/|title=Mexican standoff|work=The Word Detective|accessdate=2013-03-21}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('isbn')); // This citation used to crash code in ISBN search.  Mostly checking "something" to make Travis CI happy
  }
 
   /* TODO 

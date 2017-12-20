@@ -167,7 +167,7 @@ final class Template {
           echo "\n * Expanded from Google Books API";
         }
         if ($this->expand_by_jstor()) {
-          echo "\n * Expanded from Citoid JSTOR API";
+          echo "\n * Expanded from JSTOR API";
         }
         $this->sanitize_doi();
         if ($this->verify_doi()) {
@@ -609,8 +609,8 @@ final class Template {
     if (strpos($url, "jstor.org") !== FALSE) {
       if (strpos($url, "sici")) {  //  Outdated url style
         $this->use_sici();         // Grab what we can before getting rid off it
-        $headers_test = get_headers($url, 1);
-        if(!empty($headers_test['Location']) && strpos($headers_test['Location'], "jstor.org/stable/")) {
+        $headers_test = @get_headers($url, 1);
+        if($headers_test !==FALSE && !empty($headers_test['Location']) && strpos($headers_test['Location'], "jstor.org/stable/")) {
           $url = $headers_test['Location']; // Redirect
           if (is_null($url_sent)) {
             $this->set('url', $url); // Save it
@@ -745,7 +745,7 @@ final class Template {
       $priorP['crossref'] = $input;
       global $crossRefId;
       if ($journal || $issn) {
-        $url = "http://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId"
+        $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId"
              . ($title ? "&atitle=" . urlencode(de_wikify($title)) : "")
              . ($author ? "&aulast=" . urlencode($author) : '')
              . ($start_page ? "&spage=" . urlencode($start_page) : '')
@@ -766,7 +766,7 @@ final class Template {
       if (FAST_MODE || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
       echo "\n   x Full search failed. Dropping author & end_page... ";
-      $url = "http://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId";
+      $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId";
       if ($title) $url .= "&atitle=" . urlencode(de_wikify($title));
       if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(de_wikify($journal));
       if ($year) $url .= "&date=" . urlencode($year);
@@ -791,11 +791,11 @@ final class Template {
       $this->add_if_new('pmid', $results[0]);
     } else {
       echo " nothing found.";
-      if (mb_strtolower($this->name) == "citation" && $this->blank('journal')) {
+      if ($this->wikiname() == "citation" && $this->blank('journal')) {
         // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
-        echo "\n - Checking for ISBN";
-        if ($this->blank('isbn') && $title = $this->get("title")) $this->add_if_new("isbn", findISBN( $title, $this->first_author()));
-        else echo "\n  Already has an ISBN. ";
+        if ($this->find_isbn()) {
+          echo "\n * Found ISBN " . htmlspecialchars($this->get('isbn'));
+        }
       }
     }
   }
@@ -865,7 +865,7 @@ final class Template {
       }
     }
     $query = substr($query, 5);
-    $url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
+    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
     $xml = @simplexml_load_file($url);
     if ($xml === FALSE) {
       echo "\n - Unable to do PMID search";
@@ -901,7 +901,7 @@ final class Template {
       $context = stream_context_create(array(
         'http' => array('ignore_errors' => true),
       ));
-      $arxiv_request = "http://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
+      $arxiv_request = "https://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
       $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
       if ($arxiv_response) {
         $xml = @simplexml_load_string(
@@ -963,11 +963,11 @@ final class Template {
     if ($SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
       if ($bibcode = $this->has('bibcode')) {
-        $result = query_adsabs("bibcode:" . urlencode($this->get("bibcode")));
+        $result = $this->query_adsabs("bibcode:" . urlencode($this->get("bibcode")));
       } elseif ($this->has('doi')) {
-        $result = query_adsabs("doi:" . urlencode($this->get('doi')));
+        $result = $this->query_adsabs("doi:" . urlencode($this->get('doi')));
       } elseif ($this->has('title')) {
-        $result = query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
+        $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
@@ -987,7 +987,7 @@ final class Template {
       if ($result->numFound != 1 && $this->has('journal')) {
         $journal = $this->get('journal');
         // try partial search using bibcode components:
-        $result = query_adsabs("year:" . $this->get('year')
+        $result = $this->query_adsabs("year:" . $this->get('year')
                           . "&volume:" . $this->get('volume')
                           . "&page:" . $this->page()
                           );
@@ -1071,7 +1071,20 @@ final class Template {
        return FALSE;
     }
   }
-
+  
+  protected function query_adsabs ($options) {  
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . ADSABSAPIKEY));
+  	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
+      . "?data_type=XML&q=$options&fl="
+      . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
+    $return = @json_decode(curl_exec($ch));
+    curl_close($ch);
+    return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
+  }
+  
   protected function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if ($doi && ($force || $this->incomplete())) {
@@ -1137,20 +1150,144 @@ final class Template {
         echo " (ok)";
       } else {
         echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
-        $url_test = "http://dx.doi.org/".$doi ;
-        $headers_test = get_headers($url_test, 1);
-        if(empty($headers_test['Location']))
+        $url_test = "https://dx.doi.org/".$doi ;
+        $headers_test = @get_headers($url_test, 1);
+        if($headers_test !==FALSE && empty($headers_test['Location']))
                 $this->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
       }
     }
   }
   
   protected function expand_by_jstor() {
+    if ($this->incomplete() === FALSE) return FALSE;
+    if ($this->blank('jstor')) return FALSE;
+    $jstor = trim($this->get('jstor'));
+    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors.  We do not want i12342 kind
+    $dat=@file_get_contents('https://www.jstor.org/citation/ris/' . $jstor) ;
+    if ($dat === FALSE) {
+      echo "\n JSTOR API returned nothing for JSTOR ". $jstor . "\n";
+      return FALSE;
+    }
+    if (stripos($dat, 'No RIS data found for') !== false) {
+      echo "\n JSTOR API found nothing for JSTOR ". $jstor . "\n";
+      return FALSE;
+    }
+    $has_a_url = $this->has('url');
+    $this->expand_by_RIS($dat);
+    if ($this->has('url') && !$has_a_url) { // added http://www.jstor.org/stable/12345, so remove (do not use forget, since that echos)
+        $pos = $this->get_param_key('url');
+        unset($this->param[$pos]);
+    }
+    return TRUE;
+  }
+  
+  protected function expand_by_RIS(&$dat) { // Pass by pointer to wipe this data when called from use_unnamed_params()
+        $ris_review    = FALSE;
+        $ris_issn      = FALSE;
+        $ris_publisher = FALSE;
+        $ris = explode("\n", $dat);
+        $ris_authors = 0;
+        foreach ($ris as $ris_line) {
+          $ris_part = explode(" - ", $ris_line . " ");
+          switch (trim($ris_part[0])) {
+            case "T1":
+            case "TI":
+              $ris_parameter = "title";
+              break;
+            case "AU":
+              $ris_authors++;
+              $ris_parameter = "author$ris_authors";
+              $ris_part[1] = format_author($ris_part[1]);
+              break;
+            case "Y1":
+              $ris_parameter = "date";
+              break;
+            case "PY":
+              $ris_parameter = "date";
+              $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
+              break;
+            case "SP":
+              $start_page = trim($ris_part[1]);
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with start pages later
+              break;
+            case "EP":
+              $end_page = trim($ris_part[1]);
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with end pages later
+              break;
+            case "DO":
+              $ris_parameter = "doi";
+              break;
+            case "JO":
+            case "JF":
+            case "T2":
+              $ris_parameter = "journal";
+              break;
+            case "VL":
+              $ris_parameter = "volume";
+              break;
+            case "IS":
+              $ris_parameter = "issue";
+              break;
+            case "RI":
+              $ris_review = "Reviewed work: " . trim($ris_part[1]);  // Get these from JSTOR
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with review titles later
+              break;
+            case "SN":
+              $ris_parameter = "issn";
+              $ris_issn = trim($ris_part[1]);
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with ISSN later
+              break;
+            case "UR":
+              $ris_parameter = "url";
+              break;
+            case "PB":
+              $ris_publisher = trim($ris_part[1]);  // Get these from JSTOR
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+              $ris_parameter = FALSE; // Deal with publisher later
+              break;
+            case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
+              $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
+            default:
+              $ris_parameter = FALSE;
+          }
+          unset($ris_part[0]);
+          if ($ris_parameter
+                  && $this->add_if_new($ris_parameter, trim(implode($ris_part)))
+              ) {
+            $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+          }
+        }
+        if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
+        if (isset($start_page)) { // Have to do at end since might get end pages before start pages
+          if (isset($end_page)) {
+             $this->add_if_new("pages", $start_page . EN_DASH . $end_page);
+          } else {
+             $this->add_if_new("pages", $start_page);
+          }
+        }
+        if($this->blank('journal')) { // doing at end avoids adding if we have journal title
+          if ($ris_issn) $this->add_if_new('issn', $ris_issn);
+          if ($ris_publisher) $this->add_if_new('publisher', $ris_publisher);
+        }
+  }
+  // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
+  // For the specific implementation that we use, search fot citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
+  // This is just an API that calls the JSTOR RIS system above
+  // Leave this code here, since Citoid can be used for many many things.
+ /**
+ * Unused
+ * @codeCoverageIgnore
+ */
+  protected function expand_by_jstor_citoid() {
     if ($this->blank('jstor')) return FALSE;
     $jstor = $this->get('jstor');
     if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
-    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor . urlencode('?seq=1#page_scan_tab_contents'));
+    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
     if ($json === FALSE) {
       echo "\n Citoid API returned nothing for JSTOR ". $jstor . "\n";
       return FALSE;
@@ -1167,17 +1304,7 @@ final class Template {
     // Verify that Citoid did not think that this was a website and not a journal
     if (strtolower(substr(trim($data[0]->{'title'}),-9)) === ' on jstor') {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
-         sleep(2); // try citoid again
-         $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor . urlencode('?seq=1')); // Make URL a little different this time, in case of caching
-         if ($json === FALSE) return FALSE;
-         $data = @json_decode($json,false);
-         if (!isset($data) ||
-             !isset($data[0]) ||
-             !isset($data[0]->{'title'}) ||
-             stripos($data[0]->{'title'},  'on jstor') !== false) {
-             echo "\n Citoid API failed to parse journal data for JSTOR ". $jstor . "\n";
-             return FALSE;
-         }
+         return FALSE; // Not really "expanded"
     }
     if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  ,$data[0]->{'title'});
     if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  ,$data[0]->{'issue'});
@@ -1210,7 +1337,7 @@ final class Template {
         tag(),
         "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
         . ' for more details' . tag());
-    $xml = @simplexml_load_file("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
+    $xml = @simplexml_load_file("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
     if ($xml === FALSE) {
       echo "\n - Unable to do PubMed search";
       return;
@@ -1299,7 +1426,7 @@ final class Template {
     if (!$doi) {
       warn('#TODO: crossref lookup with no doi');
     }
-    $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=TRUE";
+    $url = "https://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=TRUE";
     for ($i = 0; $i < 2; $i++) {
       $xml = @simplexml_load_file($url);
       if ($xml) {
@@ -1351,6 +1478,66 @@ final class Template {
   
   protected function expand_by_google_books() {
     $url = $this->get('url');
+    if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) { // No Google URL yet.
+      $google_books_worked = FALSE ;
+      $isbn= $this->get('isbn');
+      $lccn= $this->get('lccn');
+      $oclc= $this->get('oclc');
+      if ($isbn) {
+        $isbn = str_replace(array(" ","-"), "", $isbn);
+        if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
+        if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
+      }
+      if ($lccn) {
+        $lccn = str_replace(array(" ","-"), "", $lccn);
+        if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
+      }
+      if ($oclc) {
+        if ( !ctype_alnum($oclc) ) $oclc='' ;
+      }
+      if ($isbn) {  // Try Books.Google.Com
+        $google_book_url='https://books.google.com/books?isbn='.$isbn;
+        $google_content = @file_get_contents($google_book_url);
+        if ($google_content !== FALSE) {
+          preg_match_all('~books.google.com/books\?id=............&amp~',$google_content,$google_results);
+          $google_results = $google_results[0];
+          $google_results = array_unique($google_results);
+          if (count($google_results) === 1) {
+            $google_results = $google_results[0];
+            $gid = substr($google_results,26,-4);
+            $url = 'https://books.google.com/books?id=' . $gid;
+            if ($this->blank('url')) $this->add('url', $url);
+            $google_books_worked = TRUE;
+          }
+        }
+      }
+      if ( !$google_books_worked ) { // Try Google API instead 
+        if ($isbn) {
+          $url_token = "isbn:" . $isbn;
+        } elseif ($oclc) {
+          $url_token = "oclc:" . $oclc;
+        } elseif ($lccn) {
+          $url_token = "lccn:" . $lccn;
+        } else {
+          return FALSE; // No data to use
+        }
+        $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
+        if ($string === FALSE) {
+            echo "\n Google APIs search failed for $url_token \n";
+            return FALSE;
+        }
+        $result = @json_decode($string, false);
+        if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
+          $gid=$result->items[0]->id;
+          $url = 'https://books.google.com/books?id=' . $gid;
+          if ($this->blank('url')) $this->add('url', $url );
+        } else {
+          echo "\n Google APIs search failed with $url_token \n";
+          return FALSE;
+        }
+      }
+    }
+    // Now we parse a Google Books URL
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $removed_redundant = 0;
       $hash = '';
@@ -1384,50 +1571,10 @@ final class Template {
       $this->google_book_details($gid[1]);
       return TRUE;
     }
-    // Use Google API to get GID instead based upon ISBN, LCCN, or OCLC
-    $isbn= $this->get('isbn');
-    $lccn= $this->get('lccn');
-    $oclc= $this->get('oclc');
-    if ($isbn) {
-        $isbn = str_replace(array(" ","-"), "", $isbn);
-        if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
-        if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
-    }
-    if ($lccn) {
-        $lccn = str_replace(array(" ","-"), "", $lccn);
-        if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
-    }
-    if ($oclc) {
-        if ( !ctype_alnum($oclc) ) $oclc='' ;
-    }
-    if ($isbn) {
-        $url_token = "isbn:" . $isbn;
-    } elseif ($oclc) {
-        $url_token = "oclc:" . $oclc;
-    } elseif ($lccn) {
-        $url_token = "lccn:" . $lccn;
-    } else {
-        return FALSE; // No data to use
-    }
-    $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
-    if ($string === FALSE) {
-        echo "\n Google APIs search failed for $url_token \n";
-        return FALSE;
-    }
-    $result = @json_decode($string, false);
-    if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
-        $gid=$result->items[0]->id;
-        $this->google_book_details($gid);
-        if ($this->blank('url')) $this->add('url', 'https://books.google.com/books?id=' . $gid );
-        return TRUE;
-    } else {
-      echo "\n Google APIs search failed with $url_token \n";
-      return FALSE;
-    }
   }
 
   protected function google_book_details ($gid) {
-    $google_book_url = "http://books.google.com/books/feeds/volumes/$gid";
+    $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", @file_get_contents($google_book_url))
     );
@@ -1494,7 +1641,7 @@ final class Template {
       global $over_isbn_limit;
       // TODO: implement over_isbn_limit based on &results=keystats in API
       if ($title && !$over_isbn_limit) {
-        $xml = @simplexml_load_file("http://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
+        $xml = @simplexml_load_file("https://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
         if ($xml === FALSE) {
           echo "\n - Unable to do ISBN DB search";
           return FALSE;
@@ -1608,76 +1755,7 @@ final class Template {
       }
 
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
-        $ris_authors=0;
-        $ris = explode("\n", $dat);
-        $ris_authors = 0;
-        foreach ($ris as $ris_line) {
-          $ris_part = explode(" - ", $ris_line . " ");
-          switch (trim($ris_part[0])) {
-            case "T1":
-            case "TI":
-              $ris_parameter = "title";
-              break;
-            case "AU":
-              $ris_authors++;
-              $ris_parameter = "author$ris_authors";
-              $ris_part[1] = format_author($ris_part[1]);
-              break;
-            case "Y1":
-              $ris_parameter = "date";
-              break;
-            case "PY":
-              $ris_parameter = "date";
-              $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
-              break;
-            case "SP":
-              $start_page = trim($ris_part[1]);
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              break;
-            case "EP":
-              $end_page = trim($ris_part[1]);
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              $this->add_if_new("pages", $start_page . "-" . $end_page);
-              break;
-            case "DO":
-              $ris_parameter = "doi";
-              break;
-            case "JO":
-            case "JF":
-            case "T2":
-              $ris_parameter = "journal";
-              break;
-            case "VL":
-              $ris_parameter = "volume";
-              break;
-            case "IS":
-              $ris_parameter = "issue";
-              break;
-            case "SN":
-              $ris_parameter = "issn";
-              break;
-            case "UR":
-              $ris_parameter = "url";
-              break;
-            case "PB":
-              $ris_parameter = "publisher";
-              break;
-            case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-            default:
-              $ris_parameter = FALSE;
-          }
-          unset($ris_part[0]);
-          if ($ris_parameter
-                  && $this->add_if_new($ris_parameter, trim(implode($ris_part)))
-              ) {
-            global $auto_summary;
-            if (!strpos("Converted RIS citation to WP format", $auto_summary)) {
-              $auto_summary .= "Converted RIS citation to WP format. ";
-            }
-            $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          }
-        }
+        $this->expand_by_RIS($dat);
       }
       
       $doi = extract_doi($dat);
@@ -1727,7 +1805,9 @@ final class Template {
       // Match vol(iss):pp
       if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) {
         $this->add_if_new('volume', $match[1]);
-        $this->add_if_new('issue' , $match[2]);
+        if($match[2] > 2100 || $match[2] < 1500) { // if between 1500 and 2100, might be year or issue
+             $this->add_if_new('issue' , $match[2]);
+        }
         $this->add_if_new('pages' , $match[3]);
         $dat = trim(str_replace($match[0], '', $dat));
       }
@@ -2012,12 +2092,12 @@ final class Template {
       
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
-        echo " replaced with $closest (likelihood " . (12 - $shortest) . "/12)";
+        echo " replaced with $closest (likelihood " . (24 - $shortest) . "/24)"; // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
       } else {
         $similarity = similar_text($p->param, $closest) / strlen($p->param);
         if ($similarity > 0.6) {
           $p->param = $closest;
-          echo " replaced with $closest (similarity " . round(12 * $similarity, 1) . "/12)";
+          echo " replaced with $closest (similarity " . (round(2 * 12 * $similarity, 1)) . "/24)"; // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
         } else {
           echo " could not be replaced with confidence.  Please check the citation yourself.";
         }
@@ -2224,7 +2304,7 @@ final class Template {
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
-      $url_test = "http://dx.doi.org/".$doi ;
+      $url_test = "https://dx.doi.org/".$doi ;
       $headers_test = @get_headers($url_test, 1);
       if ($headers_test === FALSE) {
         echo "\n   ! DOI status unkown.  dx.doi.org failed to respond at all to: " . htmlspecialchars($doi);

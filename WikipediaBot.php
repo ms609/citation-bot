@@ -111,7 +111,7 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$header],
           ]);
           
-          $ret = json_decode($data = curl_exec($this->ch));
+          $ret = @json_decode($data = curl_exec($this->ch));
           if (!$data) {
             trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
@@ -132,7 +132,7 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$header],
           ]);
           
-          $ret = json_decode($data = curl_exec($this->ch));
+          $ret = @json_decode($data = curl_exec($this->ch));
           if ( !$data ) {
             echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
             exit(0);
@@ -187,7 +187,7 @@ class WikipediaBot {
     
     if ((!is_null($lastRevId) && $myPage->lastrevid != $lastRevId)
      || (!is_null($startedEditing) && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-      triggeer_error("Possible edit conflict detected. Aborting.", E_USER_WARNING);
+      trigger_error("Possible edit conflict detected. Aborting.", E_USER_WARNING);
       return FALSE;
     }
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
@@ -439,7 +439,7 @@ class WikipediaBot {
     if (stripos($page, ':')) {
       $bits = explode(':', $page);
       if (isset($bits[2])) return NULL; # Too many colons; improperly formatted page name?
-      $namespace = namespace_id($bits[0]);
+      $namespace = $this->namespace_id($bits[0]);
       if (is_null($namespace)) return NULL; # unrecognized namespace
       $page = $bits[1];
     }

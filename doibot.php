@@ -60,14 +60,14 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
       html_echo(
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
-        . urlencode(get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
+        . urlencode($api->get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
         , ".");
     } else {
-      echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
+      echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->parsed_text());
     }
   } elseif (!$ON) {
-    echo "\n # Proposed code for " . htmlspecialchars($my_page->title) . ', which you have asked the bot to commit with edit summary ' . htmlspecialchars($my_page->edit_summary()) . "<br><pre>";
-    echo htmlspecialchars($my_page->text);
+    echo "\n # Proposed code for " . htmlspecialchars($title) . ', which you have asked the bot to commit with edit summary ' . htmlspecialchars($my_page->edit_summary()) . "<br><pre>";
+    echo htmlspecialchars($my_page->parsed_text());
     echo "</pre>";
 ?>
 <form method="post" action="doibot.php">
@@ -79,7 +79,7 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
 </form>
 <?php
   } else {
-    echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
+    echo "\n # " . ($my_page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
   }
 } else {
   echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
