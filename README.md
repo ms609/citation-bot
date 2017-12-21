@@ -5,7 +5,7 @@
 # Citation bot
 
 ## GitHub repository details
-There are two main branches of the bot: the **master** code is (should be) implemented at https://tools.wmflabs.org/citations/doibot.php, whereas the **development** branch is implemented at https://tools.wmflabs.org/citations-dev/doibot.php .  Edits should be made first to the development
+There are two main branches of the bot: the **master** code is (should be) implemented at https://tools.wmflabs.org/citations/doibot.html, whereas the **development** branch is implemented at https://tools.wmflabs.org/citations-dev/doibot.html .  Edits should be made first to the development
 branch, then – once fully tested – pulled to the master branch.
 
 The deployment branch (`release`) differs from the master in that credentials files are not included; 
@@ -44,11 +44,11 @@ A quick tour of the main files:
 * `expandFns.php`: sets up needed functions and global variables, requires most
   of the other files listed here
 * `credentials/crossref.login` allows crossref searches.
-* `logIn.php`: Logs the bot in to Wikipedia servers
+* `login.php`: Logs the bot in to Wikipedia servers
 
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
-  `get_text_from`, `expand_text`, and `write`.
+  `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
 * `Template.php`: most of the actual expansion happens here.
   `Template::process()` handles most of template expansion and checking;
   `Template::add_if_new()` is generally (but not always) used to add
