@@ -5,7 +5,7 @@
 # Citation bot
 
 ## GitHub repository details
-There are two main branches of the bot: the **master** code is (should be) implemented at https://tools.wmflabs.org/citations/doibot.php, whereas the **development** branch is implemented at https://tools.wmflabs.org/citations-dev/doibot.php .  Edits should be made first to the development
+There are two main branches of the bot: the **master** code is (should be) implemented at https://tools.wmflabs.org/citations/doibot.html, whereas the **development** branch is implemented at https://tools.wmflabs.org/citations-dev/doibot.html .  Edits should be made first to the development
 branch, then – once fully tested – pulled to the master branch.
 
 The deployment branch (`release`) differs from the master in that credentials files are not included; 
