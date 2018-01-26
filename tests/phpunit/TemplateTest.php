@@ -720,7 +720,12 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('isbn')); // This citation used to crash code in ISBN search.  Mostly checking "something" to make Travis CI happy
  }
-
+    
+ public function testApproxInTitle(){
+    $text = "{{Cite arix|eprint=1801.03103}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('I am a title',$expanded->get('title'));
+ }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
