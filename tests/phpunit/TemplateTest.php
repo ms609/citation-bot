@@ -724,7 +724,7 @@ ER -  }}';
  public function testApproxInTitle(){
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('I am a title',$expanded->get('title'));
+    $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc',$expanded->get('title'));
  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
