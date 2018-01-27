@@ -721,7 +721,7 @@ ER -  }}';
     $this->assertNull($expanded->get('isbn')); // This citation used to crash code in ISBN search.  Mostly checking "something" to make Travis CI happy
  }
     
- public function testApproxInTitle(){
+ public function testApproxInTitle(){ // This contains Math stuff that should be z∼10.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc',$expanded->get('title'));
