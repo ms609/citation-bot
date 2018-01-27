@@ -722,7 +722,7 @@ ER -  }}';
  }
     
  public function testApproxInTitle(){
-    $text = "{{Cite arix|eprint=1801.03103}}";
+    $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('I am a title',$expanded->get('title'));
  }
