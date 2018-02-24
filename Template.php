@@ -1141,11 +1141,17 @@ final class Template {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
+          if (405 == $crossRef->first_page) {
+            echo "\n KURT   \n";
+            echo "\n $crossRef->last_page  \n";
+            echo "\n $crossRef->first_page \n";
+            echo "\n " . ($crossRef->first_page != $crossRef->last_page) . "  \n";
+            echo "\n " . ($crossRef->last_page == TRUE) . "  \n";
+            echo "\n KURT   \n";
+          }
           if ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)) {
-            echo "\n PAGES $crossRef->first_page" . "–" . "$crossRef->last_page \n";
             $this->add_if_new("pages", $crossRef->first_page . "–" . $crossRef->last_page);
           } else {
-            echo "\n PAGES  $crossRef->first_page  \n";
             $this->add_if_new("pages", $crossRef->first_page);
           }
         }
