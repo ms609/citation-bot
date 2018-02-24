@@ -1430,6 +1430,7 @@ final class Template {
     for ($i = 0; $i < 2; $i++) {
       $xml = @simplexml_load_file($url);
       if ($xml) {
+        if ($doi === '10.3406/befeo.1954.5607') print_r($xml);
         $result = $xml->query_result->body->query;
         if ($result["status"] == "resolved") {
           return $result;
