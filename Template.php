@@ -94,6 +94,7 @@ final class Template {
           $this->process();
         } elseif ($this->has('eprint')) {
           $this->name = 'Cite arxiv';
+          $this->process();
         }
         $this->citation_template = TRUE;
       break;
