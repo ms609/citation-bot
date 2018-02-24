@@ -1141,12 +1141,7 @@ final class Template {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
-          if ($doi === '10.3406/befeo.1954.5607') {
-            print_r($crossRef);
-            echo "\n $crossRef->last_page LAST \n";
-            echo "\n $crossRef->first_page FIRST \n";
-          }
-          if ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)) {
+          if (!is_null($crossRef->last_page) && ($crossRef->first_page != $crossRef->last_page) && $crossRef->last_page !== 0) { // Zero test because of paranoia
             $this->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
           } else {
             $this->add_if_new("pages", $crossRef->first_page);
