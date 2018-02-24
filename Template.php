@@ -1141,6 +1141,11 @@ final class Template {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
+          if ($doi === '10.3406/befeo.1954.5607') {
+            print_r($crossRef);
+            echo "\n $crossRef->last_page LAST \n";
+            echo "\n $crossRef->first_page FIRST \n";
+          }
           if ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)) {
             $this->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
           } else {
@@ -1430,7 +1435,6 @@ final class Template {
     for ($i = 0; $i < 2; $i++) {
       $xml = @simplexml_load_file($url);
       if ($xml) {
-        if ($doi === '10.3406/befeo.1954.5607') print_r($xml);
         $result = $xml->query_result->body->query;
         if ($result["status"] == "resolved") {
           return $result;
