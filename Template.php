@@ -94,7 +94,6 @@ final class Template {
           $this->process();
         } elseif ($this->has('eprint')) {
           $this->name = 'Cite arxiv';
-          $this->process();
         }
         $this->citation_template = TRUE;
       break;
@@ -1141,9 +1140,11 @@ final class Template {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
-          if (!is_null($crossRef->last_page) && ($crossRef->first_page != $crossRef->last_page) && $crossRef->last_page !== 0) { // Zero test because of paranoia
-            $this->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
+          if ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)) {
+            echo "\n PAGES $crossRef->first_page" . "–" . "$crossRef->last_page \n";
+            $this->add_if_new("pages", $crossRef->first_page . "–" . $crossRef->last_page);
           } else {
+            echo "\n PAGES  $crossRef->first_page  \n";
             $this->add_if_new("pages", $crossRef->first_page);
           }
         }
