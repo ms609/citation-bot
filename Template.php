@@ -1141,11 +1141,7 @@ final class Template {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
-          if (405 == $crossRef->first_page) {
-            echo "\n KURT " . ($crossRef->first_page !== $crossRef->last_page) . " KURT \n";
-            echo "\n KURT " . ((int) $crossRef->first_page !== (int)$crossRef->last_page) . " KURT \n";
-          }
-          if ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)) {
+          if ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)) {  // Have to use !== since all nubmers are TRUE
             $this->add_if_new("pages", $crossRef->first_page . "–" . $crossRef->last_page);
           } else {
             $this->add_if_new("pages", $crossRef->first_page);
