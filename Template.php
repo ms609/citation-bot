@@ -1153,7 +1153,7 @@ final class Template {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
-          if ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)) {  // Have to use !== since all numbers are TRUE
+          if ($crossRef->last_page && ((int) $crossRef->first_page !== (int) $crossRef->last_page)) {  // Have to use !== since all numbers are TRUE
             $this->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
           } else {
             $this->add_if_new("pages", $crossRef->first_page);
