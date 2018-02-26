@@ -477,7 +477,13 @@ final class Template {
                   && !strpos($this->get('pages'), chr(226)) // Also en-dash
                   && !strpos($this->get('pages'), '-')
                   && !strpos($this->get('pages'), '&ndash;'))
-        ) return $this->add($param_name, sanitize_string($value));
+        ) {
+            if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
+            if ($param_name !== "page")$this->forget("page");  // Do not forget existing ones to keep postion the same
+            if ($param_name !== "pp")$this->forget("pp");
+            if ($param_name !== "p")$this->forget("p");
+            return $this->add($param_name, sanitize_string($value));
+        }
         return FALSE;
         
         
