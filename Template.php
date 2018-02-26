@@ -477,7 +477,19 @@ final class Template {
                   && !strpos($this->get('pages'), chr(226)) // Also en-dash
                   && !strpos($this->get('pages'), '-')
                   && !strpos($this->get('pages'), '&ndash;'))
-        ) return $this->add($param_name, sanitize_string($value));
+        ) {
+            if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
+            if ($param_name !== "page")$this->forget("page");
+            if ($param_name !== "pp")$this->forget("pp");
+            if ($param_name !== "p")$this->forget("p");
+            $param_key = $this->get_param_key($param_name);
+            if (!is_null($param_key)) {
+              $this->param[$param_key]->val = sanitize_string($value); // Minimize template changes (i.e. location) when upgrading from page=123 to pages=123-456
+              return TRUE;
+            } else {
+              return $this->add($param_name, sanitize_string($value));
+            }
+        }
         return FALSE;
         
         
@@ -1141,7 +1153,7 @@ final class Template {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
-          if ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)) {
+          if ($crossRef->last_page && ($crossRef->first_page !== $crossRef->last_page)) {  // Have to use !== since all numbers are TRUE
             $this->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
           } else {
             $this->add_if_new("pages", $crossRef->first_page);

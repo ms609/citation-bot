@@ -205,9 +205,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testOpenAccessLookup() {
-    $text = '{{cite journal|doi=10.1038/nature12373}}';
+    $text = '{{cite journal|doi=10.1136/bmj.327.7429.1459}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('4221854', $expanded->get('pmc'));
+    $this->assertEquals('300808', $expanded->get('pmc'));
     
     $text = '{{cite journal|doi=10.1038/nature08244}}';
     $expanded = $this->process_citation($text);
@@ -720,11 +720,17 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('isbn')); // This citation used to crash code in ISBN search.  Mostly checking "something" to make Travis CI happy
  }
-    
- public function testApproxInTitle(){ // This contains Math stuff that should be z∼10.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
+
+ public function testApproxInTitle() { // This contains Math stuff that should be z∼10.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc',$expanded->get('title'));
+ }
+
+ public function testPageRange() {
+     $text = '{{Citation|doi=10.3406/befeo.1954.5607}}' ;
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('405–554',$expanded->get('pages'));
  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
