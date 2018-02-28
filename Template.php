@@ -113,7 +113,7 @@ final class Template {
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
           // $this->forget('class');      Leave this for now since no journal title
-          // $this->forget('publisher');  Leave this for now since no journal title
+          $this->forget('publisher');
         }
       break;
       case 'cite book':
