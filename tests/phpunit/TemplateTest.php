@@ -644,6 +644,12 @@ ER -  }}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('1932Natur.129Q..18.', $expanded->get('bibcode'));
   }
+    
+  public function testBibcodeVarious() {
+      $text = '{{cite journal|bibcode=1985A&AS...60...99W}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('WHAT', $expanded->parsed_text());
+  }
 
    public function testConvertJournalToBook() {
        $text = '{{Cite journal|doi=10.1007/978-3-540-74735-2_15}}';
