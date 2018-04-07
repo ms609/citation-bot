@@ -540,7 +540,7 @@ class Template extends Item {
       $priorP['crossref'] = $input;
       global $crossRefId;
       if ($journal || $issn) {
-        $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
+        $url = "https://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
              . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
              . ($author ? "&aulast=" . urlencode($author) : '')
              . ($start_page ? "&spage=" . urlencode($start_page) : '')
@@ -562,7 +562,7 @@ class Template extends Item {
       if ($fastMode || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
       echo "\n   x Full search failed. Dropping author & end_page... ";
-      $url = "http://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
+      $url = "https://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
       if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
       if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
       if ($year) $url .= "&date=" . urlencode($year);
@@ -977,7 +977,7 @@ class Template extends Item {
     if (!$doi) {
       warn('#TODO: crossref lookup with no doi');
     }
-    $url = "http://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
+    $url = "https://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
     $xml = @simplexml_load_file($url);
     if ($xml) {
       $result = $xml->query_result->body->query;
