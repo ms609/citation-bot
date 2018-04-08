@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="exampleFns.php"
+         stopOnError="false">
+  <testsuites>
+    <testsuite name="TestSuite">
+      <directory suffix=".php">./tests/phpunit</directory>
+    </testsuite>
+  </testsuites>
+  <filter>
+    <whitelist>
+      <directory suffix=".php">.</directory>
+      <exclude>
+        <directory>./constants</directory>
+        <directory>./tests</directory>
+        <file>./constants.php</file>
+        <file>./doibot.php</file>
+        <file>./gadgetapi.php</file>
+        <file>./login.php</file>
+        <file>./Snoopy.class.php</file>
+        <file>./category.php</file>
+      </exclude>
+    </whitelist>
+  </filter>
+  <logging>
+    <log type="coverage-clover" target="clover.xml"/>
+  </logging>
+</phpunit>
