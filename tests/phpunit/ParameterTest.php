@@ -3,19 +3,13 @@
 /*
  * Tests for Parameter.php.
  */
- 
-// backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&
-    class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
-}
 
-final class ParameterTest extends PHPUnit\Framework\TestCase {
+class ParameterTest extends PHPUnit_Framework_TestCase {
 
   protected function setUp() {
     if (!defined("PIPE_PLACEHOLDER")) {
 // this is usually done elsewhere in the code
-      define("PIPE_PLACEHOLDER", '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #');
+      define("PIPE_PLACEHOLDER", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
     }
   }
 
@@ -32,7 +26,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
  * FIXME: these tests have too many assertions. Probably will require some refactoring of Parameter::parse_text().
  */
   public function testValueWithPipeAndTrailingNewline() {
-    $text = "last1 = [[:en:Bigwig# # # CITATION_BOT_PLACEHOLDER_PIPE # # #SomeoneFamous]]\n";
+    $text = "last1 = [[:en:Bigwig%%CITATION_BOT_PIPE_PLACEHOLDER%%SomeoneFamous]]\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
     $this->assertEquals($parameter->pre, '');
@@ -40,11 +34,6 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($parameter->eq, ' = ');
     $this->assertEquals($parameter->val, '[[:en:Bigwig|SomeoneFamous]]');
     $this->assertEquals($parameter->post, "\n");
-  }
-  public function testParameterWithNoParamName() {
-    $text = " = no param name";
-    $parameter = $this->parameter_parse_text_helper($text);
-    $this->assertEquals(' = ', $parameter->eq);
   }
 
   public function testBlankValueWithSpacesLeadingSpaceTrailingNewline() {
@@ -158,7 +147,6 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($parameter->val, "24 April 2008 # # # Citation bot : comment placeholder 0 # # #");
     $this->assertEquals($parameter->post, "");
   }
-  
   public function testHasUnreplacedCommentInValue() {
     $text = "archivedate= 9 August 2006 <!--DASHBot-->";
     $parameter = $this->parameter_parse_text_helper($text);
