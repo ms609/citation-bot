@@ -1099,6 +1099,7 @@ final class Template {
       . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
     $return = @json_decode(curl_exec($ch));
     curl_close($ch);
+    echo "\n $return \n";
     return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
   }
   
