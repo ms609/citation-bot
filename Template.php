@@ -1621,7 +1621,7 @@ final class Template {
               in_array(strtolower($author_ending),AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
             $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
           } else {
-            $this->add_if_new("author" . ++$i, format_author(str_replace("___", ":", $author)));
+            $this->add_if_new("author" . ++$i, format_author(str_ireplace("(sir)","",str_replace("___", ":", $author))));
           }
         }
       }
