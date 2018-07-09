@@ -731,8 +731,8 @@ ER -  }}';
  public function testHornorificInTitle() { // compaints about this
     $text = "{{cite book|title=Letter from Sir Frederick Trench to the Viscount Duncannon on his proposal for a quay on the north bank of the Thames|url=https://books.google.com/books?id=oNBbAAAAQAAJ|year=1841}}}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('LAST1',$expanded->get('last1'));
-    $this->assertEquals('FIRST1',$expanded->get('first1')); 
+    $this->assertEquals('Trench',$expanded->get('last1'));
+    $this->assertEquals('Frederick W.',$expanded->get('first1')); 
  }
 
  public function testPageRange() {
