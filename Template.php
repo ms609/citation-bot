@@ -1097,9 +1097,11 @@ final class Template {
     curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
       . "?data_type=XML&q=$options&fl="
       . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
-    $return = @json_decode(curl_exec($ch));
+    $curl_output = curl_exec($ch);
+    echo "\n CURL OUPTUT $curl_output " . tag();
+    $return = @json_decode($curl_output);
     curl_close($ch);
-    echo "\n $return \n";
+    echo "\n RETURN $return " . tag();
     return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
   }
   
