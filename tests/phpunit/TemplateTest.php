@@ -727,6 +727,14 @@ ER -  }}';
     $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc',$expanded->get('title'));
  }
 
+
+ public function testHornorificInTitle() { // compaints about this
+    $text = "{{cite book|title=Letter from Sir Frederick Trench to the Viscount Duncannon on his proposal for a quay on the north bank of the Thames|url=https://books.google.com/books?id=oNBbAAAAQAAJ|year=1841}}}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('LAST1',$expanded->get('last1'));
+    $this->assertEquals('FIRST1',$expanded->get('first1')); 
+ }
+
  public function testPageRange() {
      $text = '{{Citation|doi=10.3406/befeo.1954.5607}}' ;
      $expanded = $this->process_citation($text);
