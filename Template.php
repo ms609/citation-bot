@@ -681,7 +681,7 @@ final class Template {
           if (is_null($url_sent)) {
             $this->forget('url');
           }
-          return $this->add_if_new("pmc", $match[1] . $match[2]);
+          return $this->add_if_new("pmc", $match[1]);
         }
       } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
