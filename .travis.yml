@@ -1,4 +1,4 @@
-sudo: true 
+sudo: false
 dist: trusty
 branches:
   except: release
@@ -19,9 +19,8 @@ git:
   depth: 3
 
 before-install:
+  - update-ca-certs
   - pecl channel-update pecl.php.net
-  - sudo update-ca-certificates --fresh
-  - brew install curl
   
 before-script:  
   - travis_retry composer self-update
