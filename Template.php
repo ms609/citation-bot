@@ -674,6 +674,15 @@ final class Template {
           }
           return $this->add_if_new("pmc", $match[1] . $match[2]);
         }
+      } elseif (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $url, $match)) {
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        if ($this->blank('pmc')) {
+          quiet_echo("\n   ~ Converting Europe URL to PMC parameter");
+          if (is_null($url_sent)) {
+            $this->forget('url');
+          }
+          return $this->add_if_new("pmc", $match[1]);
+        }
       } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
@@ -1091,18 +1100,24 @@ final class Template {
   
   protected function query_adsabs ($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . ADSABSAPIKEY));
-  	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
-      . "?data_type=XML&q=$options&fl="
-      . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
-    $curl_output = curl_exec($ch);
-    echo "\n CURL OUPTUT $curl_output " . tag();
-    $return = @json_decode($curl_output);
-    curl_close($ch);
-    echo "\n RETURN $return " . tag();
-    return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
+    try {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . ADSABSAPIKEY));
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
+        . "?data_type=XML&q=$options&fl="
+        . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
+      $return = curl_exec($ch);
+      if ($return === FALSE) {
+        throw new Exception(curl_error($ch), curl_errno($ch));
+      }
+      $decoded = @json_decode($return);
+      curl_close($ch);
+      return (is_object($decoded) && isset($decoded->response)) ? $decoded->response : (object) array('numFound' => 0);
+    } catch (Exception $e) {
+      trigger_error(sprintf("Curl error %d in query_adsabs: %s",
+      $e->getCode(), $e->getMessage()), E_USER_ERROR);
+    }
   }
   
   protected function expand_by_doi($force = FALSE) {

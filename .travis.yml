@@ -1,4 +1,4 @@
-sudo: false 
+sudo: false
 dist: trusty
 branches:
   except: release
@@ -19,6 +19,8 @@ git:
   depth: 3
 
 before-install:
+  - pecl install curl --with-openssl
+  - update-ca-certs
   - pecl channel-update pecl.php.net
   
 before-script:  
