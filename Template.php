@@ -674,6 +674,15 @@ final class Template {
           }
           return $this->add_if_new("pmc", $match[1] . $match[2]);
         }
+      } elseif (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $url, $match)) {
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        if ($this->blank('pmc')) {
+          quiet_echo("\n   ~ Converting Europe URL to PMC parameter");
+          if (is_null($url_sent)) {
+            $this->forget('url');
+          }
+          return $this->add_if_new("pmc", $match[1]);
+        }
       } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
