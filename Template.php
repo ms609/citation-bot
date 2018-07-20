@@ -1107,6 +1107,7 @@ final class Template {
       curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
         . "?data_type=XML&q=$options&fl="
         . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,false)
       $return = curl_exec($ch);
       if ($return === FALSE) {
         throw new Exception(curl_error($ch), curl_errno($ch));
