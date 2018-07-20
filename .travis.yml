@@ -21,6 +21,7 @@ git:
 before-install:
   - pecl channel-update pecl.php.net
   - sudo update-ca-certificates --fresh
+  - brew install curl
   
 before-script:  
   - travis_retry composer self-update
