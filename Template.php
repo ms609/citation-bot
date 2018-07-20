@@ -1100,18 +1100,24 @@ final class Template {
   
   protected function query_adsabs ($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . ADSABSAPIKEY));
-  	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
-      . "?data_type=XML&q=$options&fl="
-      . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
-    $execd = curl_exec($ch);
-    var_dump($execd);
-    $return = @json_decode($execd);
-    var_dump ($return);
-    curl_close($ch);
-    return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
+    try {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . ADSABSAPIKEY));
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
+        . "?data_type=XML&q=$options&fl="
+        . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
+      $return = curl_exec($ch);
+      if ($return === FALSE) {
+        throw new Exception(curl_error($ch), curl_errno($ch));
+      }
+      $decoded = @json_decode($return);
+      curl_close($ch);
+      return (is_object($decoded) && isset($decoded->response)) ? $decoded->response : (object) array('numFound' => 0);
+    } catch (Exception $e) {
+      trigger_error(sprintf("Curl error %d in query_adsabs: %s",
+      $e->getCode(), $e->getMessage()), E_USER_ERROR);
+    }
   }
   
   protected function expand_by_doi($force = FALSE) {
