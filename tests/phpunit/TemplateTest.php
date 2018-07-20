@@ -724,7 +724,7 @@ ER -  }}';
  public function testPageRange() {
      $text = '{{Citation|doi=10.3406/befeo.1954.5607}}' ;
      $expanded = $this->process_citation($text);
-     $this->assertEquals('405–554',$expanded->get('pages'));
+     $this->assertEquals('405–554', $expanded->get('pages'));
  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
