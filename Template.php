@@ -1107,6 +1107,7 @@ final class Template {
       . "?data_type=XML&q=$options&fl="
       . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
     $return = @json_decode(curl_exec($ch));
+    var_dump ($return);
     curl_close($ch);
     return (is_object($return) && isset($return->response)) ? $return->response : (object) array('numFound' => 0);
   }
