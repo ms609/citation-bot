@@ -1,4 +1,4 @@
-sudo: false 
+sudo: true 
 dist: trusty
 branches:
   except: release
@@ -20,6 +20,7 @@ git:
 
 before-install:
   - pecl channel-update pecl.php.net
+  - sudo update-ca-certificates --fresh
   
 before-script:  
   - travis_retry composer self-update
