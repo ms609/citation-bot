@@ -19,6 +19,7 @@ git:
   depth: 3
 
 before-install:
+  - pecl install curl --with-openssl
   - update-ca-certs
   - pecl channel-update pecl.php.net
   
