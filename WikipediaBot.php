@@ -9,14 +9,11 @@ class WikipediaBot {
     }
     $this->oauth = new OAuth(getenv('PHP_OAUTH_CONSUMER_TOKEN'),
                              getenv('PHP_OAUTH_CONSUMER_SECRET'),
-                             getenv('PHP_OAUTH_SIG_METHOD_HMACSHA1'),
-                             getenv('PHP_OAUTH_AUTH_TYPE_AUTHORIZATION'));
+                             OAUTH_SIG_METHOD_HMACSHA1, OAUTH_AUTH_TYPE_AUTHORIZATION);
     $this->oauth->setToken(  getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
     $this->oauth->enableDebug();
     $this->oauth->setSSLChecks(0);
     $this->oauth->setRequestEngine(OAUTH_REQENGINE_CURL);
-    $wgSessionCacheType = CACHE_DB;
-
   }
   
   function __destruct() {
@@ -24,28 +21,10 @@ class WikipediaBot {
   }
       
   public function log_in() {
-    if (FALSE) {
-      $response = $this->fetch(['action' => 'query', 'meta'=>'tokens', 'type'=>'login']);
-      if (!isset($response->batchcomplete)) return FALSE;
-      if (!isset($response->query->tokens->logintoken)) return FALSE;
-      $lgToken = $response->query->tokens->logintoken;
-    } else {
-      $response = $this->fetch(['action' => 'login', 'lgname'=> getenv('PHP_BOTUSERNAME')], 'POST');
-      if (!isset($response->login)) return FALSE;
-      var_dump($response);
-      $lgToken = $response->login->token;
-    }
-    $lgVars = ['action' => 'login',
-               #m'lgname' => getenv('PHP_BOTUSERNAME'), 'lgpassword' => getenv('PHP_BOTPASSWORD'),
-               'lgname' => getenv('PHP_BOTUSERNAME'), 'lgpassword' => getenv('PHP_BOTPASSWORD'),
-               'lgtoken' => $lgToken,
-              ];
-    var_dump($lgVars);
-    $response = $this->fetch($lgVars, 'POST');
-    if (!isset($response->login->result)) return FALSE;
-    if ($response->login->result == "Success") return TRUE;
-    trigger_error("Error logging in: " . $response->login->reason, E_USER_WARNING);
-    return FALSE;
+    $response = $this->fetch(['action' => 'query', 'meta'=>'tokens', 'type'=>'login']);
+    if (!isset($response->batchcomplete)) return FALSE;
+    if (!isset($response->query->tokens->logintoken)) return FALSE;
+    return TRUE;
   }
   
   private function username() {
@@ -97,7 +76,8 @@ class WikipediaBot {
       ]);
   }
   
-  public function fetch($params, $method = 'GET') {
+  
+  public function curl_fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
       curl_close($this->ch);
       trigger_error('Could not initialize CURL resource: ' .
@@ -128,6 +108,7 @@ class WikipediaBot {
             trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
           }
+          
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
             $this->log_in();
             return $this->fetch($params, $method);
@@ -135,7 +116,6 @@ class WikipediaBot {
           return ($this->ret_okay($ret)) ? $ret : FALSE;
           
         case 'post':
-        
           $header = 'Authentication: ' . $this->oauth->getRequestHeader(
             OAUTH_HTTP_METHOD_POST, API_ROOT, http_build_query($params));
           curl_setopt_array($this->ch, [
@@ -143,13 +123,11 @@ class WikipediaBot {
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [$header],
           ]);
-          
           $ret = @json_decode($data = curl_exec($this->ch));
           if ( !$data ) {
-            echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
-            exit(0);
-          }
-          
+            trigger_error("\n ! Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
+          }  
+                    
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
             $this->log_in();
             return $this->fetch($params, $method);
@@ -160,6 +138,31 @@ class WikipediaBot {
         echo " ! Unrecognized method."; // @codecov ignore - will only be hit if error in our code
         return NULL;
       }
+    } catch(OAuthException $E) {
+      echo " ! Exception caught!\n";
+      echo "   Response: ". $E->lastResponse . "\n";
+    }
+  }
+  
+  public function fetch($params, $method = 'GET') {
+    $check_logged_in = ((isset($params['type']) && $params['type'] == 'login')
+      || (isset($params['action']) && $params['action'] == 'login')
+      || (isset($params['meta']) && $params['meta'] == 'userinfo')) ? FALSE : TRUE;
+    if ($check_logged_in) $params['assert'] = 'user';
+    $params['format'] = 'json';
+    
+    try {
+      $data = $this->oauth->fetch(API_ROOT, $params, $method);
+      $ret = @json_decode($data = $this->oauth->getLastResponse());
+      if (!$data) {
+        trigger_error("OAuth->fetch error" , E_USER_NOTICE);
+        return FALSE;
+      }
+      if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
+        $this->log_in();
+        return $this->fetch($params, $method);
+      }
+      return ($this->ret_okay($ret)) ? $ret : FALSE;
     } catch(OAuthException $E) {
       echo " ! Exception caught!\n";
       echo "   Response: ". $E->lastResponse . "\n";
