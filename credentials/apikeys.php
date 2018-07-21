@@ -10,7 +10,9 @@ if ($_SERVER['REMOTE_ADDR'] == '132.456.789.123') {
   // Restricted to Travis CI servers
   define ('GOOGLE_KEY', '&key=AIzaSyC7Sx7pAK5MsYY1yxeEHKmnU-P4WxGQPj4');
 } else {
-  trigger_error("No Google keys found for IP " . $_SERVER['REMOTE_ADDR']  . ".  Specify one manually in credentials/apikeys.php.");
+  trigger_error("No Google keys found for IP " . $_SERVER['REMOTE_ADDR'] . " // " . $_SERVER['HTTP_CLIENT_IP'] . ".  Specify one manually in credentials/apikeys.php.");
+  print_r($_SERVER);
+  print_r($_ENV);
   define ('GOOGLE_KEY', '');
   die;
 }
