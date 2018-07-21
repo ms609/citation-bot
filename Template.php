@@ -769,9 +769,8 @@ final class Template {
       return FALSE;
     } else {
       $priorP['crossref'] = $input;
-      global $crossRefId;
       if ($journal || $issn) {
-        $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId"
+        $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
              . ($title ? "&atitle=" . urlencode(de_wikify($title)) : "")
              . ($author ? "&aulast=" . urlencode($author) : '')
              . ($start_page ? "&spage=" . urlencode($start_page) : '')
@@ -792,7 +791,7 @@ final class Template {
       if (FAST_MODE || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
       echo "\n   x Full search failed. Dropping author & end_page... ";
-      $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=$crossRefId";
+      $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME;
       if ($title) $url .= "&atitle=" . urlencode(de_wikify($title));
       if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(de_wikify($journal));
       if ($year) $url .= "&date=" . urlencode($year);
@@ -1459,14 +1458,13 @@ final class Template {
   }
 
   protected function query_crossref($doi = FALSE) {
-    global $crossRefId;
     if (!$doi) {
       $doi = $this->get('doi');
     }
     if (!$doi) {
       warn('#TODO: crossref lookup with no doi');
     }
-    $url = "https://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=TRUE";
+    $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME ."&id=doi:$doi&noredirect=TRUE";
     for ($i = 0; $i < 2; $i++) {
       $xml = @simplexml_load_file($url);
       if ($xml) {
