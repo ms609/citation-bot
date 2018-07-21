@@ -1102,7 +1102,7 @@ final class Template {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     try {
       $ch = curl_init();
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . ADSABSAPIKEY));
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
         . "?data_type=XML&q=$options&fl="
@@ -1561,7 +1561,7 @@ final class Template {
         } else {
           return FALSE; // No data to use
         }
-        $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . GOOGLE_KEY);
+        $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
         if ($string === FALSE) {
             echo "\n Google APIs search failed for $url_token \n";
             return FALSE;
