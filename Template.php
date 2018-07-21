@@ -1116,7 +1116,8 @@ final class Template {
       return (is_object($decoded) && isset($decoded->response)) ? $decoded->response : (object) array('numFound' => 0);
     } catch (Exception $e) {
       trigger_error(sprintf("Curl error %d in query_adsabs: %s",
-      $e->getCode(), $e->getMessage()), E_USER_ERROR);
+      $e->getCode(), $e->getMessage()), E_USER_WARNING);
+      return (object) array('numFound' => 0);
     }
   }
   
