@@ -1,6 +1,4 @@
 <?php
-require_once("credentials/wiki.php");
-
 class WikipediaBot {
   
   protected $oauth, $ch;
@@ -25,7 +23,7 @@ class WikipediaBot {
     if (!isset($response->query->tokens->logintoken)) return FALSE;
     
     $lgVars = ['action' => 'login',
-               'lgname' => WP_USERNAME, 'lgpassword' => WP_PASSWORD,
+               'lgname' => getenv('PHP_BOTUSERNAME'), 'lgpassword' => getenv('PHP_BOTPASSWORD'),
                'lgtoken' => $response->query->tokens->logintoken,
               ];
               

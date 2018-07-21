@@ -31,26 +31,11 @@ require_once("Parameter.php");
 require_once("Comment.php");
 require_once("wikiFunctions.php");
 
-//require_once(HOME . "credentials/mysql.login");
-/* mysql.login is a php file containing:
-  define('MYSQL_DBNAME', ...);
-  define('MYSQL_SERVER', ...);
-  define('MYSQL_PREFIX', ...);
-  define('MYSQL_USERNAME', ...);
-  define('MYSQL_PASSWORD', ...);
-*/
+const CROSSREFUSERNAME = 'martins@gmail.com';
 
-require_once(HOME . "credentials/apikeys.php");
-/* apikeys.php contains:
-  <?php
-  define('CROSSREFUSERNAME','martins@gmail.com');
-  define('JSTORPASSWORD', ...);
-  define('GLOBALPASSWORD', ...);
-  define('JSTORUSERNAME', 'citation_bot');
-  define('NYTUSERNAME', 'citation_bot');
-*/
+if (!getenv('')) putenv('PHP_ADSABSAPIKEY=Dl6Dp2GU1rOl3Nu3OkfAhee6ywC42rC5wh9dtpUk')
+// Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY, PHP_BOTUSERNAME and PHP_BOTPASSWORD environment variables
 
-$crossRefId = CROSSREFUSERNAME;
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Optimisation
