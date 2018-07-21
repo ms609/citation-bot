@@ -721,6 +721,20 @@ ER -  }}';
     $this->assertNull($expanded->get('isbn')); // This citation used to crash code in ISBN search.  Mostly checking "something" to make Travis CI happy
  }
 
+ public function testLatexMathInTitle() { // This contains Math stuff that should be z∼10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
+    $text = "{{Cite arxiv|eprint=1801.03103}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc', $expanded->get('title'));
+ }
+
+
+ public function testHornorificInTitle() { // compaints about this
+    $text = "{{cite book|title=Letter from Sir Frederick Trench to the Viscount Duncannon on his proposal for a quay on the north bank of the Thames|url=https://books.google.com/books?id=oNBbAAAAQAAJ|year=1841}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Trench', $expanded->get('last1'));
+    $this->assertEquals('Frederick William', $expanded->get('first1')); 
+ }
+
  public function testPageRange() {
      $text = '{{Citation|doi=10.3406/befeo.1954.5607}}' ;
      $expanded = $this->process_citation($text);
