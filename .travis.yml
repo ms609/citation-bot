@@ -20,7 +20,7 @@ git:
 
 before_install:
   - pecl channel-update pecl.php.net
-  - pecl install curl --with-openssl
+  - pecl install curl
   - update-ca-certs
   
 before_script:  
