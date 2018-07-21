@@ -65,3 +65,24 @@ Classes should be in individual files. The code is generally written densely.
 Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, 
 and action taking place through method calls that take place in assignments or equality checks. 
 Also beware the difference between `else if` and `elseif`.
+
+## Deployment
+
+The bot requires php >= 5.6, whereas the WMFlabs servers by default (as of 2018) run 5.5.9.
+To access php5.6, one must run the bot as a webservice:
+
+    become citations[-dev]
+    webservice stop
+    webservice --backend=kubernetes php5.6 start
+
+Or for testing in the shell:
+
+    webservice --backend=kubernetes php5.6 shell
+
+Before entering the k8s shell, it may be necessary to install phpunit 
+(as wget is not available in the k8s shell):
+
+    wget https://phar.phpunit.de/phpunit-5.phar
+    webservice --backend=kubernetes php5.6 shell
+    php phpunit-5.phar --bootstrap expandFns.php tests/phpunit/TemplateTest.php
+
