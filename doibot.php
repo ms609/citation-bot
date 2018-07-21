@@ -47,7 +47,11 @@ if (is_valid_user($user)) {
 }
 
 $title = trim(ucfirst(strip_tags($_REQUEST["page"])));
-print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
+if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
+   echo "\n\n No page given.  Aborting. \n\n";
+   exit(0);
+}
+echo "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
 $my_page = new Page();
 if ($my_page->get_text_from($_REQUEST["page"])) {
   $text_expanded = $my_page->expand_text();

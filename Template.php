@@ -94,6 +94,12 @@ class Template extends Item {
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
           $this->forget('class');
+          $this->forget('publisher');
+        } else if ($this->has('doi')) { // cite arxiv does not support DOI's
+          $this->name = 'Cite journal';
+          $this->rename('eprint', 'arxiv');
+          // $this->forget('class');      Leave this for now since no journal title
+          $this->forget('publisher');
         }
       break;
       case 'cite book':
@@ -346,13 +352,32 @@ class Template extends Item {
                   && !strpos($this->get('pages'), chr(226)) // Also en-dash
                   && !strpos($this->get('pages'), '-')
                   && !strpos($this->get('pages'), '&ndash;'))
-        ) return $this->add($param, sanitize_string($value));
-        return false;
-      case 'title':
-        if ($this->blank($param)) {
-          return $this->format_title(sanitize_string($value));
+        ) {
+            if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
+            if ($param_name !== "page")$this->forget("page");
+            if ($param_name !== "pp")$this->forget("pp");
+            if ($param_name !== "p")$this->forget("p");
+            $param_key = $this->get_param_key($param_name);
+            if (!is_null($param_key)) {
+              $this->param[$param_key]->val = sanitize_string($value); // Minimize template changes (i.e. location) when upgrading from page=123 to pages=123-456
+              return TRUE;
+            } else {
+              return $this->add($param_name, sanitize_string($value));
+            }
         }
-        return false;
+        return FALSE;
+        
+        
+      ###  ARTICLE IDENTIFIERS  ###
+      ### arXiv, DOI, PMID etc. ###
+      
+      case 'url': 
+        // look for identifiers in URL - might be better to add a PMC parameter, say
+        if (!$this->get_identifiers_from_url($value) && $this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
+      
       case 'class':
         if ($this->blank($param) && strpos($this->get('eprint'), '/') === FALSE ) {
           return $this->add($param, sanitize_string($value));
@@ -466,6 +491,17 @@ class Template extends Item {
           $this->forget('url');
           $this->set("pmc", $match[1] . $match[2]);
         }
+      } elseif (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $url, $match)) {
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        if ($this->blank('pmc')) {
+          quiet_echo("\n   ~ Converting Europe URL to PMC parameter");
+          if (is_null($url_sent)) {
+            $this->forget('url');
+          }
+          return $this->add_if_new("pmc", $match[1]);
+        }
+      } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
+        quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
       } else if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
@@ -813,10 +849,36 @@ class Template extends Item {
        return false;
     }
   }
-
-  public function expand_by_doi($force = FALSE) {
-    global $editing_cite_doi_template;
-    $doi = $this->get_without_comments('doi');
+  
+  protected function query_adsabs ($options) {  
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
+    try {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . ADSABSAPIKEY));
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
+        . "?data_type=XML&q=$options&fl="
+        . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
+      if (getenv('TRAVIS')) {
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
+      }
+      $return = curl_exec($ch);
+      if ($return === FALSE) {
+        throw new Exception(curl_error($ch), curl_errno($ch));
+      }
+      $decoded = @json_decode($return);
+      curl_close($ch);
+      return (is_object($decoded) && isset($decoded->response)) ? $decoded->response : (object) array('numFound' => 0);
+    } catch (Exception $e) {
+      trigger_error(sprintf("Curl error %d in query_adsabs: %s",
+                    $e->getCode(), $e->getMessage()), E_USER_WARNING);
+      curl_close($ch);
+      return (object) array('numFound' => 0);
+    }
+  }
+  
+  protected function expand_by_doi($force = FALSE) {
+    $doi = $this->get_without_comments_and_placeholders('doi');
     if ($doi && ($force || $this->incomplete())) {
       if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $this->add_if_new('jstor', substr($doi, 8));
@@ -860,7 +922,7 @@ class Template extends Item {
           $this->add_if_new('issue', $crossRef->issue);
         }
         if ($this->blank("page")) {
-          if ($crossRef->last_page && ($crossRef->first_page != $crossRef->last_page)) {
+          if ($crossRef->last_page && (strcmp($crossRef->first_page, $crossRef->last_page) !== 0)) {
             $this->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
           } else {
             $this->add_if_new("pages", $crossRef->first_page);

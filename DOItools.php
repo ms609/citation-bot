@@ -675,6 +675,16 @@ function formatAuthor($author){
 
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
 
+  $surname = NULL;
+  // Google sometimes has these
+  $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", $author);
+
+  if (substr(trim($author), -1) === ".") {
+     $ends_with_period = TRUE;
+  } else {
+	 $ends_with_period = FALSE;
+  }
+
 	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
 	if ($author == "") {
