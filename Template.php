@@ -1107,7 +1107,7 @@ final class Template {
       curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
         . "?data_type=XML&q=$options&fl="
         . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
-      if (getenv(TRAVIS=true)) {
+      if (getenv(TRAVIS) == TRUE)) {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
       }
       $return = curl_exec($ch);
