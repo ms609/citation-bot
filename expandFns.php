@@ -40,8 +40,8 @@ require_once("wikiFunctions.php");
   define('MYSQL_PASSWORD', ...);
 */
 
-require_once(HOME . "credentials/crossref.login");
-/* crossref.login is a PHP file containing:
+require_once(HOME . "credentials/apikeys.php");
+/* apikeys.php contains:
   <?php
   define('CROSSREFUSERNAME','martins@gmail.com');
   define('JSTORPASSWORD', ...);
