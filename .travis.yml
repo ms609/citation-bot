@@ -18,12 +18,9 @@ matrix:
 git:
   depth: 3
 
-before-install:
-  - pecl install curl --with-openssl
-  - update-ca-certs
+before_install:
   - pecl channel-update pecl.php.net
   
-before-script:  
+before_script:  
   - travis_retry composer self-update
-  - travis_retry composer install --no-interaction --prefer-source --dev
   
