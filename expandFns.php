@@ -32,8 +32,6 @@ require_once("Comment.php");
 require_once("wikiFunctions.php");
 
 const CROSSREFUSERNAME = 'martins@gmail.com';
-
-if (!getenv('')) putenv('PHP_ADSABSAPIKEY=Dl6Dp2GU1rOl3Nu3OkfAhee6ywC42rC5wh9dtpUk')
 // Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY, PHP_BOTUSERNAME and PHP_BOTPASSWORD environment variables
 
 mb_internal_encoding('UTF-8'); // Avoid ??s
