@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Current tests that are failing.
+ * Tests for WikipediaBot.php
  */
 
 // backward compatibility

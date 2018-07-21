@@ -4,12 +4,18 @@ class WikipediaBot {
   protected $oauth, $ch;
   
   function __construct() {
-    $this->oauth = new OAuth(OAUTH_CONSUMER_TOKEN, OAUTH_CONSUMER_SECRET, 
-                             OAUTH_SIG_METHOD_HMACSHA1, OAUTH_AUTH_TYPE_AUTHORIZATION);
-    $this->oauth->setToken(OAUTH_ACCESS_TOKEN, OAUTH_ACCESS_SECRET);
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) {
+      trigger_error("PHP_OAUTH_CONSUMER_TOKEN not set", E_USER_WARNING);
+    }
+    $this->oauth = new OAuth(getenv('PHP_OAUTH_CONSUMER_TOKEN'),
+                             getenv('PHP_OAUTH_CONSUMER_SECRET'),
+                             getenv('PHP_OAUTH_SIG_METHOD_HMACSHA1'),
+                             getenv('PHP_OAUTH_AUTH_TYPE_AUTHORIZATION'));
+    $this->oauth->setToken(  getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
     $this->oauth->enableDebug();
     $this->oauth->setSSLChecks(0);
     $this->oauth->setRequestEngine(OAUTH_REQENGINE_CURL);
+    $wgSessionCacheType = CACHE_DB;
 
   }
   
@@ -18,19 +24,27 @@ class WikipediaBot {
   }
       
   public function log_in() {
-    $response = $this->fetch(['action' => 'query', 'meta'=>'tokens', 'type'=>'login']);
-    if (!isset($response->batchcomplete)) return FALSE;
-    if (!isset($response->query->tokens->logintoken)) return FALSE;
-    
+    if (FALSE) {
+      $response = $this->fetch(['action' => 'query', 'meta'=>'tokens', 'type'=>'login']);
+      if (!isset($response->batchcomplete)) return FALSE;
+      if (!isset($response->query->tokens->logintoken)) return FALSE;
+      $lgToken = $response->query->tokens->logintoken;
+    } else {
+      $response = $this->fetch(['action' => 'login', 'lgname'=> getenv('PHP_BOTUSERNAME')], 'POST');
+      if (!isset($response->login)) return FALSE;
+      var_dump($response);
+      $lgToken = $response->login->token;
+    }
     $lgVars = ['action' => 'login',
+               #m'lgname' => getenv('PHP_BOTUSERNAME'), 'lgpassword' => getenv('PHP_BOTPASSWORD'),
                'lgname' => getenv('PHP_BOTUSERNAME'), 'lgpassword' => getenv('PHP_BOTPASSWORD'),
-               'lgtoken' => $response->query->tokens->logintoken,
+               'lgtoken' => $lgToken,
               ];
-              
+    var_dump($lgVars);
     $response = $this->fetch($lgVars, 'POST');
     if (!isset($response->login->result)) return FALSE;
     if ($response->login->result == "Success") return TRUE;
-    trigger_error($response->login->reason, E_USER_WARNING);
+    trigger_error("Error logging in: " . $response->login->reason, E_USER_WARNING);
     return FALSE;
   }
   
