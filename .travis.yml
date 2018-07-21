@@ -11,7 +11,6 @@ matrix:
       install: pecl channel-update pecl.php.net
       install: pecl install oauth
       install: pecl install curl --with-ssl
-      install: update-ca-certs
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
       after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6
