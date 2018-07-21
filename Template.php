@@ -1673,26 +1673,6 @@ final class Template {
     // }
   }
 
-  protected function find_isbn() {
-    return FALSE; #TODO restore this service.
-    if ($this->blank('isbn') && $this->has('title')) {
-      $title = trim($this->get('title'));
-      $auth = trim($this->get('author') . $this->get('author1') . ' ' . $this->get('last') . $this->get('last1'));
-      global $over_isbn_limit;
-      // TODO: implement over_isbn_limit based on &results=keystats in API
-      if ($title && !$over_isbn_limit) {
-        $xml = @simplexml_load_file("https://isbndb.com/api/books.xml?access_key=" . ISBN_KEY . "index1=combined&value1=" . urlencode($title . " " . $auth));
-        if ($xml === FALSE) {
-          echo "\n - Unable to do ISBN DB search";
-          return FALSE;
-        }
-        if ($xml->BookList["total_results"] == 1) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
-        if ($auth && $xml->BookList["total_results"] > 0) return $this->add_if_new('isbn', (string) $xml->BookList->BookData["isbn"]);
-        else return FALSE;
-      }
-    }
-  }
-
   ### parameter processing
   protected function use_unnamed_params() {
     if (empty($this->param)) return;
