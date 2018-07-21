@@ -15,6 +15,11 @@ matrix:
       install: pecl install oauth-1.2.3
       script: phpunit --bootstrap expandFns.php tests/phpunit
 
+addons:
+  apt:
+    packages:
+      - ca-certificates
+
 git:
   depth: 3
 
