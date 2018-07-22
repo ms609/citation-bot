@@ -15,7 +15,7 @@ function quiet_echo($text, $alternate_text = '') {
   else
     echo $alternate_text;
 }
-
+// THIS IS NOT RIGHT.  UPDATE FROM DEVELOPMENT!
 define("editinterval", 10);
 define("PIPE_PLACEHOLDER", '%%CITATION_BOT_PIPE_PLACEHOLDER%%');
 define("comment_placeholder", "### Citation bot : comment placeholder %s ###");
