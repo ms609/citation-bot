@@ -35,12 +35,12 @@
         <div id="bodyContent">
           <h3 id="siteSub">Please wait while the <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> processes the page you requested.</h3>
             <pre><?php
-## Set up - including DOT_DECODE array
-define("HTML_OUTPUT", TRUE);
-require_once("expandFns.php");
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
+## Set up - including dotDecode array
+$html_output = TRUE;
+require_once ("expandFns.php");
+
 if (is_valid_user($user)) {
-  echo " Activated by $user.\n";
+  print "Activated by $user\n";
   $edit_summary_end = " | [[User:$user|$user]]";
 } else {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
@@ -53,37 +53,36 @@ if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user 
 }
 echo "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
 $my_page = new Page();
-$api = new WikipediaBot();
-if ($my_page->get_text_from($_REQUEST["page"], $api)) {
+if ($my_page->get_text_from($_REQUEST["page"])) {
   $text_expanded = $my_page->expand_text();
-  if ($text_expanded && $ON) {
-    while (!$my_page->write($api) && $attempts < 2) {
+  if ($text_expanded and $ON) {
+    while (!$my_page->write() && $attempts < 2) {
       ++$attempts;
     }
     if ($attempts < 3 ) {
-      html_echo(
+      echo $html_output ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
-        . urlencode($api->get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
-        , ".");
+        . urlencode(getLastRev($title)) . ">last edit</a></small></i>\n\n<br>"
+        : ".";
     } else {
-      echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->parsed_text());
+      echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->text);
     }
   } elseif (!$ON) {
-    echo "\n # Proposed code for " . htmlspecialchars($title) . ', which you have asked the bot to commit with edit summary ' . htmlspecialchars($my_page->edit_summary()) . "<br><pre>";
-    echo htmlspecialchars($my_page->parsed_text());
+    echo "\n # Proposed code for " . htmlspecialchars($my_page->title) . ', which you have asked the bot to commit with edit summary ' . htmlspecialchars($my_page->edit_summary()) . "<br><pre>";
+    echo htmlspecialchars($my_page->text);
     echo "</pre>";
 ?>
 <form method="post" action="doibot.php">
   <input type="hidden" name="page" value="<?php echo $title;?>"></input>
   <input type="hidden" name="user" value="<?php echo $user;?>"></input>
   <input type="hidden" name="edit" value="on"></input>
-  <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>"></input>
+  <input type="hidden" name="slow" value="<?php echo $slow_mode;?>"></input>
   <input type=submit value="Submit edits"></input>
 </form>
 <?php
   } else {
-    echo "\n # " . ($my_page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
+    echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
   }
 } else {
   echo "\n Page      '" . htmlspecialchars($title) . "' not found.";

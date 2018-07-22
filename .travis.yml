@@ -23,4 +23,3 @@ before_install:
   
 before_script:  
   - travis_retry composer self-update
-  

@@ -1,15 +1,9 @@
-[![Build Status](https://travis-ci.org/ms609/citation-bot.svg?branch=master)](https://travis-ci.org/ms609/citation-bot)
-[![codecov](https://codecov.io/gh/ms609/citation-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/ms609/citation-bot)
-[![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/inactive.svg)](http://www.repostatus.org/#inactive)
-
 # Citation bot
 
 ## GitHub repository details
-There are two main branches of the bot: the **master** code is (should be) implemented at https://tools.wmflabs.org/citations/doibot.html, whereas the **development** branch is implemented at https://tools.wmflabs.org/citations-dev/doibot.html .  Edits should be made first to the development
-branch, then – once fully tested – pulled to the master branch.
-
-The deployment branch (`release`) differs from the master in that credentials files are not included; 
-these should be completed locally with the appropriate passwords.
+There are two main branches of the bot: the **master** code [[implementation](https://tools.wmflabs.org/citations/doibot.html)],
+and the **development** branch [[implementation](https://tools.wmflabs.org/citations-dev/doibot.html)].
+Edits should be made first to the development branch, then – once fully tested – pulled to the master branch.
 
 ## Overview
 
@@ -22,25 +16,33 @@ This is more properly a bot-gadget-tool combination. The parts are:
   posts a new page revision with expanded citations and thus requires a bot account.
   All activity takes place on Tool Labs.
 * Citation expander (:en:Mediawiki:Gadget-citations.js) + gadgetapi.php. This
-  is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
+  has been re-implemented as an ajax front-end in the on-wiki gadget and a PHP
+  backend API.
 
 Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot .
 
-## Structure
-
+##Structure
 Basic structure of a Citation bot script:
-* define configuration constants
-* require `expandFns.php`, which will set up the rest of the needed functions
+* configure global variables (for instance, `$html_output` will allow or suppress
+  buffered output)
+* require `expandFns.php`, which will set up the rest of the needed functions and
+  global variables
 * use Page functions to fetch/expand/post the page's text
 
 
 A quick tour of the main files:
 * `credentials/doibot.login`: on-wiki login credentials
-* `constants.php`: constants defined
-* `wikiFunctions.php`: functions related to Wikipedia ineractions, including some marked
+* `Snoopy.class.php`: 2000s-era http client/scraper. The scraper functions are
+   not really used here and it could probably be fairly easily replaced with an
+   updated library or a dedicated MediaWiki API client libary. Note that it
+   appears to use curl only for https, so the path to curl on Labs must be
+   correct or the bot will fail to log in because the request can't reach the
+   server.
+* `wikifunctions.php`: more constants and functions, and some functions marked
    as "untested".
-* `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
-* `DOItools.php`: defines Crossref-related functions
+* `DOItools.php`: defines `$bot` (the Snoopy instance), some regexes,
+   capitalization
+* `objects.php`: mix of variables, script, and functions
 * `expandFns.php`: sets up needed functions and global variables, requires most
   of the other files listed here
 * `credentials/crossref.login` allows crossref searches.

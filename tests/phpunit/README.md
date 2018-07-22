@@ -1,4 +1,4 @@
-##Tests for Citation Bot classes
+## Tests for Citation Bot classes
 
 These tests are implemented in `../../.travis.yml`, and can be performed locally.
 
@@ -8,5 +8,6 @@ Then navigate to the root directory in which you have checked out the citation b
 i.e. the folder containing expandFns.php. 
 (If your working directory is elsewhere, glob in constants.php won't work.)
 Then, run the following command from the command line :
+>>>>>>> development
 
 `phpunit --bootstrap ./Parameter.php tests/phpunit/ParameterTest.php`
