@@ -22,7 +22,6 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
     
   public function testCategoryMembers() {
     $api = new WikipediaBot();
-    $api->log_in();
     $this->assertTrue(count($api->category_members('GA-Class cricket articles')) > 10);
     $this->assertEquals(0, count($api->category_members('A category we expect to be empty')));
   }
