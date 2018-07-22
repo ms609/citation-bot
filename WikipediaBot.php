@@ -21,7 +21,7 @@ class WikipediaBot {
     if ($this->ch) curl_close($this->ch);
   }
   
-  private function username() {
+  public function username() {
     $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
     return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : FALSE;
   }
@@ -45,10 +45,6 @@ class WikipediaBot {
   private function reset_curl() {
     if (!$this->ch) {
       $this->ch = curl_init();
-      if (!$this->log_in()) {
-        curl_close($this->ch);
-        trigger_error("Could not log in to Wikipedia servers", E_USER_ERROR);
-      }        
     }
     return curl_setopt_array($this->ch, [
         CURLOPT_FAILONERROR => TRUE, // #TODO Remove this line once debugging complete
@@ -81,51 +77,26 @@ class WikipediaBot {
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
     $request->signRequest(new HmacSha1(), $this->consumer, $this->token);
     $authenticationHeader = $request->toHeader();
-    $header = 'Authentication: $authenticationHeader';
     
     try {
-      switch (strtolower($method)) {
-        case 'get':
-          $url = API_ROOT . '?' . http_build_query($params);            
-          curl_setopt_array($this->ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_HTTPHEADER => [$header],
-          ]);
-          
-          $ret = @json_decode($data = curl_exec($this->ch));
-          if (!$data) {
-            trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
-            return FALSE;
-          }
-          if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
-            $this->log_in();
-            return $this->fetch($params, $method);
-          }
-          return ($this->ret_okay($ret)) ? $ret : FALSE;
-          
-        case 'post':
-          curl_setopt_array($this->ch, [
-            CURLOPT_POST => TRUE,
-            CURLOPT_POSTFIELDS => http_build_query($params),
-            CURLOPT_HTTPHEADER => [$header],
-          ]);
-          
-          $ret = @json_decode($data = curl_exec($this->ch));
-          if ( !$data ) {
-            echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
-            exit(0);
-          }
-          
-          if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
-            $this->log_in();
-            return $this->fetch($params, $method);
-          }
-          
-          return ($this->ret_okay($ret)) ? $ret : FALSE;
-          
-        echo " ! Unrecognized method."; // @codecov ignore - will only be hit if error in our code
-        return NULL;
+      curl_setopt_array($this->ch, [
+        CURLOPT_POST => $method=='POST',
+        CURLOPT_POSTFIELDS => http_build_query($params),
+        CURLOPT_HTTPHEADER => [$authenticationHeader],
+      ]);
+  
+      $ret = @json_decode($data = curl_exec($this->ch));
+      if ( !$data ) {
+        echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
+        exit(0);
       }
+          
+      if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+        return $this->fetch($params, $method);
+      }
+          
+      return ($this->ret_okay($ret)) ? $ret : FALSE;
+      
     } catch(OAuthException $E) {
       echo " ! Exception caught!\n";
       echo "   Response: ". $E->lastResponse . "\n";
