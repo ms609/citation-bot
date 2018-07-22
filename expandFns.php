@@ -3,7 +3,7 @@
  * expandFns.php sets up most of the page expansion. 
  * Most of the page expansion depends on the classes in objects.php, 
  * particularly Template and Page.
- */
+*/
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 
