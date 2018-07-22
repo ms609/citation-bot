@@ -49,28 +49,9 @@ require_once("DOItools.php");
 require_once("objects.php");
 require_once("wikiFunctions.php");
 
-//require_once(HOME . "credentials/mysql.login");
-/* mysql.login is a php file containing:
-  define('MYSQL_DBNAME', ...);
-  define('MYSQL_SERVER', ...);
-  define('MYSQL_PREFIX', ...);
-  define('MYSQL_USERNAME', ...);
-  define('MYSQL_PASSWORD', ...);
-*/
+const CROSSREFUSERNAME = 'martins@gmail.com';
+// Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY and PHP_BOTUSERNAME environment variables
 
-require_once(HOME . "credentials/crossref.login");
-/* crossref.login is a PHP file containing:
-  <?php
-  define('CROSSREFUSERNAME','martins@gmail.com');
-  define('JSTORPASSWORD', ...);
-  define('GLOBALPASSWORD', ...);
-  define('JSTORUSERNAME', 'citation_bot');
-  define('NYTUSERNAME', 'citation_bot');
-*/
-
-$crossRefId = CROSSREFUSERNAME;
-$isbnKey = "268OHQMW";
-$alphabet = array("", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Common replacements

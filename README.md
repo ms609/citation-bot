@@ -45,21 +45,6 @@ A quick tour of the main files:
 * `objects.php`: mix of variables, script, and functions
 * `expandFns.php`: sets up needed functions and global variables, requires most
   of the other files listed here
-<<<<<<< HEAD
-* `credentials/crossref.login` appears to facilitate crossref and New York Times
-   searches.
-
-Class files:
-* `Page.php`: Represents an individual page to expand citations on. Key methods are
-  `get_text_from`, `expand_text`, and `write`.
-* `Item.php`: Item is the parent class for Template and Comment.
-  * `Template.php`: most of the actual expansion happens here.
-    `Template::process()` handles most of template expansion and checking;
-    `Template::add_if_new()` is generally (but probably not always) used to add
-     parameters to the updated template; `Template::tidy()` cleans up the
-     template, but may add parameters as well and have side effects.
-  * `Comment.php`: Handles comments, such as ones forbidding bot activity.
-=======
 * `credentials/crossref.login` allows crossref searches.
 * `login.php`: Logs the bot in to Wikipedia servers
 
@@ -72,16 +57,34 @@ Class files:
    parameters to the updated template; `Template::tidy()` cleans up the
    template, but may add parameters as well and have side effects.
 * `Comment.php`: Handles comments and nokwiki tags
->>>>>>> development
 * `Parameter.php`: contains information about template parameter names, values,
    and metadata, and methods to parse template parameters.
 
 ## Style and structure notes
 
-There is a heavy reliance on global variables. When there are mixed script/function
-files, convention here is to put the script portions at the top, then
-functions (if they are mixed). Classes should be in individual files. The code is
-generally written densely. Beware assignments in conditionals, one-line `if`/
-`foreach`/`else` statements, and action taking place through method calls that take
-place in assignments or equality checks. Also beware the difference between `else if`
-and `elseif`.
+Constants and definitions should be provided in `constants.php`.
+Classes should be in individual files. The code is generally written densely. 
+Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, 
+and action taking place through method calls that take place in assignments or equality checks. 
+Also beware the difference between `else if` and `elseif`.
+
+## Deployment
+
+The bot requires php >= 5.6, whereas the WMFlabs servers by default (as of 2018) run 5.5.9.
+To access php5.6, one must run the bot as a webservice:
+
+    become citations[-dev]
+    webservice stop
+    webservice --backend=kubernetes php5.6 start
+
+Or for testing in the shell:
+
+    webservice --backend=kubernetes php5.6 shell
+
+Before entering the k8s shell, it may be necessary to install phpunit 
+(as wget is not available in the k8s shell):
+
+    wget https://phar.phpunit.de/phpunit-5.phar
+    webservice --backend=kubernetes php5.6 shell
+    php phpunit-5.phar --bootstrap expandFns.php tests/phpunit/TemplateTest.php
+

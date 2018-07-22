@@ -119,8 +119,15 @@ class Template extends Item {
           echo "\n * Expanded from Google Books API";
         }
         $this->tidy();
-        if ($this->find_isbn()) {
-          echo "\n * Found ISBN " . htmlspecialchars($this->get('isbn'));
+        if ($no_isbn_before_doi && $this->has("isbn")) {
+          if ($this->expand_by_google_books()) {
+             echo "\n * Expanded from Google Books API";
+          }
+        }
+
+        // If the et al. is from added parameters, go ahead and handle
+        if (count($this->initial_author_params) == 0) {
+          $this->handle_et_al();
         }
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
@@ -574,10 +581,9 @@ class Template extends Item {
       return false;
     } else {
       $priorP['crossref'] = $input;
-      global $crossRefId;
       if ($journal || $issn) {
-        $url = "https://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId"
-             . ($title ? "&atitle=" . urlencode(deWikify($title)) : "")
+        $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
+             . ($title ? "&atitle=" . urlencode(de_wikify($title)) : "")
              . ($author ? "&aulast=" . urlencode($author) : '')
              . ($start_page ? "&spage=" . urlencode($start_page) : '')
              . ($end_page > $start_page ? "&epage=" . urlencode($end_page) : '')
@@ -598,9 +604,9 @@ class Template extends Item {
       if ($fastMode || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
       echo "\n   x Full search failed. Dropping author & end_page... ";
-      $url = "https://www.crossref.org/openurl/?noredirect=true&pid=$crossRefId";
-      if ($title) $url .= "&atitle=" . urlencode(deWikify($title));
-      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(deWikify($journal));
+      $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME;
+      if ($title) $url .= "&atitle=" . urlencode(de_wikify($title));
+      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(de_wikify($journal));
       if ($year) $url .= "&date=" . urlencode($year);
       if ($volume) $url .= "&volume=" . urlencode($volume);
       if ($start_page) $url .= "&spage=" . urlencode($start_page);
@@ -623,12 +629,6 @@ class Template extends Item {
       $this->add_if_new('pmid', $results[0]);
     } else {
       echo " nothing found.";
-      if (mb_strtolower(substr($citation[$cit_i+2], 0, 8)) == "citation" && $this->blank('journal')) {
-        // Check for ISBN, but only if it's a citation.  We should not risk a false positive by searching for an ISBN for a journal article!
-        echo "\n - Checking for ISBN";
-        if ($this->blank('isbn') && $title = $this->get("title")) $this->set("isbn", findISBN( $title, $this->first_author()));
-        else echo "\n  Already has an ISBN. ";
-      }
     }
   }
 
@@ -854,7 +854,7 @@ class Template extends Item {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     try {
       $ch = curl_init();
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . ADSABSAPIKEY));
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
         . "?data_type=XML&q=$options&fl="
@@ -1032,19 +1032,22 @@ class Template extends Item {
   }
 
   protected function query_crossref($doi = FALSE) {
-    global $crossRefId;
     if (!$doi) {
       $doi = $this->get('doi');
     }
     if (!$doi) {
       warn('#TODO: crossref lookup with no doi');
     }
-    $url = "https://www.crossref.org/openurl/?pid=$crossRefId&id=doi:$doi&noredirect=true";
-    $xml = @simplexml_load_file($url);
-    if ($xml) {
-      $result = $xml->query_result->body->query;
-      if ($result["status"] == "resolved") {
-        return $result;
+    $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME ."&id=doi:$doi&noredirect=TRUE";
+    for ($i = 0; $i < 2; $i++) {
+      $xml = @simplexml_load_file($url);
+      if ($xml) {
+        $result = $xml->query_result->body->query;
+        if ($result["status"] == "resolved") {
+          return $result;
+        } else {
+          return FALSE;
+        }
       } else {
         return false;
       }
@@ -1056,6 +1059,66 @@ class Template extends Item {
 
   protected function expand_by_google_books() {
     $url = $this->get('url');
+    if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) { // No Google URL yet.
+      $google_books_worked = FALSE ;
+      $isbn= $this->get('isbn');
+      $lccn= $this->get('lccn');
+      $oclc= $this->get('oclc');
+      if ($isbn) {
+        $isbn = str_replace(array(" ","-"), "", $isbn);
+        if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
+        if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
+      }
+      if ($lccn) {
+        $lccn = str_replace(array(" ","-"), "", $lccn);
+        if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
+      }
+      if ($oclc) {
+        if ( !ctype_alnum($oclc) ) $oclc='' ;
+      }
+      if ($isbn) {  // Try Books.Google.Com
+        $google_book_url='https://books.google.com/books?isbn='.$isbn;
+        $google_content = @file_get_contents($google_book_url);
+        if ($google_content !== FALSE) {
+          preg_match_all('~books.google.com/books\?id=............&amp~',$google_content,$google_results);
+          $google_results = $google_results[0];
+          $google_results = array_unique($google_results);
+          if (count($google_results) === 1) {
+            $google_results = $google_results[0];
+            $gid = substr($google_results,26,-4);
+            $url = 'https://books.google.com/books?id=' . $gid;
+            if ($this->blank('url')) $this->add('url', $url);
+            $google_books_worked = TRUE;
+          }
+        }
+      }
+      if ( !$google_books_worked ) { // Try Google API instead 
+        if ($isbn) {
+          $url_token = "isbn:" . $isbn;
+        } elseif ($oclc) {
+          $url_token = "oclc:" . $oclc;
+        } elseif ($lccn) {
+          $url_token = "lccn:" . $lccn;
+        } else {
+          return FALSE; // No data to use
+        }
+        $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
+        if ($string === FALSE) {
+            echo "\n Google APIs search failed for $url_token \n";
+            return FALSE;
+        }
+        $result = @json_decode($string, false);
+        if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
+          $gid=$result->items[0]->id;
+          $url = 'https://books.google.com/books?id=' . $gid;
+          if ($this->blank('url')) $this->add('url', $url );
+        } else {
+          echo "\n Google APIs search failed with $url_token \n";
+          return FALSE;
+        }
+      }
+    }
+    // Now we parse a Google Books URL
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
@@ -1121,67 +1184,31 @@ class Template extends Item {
     }
     $this->add_if_new("date", $xml->dc___date);
   }
-
-  protected function find_isbn() {
-    return FALSE; #TODO restore this service.
-    if ($this->blank('isbn') && $this->has('title')) {
-      $title = trim($this->get('title'));
-      $auth = trim($this->get('author') . $this->get('author1') . ' ' . $this->get('last') . $this->get('last1'));
-      global $isbnKey, $over_isbn_limit;
-      // TODO: implement over_isbn_limit based on &results=keystats in API
-      if ($title && !$over_isbn_limit) {
-        $xml = simplexml_load_file("http://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth));
-        print "\n\nhttp://isbndb.com/api/books.xml?access_key=$isbnKey&index1=combined&value1=" . urlencode($title . " " . $auth . "\n\n");
-        if ($xml->BookList["total_results"] == 1) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
-        if ($auth && $xml->BookList["total_results"] > 0) return $this->set('isbn', (string) $xml->BookList->BookData["isbn"]);
-        else return false;
+  ### parameter processing
+  protected function use_unnamed_params() {
+    if (empty($this->param)) return;
+    
+    $this->parameter_names_to_lowercase();
+    $param_occurrences = array();
+    $duplicated_parameters = array();
+    $duplicate_identical = array();
+    
+    foreach ($this->param as $pointer => $par) {
+      if ($par->param && isset($param_occurrences[$par->param])) {
+        $duplicate_pos = $param_occurrences[$par->param];
+        array_unshift($duplicated_parameters, $duplicate_pos);
+        array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
       }
+      $param_occurrences[$par->param] = $pointer;
     }
-  }
-
-  protected function find_more_authors() {
-  /** If crossRef has only sent us one author, perhaps we can find their surname in association with other authors on the URL
-   *   Send the URL and the first author's SURNAME ONLY as $a1
-   *  The function will return an array of authors in the form $new_authors[3] = Author, The Third
-   */
-    if ($doi = $this->get_without_comments('doi')) {
-      $this->expand_by_doi(TRUE);
-    }
-    if ($this->get('pmid')) {
-      $this->expand_by_pubmed(TRUE);
-    }
-    $pages = $this->page_range();
-    $pages = $pages[0];
-    if (preg_match("~\d\D+\d~", $pages)) {
-      $new_pages = $pages;
-    }
-    if ($doi) {
-      $url = "http://dx.doi.org/" . urlencode($doi);
-    } else {
-      $url = urlencode($this->get('url'));
-    }
-    $stopRegexp = "[\n\(:]|\bAff"; // Not used currently - aff may not be necessary.
-    if (!$url) {
-      return NULL;
-    }
-    echo "\n  * Looking for more authors @ " . htmlspecialchars($url) . ":";
-    echo "\n   - Using meta tags...";
-    $meta_tags = get_meta_tags($url);
-    if ($meta_tags["citation_authors"]) {
-      $new_authors = formatAuthors($meta_tags["citation_authors"], true);
-    }
-    global $slow_mode;
-    if ($slow_mode && !$new_pages && !$new_authors) {
-      echo "\n   - Now scraping web-page.";
-      //Initiate cURL resource
-      $ch = curl_init();
-      curlSetup($ch, $url);
-
-      curl_setopt($ch, CURLOPT_MAXREDIRS, 7);  //This means we can't get stuck.
-      if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
-        echo "404 returned from URL.<br>";
-      } elseif (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 501) {
-        echo "501 returned from URL.<br>";
+    
+    $n_dup_params = count($duplicated_parameters);
+    
+    for ($i = 0; $i < $n_dup_params; $i++) {
+      if ($duplicate_identical[$i]) {
+        echo "\n * Deleting identical duplicate of parameter: " .
+          htmlspecialchars($this->param[$duplicated_parameters[$i]]->param) . "\n";
+        unset($this->param[$duplicated_parameters[$i]]);
       } else {
         $source = str_ireplace(
                     array('&nbsp;', '<p ',          '<DIV '),
