@@ -2,7 +2,8 @@
 class WikipediaBot {
   
   protected $oauth, $ch;
-  
+  // To use the oauthclient library, run:
+  // composer require mediawiki/oauthclient
   function __construct() {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) {
       trigger_error("PHP_OAUTH_CONSUMER_TOKEN not set", E_USER_WARNING);
@@ -18,13 +19,6 @@ class WikipediaBot {
   
   function __destruct() {
     if ($this->ch) curl_close($this->ch);
-  }
-      
-  public function log_in() {
-    $response = $this->fetch(['action' => 'query', 'meta'=>'tokens', 'type'=>'login']);
-    if (!isset($response->batchcomplete)) return FALSE;
-    if (!isset($response->query->tokens->logintoken)) return FALSE;
-    return TRUE;
   }
   
   private function username() {
@@ -48,107 +42,7 @@ class WikipediaBot {
     return TRUE;
   }
   
-  private function reset_curl() {
-    if (!$this->ch) {
-      $this->ch = curl_init();
-      if (!$this->log_in()) {
-        curl_close($this->ch);
-        trigger_error("Could not log in to Wikipedia servers", E_USER_ERROR);
-      }        
-    }
-    return curl_setopt_array($this->ch, [
-        CURLOPT_FAILONERROR => TRUE, // #TODO Remove this line once debugging complete
-        CURLOPT_FOLLOWLOCATION => TRUE,
-        CURLOPT_MAXREDIRS => 5,
-        CURLOPT_HEADER => FALSE, // Don't include header in output
-        CURLOPT_HTTPGET => TRUE, // Reset to default GET
-        CURLOPT_RETURNTRANSFER => TRUE,
-        
-        CURLOPT_CONNECTTIMEOUT_MS => 1200,
-        
-        CURLOPT_COOKIESESSION => TRUE,
-        CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_COOKIEJAR => 'cookiejar.txt',
-        CURLOPT_URL => API_ROOT,
-        CURLOPT_USERAGENT => 'Citation bot',
-        #CURLOPT_XOAUTH2_BEARER => OAUTH_ACCESS_TOKEN,
-        #CURLOPT_HTTPHEADER => ###,
-      ]);
-  }
-  
-  
-  public function curl_fetch($params, $method = 'GET') {
-    if (!$this->reset_curl()) {
-      curl_close($this->ch);
-      trigger_error('Could not initialize CURL resource: ' .
-        htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
-      return FALSE;
-    }
-    $check_logged_in = ((isset($params['type']) && $params['type'] == 'login')
-      || (isset($params['action']) && $params['action'] == 'login')
-      || (isset($params['meta']) && $params['meta'] == 'userinfo')) ? FALSE : TRUE;
-    if ($check_logged_in) $params['assert'] = 'user';
-    $params['format'] = 'json';
-    
-    try {
-      switch (strtolower($method)) {
-        
-        case 'get':
-          $url = API_ROOT . '?' . http_build_query($params);
-          $header = 'Authentication: ' . 
-            $this->oauth->getRequestHeader(OAUTH_HTTP_METHOD_POST, $url);
-            
-          curl_setopt_array($this->ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_HTTPHEADER => [$header],
-          ]);
-          
-          $ret = @json_decode($data = curl_exec($this->ch));
-          if (!$data) {
-            trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
-            return FALSE;
-          }
-          
-          if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
-            $this->log_in();
-            return $this->fetch($params, $method);
-          }
-          return ($this->ret_okay($ret)) ? $ret : FALSE;
-          
-        case 'post':
-          $header = 'Authentication: ' . $this->oauth->getRequestHeader(
-            OAUTH_HTTP_METHOD_POST, API_ROOT, http_build_query($params));
-          curl_setopt_array($this->ch, [
-            CURLOPT_POST => TRUE,
-            CURLOPT_POSTFIELDS => http_build_query($params),
-            CURLOPT_HTTPHEADER => [$header],
-          ]);
-          $ret = @json_decode($data = curl_exec($this->ch));
-          if ( !$data ) {
-            trigger_error("\n ! Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
-          }  
-                    
-          if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
-            $this->log_in();
-            return $this->fetch($params, $method);
-          }
-          
-          return ($this->ret_okay($ret)) ? $ret : FALSE;
-          
-        echo " ! Unrecognized method."; // @codecov ignore - will only be hit if error in our code
-        return NULL;
-      }
-    } catch(OAuthException $E) {
-      echo " ! Exception caught!\n";
-      echo "   Response: ". $E->lastResponse . "\n";
-    }
-  }
-  
   public function fetch($params, $method = 'GET') {
-    $check_logged_in = ((isset($params['type']) && $params['type'] == 'login')
-      || (isset($params['action']) && $params['action'] == 'login')
-      || (isset($params['meta']) && $params['meta'] == 'userinfo')) ? FALSE : TRUE;
-    if ($check_logged_in) $params['assert'] = 'user';
     $params['format'] = 'json';
     
     try {
@@ -159,8 +53,8 @@ class WikipediaBot {
         return FALSE;
       }
       if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
-        $this->log_in();
-        return $this->fetch($params, $method);
+        trigger_error("Problem identifying user in OAuth->fetch" , E_USER_NOTICE);
+        return FALSE;
       }
       return ($this->ret_okay($ret)) ? $ret : FALSE;
     } catch(OAuthException $E) {
@@ -235,6 +129,7 @@ class WikipediaBot {
       return FALSE;
     } elseif (isset($result->edit)) {
       if (isset($result->edit->captcha)) {
+        // If this happens, then something's gone very wrong..?
         trigger_error("Write error: We encountered a captcha, so can't be properly logged in.", E_USER_ERROR);
         return FALSE;
       } elseif ($result->edit->result == "Success") {
