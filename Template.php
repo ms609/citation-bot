@@ -132,9 +132,6 @@ final class Template {
           $this->expand_by_doi();
         }
         $this->tidy();
-        if ($this->find_isbn()) {
-          echo "\n * Found ISBN " . htmlspecialchars($this->get('isbn'));
-        }
         if ($no_isbn_before_doi && $this->has("isbn")) {
           if ($this->expand_by_google_books()) {
              echo "\n * Expanded from Google Books API";
@@ -816,12 +813,6 @@ final class Template {
       $this->add_if_new('pmid', $results[0]);
     } else {
       echo " nothing found.";
-      if ($this->wikiname() == "citation" && $this->blank('journal')) {
-        // Check for ISBN, but only if it's a citation.  We should not risk a FALSE positive by searching for an ISBN for a journal article!
-        if ($this->find_isbn()) {
-          echo "\n * Found ISBN " . htmlspecialchars($this->get('isbn'));
-        }
-      }
     }
   }
 
