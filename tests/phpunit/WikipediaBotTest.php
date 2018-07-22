@@ -22,7 +22,7 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
     
   public function testLoggedInUser() {
     $api = new WikipediaBot();
-    $this->assertEquals("User:Citation bot test", $api->username());
+    $this->assertEquals("Citation bot test", $api->username());
   }
     
   public function testCategoryMembers() {

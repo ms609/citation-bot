@@ -79,24 +79,46 @@ class WikipediaBot {
     $authenticationHeader = $request->toHeader();
     
     try {
-      curl_setopt_array($this->ch, [
-        CURLOPT_POST => $method=='POST',
-        CURLOPT_POSTFIELDS => http_build_query($params),
-        CURLOPT_HTTPHEADER => [$authenticationHeader],
-      ]);
-  
-      $ret = @json_decode($data = curl_exec($this->ch));
-      if ( !$data ) {
-        echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
-        exit(0);
-      }
+      switch (strtolower($method)) {
+        case 'get':
+          $url = API_ROOT . '?' . http_build_query($params);            
+          curl_setopt_array($this->ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_HTTPHEADER => [$authenticationHeader],
+          ]);
           
-      if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
-        return $this->fetch($params, $method);
-      }
+          $ret = @json_decode($data = curl_exec($this->ch));
+          if (!$data) {
+            trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
+            return FALSE;
+          }
+          if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
+            return $this->fetch($params, $method);
+          }
+          return ($this->ret_okay($ret)) ? $ret : FALSE;
           
-      return ($this->ret_okay($ret)) ? $ret : FALSE;
-      
+        case 'post':
+          curl_setopt_array($this->ch, [
+            CURLOPT_POST => TRUE,
+            CURLOPT_POSTFIELDS => http_build_query($params),
+            CURLOPT_HTTPHEADER => [$authenticationHeader],
+          ]);
+          
+          $ret = @json_decode($data = curl_exec($this->ch));
+          if ( !$data ) {
+            echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
+            exit(0);
+          }
+          
+          if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+            return $this->fetch($params, $method);
+          }
+          
+          return ($this->ret_okay($ret)) ? $ret : FALSE;
+          
+        echo " ! Unrecognized method."; // @codecov ignore - will only be hit if error in our code
+        return NULL;
+      }
     } catch(OAuthException $E) {
       echo " ! Exception caught!\n";
       echo "   Response: ". $E->lastResponse . "\n";
