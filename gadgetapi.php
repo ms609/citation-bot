@@ -31,7 +31,7 @@ if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
 $result = array(
   'expandedtext' => $page->parsed_text(),
   'editsummary' => $editSummary,
-  'debug' => $debug_text;
+  'debug' => $debug_text,
 );
 
 // Throw away all output
