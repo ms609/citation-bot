@@ -63,6 +63,13 @@ class Page {
       return FALSE;
     }
   }
+  
+  // Called from gadgetapi.php
+  public function parse_text($text) {
+    $this->text = $text;
+    $this->start_text = $this->text;
+    $this->modifications = array();
+  }  
 
   public function parsed_text() {
     return $this->text;
@@ -222,10 +229,5 @@ class TestPage extends Page {
   public function overwrite_text($text) {
     $this->text = $text;
   }
-
-  public function parse_text($text) {
-    $this->text = $text;
-    $this->start_text = $this->text;
-    $this->modifications = array();
-  }  
+  
 }
