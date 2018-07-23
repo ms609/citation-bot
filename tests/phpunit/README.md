@@ -18,3 +18,5 @@ To run the tests on Toolforge, first
 then
 
     php ../phpunit-5.phar --bootstrap [etc]
+
+Use Ctrl-D to escape from Toolforge.
