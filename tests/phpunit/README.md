@@ -9,4 +9,14 @@ i.e. the folder containing expandFns.php.
 (If your working directory is elsewhere, glob in constants.php won't work.)
 Then, run the following command from the command line :
 
-`phpunit --bootstrap ./Parameter.php tests/phpunit/ParameterTest.php`
+    phpunit --bootstrap ./Parameter.php tests/phpunit/ParameterTest.php
+
+To run the tests on Toolforge, first
+
+    webservice --backend=kubernetes php5.6 shell
+
+then
+
+    php ../phpunit-5.phar --bootstrap [etc]
+
+Use Ctrl-D to escape from Toolforge.

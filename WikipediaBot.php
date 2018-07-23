@@ -1,33 +1,32 @@
 <?php
+// To use the oauthclient library, run:
+// composer require mediawiki/oauthclient
+use MediaWiki\OAuthClient\Consumer;
+use MediaWiki\OAuthClient\Token;
+use MediaWiki\OAuthClient\Request;
+use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
+
 class WikipediaBot {
   
-  protected $oauth, $ch;
+  protected $consumer, $token, $ch;
   
   function __construct() {
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) {
-      trigger_error("PHP_OAUTH_CONSUMER_TOKEN not set", E_USER_WARNING);
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
+      // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
+      // if they are not set already. Remember to set permissions (not readable!)
+      include_once('env.php'); 
     }
-    $this->oauth = new OAuth(getenv('PHP_OAUTH_CONSUMER_TOKEN'),
-                             getenv('PHP_OAUTH_CONSUMER_SECRET'),
-                             OAUTH_SIG_METHOD_HMACSHA1, OAUTH_AUTH_TYPE_AUTHORIZATION);
-    $this->oauth->setToken(  getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
-    $this->oauth->enableDebug();
-    $this->oauth->setSSLChecks(0);
-    $this->oauth->setRequestEngine(OAUTH_REQENGINE_CURL);
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) trigger_error("PHP_OAUTH_CONSUMER_TOKEN not set", E_USER_ERROR);
+    if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) trigger_error("PHP_OAUTH_ACCESS_TOKEN not set", E_USER_ERROR);
+    $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
+    $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
   }
   
   function __destruct() {
     if ($this->ch) curl_close($this->ch);
   }
-      
-  public function log_in() {
-    $response = $this->fetch(['action' => 'query', 'meta'=>'tokens', 'type'=>'login']);
-    if (!isset($response->batchcomplete)) return FALSE;
-    if (!isset($response->query->tokens->logintoken)) return FALSE;
-    return TRUE;
-  }
   
-  private function username() {
+  public function username() {
     $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
     return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : FALSE;
   }
@@ -51,10 +50,6 @@ class WikipediaBot {
   private function reset_curl() {
     if (!$this->ch) {
       $this->ch = curl_init();
-      if (!$this->log_in()) {
-        curl_close($this->ch);
-        trigger_error("Could not log in to Wikipedia servers", E_USER_ERROR);
-      }        
     }
     return curl_setopt_array($this->ch, [
         CURLOPT_FAILONERROR => TRUE, // #TODO Remove this line once debugging complete
@@ -70,37 +65,31 @@ class WikipediaBot {
         CURLOPT_COOKIEFILE => 'cookie.txt',
         CURLOPT_COOKIEJAR => 'cookiejar.txt',
         CURLOPT_URL => API_ROOT,
-        CURLOPT_USERAGENT => 'Citation bot',
-        #CURLOPT_XOAUTH2_BEARER => OAUTH_ACCESS_TOKEN,
-        #CURLOPT_HTTPHEADER => ###,
+        CURLOPT_USERAGENT => 'Citation bot'
       ]);
   }
   
-  
-  public function curl_fetch($params, $method = 'GET') {
+  public function fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
       curl_close($this->ch);
       trigger_error('Could not initialize CURL resource: ' .
         htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
       return FALSE;
     }
-    $check_logged_in = ((isset($params['type']) && $params['type'] == 'login')
-      || (isset($params['action']) && $params['action'] == 'login')
-      || (isset($params['meta']) && $params['meta'] == 'userinfo')) ? FALSE : TRUE;
-    if ($check_logged_in) $params['assert'] = 'user';
     $params['format'] = 'json';
+    
+  
+    $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
+    $request->signRequest(new HmacSha1(), $this->consumer, $this->token);
+    $authenticationHeader = $request->toHeader();
     
     try {
       switch (strtolower($method)) {
-        
         case 'get':
-          $url = API_ROOT . '?' . http_build_query($params);
-          $header = 'Authentication: ' . 
-            $this->oauth->getRequestHeader(OAUTH_HTTP_METHOD_POST, $url);
-            
+          $url = API_ROOT . '?' . http_build_query($params);            
           curl_setopt_array($this->ch, [
             CURLOPT_URL => $url,
-            CURLOPT_HTTPHEADER => [$header],
+            CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
           
           $ret = @json_decode($data = curl_exec($this->ch));
@@ -108,28 +97,25 @@ class WikipediaBot {
             trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
           }
-          
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
-            $this->log_in();
             return $this->fetch($params, $method);
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
           
         case 'post':
-          $header = 'Authentication: ' . $this->oauth->getRequestHeader(
-            OAUTH_HTTP_METHOD_POST, API_ROOT, http_build_query($params));
           curl_setopt_array($this->ch, [
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
-            CURLOPT_HTTPHEADER => [$header],
+            CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
+          
           $ret = @json_decode($data = curl_exec($this->ch));
           if ( !$data ) {
-            trigger_error("\n ! Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
-          }  
-                    
+            echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
+            exit(0);
+          }
+          
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
-            $this->log_in();
             return $this->fetch($params, $method);
           }
           
@@ -138,31 +124,6 @@ class WikipediaBot {
         echo " ! Unrecognized method."; // @codecov ignore - will only be hit if error in our code
         return NULL;
       }
-    } catch(OAuthException $E) {
-      echo " ! Exception caught!\n";
-      echo "   Response: ". $E->lastResponse . "\n";
-    }
-  }
-  
-  public function fetch($params, $method = 'GET') {
-    $check_logged_in = ((isset($params['type']) && $params['type'] == 'login')
-      || (isset($params['action']) && $params['action'] == 'login')
-      || (isset($params['meta']) && $params['meta'] == 'userinfo')) ? FALSE : TRUE;
-    if ($check_logged_in) $params['assert'] = 'user';
-    $params['format'] = 'json';
-    
-    try {
-      $data = $this->oauth->fetch(API_ROOT, $params, $method);
-      $ret = @json_decode($data = $this->oauth->getLastResponse());
-      if (!$data) {
-        trigger_error("OAuth->fetch error" , E_USER_NOTICE);
-        return FALSE;
-      }
-      if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
-        $this->log_in();
-        return $this->fetch($params, $method);
-      }
-      return ($this->ret_okay($ret)) ? $ret : FALSE;
     } catch(OAuthException $E) {
       echo " ! Exception caught!\n";
       echo "   Response: ". $E->lastResponse . "\n";
@@ -492,4 +453,3 @@ class WikipediaBot {
   }
 
 }
-

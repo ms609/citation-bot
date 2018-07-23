@@ -20,9 +20,13 @@ class WikipediaBotTest extends PHPUnit\Framework\TestCase {
   protected function tearDown() {
   }
     
+  public function testLoggedInUser() {
+    $api = new WikipediaBot();
+    $this->assertEquals("Citation bot test", $api->username());
+  }
+    
   public function testCategoryMembers() {
     $api = new WikipediaBot();
-    $api->log_in();
     $this->assertTrue(count($api->category_members('GA-Class cricket articles')) > 10);
     $this->assertEquals(0, count($api->category_members('A category we expect to be empty')));
   }
