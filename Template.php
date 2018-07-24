@@ -1487,6 +1487,13 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
+        if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $best_location->url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $best_location->url, $match)) {
+          if ($this->has('pmc') ) {
+             // The best location is already linked to by the PMC link
+             return TRUE;
+          }
+        }        
         $this->add_if_new('url', $best_location->url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           switch ($best_location->version) {
