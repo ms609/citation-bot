@@ -89,8 +89,12 @@ final class Template {
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->tidy();
-        if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
+        if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('doi')) {
           $this->name = 'Cite journal';
+          $this->process();
+        } elseif ($this->has('axziv')) {
+          $this->name = 'Cite arxiv';
+          $this->rename('arxiv','eprint');
           $this->process();
         } elseif ($this->has('eprint')) {
           $this->name = 'Cite arxiv';
