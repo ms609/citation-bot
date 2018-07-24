@@ -1494,7 +1494,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
+        if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $best_location->url, $match)) {
           if ($this->has('arxiv') || $this->has('eprint')) {
              // The best location is already linked to by the ARXIV link
              return TRUE;
