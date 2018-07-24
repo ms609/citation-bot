@@ -209,7 +209,8 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
 // Parameter sort order: Capitals then lowercase; single parameters then those repeated for each
 // subsequent author or editor; Alphabetical.
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
-// that information can also be presented using the generic {{citation}} template, which we do modify
+// that information can also be presented using the generic {{citation}} template, which we do modify.
+// This list even includes items that are no longer supported, since we need to leave fixed them to humans
 const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EISSN', 'HDL', 'ID',
 'ISBN', 'ISBN13', 'ISMN', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR', 'OCLC', 'OL', 'OSTI', 'PMC', 'PMID',
 'RFC', 'SSRN', 'URL', 'ZBL', 'Author', 'DoiBroken', 'Editor', 'EditorGiven', 'EditorSurname',
