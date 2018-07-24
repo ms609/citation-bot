@@ -285,7 +285,7 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EIS
  'surname', 'template doc demo', 'time', 'timecaption', 'title', 'titlelink', 'trans_chapter',
  'trans_title', 'trans-chapter', 'transcript', 'transcript-format', 'transcripturl', 'transcript-url', 'trans-map',
  'trans-title', 'type', 'url', 'url-access', 'version', 'via','vauthors',
- 'veditors' 'volume', 'website', 'work', 'year', 'zbl',
+ 'veditors', 'volume', 'website', 'work', 'year', 'zbl',
  'author1', 'author1-first', 'author1-last', 'author1link', 'author1-link', 'author1mask',
  'author1-mask', 'author2', 'author2-first', 'author2-last', 'author2link', 'author2-link',
  'author2mask', 'author2-mask', 'author3', 'author3-first', 'author3-last', 'author3link',
