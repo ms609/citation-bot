@@ -1493,7 +1493,13 @@ final class Template {
              // The best location is already linked to by the PMC link
              return TRUE;
           }
-        }        
+        }
+        if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
+          if ($this->has('arxiv') || $this->has('eprint')) {
+             // The best location is already linked to by the ARXIV link
+             return TRUE;
+          }
+        }
         $this->add_if_new('url', $best_location->url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           switch ($best_location->version) {
