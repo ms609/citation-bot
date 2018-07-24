@@ -261,7 +261,7 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EIS
  'conferenceurl', 'conference-url', 'contribution', 'contribution-format', 'contributionurl',
  'credits', 'contribution-url', 'date',
  'deadurl', 'degree', 'department', 'df', 'dictionary', 'director', 'displayauthors', 'display-authors',
- 'displayeditors', 'display-editors', 'docket', 'doi', 'doi_brokendate', 'doi_inactivedate',
+ 'displayeditors', 'display-editors', 'docket', 'doi', 'doi-access', 'doi_brokendate', 'doi_inactivedate',
  'doi-broken-date', 'name-list-format', 'chapterformat', 'chapter-format',
  'edition', 'editor', 'editor-first', 'editorformat', 'editor-format', 'editor-last',
  'editorlink', 'editor-link', 'editormask', 'editor-mask', 'editor-name-separator',
