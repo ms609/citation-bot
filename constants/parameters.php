@@ -280,7 +280,7 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EIS
  'pp-prefix', 'program', 'publicationdate', 'publication-date', 'publicationplace',
  'publication-place', 'publisher', 'quotation', 'quote', 'ref', 'registration', 'rfc',
  'scale', 'script-chapter', 'script-title', 'season', 'section', 'sectionurl', 'section-format', 'section-url',
- 'section-url-access', 'sections' 'separator', 'series', 'serieslink', 'seriesno',
+ 'section-url-access', 'sections', 'separator', 'series', 'serieslink', 'seriesno',
  'seriesnumber', 'series-separator', 'sheet', 'sheets', 'ssrn', 'station', 'subject', 'subjectlink', 'subscription',
  'surname', 'template doc demo', 'time', 'timecaption', 'title', 'titlelink', 'trans_chapter',
  'trans_title', 'trans-chapter', 'transcript', 'transcript-format', 'transcripturl', 'transcript-url', 'trans-map',
