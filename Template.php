@@ -727,18 +727,18 @@ final class Template {
           if ($this->blank('asin')) {
             return $this->add_if_new('asin', $match['id']);
           }
-        } elseif (preg_match("~^https?://hdl\.?handle\.net/([^\?]*)~", $url, $match)) {
-          if (is_null($url_sent)) {
-             $this->forget('url');
-          }
-          if (strpos($this->name, 'web')) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
-          return $this->add_if_new('hdl', $match[1]);
         } else {
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
           if (is_null($url_sent)) {
             $this->forget('url'); // will forget accessdate too
           }
         }
+      } elseif (preg_match("~^https?://hdl\.handle\.net/([^\?]*)~", $url, $match)) {
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (strpos($this->name, 'web')) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('hdl', $match[1]);
       }
     }
   }
