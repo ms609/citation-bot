@@ -102,7 +102,17 @@ final class Template {
         $this->citation_template = TRUE;
         $this->use_unnamed_params();
         $this->expand_by_arxiv();
+
+        $saved_date = $this->get('date');// Forget dates so that DOI can update with publication date, not ARXIV date
+        $saved_year = $this->get('year');
+        $this->forget('date');
+        $this->forget('year');
         $this->expand_by_doi();
+        if ($this->blank('year') && $this->blank('date')) {
+          if ($saved_date) $this->add('date',$saved_date);
+          if ($saved_year) $this->add('year',$saved_year);
+        }
+
         $this->tidy();
         if ($this->has('journal')) {
           $this->name = 'Cite journal';
