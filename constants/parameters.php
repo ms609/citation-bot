@@ -267,7 +267,8 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EIS
  'editors', 'editor-separator', 'eissn', 'embargo', 'ended', 'encyclopaedia', 'encyclopedia', 'entry',
  'entry-format', 'entry-url', 'entry-url-access', 'episode', 'episode-link',
  'episodelink', 'eprint', 'event', 'eventurl', 'event-format', 'first', 'format', 'given', 'hdl', 'hdl-access', 'host', 'id',
- 'ignoreisbnerror', 'ignore-isbn-error', 'in', 'inset', 'institution', 'interviewer',
+ 'ignoreisbnerror', 'ignore-isbn-error', 'in', 'inset', 'institution', 'interviewer', 'interviewers',
+ 'interviewer-mask', 'interviewerlink','interviewermask', 'interviewer-first', 'interviewer-last','interviewer-link',
  'isbn', 'isbn13', 'ismn', 'issn', 'issue', 'jfm', 'journal', 'jstor', 'jstor-access', 'language', 'last',
  'lastauthoramp', 'laydate', 'laysource', 'laysummary', 'layurl', 'lccn', 'location',
  'magazine', 'mailing-list', 'mailinglist', 'map', 'map-format', 'map-url',
@@ -802,5 +803,15 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EIS
  'translator12-first', 'translator13-first', 'translator14-first', 'translator15-first', 'translator16-first',
  'translator17-first', 'translator18-first', 'translator19-first', 'translator20-first', 'translator21-first',
  'translator22-first', 'translator23-first', 'translator24-first', 'translator25-first', 'translator26-first',
- 'translator27-first', 'translator28-first', 'translator29-first', 'translator30-first');
+ 'translator27-first', 'translator28-first', 'translator29-first', 'translator30-first',
+ 'interviewer1', 'interviewer1-first', 'interviewer1-last', 'interviewer1-link', 'interviewer1-mask', 'interviewer-first1', 'interviewer-last1', 'interviewer-link1', 'interviewer-mask1', 
+ 'interviewer2', 'interviewer2-first', 'interviewer2-last', 'interviewer2-link', 'interviewer2-mask', 'interviewer-first2', 'interviewer-last2', 'interviewer-link2', 'interviewer-mask2', 
+ 'interviewer3', 'interviewer3-first', 'interviewer3-last', 'interviewer3-link', 'interviewer3-mask', 'interviewer-first3', 'interviewer-last3', 'interviewer-link3', 'interviewer-mask3', 
+ 'interviewer4', 'interviewer4-first', 'interviewer4-last', 'interviewer4-link', 'interviewer4-mask', 'interviewer-first4', 'interviewer-last4', 'interviewer-link4', 'interviewer-mask4', 
+ 'interviewer5', 'interviewer5-first', 'interviewer5-last', 'interviewer5-link', 'interviewer5-mask', 'interviewer-first5', 'interviewer-last5', 'interviewer-link5', 'interviewer-mask5', 
+ 'interviewer6', 'interviewer6-first', 'interviewer6-last', 'interviewer6-link', 'interviewer6-mask', 'interviewer-first6', 'interviewer-last6', 'interviewer-link6', 'interviewer-mask6', 
+ 'interviewer7', 'interviewer7-first', 'interviewer7-last', 'interviewer7-link', 'interviewer7-mask', 'interviewer-first7', 'interviewer-last7', 'interviewer-link7', 'interviewer-mask7', 
+ 'interviewer8', 'interviewer8-first', 'interviewer8-last', 'interviewer8-link', 'interviewer8-mask', 'interviewer-first8', 'interviewer-last8', 'interviewer-link8', 'interviewer-mask8', 
+ 'interviewer9', 'interviewer9-first', 'interviewer9-last', 'interviewer9-link', 'interviewer9-mask', 'interviewer-first9', 'interviewer-last9', 'interviewer-link9', 'interviewer-mask9', 
+ 'interviewer10', 'interviewer10-first', 'interviewer10-last', 'interviewer10-link', 'interviewer10-mask', 'interviewer-first10', 'interviewer-last10', 'interviewer-link10', 'interviewer-mask10', );
 
