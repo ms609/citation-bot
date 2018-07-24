@@ -212,7 +212,15 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|doi=10.1038/nature08244}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('0904.1532', $expanded->get('arxiv'));
-    
+      
+    $text = '{{cite journal | vauthors = Shekelle PG, Morton SC, Jungvig LK, Udani J, Spar M, Tu W, J Suttorp M, Coulter I, Newberry SJ, Hardy M | title = Effect of supplemental vitamin E for the prevention and treatment of cardiovascular disease | journal = Journal of General Internal Medicine | volume = 19 | issue = 4 | pages = 380–9 | date = April 2004 | pmid = 15061748 | pmc = 1492195 | doi = 10.1111/j.1525-1497.2004.30090.x }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('url')); // Do not add PMC URL if already has PMC
+      
+    $text = '{{Cite journal | doi = 10.1063/1.4962420| title = Calculating vibrational spectra of molecules using tensor train decomposition| journal = J. Chem. Phys. | volume = 145| year = 2016| issue = 145| pages = 124101| last1 = Rakhuba| first1 = Maxim | last2 = Oseledets | first2 = Ivan| bibcode = 2016JChPh.145l4101R| arxiv =1605.08422}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('url')); // Do not add Arxiv URL if already has Arxiv
+
     $text = '{{cite journal|doi=10.1038//TODO}}';
     /*
     $this->assertEquals('http://some.url', $expanded->get('url'));
