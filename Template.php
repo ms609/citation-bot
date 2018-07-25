@@ -1568,7 +1568,7 @@ final class Template {
             $google_results = $google_results[0];
             $gid = substr($google_results,26,-4);
             $url = 'https://books.google.com/books?id=' . $gid;
-            if ($this->blank('url')) $this->add('url', $url);
+            // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
             $google_books_worked = TRUE;
           }
         }
@@ -1592,7 +1592,7 @@ final class Template {
         if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
           $gid=$result->items[0]->id;
           $url = 'https://books.google.com/books?id=' . $gid;
-          // if ($this->blank('url')) $this->add('url', $url ); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
+          // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
         } else {
           echo "\n Google APIs search failed with $url_token \n";
           return FALSE;
