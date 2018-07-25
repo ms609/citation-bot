@@ -435,8 +435,9 @@ final class Template {
       case 'series':
         $value = wikify_external_text($value);
         if ($this->has('journal') && (strcasecmp($this->get('journal'), $value) === 0)) return FALSE ;
-        return $this->add($param_name, wikify_external_text($value));
+        return $this->add($param_name, $value);
         return FALSE;
+
       case 'chapter': case 'contribution':
         if ($this->blank("chapter") && $this->blank("contribution")) {
           return $this->add($param_name, wikify_external_text($value));
