@@ -427,14 +427,14 @@ final class Template {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
-          if ($this->has('series') && (strcasecmp($this->get('series'),$value) === 0)) return FALSE ;
+          if ($this->has('series') && (strcasecmp($this->get('series'), $value) === 0)) return FALSE ;
           return $this->add($param_name,$value);
         }
         return FALSE;
         
       case 'series':
         $value = wikify_external_text($value);
-        if ($this->has('journal') && (strcasecmp($this->get('journal'),$value) === 0)) return FALSE ;
+        if ($this->has('journal') && (strcasecmp($this->get('journal'), $value) === 0)) return FALSE ;
         return $this->add($param_name, wikify_external_text($value));
         return FALSE;
       case 'chapter': case 'contribution':
