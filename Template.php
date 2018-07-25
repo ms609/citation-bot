@@ -113,8 +113,8 @@ final class Template {
         $this->forget('year');
         $this->expand_by_doi();
         if ($this->blank('year') && $this->blank('date')) {
-          if ($saved_date) $this->add('date',$saved_date);
-          if ($saved_year) $this->add('year',$saved_year);
+          if ($saved_date) $this->add('date', $saved_date);
+          if ($saved_year) $this->add('year', $saved_year);
         }
 
         $this->tidy();
