@@ -752,6 +752,12 @@ ER -  }}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('405–554', $expanded->get('pages'));
  }
+    
+ public function testHDL() {
+     $text = '{{cite journal | pmid = 14527634 | doi = 10.1016/S1095-6433(02)00368-9 }}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('10397/34754', $expanded->get('hdl'));
+ }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
