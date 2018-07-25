@@ -89,8 +89,12 @@ final class Template {
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->tidy();
-        if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('arxiv')) {
+        if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('doi')) {
           $this->name = 'Cite journal';
+          $this->process();
+        } elseif ($this->has('arxiv')) {
+          $this->name = 'Cite arxiv';
+          $this->rename('arxiv','eprint');
           $this->process();
         } elseif ($this->has('eprint')) {
           $this->name = 'Cite arxiv';
@@ -102,7 +106,17 @@ final class Template {
         $this->citation_template = TRUE;
         $this->use_unnamed_params();
         $this->expand_by_arxiv();
+
+        $saved_date = $this->get('date');// Forget dates so that DOI can update with publication date, not ARXIV date
+        $saved_year = $this->get('year');
+        $this->forget('date');
+        $this->forget('year');
         $this->expand_by_doi();
+        if ($this->blank('year') && $this->blank('date')) {
+          if ($saved_date) $this->add('date', $saved_date);
+          if ($saved_year) $this->add('year', $saved_year);
+        }
+
         $this->tidy();
         if ($this->has('journal')) {
           $this->name = 'Cite journal';

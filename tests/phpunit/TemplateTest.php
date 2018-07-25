@@ -110,6 +110,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('class'));
     $this->assertNull($expanded->get('eprint'));
     $this->assertNull($expanded->get('publisher'));
+      
+    $text = '{{Cite arxiv |eprint=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('2018', $expanded->get('year'));
   }
   
   public function testAmazonExpansion() {
