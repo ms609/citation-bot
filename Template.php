@@ -195,7 +195,8 @@ final class Template {
           }
         }
         // Sometimes series and journal come from different databases
-        if ($this->has('series') && $this->has('journal') && (strcasecmp($this->get('series'),$this->get('journal')) === 0)) {  // Leave only one
+        if ($this->has('series') && $this->has('journal') &&
+            (strcasecmp($this->get('series'), $this->get('journal')) === 0)) {  // Leave only one
           if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
               $this->forget('journal');
           } elseif ($this->wikiname() === 'cite journal') {
