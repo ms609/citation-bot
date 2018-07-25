@@ -143,7 +143,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{Cite web | Journal=My Journal| issn=1234-4321 | publisher=Unwarranted }}";
     $expanded = $this->process_citation($text);
     // ISSN is removed when journal is added.  Is this the desired behaviour? ##TODO!
-    $this->assertEquals('{{Cite journal| journal=My Journal}}', $expanded->parsed_text());
+    $this->assertEquals('{{Cite journal| journal=My Journal | publisher=Unwarranted }}', $expanded->parsed_text());
   }
   
   public function testJournalCapitalization() {
@@ -357,7 +357,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testErrantAuthor() {
     $text = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals($text, $expanded->parsed_text());
+    $text2 = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340|publisher=Hearst Magazines}}';
+    $this->assertEquals($text2, $expanded->parsed_text());
   }
   
   public function testLongAuthorLists() {
