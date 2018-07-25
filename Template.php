@@ -737,7 +737,7 @@ final class Template {
           if (is_null($url_sent)) {
              $this->forget('url');
           }
-          if (preg_match("~\bweb\b", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('hdl', $match[1]);
       }
     }
