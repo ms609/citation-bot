@@ -209,7 +209,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testOpenAccessLookup() {
-    $text = '{{citr journal|doi=10.1206/0003-0082(2008)3610[1:nrofwf]2.0.co;2}}';
+    $text = '{{cite journal|doi=10.1206/0003-0082(2008)3610[1:nrofwf]2.0.co;2}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url')); // current gives dead url 
       
