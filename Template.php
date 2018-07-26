@@ -113,7 +113,7 @@ final class Template {
         $this->expand_by_doi();
         if ($this->blank('year') && $this->blank('date')) {
             $this->rename('CITATION_BOT_date', 'date');
-            $this->rename('CITATION_BOT_year', 'date');
+            $this->rename('CITATION_BOT_year', 'year');
         } else {
             $this->forget('CITATION_BOT_year');
             $this->forget('CITATION_BOT_date');        
