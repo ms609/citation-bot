@@ -697,6 +697,7 @@ ER -  }}';
        $text = '{{cite book |isbn=0471186368}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Explosives engineering',$expanded->get('title'));
+       $this->assertNull($expanded->get('url'));
    }
     
    public function testJustAnOCLC() {
