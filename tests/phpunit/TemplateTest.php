@@ -132,6 +132,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-981-10-3179-3', $expanded->get('isbn'));
   }
+    
+  public funciton testSeriesIsJournal() {
+    $text = '{{citation | series = Annals of the New York Academy of Sciences| doi = 10.1111/j.1749-6632.1979.tb32775.x}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('journal')); // Doi returns exact same name for journal as series
+  }
   
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
