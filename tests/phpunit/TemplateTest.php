@@ -212,6 +212,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|doi=10.1206/0003-0082(2008)3610[1:nrofwf]2.0.co;2}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url')); // current gives dead url 
+    $this->asserEquals('2008',$expanded->get('year')); // DOI does work though
       
     $text = '{{cite journal|doi=10.1136/bmj.327.7429.1459}}';
     $expanded = $this->process_citation($text);
