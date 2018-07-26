@@ -214,6 +214,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('url')); // current gives dead url 
     $this->assertEquals('2008',$expanded->get('year')); // DOI does work though
       
+    $text = '{{cite journal | vauthors = Bjelakovic G, Nikolova D, Gluud LL, Simonetti RG, Gluud C | title = Antioxidant supplements for prevention of mortality in healthy participants and patients with various diseases | journal = The Cochrane Database of Systematic Reviews | volume = 3 | issue = 3 | pages = CD007176 | date = 14 March 2012 | pmid = 22419320 | doi = 10.1002/14651858.CD007176.pub2 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get('url')); // currently gives a url 
+      
     $text = '{{cite journal|doi=10.1136/bmj.327.7429.1459}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('300808', $expanded->get('pmc'));
