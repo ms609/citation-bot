@@ -1522,6 +1522,12 @@ final class Template {
         }
         $this->add_if_new('url', $best_location->url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
+          $headers_test = @get_headers($this->get('url'), 1);
+          if($headers_test !==FALSE && empty($headers_test['Location'])) {
+            $this->forget('url');
+            echo "\n   !  Open access URL was invalid from oiDOI API for doi: " . htmlspecialchars($doi);
+            return FALSE;
+          }
           switch ($best_location->version) {
             case 'acceptedVersion': $format = 'Accepted manuscript'; break;
             case 'submittedVersion': $format = 'Submitted manuscript'; break;
