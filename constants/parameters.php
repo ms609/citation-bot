@@ -271,7 +271,7 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EIS
  'ignoreisbnerror', 'ignore-isbn-error', 'in', 'inset', 'institution', 'interviewer', 'interviewers',
  'interviewer-mask', 'interviewerlink','interviewermask', 'interviewer-first', 'interviewer-last','interviewer-link',
  'isbn', 'isbn13', 'ismn', 'issn', 'issue', 'jfm', 'journal', 'jstor', 'jstor-access', 'language', 'last',
- 'lastauthoramp', 'laydate', 'laysource', 'laysummary', 'layurl', 'lccn', 'location',
+ 'lastauthoramp', 'last-author-amp', 'laydate', 'laysource', 'laysummary', 'layurl', 'lccn', 'location',
  'magazine', 'mailing-list', 'mailinglist', 'map', 'map-format', 'map-url',
  'mapurl', 'medium', 'message-id', 'minutes', 'mode', 'month', 'mr', 'name-separator',
  'network', 'newsgroup', 'newspaper', 'nocat', 'no-cat', 
