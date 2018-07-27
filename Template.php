@@ -1929,7 +1929,8 @@ final class Template {
             )
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
-        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
+        // Reject it if it is from the "bad" list
+        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match) && in_array($closest,$parameter_list_good)) {
           $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
