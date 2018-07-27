@@ -273,3 +273,4 @@ const PARAMETER_LIST_SUBSTIUTABLE = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE'
  'interviewer##', 'interviewer##-first', 'interviewer##-last', 'interviewer##-link', 'interviewer##-mask', 'interviewer-first##', 'interviewer-last##', 'interviewer-link##', 'interviewer-mask##', 
  );
 
+const PARAMETER_LIST_NOT_SUBSTIUTABLE = array();
