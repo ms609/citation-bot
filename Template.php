@@ -1874,7 +1874,9 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list = PARAMETER_LIST;
+      $parameter_list_good = PARAMETER_LIST_SUBSTIUTABLE;
+      $parameter_list_bad  = PARAMETER_LIST_NOT_SUBSTIUTABLE;
+      $parameter_list = array_combine($parameter_list_good,$parameter_list_bad);
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
@@ -2094,7 +2096,9 @@ final class Template {
       $parameters_used[] = $p->param;
     }
   }
-  $parameter_list = PARAMETER_LIST;
+  $parameter_list_good = PARAMETER_LIST_SUBSTIUTABLE;
+  $parameter_list_bad  = PARAMETER_LIST_NOT_SUBSTIUTABLE;
+  $parameter_list = array_combine($parameter_list_good,$parameter_list_bad);
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
   $i = 0; // FIXME: this would be better as a proper for loop rather than foreach with counter
