@@ -20,9 +20,6 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
                                "na", "submitted", "tbd", "missing");
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript");
-
-
-
 const SICI_REGEXP = "~(\d{4}-\d{3}[\dxX])" . // ISSN
                     "\((\d{4})(\d{2})?/?(\d{2})?\)" . // Chronology, YY MM DD
                     "(\d+):?([\+\d]*)" . // Enumeration: Volume / issue
