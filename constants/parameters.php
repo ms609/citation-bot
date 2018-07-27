@@ -241,7 +241,7 @@ const PARAMETER_LIST_SUBSTIUTABLE = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE'
  'magazine', 'mailing-list', 'mailinglist', 'map', 'map-format', 'map-url',
  'mapurl', 'medium', 'message-id', 'minutes', 'mode', 'month', 'mr', 'name-separator',
  'network', 'newsgroup', 'newspaper', 'nocat', 'no-cat', 
- 'nopp', 'notracking', 'no-tracking', 'notestitle', 'number', 'oclc', 'ol', 'ol-access', 'origyear', 'osti', 'osti-access', 'others',
+ 'nopp', 'notracking', 'no-tracking', 'notestitle', 'number', 'oclc', 'ol', 'ol-access', 'origyear', 'orig-year', 'osti', 'osti-access', 'others',
  'p', 'page', 'pages', 'people', 'periodical', 'place', 'pmc', 'pmc-embargo-date', 'pmid', 
  'postscript', 'pp','p-prefix',
  'pp-prefix', 'program', 'publicationdate', 'publication-date', 'publicationplace',
