@@ -1880,14 +1880,16 @@ final class Template {
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
-          $parameter_value = trim(substr($dat, strlen($match[1])));
-          quiet_echo("\n   + Found $parameter floating around in template; converted to parameter");
-          if (!$param_recycled) {
-            $this->param[$param_key]->param = $parameter;
-            $this->param[$param_key]->val = $parameter_value;
-            $param_recycled = TRUE;
-          } else {
-            $this->add($parameter, $parameter_value);
+          if (in_array($parameter,$parameter_list_good)) { // Only add Good ones
+            $parameter_value = trim(substr($dat, strlen($match[1])));
+            quiet_echo("\n   + Found $parameter floating around in template; converted to parameter");
+            if (!$param_recycled) {
+              $this->param[$param_key]->param = $parameter;
+              $this->param[$param_key]->val = $parameter_value;
+              $param_recycled = TRUE;
+            } else {
+              $this->add($parameter, $parameter_value);
+            }
           }
           break;
         }
@@ -2156,16 +2158,18 @@ final class Template {
         $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
       
-      if ($shortest < 12 && $shortest < $shortish) {
-        $p->param = $closest;
-        echo " replaced with $closest (likelihood " . (24 - $shortest) . "/24)"; // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
-      } else {
-        $similarity = similar_text($p->param, $closest) / strlen($p->param);
-        if ($similarity > 0.6) {
+      if (in_array($closest,$parameter_list_good)) { // Only add Good ones
+        if ($shortest < 12 && $shortest < $shortish) {
           $p->param = $closest;
-          echo " replaced with $closest (similarity " . (round(2 * 12 * $similarity, 1)) . "/24)"; // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
+          echo " replaced with $closest (likelihood " . (24 - $shortest) . "/24)"; // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
         } else {
-          echo " could not be replaced with confidence.  Please check the citation yourself.";
+          $similarity = similar_text($p->param, $closest) / strlen($p->param);
+          if ($similarity > 0.6) {
+            $p->param = $closest;
+            echo " replaced with $closest (similarity " . (round(2 * 12 * $similarity, 1)) . "/24)"; // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
+          } else {
+            echo " could not be replaced with confidence.  Please check the citation yourself.";
+          }
         }
       }
     }
