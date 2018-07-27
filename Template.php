@@ -107,14 +107,16 @@ final class Template {
         $this->use_unnamed_params();
         $this->expand_by_arxiv();
 
-        $saved_date = $this->get('date');// Forget dates so that DOI can update with publication date, not ARXIV date
-        $saved_year = $this->get('year');
-        $this->forget('date');
-        $this->forget('year');
+        // Forget dates so that DOI can update with publication date, not ARXIV date
+        $this->rename('date', 'CITATION_BOT_date');
+        $this->rename('year', 'CITATION_BOT_year');
         $this->expand_by_doi();
         if ($this->blank('year') && $this->blank('date')) {
-          if ($saved_date) $this->add('date', $saved_date);
-          if ($saved_year) $this->add('year', $saved_year);
+            $this->rename('CITATION_BOT_date', 'date');
+            $this->rename('CITATION_BOT_year', 'year');
+        } else {
+            $this->forget('CITATION_BOT_year');
+            $this->forget('CITATION_BOT_date');        
         }
 
         $this->tidy();
