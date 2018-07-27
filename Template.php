@@ -1149,7 +1149,7 @@ final class Template {
       }
       $crossRef = $this->query_crossref($doi);
       if ($crossRef) {
-        if( in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES) === TRUE) return FALSE ;
+        if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES) === TRUE) return FALSE ;
         echo "\n - Expanding from crossRef record" . tag();
 
         if ($crossRef->volume_title && $this->blank('journal')) {
