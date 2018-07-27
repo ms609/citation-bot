@@ -2105,7 +2105,7 @@ final class Template {
   foreach ($this->param as $p) {
     ++$i;
 
-    if ((strlen($p->param) > 0) && !in_array($p->param, PARAMETER_LIST)) {
+    if ((strlen($p->param) > 0) && !in_array($p->param, $parameter_list)) {
      
       echo "\n   * Unrecognised parameter " . htmlspecialchars($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
