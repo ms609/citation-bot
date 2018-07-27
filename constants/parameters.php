@@ -257,7 +257,7 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EIS
  'author-name-separator', 'authors', 'author-separator', 'began',
  'bibcode-access', 'bibcode', 'biorxiv', 'booktitle', 'callsign',
  'cartography', 'chapter', 'chapter-format', 'chapterformat', 'chapterlink', 'chapterurl', 'chapter-url', 
- 'citeseerx', 'city', 'class', 'cointerviewers', 'collaboration', 'conference','conference-format',
+ 'citeseerx', 'city', 'class', 'coauthor', 'coauthors' 'cointerviewers', 'collaboration', 'conference','conference-format',
  'conferenceurl', 'conference-url', 'contribution', 'contribution-format', 'contributionurl',
  'credits', 'contribution-url', 'date',
  'deadurl', 'dead-url', 'degree', 'department', 'df', 'dictionary', 'director', 'displayauthors', 'display-authors',
