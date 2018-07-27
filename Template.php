@@ -1874,8 +1874,26 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list_good = PARAMETER_LIST_SUBSTIUTABLE;
-      $parameter_list_bad  = PARAMETER_LIST_NOT_SUBSTIUTABLE;
+      $parameter_list_good = array();
+      foreach (PARAMETER_LIST_SUBSTITUTABLE as $parameter ) {
+        if (strpos($parameter, '##') !== false) {
+           for( $i = 1; $i<100; $i++ ) {
+             $parameter_list_good[] = str_replace('##', strval($i), $parameter);
+           }
+        } else {
+          $parameter_list_good[] = $parameter ;
+        }
+      }
+      $parameter_list_bad = array();
+      foreach (PARAMETER_LIST_NOT_SUBSTITUTABLE as $parameter ) {
+        if (strpos($parameter, '##') !== false) {
+           for( $i = 1; $i<100; $i++ ) {
+             $parameter_list_bad[] = str_replace('##', strval($i), $parameter);
+           }
+        } else {
+          $parameter_list_bad[] = $parameter ;
+        }
+      }
       $parameter_list = array_merge($parameter_list_good,$parameter_list_bad);
       
       foreach ($parameter_list as $parameter) {
@@ -2099,9 +2117,29 @@ final class Template {
       $parameters_used[] = $p->param;
     }
   }
-  $parameter_list_good = PARAMETER_LIST_SUBSTIUTABLE;
-  $parameter_list_bad  = PARAMETER_LIST_NOT_SUBSTIUTABLE;
-  $parameter_list = array_merge($parameter_list_good,$parameter_list_bad);
+  
+      $parameter_list_good = array();
+      foreach (PARAMETER_LIST_SUBSTITUTABLE as $parameter ) {
+        if (strpos($parameter, '##') !== false) {
+           for( $i = 1; $i<100; $i++ ) {
+             $parameter_list_good[] = str_replace('##', strval($i), $parameter);
+           }
+        } else {
+          $parameter_list_good[] = $parameter ;
+        }
+      }
+      $parameter_list_bad = array();
+      foreach (PARAMETER_LIST_NOT_SUBSTITUTABLE as $parameter ) {
+        if (strpos($parameter, '##') !== false) {
+           for( $i = 1; $i<100; $i++ ) {
+             $parameter_list_bad[] = str_replace('##', strval($i), $parameter);
+           }
+        } else {
+          $parameter_list_bad[] = $parameter ;
+        }
+      }
+      $parameter_list = array_merge($parameter_list_good,$parameter_list_bad);
+  
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
   $i = 0; // FIXME: this would be better as a proper for loop rather than foreach with counter
