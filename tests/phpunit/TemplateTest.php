@@ -577,6 +577,11 @@ ER -  }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
   }
+  public function testCapsAfterColonAndPeriod() {
+      $text = '{{Cite journal |journal=Historical Biology: An International Journal. Of Paleobiology}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Historical Biology: An International Journal. Of Paleobiology', $expanded->get('journal'));
+  }  
   public function testExistingWikiText() { // checks for formating in tidy() not breaking things
       $text = '{{cite journal|title=[[Zootimeboys]] and Girls|journal=[[Zootimeboys]] and Girls}}';
       $expanded = $this->process_citation($text);
