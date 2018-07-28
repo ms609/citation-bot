@@ -1874,40 +1874,27 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list_good = array();
-      foreach (PARAMETER_LIST_SUBSTITUTABLE as $parameter ) {
+      $parameter_list = array();
+      foreach (PARAMETER_LIST as $parameter ) {
         if (strpos($parameter, '##') !== false) {
            for( $i = 1; $i<100; $i++ ) {
-             $parameter_list_good[] = str_replace('##', strval($i), $parameter);
+             $parameter_list[] = str_replace('##', strval($i), $parameter);
            }
         } else {
-          $parameter_list_good[] = $parameter ;
+          $parameter_list[] = $parameter ;
         }
       }
-      $parameter_list_bad = array();
-      foreach (PARAMETER_LIST_NOT_SUBSTITUTABLE as $parameter ) {
-        if (strpos($parameter, '##') !== false) {
-           for( $i = 1; $i<100; $i++ ) {
-             $parameter_list_bad[] = str_replace('##', strval($i), $parameter);
-           }
-        } else {
-          $parameter_list_bad[] = $parameter ;
-        }
-      }
-      $parameter_list = array_merge($parameter_list_good,$parameter_list_bad);
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
-          if (in_array($parameter,$parameter_list_good)) { // Only add Good ones
-            $parameter_value = trim(substr($dat, strlen($match[1])));
-            quiet_echo("\n   + Found $parameter floating around in template; converted to parameter");
-            if (!$param_recycled) {
-              $this->param[$param_key]->param = $parameter;
-              $this->param[$param_key]->val = $parameter_value;
-              $param_recycled = TRUE;
-            } else {
-              $this->add($parameter, $parameter_value);
-            }
+          $parameter_value = trim(substr($dat, strlen($match[1])));
+          quiet_echo("\n   + Found $parameter floating around in template; converted to parameter");
+          if (!$param_recycled) {
+            $this->param[$param_key]->param = $parameter;
+            $this->param[$param_key]->val = $parameter_value;
+            $param_recycled = TRUE;
+          } else {
+            $this->add($parameter, $parameter_value);
           }
           break;
         }
@@ -1950,7 +1937,7 @@ final class Template {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         // Reject it if it is from the "bad" list
-        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match) && in_array($closest,$parameter_list_good)) {
+        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match) && in_array($closest,$parameter_list)) {
           $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
@@ -2118,27 +2105,17 @@ final class Template {
     }
   }
   
-      $parameter_list_good = array();
-      foreach (PARAMETER_LIST_SUBSTITUTABLE as $parameter ) {
+      $parameter_list = array();
+      foreach (PARAMETER_LIST as $parameter ) {
         if (strpos($parameter, '##') !== false) {
            for( $i = 1; $i<100; $i++ ) {
-             $parameter_list_good[] = str_replace('##', strval($i), $parameter);
+             $parameter_list[] = str_replace('##', strval($i), $parameter);
            }
         } else {
-          $parameter_list_good[] = $parameter ;
+          $parameter_list[] = $parameter ;
         }
       }
       $parameter_list_bad = array();
-      foreach (PARAMETER_LIST_NOT_SUBSTITUTABLE as $parameter ) {
-        if (strpos($parameter, '##') !== false) {
-           for( $i = 1; $i<100; $i++ ) {
-             $parameter_list_bad[] = str_replace('##', strval($i), $parameter);
-           }
-        } else {
-          $parameter_list_bad[] = $parameter ;
-        }
-      }
-      $parameter_list = array_merge($parameter_list_good,$parameter_list_bad);
   
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
@@ -2196,7 +2173,7 @@ final class Template {
         $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
       
-      if (in_array($closest,$parameter_list_good)) { // Only add Good ones
+      if (in_array($closest,$parameter_list)) {
         if ($shortest < 12 && $shortest < $shortish) {
           $p->param = $closest;
           echo " replaced with $closest (likelihood " . (24 - $shortest) . "/24)"; // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
