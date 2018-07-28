@@ -1937,7 +1937,7 @@ final class Template {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         // Reject it if it is from the "bad" list
-        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match) && in_array($closest,$parameter_list)) {
+        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match))) {
           $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
@@ -2173,18 +2173,15 @@ final class Template {
         $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
       
-      if (in_array($closest,$parameter_list)) {
-        if ($shortest < 12 && $shortest < $shortish) {
+
+      if ($shortest < 12 && $shortest < $shortish) {
+        $p->param = $closest;
+        echo " replaced with $closest (likelihood " . (24 - $shortest) . "/24)"; // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarit        } else {
+        $similarity = similar_text($p->param, $closest) / strlen($p->param);
+        if ($similarity > 0.6) {
           $p->param = $closest;
-          echo " replaced with $closest (likelihood " . (24 - $shortest) . "/24)"; // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
-        } else {
-          $similarity = similar_text($p->param, $closest) / strlen($p->param);
-          if ($similarity > 0.6) {
-            $p->param = $closest;
-            echo " replaced with $closest (similarity " . (round(2 * 12 * $similarity, 1)) . "/24)"; // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
-          } else {
-            echo " could not be replaced with confidence.  Please check the citation yourself.";
-          }
+          echo " replaced with $closest (similarity " . (round(2 * 12 * $similarity, 1)) . "/24)"; // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity         } else {
+          echo " could not be replaced with confidence.  Please check the citation yourself.";
         }
       }
     }
