@@ -211,7 +211,7 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
 // that information can also be presented using the generic {{citation}} template, which we do modify.
 // This list even includes items that are no longer supported, since we need to leave fixing them to humans
-const PARAMETER_LIST_SUBSTITUTABLE = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EISSN', 'HDL', 'ID',
+const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EISSN', 'HDL', 'ID',
 'ISBN', 'ISBN13', 'ISMN', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR', 'OCLC', 'OL', 'OSTI', 'PMC', 'PMID',
 'RFC', 'SSRN', 'URL', 'ZBL', 'Author', 'DoiBroken', 'Editor', 'EditorGiven', 'EditorSurname',
  'Embargo', 'PPPrefix', 'PPrefix', 'Ref', 'Author##', 'Editor##', 'EditorGiven##',
@@ -272,5 +272,3 @@ const PARAMETER_LIST_SUBSTITUTABLE = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE
  'translator##-last', 'translator##-first',
  'interviewer##', 'interviewer##-first', 'interviewer##-last', 'interviewer##-link', 'interviewer##-mask', 'interviewer-first##', 'interviewer-last##', 'interviewer-link##', 'interviewer-mask##', 
  );
-
-const PARAMETER_LIST_NOT_SUBSTITUTABLE = array();
