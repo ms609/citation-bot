@@ -55,7 +55,7 @@ const JOURNAL_ACRONYMS = array(
 ' z/Journal ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ',
 ' ZooKeys ', ' Journal of the IEST ', ' Tellus A ', ' Zeitschrift für Geologische Wissenschaften ', ' Journal of Materials Chemistry A ',
 ' BioEssays ', ' PLOS Biology ', ' RNA ',
-' NASA Tech Briefs ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', ' JAMA Psychiatry ', ' IFAC-PapersOnLine ', ' Historical Biology: an International Journal of Paleobiology ');
+' NASA Tech Briefs ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', ' JAMA Psychiatry ', ' IFAC-PapersOnLine ', ' Historical Biology: An International Journal of Paleobiology ');
 const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Acm Sigplan Notices ', ' Asme Aes ', ' Asme Mtd ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
 ' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', ' Embo J ', ' Embo J. ', ' Embo Journal ', 
@@ -66,5 +66,5 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ',
 ' Zookeys ', ' Journal Of The Iest ', ' Tellus A ', ' Zeitschrift Für Geologische Wissenschaften ', ' Journal Of Materials Chemistry A ',
 ' Bioessays ', ' Plos Biology ', ' Rna ',
-' Nasa Tech Briefs ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', ' Jama Psychiatry ', ' Ifac-Papersonline ', ' Historical Biology: An International Journal of Paleobiology ');
+' Nasa Tech Briefs ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', ' Jama Psychiatry ', ' Ifac-Papersonline ', ' Historical Biology: an International Journal Of Paleobiology ');
  
