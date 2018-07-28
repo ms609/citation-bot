@@ -2114,7 +2114,6 @@ final class Template {
           $parameter_list[] = $parameter ;
         }
       }
-      $parameter_list_bad = array();
   
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
@@ -2172,7 +2171,6 @@ final class Template {
         $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
       
-
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
         echo " replaced with $closest (likelihood " . (24 - $shortest) . "/24)"; // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
