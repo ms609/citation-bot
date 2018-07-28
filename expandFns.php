@@ -198,18 +198,18 @@ function title_capitalization($in, $caps_after_punctuation = TRUE) {
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentance ends
     // We should therefore capitalize after each punctuation character.
-    $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~" /* Capitalise after punctuation */,
+    $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~uU" /* Capitalise after punctuation */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
   }
   
   $new_case = preg_replace_callback(
-    "~\w{2}'[A-Z]\b~" /* Lowercase after apostrophes */, 
+    "~\w{2}'[A-Z]\b~uU" /* Lowercase after apostrophes */, 
     create_function('$matches', 'return mb_strtolower($matches[0]);'),
     trim($new_case)
   );
   // Solitary 'a' should be lowercase
-  $new_case = preg_replace("~(\w\s+)A(\s+\w)~", "$1a$2", $new_case);
+  $new_case = preg_replace("~(\w\s+)A(\s+\w)~uU", "$1a$2", $new_case);
   
   // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
