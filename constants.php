@@ -66,5 +66,5 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ',
 ' Zookeys ', ' Journal Of The Iest ', ' Tellus A ', ' Zeitschrift Für Geologische Wissenschaften ', ' Journal Of Materials Chemistry A ',
 ' Bioessays ', ' Plos Biology ', ' Rna ',
-' Nasa Tech Briefs ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', ' Jama Psychiatry ', ' Ifac-Papersonline ', ' Historical Biology: an International Journal Of Paleobiology ');
+' Nasa Tech Briefs ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', ' Jama Psychiatry ', ' Ifac-Papersonline ', ' Historical Biology: An International Journal Of Paleobiology ');
  
