@@ -6,7 +6,7 @@ Pulling <a href="https://github.com/ms609/citation-bot">latest Git repo</a>:
 exec ("git pull", $output, $return_var);
 ?>
 <pre>
-<?php foreach($line in $output) print "$line \n"; ?>
+<?php foreach($output as $line) print "$line \n"; ?>
 </pre>
 <?php if ($return_var) {
   echo "Returned error code $return_var";
