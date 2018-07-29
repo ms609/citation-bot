@@ -12,12 +12,11 @@ matrix:
       - composer require mediawiki/oauthclient
     - php: 7.0
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
+      after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6
       script: phpunit --bootstrap expandFns.php tests/phpunit
     - stage: deploy
-      name: "Generate code coverage report"
-      script: bash <(curl -s https://codecov.io/bash)
-    - name: "Update WMFlabs servers"
+      name: "Update WMFlabs servers"
       if: branch = master AND !env(TRAVIS_PULL_REQUEST)
       script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
       if: branch = development AND !env(TRAVIS_PULL_REQUEST)
