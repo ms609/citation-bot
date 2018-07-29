@@ -8,7 +8,7 @@ language: php
 matrix:
   include:
     - stage: test    
-    before_script:  
+    - before_script:  
       - travis_retry composer self-update
       - composer require mediawiki/oauthclient
     - php: 7.0
