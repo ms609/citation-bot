@@ -12,10 +12,12 @@ before_script:
 matrix:
   include:
     - php: 7.0
-      script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
+      #script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
+      script: bash <(echo "Hullo 7.0")
       after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6
-      script: phpunit --bootstrap expandFns.php tests/phpunit
+      script: bash <(echo "Hullo 5.6")
+      #script: phpunit --bootstrap expandFns.php tests/phpunit
     - stage: deploy
       name: "Update WMFlabs servers"
       before_script: skip
