@@ -736,7 +736,7 @@ ER -  }}';
        $text = '{{cite book | oclc=9334453}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport',$expanded->get('title'));
-    }
+    });
    }
 
  public function testJustAnLCCN() {
@@ -744,7 +744,7 @@ ER -  }}';
       $text = '{{cite book | lccn=2009925036}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
-    }
+    });
   }
     
  public function testEmptyCitations() {
