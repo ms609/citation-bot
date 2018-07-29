@@ -2262,11 +2262,10 @@ final class Template {
                     " parameter" . tag());
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
-            if ( ($pmatch[1] !== 'issue') && (substr_count($p->val, "–") === 1) && (stripos($p->val, "http") === FALSE)) { // Exactly one EN_DASH.  Do not change issue 3-3
-              $the_dash = mb_strpos($p->val, "–");
+            if ( ($pmatch[1] !== 'issue') && (mb_substr_count($p->val, "–") === 1) && (mb_stripos($p->val, "http") === FALSE)) { // Exactly one EN_DASH.  Do not change issue 3-3
+              $the_dash = mb_strpos($p->val, "–"); // ALL must be mb_ functions because of long dash
               $part1 = mb_substr($p->val, 0, $the_dash);
               $part2 = mb_substr($p->val, $the_dash + 1);
-              echo ' DEBUG ' . $p->val . '   ' .   $part1  . '  '  . $part2 . ' ';
               if ($part1 === $part2) {
                 $p->val = $part1;
               }
