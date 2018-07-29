@@ -11,7 +11,7 @@ before_script:
 matrix:
   include:
     - stage: test    
-    - php: 7.0
+      php: 7.0
       #script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
       script: echo "Hullo 7.0"
       after_success: bash <(curl -s https://codecov.io/bash)
