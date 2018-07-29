@@ -17,9 +17,12 @@ matrix:
     - stage: deploy
       name: "Update WMFlabs servers"
       if: branch = master
-      script: bash <(wget -O- https://tools.wmflabs.org/citations/gitpull.php)
+      script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
       if: branch = development
-      script: bash <(wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
+      script: 
+        - bash <(echo wget https://tools.wmflabs.org/citations-dev/gitpull.php)
+        - bash <(echo wget -O https://tools.wmflabs.org/citations-dev/gitpull.php)
+        - bash <(echo wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
 
 git:
   depth: 3
