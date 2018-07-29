@@ -21,7 +21,6 @@ matrix:
       if: branch = development
       script: 
         - bash <(echo wget https://tools.wmflabs.org/citations-dev/gitpull.php)
-        - bash <(echo wget -O https://tools.wmflabs.org/citations-dev/gitpull.php)
         - bash <(echo wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
 
 git:
