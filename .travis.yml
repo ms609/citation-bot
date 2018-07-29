@@ -11,10 +11,9 @@ matrix:
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
     - php: 5.6
       script: phpunit --bootstrap expandFns.php tests/phpunit
-    - stage: codecov
+    - stage: deploy
       name: "Generate code coverage report"
       script: bash <(curl -s https://codecov.io/bash)
-    - stage: deploy
       name: "Update WMFlabs servers"
       if: branch = master
       script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
