@@ -13,6 +13,9 @@ matrix:
       script: phpunit --bootstrap expandFns.php tests/phpunit
     - stage: codecov
       script: bash <(curl -s https://codecov.io/bash)
+    - stage: update-server
+        if: branch = master
+        script: wget https://tools.wmflabs.org/citations/gitpull.php
 
 git:
   depth: 3
