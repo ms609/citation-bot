@@ -2262,11 +2262,17 @@ final class Template {
                     " parameter" . tag());
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
+            echo ("\ n DEBUG ", $p->val);
+            echo ("\ n DEBUG ", substr_count($p->val, "–"));
             if ( ($pmatch[1] !== 'issue') && (substr_count($p->val, "–") === 1) && (stripos($p->val, "http") === FALSE)) { // Exactly one EN_DASH.  Do not change issue 3-3
               preg_match("~(.+)–~" , $p->val, $part1);
+              echo ("\ n DEBUG ", $part1[0]);
               $part1[0] = substr($part1[0], 0, -1); // Remove ending dash
+              echo ("\ n DEBUG ", $part1[0]);
               preg_match("~–(.+)~" , $p->val, $part2);
+              echo ("\ n DEBUG ", $part2[0]);
               $part2[0] = substr($part2[0], 1); // Remove starting dash
+              echo ("\ n DEBUG ", $part2[0]);
               if ($part1[0] === $part2[0]) {
                 $p->val = $part1[0];
               }
