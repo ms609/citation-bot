@@ -2273,8 +2273,8 @@ final class Template {
             }
             break;
           case 'coauthor': case 'coauthors':  // Commonly left there and empty
-            if ($this->empty('coauthor')) $this->forget('coauthor');
-            if ($this->empty('coauthors')) $this->forget('coauthors');
+            if ($this->blank('coauthor')) $this->forget('coauthor');
+            if ($this->blank('coauthors')) $this->forget('coauthors');
             break;
           case 'isbn':
             $p->val = $this->isbn10Toisbn13($p->val);
