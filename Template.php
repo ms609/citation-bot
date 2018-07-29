@@ -2266,7 +2266,7 @@ final class Template {
               $the_dash = mb_strpos($p->val, "–");
               $part1 = mb_substr($p->val, 0, $the_dash);
               $part2 = mb_substr($p->val, $the_dash + 1);
-              echo '\n DEBUG ' . $p->val . '   ' .   $part1  '  '  . $part2 . ' ';
+              echo ' DEBUG ' . $p->val . '   ' .   $part1  . '  '  . $part2 . ' ';
               if ($part1 === $part2) {
                 $p->val = $part1;
               }
