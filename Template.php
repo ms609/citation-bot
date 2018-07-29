@@ -89,7 +89,7 @@ final class Template {
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->tidy();
-        if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('doi')) {
+        if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('doi') || $this->has('pmid') || $this->has('pmc')) {
           $this->name = 'Cite journal';
           $this->process();
         } elseif ($this->has('arxiv')) {
@@ -107,14 +107,16 @@ final class Template {
         $this->use_unnamed_params();
         $this->expand_by_arxiv();
 
-        $saved_date = $this->get('date');// Forget dates so that DOI can update with publication date, not ARXIV date
-        $saved_year = $this->get('year');
-        $this->forget('date');
-        $this->forget('year');
+        // Forget dates so that DOI can update with publication date, not ARXIV date
+        $this->rename('date', 'CITATION_BOT_date');
+        $this->rename('year', 'CITATION_BOT_year');
         $this->expand_by_doi();
         if ($this->blank('year') && $this->blank('date')) {
-          if ($saved_date) $this->add('date', $saved_date);
-          if ($saved_year) $this->add('year', $saved_year);
+            $this->rename('CITATION_BOT_date', 'date');
+            $this->rename('CITATION_BOT_year', 'year');
+        } else {
+            $this->forget('CITATION_BOT_year');
+            $this->forget('CITATION_BOT_date');        
         }
 
         $this->tidy();
@@ -220,7 +222,7 @@ final class Template {
     }
     if ($this->citation_template) {
       $this->correct_param_spelling();
-      $this->check_url();
+      // $this->check_url(); // Function currently disabled
     }
   }
 
@@ -641,16 +643,24 @@ final class Template {
     
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
-      if (strpos($url, "sici")) {  //  Outdated url style
-        $this->use_sici();         // Grab what we can before getting rid off it
-        $headers_test = @get_headers($url, 1);
-        if($headers_test !==FALSE && !empty($headers_test['Location']) && strpos($headers_test['Location'], "jstor.org/stable/")) {
-          $url = $headers_test['Location']; // Redirect
-          if (is_null($url_sent)) {
-            $this->set('url', $url); // Save it
+      $sici_pos = strpos($url, "sici");
+      if ($sici_pos) {  //  Outdated url style
+        $this->use_sici(); // Grab what we can before getting rid off it
+        // Need to encode the sici bit that follows sici?sici= [10 characters]
+        $encoded_url = substr($url, 0, $sici_pos + 10) . urlencode(urldecode(substr($url, $sici_pos + 10)));
+        $ch = curl_init($encoded_url);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_NOBODY, 1);
+        if (curl_exec($ch)) {
+          $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+          if (strpos($redirect_url, "jstor.org/stable/")) {
+            $url = $redirect_url; 
+            if (is_null($url_sent)) {
+              $this->set('url', $url); // Save it
+            }
+          } else {
+            return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
           }
-        } else {
-          return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
         }
       }
       if (strpos($url, "plants.jstor.org")) {
@@ -2094,6 +2104,7 @@ final class Template {
       $parameters_used[] = $p->param;
     }
   }
+  
   $parameter_list = PARAMETER_LIST;
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
@@ -2101,7 +2112,7 @@ final class Template {
   foreach ($this->param as $p) {
     ++$i;
 
-    if ((strlen($p->param) > 0) && !in_array($p->param, PARAMETER_LIST)) {
+    if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '##', $p->param), $parameter_list)) {
      
       echo "\n   * Unrecognised parameter " . htmlspecialchars($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
@@ -2421,8 +2432,6 @@ final class Template {
       }
       echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
     }*/
-
-
   }
   
   /* function handle_et_al

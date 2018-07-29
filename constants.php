@@ -75,5 +75,4 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Rna ',
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' Tellus A ', ' The Embo Journal ', ' Time Out London ',
 ' Z/journal ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ',
-' Zookeys ', ' Zeitschrift Für Geologische Wissenschaften ');
- 
+' Zookeys ', ' Zeitschrift Für Geologische Wissenschaften '); 

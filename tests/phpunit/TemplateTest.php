@@ -22,6 +22,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   protected function tearDown() {
   }
   
+  protected function requires_secrets($function) {
+    if (getenv('TRAVIS_PULL_REQUEST')) {
+      echo "\n - Skipping test: Risks exposing secret keys";
+    } else {
+      $function();
+    }
+  }
+  
   protected function process_citation($text) {
     $page = new TestPage();
     $page->parse_text($text);
@@ -129,13 +137,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
   }
-    
-  public function testDoiMetaData() {
-    $text = "{{cite journal |doi= 10.1093/mnras/stx3343}}";
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('title')); // Some point this will start working, and the test will need removed. But it verifies patch for now
-  }
-  
+
   public function testDoiExpansionBook() {
     $text = "{{cite book|doi=10.1007/978-981-10-3180-9_1}}";
     $expanded = $this->process_citation($text);
@@ -633,13 +635,8 @@ ER -  }}';
    $url = "https://www.jstor.org/sici?sici=0003-0279(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
    $text = "{{Cite journal|url=$url}}";
    $expanded = $this->process_citation($text);
-   if (get_headers($url, 1)[0] == "HTTP/1.1 400 Bad Request") {
-     // Sometimes we don't get the redirect we hope for.
-    $this->assertNull($expanded->get('jstor'));
-   } else {
-    $this->assertEquals('594900', $expanded->get('jstor'));
-   }
-   $this->assertEquals('0003-0279', $expanded->get('issn'));
+     
+   $this->assertEquals('594900', $expanded->get('jstor'));
    $this->assertEquals('1961', $expanded->get('year'));
    $this->assertEquals('81', $expanded->get('volume'));
    $this->assertEquals('1', $expanded->get('issue'));
@@ -648,9 +645,9 @@ ER -  }}';
     
     
    public function testJstorSICIEncoded() {
-       $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('594900', $expanded->get('jstor'));
+     $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('594900', $expanded->get('jstor'));
    }
     
    public function getDateAndYear($input){
@@ -673,9 +670,11 @@ ER -  }}';
   }
    
   public function testBibcodeDotEnding() {
-     $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('1932Natur.129Q..18.', $expanded->get('bibcode'));
+    $this->requires_secrets(function() {
+      $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('1932Natur.129Q..18.', $expanded->get('bibcode'));
+    });
   }
 
    public function testConvertJournalToBook() {
@@ -722,15 +721,19 @@ ER -  }}';
    }
     
    public function testJustAnOCLC() {
+    $this->requires_secrets(function() {
        $text = '{{cite book | oclc=9334453}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport',$expanded->get('title'));
+    });
    }
 
  public function testJustAnLCCN() {
-    $text = '{{cite book | lccn=2009925036}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
+    $this->requires_secrets(function() {
+      $text = '{{cite book | lccn=2009925036}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
+    });
   }
     
  public function testEmptyCitations() {
