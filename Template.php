@@ -1159,7 +1159,7 @@ final class Template {
       }
       $crossRef = $this->query_crossref($doi);
       if ($crossRef) {
-        if (strtolower($crossRef->article_title) === 'oup accepted manuscript') return FALSE ; // OUP accepted manuscript is placeholder
+        if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
         echo "\n - Expanding from crossRef record" . tag();
 
         if ($crossRef->volume_title && $this->blank('journal')) {
