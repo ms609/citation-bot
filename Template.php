@@ -2265,9 +2265,7 @@ final class Template {
             if ( ($pmatch[1] !== 'issue') && (substr_count($p->val, "–") === 1) && (stripos($p->val, "http") === FALSE)) { // Exactly one EN_DASH.  Do not change issue 3-3
               $the_dash = strpos($p->val, "–");
               $part1 = substr($p->val, 0, $the_dash);
-              $part2 = substr($p->val, $the_dash);
-              echo '\n DEBUG ' . $part1 ;
-              echo '\n DEUGGY ' . $part2 ;
+              $part2 = substr($p->val, $the_dash + 1);
               if ($part1 === $part2) {
                 $p->val = $part1;
               }
