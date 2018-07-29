@@ -222,7 +222,7 @@ final class Template {
     }
     if ($this->citation_template) {
       $this->correct_param_spelling();
-      $this->check_url();
+      // $this->check_url(); // Function currently disabled
     }
   }
 
@@ -643,16 +643,24 @@ final class Template {
     
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
-      if (strpos($url, "sici")) {  //  Outdated url style
-        $this->use_sici();         // Grab what we can before getting rid off it
-        $headers_test = @get_headers($url, 1);
-        if($headers_test !==FALSE && !empty($headers_test['Location']) && strpos($headers_test['Location'], "jstor.org/stable/")) {
-          $url = $headers_test['Location']; // Redirect
-          if (is_null($url_sent)) {
-            $this->set('url', $url); // Save it
+      $sici_pos = strpos($url, "sici");
+      if ($sici_pos) {  //  Outdated url style
+        $this->use_sici(); // Grab what we can before getting rid off it
+        // Need to encode the sici bit that follows sici?sici= [10 characters]
+        $encoded_url = substr($url, 0, $sici_pos + 10) . urlencode(urldecode(substr($url, $sici_pos + 10)));
+        $ch = curl_init($encoded_url);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_NOBODY, 1);
+        if (curl_exec($ch)) {
+          $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+          if (strpos($redirect_url, "jstor.org/stable/")) {
+            $url = $redirect_url; 
+            if (is_null($url_sent)) {
+              $this->set('url', $url); // Save it
+            }
+          } else {
+            return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
           }
-        } else {
-          return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
         }
       }
       if (strpos($url, "plants.jstor.org")) {
@@ -2423,8 +2431,6 @@ final class Template {
       }
       echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
     }*/
-
-
   }
   
   /* function handle_et_al
