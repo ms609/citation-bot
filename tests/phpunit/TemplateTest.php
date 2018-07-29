@@ -137,13 +137,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
   }
-    
-  public function testDoiMetaData() {
-    $text = "{{cite journal |doi= 10.1093/mnras/stx3343}}";
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('title')); // Some point this will start working, and the test will need removed. But it verifies patch for now
-  }
-  
+
   public function testDoiExpansionBook() {
     $text = "{{cite book|doi=10.1007/978-981-10-3180-9_1}}";
     $expanded = $this->process_citation($text);
