@@ -2263,12 +2263,13 @@ final class Template {
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
             if ( ($pmatch[1] !== 'issue') && (substr_count($p->val, "–") === 1) && (stripos($p->val, "http") === FALSE)) { // Exactly one EN_DASH.  Do not change issue 3-3
-              preg_match("~(.+)–~" , $p->val, $part1);
-              $part11 = mb_substr($part1[0], 0, -1, 'UTF-8'); // Remove ending dash
-              preg_match("~–(.+)~" , $p->val, $part2);
-              $part22 = mb_substr($part2[0], 1, 'UTF-8'); // Remove starting dash
-              if ($part11 === $part22) {
-                $p->val = $part11;
+              $the_dash = strpos($p->val, "–");
+              $part1 = substr($p->val, 0, $the_dash);
+              $part2 = substr($p->val, $the_dash);
+              echo '\n DEBUG ' . $part1 ;
+              echo '\n DEUGGY ' . $part2 ;
+              if ($part1 === $part2) {
+                $p->val = $part1;
               }
             }
             break;
