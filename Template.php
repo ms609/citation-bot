@@ -2272,6 +2272,10 @@ final class Template {
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
             break;
+          case 'coauthor': case 'coauthors':  // Commonly left there and empty
+            if ($this->empty('coauthor')) $this->forget('coauthor');
+            if ($this->empty('coauthors')) $this->forget('coauthors');
+            break;
           case 'isbn':
             $p->val = $this->isbn10Toisbn13($p->val);
             break;
