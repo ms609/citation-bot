@@ -635,13 +635,8 @@ ER -  }}';
    $url = "https://www.jstor.org/sici?sici=0003-0279(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
    $text = "{{Cite journal|url=$url}}";
    $expanded = $this->process_citation($text);
-   if (get_headers($url, 1)[0] == "HTTP/1.1 400 Bad Request") {
-     // Sometimes we don't get the redirect we hope for.
-    $this->assertNull($expanded->get('jstor'));
-   } else {
-    $this->assertEquals('594900', $expanded->get('jstor'));
-   }
-   $this->assertEquals('0003-0279', $expanded->get('issn'));
+     
+   $this->assertEquals('594900', $expanded->get('jstor'));
    $this->assertEquals('1961', $expanded->get('year'));
    $this->assertEquals('81', $expanded->get('volume'));
    $this->assertEquals('1', $expanded->get('issue'));
@@ -650,9 +645,9 @@ ER -  }}';
     
     
    public function testJstorSICIEncoded() {
-       $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('594900', $expanded->get('jstor'));
+     $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('594900', $expanded->get('jstor'));
    }
     
    public function getDateAndYear($input){
