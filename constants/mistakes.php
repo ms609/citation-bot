@@ -57,7 +57,6 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "vol"             =>  "volume",
   "Vol"             =>  "volume",
   "Vol."            =>  "volume",
-  "website"         =>  "url",
   "ARXIV"           =>  "arxiv",
   "cointerviewers"  =>  "others",
   "doi_brokendate"  =>  "doi-broken-date",
