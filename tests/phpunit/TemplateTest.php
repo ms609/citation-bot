@@ -578,9 +578,9 @@ ER -  }}';
       $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
   }
   public function testCapsAfterColonAndPeriod() {
-      $text = '{{Cite journal |journal=Historical biology: An international Journal. Of Paleobiology}}';
+      $text = '{{Cite journal |journal=Capitalization test: a word following punctuation needs capitals. Of course.}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('Historical Biology: An International Journal. Of Paleobiology', $expanded->get('journal'));
+      $this->assertEquals('Capitalization test: A word following punctuation needs capitals. Of course.', $expanded->get('journal'));
   }  
   public function testExistingWikiText() { // checks for formating in tidy() not breaking things
       $text = '{{cite journal|title=[[Zootimeboys]] and Girls|journal=[[Zootimeboys]] and Girls}}';
