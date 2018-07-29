@@ -22,6 +22,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   protected function tearDown() {
   }
   
+  protected function requires_secrets($function) {
+    if (getenv('TRAVIS_PULL_REQUEST')) {
+      echo "\n - Skipping test: Risks exposing secret keys";
+    } else {
+      $function();
+    }
+  }
+  
   protected function process_citation($text) {
     $page = new TestPage();
     $page->parse_text($text);
@@ -667,9 +675,11 @@ ER -  }}';
   }
    
   public function testBibcodeDotEnding() {
-     $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('1932Natur.129Q..18.', $expanded->get('bibcode'));
+    $this->requires_secrets(function() {
+      $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('1932Natur.129Q..18.', $expanded->get('bibcode'));
+    });
   }
 
    public function testConvertJournalToBook() {
@@ -716,15 +726,19 @@ ER -  }}';
    }
     
    public function testJustAnOCLC() {
+    $this->requires_secrets(function() {
        $text = '{{cite book | oclc=9334453}}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport',$expanded->get('title'));
+    });
    }
 
  public function testJustAnLCCN() {
-    $text = '{{cite book | lccn=2009925036}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
+    $this->requires_secrets(function() {
+      $text = '{{cite book | lccn=2009925036}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
+    });
   }
     
  public function testEmptyCitations() {
