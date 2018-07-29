@@ -1874,16 +1874,7 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list = array();
-      foreach (PARAMETER_LIST as $parameter ) {
-        if (strpos($parameter, '##') !== false) {
-           for( $i = 1; $i<100; $i++ ) {
-             $parameter_list[] = str_replace('##', strval($i), $parameter);
-           }
-        } else {
-          $parameter_list[] = $parameter ;
-        }
-      }
+      $parameter_list = PARAMETER_LIST;
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
@@ -2104,24 +2095,14 @@ final class Template {
     }
   }
   
-      $parameter_list = array();
-      foreach (PARAMETER_LIST as $parameter ) {
-        if (strpos($parameter, '##') !== false) {
-           for( $i = 1; $i<100; $i++ ) {
-             $parameter_list[] = str_replace('##', strval($i), $parameter);
-           }
-        } else {
-          $parameter_list[] = $parameter ;
-        }
-      }
-  
+  $parameter_list = PARAMETER_LIST;
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
   $i = 0; // FIXME: this would be better as a proper for loop rather than foreach with counter
   foreach ($this->param as $p) {
     ++$i;
 
-    if ((strlen($p->param) > 0) && !in_array($p->param, $parameter_list)) {
+    if ((strlen($p->param) > 0) && !in_array(preg_replace($p->param, '~\d+~', '##'), $parameter_list)) {
      
       echo "\n   * Unrecognised parameter " . htmlspecialchars($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
