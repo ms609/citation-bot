@@ -2266,6 +2266,7 @@ final class Template {
               $the_dash = strpos($p->val, "–");
               $part1 = substr($p->val, 0, $the_dash);
               $part2 = substr($p->val, $the_dash + 1);
+              echo '\n DEBUG ' . $p->val . '   ' .   $part1 . '  '  . $part2 . ' ';
               if ($part1 === $part2) {
                 $p->val = $part1;
               }
