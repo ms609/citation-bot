@@ -7,17 +7,20 @@ language: php
     
 matrix:
   include:
-    before_script:  
+    - stage: test
+      before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
-    - stage: test
       php: 7.0
-      #script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
-      script: echo "Hullo 7.0"
+      script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
+      #script: echo "Hullo 7.0"
       after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6
-      #script: phpunit --bootstrap expandFns.php tests/phpunit
-      script: echo "Hullo 5.6"
+      before_script:  
+        - travis_retry composer self-update
+        - composer require mediawiki/oauthclient
+      script: phpunit --bootstrap expandFns.php tests/phpunit
+      #script: echo "Hullo 5.6"
     - stage: deploy
       name: "Update WMFlabs servers"
       if: branch = master AND !env(TRAVIS_PULL_REQUEST)
