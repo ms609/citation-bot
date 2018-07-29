@@ -19,7 +19,7 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
                                "na", "submitted", "tbd", "missing");
-const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript");
+const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", "placeholder", "symbolic placeholder","[placeholder]", "placeholder for arabic language transliteration");
 const SICI_REGEXP = "~(\d{4}-\d{3}[\dxX])" . // ISSN
                     "\((\d{4})(\d{2})?/?(\d{2})?\)" . // Chronology, YY MM DD
                     "(\d+):?([\+\d]*)" . // Enumeration: Volume / issue
