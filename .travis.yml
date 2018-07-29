@@ -12,13 +12,13 @@ matrix:
     - php: 5.6
       script: phpunit --bootstrap expandFns.php tests/phpunit
     - stage: deploy
-      name: "Generate code coverage report"
-      script: bash <(curl -s https://codecov.io/bash)
-      name: "Update WMFlabs servers"
-      if: branch = master
-      script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
-      if: branch = development
-      script: bash <(echo wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
+      - name: "Generate code coverage report"
+        script: bash <(curl -s https://codecov.io/bash)
+      - name: "Update WMFlabs servers"
+        if: branch = master
+        script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
+        if: branch = development
+        script: bash <(echo wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
 
 git:
   depth: 3
