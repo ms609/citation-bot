@@ -2262,6 +2262,15 @@ final class Template {
                     " parameter" . tag());
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
+            if ( ($pmatch[1] !== 'issue') && (substr_count($p->val, EN_DASH) === 1) && (stripos($p->val, "http") === FALSE)) { // Exactly one EN_DASH.  Do not change issue 3-3
+              preg_match("~([A-Za-z0-9])+" . EN_DASH . "~" , $p->val, $part1);
+              $part1[0] = substr($part1[0], 0, -1); // Remove ending dash
+              preg_match("~" . EN_DASH . "([A-Za-z0-9])+~" , $p->val, $part2);
+              $part2[0] = substr($part2[0], 1); // Remove starting dash
+              if ($part1[0] === $part2[0]) {
+                $p->val = $part1[0];
+              }
+            }
             break;
           case 'isbn':
             $p->val = $this->isbn10Toisbn13($p->val);
