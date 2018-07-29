@@ -58,4 +58,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "Vol"             =>  "volume",
   "Vol."            =>  "volume",
   "website"         =>  "url",
+  "ARXIV"           =>  "arxiv",
+  "cointerviewers"  =>  "others",
+  "doi_brokendate"  =>  "doi-broken-date",
+  "trans_chapter"   =>  "trans-chapter",
+  "trans_title"     =>  "trans-title",
 );
