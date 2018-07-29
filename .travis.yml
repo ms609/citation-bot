@@ -15,8 +15,7 @@ matrix:
       script: bash <(curl -s https://codecov.io/bash)
     - stage: deploy
       name: "Update WMFlabs servers"
-      if: branch = master
-      script: wget https://tools.wmflabs.org/citations/gitpull.php
+      script: bash <(wget https://tools.wmflabs.org/citations/gitpull.php)
 
 git:
   depth: 3
