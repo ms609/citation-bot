@@ -2264,9 +2264,11 @@ final class Template {
             }
             if ( ($pmatch[1] !== 'issue') && (substr_count($p->val, "–") === 1) && (stripos($p->val, "http") === FALSE)) { // Exactly one EN_DASH.  Do not change issue 3-3
               preg_match("~(.+)–~" , $p->val, $part1);
-              $part11 = substr($part1[0], 0, -1); // Remove ending dash
+              $part11 = $part1[0];
+              $part11 = substr($part11, 0, -1); // Remove ending dash
               preg_match("~–(.+)~" , $p->val, $part2);
-              $part22 = substr($part2[0], 1); // Remove starting dash
+              $part22 = $part2[0];
+              $part22 = substr($part22, 1); // Remove starting dash
               if ($part11 === $part22) {
                 $p->val = $part11;
               }
