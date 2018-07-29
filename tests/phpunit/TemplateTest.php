@@ -688,6 +688,10 @@ ER -  }}';
        $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]',$expanded->get('pages'));
+       $text = '{{cite journal|pages=1233-1233}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('1233',$expanded->get('pages'));
+   
    }
    
    public function testDoNotAddYearIfDate() {
