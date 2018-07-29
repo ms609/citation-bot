@@ -204,7 +204,7 @@ function title_capitalization($in, $caps_after_punctuation = TRUE) {
   } else { // everything but periods in case of abbreviations
       $new_case = preg_replace_callback("~[?:!]\s+[a-z]~u" /* Capitalise after punctuation */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
-      $new_case)
+      $new_case);
   }
   
   $new_case = preg_replace_callback(
