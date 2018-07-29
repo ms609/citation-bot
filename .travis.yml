@@ -15,9 +15,9 @@ matrix:
       name: "Generate code coverage report"
       script: bash <(curl -s https://codecov.io/bash)
     - name: "Update WMFlabs servers"
-    - if: branch = master
+    - if: branch = master AND !env(TRAVIS_PULL_REQUEST)
       script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
-    - if: branch = development
+    - if: branch = development AND !env(TRAVIS_PULL_REQUEST)
       script: bash <(echo wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
 
 git:
