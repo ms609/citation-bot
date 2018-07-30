@@ -21,6 +21,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
     
   protected function error_handler($errno,$errstr) {
+      echo "\n STRING IS " . $errstr ;
+      echo "\n ERRNUM IS " . $errno ;
       if ($errno === 5000 && $errstr === "API Error in query_adsabs: Unauthorized" && getenv('TRAVIS')) {
           echo "\n -API Error in query_adsabs: Unauthorized";
           return TRUE;
