@@ -129,7 +129,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{Cite web | http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
-    $this->assertEquals('978-022684549-4', $expanded->get('isbn'));
+    $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
   }
   
