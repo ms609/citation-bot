@@ -17,9 +17,20 @@ $SLOW_MODE = TRUE;
 final class TemplateTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
+     @set_error_handler(error_handler);
+  }
+    
+  protected function error_handler($errno,$errstr) {
+      if ($errno === 5000 && $errstr === "API Error in query_adsabs: Unauthorized" && getenv('TRAVIS')) {
+          echo "\n -API Error in query_adsabs: Unauthorized";
+          return TRUE;
+      } else {
+          return FALSE;
+      }
   }
 
   protected function tearDown() {
+     @set_error_handler(NULL);
   }
   
   protected function requires_secrets($function) {
