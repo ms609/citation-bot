@@ -13,10 +13,8 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 // Initialize bot configuration
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
- 
-final class TemplateTest extends PHPUnit\Framework\TestCase {
 
-  public function callable_error_handler($errno,$errstr,$errfile,$errline) {
+function arxiv_callable_error_handler($errno,$errstr,$errfile,$errline) {
       echo "\n STRING IS " . $errstr ;
       echo "\n ERRNUM IS " . $errno ;
       if ($errno === 5000 && $errstr === "API Error in query_adsabs: Unauthorized" && getenv('TRAVIS')) {
@@ -25,14 +23,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       } else {
           return FALSE;
       }
-  }
+}
+ 
+final class TemplateTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
-     set_error_handler("callable_error_handler");
+     set_error_handler("arxiv_callable_error_handler");
   }
 
   protected function tearDown() {
-     @set_error_handler(NULL);
+     set_error_handler(NULL);
   }
   
   protected function requires_secrets($function) {
