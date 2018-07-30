@@ -204,16 +204,16 @@ function title_capitalization($in, $caps_after_all_periods = TRUE) {
       $new_case = preg_replace_callback("~[?:!]\s+[a-z]~u" /* Capitalise after punctuation */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
-      $new_case = preg_replace_callback("~[.]\s+the ~u" /* Capitalise after periods the word "the" if followed by a space */,
+      $new_case = preg_replace_callback("~[.]\s+the\s+~u" /* Capitalise after periods the word "the" if followed by white space */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
-      $new_case = preg_replace_callback("~[.]\s+a ~u" /* Capitalise after periods the word "a" if followed by a space  */,
+      $new_case = preg_replace_callback("~[.]\s+a\s+~u" /* Capitalise after periods the word "a" if followed by white space  */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
-      $new_case = preg_replace_callback("~[.]\s+an ~u" /* Capitalise after periods the word "an" if followed by a space  */,
+      $new_case = preg_replace_callback("~[.]\s+an\s+~u" /* Capitalise after periods the word "an" if followed by white space  */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
-      $new_case = preg_replace_callback("~[.]\s+a$~u" /* Capitalise after periods the word "a" if at the end of the string since it is probably J Chem Phys A  */,
+      $new_case = preg_replace_callback("~[.]\s+[a-z]$~u" /* Capitalise after periods a single letter if at the end of the string since it is probably J Chem Phys. C  */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
   }
