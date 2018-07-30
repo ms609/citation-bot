@@ -1140,13 +1140,24 @@ final class Template {
       if ($return === FALSE) {
         throw new Exception(curl_error($ch), curl_errno($ch));
       }
+      curl_close($ch);
       $decoded = @json_decode($return);
-      curl_close($ch);
-      return (is_object($decoded) && isset($decoded->response)) ? $decoded->response : (object) array('numFound' => 0);
+      if (is_object($decoded) && isset($decoded->response)) {
+        $response = $decoded->response;
+      } else {
+        if ($decoded->error) throw new Exception($decoded->error, 5000);
+        throw new Exception("Could not decode AdsAbs response", 5000);
+      }
+      return $response;
     } catch (Exception $e) {
-      trigger_error(sprintf("Curl error %d in query_adsabs: %s",
-                    $e->getCode(), $e->getMessage()), E_USER_WARNING);
-      curl_close($ch);
+      if ($e->getCode() == 5000) { // made up code for AdsAbs error
+        trigger_error(sprintf("API Error in query_adsabs: %s",
+                      $e->getMessage()), E_USER_WARNING);
+      } else {
+        trigger_error(sprintf("Curl error %d in query_adsabs: %s",
+                      $e->getCode(), $e->getMessage()), E_USER_WARNING);
+        curl_close($ch);
+      }
       return (object) array('numFound' => 0);
     }
   }
