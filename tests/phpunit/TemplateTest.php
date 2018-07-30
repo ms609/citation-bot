@@ -151,6 +151,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('journal')); // Doi returns exact same name for journal as series
   }
   
+  public function testEmptyCoauthor() {
+    $text = '{{Cite journal|pages=2| coauthor= |coauthors= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{Cite journal|pages=2}}', $expanded->parsed_text());
+  }
+
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
     $text = "{{Cite web | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
