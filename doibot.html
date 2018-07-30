@@ -1606,6 +1606,14 @@ div#mw-recreate-deleted-warn ul li {
 }
   </style> 
    
+<script type="text/javascript">
+    function onSubmit() {
+            document.title = "Please Wait....";
+            var laden_display = document.getElementById('laden');
+            laden_display.innerHTML = "<h3>Wait for the Citation bot to complete your request.</h3><h4>Upon completion this page will change to the results.......</h4>"
+            return true;
+    }
+</script>
 
 </head>
 <body style="direction: ltr;" class="mediawiki ns--1 ltr page-Spezial_Beiträge"> 
@@ -1624,7 +1632,7 @@ div#mw-recreate-deleted-warn ul li {
 					
           <!-- start content --> 
           <div id="laden">
-						<form action="doibot.php" method=post>
+						<form action="doibot.php" method=post onsubmit="onSubmit()">
 						<h3>Welcome to the Citation bot.</h3>
 						Enter the name of a page to fill in missing DOIs, and to complete other empty fields in {{cite journal}} family templates.
 						<br><input name=page value=""><br>
