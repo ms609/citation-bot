@@ -10,14 +10,27 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
 
-
+function arxiv_callable_error_handler($errno,$errstr,$errfile,$errline) {
+      if ($errno === 1024 && $errstr === "API Error in query_adsabs: Unauthorized" && getenv('TRAVIS')) {
+          echo "\n -API Error in query_adsabs: Unauthorized";
+          return TRUE;
+      } elseif ($errno === 1024 && $errstr === "Error in query_adsabs: Could not decode AdsAbs response" && getenv('TRAVIS')) {
+          echo "\n -Error in query_adsabs: Could not decode AdsAbs response";
+          return TRUE;
+      } else {
+          echo "\n STRING IS " . $errstr ;
+          echo "\n ERRNUM IS " . $errno ;
+          return FALSE;
+      }
+}
 final class doiToolsTest extends PHPUnit\Framework\TestCase {
-
   protected function setUp() {
+     set_error_handler("arxiv_callable_error_handler");
   }
-
   protected function tearDown() {
+     set_error_handler(NULL);
   }
+  
 
   public function testFormatMultipleAuthors1() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
