@@ -1152,7 +1152,7 @@ final class Template {
     } catch (Exception $e) {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         trigger_error(sprintf("API Error in query_adsabs: %s",
-                      $e->getMessage()), E_USER_WARNING);
+                      $e->getMessage()), E_USER_NOTICE);
       } else {
         trigger_error(sprintf("Curl error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_WARNING);
