@@ -2242,8 +2242,11 @@ final class Template {
       $this->rename('origyear', 'year');
     }
     
-    if ($this->has('isbn')) $this->set('isbn',$this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
-    
+    if ($this->has('isbn')) {
+      $this->set('isbn',$this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
+      $this->forget('asin'));
+    }
+
     $authors = $this->get('authors');
     if (!$authors) {
       $authors = $this->get('author'); # Order _should_ be irrelevant as only one will be set... but prefer 'authors' if not.
