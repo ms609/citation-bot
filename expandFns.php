@@ -176,11 +176,10 @@ function restore_italics ($text) {
 }
 
 /** Returns a properly capitalised title.
- *      If $caps_after_punctuation is TRUE (or there is an abundance of periods), it allows the 
- *      letter after colons and other punctuation marks to remain capitalized.
- *      If not, it won't capitalise after : etc.
+ *      If $caps_after_all_periods is TRUE (or there is an abundance of periods), it allows the 
+ *      letter after all periods marks to remain capitalized.
  */
-function title_capitalization($in, $caps_after_punctuation = TRUE) {
+function title_capitalization($in, $caps_after_all_periods = TRUE) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
   if(substr($new_case,0,2) === "[[" && substr($new_case,-2) === "]]") {
@@ -195,14 +194,26 @@ function title_capitalization($in, $caps_after_punctuation = TRUE) {
   }
   $new_case = substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
     
-  if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
+  if ($caps_after_all_periods || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentance ends
     // We should therefore capitalize after each punctuation character.
     $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
-  } else { // everything but periods in case of abbreviations
+  } else { // everything but most periods
       $new_case = preg_replace_callback("~[?:!]\s+[a-z]~u" /* Capitalise after punctuation */,
+      create_function('$matches', 'return mb_strtoupper($matches[0]);'),
+      $new_case);
+      $new_case = preg_replace_callback("~[.]\s+the ~u" /* Capitalise after periods the word "the" if followed by a space */,
+      create_function('$matches', 'return mb_strtoupper($matches[0]);'),
+      $new_case);
+      $new_case = preg_replace_callback("~[.]\s+a ~u" /* Capitalise after periods the word "a" if followed by a space  */,
+      create_function('$matches', 'return mb_strtoupper($matches[0]);'),
+      $new_case);
+      $new_case = preg_replace_callback("~[.]\s+an ~u" /* Capitalise after periods the word "an" if followed by a space  */,
+      create_function('$matches', 'return mb_strtoupper($matches[0]);'),
+      $new_case);
+      $new_case = preg_replace_callback("~[.]\s+a$~u" /* Capitalise after periods the word "a" if at the end of the string since it is probably J Chem Phys A  */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
   }
