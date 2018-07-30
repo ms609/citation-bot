@@ -599,14 +599,22 @@ final class Template {
 
       case 'asin':
         if ($this->blank($param_name)) {
-          if($this->has('isbn')) {
-            if (preg_match("~^[0-9]~",$value) && !preg_match("~^630~",$value)) { // 630 ones are not ISBNs
+          if($this->has('isbn')) { // Already have ISBN
+            if (preg_match("~^[0-9]~",$value) && !preg_match("~^630~",$value)) {
               quiet_echo("\n   ~ Ignoring ASIN value that is just an ISBN which we already have.");
             } else {
               quiet_echo("\n   ~ Ignoring ASIN since we have ISBN already.");
             }
             return FALSE;
-          } else {
+          } elseif (preg_match("~^[0-9]~",$value) && !preg_match("~^630~",$value)) { // 630 ones are not ISBNs
+            $possible_isbn = sanitize_string($value);
+            $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn);
+            if ($possible_isbn === $possible_isbn13) {
+              return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
+            } else {
+              return $this->add('isbn', $possible_isbn13);
+            }
+          } else {  // NOT ISBN
             return $this->add($param_name, sanitize_string($value));
           }
         }
