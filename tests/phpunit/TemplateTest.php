@@ -126,11 +126,22 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testAmazonExpansion() {
-    $text = "{{Cite web | http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn=}}";
+    $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn=}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
+      
+    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 |isbn=}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite book', $expanded->wikiname());  // TODO leave as web
+    $this->assertEquals('B0002TV0K8', $expanded->get('asin'));
+    $this->assertNull($expanded->get('isbn'));
+      
+    $text = "{{Cite book | asin=B0002TV0K8 |isbn=}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('B0002TV0K8', $expanded->get('asin'));
+    $this->assertNull($expanded->get('isbn'));
   }
   
   public function testDoiExpansion() {
