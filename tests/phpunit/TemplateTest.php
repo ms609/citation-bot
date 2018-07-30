@@ -142,6 +142,11 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('B0002TV0K8', $expanded->get('asin'));
     $this->assertNull($expanded->get('isbn'));
+      
+    $text = "{{Cite book | asin=0226845494 |isbn=0226845494}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-0226845494', $expanded->get('isbn'));
+    $this->assertNull($expanded->get('asin'));
   }
   
   public function testDoiExpansion() {
