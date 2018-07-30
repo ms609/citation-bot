@@ -132,18 +132,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
       
-    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 |isbn=}}";
+    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('cite web', $expanded->wikiname());
-    $this->assertEquals('B0002TV0K8', $expanded->get('asin'));
-    $this->assertNull($expanded->get('isbn'));
+    $this->assertEquals($text, $expanded->parsed_text());  // We do not touch this kind of URL
   }
 
   public function testRemoveASIN() {
     $text = "{{Cite book | asin=B0002TV0K8 |isbn=}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('B0002TV0K8', $expanded->get('asin'));
-    $this->assertNull($expanded->get('isbn'));
+    $this->assertEquals('', $expanded->get('isbn'));
       
     $text = "{{Cite book | asin=0226845494 |isbn=0226845494}}";
     $expanded = $this->process_citation($text);
