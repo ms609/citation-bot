@@ -10,7 +10,8 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
 
-function arxiv_callable_error_handler($errno,$errstr,$errfile,$errline) {
+if (!function_exists(arxiv_callable_error_handler)) {
+   function arxiv_callable_error_handler($errno,$errstr,$errfile,$errline) {
       if ($errno === 1024 && $errstr === "API Error in query_adsabs: Unauthorized" && getenv('TRAVIS')) {
           echo "\n -API Error in query_adsabs: Unauthorized";
           return TRUE;
@@ -22,6 +23,7 @@ function arxiv_callable_error_handler($errno,$errstr,$errfile,$errline) {
           echo "\n ERRNUM IS " . $errno ;
           return FALSE;
       }
+   }
 }
 final class constantsTest extends PHPUnit\Framework\TestCase {
 
