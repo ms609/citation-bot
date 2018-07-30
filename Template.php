@@ -1145,7 +1145,7 @@ final class Template {
       if (is_object($decoded) && isset($decoded->response)) {
         $response = $decoded->response;
       } else {
-        if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // "". to force string
+        if (is_object($decoded) && $decoded->error) throw new Exception("" . $decoded->error, 5000); // "". to force string
         throw new Exception("Could not decode AdsAbs response", 5000);
       }
       return $response;
