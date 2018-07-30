@@ -1140,13 +1140,24 @@ final class Template {
       if ($return === FALSE) {
         throw new Exception(curl_error($ch), curl_errno($ch));
       }
+      curl_close($ch);
       $decoded = @json_decode($return);
-      curl_close($ch);
-      return (is_object($decoded) && isset($decoded->response)) ? $decoded->response : (object) array('numFound' => 0);
+      if (is_object($decoded) && isset($decoded->response)) {
+        $response = $decoded->response;
+      } else {
+        if ($decoded->error) throw new Exception($decoded->error, 5000);
+        throw new Exception("Could not decode AdsAbs response", 5000);
+      }
+      return $response;
     } catch (Exception $e) {
-      trigger_error(sprintf("Curl error %d in query_adsabs: %s",
-                    $e->getCode(), $e->getMessage()), E_USER_WARNING);
-      curl_close($ch);
+      if ($e->getCode() == 5000) { // made up code for AdsAbs error
+        trigger_error(sprintf("API Error in query_adsabs: %s",
+                      $e->getMessage()), E_USER_WARNING);
+      } else {
+        trigger_error(sprintf("Curl error %d in query_adsabs: %s",
+                      $e->getCode(), $e->getMessage()), E_USER_WARNING);
+        curl_close($ch);
+      }
       return (object) array('numFound' => 0);
     }
   }
@@ -1159,7 +1170,7 @@ final class Template {
       }
       $crossRef = $this->query_crossref($doi);
       if ($crossRef) {
-        if (strtolower($crossRef->article_title) === 'oup accepted manuscript') return FALSE ; // OUP accepted manuscript is placeholder
+        if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
         echo "\n - Expanding from crossRef record" . tag();
 
         if ($crossRef->volume_title && $this->blank('journal')) {
@@ -2104,6 +2115,7 @@ final class Template {
       $parameters_used[] = $p->param;
     }
   }
+  
   $parameter_list = PARAMETER_LIST;
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
@@ -2111,7 +2123,7 @@ final class Template {
   foreach ($this->param as $p) {
     ++$i;
 
-    if ((strlen($p->param) > 0) && !in_array($p->param, PARAMETER_LIST)) {
+    if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '##', $p->param), $parameter_list)) {
      
       echo "\n   * Unrecognised parameter " . htmlspecialchars($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
@@ -2270,6 +2282,9 @@ final class Template {
                     " parameter" . tag());
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
+            break;
+          case 'coauthor': case 'coauthors':  // Commonly left there and empty and deprecated
+            if ($this->blank($pmatch[1])) $this->forget($pmatch[1]);
             break;
           case 'isbn':
             $p->val = $this->isbn10Toisbn13($p->val);

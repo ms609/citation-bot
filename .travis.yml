@@ -13,19 +13,17 @@ matrix:
         - composer require mediawiki/oauthclient
       php: 7.0
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
-      #script: echo "Hullo 7.0"
-      after_success: bash <(curl -s https://codecov.io/bash)
+     after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
       script: phpunit --bootstrap expandFns.php tests/phpunit
-      #script: echo "Hullo 5.6"
     - stage: deploy
       name: "Update WMFlabs servers"
-      if: branch = master AND !env(TRAVIS_PULL_REQUEST)
+      if: branch = master AND NOT env(TRAVIS_PULL_REQUEST)
       script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
-      if: branch = development AND !env(TRAVIS_PULL_REQUEST)
+      if: branch = development AND NOT env(TRAVIS_PULL_REQUEST)
       script: bash <(echo wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
 
 git:
