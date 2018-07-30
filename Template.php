@@ -599,7 +599,7 @@ final class Template {
 
       case 'asin':
         if ($this->blank($param_name)) {
-          if($this->has('isbn')) { // Already have ISBN
+          if(!$this->blank('isbn')) { // Already have ISBN
             if (preg_match("~^[0-9]~",$value) && !preg_match("~^630~",$value)) {
               quiet_echo("\n   ~ Ignoring ASIN value that is just an ISBN which we already have.");
             } else {
@@ -2242,7 +2242,7 @@ final class Template {
       $this->rename('origyear', 'year');
     }
     
-    if ($this->has('isbn')) {
+    if (!$this->blank('isbn')) {
       $this->set('isbn',$this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
       $this->forget('asin');
     }
