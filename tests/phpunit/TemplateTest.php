@@ -126,7 +126,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testAmazonExpansion() {
-    $text = "{{Cite web | http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20}}";
+    $text = "{{Cite web | http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn=}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
