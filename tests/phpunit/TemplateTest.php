@@ -15,12 +15,15 @@ if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
 
 function arxiv_callable_error_handler($errno,$errstr,$errfile,$errline) {
-      echo "\n STRING IS " . $errstr ;
-      echo "\n ERRNUM IS " . $errno ;
-      if ($errno === 5000 && $errstr === "API Error in query_adsabs: Unauthorized" && getenv('TRAVIS')) {
+      if ($errno === 1024 && $errstr === "API Error in query_adsabs: Unauthorized" && getenv('TRAVIS')) {
           echo "\n -API Error in query_adsabs: Unauthorized";
           return TRUE;
+      elseif ($errno === 1024 && $errstr === "Error in query_adsabs: Could not decode AdsAbs response" && getenv('TRAVIS')) {
+          echo "\n -Error in query_adsabs: Could not decode AdsAbs response";
+          return TRUE;
       } else {
+          echo "\n STRING IS " . $errstr ;
+          echo "\n ERRNUM IS " . $errno ;
           return FALSE;
       }
 }
