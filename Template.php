@@ -599,7 +599,7 @@ final class Template {
 
       case 'asin':
         if ($this->blank($param_name)) {
-          if($this->has('isbn') && preg_match("~^[0-9]~",$value) && !preg_match("~^630~",$value) { // 630 ones are not ISBNs
+          if($this->has('isbn') && preg_match("~^[0-9]~",$value) && !preg_match("~^630~",$value)) { // 630 ones are not ISBNs
             quiet_echo("\n   ~ Ignoring ASIN value that is just an ISBN which we already have.");
           } else {
             return $this->add($param_name, sanitize_string($value));
