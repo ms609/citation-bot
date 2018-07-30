@@ -2244,7 +2244,7 @@ final class Template {
     
     if ($this->has('isbn')) {
       $this->set('isbn',$this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
-      $this->forget('asin'));
+      $this->forget('asin');
     }
 
     $authors = $this->get('authors');
