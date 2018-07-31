@@ -108,15 +108,12 @@ final class Template {
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
           $this->forget('class');
-          $this->forget('publisher'); // no longer valid
+          $this->forget('publisher'); // will not match Journal publisher
         } else if ($this->has('doi')) { // cite arxiv does not support DOI's
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
           // $this->forget('class');      Leave this for now since no journal title
-          if ($this->has('publisher') && $this->has('journal') &&
-              strcasecmp($this->get('publisher'), $this->get('journal')) === 0) {
-            $this->forget('publisher');
-          }
+          $this->forget('publisher'); // will not match DOI publsher
         }
       break;
       case 'cite book':
