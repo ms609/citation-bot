@@ -1130,6 +1130,7 @@ final class Template {
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt($ch, CURLOPT_HEADER, TRUE);
       curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
         . "?data_type=XML&q=$options&fl="
         . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
@@ -1140,8 +1141,23 @@ final class Template {
       if ($return === FALSE) {
         throw new Exception(curl_error($ch), curl_errno($ch));
       }
+      $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
       curl_close($ch);
-      $decoded = @json_decode($return);
+      $header = substr($return, 0, $header_length);
+      $body = substr($return, $header_length);
+      if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
+        if ($rate_limit[2][2]) {
+          echo "\n   - AdsAbs search " . $rate_limit[2][0] . "/" . $rate_limit[2][1] .
+               "; reset at " . date('r', $rate_limit[2][2]);
+        } else {
+          echo "\n   - AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n";
+          return (object) array('numFound' => 0);
+        }
+      } else {
+        throw new Exception("Headers do not contain rate limit information", 5000);
+      }
+      
+      $decoded = @json_decode($body);
       if (is_object($decoded) && isset($decoded->response)) {
         $response = $decoded->response;
       } else {
