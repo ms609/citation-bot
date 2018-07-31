@@ -89,7 +89,10 @@ final class Template {
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->tidy();
-        if ($this->has('journal') || $this->has('bibcode') || $this->has('jstor') || $this->has('doi') || $this->has('pmid') || $this->has('pmc')) {
+        if ($this->has('journal') || $this->has('bibcode') 
+           || $this->has('jstor') || $this->has('doi') 
+           || $this->has('pmid') || $this->has('pmc')
+            ) {
           $this->name = 'Cite journal';
           $this->process();
         } elseif ($this->has('arxiv')) {
@@ -1039,9 +1042,11 @@ final class Template {
       if ($result->numFound != 1 && $this->has('journal')) {
         $journal = $this->get('journal');
         // try partial search using bibcode components:
-        $result = $this->query_adsabs("year:" . $this->get('year')
-                          . "&volume:" . $this->get('volume')
-                          . "&page:" . $this->page()
+        $result = $this->query_adsabs("pub:" . urlencode($journal)
+                          . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
+                          . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
+                          . ($this->has('volume') ? ("&volume:" . urlencode($this->get('volume'))) : '')
+                          . ($this->page() ? ("&page:" . urlencode($this->page())) : '')
                           );
         if ($result->numFound == 0) return FALSE;
         if (!isset($result->docs[0]->pub)) return FALSE;
@@ -1124,15 +1129,20 @@ final class Template {
     }
   }
   
+  // $options should be a series of field names, colons (optionally urlencoded), and
+  // URL-ENCODED search strings, separated by (unencoded) ampersands.
   protected function query_adsabs ($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     try {
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-      curl_setopt($ch, CURLOPT_URL, "https://api.adsabs.harvard.edu/v1/search/query"
-        . "?data_type=XML&q=$options&fl="
-        . "arxiv_class,author,bibcode,doi,doctype,identifier,issue,page,pub,pubdate,title,volume,year");
+      curl_setopt($ch, CURLOPT_HEADER, TRUE);
+      $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/query"
+                  . "?data_type=XML&q=$options&fl="
+                  . "arxiv_class,author,bibcode,doi,doctype,identifier,"
+                  . "issue,page,pub,pubdate,title,volume,year";
+      curl_setopt($ch, CURLOPT_URL, $adsabs_url);
       if (getenv('TRAVIS')) {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
       }
@@ -1140,8 +1150,32 @@ final class Template {
       if ($return === FALSE) {
         throw new Exception(curl_error($ch), curl_errno($ch));
       }
+      $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
       curl_close($ch);
-      $decoded = @json_decode($return);
+      $header = substr($return, 0, $header_length);
+      $body = substr($return, $header_length);
+      $decoded = @json_decode($body);
+     
+      if (isset($decoded->error)) {
+        throw new Exception($decoded->error->msg, $decoded->error->code);
+      }
+      if ($http_response != 200) {
+        throw new Exception(strtok($header, "\n"), $http_response);
+      }
+      
+      if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
+        if ($rate_limit[2][2]) {
+          echo "\n   - AdsAbs search " . (5000 - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
+               "; reset at " . date('r', $rate_limit[2][2]);
+        } else {
+          echo "\n   - AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n";
+          return (object) array('numFound' => 0);
+        }
+      } else {
+        throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);
+      }
+      
       if (is_object($decoded) && isset($decoded->response)) {
         $response = $decoded->response;
       } else {
@@ -1153,8 +1187,11 @@ final class Template {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         trigger_error(sprintf("API Error in query_adsabs: %s",
                       $e->getMessage()), E_USER_NOTICE);
+      } else if (strpos($e->getMessage(), 'HTTP') === 0) {
+        trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
+                      $e->getCode(), $e->getMessage()), E_USER_NOTICE);
       } else {
-        trigger_error(sprintf("Curl error %d in query_adsabs: %s",
+        trigger_error(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_WARNING);
         curl_close($ch);
       }
