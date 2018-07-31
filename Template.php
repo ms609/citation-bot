@@ -1042,8 +1042,9 @@ final class Template {
       if ($result->numFound != 1 && $this->has('journal')) {
         $journal = $this->get('journal');
         // try partial search using bibcode components:
-        $result = $this->query_adsabs("journal:" . urlencode($journal)
+        $result = $this->query_adsabs("bibstem:" . urlencode($journal)
                           . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
+                          . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
                           . ($this->has('volume') ? ("&volume:" . urlencode($this->get('volume'))) : '')
                           . ($this->page() ? ("&page:" . urlencode($this->page())) : '')
                           );
@@ -1160,8 +1161,6 @@ final class Template {
         throw new Exception($decoded->error->msg, $decoded->error->code);
       }
       if ($http_response != 200) {
-        var_dump($adsabs_url);
-        var_dump ($return);
         throw new Exception(strtok($header, "\n"), $http_response);
       }
       
