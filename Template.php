@@ -1042,10 +1042,10 @@ final class Template {
       if ($result->numFound != 1 && $this->has('journal')) {
         $journal = $this->get('journal');
         // try partial search using bibcode components:
-        $result = $this->query_adsabs("year:" . $this->get('year')
-                          . "&journal:" . $journal
-                          . "&volume:" . $this->get('volume')
-                          . "&page:" . $this->page()
+        $result = $this->query_adsabs("year:" . urlencode($this->get('year'))
+                          . "&journal:" . urlencode($journal)
+                          . "&volume:" . urlencode($this->get('volume'))
+                          . "&page:" . urlencode($this->page())
                           );
         if ($result->numFound == 0) return FALSE;
         if (!isset($result->docs[0]->pub)) return FALSE;
@@ -1128,6 +1128,8 @@ final class Template {
     }
   }
   
+  // $options should be a URL-ENCODED search string.
+  // (Colons between field names and content are okay.)
   protected function query_adsabs ($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     try {
@@ -1157,7 +1159,11 @@ final class Template {
       if (isset($decoded->error)) {
         throw new Exception($decoded->error->msg, $decoded->error->code);
       }
-      if ($http_response != 200) throw new Exception(strtok($header, "\n"), $http_response);
+      if ($http_response != 200) {
+        var_dump($adsabs_url);
+        var_dump ($return);
+        throw new Exception(strtok($header, "\n"), $http_response);
+      }
       
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
         if ($rate_limit[2][2]) {
