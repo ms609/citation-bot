@@ -1128,8 +1128,8 @@ final class Template {
     }
   }
   
-  // $options should be a URL-ENCODED search string.
-  // (Colons between field names and content are okay.)
+  // $options should be a series of field names, colons (optionally urlencoded), and
+  // URL-ENCODED search strings, separated by (unencoded) ampersands.
   protected function query_adsabs ($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     try {
