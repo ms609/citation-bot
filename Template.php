@@ -1192,7 +1192,7 @@ final class Template {
         trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_NOTICE);
       } else {
-        trigger_error(sprintf("Curl error %d in query_adsabs: %s",
+        trigger_error(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_WARNING);
         curl_close($ch);
       }
