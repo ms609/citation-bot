@@ -1042,10 +1042,10 @@ final class Template {
       if ($result->numFound != 1 && $this->has('journal')) {
         $journal = $this->get('journal');
         // try partial search using bibcode components:
-        $result = $this->query_adsabs("year:" . urlencode($this->get('year'))
-                          . "&journal:" . urlencode($journal)
-                          . "&volume:" . urlencode($this->get('volume'))
-                          . "&page:" . urlencode($this->page())
+        $result = $this->query_adsabs("journal:" . urlencode($journal)
+                          . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
+                          . ($this->has('volume') ? ("&volume:" . urlencode($this->get('volume'))) : '')
+                          . ($this->page() ? ("&page:" . urlencode($this->page())) : '')
                           );
         if ($result->numFound == 0) return FALSE;
         if (!isset($result->docs[0]->pub)) return FALSE;
