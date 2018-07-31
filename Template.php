@@ -1138,6 +1138,7 @@ final class Template {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
       }
       $return = curl_exec($ch);
+      var_dump($return);
       if ($return === FALSE) {
         throw new Exception(curl_error($ch), curl_errno($ch));
       }
@@ -1154,7 +1155,7 @@ final class Template {
           return (object) array('numFound' => 0);
         }
       } else {
-        throw new Exception("Headers do not contain rate limit information", 5000);
+        throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);
       }
       
       $decoded = @json_decode($body);
