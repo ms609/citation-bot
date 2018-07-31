@@ -1138,7 +1138,6 @@ final class Template {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
       }
       $return = curl_exec($ch);
-      var_dump($return);
       if ($return === FALSE) {
         throw new Exception(curl_error($ch), curl_errno($ch));
       }
@@ -1146,11 +1145,12 @@ final class Template {
       $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
       curl_close($ch);
       if ($http_response != 200) throw new Exception(strtok($return, "\n"), $http_response);
+      
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
         if ($rate_limit[2][2]) {
-          echo "\n   - AdsAbs search " . $rate_limit[2][1] . "/" . $rate_limit[2][0] .
+          echo "\n   - AdsAbs search " . (5000 - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
                "; reset at " . date('r', $rate_limit[2][2]);
         } else {
           echo "\n   - AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n";
@@ -1172,6 +1172,9 @@ final class Template {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         trigger_error(sprintf("API Error in query_adsabs: %s",
                       $e->getMessage()), E_USER_NOTICE);
+      } else if (strpos($e->getMessage, 'HTTP') === 0) {
+        trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
+                      $e->getCode(), $e->getMessage()), E_USER_NOTICE);
       } else {
         trigger_error(sprintf("Curl error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_WARNING);
