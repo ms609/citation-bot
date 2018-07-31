@@ -1043,6 +1043,7 @@ final class Template {
         $journal = $this->get('journal');
         // try partial search using bibcode components:
         $result = $this->query_adsabs("year:" . $this->get('year')
+                          . "&journal:" . $journal
                           . "&volume:" . $this->get('volume')
                           . "&page:" . $this->page()
                           );
@@ -1152,7 +1153,7 @@ final class Template {
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
       $decoded = @json_decode($body);
-      
+     
       if (isset($decoded->error)) {
         throw new Exception($decoded->error->msg, $decoded->error->code);
       }
