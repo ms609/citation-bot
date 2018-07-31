@@ -1145,14 +1145,14 @@ final class Template {
       if (is_object($decoded) && isset($decoded->response)) {
         $response = $decoded->response;
       } else {
-        if ($decoded->error) throw new Exception($decoded->error, 5000);
+        if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // "". to force string
         throw new Exception("Could not decode AdsAbs response", 5000);
       }
       return $response;
     } catch (Exception $e) {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         trigger_error(sprintf("API Error in query_adsabs: %s",
-                      $e->getMessage()), E_USER_WARNING);
+                      $e->getMessage()), E_USER_NOTICE);
       } else {
         trigger_error(sprintf("Curl error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_WARNING);
