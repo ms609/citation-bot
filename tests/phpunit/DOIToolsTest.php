@@ -3,7 +3,7 @@
 /*
  * Tests for DOITools.php.
  */
- 
+error_reporting(E_ALL); // whining is good
  // backward compatibility
 if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_exists('\PHPUnit_Framework_TestCase')) {
