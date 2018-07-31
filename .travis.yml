@@ -13,7 +13,7 @@ matrix:
         - composer require mediawiki/oauthclient
       php: 7.0
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
-     after_success: bash <(curl -s https://codecov.io/bash)
+      after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6
       before_script:  
         - travis_retry composer self-update
