@@ -1142,8 +1142,10 @@ final class Template {
       if ($return === FALSE) {
         throw new Exception(curl_error($ch), curl_errno($ch));
       }
+      $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
       curl_close($ch);
+      if ($http_response != 200) throw new Exception(explode($return, "\r\n")[0], $http_response);
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
