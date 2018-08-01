@@ -2330,6 +2330,15 @@ final class Template {
                     " parameter" . tag());
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
+            if (   (mb_substr_count($p->val, "–") === 1) // Exactly one EN_DASH.  
+                && (mb_stripos($p->val, "http") === FALSE)) { 
+              $the_dash = mb_strpos($p->val, "–"); // ALL must be mb_ functions because of long dash
+              $part1 = mb_substr($p->val, 0, $the_dash);
+              $part2 = mb_substr($p->val, $the_dash + 1);
+              if ($part1 === $part2) {
+                $p->val = $part1;
+              }
+            }
             break;
           case 'coauthor': case 'coauthors':  // Commonly left there and empty and deprecated
             if ($this->blank($pmatch[1])) $this->forget($pmatch[1]);
