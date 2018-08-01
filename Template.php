@@ -127,7 +127,8 @@ final class Template {
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
           $this->forget('class');
-          $this->forget('publisher');  // This almost guaranted to refers to ARXIV preprint not journal which we have added.  Therefore remove incorrect data
+          $this->forget('publisher');  // This is either bad data, or refers to ARXIV preprint, not the journal that we have just added.
+                                       // Therefore remove incorrect data
         } else if ($this->has('doi')) { // cite arxiv does not support DOI's
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
