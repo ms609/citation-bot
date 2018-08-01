@@ -1137,7 +1137,8 @@ final class Template {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     
     if (!getenv('PHP_ADSABSAPIKEY')) {
-      trigger_error(" x PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.", E_USER_NOTICE);
+      echo " x PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.";
+      return (object) array('numFound' => 0);
     }
     
     try {
