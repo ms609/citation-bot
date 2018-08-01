@@ -241,7 +241,11 @@ function tag($long = FALSE) {
       $output = '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);
     }
   }
-  echo ' [..' . htmlspecialchars($output) . ']';
+  if (getenv('TRAVIS')) {
+     echo ' [..' . $output . ']';
+  } else {
+     echo ' [..' . htmlspecialchars($output) . ']';
+  } 
 }
 
 function sanitize_string($str) {
