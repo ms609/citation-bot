@@ -1156,8 +1156,8 @@ final class Template {
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
       $decoded = @json_decode($body);
-     
-      if (isset($decoded->error)) {
+      
+      if (is_object($decoded) && isset($decoded->error)) {
         throw new Exception($decoded->error->msg, $decoded->error->code);
       }
       if ($http_response != 200) {
@@ -1175,8 +1175,11 @@ final class Template {
       } else {
         throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);
       }
+      if (!is_object($decoded)) {
+        throw new Exception("Could not decode API response:\n" . $body, 5000);
+      }
       
-      if (is_object($decoded) && isset($decoded->response)) {
+      if (isset($decoded->response)) {
         $response = $decoded->response;
       } else {
         if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // "". to force string
