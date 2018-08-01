@@ -1021,7 +1021,7 @@ final class Template {
         $result = $this->query_adsabs("bibcode:" . urlencode($this->get("bibcode")));
       } elseif ($this->has('doi') 
                 // AdsAbs API cannot handle brackets at 2018-08-01; see query_adsabs for details
-                && !preg_match('~\(\)\{\}\[\]~', $this->get('doi'))
+                && !preg_match('~[\(\)\{\}\[\]]~', $this->get('doi'))
                 && preg_match(DOI_REGEXP, remove_comments($this->get('doi')), $doi)) {
         $result = $this->query_adsabs("doi:" . urlencode($doi[0]));
       } elseif ($this->has('title')) {
@@ -1140,7 +1140,7 @@ final class Template {
     // Parentheses of any shape are not presently supported by AdsAbs API: see
     // https://github.com/adsabs/adsabs-dev-api/issues/43
     if (preg_match("~%2[89]|%[57][BD]~", $options)) {
-      trigger_error(" x Parentheses are not presently supported by AdsAbs API. \n   Options were: " . urldecode($options), E_USER_NOTICE);
+      trigger_error(" x Parentheses are not presently supported by AdsAbs API. \n   Query options were: " . urldecode($options), E_USER_NOTICE);
       return (object) array('numFound' => 0);
     }
     
