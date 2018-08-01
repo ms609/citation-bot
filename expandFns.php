@@ -241,7 +241,7 @@ function tag($long = FALSE) {
       $output = '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);
     }
   }
-  if (getenv('TRAVIS') {
+  if (getenv('TRAVIS')) {
      echo ' [..' . $output . ']';
   } else {
      echo ' [..' . htmlspecialchars($output) . ']';
