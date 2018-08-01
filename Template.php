@@ -600,13 +600,9 @@ final class Template {
       case 'asin':
         if ($this->blank($param_name)) {
           if($this->has('isbn')) { // Already have ISBN
-            if (preg_match("~^[0-9]~",$value) && !preg_match("~^630~",$value)) {
-              quiet_echo("\n   ~ Ignoring ASIN value that is just an ISBN which we already have.");
-            } else {
-              quiet_echo("\n   ~ Ignoring ASIN since we have ISBN already.");
-            }
+            quiet_echo("\n   . Not adding ASIN: redundant to existing ISBN.");
             return FALSE;
-          } elseif (preg_match("~^[0-9]~",$value) && !preg_match("~^630~",$value)) { // 630 ones are not ISBNs
+          } elseif (preg_match("~^\d~", $value) && substr($value, 0, 3) !== '630') { // 630 ones are not ISBNs
             $possible_isbn = sanitize_string($value);
             $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn);
             if ($possible_isbn === $possible_isbn13) {
