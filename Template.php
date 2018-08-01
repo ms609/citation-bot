@@ -654,6 +654,7 @@ final class Template {
         $ch = curl_init($encoded_url);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_NOBODY, 1);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0); // stop curl from talking to stdout
         if (curl_exec($ch)) {
           $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
           if (strpos($redirect_url, "jstor.org/stable/")) {
@@ -2463,6 +2464,7 @@ final class Template {
         curl_setopt($ch, CURLOPT_NOBODY, 1);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_exec($ch);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0); // stop stdout
         switch(curl_getinfo($ch, CURLINFO_HTTP_CODE)){
           case "404":
             global $p;
