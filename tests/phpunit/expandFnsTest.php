@@ -19,9 +19,9 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testCapitalization() {
-    $this->assertEquals('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology')));
-    $this->assertEquals('z/Journal', title_capitalization(title_case('z/Journal')));
-    $this->assertEquals('The Journal of Journals', title_capitalization('The Journal Of Journals')); // The, not the
+    $this->assertEquals('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'),TRUE));
+    $this->assertEquals('z/Journal', title_capitalization(title_case('z/Journal'),TRUE));
+    $this->assertEquals('The Journal of Journals', title_capitalization('The Journal Of Journals'), TRUE); // The, not the
   }
 
   public function testDoiRegExp() {
