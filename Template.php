@@ -1177,8 +1177,8 @@ final class Template {
       
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
         if ($rate_limit[2][2]) {
-          echo "\n   - AdsAbs search " . (5000 - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
-               "; reset at " . date('r', $rate_limit[2][2]);
+          echo "\n   - AdsAbs search " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0];
+               // "; reset at " . date('r', $rate_limit[2][2]);
         } else {
           echo "\n   - AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n";
           return (object) array('numFound' => 0);
