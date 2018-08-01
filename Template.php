@@ -599,6 +599,25 @@ final class Template {
           return $this->add($param_name, $value);
         }
       return FALSE;
+
+      case 'asin':
+        if ($this->blank($param_name)) {
+          if($this->has('isbn')) { // Already have ISBN
+            quiet_echo("\n   . Not adding ASIN: redundant to existing ISBN.");
+            return FALSE;
+          } elseif (preg_match("~^\d~", $value) && substr($value, 0, 3) !== '630') { // 630 ones are not ISBNs
+            $possible_isbn = sanitize_string($value);
+            $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn);
+            if ($possible_isbn === $possible_isbn13) {
+              return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
+            } else {
+              return $this->add('isbn', $possible_isbn13);
+            }
+          } else {  // NOT ISBN
+            return $this->add($param_name, sanitize_string($value));
+          }
+        }
+        return FALSE;
       
       default:
         if ($this->blank($param_name)) {
@@ -2267,8 +2286,11 @@ final class Template {
       $this->rename('origyear', 'year');
     }
     
-    if ($this->has('isbn')) $this->set('isbn',$this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
-    
+    if ($this->has('isbn')) {
+      $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
+      $this->forget('asin');
+    }
+
     $authors = $this->get('authors');
     if (!$authors) {
       $authors = $this->get('author'); # Order _should_ be irrelevant as only one will be set... but prefer 'authors' if not.
@@ -2447,7 +2469,7 @@ final class Template {
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
-      $url_test = "https://dx.doi.org/".$doi ;
+      $url_test = "https://dx.doi.org/" . $doi;
       $headers_test = @get_headers($url_test, 1);
       if ($headers_test === FALSE) {
         echo "\n   ! DOI status unkown.  dx.doi.org failed to respond at all to: " . htmlspecialchars($doi);
