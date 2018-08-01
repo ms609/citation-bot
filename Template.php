@@ -1018,14 +1018,12 @@ final class Template {
     if ($SLOW_MODE || $this->has('bibcode')) {
       echo "\n - Checking AdsAbs database";
       if ($bibcode = $this->has('bibcode')) {
-        $result = $this->query_adsabs("bibcode:" . urlencode($this->get("bibcode")));
+        $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
       } elseif ($this->has('doi') 
-                // AdsAbs API cannot handle brackets at 2018-08-01; see query_adsabs for details
-                && !preg_match('~[\(\)\{\}\[\]]~', $this->get('doi'))
                 && preg_match(DOI_REGEXP, remove_comments($this->get('doi')), $doi)) {
-        $result = $this->query_adsabs("doi:" . urlencode($doi[0]));
+        $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
       } elseif ($this->has('title')) {
-        $result = $this->query_adsabs("title:" . urlencode('"' .  remove_brackets($this->get("title")) . '"'));
+        $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
@@ -1045,11 +1043,11 @@ final class Template {
       if ($result->numFound != 1 && $this->has('journal')) {
         $journal = $this->get('journal');
         // try partial search using bibcode components:
-        $result = $this->query_adsabs("pub:" . urlencode(remove_brackets($journal))
+        $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
           . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
           . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
-          . ($this->has('volume') ? ("&volume:" . urlencode($this->get('volume'))) : '')
-          . ($this->page() ? ("&page:" . urlencode($this->page())) : '')
+          . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
+          . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
         );
         if ($result->numFound == 0) return FALSE;
         if (!isset($result->docs[0]->pub)) return FALSE;
@@ -1134,16 +1132,11 @@ final class Template {
   
   // $options should be a series of field names, colons (optionally urlencoded), and
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
+  // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs ($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     
-    // Parentheses of any shape are not presently supported by AdsAbs API: see
-    // https://github.com/adsabs/adsabs-dev-api/issues/43
-    if (preg_match("~%2[89]|%[57][BD]~", $options)) {
-      trigger_error(" x Parentheses are not presently supported by AdsAbs API. \n   Query options were: " 
-                    . urldecode($options), E_USER_NOTICE);
-      return (object) array('numFound' => 0);
-    } else if (!getenv('PHP_ADSABSAPIKEY')) {
+    if (!getenv('PHP_ADSABSAPIKEY')) {
       trigger_error(" x PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.", E_USER_NOTICE);
     }
     
@@ -1153,8 +1146,7 @@ final class Template {
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
       $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/query"
-                  . "?data_type=XML&q=$options&fl="
-                  . "arxiv_class,author,bibcode,doi,doctype,identifier,"
+                  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
       if (getenv('TRAVIS')) {
@@ -2762,7 +2754,7 @@ final class Template {
   
   protected function isbn10Toisbn13 ($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
-       $isbn10 = str_replace(array('—','―','–','−','‒'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
+       $isbn10 = str_replace(array('—','?','–','-','?'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
        if (preg_match("~[^0-9Xx\-]~",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
        if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-") return $isbn10;  // Ends or starts with a dash
        $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
