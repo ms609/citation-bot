@@ -12,7 +12,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 $SLOW_MODE = TRUE;
  
 if (getenv('TRAVIS_PULL_REQUEST')) {
-  echo (' - Skipping WikipediaBotTest.php: Testing bot in Travis pull requests would endanger secure tokens.\n');
+  echo (" - Skipping WikipediaBotTest.php: Testing bot in Travis pull requests would endanger secure tokens.\n");
 } else {
   class WikipediaBotTest extends PHPUnit\Framework\TestCase {
 
