@@ -1140,7 +1140,7 @@ final class Template {
     // Parentheses of any shape are not presently supported by AdsAbs API: see
     // https://github.com/adsabs/adsabs-dev-api/issues/43
     if (preg_match("~%2[89]|%[57][BD]~", $options)) {
-      trigger_error(" x Parentheses are not presently supported by AdsAbs API", E_USER_NOTICE);
+      trigger_error(" x Parentheses are not presently supported by AdsAbs API. \n   Options were: " . urldecode($options), E_USER_NOTICE);
       return (object) array('numFound' => 0);
     }
     
