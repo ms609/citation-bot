@@ -266,6 +266,10 @@ function sanitize_string($str) {
   return $str;
 }
 
+function remove_brackets($string) {
+  return str_replace(['(', ')', '{', '}', '[', ']'], '' , $string);
+}
+
 function prior_parameters($par, $list=array()) {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match)) {

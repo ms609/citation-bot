@@ -1019,10 +1019,11 @@ final class Template {
       echo "\n - Checking AdsAbs database";
       if ($bibcode = $this->has('bibcode')) {
         $result = $this->query_adsabs("bibcode:" . urlencode($this->get("bibcode")));
-      } elseif ($this->has('doi')) {
+      } elseif ($this->has('doi') && !preg_match('~\(\)\{\}\[\]~', $this->get('doi'))) {
+        // AdsAbs API cannot handle brackets at 2018-08-01; see query_adsabs for details
         $result = $this->query_adsabs("doi:" . urlencode($this->get('doi')));
       } elseif ($this->has('title')) {
-        $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
+        $result = $this->query_adsabs("title:" . urlencode('"' .  remove_brackets($this->get("title")) . '"'));
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
@@ -1042,12 +1043,12 @@ final class Template {
       if ($result->numFound != 1 && $this->has('journal')) {
         $journal = $this->get('journal');
         // try partial search using bibcode components:
-        $result = $this->query_adsabs("pub:" . urlencode($journal)
-                          . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
-                          . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
-                          . ($this->has('volume') ? ("&volume:" . urlencode($this->get('volume'))) : '')
-                          . ($this->page() ? ("&page:" . urlencode($this->page())) : '')
-                          );
+        $result = $this->query_adsabs("pub:" . urlencode(remove_brackets($journal))
+          . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
+          . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
+          . ($this->has('volume') ? ("&volume:" . urlencode($this->get('volume'))) : '')
+          . ($this->page() ? ("&page:" . urlencode($this->page())) : '')
+        );
         if ($result->numFound == 0) return FALSE;
         if (!isset($result->docs[0]->pub)) return FALSE;
         $journal_string = explode(",", (string) $result->docs[0]->pub);
@@ -1133,6 +1134,14 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   protected function query_adsabs ($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
+    
+    // Parentheses of any shape are not presently supported by AdsAbs API: see
+    // https://github.com/adsabs/adsabs-dev-api/issues/43
+    if (preg_match("~%2[89]|%[57][BD]~", $options)) {
+      trigger_error(" x Parentheses are not presently supported by AdsAbs API", E_USER_NOTICE);
+      return (object) array('numFound' => 0);
+    }
+    
     try {
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
@@ -1158,7 +1167,7 @@ final class Template {
       $decoded = @json_decode($body);
       
       if (is_object($decoded) && isset($decoded->error)) {
-        throw new Exception($decoded->error->msg, $decoded->error->code);
+        throw new Exception($decoded->error->msg . "\n - URL was:  " . $adsabs_url, $decoded->error->code);
       }
       if ($http_response != 200) {
         throw new Exception(strtok($header, "\n"), $http_response);
