@@ -3,7 +3,7 @@
 /*
  * Current tests that are failing.
  */
-
+error_reporting(E_ALL);
 // backward compatibility
 if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_exists('\PHPUnit_Framework_TestCase')) {
