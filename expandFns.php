@@ -132,7 +132,7 @@ function wikify_external_text($title) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $title = title_capitalization($title);
+  $title = title_capitalization($title,FALSE);
   
   $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
   $wikiTags = array("''","''",'','',"");
