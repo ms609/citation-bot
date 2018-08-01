@@ -270,6 +270,12 @@ function remove_brackets($string) {
   return str_replace(['(', ')', '{', '}', '[', ']'], '' , $string);
 }
 
+function remove_comments($string) {
+  // See Comment::PLACEHOLDER_TEXT for syntax
+  $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~', "", $string);
+  return preg_replace("~<!--.*?-->~us", "", $string);
+}
+
 function prior_parameters($par, $list=array()) {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match)) {

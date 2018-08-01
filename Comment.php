@@ -4,6 +4,7 @@
  */
 
 final class Comment {
+  // If you ever change PLACEHOLDER_TEXT, please update expandFns.php::remove_comments
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENT %s # # #';
   const REGEXP = '~<!--.*?-->~us';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;

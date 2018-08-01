@@ -1019,9 +1019,11 @@ final class Template {
       echo "\n - Checking AdsAbs database";
       if ($bibcode = $this->has('bibcode')) {
         $result = $this->query_adsabs("bibcode:" . urlencode($this->get("bibcode")));
-      } elseif ($this->has('doi') && !preg_match('~\(\)\{\}\[\]~', $this->get('doi'))) {
-        // AdsAbs API cannot handle brackets at 2018-08-01; see query_adsabs for details
-        $result = $this->query_adsabs("doi:" . urlencode($this->get('doi')));
+      } elseif ($this->has('doi') 
+                // AdsAbs API cannot handle brackets at 2018-08-01; see query_adsabs for details
+                && !preg_match('~\(\)\{\}\[\]~', $this->get('doi'))
+                && preg_match(DOI_REGEXP, remove_comments($this->get('doi')), $doi)) {
+        $result = $this->query_adsabs("doi:" . urlencode($doi[0]));
       } elseif ($this->has('title')) {
         $result = $this->query_adsabs("title:" . urlencode('"' .  remove_brackets($this->get("title")) . '"'));
         if ($result->numFound == 0) return FALSE;
