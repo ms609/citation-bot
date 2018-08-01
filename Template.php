@@ -127,12 +127,12 @@ final class Template {
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
           $this->forget('class');
-          $this->forget('publisher');  // will not match Journal, which the bot has just added
+          $this->forget('publisher');  // This almost guaranted to refers to ARXIV preprint not journal which we have added.  Therefore remove incorrect data
         } else if ($this->has('doi')) { // cite arxiv does not support DOI's
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
           // $this->forget('class');      Leave this for now since no journal title
-          $this->forget('publisher');  // will not match newly added DOI
+          $this->forget('publisher');  // Since we have no journal, we cannot have a publisher
         }
       break;
       case 'cite book':
