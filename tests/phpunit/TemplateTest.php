@@ -681,20 +681,20 @@ ER -  }}';
    public function testPagesDash() {
        $text = '{{cite journal|pages=1-2|title=do change}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('1–2',$expanded->get('pages'));
+       $this->assertEquals('1–2', $expanded->get('pages'));
        $text = '{{cite journal|at=1-2|title=do not change}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('1-2',$expanded->get('at'));
+       $this->assertEquals('1-2', $expanded->get('at'));
        $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]',$expanded->get('pages'));
+       $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]', $expanded->get('pages'));
    }
     
    public function testCollapseRanges() {
        $text = '{{cite journal|pages=1233-1233|year=1999-1999}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('1233',$expanded->get('pages'));
-       $this->assertEquals('1999',$expanded->get('year'));
+       $this->assertEquals('1233', $expanded->get('pages'));
+       $this->assertEquals('1999', $expanded->get('year'));
    }
    
    public function testDoNotAddYearIfDate() {
