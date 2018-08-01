@@ -2239,7 +2239,7 @@ final class Template {
     }
     
     if ($this->has('isbn')) {
-      $this->set('isbn',$this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
+      $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
       $this->forget('asin');
     }
 
@@ -2412,7 +2412,7 @@ final class Template {
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
-      $url_test = "https://dx.doi.org/".$doi ;
+      $url_test = "https://dx.doi.org/" . $doi;
       $headers_test = @get_headers($url_test, 1);
       if ($headers_test === FALSE) {
         echo "\n   ! DOI status unkown.  dx.doi.org failed to respond at all to: " . htmlspecialchars($doi);
