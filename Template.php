@@ -673,6 +673,7 @@ final class Template {
         $ch = curl_init($encoded_url);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_NOBODY, 1);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0); // stop curl from printing everything to standard out
         if (curl_exec($ch)) {
           $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
           if (strpos($redirect_url, "jstor.org/stable/")) {
@@ -2504,6 +2505,7 @@ final class Template {
         curl_setup($ch, str_replace("&amp;", "&", $url));
         curl_setopt($ch, CURLOPT_NOBODY, 1);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0); // stop curl from printing everything to standard out
         curl_exec($ch);
         switch(curl_getinfo($ch, CURLINFO_HTTP_CODE)){
           case "404":
