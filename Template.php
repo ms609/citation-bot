@@ -1146,8 +1146,7 @@ final class Template {
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
       $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/query"
-                  . "?data_type=XML&q=$options&fl="
-                  . "arxiv_class,author,bibcode,doi,doctype,identifier,"
+                  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
       if (getenv('TRAVIS')) {
