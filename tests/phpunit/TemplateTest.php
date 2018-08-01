@@ -610,7 +610,7 @@ ER -  }}';
       $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
   }
   public function testCapsAfterColonAndPeriodJournal() {
-      $text = '{{Cite journal |journal=In Journal Titles: a word following punctuation needs capitals. Of course.}}'
+      $text = '{{Cite journal |journal=In Journal Titles: a word following punctuation needs capitals. Of course.}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('In Journal Titles: A Word Following Punctuation Needs Capitals. Of Course.', $expanded->get('journal'));
   }  
