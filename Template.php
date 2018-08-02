@@ -652,7 +652,7 @@ final class Template {
         }
       }
       
-      $url = $this->get('url'); // If URL was blank, we'd've returned already.
+      $url = $this->get('url'); // If URL was blank, we would have returned already.
     } else {
       $url = $url_sent;
     }
