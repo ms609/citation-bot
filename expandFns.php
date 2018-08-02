@@ -132,7 +132,7 @@ function wikify_external_text($title) {
               : $title
             );
   $title = preg_replace('~[\*]$~', '', $title);
-  $title = title_capitalization($title);
+  $title = title_capitalization($title, TRUE);
   
   $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
   $wikiTags = array("''","''",'','',"");
@@ -180,7 +180,7 @@ function restore_italics ($text) {
  *      letter after colons and other punctuation marks to remain capitalized.
  *      If not, it won't capitalise after : etc.
  */
-function title_capitalization($in, $caps_after_punctuation = TRUE) {
+function title_capitalization($in, $caps_after_punctuation) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
   if(substr($new_case,0,2) === "[[" && substr($new_case,-2) === "]]") {
