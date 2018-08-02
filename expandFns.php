@@ -196,7 +196,7 @@ function title_capitalization($in, $caps_after_punctuation) {
   $new_case = substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
     
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
-    // When there are lots of periods, then they probably mark abbrev.s, not sentance ends
+    // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
     $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
