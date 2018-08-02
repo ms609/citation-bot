@@ -644,7 +644,7 @@ ER -  }}';
   }
   public function testTitleCAPS(){
       $text = 'THIS A JOURNAL';
-      $expanded = title_capitalization($text,TRUE);
+      $expanded = title_capitalization($text, TRUE);
       $this->assertEquals("This a Journal", $expanded);
   }
   public function testSpeciesCaps() {
