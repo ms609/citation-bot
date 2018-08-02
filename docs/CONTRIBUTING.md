@@ -29,3 +29,14 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We prefer `elseif` to `else if`
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
   * All code must be both valid PHP 5.5.9 and valid PHP 7.0
+
+## Bot output conventions
+The bot reports its activity to users using:
+  * A new line beginning with an asterisk `*_` to announce that a new item is being analysed
+  * A new line beginning with a space and a hyphen `_-_` to announce that it is undertaking an expansion activity
+  * A new line beginning with three spaces and a symbol `___X_` to denote that it is changing the value of a parameter:
+    * `+` denotes a newly added parameter
+    * `-` denotes the removal of a parameter
+    * `~` denotes that the name or value of an existing parameter is being modified
+    * `!` is used to denote an outcome that may require review by the user or bot maintainer
+      
