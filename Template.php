@@ -2335,7 +2335,7 @@ final class Template {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            $p->val = title_capitalization($p->val, TRUE);
+            $p->val = title_capitalization(ucfirst($p->val), TRUE);
             break;
           case 'edition': 
             $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
