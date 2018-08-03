@@ -1233,10 +1233,10 @@ final class Template {
   
   protected function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
-    if ($doi && ($force || $this->incomplete())) {
-      if (preg_match('~^10\.2307/(\d+)$~', $doi)) {
+    if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $this->add_if_new('jstor', substr($doi, 8));
-      }
+    }
+    if ($doi && ($force || $this->incomplete())) {
       $crossRef = $this->query_crossref($doi);
       if ($crossRef) {
         if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
@@ -1249,7 +1249,7 @@ final class Template {
           }
           $this->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will wikify title and sanitize the string
         } else {
-          $this->add_if_new('title',  restore_italics($crossRef->article_title)); // add_if_new will wikify title and sanitize the string
+          $this->add_if_new('title', restore_italics($crossRef->article_title)); // add_if_new will wikify title and sanitize the string
         }
         $this->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
         $this->add_if_new("year", $crossRef->year);
