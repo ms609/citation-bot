@@ -165,7 +165,12 @@ final class Template {
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
         $this->citation_template = TRUE;
-        echo "\n\n* Expand citation: " . htmlspecialchars($this->get('title'));
+        echo "\n\n* Expand citation: ";
+        if (getenv('TRAVIS')) {
+          echo $this->get('title');
+        } else {
+          htmlspecialchars($this->get('title'));
+        }
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
 
