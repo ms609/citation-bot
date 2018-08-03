@@ -652,7 +652,7 @@ final class Template {
         }
       }
       
-      $url = $this->get('url'); // If URL was blank, we'd've returned already.
+      $url = $this->get('url'); // If URL was blank, we would have returned already.
     } else {
       $url = $url_sent;
     }
@@ -2590,7 +2590,7 @@ final class Template {
     return $max;
   }
   
-  // Retreive properties of template
+  // Retrieve properties of template
   public function first_author() {
     foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
       $author = $this->get($auth_param);
