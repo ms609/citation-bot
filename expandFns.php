@@ -24,7 +24,9 @@ function quiet_echo($text, $alternate_text = '') {
   }
 }
 
-function safely_echo ($string) echo echoable($string);
+function safely_echo ($string) {
+  echo echoable($string);
+}
 
 function echoable($string) {
   return HTML_OUTPUT ? htmlspecialchars($string) : $string;
