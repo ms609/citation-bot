@@ -242,9 +242,10 @@ function tag($long = FALSE) {
   $dbg = array_reverse(debug_backtrace());
   array_pop($dbg);
   array_shift($dbg);
+  $output = '';
   foreach ($dbg as $d) {
     if ($long) {
-      $output = '> ' . $d['function'];
+      $output = $output . '> ' . $d['function'];
     } else {
       $output = '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);
     }
