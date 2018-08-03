@@ -142,7 +142,7 @@ final class Template {
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->id_to_param();
-        echo "\n* " . htmlspecialchars($this->get('title'));
+        echo "\n* " . echoable($this->get('title'));
         $this->correct_param_spelling();
         if ($this->expand_by_google_books()) {
           echo "\n * Expanded from Google Books API";
@@ -165,7 +165,7 @@ final class Template {
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
         $this->citation_template = TRUE;
-        echo "\n\n* Expand citation: " . htmlspecialchars($this->get('title'));
+        echo "\n\n* Expand citation: " . echoable($this->get('title'));
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
 
@@ -839,7 +839,7 @@ final class Template {
           echo "\n   * Error loading simpleXML file from CrossRef.";
         }
         elseif ($result['status'] == 'malformed') {
-          echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
+          echo "\n   * Cannot search CrossRef: " . echoable($result->msg);
         }
         elseif ($result["status"] == "resolved") {
           return $result;
@@ -858,7 +858,7 @@ final class Template {
         echo "\n   * Error loading simpleXML file from CrossRef." . tag();
       }
       elseif ($result['status'] == 'malformed') {
-        echo "\n   * Cannot search CrossRef: " . htmlspecialchars($result->msg);
+        echo "\n   * Cannot search CrossRef: " . echoable($result->msg);
       } elseif ($result["status"]=="resolved") {
         echo " Successful!";
         return $result;
@@ -950,7 +950,7 @@ final class Template {
     if ($check_for_errors && $xml->ErrorList) {
       echo $xml->ErrorList->PhraseNotFound
               ? " no results."
-              : "\n - Errors detected in PMID search (" . htmlspecialchars(print_r($xml->ErrorList, 1)) . "); abandoned.";
+              : "\n - Errors detected in PMID search (" . echoable(print_r($xml->ErrorList, 1)) . "); abandoned.";
       return array(NULL, 0);
     }
 
@@ -973,7 +973,7 @@ final class Template {
     $this->set($arxiv_param, $eprint);
 
     if ($eprint) {
-      echo "\n * Getting data from arXiv " . htmlspecialchars($eprint);
+      echo "\n * Getting data from arXiv " . echoable($eprint);
       $context = stream_context_create(array(
         'http' => array('ignore_errors' => true),
       ));
@@ -1080,8 +1080,8 @@ final class Template {
                    ) === FALSE
         ) {
           echo "\n   Match for pagination but database journal \"" .
-            htmlspecialchars($journal_string[0]) . "\" didn't match \"" .
-            htmlspecialchars($journal) . "\"." . tag();
+            echoable($journal_string[0]) . "\" didn't match \"" .
+            echoable($journal) . "\"." . tag();
           return FALSE;
         }
       }
@@ -1296,7 +1296,7 @@ final class Template {
         }
         echo " (ok)";
       } else {
-        echo "\n - No CrossRef record found for doi '" . htmlspecialchars($doi) ."'; marking as broken";
+        echo "\n - No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken";
         $url_test = "https://dx.doi.org/".$doi ;
         $headers_test = @get_headers($url_test, 1);
         if($headers_test !==FALSE && empty($headers_test['Location']))
@@ -1480,9 +1480,9 @@ final class Template {
     }
     html_echo ("\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
         urlencode($pm) . '" target="_blank">' .
-        htmlspecialchars(strtoupper($identifier) . ' ' . $pm) . "</a> for more details" .
+        echoable(strtoupper($identifier) . ' ' . $pm) . "</a> for more details" .
         tag(),
-        "\n - Checking " . htmlspecialchars(strtoupper($identifier) . ' ' . $pm)
+        "\n - Checking " . echoable(strtoupper($identifier) . ' ' . $pm)
         . ' for more details' . tag());
     $xml = @simplexml_load_file("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
     if ($xml === FALSE) {
@@ -1587,7 +1587,7 @@ final class Template {
         // Keep trying...
       }
     }
-    echo "\n   ! Error loading CrossRef file from DOI " . htmlspecialchars($doi) ."!";
+    echo "\n   ! Error loading CrossRef file from DOI " . echoable($doi) ."!";
     return FALSE;
   }
 
@@ -1622,13 +1622,13 @@ final class Template {
           $headers_test = @get_headers($this->get('url'), 1);
           if($headers_test ===FALSE) {
             $this->forget('url');
-            echo "\n   !  Open access URL was was unreachable from oiDOI API for doi: " . htmlspecialchars($doi);
+            echo "\n   !  Open access URL was was unreachable from oiDOI API for doi: " . echoable($doi);
             return FALSE;
           }
           $response_code = intval(substr($headers_test[0], 9, 3)); 
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
             $this->forget('url');
-            echo "\n   !  Open access URL gave response code " . $response_code . " from oiDOI API for doi: " . htmlspecialchars($doi);
+            echo "\n   !  Open access URL gave response code " . $response_code . " from oiDOI API for doi: " . echoable($doi);
             return FALSE;
           }
           switch ($best_location->version) {
@@ -1642,7 +1642,7 @@ final class Template {
         return TRUE;
       }
     } else {
-       echo "\n   ! Could not retrieve open access details from oiDOI API for doi: " . htmlspecialchars($doi);
+       echo "\n   ! Could not retrieve open access details from oiDOI API for doi: " . echoable($doi);
        return FALSE;
     }
   }
@@ -1732,7 +1732,7 @@ final class Template {
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
           default:
-            echo "\n - " . htmlspecialchars($part);
+            echo "\n - " . echoable($part);
             $removed_redundant++;
         }
       }
@@ -1827,12 +1827,12 @@ final class Template {
     for ($i = 0; $i < $n_dup_params; $i++) {
       if ($duplicate_identical[$i]) {
         echo "\n * Deleting identical duplicate of parameter: " .
-          htmlspecialchars($this->param[$duplicated_parameters[$i]]->param) . "\n";
+          echoable($this->param[$duplicated_parameters[$i]]->param) . "\n";
         unset($this->param[$duplicated_parameters[$i]]);
       } else {
         $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
         echo "\n * Marking duplicate parameter: " .
-          htmlspecialchars($duplicated_parameters[$i]->param) . "\n";
+          echoable($duplicated_parameters[$i]->param) . "\n";
       }
     }
     
@@ -2194,7 +2194,7 @@ final class Template {
 
     if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '##', $p->param), $parameter_list)) {
      
-      echo "\n   * Unrecognised parameter " . htmlspecialchars($p->param) . " ";
+      echo "\n   * Unrecognised parameter " . echoable($p->param) . " ";
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
         // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
@@ -2207,7 +2207,7 @@ final class Template {
        * If it is valid, it should apply only when $p->param relates to authors,
        * not when it applies to e.g. pages, title.
       if ($this->initial_author_params) {
-        echo "\n * initial authors exist, not correcting " . htmlspecialchars($p->param);
+        echo "\n * initial authors exist, not correcting " . echoable($p->param);
         continue;
       }
       */
@@ -2350,7 +2350,7 @@ final class Template {
           case 'pages': case 'page': case 'issue': case 'year':
             if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(TO_EN_DASH, $p->val) && (stripos($p->val, "http") === FALSE)) {
               $this->mod_dashes = TRUE;
-              echo ( "\n   ~ Upgrading to en-dash in " . htmlspecialchars($p->param) .
+              echo ( "\n   ~ Upgrading to en-dash in " . echoable($p->param) .
                     " parameter" . tag());
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
@@ -2467,14 +2467,14 @@ final class Template {
         $doi = $try;
       }
     }
-    echo "\n   . Checking that DOI " . htmlspecialchars($doi) . " is operational..." . tag();
+    echo "\n   . Checking that DOI " . echoable($doi) . " is operational..." . tag();
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
       $url_test = "https://dx.doi.org/" . $doi;
       $headers_test = @get_headers($url_test, 1);
       if ($headers_test === FALSE) {
-        echo "\n   ! DOI status unkown.  dx.doi.org failed to respond at all to: " . htmlspecialchars($doi);
+        echo "\n   ! DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi);
         return FALSE;
       }
       $this->forget("doi_inactivedate");
@@ -2482,7 +2482,7 @@ final class Template {
       $this->forget("doi_brokendate");
       if(empty($headers_test['Location']))
          $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if cross-ref fails
-      echo "\n   ! Broken doi: " . htmlspecialchars($doi);
+      echo "\n   ! Broken doi: " . echoable($doi);
       return FALSE;
     } else {
       $this->forget('doi_brokendate');
@@ -2740,7 +2740,7 @@ final class Template {
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
-      echo "\n   - Dropping parameter " . htmlspecialchars($par) . tag();
+      echo "\n   - Dropping parameter " . echoable($par) . tag();
       unset($this->param[$pos]);
     }
   }

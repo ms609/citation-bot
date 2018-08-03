@@ -51,7 +51,7 @@ if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user 
    echo "\n\n No page given.  Aborting. \n\n";
    exit(0);
 }
-echo "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
+echo "\n\n Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
 $my_page = new Page();
 $api = new WikipediaBot();
 if ($my_page->get_text_from($_REQUEST["page"], $api)) {
@@ -67,11 +67,11 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
         . urlencode($api->get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
         , ".");
     } else {
-      echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->parsed_text());
+      echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());
     }
   } elseif (!$ON) {
-    echo "\n # Proposed code for " . htmlspecialchars($title) . ', which you have asked the bot to commit with edit summary ' . htmlspecialchars($my_page->edit_summary()) . "<br><pre>";
-    echo htmlspecialchars($my_page->parsed_text());
+    echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
+    safely_echo($my_page->parsed_text());
     echo "</pre>";
 ?>
 <form method="post" action="doibot.php">

@@ -8,7 +8,7 @@
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once("./vendor/autoload.php");
 
-if (!defined("HTML_OUTPUT")) {  // Fail safe code
+if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
   define("HTML_OUTPUT", FALSE);
 }  
 
@@ -22,6 +22,14 @@ function quiet_echo($text, $alternate_text = '') {
   } else {
     echo $alternate_text;
   }
+}
+
+function safely_echo ($string) {
+  echo echoable($string);
+}
+
+function echoable($string) {
+  return HTML_OUTPUT ? htmlspecialchars($string) : $string;
 }
 
 require_once("constants.php");

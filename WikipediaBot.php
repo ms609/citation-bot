@@ -73,7 +73,7 @@ class WikipediaBot {
     if (!$this->reset_curl()) {
       curl_close($this->ch);
       trigger_error('Could not initialize CURL resource: ' .
-        htmlspecialchars(curl_error($this->ch)), E_USER_ERROR);
+        echoable(curl_error($this->ch)), E_USER_ERROR);
       return FALSE;
     }
     $params['format'] = 'json';
@@ -94,7 +94,7 @@ class WikipediaBot {
           
           $ret = @json_decode($data = curl_exec($this->ch));
           if (!$data) {
-            trigger_error("Curl error: " . htmlspecialchars(curl_error($this->ch)), E_USER_NOTICE);
+            trigger_error("Curl error: " . echoable(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
           }
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
@@ -111,7 +111,7 @@ class WikipediaBot {
           
           $ret = @json_decode($data = curl_exec($this->ch));
           if ( !$data ) {
-            echo "\n ! Curl error: " . htmlspecialchars(curl_error($this->ch));
+            echo "\n ! Curl error: " . echoable(curl_error($this->ch));
             exit(0);
           }
           
@@ -190,9 +190,9 @@ class WikipediaBot {
     
     if (isset($result->error)) {
       trigger_error("Write error: " . 
-                    htmlspecialchars(strtoupper($result->error->code)) . ": " . 
+                    echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
-                    htmlspecialchars($result->error->info)), E_USER_ERROR);
+                    echoable($result->error->info)), E_USER_ERROR);
       return FALSE;
     } elseif (isset($result->edit)) {
       if (isset($result->edit->captcha)) {
@@ -203,12 +203,12 @@ class WikipediaBot {
         if (HTML_OUTPUT) {
           echo "\n <span style='color: #e21'>Written to <a href='" 
           . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
-          . htmlspecialchars($myPage->title) . '</a></span>';
+          . echoable($myPage->title) . '</a></span>';
         }
-        else echo "\n Written to " . htmlspecialchars($myPage->title) . '.  ';
+        else echo "\n Written to " . echoable($myPage->title) . '.  ';
         return TRUE;
       } elseif (isset($result->edit->result)) {
-        echo "\n ! " . htmlspecialchars($result->edit->result);
+        echo "\n ! " . echoable($result->edit->result);
         return FALSE;
       }
     } else {
@@ -236,7 +236,7 @@ class WikipediaBot {
           $list[] = (string) $page->title;
         }
       } else {
-        trigger_error('Error reading API from ' . htmlspecialchars($url) . "\n\n", E_USER_WARNING);
+        trigger_error('Error reading API from ' . echoable($url) . "\n\n", E_USER_WARNING);
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
@@ -264,7 +264,7 @@ class WikipediaBot {
       set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->embeddedin->ei)) {
-        trigger_error('Error reading API from ' . htmlspecialchars($url), E_USER_NOTICE);
+        trigger_error('Error reading API from ' . echoable($url), E_USER_NOTICE);
       } else {
         foreach($res->query->embeddedin as $page) {
           $list["title"][] = $page->title;
