@@ -63,7 +63,7 @@ const JOURNAL_ACRONYMS = array(
 ' RNA ',
 ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ',     ' Tellus A ', ' The EMBO Journal ', ' Time Out London ',
 ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ',
-' ZooKeys ');
+' ZooKeys ', ' The FASEB Journal ');
 const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Acm Sigplan Notices ', ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Bmj ',
 ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
@@ -76,4 +76,4 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Rna ',
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' Tellus A ', ' The Embo Journal ', ' Time Out London ',
 ' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ',
-' Zookeys '); 
+' Zookeys ', ' The Faseb Journal '); 
