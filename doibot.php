@@ -75,11 +75,11 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
     echo "</pre>";
 ?>
 <form method="post" action="doibot.php">
-  <input type="hidden" name="page" value="<?php echo $title;?>"></input>
-  <input type="hidden" name="user" value="<?php echo $user;?>"></input>
-  <input type="hidden" name="edit" value="on"></input>
-  <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>"></input>
-  <input type=submit value="Submit edits"></input>
+  <input type="hidden" name="page" value="<?php echo $title;?>" />
+  <input type="hidden" name="user" value="<?php echo $user;?>" />
+  <input type="hidden" name="edit" value="on" />
+  <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>" />
+  <input type=submit value="Submit edits" />
 </form>
 <?php
   } else {
