@@ -29,6 +29,11 @@ class PageTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
+  public function testPageChangeSummary() {
+      $page = $this->process_page('{{cite journal|isbn=123456789|chapter=chapter name|title=book name}}');
+      $this->assertNull($page->edit_summary()); // Actually not NULL, just want to see it.  We alter journal to book
+  }
+
   public function testBotRead() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
       echo "\n[Test skipped] in pull requests, to protect Bot secrets";
