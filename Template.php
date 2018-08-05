@@ -2768,8 +2768,8 @@ final class Template {
     }
 
     $old = ($this->initial_param) ? $this->initial_param : array();
-    if ($this->intial_name !== $this->name) {
-      $old[] = $this->intial_name;
+    if ($this->initial_name !== $this->name) {
+      $old[] = $this->initial_name;
       $new[] = $this->name;
     }
 
