@@ -2784,9 +2784,12 @@ final class Template {
       }
     }
     $ret['dashes'] = $this->mod_dashes;
-    foreach ($ret as $r) {
-        if (count($r) === 0) unset($r); // Remove ones that are empty
-    }
+
+    if(isset($ret['modifications']) && (count($ret['modifications'])===0)) unset($ret['modifications']);
+    if(isset($ret['additions']) && (count($ret['additions'])===0)) unset($ret['additions']);
+    if(isset($ret['deletions']) && (count($ret['deletions'])===0)) unset($ret['deletions']);
+    if(isset($ret['changeonly']) && (count($ret['changeonly'])===0)) unset($ret['changeonly']);
+
     if (in_array($type, array_keys($ret))) return $ret[$type];
     return $ret;
   }
