@@ -2778,6 +2778,9 @@ final class Template {
         $ret['additions'] = array_diff(array_keys($new), array_keys($old));
         $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
         $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
+        foreach ($ret['deletions'] as $inds=>$vals) {
+          if ($vals === '') unset($ret['deletions'][$inds]); // If we get rid of double pipe that appears as a deletion, not misc.
+        }
       } else {
         $ret['additions'] = array_keys($new);
         $ret['modifications'] = array_keys($new);
