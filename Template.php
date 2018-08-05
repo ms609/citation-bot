@@ -2768,10 +2768,9 @@ final class Template {
     }
 
     $old = ($this->initial_param) ? $this->initial_param : array();
-    if ($this->initial_name !== $this->name) {
-      $old[] = $this->initial_name;
-      $new[] = $this->name;
-    }
+    
+    $old['template type'] = trim($this->initial_name);
+    $new['template type'] = trim($this->name);
 
     if ($new) {
       if ($old) {
