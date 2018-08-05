@@ -153,7 +153,7 @@ class Page {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
-    $auto_summary .= (((count($this->modifications["deletions"]) !==0))
+    $auto_summary .= ((count($this->modifications["deletions"]) !==0)
       ? "Removed parameters. "
       : ""
       ) . (($this->modifications["dashes"])
