@@ -41,7 +41,7 @@ final class Template {
       $this->name = substr($text, 2, -2);
       $this->param = NULL;
     }
-    $initial_name = $this->name;
+    $this->$initial_name = $this->name;
 
     // extract initial parameters/values from Parameters in $this->param
     if ($this->param) foreach ($this->param as $p) {
