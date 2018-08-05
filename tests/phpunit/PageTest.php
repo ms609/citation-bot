@@ -5,7 +5,7 @@
  */
 error_reporting(E_ALL);
 // backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&https://github.com/ms609/citation-bot/pull/511/files
+if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_exists('\PHPUnit_Framework_TestCase')) {
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
