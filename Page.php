@@ -17,6 +17,7 @@ class Page {
 
   function __construct() {
     $this->api = new WikipediaBot();
+    $this->modifications = array();
   }
     
   public function get_text_from($title, $api) {    
@@ -50,7 +51,6 @@ class Page {
 
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     $this->start_text = $this->text;
-    $this->modifications = array();
 
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
@@ -68,7 +68,6 @@ class Page {
   public function parse_text($text) {
     $this->text = $text;
     $this->start_text = $this->text;
-    $this->modifications = array();
   }  
 
   public function parsed_text() {
@@ -87,7 +86,6 @@ class Page {
       . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
       "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
     $text = $this->text;
-    $this->modifications = array();
     if (!$text) {
       echo "\n\n  ! No text retrieved.\n";
       return FALSE;
