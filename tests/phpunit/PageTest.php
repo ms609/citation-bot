@@ -30,8 +30,8 @@ class PageTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testPageChangeSummary() {
-      $page = $this->process_page('{{cite journal|isbn=123456789|chapter=chapter name|title=book name}}');
-      $this->assertNull($page->edit_summary()); // Actually not NULL, just want to see it.  We alter journal to book
+      $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}');
+      $this->assertEquals('Alter: template type. Add. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
   }
 
   public function testBotRead() {
