@@ -42,7 +42,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
   }
     
   public function testPageChangeSummary() {
-      $page = $this->process_page('{{cite journal|isbn=123456789|chapter=chapter name|title=book name}}') {
+      $page = $this->process_page('{{cite journal|isbn=123456789|chapter=chapter name|title=book name}}');
       $this->assertNull($page->edit_summary()); // Actually not NULL, just want to see it
   }
   
