@@ -40,6 +40,11 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('This page tests bots', $page->parsed_text());
     }
   }
+    
+  public function testPageChangeSummary() {
+      $page = $this->process_page('{{cite journal|isbn=123456789'|chapter='chapter'|title='Book'}}) {
+      $this->assertNull($page->edit_summary()); // Actually not NULL, just want to see it
+  }
   
   public function testBotExpandWrite() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
