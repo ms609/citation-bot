@@ -127,10 +127,10 @@ class Page {
 
   public function edit_summary() {
     $auto_summary = "";
-    if ((count($this->modifications['changeonly']) !== 0)) {
+    if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
-    if ((count($this->modifications['additions']) !== 0)) {
+    if (count($this->modifications['additions']) !== 0) {
       $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
