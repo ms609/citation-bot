@@ -25,7 +25,7 @@ final class Template {
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes;
+            $mod_dashes, $initial_name;
 
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
@@ -41,6 +41,7 @@ final class Template {
       $this->name = substr($text, 2, -2);
       $this->param = NULL;
     }
+    $initial_name = $this->name;
 
     // extract initial parameters/values from Parameters in $this->param
     if ($this->param) foreach ($this->param as $p) {
@@ -2767,6 +2768,11 @@ final class Template {
     }
 
     $old = ($this->initial_param) ? $this->initial_param : array();
+    if ($this->intial_name !== $this->name) {
+      $old[] = $this->intial_name;
+      $new[] = $this->name;
+    }
+
     if ($new) {
       if ($old) {
         $ret['modifications'] = array_keys(array_diff_assoc ($new, $old));
