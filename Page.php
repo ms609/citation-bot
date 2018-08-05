@@ -127,10 +127,10 @@ class Page {
 
   public function edit_summary() {
     $auto_summary = "";
-    if (isset($this->modifications["changeonly"]) && count($this->modifications['changeonly']) !== 0) {
+    if (isset($this->modifications["changeonly"]) && (count($this->modifications['changeonly']) !== 0)) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
-    if (isset($this->modifications['additions']) && count($this->modifications['additions']) !== 0) {
+    if (isset($this->modifications['additions']) && (count($this->modifications['additions']) !== 0)) {
       $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
@@ -156,7 +156,7 @@ class Page {
     $auto_summary .= (isset($this->modifications["deletions"]) && (count($this->modifications["deletions"]) !==0))
       ? "Removed parameters. "
       : ""
-      ) . ((isset($this->modifications["dashes"]) && (count($this->modifications["dashes"]) !== 0))
+      ) . (isset($this->modifications["dashes"]) && (count($this->modifications["dashes"]) !== 0))
       ? "Formatted [[WP:ENDASH|dashes]]. "
       : ""
     );
