@@ -224,7 +224,7 @@ final class Template {
           }
         }
         // "Work is a troublesome parameter
-        if ($this->has('work') {
+        if ($this->has('work')) {
           if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
               ($this->has('title') && (strcasecmp($this->get('work'), $this->get('title')) === 0))     ||
               ($this->has('series') && (strcasecmp($this->get('work'), $this->get('series')) === 0))   || 
