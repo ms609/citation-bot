@@ -153,10 +153,10 @@ class Page {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
-    $auto_summary .= (($this->modifications["deletions"])
+    $auto_summary .= (isset($this->modifications["deletions"]) && (count($this->modifications["deletions"]) !==0))
       ? "Removed parameters. "
       : ""
-      ) . (($this->modifications["dashes"])
+      ) . ((isset($this->modifications["dashes"]) && (count($this->modifications["dashes"]) !== 0))
       ? "Formatted [[WP:ENDASH|dashes]]. "
       : ""
     );
