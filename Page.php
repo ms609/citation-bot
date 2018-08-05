@@ -127,10 +127,10 @@ class Page {
 
   public function edit_summary() {
     $auto_summary = "";
-    if (isset($this->modifications["changeonly"]) && (count($this->modifications['changeonly']) !== 0)) {
+    if ((count($this->modifications['changeonly']) !== 0)) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
-    if (isset($this->modifications['additions']) && (count($this->modifications['additions']) !== 0)) {
+    if ((count($this->modifications['additions']) !== 0)) {
       $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
@@ -147,13 +147,13 @@ class Page {
         $auto_summary = substr($auto_summary, 0, -2) . '. ';
       }
     }
-    if (isset($this->modifications["deletions"])
+    if ((count($this->modifications["deletions"]) !== 0)
     && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE
     ) {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
-    $auto_summary .= ((isset($this->modifications["deletions"]) && (count($this->modifications["deletions"]) !==0))
+    $auto_summary .= (((count($this->modifications["deletions"]) !==0))
       ? "Removed parameters. "
       : ""
       ) . (($this->modifications["dashes"])
