@@ -156,7 +156,7 @@ class Page {
     $auto_summary .= ((isset($this->modifications["deletions"]) && (count($this->modifications["deletions"]) !==0))
       ? "Removed parameters. "
       : ""
-      ) . ((isset($this->modifications["dashes"]) && (count($this->modifications["dashes"]) !== 0))
+      ) . (isset($this->modifications["dashes"])
       ? "Formatted [[WP:ENDASH|dashes]]. "
       : ""
     );
