@@ -223,6 +223,15 @@ final class Template {
             $this->forget('series');
           }
         }
+        // "Work is a troublesome parameter
+        if ($this->has('work') {
+          if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
+              ($this->has('title') && (strcasecmp($this->get('work'), $this->get('title')) === 0))     ||
+              ($this->has('series') && (strcasecmp($this->get('work'), $this->get('series')) === 0))   || 
+              ($this->has('chapter') && (strcasecmp($this->get('work'), $this->get('chapter')) === 0)) ){
+             $this->forget('work');
+          }
+        }
     }
     if ($this->citation_template) {
       $this->correct_param_spelling();
