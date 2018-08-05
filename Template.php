@@ -212,7 +212,7 @@ final class Template {
       if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
             $this->forget('title');
-        } elseif ($this->wikiname() === 'cite journal' || this->wikiname() === 'citation') {
+        } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
           $this->forget('chapter');
         }
       }
@@ -221,7 +221,7 @@ final class Template {
           (strcasecmp($this->get('series'), $this->get('journal')) === 0)) {  // Leave only one
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
             $this->forget('journal');
-        } elseif ($this->wikiname() === 'cite journal'|| this->wikiname() === 'citation') {
+        } elseif ($this->wikiname() === 'cite journal'|| $this->wikiname() === 'citation') {
           $this->forget('series');
         }
       }
