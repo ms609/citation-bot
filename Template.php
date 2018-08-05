@@ -201,8 +201,40 @@ final class Template {
         $this->get_open_access_url();
         $this->find_pmid();
         $this->tidy();
+
+        // Convert from journal to book, if there is a unique chapter name or has an ISBN
+        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
+          $this->name = 'Cite book';
+        }
+        // Sometimes title and chapter come from different databases
+        if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
+          if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+              $this->forget('title');
+          } elseif ($this->wikiname() === 'cite journal') {
+            $this->forget('chapter');
+          }
+        }
+        // Sometimes series and journal come from different databases
+        if ($this->has('series') && $this->has('journal') &&
+            (strcasecmp($this->get('series'), $this->get('journal')) === 0)) {  // Leave only one
+          if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+              $this->forget('journal');
+          } elseif ($this->wikiname() === 'cite journal') {
+            $this->forget('series');
+          }
+        }
     }
     if ($this->citation_template) {
+      // "Work is a troublesome parameter
+      if ($this->has('work')) {
+        if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
+            ($this->has('title') && (strcasecmp($this->get('work'), $this->get('title')) === 0))     ||
+            ($this->has('series') && (strcasecmp($this->get('work'), $this->get('series')) === 0))   || 
+            ($this->has('chapter') && (strcasecmp($this->get('work'), $this->get('chapter')) === 0)) ||
+            ($this->blank('work'))  ){
+           $this->forget('work');
+        }
+      }
       $this->correct_param_spelling();
       // $this->check_url(); // Function currently disabled
     }
@@ -2259,37 +2291,6 @@ final class Template {
 
   ### Tidying and formatting
   protected function tidy() {
-    // Convert from journal to book, if there is a unique chapter name or has an ISBN
-    if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) {
-        $this->name = 'Cite book';
-    }
-    // Sometimes title and chapter come from different databases
-    if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
-       if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
-         $this->forget('title');
-       } elseif ($this->wikiname() === 'cite journal') {
-         $this->forget('chapter');
-       }
-    }
-    // Sometimes series and journal come from different databases
-    if ($this->has('series') && $this->has('journal') &&
-          (strcasecmp($this->get('series'), $this->get('journal')) === 0)) {  // Leave only one
-       if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
-           $this->forget('journal');
-       } elseif ($this->wikiname() === 'cite journal') {
-           $this->forget('series');
-       }
-    }
-    // Work is a troublesome parameter:  Often duplicates other parameters
-    if ($this->has('work')) {
-       if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
-           ($this->has('title') && (strcasecmp($this->get('work'), $this->get('title')) === 0))     ||
-           ($this->has('series') && (strcasecmp($this->get('work'), $this->get('series')) === 0))   || 
-           ($this->has('chapter') && (strcasecmp($this->get('work'), $this->get('chapter')) === 0)) ||
-           ($this->blank('work'))  ){
-             $this->forget('work');
-        }
-    }
     $to_add = array();
     $others = '';
 
