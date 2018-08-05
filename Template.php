@@ -2784,6 +2784,9 @@ final class Template {
       }
     }
     $ret['dashes'] = $this->mod_dashes;
+    foreach ($ret as $r) {
+        if (count($r) === 0) unset($r); // Remove ones that are empty
+    }
     if (in_array($type, array_keys($ret))) return $ret[$type];
     return $ret;
   }
