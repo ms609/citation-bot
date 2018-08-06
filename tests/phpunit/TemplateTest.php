@@ -389,7 +389,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('{{cite book|series=LoSe mE}}',$expanded->parsed_text());
       $text = '{{cite journal|chapter=abc|work=abc}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite journal|chapter=abc}}',$expanded->parsed_text());
+      $this->assertEquals('{{cite book|chapter=abc}}',$expanded->parsed_text());
       $text = '{{cite journal|work=I Live}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{cite journal|work=I Live}}',$expanded->parsed_text());
