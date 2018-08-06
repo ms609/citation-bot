@@ -24,8 +24,8 @@ final class Template {
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
   protected $rawtext;
 
-  protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes;
+  protected $name, $param, $initial_param, $initial_author_params, $initial_name,
+            $citation_template, $mod_dashes;
 
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
@@ -41,6 +41,7 @@ final class Template {
       $this->name = substr($text, 2, -2);
       $this->param = NULL;
     }
+    $this->initial_name = $this->name;
 
     // extract initial parameters/values from Parameters in $this->param
     if ($this->param) foreach ($this->param as $p) {
@@ -2767,12 +2768,19 @@ final class Template {
     }
 
     $old = ($this->initial_param) ? $this->initial_param : array();
+    
+    $old['template type'] = trim($this->initial_name);
+    $new['template type'] = trim($this->name);
+
     if ($new) {
       if ($old) {
         $ret['modifications'] = array_keys(array_diff_assoc ($new, $old));
         $ret['additions'] = array_diff(array_keys($new), array_keys($old));
         $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
         $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
+        foreach ($ret['deletions'] as $inds=>$vals) {
+          if ($vals === '') unset($ret['deletions'][$inds]); // If we get rid of double pipe that appears as a deletion, not misc.
+        }
       } else {
         $ret['additions'] = array_keys($new);
         $ret['modifications'] = array_keys($new);
