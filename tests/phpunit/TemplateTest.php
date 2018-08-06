@@ -398,7 +398,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('{{not cite|work=xyz|chapter=xzy}}',$expanded->parsed_text());
       $text = '{{citation|work=xyz|journal=xyz}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{citation|journal=xyz}}',$expanded->parsed_text());
+      $this->assertEquals('{{citation|journal=Xyz}}',$expanded->parsed_text());
       $text = '{{citation|work=|chapter=abc}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{citation|chapter=abc}}',$expanded->parsed_text());
