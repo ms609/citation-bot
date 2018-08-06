@@ -1592,7 +1592,9 @@ final class Template {
 
   protected function get_open_access_url() {
     $doi = $this->get('doi');
-    if (!$doi || $this->get('url')) return;
+    if (!$doi || $this->get('url') || $this->get('chapter-url') || $this->get('chapterurl') || $this->get('ontribution-url') || $this->get('ontributionurl')) return FALSE;
+    $possible_braces = $this>get('title') . $this>get('chapter') . "";
+    if ((strpos($possible_braces, ']]') !== FALSE) || (strpos($possible_braces, '&&') !== FALSE)) return FALSE;
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
