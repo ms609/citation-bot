@@ -1,1 +1,70 @@
 DirectoryIndex doibot.html
+
+<Files ".gitignore">
+order deny,allow
+deny from all
+</Files>
+<Files ".htaccess">
+order deny,allow
+deny from all
+</Files>
+<Files ".travis.yml">
+order deny,allow
+deny from all
+</Files>
+<Files "Comment.php">
+order deny,allow
+deny from all
+</Files>
+<Files "DOItools.php">
+order deny,allow
+deny from all
+</Files>
+<Files "LICENSE">
+order deny,allow
+deny from all
+</Files>
+<Files "Page.php">
+order deny,allow
+deny from all
+</Files>
+<Files "Parameter.php">
+order deny,allow
+deny from all
+</Files>
+<Files "README.md">
+order deny,allow
+deny from all
+</Files>
+<Files "Template.php">
+order deny,allow
+deny from all
+</Files>
+<Files "WikipediaBot.php">
+order deny,allow
+deny from all
+</Files>
+<Files "composer.json">
+order deny,allow
+deny from all
+</Files>
+<Files "constants.php">
+order deny,allow
+deny from all
+</Files>
+<Files "expandFns.php">
+order deny,allow
+deny from all
+</Files>
+<Files "phpunit.xml.dist">
+order deny,allow
+deny from all
+</Files>
+<Files "public.pem">
+order deny,allow
+deny from all
+</Files>
+<Files "wikiFunctions.php">
+order deny,allow
+deny from all
+</Files>
