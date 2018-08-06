@@ -569,9 +569,7 @@ final class Template {
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
           $this->expand_by_pubmed();
-          if ($this->blank('doi')) {
-            $this->get_doi_from_crossref();
-          }
+          $this->get_doi_from_crossref();
           return TRUE;
         }
       return FALSE;
@@ -1549,7 +1547,7 @@ final class Template {
         break;
       }
     }
-    if ($xml && $this->blank('doi')) $this->get_doi_from_crossref();
+    if ($xml) $this->get_doi_from_crossref();
   }
 
   protected function use_sici() {
