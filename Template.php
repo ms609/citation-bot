@@ -2335,7 +2335,7 @@ final class Template {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            if(substr($p->val,0,1) !== "[" && substr($p->val,-1) !== "]") { 
+            if(substr($p->val, 0, 1) !== "[" && substr($p->val, -1) !== "]") { 
                $p->val = title_capitalization(ucwords($p->val), TRUE);
             }
             break;
