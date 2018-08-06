@@ -226,7 +226,7 @@ final class Template {
         }
       }
       // "Work is a troublesome parameter
-      if ($this->has('work')) {
+      if ($this->get('work') !== NULL) { // We want to catch {{Cite|work=}} also, so do not use $this->has('work')
         if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
             ($this->has('title') && (strcasecmp($this->get('work'), $this->get('title')) === 0))     ||
             ($this->has('series') && (strcasecmp($this->get('work'), $this->get('series')) === 0))   || 
@@ -2691,7 +2691,7 @@ final class Template {
     return NULL;
   }
 
-  protected function has($par) {return (bool) strlen($this->get($par));}
+  protected function has($par) {return (bool) strlen($this-> get($par));}
   protected function lacks($par) {return !$this->has($par);}
 
   protected function add($par, $val) {
