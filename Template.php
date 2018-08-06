@@ -1593,7 +1593,7 @@ final class Template {
   protected function get_open_access_url() {
     $doi = $this->get('doi');
     if (!$doi || $this->get('url')) return FALSE;
-    if ((strpos($this->get('title'), ']]') !== FALSE) || (strpos($this->get('title'), '&&') !== FALSE)) return FALSE;
+    if ((strpos($this->get('title'), ']]') !== FALSE) || (strpos($this->get('title'), '[[') !== FALSE)) return FALSE; // Has wikilinks in name
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
