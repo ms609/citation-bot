@@ -24,8 +24,8 @@ final class Template {
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
   protected $rawtext;
 
-  protected $name, $param, $initial_param, $initial_author_params, $citation_template, 
-            $mod_dashes, $initial_name;
+  protected $name, $param, $initial_param, $initial_author_params, $initial_name,
+            $citation_template, $mod_dashes;
 
   public function parse_text($text) {
     $this->initial_author_params = null; // Will be populated later if there are any
