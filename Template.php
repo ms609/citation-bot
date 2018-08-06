@@ -2691,7 +2691,7 @@ final class Template {
     return NULL;
   }
 
-  protected function has($par){return (bool) strlen($this-> get($par));}
+  protected function has($par) {return (bool) strlen($this->get($par));}
   protected function lacks($par) {return !$this->has($par);}
 
   protected function add($par, $val) {
