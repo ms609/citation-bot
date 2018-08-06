@@ -383,16 +383,25 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
       $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->get('work'));
+      $this->assertEquals('{{citation|title=Rubbish|chapter=Dog}}',$expanded->parsed_text());
       $text = '{{cite book|series=LoSe mE|work=lose Me}}';
       $expanded = $this->process_citation($text);
+      $this->assertEquals('{{cite book|series=LoSe mE}}',$expanded->parsed_text());
       $text = '{{cite journal|chapter=abc|work=abc}}';
       $expanded = $this->process_citation($text);
+      $this->assertEquals('{{cite journal|chapter=abc}}',$expanded->parsed_text());
       $text = '{{cite journal|work=I Live}}';
       $expanded = $this->process_citation($text);
+      $this->assertEquals('{{cite journal|work=I Live}}',$expanded->parsed_text());
       $text = '{{not cite|work=xyz|chapter=xzy}}';
       $expanded = $this->process_citation($text);
-      NOT DONE.  SAVING FOR NOW
+      $this->assertEquals('{{not cite|work=xyz|chapter=xzy}}',$expanded->parsed_text());
+      $text = '{{citation|work=xyz|journal=xyz}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('{{citation|journal=xyz}}',$expanded->parsed_text());
+      $text = '{{citation|work=|chapter=abc}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('{{citation|chapter=abc}}',$expanded->parsed_text());
   }
   
   public function testOrigYearHandling() {
