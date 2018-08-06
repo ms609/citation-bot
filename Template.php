@@ -1603,20 +1603,21 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $best_location->url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $best_location->url, $match)) {
+        if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $best_location->url_for_landing_page, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $best_location->url_for_landing_page, $match)) {
           if ($this->has('pmc') ) {
              // The best location is already linked to by the PMC link
              return TRUE;
           }
         }
-        if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $best_location->url, $match)) {
+        if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $best_location->url_for_landing_page, $match)) {
           if ($this->has('arxiv') || $this->has('eprint')) {
              // The best location is already linked to by the ARXIV link
              return TRUE;
           }
         }
-        $this->add_if_new('url', $best_location->url);  // Will check for PMCs etc hidden in URL
+        if (
+        $this->add_if_new('url', $best_location->url_for_landing_page);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
           if($headers_test ===FALSE) {
