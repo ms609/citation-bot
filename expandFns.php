@@ -191,8 +191,9 @@ function restore_italics ($text) {
 function title_capitalization($in, $caps_after_punctuation) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
-  if(substr($new_case,0,2) === "[[" && substr($new_case,-2) === "]]") {
-     return $new_case;  // And now we ignore wikilinked names since who knows what's going on there.  We would need to not break links.  Deal with [[Journal YZ|J. YZ]] etc.
+  if(substr($new_case, 0, 1) === "[" && substr($new_case, -1) === "]") {
+     return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
+                       // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
   
   if ( $new_case == mb_strtoupper($new_case) 
