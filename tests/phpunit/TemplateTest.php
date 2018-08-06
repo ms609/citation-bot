@@ -272,6 +272,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url')); // Do not add Arxiv URL if already has Arxiv
 
+    $text = '{{cite journal | doi = 10.1671/0272-4634(2002)022[0058:ADATDF]2.0.CO;2 | last1 = Lamanna | first1 = M.C. | last2 = Martinez | first2 = R.D. | last3 = Smith | first3 = J.B. | year = 2002 | title = A definitive abelisaurid theropod dinosaur from the early Late Cretaceous of [[Patagonia]]  | journal = Journal of Vertebrate Paleontology | volume = 22 | issue = 1| pages = 58–69 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('url')); // Do not URL since title it wikilinked
+      
     $text = '{{cite journal|doi=10.1038//TODO}}';
     /*
     $this->assertEquals('http://some.url', $expanded->get('url'));
