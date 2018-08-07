@@ -1570,6 +1570,7 @@ final class Template {
     }
     if (!$doi) {
       warn('#TODO: crossref lookup with no doi');
+      return FALSE;
     }
     $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME ."&id=doi:$doi&noredirect=TRUE";
     for ($i = 0; $i < 2; $i++) {
