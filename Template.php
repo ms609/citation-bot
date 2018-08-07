@@ -541,10 +541,13 @@ final class Template {
       case 'doi':
         if ($this->blank($param_name) &&  preg_match('~(10\..+)$~', $value, $match)) {
           $this->add('doi', $match[0]);
-          $this->verify_doi();
-          $this->expand_by_doi();
-          
-          return TRUE;
+          if ($this->verify_doi()) {
+             $this->expand_by_doi();
+             return TRUE;
+          }  // We do not add a bad doi
+          echo "\n   - New DOI did not resolve.  Ignoring:  " . echoable($this->get('doi');) . tag();
+          $this->forget('doi-broken-date');
+          $this->forget('doi');
         }
         return FALSE;
       
