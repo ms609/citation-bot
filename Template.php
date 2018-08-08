@@ -1569,7 +1569,7 @@ final class Template {
       $doi = $this->get('doi');
     }
     if (!$doi) {
-      warn('#TODO: crossref lookup with no doi');
+      warn('query_crossref called with with no doi');
       return FALSE;
     }
     $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME ."&id=doi:$doi&noredirect=TRUE";
