@@ -739,17 +739,21 @@ final class Template {
       } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-        if (is_null($url_sent)) {
-          $this->forget('url');
+        if ($this->add_if_new("doi", urldecode($match[1])) ) { // Will expand from DOI when added
+          if (is_null($url_sent)) {
+            $this->forget('url');
+          }
+          return TRUE;
+        } else {
+          return FALSE;  // Did not add properly, so use as URL
         }
-        $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
-        return TRUE;   
       } elseif (extract_doi($url)[1]) {
-        
-        quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
-        $this->add_if_new('doi', extract_doi($url)[1]);
-        return TRUE;
-        
+        if ($this->add_if_new('doi', extract_doi($url)[1])) {
+           quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
+           return TRUE;
+        } else {
+           return FALSE; // Did not add properly, so use as URL
+        }
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         
         /* ARXIV
