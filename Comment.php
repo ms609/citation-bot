@@ -1,4 +1,3 @@
-<?php
 /*
  * Contains constants and text-parsing functions for wikitext comments.
  */
