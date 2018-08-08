@@ -545,7 +545,7 @@ final class Template {
              $this->expand_by_doi();
              return TRUE;
           }  // We do not add a bad doi
-          echo "\n   - New DOI did not resolve.  Ignoring:  " . echoable($this->get('doi');) . tag();
+          echo "\n   - New DOI did not resolve.  Ignoring:  " . echoable($this->get('doi')) . tag();
           $this->forget('doi-broken-date');
           $this->forget('doi');
         }
