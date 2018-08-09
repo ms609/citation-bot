@@ -249,8 +249,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testOpenAccessLookup() {
     $text = '{{cite journal|doi=10.1206/0003-0082(2008)3610[1:nrofwf]2.0.co;2}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.1001.5321',$expanded->get('url'));
-    $this->assertEquals('2008',$expanded->get('year')); // DOI does work though
+    $this->assertEquals('http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.1001.5321', $expanded->get('url'));
+    $this->assertEquals('2008', $expanded->get('year')); // DOI does work though
       
     $text = '{{cite journal | vauthors = Bjelakovic G, Nikolova D, Gluud LL, Simonetti RG, Gluud C | title = Antioxidant supplements for prevention of mortality in healthy participants and patients with various diseases | journal = The Cochrane Database of Systematic Reviews | volume = 3 | issue = 3 | pages = CD007176 | date = 14 March 2012 | pmid = 22419320 | doi = 10.1002/14651858.CD007176.pub2 }}';
     $expanded = $this->process_citation($text);
@@ -336,7 +336,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     // Double-check pages expansion
     $text = "{{Cite journal|pp. 1-5}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('1–5',$expanded->get('pages'));
+    $this->assertEquals('1–5', $expanded->get('pages'));
   }
        
   public function testId2Param() {
@@ -361,23 +361,23 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} {{arxiv|astr.ph|1234.5678}} }}'; // Two of the same thing
       $expanded = $this->process_citation($text);
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));
-      $this->assertEquals('{{cite book | arxiv=astr.ph/1234.5678 }}',$expanded->parsed_text());
+      $this->assertEquals('{{cite book | arxiv=astr.ph/1234.5678 }}', $expanded->parsed_text());
       
       $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different tempalates
       $expanded = $this->process_page($text);
-      $this->assertEquals('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678}}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678}}',$expanded->parsed_text());
+      $this->assertEquals('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678}}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678}}', $expanded->parsed_text());
   }
   
   public function testNestedTemplates() {
       $text = '{{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} | id={{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }}  }} |  cool stuff | not cool}}';
       $expanded = $this->process_citation($text);
       $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
-      $this->assertEquals($text,$expanded->parsed_text());
+      $this->assertEquals($text, $expanded->parsed_text());
       
       $text = '{{cite book|quote=See {{cite book|pages=1-2|quote=See {{cite book|pages=1-4}}}}|pages=1-3}}';
       $expanded = $this->process_citation($text);
       $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
-      $this->assertEquals($text,$expanded->parsed_text());
+      $this->assertEquals($text, $expanded->parsed_text());
   }
   
    
@@ -440,11 +440,11 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testInPress() {
     $text = '{{Cite journal|pmid=9858585|date =in press}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('1999',$this->getDateAndYear($expanded));
+    $this->assertEquals('1999', $this->getDateAndYear($expanded));
 
     $text = '{{cite journal|pmid=9858585|year=in press}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('1999',$this->getDateAndYear($expanded));
+    $this->assertEquals('1999', $this->getDateAndYear($expanded));
   }
   
  public function testISODates() {
@@ -591,7 +591,7 @@ ER -  }}';
   public function testHearst () {
        $text = '{{cite book|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('Hearst Magazines',$expanded->get('publisher'));
+       $this->assertEquals('Hearst Magazines', $expanded->get('publisher'));
        $this->assertNull($expanded->get('last1'));
        $this->assertNull($expanded->get('last'));
        $this->assertNull($expanded->get('author'));
@@ -602,7 +602,7 @@ ER -  }}';
   public function testLinefeeds(){
        $text = '{{cite arXiv|eprint=hep-th/0303241}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics',$expanded->get('title'));
+       $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics', $expanded->get('title'));
   }
    public function testInternalCaps() { // checks for title formating in tidy() not breaking things
       $text = '{{cite journal|journal=ZooTimeKids}}';
@@ -694,7 +694,7 @@ ER -  }}';
   public function testIgnoreJstorPlants() {
     $text='{{Cite journal| url=http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972 |title=Holotype of Persoonia terminalis L.A.S.Johnson & P.H.Weston [family PROTEACEAE]}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972',$expanded->get('url'));
+    $this->assertEquals('http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972', $expanded->get('url'));
     $this->assertNull($expanded->get('jstor'));
   }
    
@@ -752,7 +752,7 @@ ER -  }}';
    public function testJustAnISBN() {
        $text = '{{cite book |isbn=0471186368}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('Explosives engineering',$expanded->get('title'));
+       $this->assertEquals('Explosives engineering', $expanded->get('title'));
        $this->assertNull($expanded->get('url'));
    }
     
@@ -760,7 +760,7 @@ ER -  }}';
     $this->requires_secrets(function() {
        $text = '{{cite book | oclc=9334453}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport',$expanded->get('title'));
+       $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport', $expanded->get('title'));
     });
    }
 
@@ -768,7 +768,7 @@ ER -  }}';
     $this->requires_secrets(function() {
       $text = '{{cite book | lccn=2009925036}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('Alternative Energy for Dummies',$expanded->get('title'));
+      $this->assertEquals('Alternative Energy for Dummies', $expanded->get('title'));
     });
   }
     
@@ -794,7 +794,7 @@ ER -  }}';
     $this->assertNull($expanded->get('isbn')); // This citation used to crash code in ISBN search.  Mostly checking "something" to make Travis CI happy
  }
 
- public function testLatexMathInTitle() { // This contains Math stuff that should be z∼10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
+ public function testLatexMathInTitle() { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc', $expanded->get('title'));
