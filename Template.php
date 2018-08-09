@@ -876,6 +876,7 @@ final class Template {
   }
 
   protected function find_pmid() {
+    if (!$this->blank('pmid')) return;
     echo "\n - Searching PubMed... " . tag();
     $results = ($this->query_pubmed());
     if ($results[1] == 1) {
