@@ -106,7 +106,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('154623', $expanded->get('pmc'));
   }
   
-
   public function testArxivExpansion() {
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}";
     $expanded = $this->process_citation($text);
