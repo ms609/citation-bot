@@ -111,6 +111,12 @@ function extract_doi($text) {
         ) {
       $doi = $new_match[1];
     }
+    $doi = substr($doi . " ", 0 , (strrpos($doi, ".pdf ")));
+    $doi = substr($doi . " ", 0 , (strrpos($doi, ".xml ")));
+    $doi = substr($doi . " ", 0 , (strrpos($doi, ".html ")));
+    $doi = substr($doi . " ", 0 , (strrpos($doi, ".jpg ")));
+    $doi = substr($doi . " ", 0 , (strrpos($doi, ".png ")));
+    $doi = trim($doi);
     return array($match[0], sanitize_doi($doi));
   }
   return NULL;
