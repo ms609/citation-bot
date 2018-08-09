@@ -188,9 +188,11 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('{{Cite journal| journal=My Journal}}', $expanded->parsed_text());
   }
 
-  public function testRemoveJournalWikilinks() {
+  public function testRemoveWikilinks() {
     $expanded = $this->process_citation("{{Cite journal|journal=[[Pure Evil]]}}");
-    $this->assertEquals('[[Pure Evil]]', $expanded->get('journal'));
+    $this->assertEquals('[[Pure Evil]]', $expanded->get('journal')); // leave fully linked journals
+    $expanded = $this->process_citation("{{Cite journal|journal=[[Pure]] and [[Evil]]}}");
+    $this->assertEquals('Pure and Evil', $expanded->get('journal')); // leave fully linked journals
     $expanded = $this->process_citation("{{Cite journal|journal=Dark Lord of the Sith [[Pure Evil]]}}");
     $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('journal'));
     $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil]]}}");
