@@ -207,25 +207,35 @@ final class Template {
         if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
           $this->name = 'Cite book';
         }
-        // Sometimes title and chapter come from different databases
-        if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
-          if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
-              $this->forget('title');
-          } elseif ($this->wikiname() === 'cite journal') {
-            $this->forget('chapter');
-          }
-        }
-        // Sometimes series and journal come from different databases
-        if ($this->has('series') && $this->has('journal') &&
-            (strcasecmp($this->get('series'), $this->get('journal')) === 0)) {  // Leave only one
-          if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
-              $this->forget('journal');
-          } elseif ($this->wikiname() === 'cite journal') {
-            $this->forget('series');
-          }
-        }
     }
     if ($this->citation_template) {
+      // Sometimes title and chapter come from different databases
+      if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
+        if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+            $this->forget('title');
+        } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
+          $this->forget('chapter');
+        }
+      }
+      // Sometimes series and journal come from different databases
+      if ($this->has('series') && $this->has('journal') &&
+          (strcasecmp($this->get('series'), $this->get('journal')) === 0)) {  // Leave only one
+        if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+            $this->forget('journal');
+        } elseif ($this->wikiname() === 'cite journal'|| $this->wikiname() === 'citation') {
+          $this->forget('series');
+        }
+      }
+      // "Work is a troublesome parameter
+      if ($this->get('work') !== NULL) { // We want to catch {{Cite|work=}} also, so do not use $this->has('work')
+        if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
+            ($this->has('title') && (strcasecmp($this->get('work'), $this->get('title')) === 0))     ||
+            ($this->has('series') && (strcasecmp($this->get('work'), $this->get('series')) === 0))   || 
+            ($this->has('chapter') && (strcasecmp($this->get('work'), $this->get('chapter')) === 0)) ||
+            ($this->blank('work'))  ){
+           $this->forget('work');
+        }
+      }
       $this->correct_param_spelling();
       // $this->check_url(); // Function currently disabled
     }
