@@ -99,13 +99,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('1941451', $expanded->get('pmid'));
   }
   
-  public function testPMCExpansion() {
-    $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pmc/articles/PMC154623/}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded->wikiname());
-    $this->assertEquals('154623', $expanded->get('pmc'));
-  }
-  
   public function testPMC2PMID() {
     $text = '{{cite journal|pmc=58796}}';
     $expanded = $this->process_citation($text);
