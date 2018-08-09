@@ -876,6 +876,7 @@ final class Template {
   }
 
   protected function find_pmid() {
+    if (!$this->blank('pmid')) return;
     echo "\n - Searching PubMed... " . tag();
     $results = ($this->query_pubmed());
     if ($results[1] == 1) {
@@ -895,36 +896,36 @@ final class Template {
  *
  */
     if ($doi = $this->get('doi')) {
-      $results = $this->do_pumbed_query(array("doi"), TRUE);
+      $results = $this->do_pubmed_query(array("doi"), TRUE);
       if ($results[1] == 1) return $results;
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
 
     if ($this->has("journal") && $this->has("volume") && $this->has("pages")) {
-      $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages"));
+      $results = $this->do_pubmed_query(array("journal", "volume", "issue", "pages"));
       if ($results[1] == 1) return $results;
     }
     if ($this->has("title") && ($this->has("author") || $this->has("author") || $this->has("author1") || $this->has("author1"))) {
-      $results = $this->do_pumbed_query(array("title", "author", "author", "author1", "author1"));
+      $results = $this->do_pubmed_query(array("title", "author", "author", "author1", "author1"));
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
-        $results = $this->do_pumbed_query(array("title", "author", "author", "author1", "author1", "year", "date"));
+        $results = $this->do_pubmed_query(array("title", "author", "author", "author1", "author1", "year", "date"));
         if ($results[1] == 1) return $results;
         if ($results[1] > 1) {
-          $results = $this->do_pumbed_query(array("title", "author", "author", "author1", "author1", "year", "date", "volume", "issue"));
+          $results = $this->do_pubmed_query(array("title", "author", "author", "author1", "author1", "year", "date", "volume", "issue"));
           if ($results[1] == 1) return $results;
         }
       }
     }
   }
 
-  protected function do_pumbed_query($terms, $check_for_errors = FALSE) {
+  protected function do_pubmd_query($terms, $check_for_errors = FALSE) {
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
    * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
    * return the results as array (first result, # of results)
-   * If $check_for_errors is TRUE, it will return 'fasle' on errors returned by pubmed
+   * If $check_for_errors is TRUE, it will return 'false' on errors returned by pubmed
    */
     $query = '';
     foreach ($terms as $term) {
