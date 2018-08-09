@@ -654,8 +654,8 @@ ER -  }}';
   public function testExistingWikiText() { // checks for formating in tidy() not breaking things
       $text = '{{cite journal|title=[[Zootimeboys]] and Girls|journal=[[Zootimeboys]] and Girls}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('[[Zootimeboys]] and Girls', $expanded->get('journal'));
-      $this->assertEquals('[[Zootimeboys]] and Girls', $expanded->get('title'));
+      $this->assertEquals('Zootimeboys and Girls', $expanded->get('journal'));
+      $this->assertEquals('Zootimeboys and Girls', $expanded->get('title'));
   }
   public function testNewWikiText() { // checks for new information that looks like wiki text and needs escaped
       $text = '{{Cite journal|doi=10.1021/jm00193a001}}';  // This has greek letters, [, ], (, and ).
