@@ -844,7 +844,7 @@ ER -  }}';
  }
     
  public function testStripPDF() {
-     $text = '{{cite journal |url=https://link.springer.com/content/pdf/10.1007/BF00428580.pdf}}'
+     $text = '{{cite journal |url=https://link.springer.com/content/pdf/10.1007/BF00428580.pdf}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('10.1007/BF00428580', $expanded->get('doi'));
  }
