@@ -190,6 +190,8 @@ function restore_italics ($text) {
  */
 function title_capitalization($in, $caps_after_punctuation) {
   // Use 'straight quotes' per WP:MOS
+  if (substr(strtolower($newcase),0,4)==='http' ||
+      substr(strtolower($newcase),0,3)==='www') return $newcase;
   $new_case = straighten_quotes(trim($in));
   if(substr($new_case, 0, 1) === "[" && substr($new_case, -1) === "]") {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
