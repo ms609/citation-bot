@@ -187,7 +187,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     // ISSN is removed when journal is added.  Is this the desired behaviour? ##TODO!
     $this->assertEquals('{{Cite journal| journal=My Journal}}', $expanded->parsed_text());
   }
-  
+
+  public function testRemoveJournalWikilinks() {
+    $expanded = $this->process_citation("{{Cite journal|journal=[[Pure Evil]]}}");
+    $this->assertEquals('Pure Evil', $expanded->get('journal'));
+    $expanded = $this->process_citation("{{Cite journal|journal=Dark Lord of the Sith [[Pure Evil]]}}");
+    $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('journal'));
+  }
+      
   public function testJournalCapitalization() {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
     $this->assertEquals('Molecular and Cellular Biology', $expanded->get('journal'));
