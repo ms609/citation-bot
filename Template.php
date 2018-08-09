@@ -2349,9 +2349,12 @@ final class Template {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            if(substr($p->val, 0, 2) !== "[[" || substr($p->val, -2) !== "]]") { 
-                $p->val = preg_replace("~\[\[~", "", $p->val);  // remove partial wikilinks
-                $p->val = preg_replace("~\]\]~", "", $p->val);
+            if(mb_substr($p->val, 0, 2) !== "[["   ||
+               mb_substr($p->val, -2) !== "]]"     ||
+               mb_substr_count($p->val,'[[') !== 1 ||
+               mb_substr_count($p->val,']]') !== 1) { 
+                 $p->val = preg_replace("~\[\[~", "", $p->val);  // remove partial wikilinks
+                 $p->val = preg_replace("~\]\]~", "", $p->val);
             }
             if(substr($p->val, 0, 1) !== "[" && substr($p->val, -1) !== "]") { 
                $p->val = title_capitalization(ucwords($p->val), TRUE);
