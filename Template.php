@@ -2342,9 +2342,17 @@ final class Template {
               echo "\n * Initial authors exist, skipping authorlink in tidy";
             }
             break;
+          case 'title':  
+            $p->val = preg_replace("~\[\[~", "", $p->val);  // remove wikilinks - brackets in names will be escaped
+            $p->val = preg_replace("~\]\]~", "", $p->val);
+            break;
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
+            if(substr($p->val, 0, 2) !== "[[" || substr($p->val, -2) !== "]]") { 
+                $p->val = preg_replace("~\[\[~", "", $p->val);  // remove partial wikilinks
+                $p->val = preg_replace("~\]\]~", "", $p->val);
+            }
             if(substr($p->val, 0, 1) !== "[" && substr($p->val, -1) !== "]") { 
                $p->val = title_capitalization(ucwords($p->val), TRUE);
             }
