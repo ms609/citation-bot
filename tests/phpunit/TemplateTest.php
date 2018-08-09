@@ -154,6 +154,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
+    $text = "{{Cite journal|url=http://onlinelibrary.wiley.com/doi/10.1111/j.BOT_TESTING_BOGUS_DOI}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
   }
 
   public function testDoiExpansionBook() {
@@ -344,10 +347,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $expanded = $this->process_citation($text);
       $this->assertEquals('978-1234-9583-068', $expanded->get('isbn'));
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
-      $this->assertEquals('10.1234/bashifbjaksn.ch2', $expanded->get('doi'));
+      $this->assertNull($expanded->get('doi'));
       $this->assertEquals('1234', $expanded->get('oclc'));
       $this->assertEquals('12345', $expanded->get('ol'));
-      $this->assertNotNull($expanded->get('doi-broken-date'));
+      $this->assertNull($expanded->get('doi-broken-date'));
       $this->assertEquals(0, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
       
       $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
@@ -547,7 +550,7 @@ ER -  }}';
        $this->assertEquals('Permian strata in South-East Asia', $expanded->get('title'));
        $this->assertEquals('1990', $this->getDateAndYear($expanded));
        $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
-       $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
+       $this->assertNull($expanded->get('doi'));  
   }
    
   public function testConvertingISBN10intoISBN13() { // URLS present just to speed up tests
