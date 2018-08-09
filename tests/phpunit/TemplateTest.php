@@ -192,6 +192,15 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
     $this->assertEquals('Molecular and Cellular Biology', $expanded->get('journal'));
   }
+    
+  public fucntion testWebsiteAsJournal() {
+    $text = '{{Cite journal | journal=www.foobar.com}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text()); // Do not captialize URLS
+    $text = '{{Cite journal | journal=https://www.foobar.com}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text()); // Do not captialize URLS
+  }
   
   public function testPageDuplication() {
      global $SLOW_MODE;
