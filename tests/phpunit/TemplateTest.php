@@ -193,7 +193,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Molecular and Cellular Biology', $expanded->get('journal'));
   }
     
-  public fucntion testWebsiteAsJournal() {
+  public function testWebsiteAsJournal() {
     $text = '{{Cite journal | journal=www.foobar.com}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text()); // Do not captialize URLS
