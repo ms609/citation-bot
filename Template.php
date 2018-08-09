@@ -583,6 +583,14 @@ final class Template {
           return TRUE;
         }
       return FALSE;
+
+      case 'pmc':
+        if ($this->blank($param_name)) {
+          $this->add($param_name, sanitize_string($value));
+          if ($this->blank('pmid')) $this->find_pmid(); // Attempt to find pmid while avoiding infinite loop
+          return TRUE;
+        }
+      return FALSE;
       
       case 'bibcode':
         if ($this->blank($param_name)) { 
