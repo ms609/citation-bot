@@ -106,6 +106,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('154623', $expanded->get('pmc'));
   }
   
+
   public function testArxivExpansion() {
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}";
     $expanded = $this->process_citation($text);
@@ -162,7 +163,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-981-10-3179-3', $expanded->get('isbn'));
   }
-    
+
+  public function testAddCiteseerx() {
+     $text = '{{cite journal | last = Popescu | first = Sandu |author2=Rohrlich, Daniel | title = Nonlocality as an axiom | journal = Foundations of Physics  | volume = 24| pages = 379–385 | year = 1994 | doi = 10.1007/BF02058098 | issue = 3 |bibcode = 1994FoPh...24..379P }}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('10.1.1.508.4193', $expanded->get('citeseerx'));
+  }
+
   public function testSeriesIsJournal() {
     $text = '{{citation | series = Annals of the New York Academy of Sciences| doi = 10.1111/j.1749-6632.1979.tb32775.x}}';
     $expanded = $this->process_citation($text);
