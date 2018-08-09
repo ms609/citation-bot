@@ -112,15 +112,15 @@ final class Template {
         $this->expand_by_arxiv();
 
         // Forget dates so that DOI can update with publication date, not ARXIV date
-        $this->rename('date', 'CITATION_BOT_date');
-        $this->rename('year', 'CITATION_BOT_year');
+        $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
+        $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
         $this->expand_by_doi();
         if ($this->blank('year') && $this->blank('date')) {
-            $this->rename('CITATION_BOT_date', 'date');
-            $this->rename('CITATION_BOT_year', 'year');
+            $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
+            $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
         } else {
-            $this->forget('CITATION_BOT_year');
-            $this->forget('CITATION_BOT_date');        
+            $this->forget('CITATION_BOT_PLACEHOLDER_year');
+            $this->forget('CITATION_BOT_PLACEHOLDER_date');        
         }
 
         $this->tidy();
