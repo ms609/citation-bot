@@ -750,6 +750,13 @@ final class Template {
           $this->forget('url');
         }
         return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
+      } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/summary\?doi=([0-9.]*)~", $url, $match)) {
+        quiet_echo("\n   ~ URL is hard-coded citeseerx; converting to use citeseerx parameter.");
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        if (is_null($url_sent)) {
+          $this->forget('url');
+        }
+        return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
         
       } elseif (extract_doi($url)[1]) {
         
