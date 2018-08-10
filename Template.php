@@ -951,6 +951,7 @@ final class Template {
       }
     }
     $query = substr($query, 5);
+    str_replace("%2F", "/", $query);
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
     print_r($url);
     $xml = @simplexml_load_file($url);
