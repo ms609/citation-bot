@@ -184,7 +184,7 @@ final class Template {
           $this->handle_et_al();
         }
 
-        $this->expand_by_pubmed(TRUE); //partly to try to find DOI
+        $this->expand_by_pubmed(); //partly to try to find DOI
 
         if ($this->expand_by_google_books()) {
           echo "\n * Expanded from Google Books API";
