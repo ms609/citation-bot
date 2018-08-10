@@ -184,7 +184,7 @@ final class Template {
           $this->handle_et_al();
         }
 
-        $this->expand_by_pubmed($this->blank('pmid') && $this->has('pmc')); //partly to try to find DOI
+        $this->expand_by_pubmed($this->blank('pmid') && $this->has('pmc')); //partly to try to find DOI and to find PMC
 
         if ($this->expand_by_google_books()) {
           echo "\n * Expanded from Google Books API";
@@ -1536,7 +1536,7 @@ final class Template {
         break; case "ArticleIds":
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
-              case "pubmed":
+              case "pubmed": case "pmid":
                   preg_match("~\d+~", (string) $subItem, $match);
                   if ($this->add_if_new("pmid", $match[0])) $this->expand_by_pubmed();
                   break; ### TODO PLACEHOLDER YOU ARE HERE CONTINUATION POINT ###
