@@ -578,7 +578,7 @@ final class Template {
       case 'pmid':
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
-          $this->expand_by_pubmed($this->blank || $this->blank('doi'));  //Force = TRUE if missing DOI or PMC
+          $this->expand_by_pubmed($this->blank('pmc') || $this->blank('doi'));  //Force = TRUE if missing DOI or PMC
           $this->get_doi_from_crossref();
           return TRUE;
         }
