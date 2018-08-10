@@ -1552,6 +1552,9 @@ final class Template {
                     $this->expand_by_doi();
                   }
                 }
+                if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
+                  $this->add_if_new('pmc', substr($match[0], 3));
+                }
                 break;
             }
           }
