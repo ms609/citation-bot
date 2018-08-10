@@ -947,7 +947,7 @@ final class Template {
       );
       $key = $key_index[mb_strtolower($term)];
       if ($key && $term && $val = $this->get($term)) {
-        if ($key === "doi") {
+        if ($key === "AID") {
            $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", ($val)) . "\"" . "[$key])";
         } else {
            $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
