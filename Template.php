@@ -720,7 +720,8 @@ final class Template {
           if (is_null($url_sent)) {
             $this->forget('url');
           }
-          return $this->add_if_new("bibcode", urldecode($bibcode[1]));
+          $this->add_if_new("bibcode", urldecode($bibcode[1]));
+          return TRUE;
         }
         
       } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
@@ -732,7 +733,8 @@ final class Template {
           if (is_null($url_sent)) {
             $this->forget('url');
           }
-          return $this->add_if_new("pmc", $match[1] . $match[2]);
+          $this->add_if_new("pmc", $match[1] . $match[2]);
+          return TRUE;
         }
       } elseif (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $url, $match)) {
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
@@ -741,21 +743,27 @@ final class Template {
           if (is_null($url_sent)) {
             $this->forget('url');
           }
-          return $this->add_if_new("pmc", $match[1]);
+          $this->add_if_new("pmc", $match[1]);
+          return TRUE;
         }
       } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
         quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-        if (is_null($url_sent)) {
-          $this->forget('url');
+        if ($this->add_if_new("doi", urldecode($match[1])) ) { // Will expand from DOI when added
+          if (is_null($url_sent)) {
+            $this->forget('url');
+          }
+          return TRUE;
+        } else {
+          return FALSE;  // Did not add properly, so use as URL
         }
-        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
-        
       } elseif (extract_doi($url)[1]) {
-        
-        quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
-        return $this->add_if_new('doi', extract_doi($url)[1]);
-        
+        if ($this->add_if_new('doi', extract_doi($url)[1])) {
+           quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
+           return TRUE;
+        } else {
+           return FALSE; // Did not add properly, so use as URL
+        }
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         
         /* ARXIV
@@ -768,7 +776,8 @@ final class Template {
           if (is_null($url_sent)) {
             $this->forget('url');
           }
-          return $this->add_if_new("arxiv", $arxiv_id[0]);
+          $this->add_if_new("arxiv", $arxiv_id[0]);
+          return TRUE;
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
         
@@ -778,7 +787,8 @@ final class Template {
           $this->forget('url');
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
-        return $this->add_if_new('pmid', $match[1]);
+        $this->add_if_new('pmid', $match[1]);
+        return TRUE;
         
       } elseif (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~", $url, $match)) {
         
@@ -788,22 +798,26 @@ final class Template {
             $this->forget('url');
           }
           if ($this->blank('asin')) {
-            return $this->add_if_new('asin', $match['id']);
+            $this->add_if_new('asin', $match['id']);
+            return TRUE;
           }
         } else {
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
           if (is_null($url_sent)) {
             $this->forget('url'); // will forget accessdate too
           }
+          return TRUE;
         }
       } elseif (preg_match("~^https?://hdl\.handle\.net/([^\?]*)~", $url, $match)) {
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
-          return $this->add_if_new('hdl', $match[1]);
+          $this->add_if_new('hdl', $match[1]);
+          return TRUE;
       }
     }
+    return FALSE;
   }
 
   protected function get_doi_from_text() {
