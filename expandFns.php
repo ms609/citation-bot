@@ -254,9 +254,9 @@ function title_capitalization($in, $caps_after_punctuation) {
   return $new_case;
 }
 
-function mb_ucfirst($string)
+function mb_ucfirst($string, $encode="UTF-8")
 {
-    return mb_strtoupper(mb_substr($string, 0, 1)).mb_strtolower(mb_substr($string, 1));
+    return mb_strtoupper(mb_substr($string, 0, 1, $encode)).mb_strtolower(mb_substr($string, 1, $encode), $encode);
 }
 
 function tag($long = FALSE) {
