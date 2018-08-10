@@ -1537,7 +1537,7 @@ final class Template {
         break; case "ArticleIds":
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
-              case "pubmed":
+              case "pubmed": case "pmid":
                   preg_match("~\d+~", (string) $subItem, $match);
                   if ($this->add_if_new("pmid", $match[0])) $this->expand_by_pubmed();
                   break; ### TODO PLACEHOLDER YOU ARE HERE CONTINUATION POINT ###
