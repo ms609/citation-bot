@@ -895,7 +895,7 @@ final class Template {
  *   [1] => total number of results
  *
  */
-    if ($doi = get_without_comments_and_placeholders($this->get('doi'))) {
+    if ($doi = $this->get_without_comments_and_placeholders($this->get('doi'))) {
       $results = $this->do_pumbed_query(array("doi"), TRUE);
       if ($results[1] == 1) return $results;
     }
