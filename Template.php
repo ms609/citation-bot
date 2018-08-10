@@ -1580,7 +1580,7 @@ final class Template {
 
   protected function query_crossref($doi = FALSE) {
     if (!$doi) {
-      $doi = $this->get('doi');
+      $doi = $this->get_without_comments_and_placeholders('doi');
     }
     if (!$doi) {
       warn('query_crossref called with with no doi');
@@ -1606,7 +1606,7 @@ final class Template {
   }
 
   protected function get_open_access_url() {
-    $doi = $this->get('doi');
+    $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi || $this->get('url')) return;
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
