@@ -930,7 +930,7 @@ final class Template {
     $query = '';
     foreach ($terms as $term) {
       $key_index = array(
-        'doi' =>  'AID',
+        'doi' =>  '',
         'author1' =>  'Author',
         'author' =>  'Author',
         'issue' =>  'Issue',
