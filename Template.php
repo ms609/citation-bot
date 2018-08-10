@@ -948,7 +948,7 @@ final class Template {
       $key = $key_index[mb_strtolower($term)];
       if ($key && $term && $val = $this->get($term)) {
         if ($key === "AID") {
-           $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", ($val)) . "\"" . "[$key])";
+           $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", ($val)) . "\"" . "[$key])"; // Do not escape DOIs
         } else {
            $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
         }
@@ -956,9 +956,7 @@ final class Template {
     }
     $query = substr($query, 5);
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
-    print_r($url);
     $xml = @simplexml_load_file($url);
-    print_r($xml);
     if ($xml === FALSE) {
       echo "\n - Unable to do PMID search";
       return array(NULL, 0);
