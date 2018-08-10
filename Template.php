@@ -947,7 +947,7 @@ final class Template {
       );
       $key = $key_index[mb_strtolower($term)];
       if ($key && $term && $val = $this->get($term)) {
-        $query .= "+AND+" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+        $query .= "+AND+" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key]";
       }
     }
     $query = substr($query, 5);
