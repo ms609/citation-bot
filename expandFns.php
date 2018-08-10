@@ -111,9 +111,9 @@ function extract_doi($text) {
         ) {
       $doi = $new_match[1];
     }
-    $extension = substr($doi, strrpos($doi,'.'));
-    if (in_array(strtolower($extension),array('.xml', '.pdf', '.html', '.png', '.jpg', '.jpeg', '.htm'))) {
-      $doi = substr($doi, 0 , (strrpos($doi, $extension)));
+    $extension = substr($doi, strrpos($doi, '.'));
+    if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
+      $doi = substr($doi, 0, (strrpos($doi, $extension)));
     }
     return array($match[0], sanitize_doi($doi));
   }
