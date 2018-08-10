@@ -256,7 +256,7 @@ function title_capitalization($in, $caps_after_punctuation) {
 
 function mb_ucfirst($string, $encode="UTF-8")
 {
-    return mb_strtoupper(mb_substr($string, 0, 1, $encode)).mb_strtolower(mb_substr($string, 1, $encode), $encode);
+    return mb_strtoupper(mb_substr($string, 0, 1, NULL, $encode)).mb_strtolower(mb_substr($string, 1, NULL, $encode), $encode);
 }
 
 function tag($long = FALSE) {
