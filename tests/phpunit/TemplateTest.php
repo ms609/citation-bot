@@ -293,6 +293,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text, $expanded_page->parsed_text());
   }
   
+  public function testDoi2PMID() {
+    $text = "{{cite journal|url=doi=10.1073/pnas.171325998}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('11573006',$this->get('pmid'));
+  }
+ 
   public function testSiciExtraction() {
     $text = "{{cite journal|url=http://fake.url/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}";
     $expanded = $this->process_citation($text);
