@@ -297,6 +297,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{cite journal|doi=10.1073/pnas.171325998}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('11573006',$expanded->get('pmid'));
+    $this->assertEquals('58796',$expanded->get('pmc'));
   }
  
   public function testSiciExtraction() {
