@@ -930,7 +930,7 @@ final class Template {
     $query = '';
     foreach ($terms as $term) {
       $key_index = array(
-        'doi' =>  '',
+        'doi' =>  'AID',
         'author1' =>  'Author',
         'author' =>  'Author',
         'issue' =>  'Issue',
@@ -952,6 +952,7 @@ final class Template {
     }
     $query = substr($query, 5);
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
+    print_r($url);
     $xml = @simplexml_load_file($url);
     print_r($xml);
     if ($xml === FALSE) {
