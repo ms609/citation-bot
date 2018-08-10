@@ -953,6 +953,7 @@ final class Template {
     $query = substr($query, 5);
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
     $xml = @simplexml_load_file($url);
+    print_r($xml);
     if ($xml === FALSE) {
       echo "\n - Unable to do PMID search";
       return array(NULL, 0);
