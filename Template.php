@@ -2345,10 +2345,10 @@ final class Template {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            if (substr(strtolower($p->val),0,4) !== 'http' &&
-                substr(strtolower($p->val),0,3) !== 'www'  &&
-                substr($p->val, 0, 1)           !== "["    &&
-                substr($p->val, -1)             !== "]") { 
+            if (substr(strtolower($p->val), 0, 4) !== 'http' &&
+                substr(strtolower($p->val), 0, 3) !== 'www'  &&
+                substr($p->val, 0, 1)             !== "["    &&
+                substr($p->val, -1)               !== "]") { 
                $p->val = title_capitalization(ucwords($p->val), TRUE);
             }
             break;
