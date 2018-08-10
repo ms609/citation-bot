@@ -274,7 +274,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       
     $text = '{{cite journal | vauthors = Benzie IF | title = Evolution of dietary antioxidants | journal = Comparative Biochemistry and Physiology A | volume = 136 | issue = 1 | pages = 113–26 | date = September 2003 | pmid = 14527634 | doi = 10.1016/S1095-6433(02)00368-9 | hdl = 10397/34754 | url = http://hdl.handle.net/10397/34754 }}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('hdl')); // Do not add HDL URL if already has Arxiv
+    $this->assertNull($expanded->get('url')); // Do not add HDL URL if already has hdl=
       
     $text = '{{cite journal|doi=10.1038//TODO}}';
     /*
