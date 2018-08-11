@@ -2605,8 +2605,7 @@ final class Template {
     if (($da = $this->get('display-authors')) === NULL) {
       $da = $this->get('displayauthors');
     }
-    if ($da === NULL || $da ==="etal") return FALSE; // PHP 7.1.11 does not like the next line with "etal"
-    return is_int(1 * $da) ? $da : FALSE;
+    return preg_match('~^\d+$~', $da) ? $da : FALSE;
   }
 
   protected function number_of_authors() {
