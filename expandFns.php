@@ -223,11 +223,11 @@ function title_capitalization($in, $caps_after_punctuation) {
   );
   
   // '=straight, ff07=full width, 055A=armenian, 00B4=acute accent, 2019 = right quotation (All in hexadecimal)
-  $new_case = preg_replace_callback("~\S(L[\'\’\x{FF07}\x{055A}\x{00B4}\x{2019}])([a-zÀ-ÿ]+)~u", function($matches) { /** French l'Words  **/
+  $new_case = preg_replace_callback("~\s(L[\'\’\x{FF07}\x{055A}\x{00B4}\x{2019}])([a-zÀ-ÿ]+?)\b~u", function($matches) { /** French l'Words  **/
     return " l'" . mb_ucfirst($matches[2]);
   }, ' ' . $new_case);
   $new_case = mb_ucfirst(trim($new_case));
-  $new_case = preg_replace_callback("~\S(D[\'\’\x{FF07}\x{055A}\x{00B4}\x{2019}])([a-zÀ-ÿ]+)~u", function($matches) { /** French d'Words  **/
+  $new_case = preg_replace_callback("~\s(D[\'\’\x{FF07}\x{055A}\x{00B4}\x{2019}])([a-zÀ-ÿ]+?)\b~u", function($matches) { /** French d'Words  **/
     return " d'" . mb_ucfirst($matches[2]);
   }, ' ' . $new_case);
   $new_case = mb_ucfirst(trim($new_case));
