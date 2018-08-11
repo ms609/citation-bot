@@ -222,12 +222,12 @@ function title_capitalization($in, $caps_after_punctuation) {
     trim($new_case)
   );
   
-  $new_case = preg_replace_callback("/ (L')([a-zÀ-ÿ]+)/", function($matches) { /** French l'Words  **/
+  $new_case = preg_replace_callback("~ (L[\'\{FF07}\{055A}\{00B4}\{2019}])([a-zÀ-ÿ]+)~", function($matches) { /** French l'Words  **/
     return " l'" . mb_ucfirst($matches[2]);
   }, ' ' . $new_case);
   $new_case = mb_ucfirst(trim($new_case));
-
-  $new_case = preg_replace_callback("/ (D')([a-zÀ-ÿ]+)/", function($matches) { /** French d'Words  **/
+  // '=straight, ff07=full width, 00b8=armenian, 2019 = right quotation
+  $new_case = preg_replace_callback("~ (D[\'\{FF07}\{055A}\{00B4}\{2019}])([a-zÀ-ÿ]+)~", function($matches) { /** French d'Words  **/
     return " d'" . mb_ucfirst($matches[2]);
   }, ' ' . $new_case);
   $new_case = mb_ucfirst(trim($new_case));
