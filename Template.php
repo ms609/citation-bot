@@ -2605,6 +2605,7 @@ final class Template {
     if (($da = $this->get('display-authors')) === NULL) {
       $da = $this->get('displayauthors');
     }
+    if ($da === NULL) return FALSE;
     return is_int(1 * $da) ? $da : FALSE;
   }
 
