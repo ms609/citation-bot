@@ -240,7 +240,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 }
 
 function straighten_quotes($str) {
-$str = preg_replace('~&#821[679];|&#x201[89];|[\x{00B4}\x{2039}\x{203A}x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[ab]?quo;~u', "'", $str);
+$str = preg_replace('~&#821[679];|&#x201[89];|[\x{2039}\x{203A}x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[ab]?quo;~u', "'", $str);
   $str = preg_replace('~&#822[013];|[\x{00AB}\x{00BB}\x{201C}-\x{201F}]|&[rlb][ad]?quo;~u', '"', $str);
   return $str;
 }
