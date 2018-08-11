@@ -1619,7 +1619,7 @@ final class Template {
 
   protected function get_open_access_url() {
     $doi = $this->get_without_comments_and_placeholders('doi');
-    if (!$doi || $this->get('url')) return;
+    if (!$doi) return;
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
@@ -1629,6 +1629,10 @@ final class Template {
         if ($best_location->host_type == 'publisher') {
           // The best location is already linked to by the doi link
           return TRUE;
+        }
+        if ($this->get('url')) {
+            $this->get_identifiers_from_url($best_location->url_for_landing_page);  // Maybe we can get a new link type
+            return TRUE;
         }
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $best_location->url_for_landing_page, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $best_location->url_for_landing_page, $match)) {
