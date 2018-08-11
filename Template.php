@@ -932,7 +932,7 @@ final class Template {
    * Searches pubmed based on terms provided in an array.
    * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
    * return the results as array (first result, # of results)
-   * If $check_for_errors is TRUE, it will return 'fasle' on errors returned by pubmed
+   * If $check_for_errors is TRUE, it will return 'false' on errors returned by pubmed
    */
     $query = '';
     foreach ($terms as $term) {
@@ -2605,6 +2605,7 @@ final class Template {
     if (($da = $this->get('display-authors')) === NULL) {
       $da = $this->get('displayauthors');
     }
+    if ($da === NULL || $da ==="etal") return FALSE; // PHP 7.1.11 does not like the next line with "etal"
     return is_int(1 * $da) ? $da : FALSE;
   }
 
