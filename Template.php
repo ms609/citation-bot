@@ -460,11 +460,11 @@ final class Template {
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && (strcasecmp($this->get('series'), $value) === 0)) return FALSE ;
           if ($this->has('work')) {
-            if (strcasecmp($this->get('work'), $value) === 0)) {
+            if (strcasecmp($this->get('work'), $value) === 0) {
               $this->rename('work',$param_name);
               return TRUE;
             } else {
-              return FALSE;  // Cannot have both work and journal :-(
+              return FALSE;  // Cannot have both work and journal
             }
           }
           return $this->add($param_name,$value);
