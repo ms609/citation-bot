@@ -2605,7 +2605,7 @@ final class Template {
     if (($da = $this->get('display-authors')) === NULL) {
       $da = $this->get('displayauthors');
     }
-    return preg_match('~^\d+$~', $da) ? $da : FALSE;
+    return ctype_digit($da) ? $da : FALSE;
   }
 
   protected function number_of_authors() {
