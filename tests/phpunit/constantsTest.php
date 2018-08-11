@@ -28,5 +28,10 @@ final class constantsTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
     }
   }
+ 
+ public function testWhiteListUpdate() {
+   $headers_test = @get_headers('https://en.wikipedia.org/wiki/Module:Citation/CS1/Whitelist', 1);
+   print_r($headers_test);
+ }
   
 }
