@@ -1661,7 +1661,7 @@ final class Template {
              return TRUE; // The best location is already linked to by the bibcode link 
           }
         }
-        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match) {
+        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
           if ($this->has('pmid')) {
              return TRUE; // The best location is already linked to by the pmid link 
           }
