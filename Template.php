@@ -2345,7 +2345,7 @@ final class Template {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            if (substr(strtolower($p->val), 0, 5) === 'http:' || substr(strtolower($p->val), 0, 6) === 'https:') {
+            if (substr(strtolower($p->val), 0, 7) === 'http://' || substr(strtolower($p->val), 0, 8) === 'https://') {
               if ($this->blank('url')) $this->rename($pmatch[1], 'url');
             } elseif (substr(strtolower($p->val), 0, 4) === 'www.') {
                if ($this->blank('website')) $this->rename($pmatch[1], 'website');
