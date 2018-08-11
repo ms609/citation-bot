@@ -578,7 +578,7 @@ final class Template {
       case 'pmid':
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
-          $this->expand_by_pubmed();
+          $this->expand_by_pubmed($this->blank('pmc') || $this->blank('doi'));  //Force = TRUE if missing DOI or PMC
           $this->get_doi_from_crossref();
           return TRUE;
         }
@@ -947,7 +947,11 @@ final class Template {
       );
       $key = $key_index[mb_strtolower($term)];
       if ($key && $term && $val = $this->get($term)) {
-        $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+        if ($key === "AID") {
+           $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", ($val)) . "\"" . "[$key])"; // Do not escape DOIs
+        } else {
+           $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
+        }
       }
     }
     $query = substr($query, 5);
