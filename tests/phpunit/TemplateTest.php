@@ -204,7 +204,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('journal');
     $text = '{{Cite journal | journal=[www.foobar.com]}}';
     $expanded = $this->process_citation($text);
-     $this->assertEquals($text, $expanded->parsed_text());
+    $this->assertEquals($text, $expanded->parsed_text());
   }
   
   public function testPageDuplication() {
