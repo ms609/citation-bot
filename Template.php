@@ -2347,7 +2347,7 @@ final class Template {
           case 'periodical': 
             if (substr(strtolower($p->val), 0, 4) !== 'http' &&
                 substr(strtolower($p->val), 0, 3) !== 'www'  &&
-                substr($p->val, 0, 1)             !== "["    &&
+                substr($p->val, 0, 1)             !== "["    &&  // TODO Handle the non-link part of [[My Journal|My Journal]]
                 substr($p->val, -1)               !== "]") { // TODO Handle the non-URL part of [http://meyjournal.com my journal]
                $p->val = title_capitalization(ucwords($p->val), TRUE);
             }
