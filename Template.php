@@ -454,11 +454,19 @@ final class Template {
         
       case "periodical": case "journal":
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
-        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
+        if ($this->blank("journal") && $this->blank("periodical")) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && (strcasecmp($this->get('series'), $value) === 0)) return FALSE ;
+          if ($this->has('work')) {
+            if (strcasecmp($this->get('work'), $value) === 0)) {
+              $this->rename('work',$param_name);
+              return TRUE;
+            } else {
+              return FALSE;  // Cannot have both work and journal :-(
+            }
+          }
           return $this->add($param_name,$value);
         }
         return FALSE;
