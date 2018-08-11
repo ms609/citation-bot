@@ -201,7 +201,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{Cite journal | journal=https://www.foobar.com}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('https://www.foobar.com', $expanded->get('url');
-    $this->assertNull($expanded->get('journal');
+    $this->assertNull($expanded->get('journal'));
     $text = '{{Cite journal | journal=[www.foobar.com]}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
