@@ -221,17 +221,17 @@ function title_capitalization($in, $caps_after_punctuation) {
     create_function('$matches', 'return mb_strtolower($matches[0]);'),
     trim($new_case)
   );
-  
+  /** French l'Words and d'Words  **/
   // '=straight, ff07=full width, 055A=armenian, 00B4=acute accent, 2019 = right quotation (All in hexadecimal)
   $new_case = preg_replace_callback(
-    "~\s(L[\'\’\x{FF07}\x{055A}\x{00B4}\x{2019}])([a-zÀ-ÿ]+?)\b~u"  /** French l'Words  **/,
-    create_function('$matches', 'return " l\" . mb_ucfirst($matches[2]);'),
+    "~\s(L[\'\’\x{FF07}\x{055A}\x{00B4}\x{2019}])([a-zÀ-ÿ]+?)\b~u",
+    create_function('$matches', 'return " l\'" . mb_ucfirst($matches[2]);'),
     ' ' . $new_case)
   );
   $new_case = mb_ucfirst(trim($new_case));
   $new_case = preg_replace_callback(
-    "~\s(D[\'\’\x{FF07}\x{055A}\x{00B4}\x{2019}])([a-zÀ-ÿ]+?)\b~u"  /** French d'Words  **/,
-    create_function('$matches', 'return " d'" . mb_ucfirst($matches[2]);'),
+    "~\s(D[\'\’\x{FF07}\x{055A}\x{00B4}\x{2019}])([a-zÀ-ÿ]+?)\b~u",
+    create_function('$matches', 'return " d\'" . mb_ucfirst($matches[2]);'),
     ' ' . $new_case)
   );
   $new_case = mb_ucfirst(trim($new_case));
