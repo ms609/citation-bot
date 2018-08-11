@@ -31,8 +31,8 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals("L'Aerotecnica", 
                         title_capitalization(title_case("L'Aerotecnica"), TRUE));
     $this->assertEquals("Phénomènes d'Évaporation d’Hydrologie", 
-                        title_capitalization(title_case("Phénomènes d'Évaporation d’Hydrologie"), TRUE));
-    $this->assertEquals("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica",
+                        title_capitalization(title_case("Phénomènes d'Évaporation d'Hydrologie"), TRUE));
+    $this->assertEquals("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica",
                         title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE));
   }
     
