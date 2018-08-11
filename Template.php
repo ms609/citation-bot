@@ -811,6 +811,7 @@ final class Template {
           return $this->add_if_new('hdl', $match[1]);
       }
     }
+    return FALSE ;
   }
 
   protected function get_doi_from_text() {
