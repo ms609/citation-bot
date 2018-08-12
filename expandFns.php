@@ -223,14 +223,8 @@ function title_capitalization($in, $caps_after_punctuation) {
   );
   /** French l'Words and d'Words  **/
   $new_case = preg_replace_callback(
-    "~(\sL[\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
-    create_function('$matches', 'return " l\'" . mb_ucfirst($matches[2]);'),
-    ' ' . $new_case
-  );
-  $new_case = mb_ucfirst(trim($new_case));
-  $new_case = preg_replace_callback(
-    "~(\sD[\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
-    create_function('$matches', 'return " d\'" . mb_ucfirst($matches[2]);'),
+    "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
+    create_function('$matches', 'return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);'),
     ' ' . $new_case
   );
   $new_case = mb_ucfirst(trim($new_case));
