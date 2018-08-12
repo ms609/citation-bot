@@ -30,6 +30,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{Cite web | testy1= | testy2=}}';
     $expanded = $this->process_citation($text);
     $expanded->rename('testy2','testy1');
-    $this->assetNull($expanded->parsed_text());
+    echo $expanded->parsed_text();
   }
 }
