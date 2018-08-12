@@ -2410,6 +2410,13 @@ final class Template {
           case 'isbn':
             $p->val = $this->isbn10Toisbn13($p->val);
             break;
+          case 'url':
+            $p->val =  preg_replace_callback(
+               "~(https?://www.researchgate.net/publication/[0-9]+)(_*)"   // Trim researchgate
+               create_function('$matches', 'return $matches[0];'),
+               $p->val
+               );
+            break;
         }
       }
     }
