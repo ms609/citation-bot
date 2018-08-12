@@ -206,7 +206,15 @@ final class Template {
         // Convert from journal to book, if there is a unique chapter name or has an ISBN
         if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
           $this->name = 'Cite book';
+        } elseif ($this->has('work') && $this->blank('journal')) { // Never did get a journal name....
+          $this->rename('work','journal');
         }
+        break;
+      case 'cite magazine':
+        if ($this->blank('magazine') && $this->has('work')) { // This is all we do with cite magazine
+          $this->rename('work','magazine');
+        }
+        break;
     }
     if ($this->citation_template) {
       // Sometimes title and chapter come from different databases
