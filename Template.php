@@ -2781,7 +2781,7 @@ final class Template {
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
-      if ($this->has($par)) echo "\n   - Dropping parameter " . echoable($par) . tag(); // Do not mention forgetting empty parameters
+      if ($this->has($par) && strpos($par,'CITATION_BOT_PLACEHOLDER') === FALSE) echo "\n   - Dropping parameter " . echoable($par) . tag(); // Do not mention forgetting empty parameters
       unset($this->param[$pos]);
     }
   }
