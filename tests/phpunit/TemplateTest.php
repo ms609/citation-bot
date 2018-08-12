@@ -860,6 +860,12 @@ ER -  }}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('10.1007/BF00428580', $expanded->get('doi'));
  }
+    
+ public function testRemovePublisherWithWork() {
+     $text = '{{cite journal|jstor=1148172|title=Strategic Acupuncture|work=Foreign Policy|issue=Winter 1980|pages=44–61|publisher=Washingtonpost.Newsweek Interactive, LLC|year=1980}}';
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('publisher'));  
+ }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
