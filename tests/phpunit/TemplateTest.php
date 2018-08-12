@@ -55,5 +55,5 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assetNull($expanded->parsed_text());
   }
   
-  
+ } 
 }
