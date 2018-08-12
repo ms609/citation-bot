@@ -454,12 +454,20 @@ final class Template {
         
       case "periodical": case "journal":
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
-        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
+        if ($this->blank("journal") && $this->blank("periodical")) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && (strcasecmp($this->get('series'), $value) === 0)) return FALSE ;
-          return $this->add($param_name,$value);
+          if ($this->has('work')) {
+            if (strcasecmp($this->get('work'), $value) === 0) {
+              $this->rename('work', $param_name);
+              return TRUE;
+            } else {
+              return FALSE;  // Cannot have both work and journal
+            }
+          }
+          return $this->add($param_name, $value);
         }
         return FALSE;
         
@@ -811,6 +819,7 @@ final class Template {
           return $this->add_if_new('hdl', $match[1]);
       }
     }
+    return FALSE ;
   }
 
   protected function get_doi_from_text() {
@@ -1474,13 +1483,13 @@ final class Template {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
          return FALSE; // Not really "expanded"
     }
-    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  ,$data[0]->{'title'});
-    if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  ,$data[0]->{'issue'});
-    if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  ,$data[0]->{'pages'});
-    if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal',$data[0]->{'publicationTitle'});
-    if ( isset($data[0]->{'volume'}))           $this->add_if_new('volume' ,$data[0]->{'volume'});
-    if ( isset($data[0]->{'date'}))             $this->add_if_new('date'   ,$data[0]->{'date'});
-    if ( isset($data[0]->{'DOI'}))              $this->add_if_new('doi'    ,$data[0]->{'DOI'});
+    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  , $data[0]->{'title'});
+    if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  , $data[0]->{'issue'});
+    if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  , $data[0]->{'pages'});
+    if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal', $data[0]->{'publicationTitle'});
+    if ( isset($data[0]->{'volume'}))           $this->add_if_new('volume' , $data[0]->{'volume'});
+    if ( isset($data[0]->{'date'}))             $this->add_if_new('date'   , $data[0]->{'date'});
+    if ( isset($data[0]->{'DOI'}))              $this->add_if_new('doi'    , $data[0]->{'DOI'});
     $i = 0;
     while (isset($data[0]->{'author'}[$i])) {
         if ( isset($data[0]->{'author'}[$i][0])) $this->add_if_new('first' . ($i+1), $data[0]->{'author'}[$i][0]);
@@ -1618,7 +1627,7 @@ final class Template {
 
   protected function get_open_access_url() {
     $doi = $this->get_without_comments_and_placeholders('doi');
-    if (!$doi || $this->get('url')) return;
+    if (!$doi) return;
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
@@ -1629,7 +1638,11 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        // Check if best location is already linked -- avoid double linking
+        if ($this->get('url')) {
+            $this->get_identifiers_from_url($best_location->url_for_landing_page);  // Maybe we can get a new link type
+            return TRUE;
+        }
+        // Check if best location is already linked -- avoid double linki
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $best_location->url_for_landing_page, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $best_location->url_for_landing_page, $match)) {
           if ($this->has('pmc') ) {
@@ -1701,12 +1714,12 @@ final class Template {
       $oclc= $this->get('oclc');
       if ($isbn) {
         $isbn = str_replace(array(" ","-"), "", $isbn);
-        if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
+        if (preg_match("~[^0-9Xx]~", $isbn) === 1) $isbn='' ;
         if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
       }
       if ($lccn) {
         $lccn = str_replace(array(" ","-"), "", $lccn);
-        if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
+        if (preg_match("~[^0-9]~", $lccn) === 1) $lccn='' ;
       }
       if ($oclc) {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
@@ -1715,7 +1728,7 @@ final class Template {
         $google_book_url='https://books.google.com/books?isbn='.$isbn;
         $google_content = @file_get_contents($google_book_url);
         if ($google_content !== FALSE) {
-          preg_match_all('~books.google.com/books\?id=............&amp~',$google_content,$google_results);
+          preg_match_all('~books.google.com/books\?id=............&amp~', $google_content, $google_results);
           $google_results = $google_results[0];
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
@@ -1819,7 +1832,7 @@ final class Template {
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
-          $author_parts  = explode(" ",$author);
+          $author_parts  = explode(" ", $author);
           $author_ending = end($author_parts);
           if( in_array(strtolower($author),       AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
               in_array(strtolower($author_ending),AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
@@ -1840,7 +1853,7 @@ final class Template {
           }
         }
     }
-    $this->add_if_new("date",$google_date);
+    $this->add_if_new("date", $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     // foreach ($xml->dc___format as $format) {
     //   if (preg_match("~([\d\-]+)~", $format, $matches)) {
@@ -2844,18 +2857,18 @@ final class Template {
   protected function isbn10Toisbn13 ($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
        $isbn10 = str_replace(array('—','?','–','-','?'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
-       if (preg_match("~[^0-9Xx\-]~",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
+       if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
        if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-") return $isbn10;  // Ends or starts with a dash
        $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
        if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
        $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit - do not need and might be X
-       if (preg_match("~[^0123456789]~",$isbn13) === 1)  return $isbn10;  // Not just numbers
+       if (preg_match("~[^0123456789]~", $isbn13) === 1)  return $isbn10;  // Not just numbers
        $sum = 0;
        for ($count=0; $count<12; $count++ ) {
           $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
        }
        $sum = ((10-$sum%10)%10) ;
-       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum ; // Assume existing dashes (if any) are right
-       return $isbn13 ;
+       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum; // Assume existing dashes (if any) are right
+       return $isbn13;
   }
 }

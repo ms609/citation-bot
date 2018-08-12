@@ -221,6 +221,14 @@ function title_capitalization($in, $caps_after_punctuation) {
     create_function('$matches', 'return mb_strtolower($matches[0]);'),
     trim($new_case)
   );
+  /** French l'Words and d'Words  **/
+  $new_case = preg_replace_callback(
+    "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
+    create_function('$matches', 'return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);'),
+    ' ' . $new_case
+  );
+  $new_case = mb_ucfirst(trim($new_case));
+
   // Solitary 'a' should be lowercase
   $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
   
@@ -241,6 +249,11 @@ function title_capitalization($in, $caps_after_punctuation) {
   }
   */
   return $new_case;
+}
+
+function mb_ucfirst($string)
+{
+    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
 
 function tag($long = FALSE) {
