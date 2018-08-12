@@ -2669,7 +2669,7 @@ final class Template {
   }
 
   // Amend parameters
-  protected function rename($old_param, $new_param, $new_value = FALSE) {
+  public function rename($old_param, $new_param, $new_value = FALSE) {
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
