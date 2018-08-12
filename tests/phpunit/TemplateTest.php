@@ -27,7 +27,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testParameterWithNoParameters() {
-    $text = "{{Cite web | testy1= | testy2=}}';
+    $text = '{{Cite web | testy1= | testy2=}}';
     $expanded = $this->process_citation($text);
     $expanded->rename('testy2','testy1');
     $this->assetNull($expanded->parsed_text());
