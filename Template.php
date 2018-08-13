@@ -817,6 +817,36 @@ final class Template {
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('hdl', $match[1]);
+      } elseif (preg_match("~^https?://zbmath\.org/?format=complete&q=an:([^\?]*)~", $url, $match)) {
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('zbl', $match[1]);
+      } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([^\?]*)~", $url, $match)) {
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('mr', $match[1]);
+      } elseif (preg_match("~^https?://papers\.ssrn\.com/sol3/papers\.cfm\?abstract_id=([^\?]*)~", $url, $match)) {
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('ssrn', $match[1]);
+      } elseif (preg_match("~^https?://www\.osti\.gov/biblio/([^\?]*)~", $url, $match)) {
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('osti', $match[1]);
+      } elseif (preg_match("~^https?://www\.osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([^\?]*)~", $url, $match)) {
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('osti', $match[1]);
       }
     }
     return FALSE ;
