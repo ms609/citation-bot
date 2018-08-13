@@ -880,6 +880,10 @@ ER -  }}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('1111.22222', $expanded->get('zbl'));
      $this->assertNull($expanded->get('url'));
+     $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:11.2222.44}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('11.2222.44', $expanded->get('jfm'));
+     $this->assertNull($expanded->get('url'));
  }
     
  public function testStripPDF() {
