@@ -2412,8 +2412,8 @@ final class Template {
             break;
           case 'url':
             $p->val =  preg_replace_callback(
-               "~(https?://www.researchgate.net/publication/[0-9]+)(_*)"   // Trim researchgate
-               create_function('$matches', 'return $matches[0];'),
+               "~(https?://www.researchgate.net/publication/)([0-9]+)(_*)"   // Trim researchgate URLS and force https
+               create_function('$matches', 'return 'https://www.researchgate.net/publication/' . $matches[1];'),
                $p->val
                );
             break;
