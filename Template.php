@@ -817,7 +817,7 @@ final class Template {
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('hdl', $match[1]);
-      } elseif (preg_match("~^https?://zbmath\.org/?format=complete&q=an:([^\?]*)~", $url, $match)) {
+      } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([^\?]*)~", $url, $match)) {
           if (is_null($url_sent)) {
              $this->forget('url');
           }
