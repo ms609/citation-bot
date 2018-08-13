@@ -885,6 +885,9 @@ ER -  }}';
      $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals($want, $expanded->get('url'));
+     $text = '{{cite journal|url=http://researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($want, $expanded->get('url'));
  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
