@@ -858,6 +858,29 @@ ER -  }}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('10397/34754', $expanded->get('hdl'));
  }
+
+ public function testUrlConversions() {
+     $text = '{{cite journal | url= https://mathscinet.ams.org/mathscinet-getitem?mr=0012343 }}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('0012343', $expanded->get('mr'));
+     $this->assertNull($expanded->get('url'));
+     $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('1234231', $expanded->get('ssrn'));
+     $this->assertNull($expanded->get('url'));
+     $text = '{{cite journal | url=https://www.osti.gov/biblio/2341}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('2341', $expanded->get('osti'));
+     $this->assertNull($expanded->get('url'));
+     $text = '{{cite journal | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('2341', $expanded->get('osti'));
+     $this->assertNull($expanded->get('url'));
+     $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:1111.22222}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('1111.22222', $expanded->get('zbl'));
+     $this->assertNull($expanded->get('url'));
+ }
     
  public function testStripPDF() {
      $text = '{{cite journal |url=https://link.springer.com/content/pdf/10.1007/BF00428580.pdf}}';
