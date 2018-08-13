@@ -870,6 +870,22 @@ ER -  }}';
      $expanded = $this->process_citation($text);
      $this->assertNull($expanded->get('publisher'));  
  }
+    
+ public function testTrimResearchGate() {
+     $want = 'https://www.researchgate.net/publication/320041870';
+     $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($want, $expanded->get('url'));
+     $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($want, $expanded->get('url'));
+     $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($want, $expanded->get('url'));
+     $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($want, $expanded->get('url'));
+ }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
