@@ -2411,11 +2411,8 @@ final class Template {
             $p->val = $this->isbn10Toisbn13($p->val);
             break;
           case 'url':
-            $p->val =  preg_replace_callback(
-               "~(https?://www.researchgate.net/publication/)([0-9]+)(_*)",   // Trim researchgate URLS and force https
-               create_function('$matches', 'return 'https://www.researchgate.net/publication/' . $matches[1];'),
-               $p->val
-               );
+            $research_gate = preg_match("~(https?://www.researchgate.net/publication/)([0-9]+)(_*)~", $p->val, $matches);
+            if ($research_gate === 1) $p->val = 'https://www.researchgate.net/publication/' . $matches[1];
             break;
         }
       }
