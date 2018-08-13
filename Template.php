@@ -788,7 +788,7 @@ final class Template {
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
         
       } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        
+        quiet_echo("\n   ~ Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget('url');
         }
@@ -803,51 +803,60 @@ final class Template {
             $this->forget('url');
           }
           if ($this->blank('asin')) {
+            quiet_echo("\n   ~ Converting URL to ASIN parameter");
             return $this->add_if_new('asin', $match['id']);
           }
         } else {
+          quiet_echo("\n   ~ Converting URL to ASIN template");
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
           if (is_null($url_sent)) {
             $this->forget('url'); // will forget accessdate too
           }
         }
       } elseif (preg_match("~^https?://hdl\.handle\.net/([^\?]*)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('hdl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('zbl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to JFM parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('jfm', $match[1]);
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to MR parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('mr', $match[1]);
       } elseif (preg_match("~^https?://papers\.ssrn\.com/sol3/papers\.cfm\?abstract_id=([0-9]+)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to SSRN parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('ssrn', $match[1]);
       } elseif (preg_match("~^https?://www\.osti\.gov/biblio/([0-9]+)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://www\.osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
