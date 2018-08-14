@@ -235,7 +235,7 @@ function title_capitalization($in, $caps_after_punctuation) {
   // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
-    function($matches) {return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);},
+    function($matches) {return "\'\'" . ucfirst(strtolower($matches['taxon'])) . "\'\' " . strtolower($matches["nova"]);},
     $new_case);
   
   // Capitalization exceptions, e.g. Elife -> eLife
