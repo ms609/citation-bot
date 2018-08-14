@@ -19,6 +19,7 @@ matrix:
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
+        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit --bootstrap expandFns.php tests/phpunit
     - stage: deploy
       name: "Update WMFlabs servers"
