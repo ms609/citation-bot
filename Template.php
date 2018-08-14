@@ -28,7 +28,7 @@ final class Template {
             $citation_template, $mod_dashes;
 
   public function parse_text($text) {
-    $this->initial_author_params = null; // Will be populated later if there are any
+    $this->initial_author_params = NULL; // Will be populated later if there are any
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
     }
