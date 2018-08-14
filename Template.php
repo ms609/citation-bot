@@ -2455,6 +2455,11 @@ final class Template {
           case 'isbn':
             $p->val = $this->isbn10Toisbn13($p->val);
             break;
+          case 'url':
+            if (preg_match("~^(https?://w?w?w?.?researchgate.net/publication/)([0-9]+)(_*)~", $p->val, $matches)) {
+                $p->val = 'https://www.researchgate.net/publication/' . $matches[2];
+            }
+            break;
         }
       }
     }
