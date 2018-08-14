@@ -2720,6 +2720,7 @@ final class Template {
 
   // Amend parameters
   protected function rename($old_param, $new_param, $new_value = FALSE) {
+    if($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
@@ -2830,7 +2831,7 @@ final class Template {
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
-      echo "\n   - Dropping parameter " . echoable($par) . tag();
+      if ($this->has($par) && strpos($par,'CITATION_BOT_PLACEHOLDER') === FALSE) echo "\n   - Dropping parameter " . echoable($par) . tag(); // Do not mention forgetting empty parameters
       unset($this->param[$pos]);
     }
   }
