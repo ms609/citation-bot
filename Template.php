@@ -1390,7 +1390,7 @@ final class Template {
       echo "\n JSTOR API returned nothing for JSTOR ". $jstor . "\n";
       return FALSE;
     }
-    if (stripos($dat, 'No RIS data found for') !== false) {
+    if (stripos($dat, 'No RIS data found for') !== FALSE) {
       echo "\n JSTOR API found nothing for JSTOR ". $jstor . "\n";
       return FALSE;
     }
@@ -1514,7 +1514,7 @@ final class Template {
       echo "\n Citoid API returned nothing for JSTOR ". $jstor . "\n";
       return FALSE;
     }
-    $data = @json_decode($json,false);
+    $data = @json_decode($json,FALSE);
     if (!isset($data) || !isset($data[0]) || !isset($data[0]->{'title'})) {
       echo "\n Citoid API returned invalid json for JSTOR ". $jstor . "\n";
       return FALSE;
@@ -1780,7 +1780,7 @@ final class Template {
             echo "\n Google APIs search failed for $url_token \n";
             return FALSE;
         }
-        $result = @json_decode($string, false);
+        $result = @json_decode($string, FALSE);
         if (isset($result) && isset($result->totalItems) && $result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
           $gid=$result->items[0]->id;
           $url = 'https://books.google.com/books?id=' . $gid;
