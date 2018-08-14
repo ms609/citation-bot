@@ -49,20 +49,20 @@ function format_surname($surname) {
 }
 function format_surname_2($surname) {
   $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u", 
-          create_function('$matches',
+          function($matches) {
                   'return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);'
-          ),
+	  }
           mb_ereg_replace(" - ", "-", $surname));
   $ret = str_ireplace(array('Von ', 'Und ', 'De La '), array('von ', 'und ', 'de la '), $ret);
-  $ret = preg_replace_callback('~;\w~', create_function('$matches', 'return strtolower($matches[0]);'), $ret);
+  $ret = preg_replace_callback('~;\w~', function($matches) {return strtolower($matches[0]);}, $ret);
   return $ret;
 }
 
 function format_forename($forename){
-  return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  create_function(
-            '$matches',
-            'return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);'
-        ), $forename)));
+  return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
+            $matches) {
+            return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);}
+         , $forename)));
 }
 
 /* format_initials
