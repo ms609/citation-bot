@@ -193,7 +193,21 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     // ISSN is removed when journal is added.  Is this the desired behaviour? ##TODO!
     $this->assertEquals('{{Cite journal| journal=My Journal}}', $expanded->parsed_text());
   }
+
+  public function testRemoveWikilinks() {
+    $expanded = $this->process_citation("{{Cite journal|journal=[[Pure Evil]]}}");
+    $this->assertEquals('[[Pure Evil]]', $expanded->get('journal')); // leave fully linked journals
+    $expanded = $this->process_citation("{{Cite journal|journal=[[Pure]] and [[Evil]]}}");
+    $this->assertEquals('Pure and Evil', $expanded->get('journal')); // leave fully linked journals
+    $expanded = $this->process_citation("{{Cite journal|journal=Dark Lord of the Sith [[Pure Evil]]}}");
+    $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('journal'));
+    $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil]]}}");
+    $this->assertEquals('Pure Evil', $expanded->get('title'));
+    $expanded = $this->process_citation("{{Cite journal|title=[[Dark]] Lord of the [[Sith (Star Wars)|Sith]] [[Pure Evil]]}}");
+    $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
   
+  }
+      
   public function testJournalCapitalization() {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
     $this->assertEquals('Molecular and Cellular Biology', $expanded->get('journal'));
@@ -656,8 +670,8 @@ ER -  }}';
   public function testExistingWikiText() { // checks for formating in tidy() not breaking things
       $text = '{{cite journal|title=[[Zootimeboys]] and Girls|journal=[[Zootimeboys]] and Girls}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('[[Zootimeboys]] and Girls', $expanded->get('journal'));
-      $this->assertEquals('[[Zootimeboys]] and Girls', $expanded->get('title'));
+      $this->assertEquals('Zootimeboys and Girls', $expanded->get('journal'));
+      $this->assertEquals('Zootimeboys and Girls', $expanded->get('title'));
   }
   public function testNewWikiText() { // checks for new information that looks like wiki text and needs escaped
       $text = '{{Cite journal|doi=10.1021/jm00193a001}}';  // This has greek letters, [, ], (, and ).

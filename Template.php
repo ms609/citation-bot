@@ -2415,9 +2415,36 @@ final class Template {
               echo "\n * Initial authors exist, skipping authorlink in tidy";
             }
             break;
+          case 'title':
+            $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
+                      "~(\[\[)([^|]+?)(\]\])~",
+                      create_function('$matches','return $matches[2];'),
+                      $p->val
+                      );
+            $p->val = preg_replace_callback(
+                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
+                      create_function('$matches','return $matches[4];'),
+                      $p->val
+                      );
+            break;
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
+            if(mb_substr($p->val, 0, 2) !== "[["   ||
+               mb_substr($p->val, -2) !== "]]"     ||
+               mb_substr_count($p->val,'[[') !== 1 ||
+               mb_substr_count($p->val,']]') !== 1) { // Only remove partial wikilinks
+                  $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
+                      "~(\[\[)([^|]+?)(\]\])~",
+                      create_function('$matches','return $matches[2];'),
+                      $p->val
+                      );
+                  $p->val = preg_replace_callback(
+                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
+                      create_function('$matches','return $matches[4];'),
+                      $p->val
+                      );
+            }
             if(substr($p->val, 0, 1) !== "[" && substr($p->val, -1) !== "]") { 
                $p->val = title_capitalization(ucwords($p->val), TRUE);
             }
