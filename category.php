@@ -16,8 +16,8 @@ foreach ($argv as $arg) {
       default:
       $argument[$oArg][] = $arg;
     }
-  }
-}
+  } VERIFY that it works with a nice bug
+} or two
 
 $account_suffix='_4'; // Whilst testing
 $account_suffix='_1'; // Keep this before including expandFns
