@@ -160,7 +160,7 @@ final class Template {
         }
 
         // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_params) == 0) {
+        if (!$this->initial_author_params)) {
           $this->handle_et_al();
         }
       break;
@@ -180,7 +180,7 @@ final class Template {
         // TODO: Check for the doi-inline template in the title
 
         // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_params) == 0) {
+        if (!$this->initial_author_params)) {
           $this->handle_et_al();
         }
 
