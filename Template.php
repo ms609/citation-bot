@@ -2418,12 +2418,12 @@ final class Template {
           case 'title':
             $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
-                      create_function('$matches','return $matches[2];'),
+                      function($matches) {return $matches[2];},
                       $p->val
                       );
             $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      create_function('$matches','return $matches[4];'),
+                      function($matches) {return $matches[4];},
                       $p->val
                       );
             break;
@@ -2436,12 +2436,12 @@ final class Template {
                mb_substr_count($p->val,']]') !== 1) { // Only remove partial wikilinks
                   $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
-                      create_function('$matches','return $matches[2];'),
+                      function($matches) {return $matches[2];},
                       $p->val
                       );
                   $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      create_function('$matches','return $matches[4];'),
+                      function($matches) {return $matches[4];},
                       $p->val
                       );
             }
