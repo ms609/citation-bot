@@ -244,8 +244,8 @@ function title_capitalization($in, $caps_after_punctuation) {
     
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
   $new_case = preg_replace_callback(
-    "~(*) ([a-z])$~",
-    function ($matches) {return $matches[1] . ' ' . strtoupper($matches[1]);},
+    "~( [a-z])$~",
+    function ($matches) {return strtoupper($matches[1]);},
     $new_case);
   
   /* I believe we can do without this now
