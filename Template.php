@@ -208,12 +208,12 @@ final class Template {
           $this->name = 'Cite book';
         }
         if ($this->wikiname() === 'cite journal' && $this->has('work') && $this->blank('journal')) { // Never did get a journal name....
-          $this->rename('work','journal');
+          $this->rename('work', 'journal');
         }
         break;
       case 'cite magazine':
         if ($this->blank('magazine') && $this->has('work')) { // This is all we do with cite magazine
-          $this->rename('work','magazine');
+          $this->rename('work', 'magazine');
         }
         break;
     }
