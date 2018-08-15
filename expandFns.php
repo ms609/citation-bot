@@ -233,7 +233,7 @@ function title_capitalization($in, $caps_after_punctuation) {
 
   // Solitary 'a' should be lowercase
   $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
-  // but not not "U S A"
+  // but not in "U S A"
   $new_case = trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
   // Catch some specific epithets, which should be lowercase
