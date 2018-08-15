@@ -785,9 +785,9 @@ ER -  }}';
    }
     
    public function testSmallWords() {
-       $text = '{{cite journal|journal=A Word in ny and n y ABOUT the U S A and y and z}}';
+       $text = '{{cite journal|journal=A Word in ny and n y ABOUT cow And Then boys the U S A and y and z}}';
        $expanded = $this->process_citation($text);
-       $this->assertEquals('A Word in NY and N Y About the U S A and y and Z', $expanded->get('journal'));
+       $this->assertEquals('A Word in NY and N Y About Cow and then Boys the U S A and y and Z', $expanded->get('journal'));
           
    }
    
