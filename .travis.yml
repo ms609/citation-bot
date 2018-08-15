@@ -20,6 +20,7 @@ matrix:
         - composer require mediawiki/oauthclient
       script: phpunit --bootstrap expandFns.php tests/phpunit
     - stage: deploy
+      php: 5.6 # Avoid downloading and installing 5.5
       name: "Update WMFlabs servers"
       script:
         - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
