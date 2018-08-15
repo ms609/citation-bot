@@ -51,22 +51,22 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints");
 
 const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' its ',
                              ' then ',' else ',' when ', ' at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',
-                             ' to ',' into ',' with ',' USA ',' y ', ' für ', ' de ', ' zur ', ' der ', ' und ',
+                             ' to ',' into ',' with ',' U S A ',' USA ',' y ', ' für ', ' de ', ' zur ', ' der ', ' und ',
                              ' du ', ' et ', ' la ', ' le ', ' DNA ', ' UK ', ' FASEB ', ' van ', ' von ', ' AJHG ',
                              ' BBA ', ' BMC ', ' BMJ ', ' EMBO ', ' FEBS ', ' FEMS ', ' JAMA ', ' MNRAS ', ' NEJM ', 
                              ' NYT ', ' PCR ', ' PNAS ', ' RNA ',  ' zu ' , ' des ', ' aus ', ' dem ', ' del ', ' dei ', 
                              ' di ', ' ed ', ' du ', ' de ', ' dans ', ' les ', ' e ', ' den ', ' die ', ' das ', ' ein ', 
                              ' eine ', ' einen ', ' NYC ', ' d\'une ', ' d\'un ', ' el ',  ' los ', ' las ', ' as ',
-                             ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' U S A ', ' för ');
+                             ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' för ');
 const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Its ',
                              ' Then ',' Else ',' When ', ' At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',
-                             ' To ',' Into ',' With ',' Usa ',' Y ', ' Für ', ' De ', ' Zur ', ' Der ', ' Und ',
+                             ' To ',' Into ',' With ',' U S A',' Usa ',' Y ', ' Für ', ' De ', ' Zur ', ' Der ', ' Und ',
                              ' Du ', ' Et ', ' La ', ' Le ', ' Dna ', ' Uk ', ' Faseb ', ' Van ', ' Von ', ' Ajhg ',
                              ' Bba ', ' Bmc ', ' Bmj ', ' Embo ', ' Febs ', ' Fems ', ' Jama ', ' Mnras ', ' Nejm ', 
                              ' Nyt ', ' Pcr ', ' Pnas ', ' Rna ',  ' Zu ' , ' Des ', ' Aus ', ' Dem ', ' Del ', ' Dei ', 
                              ' Di ', ' Ed ', ' Du ', ' De ', ' Dans ', ' Les ', ' E ', ' Den ', ' Die ', ' Das ', ' Ein ', 
                              ' Eine ', ' Einen ', ' Nyc ', ' D\'une ', ' D\'un ', ' El ',  ' Los ', ' Las ', ' As ',
-                             ' Nor ',' At ', ' Up ', ' Ny ', ' N y ', ' U S a ', ' För ');
+                             ' Nor ',' At ', ' Up ', ' Ny ', ' N y ', ' För ');
 
 const JOURNAL_ACRONYMS = array(
 ' ACM SIGPLAN Notices ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ',
