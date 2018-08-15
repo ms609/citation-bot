@@ -2450,28 +2450,16 @@ final class Template {
                mb_substr($p->val, -2) === "]]"            &&
                mb_substr_count($p->val,'[[') === 1        &&
                mb_substr_count($p->val,']]') === 1) {
-               $pipe = strpos ($p->val, "|");
+               $pipe = mb_strpos ($p->val, "|");
                if ($pipe === FALSE) {
-                  $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X and link to X
-                      "~(\[\[)([^|]+?)(\]\])~",
-                      function($matches) {return $matches[2];},
-                      $p->val
-                      );
-                  $this->add_if_new('title-link', $p->val);
+                  $tval1 = mb_substr($p->val, 2, -2);
+                  $tval2 = mb_substr($p->val, 2, -2);
                } else {
-                  $this->add_if_new('title-link',
-                      preg_replace_callback(
-                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into link to Y
-                      function($matches) {return $matches[2];},
-                      $p->val
-                      )
-                      );
-                  $p->val = preg_replace_callback(
-                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks text into X
-                      function($matches) {return $matches[4];},
-                      $p->val
-                      );
+                  $tval1 = mb_substr($p->val, 2, $pipe-2);
+                  $tval2 = mb_substr($p->val, $pipe+1, -2);
                }
+              $p->val = $tval2;
+              $this->add_if_new('title-link', $tval1);
             }
             break;
           case 'journal': 
