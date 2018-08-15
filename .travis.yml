@@ -21,7 +21,7 @@ matrix:
       script: phpunit --bootstrap expandFns.php tests/phpunit
     - stage: deploy
       name: "Update WMFlabs servers"
-      if: (branch == master) AND (NOT env(TRAVIS_PULL_REQUEST))
+      if: (branch == master) #### AND (NOT env(TRAVIS_PULL_REQUEST))
       script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
       if: (branch == development) AND (NOT env(TRAVIS_PULL_REQUEST))
       script: bash <(echo wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
