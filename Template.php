@@ -2450,10 +2450,10 @@ final class Template {
                mb_substr($p->val, -2) === "]]"            &&
                mb_substr_count($p->val,'[[') === 1        &&
                mb_substr_count($p->val,']]') === 1) {
-               $pipe = mb_strpos ($p->val, "|");
+               $pipe = mb_strpos($p->val, '|');
                if ($pipe === FALSE) {
                   $tval1 = mb_substr($p->val, 2, -2);
-                  $tval2 = mb_substr($p->val, 2, -2);
+                  $tval2 = $tval1;
                } else {
                   $tval1 = mb_substr($p->val, 2, $pipe-2);
                   $tval2 = mb_substr($p->val, $pipe+1, -2);
