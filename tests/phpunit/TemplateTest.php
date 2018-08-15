@@ -783,6 +783,13 @@ ER -  }}';
        $this->assertEquals('1233', $expanded->get('pages'));
        $this->assertEquals('1999', $expanded->get('year'));
    }
+    
+   public function testSmallWords() {
+       $text = '{{cite journal|journal=A Word in ny and n y ABOUT the U S A and y and z}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('A Word in NY and N Y About the U S A and y and Z', $expanded->get('journal'));
+          
+   }
    
    public function testDoNotAddYearIfDate() {
        $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
