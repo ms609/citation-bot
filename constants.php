@@ -48,7 +48,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints");
 // dontCap is am array of strings that should not be capitalized in their titlecase format; 
 // unCapped is their correct capitalization. Remember to enclose any word in spaces.
 const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' its ',
-                             ' then ',' else ',' when', 'at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',
+                             ' then ',' else ',' when ', ' at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',
                              ' to ',' into ',' with ',' USA ',' y ', ' für ', ' de ', ' zur ', ' der ', ' und ',
                              ' du ', ' et ', ' la ', ' le ', ' DNA ', ' UK ', ' FASEB ', ' van ', ' von ', ' AJHG ',
                              ' BBA ', ' BMC ', ' BMJ ', ' EMBO ', ' FEBS ', ' FEMS ', ' JAMA ', ' MNRAS ', ' NEJM ', 
@@ -57,7 +57,7 @@ const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',
                              ' eine ', ' einen ', ' NYC ', ' d\'une ', '  d\'un ', ' el ',  ' los ', ' las ', ' as ',
                              ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Its ',
-                             ' Then ',' Else ',' When', 'At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',
+                             ' Then ',' Else ',' When ', ' At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',
                              ' To ',' Into ',' With ',' Usa ',' Y ', ' Für ', ' De ', ' Zur ', ' Der ', ' Und ',
                              ' Du ', ' Et ', ' La ', ' Le ', ' Dna ', ' Uk ', ' Faseb ', ' Van ', ' Von ', ' Ajhg ',
                              ' Bba ', ' Bmc ', ' Bmj ', ' Embo ', ' Febs ', ' Fems ', ' Jama ', ' Mnras ', ' Nejm ', 
