@@ -930,9 +930,9 @@ ER -  }}';
      $expanded = $this->process_citation($text);
      $this->assertEquals($want, $expanded->get('url'));
      
-     $text = '{{cite web|url=http://academia.EDU/123456/extra_stuff}}';
+     $text = '{{cite web|url=http://acADemia.EDU/123456/extra_stuff}}';
      $expanded = $this->process_citation($text);
-     $this->assertEquals('{{cite web|url=https://www.academia.edu/123456}}', $expanded->get('url')); 
+     $this->assertEquals('https://www.academia.edu/123456', $expanded->get('url')); 
  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
