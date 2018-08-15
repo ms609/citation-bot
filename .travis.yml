@@ -21,13 +21,13 @@ matrix:
         - composer require mediawiki/oauthclient
       script: phpunit --bootstrap expandFns.php tests/phpunit
       after_success:
-        - [ "${TRAVIS_PULL_REQUEST}" ] && (branch = master) 
+        - if: [ "${TRAVIS_PULL_REQUEST}" ] && (branch = master) 
           script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull-ONE.php)
-        - [ "${TRAVIS_PULL_REQUEST}"] 
+        - if: [ "${TRAVIS_PULL_REQUEST}"] 
           script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull-TWO.php)
-        - (branch = master) 
+        - if: (branch = master) 
           script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull-THR.php)
-        - true
+        - if: true
           script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull-FOR.php)
 
 git:
