@@ -11,10 +11,10 @@ matrix:
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
-      php: 7.1.11
+      php: 97.1.11
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
       after_success: bash <(curl -s https://codecov.io/bash)
-    - php: 5.6
+    - php: 95.6
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
