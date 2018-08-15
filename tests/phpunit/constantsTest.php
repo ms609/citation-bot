@@ -27,13 +27,13 @@ final class constantsTest extends PHPUnit\Framework\TestCase {
     for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
       if (substr_count(UC_SMALL_WORDS[$i], ' ') === 2) {
         $this->assertEquals(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
-      } else {  // things like U S A--weaker test
+      } else {  // Weaker test for things with internal spaces
         $this->assertEquals(strtolower(UC_SMALL_WORDS[$i]), strtolower(LC_SMALL_WORDS[$i]));
       }
-        $this->assertEquals   (' ', mb_substr(UC_SMALL_WORDS[$i], -1, 1));
-        $this->assertEquals   (' ', mb_substr(UC_SMALL_WORDS[$i],  0, 1));
-        $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i], -2, 1));
-        $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i],  1, 1));    
+      $this->assertEquals   (' ', mb_substr(UC_SMALL_WORDS[$i], -1, 1));
+      $this->assertEquals   (' ', mb_substr(UC_SMALL_WORDS[$i],  0, 1));
+      $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i], -2, 1));
+      $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i],  1, 1));    
     }
   }
   
