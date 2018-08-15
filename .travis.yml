@@ -22,9 +22,13 @@ matrix:
       script: phpunit --bootstrap expandFns.php tests/phpunit
       after_sucess:
         - if: NOT (branch == master) #### AND (NOT env(TRAVIS_PULL_REQUEST))
-          bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
-        - if: (branch == development) AND (NOT env(TRAVIS_PULL_REQUEST))
-          bash <(echo wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
+          script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull-TWO.php)
+        - if: NOT (branch = master) #### AND (NOT env(TRAVIS_PULL_REQUEST))
+          script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull-ONE.php)
+        - if:  (NOT env(TRAVIS_PULL_REQUEST))
+          script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull-THR.php)
+        - if:  (env(TRAVIS_PULL_REQUEST))
+          script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull-FOR.php)
 
 git:
   depth: 3
