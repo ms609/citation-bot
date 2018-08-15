@@ -60,7 +60,7 @@ const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',
                              ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' för ');
 const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Its ',
                              ' Then ',' Else ',' When ', ' At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',
-                             ' To ',' Into ',' With ',' U S A',' Usa ',' Y ', ' Für ', ' De ', ' Zur ', ' Der ', ' Und ',
+                             ' To ',' Into ',' With ',' U S A ',' Usa ',' Y ', ' Für ', ' De ', ' Zur ', ' Der ', ' Und ',
                              ' Du ', ' Et ', ' La ', ' Le ', ' Dna ', ' Uk ', ' Faseb ', ' Van ', ' Von ', ' Ajhg ',
                              ' Bba ', ' Bmc ', ' Bmj ', ' Embo ', ' Febs ', ' Fems ', ' Jama ', ' Mnras ', ' Nejm ', 
                              ' Nyt ', ' Pcr ', ' Pnas ', ' Rna ',  ' Zu ' , ' Des ', ' Aus ', ' Dem ', ' Del ', ' Dei ', 
