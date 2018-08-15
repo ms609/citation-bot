@@ -214,6 +214,8 @@ function title_capitalization($in, $caps_after_punctuation) {
     $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
+    // But not "Ann. Of...." which seems to be common in journal titles
+    $new_case = str_replace("Ann. Of ", "Ann. of ", $new_case);
   }
   
   $new_case = preg_replace_callback(
