@@ -2493,9 +2493,11 @@ final class Template {
             $p->val = $this->isbn10Toisbn13($p->val);
             break;
           case 'url':
-            if (preg_match("~^(https?://w?w?w?.?researchgate.net/publication/)([0-9]+)(_*)~", $p->val, $matches)) {
-                $p->val = 'https://www.researchgate.net/publication/' . $matches[2];
-            }
+            if (preg_match("~^https?://(?:www.|)researchgate.net/publication/([0-9]+)_*~i", $p->val, $matches)) {
+                $p->val = 'https://www.researchgate.net/publication/' . $matches[1];
+            } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $p->val, $matches)) {
+                $p->val = 'https://www.academia.edu/' . $matches[1];
+            }      
             break;
         }
       }

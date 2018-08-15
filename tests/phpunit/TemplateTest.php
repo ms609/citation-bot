@@ -912,7 +912,7 @@ ER -  }}';
      $this->assertNull($expanded->get('publisher'));  
  }
     
- public function testTrimResearchGate() {
+ public function testTrimResearchGateETC() {
      $want = 'https://www.researchgate.net/publication/320041870';
      $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870}}';
      $expanded = $this->process_citation($text);
@@ -929,6 +929,10 @@ ER -  }}';
      $text = '{{cite journal|url=http://researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals($want, $expanded->get('url'));
+     
+     $text = '{{cite web|url=http://acADemia.EDU/123456/extra_stuff}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('https://www.academia.edu/123456', $expanded->get('url')); 
  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
