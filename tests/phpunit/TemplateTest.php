@@ -13,7 +13,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 // Initialize bot configuration
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
- 
+ text_in
 final class TemplateTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
@@ -799,7 +799,7 @@ ER -  }}';
        $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
    }
     
-  public function testSmallWordsCrazyBigTest() {
+  public function text_in() {
     $text_in  = 'Start ';
     $text_out = 'Start ';
     for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
@@ -808,7 +808,7 @@ ER -  }}';
     }
     $text_in  = $text_in  . ' Ending';
     $text_out = $text_out . ' Ending';
-    $text = '{{cite journal|journal=$text_in}}';
+    $text = '{{cite journal|journal=' . $text_in . '}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text_out, $expanded->get('journal')); 
   }
