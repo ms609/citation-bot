@@ -18,7 +18,7 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   
   public function testIsValidUser() {
 
-    $this->assertEquals(FALSE, FALSE);
+    $this->assertEquals(FALSE, TRUE);
   }
   
 }
