@@ -2426,16 +2426,47 @@ final class Template {
             }
             break;
           case 'title':
-            $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
+            if(mb_substr($p->val, 0, 2) !== "[["   ||   // Completely remove partial links
+               mb_substr($p->val, -2) !== "]]"     ||
+               mb_substr_count($p->val,'[[') !== 1 ||
+               mb_substr_count($p->val,']]') !== 1) {
+               $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
                       function($matches) {return $matches[2];},
                       $p->val
                       );
-            $p->val = preg_replace_callback(
+               $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
                       function($matches) {return $matches[4];},
                       $p->val
                       );
+            } elseif (mb_substr($p->val, 0, 2) === "[["   &&  // Convert full wikilinks to title-link
+               mb_substr($p->val, -2) === "]]"            &&
+               mb_substr_count($p->val,'[[') === 1        &&
+               mb_substr_count($p->val,']]') === 1) {
+               $pipe = strpos ($p->val, "|");
+               if ($pipe === FALSE) {
+                  $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X and link to X
+                      "~(\[\[)([^|]+?)(\]\])~",
+                      function($matches) {return $matches[2];},
+                      $p->val
+                      );
+                  $this->add_if_new('title-link', $p->val);
+               } else {
+                  $this->add_if_new('title-link',
+                      preg_replace_callback(
+                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into link to Y
+                      function($matches) {return $matches[2];},
+                      $p->val
+                      )
+                      );
+                  $p->val = preg_replace_callback(
+                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks text into X
+                      function($matches) {return $matches[4];},
+                      $p->val
+                      );
+               }
+            }
             break;
           case 'journal': 
             $this->forget('publisher');
