@@ -21,14 +21,14 @@ matrix:
         - composer require mediawiki/oauthclient
       script: phpunit --bootstrap expandFns.php tests/phpunit
       after_success:
-        - if: NOT (branch == master) #### AND (NOT env(TRAVIS_PULL_REQUEST))
-          script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull.php)
-        - if: NOT (branch = master) #### AND (NOT env(TRAVIS_PULL_REQUEST))
-          script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull.php)
-        - if:  (NOT env(TRAVIS_PULL_REQUEST))
-          script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull.php)
-        - if:  (env(TRAVIS_PULL_REQUEST))
-          script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull.php)
+        - [ "${TRAVIS_PULL_REQUEST}" ] && (branch = master) 
+          script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull-ONE.php)
+        - [ "${TRAVIS_PULL_REQUEST}"] 
+          script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull-TWO.php)
+        - (branch = master) 
+          script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull-THR.php)
+        - true
+          script: bash <(curl -s https://tools.wmflabs.org/citations/gitpull-FOR.php)
 
 git:
   depth: 3
