@@ -2437,7 +2437,6 @@ final class Template {
                mb_substr($p->val, -2) !== "]]"     ||
                mb_substr_count($p->val,'[[') !== 1 ||
                mb_substr_count($p->val,']]') !== 1) {
-               echo "\n\n KURT LINE 2440  " .$p->val. "  \n";
                $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
                       function($matches) {return $matches[2];},
@@ -2453,8 +2452,6 @@ final class Template {
                mb_substr_count($p->val,'[[') === 1        &&
                mb_substr_count($p->val,']]') === 1) {
                $pipe = mb_strpos($p->val, '|');
-               echo "\n\n KURT LINE 2456  " .$p->val. "   \n";
-               echo "\n\n KURT PIPE ". (string) $pipe .  "   \n";
                if ($pipe === FALSE) {
                   $tval1 = mb_substr($p->val, 2, -2);
                   $tval2 = $tval1;
