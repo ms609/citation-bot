@@ -30,10 +30,10 @@ final class constantsTest extends PHPUnit\Framework\TestCase {
       } else {  // things like U S A--weaker test
         $this->assertEquals(strtolower(UC_SMALL_WORDS[$i]), strtolower(LC_SMALL_WORDS[$i]));
       }
-        $this->assertEquals(' ', mb_substr(UC_SMALL_WORDS[$i], -1, 1));
-        $this->assertEquals(' ', mb_substr(UC_SMALL_WORDS[$i],  0, 1));
-        $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i], -2, 1));
-        $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i],  1, 1));    
+        $this->assertEquals(' ' . UC_SMALL_WORDS[$i], mb_substr(UC_SMALL_WORDS[$i], -1, 1) . UC_SMALL_WORDS[$i]);
+        $this->assertEquals(' ' . UC_SMALL_WORDS[$i], mb_substr(UC_SMALL_WORDS[$i],  0, 1) . UC_SMALL_WORDS[$i]);
+        $this->assertNotEquals(' ' . UC_SMALL_WORDS[$i], mb_substr(UC_SMALL_WORDS[$i], -2, 1) . UC_SMALL_WORDS[$i]);
+        $this->assertNotEquals(' ' . UC_SMALL_WORDS[$i], mb_substr(UC_SMALL_WORDS[$i],  1, 1) . UC_SMALL_WORDS[$i]);    
     }
   }
   
