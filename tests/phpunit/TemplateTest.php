@@ -198,11 +198,15 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation("{{Cite journal|journal=[[Pure Evil]]}}");
     $this->assertEquals('[[Pure Evil]]', $expanded->get('journal')); // leave fully linked journals
     $expanded = $this->process_citation("{{Cite journal|journal=[[Pure]] and [[Evil]]}}");
-    $this->assertEquals('Pure and Evil', $expanded->get('journal')); // leave fully linked journals
+    $this->assertEquals('Pure and Evil', $expanded->get('journal'));
     $expanded = $this->process_citation("{{Cite journal|journal=Dark Lord of the Sith [[Pure Evil]]}}");
     $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('journal'));
     $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil]]}}");
     $this->assertEquals('Pure Evil', $expanded->get('title'));
+    $this->assertEquals('Pure Evil', $expanded->get('title-link'));
+    $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil|Approximate Physics]]}}");
+    $this->assertEquals('Approximate Physics', $expanded->get('title'));
+    $this->assertEquals('Pure Evil', $expanded->get('title-link'));
     $expanded = $this->process_citation("{{Cite journal|title=[[Dark]] Lord of the [[Sith (Star Wars)|Sith]] [[Pure Evil]]}}");
     $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
   
