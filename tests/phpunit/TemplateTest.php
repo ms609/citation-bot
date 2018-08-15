@@ -799,7 +799,7 @@ ER -  }}';
        $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
    }
     
-  public function text_in() {
+  public function testSmallWordsOneGiantTest() {
     $text_in  = 'Start ';
     $text_out = 'Start ';
     for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
