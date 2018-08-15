@@ -545,11 +545,17 @@ final class Template {
       
       case 'url': 
         // look for identifiers in URL - might be better to add a PMC parameter, say
-        if (!$this->get_identifiers_from_url($value) && $this->blank($param_name)) {
+        if (!$this->get_identifiers_from_url($value) && $this->blank($param_name)  && $this->blank('title-link') && $this->blank('titlelink')) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
-      
+        
+      case 'title-link':
+        if ($this->blank('title-link') && $this->blank('titlelink') && $this->blank('url') {
+          return $this->add($param_name, $value); // We do not sanitize this, since it is not new data
+        }
+        return FALSE;
+        
       case 'class':
         if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE ) {
           return $this->add($param_name, sanitize_string($value));
