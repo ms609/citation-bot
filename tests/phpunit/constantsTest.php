@@ -30,6 +30,7 @@ final class constantsTest extends PHPUnit\Framework\TestCase {
       } else {  // things like U S A--weaker test
         $this->assertEquals(strtolower(UC_SMALL_WORDS[$i]), strtolower(LC_SMALL_WORDS[$i]));
       }
+    }
   }
   
 }
