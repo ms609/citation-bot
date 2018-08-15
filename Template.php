@@ -160,7 +160,7 @@ final class Template {
         }
 
         // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_params) == 0) {
+        if (!$this->initial_author_params) {
           $this->handle_et_al();
         }
       break;
@@ -180,7 +180,7 @@ final class Template {
         // TODO: Check for the doi-inline template in the title
 
         // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_params) == 0) {
+        if (!$this->initial_author_params) {
           $this->handle_et_al();
         }
 
@@ -454,12 +454,20 @@ final class Template {
         
       case "periodical": case "journal":
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
-        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
+        if ($this->blank("journal") && $this->blank("periodical")) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && (strcasecmp($this->get('series'), $value) === 0)) return FALSE ;
-          return $this->add($param_name,$value);
+          if ($this->has('work')) {
+            if (strcasecmp($this->get('work'), $value) === 0) {
+              $this->rename('work', $param_name);
+              return TRUE;
+            } else {
+              return FALSE;  // Cannot have both work and journal
+            }
+          }
+          return $this->add($param_name, $value);
         }
         return FALSE;
         
@@ -576,10 +584,20 @@ final class Template {
       return FALSE;
       
       case 'pmid':
+        if ($value === 0) return FALSE;  // Got this once from pubmed
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
-          $this->expand_by_pubmed();
+          $this->expand_by_pubmed($this->blank('pmc') || $this->blank('doi'));  //Force = TRUE if missing DOI or PMC
           $this->get_doi_from_crossref();
+          return TRUE;
+        }
+      return FALSE;
+
+      case 'pmc':
+        if ($value === 0) return FALSE;  // Got PMID of zero once from pubmed
+        if ($value === "PMC0") return FALSE;
+        if ($this->blank($param_name)) {
+          $this->add($param_name, sanitize_string($value));
           return TRUE;
         }
       return FALSE;
@@ -750,6 +768,13 @@ final class Template {
           $this->forget('url');
         }
         return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
+      } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/summary\?doi=([0-9.]*)~", $url, $match)) {
+        quiet_echo("\n   ~ URL is hard-coded citeseerx; converting to use citeseerx parameter.");
+        if (strpos($this->name, 'web')) $this->name = 'Cite journal';
+        if (is_null($url_sent)) {
+          $this->forget('url');
+        }
+        return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
         
       } elseif (extract_doi($url)[1]) {
         
@@ -773,7 +798,7 @@ final class Template {
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
         
       } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        
+        quiet_echo("\n   ~ Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget('url');
         }
@@ -788,22 +813,68 @@ final class Template {
             $this->forget('url');
           }
           if ($this->blank('asin')) {
+            quiet_echo("\n   ~ Converting URL to ASIN parameter");
             return $this->add_if_new('asin', $match['id']);
           }
         } else {
+          quiet_echo("\n   ~ Converting URL to ASIN template");
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
           if (is_null($url_sent)) {
             $this->forget('url'); // will forget accessdate too
           }
         }
       } elseif (preg_match("~^https?://hdl\.handle\.net/([^\?]*)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('hdl', $match[1]);
+      } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to ZBL parameter");
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('zbl', $match[1]);
+      } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to JFM parameter");
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('jfm', $match[1]);
+      } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to MR parameter");
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('mr', $match[1]);
+      } elseif (preg_match("~^https?://papers\.ssrn\.com/sol3/papers\.cfm\?abstract_id=([0-9]+)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to SSRN parameter");
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('ssrn', $match[1]);
+      } elseif (preg_match("~^https?://www\.osti\.gov/biblio/([0-9]+)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to OSTI parameter");
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('osti', $match[1]);
+      } elseif (preg_match("~^https?://www\.osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~", $url, $match)) {
+          quiet_echo("\n   ~ Converting URL to OSTI parameter");
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
+          return $this->add_if_new('osti', $match[1]);
       }
     }
+    return FALSE ;
   }
 
   protected function get_doi_from_text() {
@@ -876,6 +947,7 @@ final class Template {
   }
 
   protected function find_pmid() {
+    if (!$this->blank('pmid')) return;
     echo "\n - Searching PubMed... " . tag();
     $results = ($this->query_pubmed());
     if ($results[1] == 1) {
@@ -894,7 +966,7 @@ final class Template {
  *   [1] => total number of results
  *
  */
-    if ($doi = $this->get('doi')) {
+    if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       $results = $this->do_pumbed_query(array("doi"), TRUE);
       if ($results[1] == 1) return $results;
     }
@@ -924,7 +996,7 @@ final class Template {
    * Searches pubmed based on terms provided in an array.
    * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
    * return the results as array (first result, # of results)
-   * If $check_for_errors is TRUE, it will return 'fasle' on errors returned by pubmed
+   * If $check_for_errors is TRUE, it will return 'false' on errors returned by pubmed
    */
     $query = '';
     foreach ($terms as $term) {
@@ -946,7 +1018,11 @@ final class Template {
       );
       $key = $key_index[mb_strtolower($term)];
       if ($key && $term && $val = $this->get($term)) {
-        $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+        if ($key === "AID") {
+           $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", ($val)) . "\"" . "[$key])"; // Do not escape DOIs
+        } else {
+           $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
+        }
       }
     }
     $query = substr($query, 5);
@@ -1462,13 +1538,13 @@ final class Template {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
          return FALSE; // Not really "expanded"
     }
-    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  ,$data[0]->{'title'});
-    if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  ,$data[0]->{'issue'});
-    if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  ,$data[0]->{'pages'});
-    if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal',$data[0]->{'publicationTitle'});
-    if ( isset($data[0]->{'volume'}))           $this->add_if_new('volume' ,$data[0]->{'volume'});
-    if ( isset($data[0]->{'date'}))             $this->add_if_new('date'   ,$data[0]->{'date'});
-    if ( isset($data[0]->{'DOI'}))              $this->add_if_new('doi'    ,$data[0]->{'DOI'});
+    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  , $data[0]->{'title'});
+    if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  , $data[0]->{'issue'});
+    if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  , $data[0]->{'pages'});
+    if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal', $data[0]->{'publicationTitle'});
+    if ( isset($data[0]->{'volume'}))           $this->add_if_new('volume' , $data[0]->{'volume'});
+    if ( isset($data[0]->{'date'}))             $this->add_if_new('date'   , $data[0]->{'date'});
+    if ( isset($data[0]->{'DOI'}))              $this->add_if_new('doi'    , $data[0]->{'DOI'});
     $i = 0;
     while (isset($data[0]->{'author'}[$i])) {
         if ( isset($data[0]->{'author'}[$i][0])) $this->add_if_new('first' . ($i+1), $data[0]->{'author'}[$i][0]);
@@ -1536,7 +1612,7 @@ final class Template {
         break; case "ArticleIds":
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
-              case "pubmed":
+              case "pubmed": case "pmid":
                   preg_match("~\d+~", (string) $subItem, $match);
                   if ($this->add_if_new("pmid", $match[0])) $this->expand_by_pubmed();
                   break; ### TODO PLACEHOLDER YOU ARE HERE CONTINUATION POINT ###
@@ -1550,6 +1626,9 @@ final class Template {
                   if ($this->add_if_new('doi', $match[0])) {
                     $this->expand_by_doi();
                   }
+                }
+                if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
+                  $this->add_if_new('pmc', substr($match[0], 3));
                 }
                 break;
             }
@@ -1576,7 +1655,7 @@ final class Template {
 
   protected function query_crossref($doi = FALSE) {
     if (!$doi) {
-      $doi = $this->get('doi');
+      $doi = $this->get_without_comments_and_placeholders('doi');
     }
     if (!$doi) {
       warn('query_crossref called with with no doi');
@@ -1602,8 +1681,8 @@ final class Template {
   }
 
   protected function get_open_access_url() {
-    $doi = $this->get('doi');
-    if (!$doi || $this->get('url')) return;
+    $doi = $this->get_without_comments_and_placeholders('doi');
+    if (!$doi) return;
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
@@ -1613,6 +1692,10 @@ final class Template {
         if ($best_location->host_type == 'publisher') {
           // The best location is already linked to by the doi link
           return TRUE;
+        }
+        if ($this->get('url')) {
+            $this->get_identifiers_from_url($best_location->url_for_landing_page);  // Maybe we can get a new link type
+            return TRUE;
         }
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $best_location->url_for_landing_page, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $best_location->url_for_landing_page, $match)) {
@@ -1666,12 +1749,12 @@ final class Template {
       $oclc= $this->get('oclc');
       if ($isbn) {
         $isbn = str_replace(array(" ","-"), "", $isbn);
-        if (preg_match("~[^0-9Xx]~",$isbn) === 1) $isbn='' ;
+        if (preg_match("~[^0-9Xx]~", $isbn) === 1) $isbn='' ;
         if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
       }
       if ($lccn) {
         $lccn = str_replace(array(" ","-"), "", $lccn);
-        if (preg_match("~[^0-9]~",$lccn) === 1) $lccn='' ;
+        if (preg_match("~[^0-9]~", $lccn) === 1) $lccn='' ;
       }
       if ($oclc) {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
@@ -1680,7 +1763,7 @@ final class Template {
         $google_book_url='https://books.google.com/books?isbn='.$isbn;
         $google_content = @file_get_contents($google_book_url);
         if ($google_content !== FALSE) {
-          preg_match_all('~books.google.com/books\?id=............&amp~',$google_content,$google_results);
+          preg_match_all('~books.google.com/books\?id=............&amp~', $google_content, $google_results);
           $google_results = $google_results[0];
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
@@ -1784,7 +1867,7 @@ final class Template {
     if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
-          $author_parts  = explode(" ",$author);
+          $author_parts  = explode(" ", $author);
           $author_ending = end($author_parts);
           if( in_array(strtolower($author),       AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
               in_array(strtolower($author_ending),AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
@@ -1805,7 +1888,7 @@ final class Template {
           }
         }
     }
-    $this->add_if_new("date",$google_date);
+    $this->add_if_new("date", $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     // foreach ($xml->dc___format as $format) {
     //   if (preg_match("~([\d\-]+)~", $format, $matches)) {
@@ -2342,6 +2425,18 @@ final class Template {
               echo "\n * Initial authors exist, skipping authorlink in tidy";
             }
             break;
+          case 'title':
+            $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
+                      "~(\[\[)([^|]+?)(\]\])~",
+                      function($matches) {return $matches[2];},
+                      $p->val
+                      );
+            $p->val = preg_replace_callback(
+                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
+                      function($matches) {return $matches[4];},
+                      $p->val
+                      );
+            break;
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
@@ -2349,9 +2444,22 @@ final class Template {
               if ($this->blank('url')) $this->rename($pmatch[1], 'url');
             } elseif (substr(strtolower($p->val), 0, 4) === 'www.') {
                if ($this->blank('website')) $this->rename($pmatch[1], 'website');
-            } elseif (substr($p->val, 0, 1)  === "[" || substr($p->val, -1) === "]") {
-               ; // TODO Handle the non-link part of [[My Journal|My Journal]] and Handle the non-URL part of [http://meyjournal.com my journal]
-            } else {
+            } elseif(mb_substr($p->val, 0, 2) !== "[["   ||
+               mb_substr($p->val, -2) !== "]]"     ||
+               mb_substr_count($p->val,'[[') !== 1 ||
+               mb_substr_count($p->val,']]') !== 1) { // Only remove partial wikilinks
+                  $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
+                      "~(\[\[)([^|]+?)(\]\])~",
+                      function($matches) {return $matches[2];},
+                      $p->val
+                      );
+                  $p->val = preg_replace_callback(
+                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
+                      function($matches) {return $matches[4];},
+                      $p->val
+                      );
+            }
+            if(substr($p->val, 0, 1) !== "[" && substr($p->val, -1) !== "]") { 
                $p->val = title_capitalization(ucwords($p->val), TRUE);
             }
             break;
@@ -2387,6 +2495,13 @@ final class Template {
             break;
           case 'isbn':
             $p->val = $this->isbn10Toisbn13($p->val);
+            break;
+          case 'url':
+            if (preg_match("~^https?://(?:www.|)researchgate.net/publication/([0-9]+)_*~i", $p->val, $matches)) {
+                $p->val = 'https://www.researchgate.net/publication/' . $matches[1];
+            } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $p->val, $matches)) {
+                $p->val = 'https://www.academia.edu/' . $matches[1];
+            }      
             break;
         }
       }
@@ -2596,7 +2711,7 @@ final class Template {
     if (($da = $this->get('display-authors')) === NULL) {
       $da = $this->get('displayauthors');
     }
-    return is_int(1 * $da) ? $da : FALSE;
+    return ctype_digit($da) ? $da : FALSE;
   }
 
   protected function number_of_authors() {
@@ -2648,6 +2763,7 @@ final class Template {
 
   // Amend parameters
   protected function rename($old_param, $new_param, $new_value = FALSE) {
+    if($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
@@ -2758,7 +2874,7 @@ final class Template {
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
-      echo "\n   - Dropping parameter " . echoable($par) . tag();
+      if ($this->has($par) && strpos($par,'CITATION_BOT_PLACEHOLDER') === FALSE) echo "\n   - Dropping parameter " . echoable($par) . tag(); // Do not mention forgetting empty parameters
       unset($this->param[$pos]);
     }
   }
@@ -2815,18 +2931,18 @@ final class Template {
   protected function isbn10Toisbn13 ($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
        $isbn10 = str_replace(array('—','?','–','-','?'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
-       if (preg_match("~[^0-9Xx\-]~",$isbn10) === 1)  return $isbn10;  // Contains invalid characters
+       if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
        if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-") return $isbn10;  // Ends or starts with a dash
        $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
        if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
        $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit - do not need and might be X
-       if (preg_match("~[^0123456789]~",$isbn13) === 1)  return $isbn10;  // Not just numbers
+       if (preg_match("~[^0123456789]~", $isbn13) === 1)  return $isbn10;  // Not just numbers
        $sum = 0;
        for ($count=0; $count<12; $count++ ) {
           $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
        }
        $sum = ((10-$sum%10)%10) ;
-       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum ; // Assume existing dashes (if any) are right
-       return $isbn13 ;
+       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum; // Assume existing dashes (if any) are right
+       return $isbn13;
   }
 }

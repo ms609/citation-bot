@@ -111,6 +111,10 @@ function extract_doi($text) {
         ) {
       $doi = $new_match[1];
     }
+    $extension = substr($doi, strrpos($doi, '.'));
+    if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
+      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+    }
     return array($match[0], sanitize_doi($doi));
   }
   return NULL;
@@ -208,28 +212,42 @@ function title_capitalization($in, $caps_after_punctuation) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
     $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
-      create_function('$matches', 'return mb_strtoupper($matches[0]);'),
+      function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
   }
   
   $new_case = preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
-    create_function('$matches', 'return mb_strtolower($matches[0]);'),
+    function($matches) {return mb_strtolower($matches[0]);},
     trim($new_case)
   );
+  /** French l'Words and d'Words  **/
+  $new_case = preg_replace_callback(
+    "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
+    function($matches) {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
+    ' ' . $new_case
+  );
+  $new_case = mb_ucfirst(trim($new_case));
+
   // Solitary 'a' should be lowercase
   $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
   
   // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
-    create_function('$matches', 'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'),
+    function($matches) {return "''" . ucfirst(strtolower($matches['taxon'])) . "'' " . strtolower($matches["nova"]);},
     $new_case);
   
   // Capitalization exceptions, e.g. Elife -> eLife
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
   $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
     
+  // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
+  $new_case = preg_replace_callback(
+    "~( [a-z])$~",
+    function ($matches) {return strtoupper($matches[1]);},
+    $new_case);
+  
   /* I believe we can do without this now
   if (preg_match("~^(the|into|at?|of)\b~", $new_case)) {
     // If first word is a little word, it should still be capitalized
@@ -237,6 +255,11 @@ function title_capitalization($in, $caps_after_punctuation) {
   }
   */
   return $new_case;
+}
+
+function mb_ucfirst($string)
+{
+    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
 
 function tag($long = FALSE) {
