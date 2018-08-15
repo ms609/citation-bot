@@ -64,7 +64,7 @@ const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',
                              ' Nyt ', ' Pcr ', ' Pnas ', ' Rna ',  ' Zu' , ' Des ', ' Aus ', ' Dem ', ' Del ', ' Dei ', 
                              ' Di ', ' Ed ', ' Du ', ' De ', ' Dans ', ' Les ', ' E ', ' Den ', ' Die ', ' Das ', ' Ein ', 
                              ' Eine ', ' Einen ', ' Nyc ', ' D\'une ', '  D\'un ', ' El ',  ' Los ', ' Las ', ' As ',
-                             ' Nor ',' At ', ' Up ', ' Ny ', ' N Y ', ' U S A ');
+                             ' Nor ',' At ', ' Up ', ' Ny ', ' N y ', ' U S a ');
 
 const JOURNAL_ACRONYMS = array(
 ' ACM SIGPLAN Notices ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ',
