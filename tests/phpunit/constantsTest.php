@@ -25,7 +25,7 @@ final class constantsTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals(UCFIRST_JOURNAL_ACRONYMS[$i], mb_convert_case(JOURNAL_ACRONYMS[$i], MB_CASE_TITLE, "UTF-8"));
     }
     for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
-      if (substr_count(UC_SMALL_WORDS[$i], ' ') === 2 {
+      if (substr_count(UC_SMALL_WORDS[$i], ' ')) === 2 {
         $this->assertEquals(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
       } else {  // things like U S A--weaker test
         $this->assertEquals(strtolower(UC_SMALL_WORDS[$i]), strtolower(LC_SMALL_WORDS[$i]));
