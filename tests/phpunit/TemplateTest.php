@@ -798,7 +798,21 @@ ER -  }}';
        $expanded = $this->process_citation($text);
        $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
    }
-   
+    
+  public function testSmallWordsCrazyBigTest() {
+    $text_in  = 'Start ';
+    $text_out = 'Start ';
+    for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
+      $text_out = $text_out . LC_SMALL_WORDS[$i];
+      $text_in  = $text_in  . UC_SMALL_WORDS[$i];
+    }
+    $text_in  = $text_in  . ' Ending';
+    $text_out = $text_out . ' Ending';
+    $text = '{{cite journal|journal=$text_in}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text_out, $expanded->get('journal')); 
+  }
+  
    public function testDoNotAddYearIfDate() {
        $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
        $expanded = $this->process_citation($text);
