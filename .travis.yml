@@ -8,7 +8,7 @@ language: php
 matrix:
   include:
     - stage: test
-      php: 7.2
+      php: 9.2
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
@@ -20,7 +20,7 @@ matrix:
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
       script: phpunit --bootstrap expandFns.php tests/phpunit
-      after_sucess:
+      after_success:
         - if: NOT (branch == master) #### AND (NOT env(TRAVIS_PULL_REQUEST))
           script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull-TWO.php)
         - if: NOT (branch = master) #### AND (NOT env(TRAVIS_PULL_REQUEST))
