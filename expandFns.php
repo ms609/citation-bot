@@ -242,6 +242,12 @@ function title_capitalization($in, $caps_after_punctuation) {
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
   $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
     
+  // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
+  $new_case = preg_replace_callback(
+    "~( [a-z])$~",
+    function ($matches) {return strtoupper($matches[1]);},
+    $new_case);
+  
   /* I believe we can do without this now
   if (preg_match("~^(the|into|at?|of)\b~", $new_case)) {
     // If first word is a little word, it should still be capitalized
