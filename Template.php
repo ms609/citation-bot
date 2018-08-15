@@ -160,7 +160,7 @@ final class Template {
         }
 
         // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_params) == 0) {
+        if (!$this->initial_author_params) {
           $this->handle_et_al();
         }
       break;
@@ -180,7 +180,7 @@ final class Template {
         // TODO: Check for the doi-inline template in the title
 
         // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_params) == 0) {
+        if (!$this->initial_author_params) {
           $this->handle_et_al();
         }
 
@@ -2418,12 +2418,12 @@ final class Template {
           case 'title':
             $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
-                      create_function('$matches','return $matches[2];'),
+                      function($matches) {return $matches[2];},
                       $p->val
                       );
             $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      create_function('$matches','return $matches[4];'),
+                      function($matches) {return $matches[4];},
                       $p->val
                       );
             break;
@@ -2436,12 +2436,12 @@ final class Template {
                mb_substr_count($p->val,']]') !== 1) { // Only remove partial wikilinks
                   $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
-                      create_function('$matches','return $matches[2];'),
+                      function($matches) {return $matches[2];},
                       $p->val
                       );
                   $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      create_function('$matches','return $matches[4];'),
+                      function($matches) {return $matches[4];},
                       $p->val
                       );
             }
