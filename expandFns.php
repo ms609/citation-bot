@@ -212,19 +212,19 @@ function title_capitalization($in, $caps_after_punctuation) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
     $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
-      create_function('$matches', 'return mb_strtoupper($matches[0]);'),
+      function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
   }
   
   $new_case = preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
-    create_function('$matches', 'return mb_strtolower($matches[0]);'),
+    function($matches) {return mb_strtolower($matches[0]);},
     trim($new_case)
   );
   /** French l'Words and d'Words  **/
   $new_case = preg_replace_callback(
     "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
-    create_function('$matches', 'return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);'),
+    function($matches) {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
     ' ' . $new_case
   );
   $new_case = mb_ucfirst(trim($new_case));
@@ -235,7 +235,7 @@ function title_capitalization($in, $caps_after_punctuation) {
   // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
-    create_function('$matches', 'return "\'\'" . ucfirst(strtolower($matches[\'taxon\'])) . "\'\' " . strtolower($matches["nova"]);'),
+    function($matches) {return "''" . ucfirst(strtolower($matches['taxon'])) . "'' " . strtolower($matches["nova"]);},
     $new_case);
   
   // Capitalization exceptions, e.g. Elife -> eLife
