@@ -8,21 +8,22 @@ language: php
 matrix:
   include:
     - stage: test
-      php: 9.2
+      php: 7.2
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
-      after_success:
-        - bash <(curl -s https://codecov.io/bash)
+      after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
       script: phpunit --bootstrap expandFns.php tests/phpunit
-      after_success:
-        - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" != "false" ]; then wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
+    - stage: deploy
+      name: "Update WMFlabs servers"
+      script:
+        - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
+        - if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php ; fi
 
 git:
   depth: 3
-  
