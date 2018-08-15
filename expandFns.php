@@ -214,6 +214,8 @@ function title_capitalization($in, $caps_after_punctuation) {
     $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
       create_function('$matches', 'return mb_strtoupper($matches[0]);'),
       $new_case);
+    // But not the word "of"
+    $new_case = trim(str_replace(". Of ", ". of ",  $new_case));
   }
   
   $new_case = preg_replace_callback(
@@ -231,7 +233,7 @@ function title_capitalization($in, $caps_after_punctuation) {
 
   // Solitary 'a' should be lowercase
   $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
-  // not usa
+  // but not not "U S A"
   $new_case = trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
   // Catch some specific epithets, which should be lowercase
