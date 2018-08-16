@@ -1,10 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
 		<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
-		<link rel="copyright" href="http://www.gnu.org/copyleft/fdl.html" />
+		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
 		<title>Citation bot: Preparing to run</title>
 		<style type="text/css" media="screen, projection">/*<![CDATA[*/
 			@import "https://en.wikipedia.org/skins-1.5/common/shared.css?144";
