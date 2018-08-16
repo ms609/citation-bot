@@ -420,9 +420,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite journal|chapter=abc|work=abc}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{Cite book|chapter=abc}}',$expanded->parsed_text());
-      $text = '{{cite journal|work=I Live}}';
+      $text = '{{citation|work=I Live}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite journal|work=I Live}}',$expanded->parsed_text());
+      $this->assertEquals($text,$expanded->parsed_text());
       $text = '{{not cite|work=xyz|chapter=xzy}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{not cite|work=xyz|chapter=xzy}}',$expanded->parsed_text());
@@ -432,6 +432,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{citation|work=|chapter=abc}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{citation|chapter=abc}}',$expanded->parsed_text());
+      $text = '{{cite journal|work=xyz}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('{{cite journal|journal=xyz}}',$expanded->parsed_text());
+      $text = '{{cite magazine|work=abc}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('{{cite magazine|magazine=abc}}',$expanded->parsed_text());
   }
   
   public function testOrigYearHandling() {
