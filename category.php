@@ -2,7 +2,7 @@
 <?php
 
 error_reporting(E_ALL^E_NOTICE);
-$argument["cat"]=NULL;
+$argument["cat"] = NULL;
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
@@ -18,18 +18,13 @@ foreach ($argv as $arg) {
     }
   }
 }
-
-$account_suffix='_4'; // Whilst testing
-$account_suffix='_1'; // Keep this before including expandFns
 include("expandFns.php");
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
-if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
 if ($category) {
   $attempts = 0;
   $api = new WikipediaBot();
   $pages_in_category = $api->category_members($category);
-  #print_r($pages_in_category);
   shuffle($pages_in_category);
   $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
@@ -55,5 +50,5 @@ if ($category) {
 
   exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL.");
+  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
