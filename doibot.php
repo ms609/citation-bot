@@ -1,10 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
 		<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
-		<link rel="copyright" href="http://www.gnu.org/copyleft/fdl.html" />
+		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
 		<title>Citation bot: Preparing to run</title>
 		<style type="text/css" media="screen, projection">/*<![CDATA[*/
 			@import "https://en.wikipedia.org/skins-1.5/common/shared.css?144";
@@ -51,7 +51,7 @@ if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user 
    echo "\n\n No page given.  Aborting. \n\n";
    exit(0);
 }
-echo "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
+echo "\n\n Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
 $my_page = new Page();
 $api = new WikipediaBot();
 if ($my_page->get_text_from($_REQUEST["page"], $api)) {
@@ -67,19 +67,19 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
         . urlencode($api->get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
         , ".");
     } else {
-      echo "\n # Failed. Text was:\n" . htmlspecialchars($my_page->parsed_text());
+      echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());
     }
   } elseif (!$ON) {
-    echo "\n # Proposed code for " . htmlspecialchars($title) . ', which you have asked the bot to commit with edit summary ' . htmlspecialchars($my_page->edit_summary()) . "<br><pre>";
-    echo htmlspecialchars($my_page->parsed_text());
+    echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
+    safely_echo($my_page->parsed_text());
     echo "</pre>";
 ?>
 <form method="post" action="doibot.php">
-  <input type="hidden" name="page" value="<?php echo $title;?>"></input>
-  <input type="hidden" name="user" value="<?php echo $user;?>"></input>
-  <input type="hidden" name="edit" value="on"></input>
-  <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>"></input>
-  <input type=submit value="Submit edits"></input>
+  <input type="hidden" name="page" value="<?php echo $title;?>" />
+  <input type="hidden" name="user" value="<?php echo $user;?>" />
+  <input type="hidden" name="edit" value="on" />
+  <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>" />
+  <input type=submit value="Submit edits" />
 </form>
 <?php
   } else {

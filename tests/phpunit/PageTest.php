@@ -29,6 +29,13 @@ class PageTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
+  public function testPageChangeSummary() {
+      $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}'); // Change to book from journal
+      $this->assertEquals('Alter: template type. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
+      $page = $this->process_page('{{cite book||quote=a quote}}'); // Just lose extra pipe
+      $this->assertEquals('Misc citation tidying. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
+  }
+
   public function testBotRead() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
       echo "\n[Test skipped] in pull requests, to protect Bot secrets";

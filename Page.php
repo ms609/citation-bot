@@ -76,17 +76,15 @@ class Page {
   }
   
   public function expand_text() {
-    $safetitle = htmlspecialchars($this->title);
     date_default_timezone_set('UTC');
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=" 
-      . urlencode($this->title) 
-      . "' style='text-weight:bold;'>{$safetitle}</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title="
-      . urlencode($this->title)
-      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title="
-      . urlencode($this->title)
+    $url_encoded_title =  urlencode($this->title);
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title' style='text-weight:bold;'>" 
+      . htmlspecialchars($this->title)
+      . "</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
+      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
       . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
       . "document.title=\"Citation bot: '"
-      . str_replace("+", " ", urlencode($this->title)) ."'\";</script>", 
+      . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
       "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
     $text = $this->text;
     $this->modifications = array();
@@ -129,10 +127,10 @@ class Page {
 
   public function edit_summary() {
     $auto_summary = "";
-    if (isset($this->modifications["changeonly"])) {
+    if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
-    if (isset($this->modifications['additions'])) {
+    if (count($this->modifications['additions']) !== 0) {
       $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
@@ -149,13 +147,13 @@ class Page {
         $auto_summary = substr($auto_summary, 0, -2) . '. ';
       }
     }
-    if (isset($this->modifications["deletions"])
+    if ((count($this->modifications["deletions"]) !== 0)
     && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE
     ) {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
-    $auto_summary .= (($this->modifications["deletions"])
+    $auto_summary .= ((count($this->modifications["deletions"]) !==0)
       ? "Removed parameters. "
       : ""
       ) . (($this->modifications["dashes"])

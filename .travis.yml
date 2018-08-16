@@ -8,23 +8,25 @@ language: php
 matrix:
   include:
     - stage: test
+      php: 7.2
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
-      php: 7.0
+        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
       after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
+        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit --bootstrap expandFns.php tests/phpunit
     - stage: deploy
       name: "Update WMFlabs servers"
-      if: branch = master AND (NOT env(TRAVIS_PULL_REQUEST))
-      script: bash <(echo wget -O- https://tools.wmflabs.org/citations/gitpull.php)
-      if: branch = development AND (NOT env(TRAVIS_PULL_REQUEST))
-      script: bash <(echo wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php)
+      php: 5.6 # Avoid downloading and installing 5.5
+      script:
+        - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
+        - if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php ; fi
 
 git:
   depth: 3
