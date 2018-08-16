@@ -268,7 +268,7 @@ final class Template {
     return (!(
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
-          &&  ($this->has("issue") || $this->has('number'))
+          && ($this->has("issue") || $this->has('number'))
           &&  $this->has("title")
           && ($this->has("date") || $this->has("year"))
           && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
@@ -572,7 +572,7 @@ final class Template {
         return FALSE;
         
       case 'doi':
-        if ($this->blank($param_name) &&  preg_match('~(10\..+)$~', $value, $match)) {
+        if ($this->blank($param_name) && preg_match(DOI_REGEXP, $value, $match)) {
           $this->add('doi', $match[0]);
           $this->verify_doi();
           $this->expand_by_doi();
