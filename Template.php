@@ -572,7 +572,7 @@ final class Template {
         return FALSE;
         
       case 'doi':
-        if ($this->blank($param_name) &&  preg_match('~(10\..+)$~', $value, $match)) {
+        if ($this->blank($param_name) &&  preg_match('~(10\..+/.+)$~', $value, $match)) {
           $this->add('doi', $match[0]);
           $this->verify_doi();
           $this->expand_by_doi();
