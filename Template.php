@@ -98,7 +98,7 @@ final class Template {
           $this->process();
         } elseif ($this->has('arxiv')) {
           $this->name = 'Cite arxiv';
-          $this->rename('arxiv','eprint');
+          $this->rename('arxiv', 'eprint');
           $this->process();
         } elseif ($this->has('eprint')) {
           $this->name = 'Cite arxiv';
@@ -328,7 +328,7 @@ final class Template {
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(format_Surname($au[0])));
             return $this->add_if_new('first' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(format_forename(trim($au[1]))));
           } else {
-            return $this->add($param_name,sanitize_string($value));
+            return $this->add($param_name, sanitize_string($value));
           }
         }
       return FALSE;
@@ -342,7 +342,7 @@ final class Template {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
-          return $this->add($param_name,sanitize_string($value));
+          return $this->add($param_name, sanitize_string($value));
           // Note; we shouldn't be using this parameter ever....
       return FALSE;
       case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
@@ -381,7 +381,7 @@ final class Template {
             $this->add('last' . $auNo, format_surname($au[0]));
             return $this->add_if_new('first' . $auNo, format_forename(trim($au[1])));
           } else {
-            return $this->add($param_name,sanitize_string($value));
+            return $this->add($param_name, sanitize_string($value));
           }
         }
         return FALSE;
@@ -400,7 +400,7 @@ final class Template {
         if ($this->blank($param_name)
                 && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
-          return $this->add($param_name,sanitize_string($value));
+          return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
       
@@ -497,8 +497,8 @@ final class Template {
       case 'volume':
         if ($this->blank($param_name)) {
           $temp_string = strtolower($this->get('journal')) ;
-          if(substr($temp_string,0,2) === "[[" && substr($temp_string,-2) === "]]") {  // Wikilinked journal title 
-               $temp_string = substr(substr($temp_string,2),0,-2); // Remove [[ and ]]
+          if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
+               $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
           }
           if (in_array($temp_string, HAS_NO_VOLUME) === TRUE ) {
             // This journal has no volume.  This is really the issue number
@@ -1206,9 +1206,9 @@ final class Template {
         }
         if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
           foreach ($record->identifier as $recid) {
-            if(strtolower(substr($recid,0,6)) === 'arxiv:') {
+            if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
                if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
-               if ($this->add_if_new("arxiv", substr($recid,6))) $this->expand_by_arxiv();
+               if ($this->add_if_new("arxiv", substr($recid, 6))) $this->expand_by_arxiv();
             }
           }
         }
@@ -1514,7 +1514,7 @@ final class Template {
       echo "\n Citoid API returned nothing for JSTOR ". $jstor . "\n";
       return FALSE;
     }
-    $data = @json_decode($json,FALSE);
+    $data = @json_decode($json, FALSE);
     if (!isset($data) || !isset($data[0]) || !isset($data[0]->{'title'})) {
       echo "\n Citoid API returned invalid json for JSTOR ". $jstor . "\n";
       return FALSE;
@@ -1524,7 +1524,7 @@ final class Template {
       return FALSE;
     }
     // Verify that Citoid did not think that this was a website and not a journal
-    if (strtolower(substr(trim($data[0]->{'title'}),-9)) === ' on jstor') {
+    if (strtolower(substr(trim($data[0]->{'title'}), -9)) === ' on jstor') {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
          return FALSE; // Not really "expanded"
     }
@@ -1570,7 +1570,7 @@ final class Template {
         $this->add_if_new('doi', $match[0]);
       }
       switch ($item["Name"]) {
-                case "Title":   $this->add_if_new('title',  str_replace(array("[", "]"), "",(string) $item)); // add_if_new will format the title
+                case "Title":   $this->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item)); // add_if_new will format the title
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
                                 $this->add_if_new('year', (string) $match[1]);
         break;  case "FullJournalName": $this->add_if_new('journal',  ucwords((string) $item)); // add_if_new will format the title
@@ -1738,12 +1738,12 @@ final class Template {
       $lccn= $this->get('lccn');
       $oclc= $this->get('oclc');
       if ($isbn) {
-        $isbn = str_replace(array(" ","-"), "", $isbn);
+        $isbn = str_replace(array(" ", "-"), "", $isbn);
         if (preg_match("~[^0-9Xx]~", $isbn) === 1) $isbn='' ;
         if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
       }
       if ($lccn) {
-        $lccn = str_replace(array(" ","-"), "", $lccn);
+        $lccn = str_replace(array(" ", "-"), "", $lccn);
         if (preg_match("~[^0-9]~", $lccn) === 1) $lccn='' ;
       }
       if ($oclc) {
@@ -1758,7 +1758,7 @@ final class Template {
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
             $google_results = $google_results[0];
-            $gid = substr($google_results,26,-4);
+            $gid = substr($google_results, 26, -4);
             $url = 'https://books.google.com/books?id=' . $gid;
             // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
             $google_books_worked = TRUE;
@@ -1859,8 +1859,8 @@ final class Template {
         if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
           $author_parts  = explode(" ", $author);
           $author_ending = end($author_parts);
-          if( in_array(strtolower($author),       AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
-              in_array(strtolower($author_ending),AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
+          if( in_array(strtolower($author),        AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
+              in_array(strtolower($author_ending), AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
             $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
           } else {
             $this->add_if_new("author" . ++$i, format_author(str_replace("___", ":", $author)));
@@ -1872,7 +1872,7 @@ final class Template {
     if (substr_count($google_date, "-") === 1) {
         $date=@date_create($google_date);
         if ($date !== FALSE) {
-          $date = @date_format($date,"F Y");
+          $date = @date_format($date, "F Y");
           if ($date !== FALSE) {
             $google_date = $date; // only now change data
           }
@@ -2131,7 +2131,7 @@ final class Template {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE; 
             } else {
-              $this->add($p1,implode(" ", $pAll));
+              $this->add($p1, implode(" ", $pAll));
             }
           }
           break;
@@ -2143,7 +2143,7 @@ final class Template {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('issue',implode(" ", $pAll));
+              $this->add('issue', implode(" ", $pAll));
             }
           }
           break;
@@ -2155,7 +2155,7 @@ final class Template {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('accessdate',implode(" ", $pAll));
+              $this->add('accessdate', implode(" ", $pAll));
             }
           }
           break;
@@ -2418,12 +2418,12 @@ final class Template {
           case 'title':
             $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
-                      create_function('$matches','return $matches[2];'),
+                      create_function('$matches', 'return $matches[2];'),
                       $p->val
                       );
             $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      create_function('$matches','return $matches[4];'),
+                      create_function('$matches', 'return $matches[4];'),
                       $p->val
                       );
             break;
@@ -2432,16 +2432,16 @@ final class Template {
           case 'periodical': 
             if(mb_substr($p->val, 0, 2) !== "[["   ||
                mb_substr($p->val, -2) !== "]]"     ||
-               mb_substr_count($p->val,'[[') !== 1 ||
-               mb_substr_count($p->val,']]') !== 1) { // Only remove partial wikilinks
+               mb_substr_count($p->val, '[[') !== 1 ||
+               mb_substr_count($p->val, ']]') !== 1) { // Only remove partial wikilinks
                   $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
-                      create_function('$matches','return $matches[2];'),
+                      create_function('$matches', 'return $matches[2];'),
                       $p->val
                       );
                   $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      create_function('$matches','return $matches[4];'),
+                      create_function('$matches', 'return $matches[4];'),
                       $p->val
                       );
             }
@@ -2858,7 +2858,7 @@ final class Template {
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
-      if ($this->has($par) && strpos($par,'CITATION_BOT_PLACEHOLDER') === FALSE) echo "\n   - Dropping parameter " . echoable($par) . tag(); // Do not mention forgetting empty parameters
+      if ($this->has($par) && strpos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) echo "\n   - Dropping parameter " . echoable($par) . tag(); // Do not mention forgetting empty parameters
       unset($this->param[$pos]);
     }
   }
@@ -2914,19 +2914,19 @@ final class Template {
   
   protected function isbn10Toisbn13 ($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
-       $isbn10 = str_replace(array('—','?','–','-','?'),'-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
+       $isbn10 = str_replace(array('—', '?', '–', '-', '?'), '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
        if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
-       if (substr($isbn10, -1) === "-" || substr($isbn10,0,1) === "-") return $isbn10;  // Ends or starts with a dash
+       if (substr($isbn10, -1) === "-" || substr($isbn10, 0, 1) === "-") return $isbn10;  // Ends or starts with a dash
        $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
        if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
-       $isbn13 = '978' . substr($isbn13,0,-1);  // Convert without check digit - do not need and might be X
+       $isbn13 = '978' . substr($isbn13, 0, -1);  // Convert without check digit - do not need and might be X
        if (preg_match("~[^0123456789]~", $isbn13) === 1)  return $isbn10;  // Not just numbers
        $sum = 0;
        for ($count=0; $count<12; $count++ ) {
           $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
        }
        $sum = ((10-$sum%10)%10) ;
-       $isbn13 = '978' . '-' . substr($isbn10,0,-1) . (string) $sum; // Assume existing dashes (if any) are right
+       $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
        return $isbn13;
   }
 }
