@@ -17,10 +17,13 @@ $page->parse_text($originalText);
 $page->expand_text();
 
 //Modify edit summary to identify bot-assisted edits
-if ($editSummary) {
-  $editSummary .= " | ";
+$UCB_Assisted = "[[WP:UCB|Assisted by Citation bot]]";
+if (mb_substr(trim($editSummary),-mb_strlen($UCB_Assisted)) !== $UCB_Assisted ){
+  if ($editSummary) {
+    $editSummary .= " | ";
+  }
+  $editSummary .= $UCB_Assisted;
 }
-$editSummary .= "[[WP:UCB|Assisted by Citation bot]]";
 
 if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
   $debug_text = ob_get_contents();
