@@ -2495,7 +2495,13 @@ final class Template {
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            if(mb_substr($p->val, 0, 2) !== "[["   ||
+            if (substr(strtolower($p->val), 0, 7) === 'http://' || substr(strtolower($p->val), 0, 8) === 'https://') {
+               if ($this->blank('url')) $this->rename($pmatch[1], 'url');
+               break;
+            } elseif (substr(strtolower($p->val), 0, 4) === 'www.') {
+               if ($this->blank('website')) $this->rename($pmatch[1], 'website');
+               break;
+            } elseif(mb_substr($p->val, 0, 2) !== "[["   ||
                mb_substr($p->val, -2) !== "]]"     ||
                mb_substr_count($p->val,'[[') !== 1 ||
                mb_substr_count($p->val,']]') !== 1) { // Only remove partial wikilinks
