@@ -1707,44 +1707,45 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
+        $oa_url = $best_location->url_for_landing_page;
         if ($this->get('url')) {
-            $this->get_identifiers_from_url($best_location->url_for_landing_page);  // Maybe we can get a new link type
+            $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
         }
         // Check if best location is already linked -- avoid double linki
-        if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $best_location->url_for_landing_page, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $best_location->url_for_landing_page, $match)) {
+        if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $oa_url, $match)) {
           if ($this->has('pmc') ) {
              return TRUE;
           }
         }
-        if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $best_location->url_for_landing_page, $match)) {
+        if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $oa_url, $match)) {
           if ($this->has('arxiv') || $this->has('eprint')) {
              return TRUE;
           }
         }
-        if (strpos($best_location->url_for_landing_page, 'hdl.handle.net') !== false) {
+        if (strpos($oa_url, 'hdl.handle.net') !== false) {
           if ($this->has('hdl') ) {
              return TRUE;
           }
         }
-        if (strpos($best_location->url_for_landing_page, 'citeseerx.ist.ps.edu') !== false) {
+        if (strpos($oa_url, 'citeseerx.ist.psu.edu') !== false) {
           if ($this->has('citeseerx') ) {
              return TRUE;
           }
         }
-        if (preg_match(BIBCODE_REGEXP, urldecode($best_location->url_for_landing_page), $bibcode)) {
+        if (preg_match(BIBCODE_REGEXP, urldecode($oa_url), $bibcode)) {
            if ($this->has('bibcode')) {
              return TRUE;
           }
         }
-        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $best_location->url_for_landing_page, $match)) {
+        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $oa_url, $match)) {
           if ($this->has('pmid')) {
              return TRUE;
           }
         }
 
-        $this->add_if_new('url', $best_location->url_for_landing_page);  // Will check for PMCs etc hidden in URL
+        $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
           if($headers_test ===FALSE) {
