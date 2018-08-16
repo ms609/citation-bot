@@ -18,7 +18,7 @@ foreach ($argv as $arg) {
     }
   }
 }
-include("expandFns.php");
+require_once __DIR__ . '/expandFns.php';
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if ($category) {
