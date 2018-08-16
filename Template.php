@@ -554,11 +554,17 @@ final class Template {
       
       case 'url': 
         // look for identifiers in URL - might be better to add a PMC parameter, say
-        if (!$this->get_identifiers_from_url($value) && $this->blank($param_name)) {
+        if (!$this->get_identifiers_from_url($value) && $this->blank($param_name) && $this->blank('title-link') && $this->blank('titlelink')) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
-      
+        
+      case 'title-link':
+        if ($this->blank('title-link') && $this->blank('titlelink') && $this->blank('url')) {
+          return $this->add($param_name, $value); // We do not sanitize this, since it is not new data
+        }
+        return FALSE;
+        
       case 'class':
         if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE ) {
           return $this->add($param_name, sanitize_string($value));
@@ -2455,16 +2461,36 @@ final class Template {
             }
             break;
           case 'title':
-            $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
+            $p->val = trim($p->val);
+            if(mb_substr($p->val, 0, 2) !== "[["   ||   // Completely remove partial links
+               mb_substr($p->val, -2) !== "]]"     ||
+               mb_substr_count($p->val,'[[') !== 1 ||
+               mb_substr_count($p->val,']]') !== 1) {
+               $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
                       function($matches) {return $matches[2];},
                       $p->val
                       );
-            $p->val = preg_replace_callback(
+               $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
                       function($matches) {return $matches[4];},
                       $p->val
                       );
+            } elseif (mb_substr($p->val, 0, 2) === "[["   &&  // Convert full wikilinks to title-link
+               mb_substr($p->val, -2) === "]]"            &&
+               mb_substr_count($p->val,'[[') === 1        &&
+               mb_substr_count($p->val,']]') === 1) {
+               $pipe = mb_strpos($p->val, '|');
+               if ($pipe === FALSE) {
+                  $tval1 = mb_substr($p->val, 2, -2);
+                  $tval2 = $tval1;
+               } else {
+                  $tval1 = mb_substr($p->val, 2, $pipe-2);
+                  $tval2 = mb_substr($p->val, $pipe+1, -2);
+               }
+               $p->val = $tval2;
+               $this->add_if_new('title-link', $tval1);
+            }
             break;
           case 'journal': 
             $this->forget('publisher');
