@@ -25,6 +25,10 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
                         title_capitalization(title_case('z/Journal'), TRUE));
     $this->assertEquals('The Journal of Journals', // The, not the
                         title_capitalization('The Journal Of Journals', TRUE));
+    $this->assertEquals('A Journal of Chemistry A',
+                        title_capitalization('A Journal of Chemistry A', TRUE));
+    $this->assertEquals('A Journal of Chemistry E',
+                        title_capitalization('A Journal of Chemistry E', TRUE));
   }
   
   public function testFrenchCapitalization() {

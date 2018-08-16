@@ -98,7 +98,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('1941451', $expanded->get('pmid'));
   }
-  
+    
+  public function testPmidIsZero() {
+      $text = '{{cite journal|pmc=2676591}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('pmid'));
+  }
   public function testPMCExpansion() {
     $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pmc/articles/PMC154623/}}";
     $expanded = $this->process_citation($text);
@@ -198,11 +203,15 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation("{{Cite journal|journal=[[Pure Evil]]}}");
     $this->assertEquals('[[Pure Evil]]', $expanded->get('journal')); // leave fully linked journals
     $expanded = $this->process_citation("{{Cite journal|journal=[[Pure]] and [[Evil]]}}");
-    $this->assertEquals('Pure and Evil', $expanded->get('journal')); // leave fully linked journals
+    $this->assertEquals('Pure and Evil', $expanded->get('journal'));
     $expanded = $this->process_citation("{{Cite journal|journal=Dark Lord of the Sith [[Pure Evil]]}}");
     $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('journal'));
     $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil]]}}");
     $this->assertEquals('Pure Evil', $expanded->get('title'));
+    $this->assertEquals('Pure Evil', $expanded->get('title-link'));
+    $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil|Approximate Physics]]}}");
+    $this->assertEquals('Approximate Physics', $expanded->get('title'));
+    $this->assertEquals('Pure Evil', $expanded->get('title-link'));
     $expanded = $this->process_citation("{{Cite journal|title=[[Dark]] Lord of the [[Sith (Star Wars)|Sith]] [[Pure Evil]]}}");
     $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
   
@@ -211,6 +220,20 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testJournalCapitalization() {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
     $this->assertEquals('Molecular and Cellular Biology', $expanded->get('journal'));
+  }
+    
+  public function testWebsiteAsJournal() {
+    $text = '{{Cite journal | journal=www.foobar.com}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('www.foobar.com', $expanded->get('website'));
+    $this->assertNull($expanded->get('journal'));
+    $text = '{{Cite journal | journal=https://www.foobar.com}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('https://www.foobar.com', $expanded->get('url'));
+    $this->assertNull($expanded->get('journal'));
+    $text = '{{Cite journal | journal=[www.foobar.com]}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
   }
   
   public function testPageDuplication() {
@@ -420,9 +443,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite journal|chapter=abc|work=abc}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{Cite book|chapter=abc}}',$expanded->parsed_text());
-      $text = '{{cite journal|work=I Live}}';
+      $text = '{{citation|work=I Live}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite journal|work=I Live}}',$expanded->parsed_text());
+      $this->assertEquals($text,$expanded->parsed_text());
       $text = '{{not cite|work=xyz|chapter=xzy}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{not cite|work=xyz|chapter=xzy}}',$expanded->parsed_text());
@@ -432,6 +455,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{citation|work=|chapter=abc}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{citation|chapter=abc}}',$expanded->parsed_text());
+      $text = '{{cite journal|work=xyz}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('{{cite journal|journal=xyz}}',$expanded->parsed_text());
+      $text = '{{cite magazine|work=abc}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('{{cite magazine|magazine=abc}}',$expanded->parsed_text());
   }
   
   public function testOrigYearHandling() {
@@ -783,7 +812,36 @@ ER -  }}';
        $this->assertEquals('1233', $expanded->get('pages'));
        $this->assertEquals('1999', $expanded->get('year'));
    }
-   
+    
+   public function testSmallWords() {
+       $text = '{{cite journal|journal=A Word in ny and n y About cow And Then boys the U S A and y and z}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('A Word in NY and N Y About Cow and then Boys the U S A and y and Z', $expanded->get('journal')); 
+       $text = '{{cite journal|journal=Ann of Math}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Ann of Math', $expanded->get('journal')); 
+       $text = '{{cite journal|journal=Ann. of Math.}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Ann. of Math.', $expanded->get('journal')); 
+       $text = '{{cite journal|journal=Ann. of Math}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
+   }
+    
+  public function testSmallWordsOneGiantTest() {
+    $text_in  = 'Start ';
+    $text_out = 'Start ';
+    for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
+      $text_out = $text_out . LC_SMALL_WORDS[$i];
+      $text_in  = $text_in  . UC_SMALL_WORDS[$i];
+    }
+    $text_in  = $text_in  . ' Ending';
+    $text_out = $text_out . ' Ending';
+    $text = '{{cite journal|journal=' . $text_in . '}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text_out, $expanded->get('journal')); 
+  }
+  
    public function testDoNotAddYearIfDate() {
        $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
        $expanded = $this->process_citation($text);
@@ -912,7 +970,7 @@ ER -  }}';
      $this->assertNull($expanded->get('publisher'));  
  }
     
- public function testTrimResearchGate() {
+ public function testTrimResearchGateETC() {
      $want = 'https://www.researchgate.net/publication/320041870';
      $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870}}';
      $expanded = $this->process_citation($text);
@@ -929,6 +987,10 @@ ER -  }}';
      $text = '{{cite journal|url=http://researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals($want, $expanded->get('url'));
+     
+     $text = '{{cite web|url=http://acADemia.EDU/123456/extra_stuff}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('https://www.academia.edu/123456', $expanded->get('url')); 
  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors

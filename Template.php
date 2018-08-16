@@ -160,7 +160,7 @@ final class Template {
         }
 
         // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_params) == 0) {
+        if (!$this->initial_author_params) {
           $this->handle_et_al();
         }
       break;
@@ -180,7 +180,7 @@ final class Template {
         // TODO: Check for the doi-inline template in the title
 
         // If the et al. is from added parameters, go ahead and handle
-        if (count($this->initial_author_params) == 0) {
+        if (!$this->initial_author_params) {
           $this->handle_et_al();
         }
 
@@ -207,6 +207,15 @@ final class Template {
         if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
           $this->name = 'Cite book';
         }
+        if ($this->wikiname() === 'cite journal' && $this->has('work') && $this->blank('journal')) { // Never did get a journal name....
+          $this->rename('work', 'journal');
+        }
+        break;
+      case 'cite magazine':
+        if ($this->blank('magazine') && $this->has('work')) { // This is all we do with cite magazine
+          $this->rename('work', 'magazine');
+        }
+        break;
     }
     if ($this->citation_template) {
       // Sometimes title and chapter come from different databases
@@ -545,11 +554,17 @@ final class Template {
       
       case 'url': 
         // look for identifiers in URL - might be better to add a PMC parameter, say
-        if (!$this->get_identifiers_from_url($value) && $this->blank($param_name)) {
+        if (!$this->get_identifiers_from_url($value) && $this->blank($param_name) && $this->blank('title-link') && $this->blank('titlelink')) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
-      
+        
+      case 'title-link':
+        if ($this->blank('title-link') && $this->blank('titlelink') && $this->blank('url')) {
+          return $this->add($param_name, $value); // We do not sanitize this, since it is not new data
+        }
+        return FALSE;
+        
       case 'class':
         if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE ) {
           return $this->add($param_name, sanitize_string($value));
@@ -584,10 +599,19 @@ final class Template {
       return FALSE;
       
       case 'pmid':
+        if ($value === 0 || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
           $this->expand_by_pubmed($this->blank('pmc') || $this->blank('doi'));  //Force = TRUE if missing DOI or PMC
           $this->get_doi_from_crossref();
+          return TRUE;
+        }
+      return FALSE;
+
+      case 'pmc':
+        if ($value === 0 || $value === "PMC0" || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
+        if ($this->blank($param_name)) {
+          $this->add($param_name, sanitize_string($value));
           return TRUE;
         }
       return FALSE;
@@ -1687,19 +1711,39 @@ final class Template {
             $this->get_identifiers_from_url($best_location->url_for_landing_page);  // Maybe we can get a new link type
             return TRUE;
         }
+        // Check if best location is already linked -- avoid double linki
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $best_location->url_for_landing_page, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $best_location->url_for_landing_page, $match)) {
           if ($this->has('pmc') ) {
-             // The best location is already linked to by the PMC link
              return TRUE;
           }
         }
         if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $best_location->url_for_landing_page, $match)) {
           if ($this->has('arxiv') || $this->has('eprint')) {
-             // The best location is already linked to by the ARXIV link
              return TRUE;
           }
         }
+        if (strpos($best_location->url_for_landing_page, 'hdl.handle.net') !== false) {
+          if ($this->has('hdl') ) {
+             return TRUE;
+          }
+        }
+        if (strpos($best_location->url_for_landing_page, 'citeseerx.ist.ps.edu') !== false) {
+          if ($this->has('citeseerx') ) {
+             return TRUE;
+          }
+        }
+        if (preg_match(BIBCODE_REGEXP, urldecode($best_location->url_for_landing_page), $bibcode)) {
+           if ($this->has('bibcode')) {
+             return TRUE;
+          }
+        }
+        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $best_location->url_for_landing_page, $match)) {
+          if ($this->has('pmid')) {
+             return TRUE;
+          }
+        }
+
         $this->add_if_new('url', $best_location->url_for_landing_page);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
@@ -2416,32 +2460,58 @@ final class Template {
             }
             break;
           case 'title':
-            $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
+            $p->val = trim($p->val);
+            if(mb_substr($p->val, 0, 2) !== "[["   ||   // Completely remove partial links
+               mb_substr($p->val, -2) !== "]]"     ||
+               mb_substr_count($p->val,'[[') !== 1 ||
+               mb_substr_count($p->val,']]') !== 1) {
+               $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
-                      create_function('$matches', 'return $matches[2];'),
+                      function($matches) {return $matches[2];},
                       $p->val
                       );
-            $p->val = preg_replace_callback(
+               $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      create_function('$matches', 'return $matches[4];'),
+                      function($matches) {return $matches[4];},
                       $p->val
                       );
+            } elseif (mb_substr($p->val, 0, 2) === "[["   &&  // Convert full wikilinks to title-link
+               mb_substr($p->val, -2) === "]]"            &&
+               mb_substr_count($p->val,'[[') === 1        &&
+               mb_substr_count($p->val,']]') === 1) {
+               $pipe = mb_strpos($p->val, '|');
+               if ($pipe === FALSE) {
+                  $tval1 = mb_substr($p->val, 2, -2);
+                  $tval2 = $tval1;
+               } else {
+                  $tval1 = mb_substr($p->val, 2, $pipe-2);
+                  $tval2 = mb_substr($p->val, $pipe+1, -2);
+               }
+               $p->val = $tval2;
+               $this->add_if_new('title-link', $tval1);
+            }
             break;
           case 'journal': 
             $this->forget('publisher');
           case 'periodical': 
-            if(mb_substr($p->val, 0, 2) !== "[["   ||
+            if (substr(strtolower($p->val), 0, 7) === 'http://' || substr(strtolower($p->val), 0, 8) === 'https://') {
+               if ($this->blank('url')) $this->rename($pmatch[1], 'url');
+               break;
+            } elseif (substr(strtolower($p->val), 0, 4) === 'www.') {
+               if ($this->blank('website')) $this->rename($pmatch[1], 'website');
+               break;
+            } elseif(mb_substr($p->val, 0, 2) !== "[["   ||
                mb_substr($p->val, -2) !== "]]"     ||
                mb_substr_count($p->val, '[[') !== 1 ||
                mb_substr_count($p->val, ']]') !== 1) { // Only remove partial wikilinks
                   $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
-                      create_function('$matches', 'return $matches[2];'),
+                      function($matches) {return $matches[2];},
                       $p->val
                       );
                   $p->val = preg_replace_callback(
                       "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      create_function('$matches', 'return $matches[4];'),
+                      function($matches) {return $matches[4];},
                       $p->val
                       );
             }
@@ -2483,9 +2553,11 @@ final class Template {
             $p->val = $this->isbn10Toisbn13($p->val);
             break;
           case 'url':
-            if (preg_match("~^(https?://w?w?w?.?researchgate.net/publication/)([0-9]+)(_*)~", $p->val, $matches)) {
-                $p->val = 'https://www.researchgate.net/publication/' . $matches[2];
-            }
+            if (preg_match("~^https?://(?:www.|)researchgate.net/publication/([0-9]+)_*~i", $p->val, $matches)) {
+                $p->val = 'https://www.researchgate.net/publication/' . $matches[1];
+            } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $p->val, $matches)) {
+                $p->val = 'https://www.academia.edu/' . $matches[1];
+            }      
             break;
         }
       }
