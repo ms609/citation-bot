@@ -214,6 +214,8 @@ function title_capitalization($in, $caps_after_punctuation) {
     $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
       function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
+    // But not "Ann. Of...." which seems to be common in journal titles
+    $new_case = str_replace("Ann. Of ", "Ann. of ", $new_case);
   }
   
   $new_case = preg_replace_callback(
@@ -231,7 +233,9 @@ function title_capitalization($in, $caps_after_punctuation) {
 
   // Solitary 'a' should be lowercase
   $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
-  
+  // but not in "U S A"
+  $new_case = trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
+
   // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,

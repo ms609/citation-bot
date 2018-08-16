@@ -793,7 +793,36 @@ ER -  }}';
        $this->assertEquals('1233', $expanded->get('pages'));
        $this->assertEquals('1999', $expanded->get('year'));
    }
-   
+    
+   public function testSmallWords() {
+       $text = '{{cite journal|journal=A Word in ny and n y About cow And Then boys the U S A and y and z}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('A Word in NY and N Y About Cow and then Boys the U S A and y and Z', $expanded->get('journal')); 
+       $text = '{{cite journal|journal=Ann of Math}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Ann of Math', $expanded->get('journal')); 
+       $text = '{{cite journal|journal=Ann. of Math.}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Ann. of Math.', $expanded->get('journal')); 
+       $text = '{{cite journal|journal=Ann. of Math}}';
+       $expanded = $this->process_citation($text);
+       $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
+   }
+    
+  public function testSmallWordsOneGiantTest() {
+    $text_in  = 'Start ';
+    $text_out = 'Start ';
+    for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
+      $text_out = $text_out . LC_SMALL_WORDS[$i];
+      $text_in  = $text_in  . UC_SMALL_WORDS[$i];
+    }
+    $text_in  = $text_in  . ' Ending';
+    $text_out = $text_out . ' Ending';
+    $text = '{{cite journal|journal=' . $text_in . '}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text_out, $expanded->get('journal')); 
+  }
+  
    public function testDoNotAddYearIfDate() {
        $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
        $expanded = $this->process_citation($text);
