@@ -14,7 +14,7 @@ const WIKI_ROOT = "https://en.wikipedia.org/w/index.php";
 const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
 const TEMPLATE_REGEXP = "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~";
 const BRACESPACE = "!BOTCODE-spaceBeforeTheBrace";
-const BIBCODE_REGEXP = "~^(?:https?://(?:\w+.)?adsabs.harvard.edu|https?//ads\.ari\.uni-heidelberg\.de|https?//ads\.inasan\.ru|https?//ads\.mao\.kiev\.ua|https?//ads\.astro\.puc\.cl|https?//ads\.on\.br|https?//ads\.nao\.ac\.jp|https?//ads\.bao\.ac\.cn|https?//ads\.iucaa\.ernet\.in|https?//ads\.lipi\.go\.id|https?//cdsads\.u-strasbg\.fr|https?//esoads\.eso\.org|https?//ukads\.nottingham\.ac\.uk|https?//www\.ads\.lipi\.go\.id)/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
+const BIBCODE_REGEXP = "~^(?:https?://(?:\w+.)?adsabs.harvard.edu|https?://ads\.ari\.uni-heidelberg\.de|https?://ads\.inasan\.ru|https?://ads\.mao\.kiev\.ua|https?://ads\.astro\.puc\.cl|https?://ads\.on\.br|https?://ads\.nao\.ac\.jp|https?://ads\.bao\.ac\.cn|https?://ads\.iucaa\.ernet\.in|https?://ads\.lipi\.go\.id|https?://cdsads\.u-strasbg\.fr|https?://esoads\.eso\.org|https?://ukads\.nottingham\.ac\.uk|https?://www\.ads\.lipi\.go\.id)/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
 const DOI_REGEXP = "~10\.\d{4,6}/\S+~";
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
