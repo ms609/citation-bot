@@ -51,7 +51,7 @@ if ($category) {
         , ".");
       } else {
          html_echo ("<br> # Failed. <br>",
-                    "\n # Failed. \n")
+                    "\n # Failed. \n");
       }
     } else {
       html_echo ( "<br> # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "<br> # # # ",
