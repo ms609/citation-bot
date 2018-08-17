@@ -21,9 +21,8 @@ function user_notice($symbol, $class, $text) {
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
 }
 
-function report_action($text) {
-  user_notice(">", "subitem", $text);
-}
+function report_action($text)  { user_notice(">", "subitem", $text); }
+function report_warning($text) { user_notice("  !", "warning", $text); }
 
 function quiet_echo($text, $alternate_text = '') {
   if (defined('VERBOSE') || HTML_OUTPUT ) {
