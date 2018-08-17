@@ -28,6 +28,10 @@
       header a, footer a {
         text-decoration: none;
       }
+      
+      .added {
+        color: green;
+      }
     </style>
 	</head>
 <body class="mediawiki ns-2 ltr">
@@ -77,10 +81,14 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
       echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());
     }
   } elseif (!$ON) {
-    echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
+    echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre id='botOutput'>";
     safely_echo($my_page->parsed_text());
     echo "</pre>";
 ?>
+<script>
+  output = document.getElementById('botOutput');
+  output.innerHTML = output.innerHTML.replace(/\n( +\+.*)/, "\n<span class='added'>$1</span>")
+</script>
 <form method="post" action="doibot.php">
   <input type="hidden" name="page" value="<?php echo $title;?>" />
   <input type="hidden" name="user" value="<?php echo $user;?>" />
