@@ -42,4 +42,4 @@ The bot reports its activity to users using:
     * `.` denotes that a change has been considered but deemed unnecessary or unsuitable
     * `!` is used to denote an outcome that may require review by the user or bot maintainer
       
-  
+  We recommend using the "report_" family of functions defined in `expandFns.php` to communicate with the user.
