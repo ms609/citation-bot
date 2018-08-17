@@ -169,4 +169,18 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($parameter->val, "9 August 2006 <!--DASHBot-->");
     $this->assertEquals($parameter->post, "");
   }
+    
+  public function testWhiteList() {
+      $our_whitelist = PARAMETER_LIST;
+      $context = stream_context_create(array(
+        'http' => array('ignore_errors' => true),
+      ));
+      $wikipedia_response = @file_get_contents('https://en.wikipedia.org/w/index.php?title=Module:Citation/CS1/Whitelist&action=raw', FALSE, $context);
+      preg_match("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $their_whitelist);
+      echo "\n \n What they have that we missed\n";
+      print_r(array_diff($their_whitelist, $our_whitelist));
+      echo "\n \n What we have that they do not\n";
+      print_r(array_diff($our_whitelist, $their_whitelist));
+      $this->assertNull(NULL);
+  }
 }
