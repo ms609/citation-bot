@@ -111,62 +111,14 @@ h1, h2, h3, h4, h5, h6 {
 	border-bottom: 1px solid #aaa;
 }
 h1 { font-size: 188%; }
-h1 .editsection { font-size: 53%; }
 h2 { font-size: 150%; }
-h2 .editsection { font-size: 67%; }
 h3, h4, h5, h6 {
 	border-bottom: none;
 	font-weight: bold;
 }
 h3 { font-size: 132%; }
-h3 .editsection { font-size: 76%; font-weight: normal; }
 h4 { font-size: 116%; }
-h4 .editsection { font-size: 86%; font-weight: normal; }
-h5 { font-size: 100%; }
-h5 .editsection { font-weight: normal; }
-h6 { font-size: 80%;  }
-h6 .editsection { font-size: 125%; font-weight: normal; }
 
-ul {
-	line-height: 1.5em;
-	list-style-type: square;
-	margin: .3em 0 0 1.5em;
-	padding: 0;
-	list-style-image: url(bullet.gif);
-}
-ol {
-	line-height: 1.5em;
-	margin: .3em 0 0 3.2em;
-	padding: 0;
-	list-style-image: none;
-}
-li {
-	margin-bottom: .1em;
-}
-dt {
-	font-weight: bold;
-	margin-bottom: .1em;
-}
-dl {
-	margin-top: .2em;
-	margin-bottom: .5em;
-}
-dd {
-	line-height: 1.5em;
-	margin-left: 2em;
-	margin-bottom: .1em;
-}
-
-fieldset {
-	border: 1px solid #2f6fab;
-	margin: 1em 0 1em 0;
-	padding: 0 1em 1em;
-	line-height: 1.5em;
-}
-legend {
-	padding: .5em;
-	font-size: 95%;
-}
 form {
 	border: none;
 	margin: 0;
@@ -175,27 +127,6 @@ form {
 textarea {
 	width: 100%;
 	padding: .1em;
-}
-
-input.historysubmit {
-	padding: 0 .3em .3em .3em !important;
-	font-size: 94%;
-	cursor: pointer;
-	height: 1.7em !important;
-	margin-left: 1.6em;
-}
-select {
-	vertical-align: top;
-}
-abbr, acronym, .explain {
-	border-bottom: 1px dotted black;
-	color: black;
-	background: none;
-	cursor: help;
-}
-q {
-	font-family: Times, "Times New Roman", serif;
-	font-style: italic;
 }
 code {
 	background-color: #f9f9f9;
@@ -211,13 +142,6 @@ pre {
 /*
 ** the main content area
 */
-
-#siteSub {
-	display: none;
-}
-#jump-to-nav {
-	display: none;
-}
 
 #contentSub, #contentSub2 {
 	font-size: 84%;
@@ -239,87 +163,6 @@ span.subpages {
 }
 .firstHeading {
 	margin-bottom: .1em;
-}
-
-/* user notification thing */
-.usermessage {
-	background-color: #7AA6FF;
-	border: 1px groove #678DFF;
-	color: black;
-	font-weight: bold;
-	margin: 2em 0 1em;
-	padding: .5em 1em;
-	vertical-align: middle;
-}
-#siteNotice {
-	text-align: center;
-	font-size: 95%;
-	padding: 0 .9em;
-}
-#siteNotice p {
-	margin: 0;
-	padding: 0;
-}
-.error {
-	color: red;
-	font-size: larger;
-}
-.errorbox, .successbox {
-	font-size: larger;
-	border: 2px solid;
-	padding: .5em 1em;
-	float: left;
-	margin-bottom: 2em;
-	color: #000;
-}
-.errorbox {
-	border-color: red;
-	background-color: #fff2f2;
-}
-.successbox {
-	border-color: green;
-	background-color: #dfd;
-}
-.errorbox h2, .successbox h2 {
-	font-size: 1em;
-	font-weight: bold;
-	display: inline;
-	margin: 0 .5em 0 0;
-	border: none;
-}
-
-#catlinks {
-	border: 1px solid #aaa;
-	background-color: #f9f9f9;
-	padding: 5px;
-	margin-top: 1em;
-	clear: both;
-}
-/* currently unused, intended to be used by a metadata box
-in the bottom-right corner of the content area */
-.documentDescription {
-	/* The summary text describing the document */
-	font-weight: bold;
-	display: block;
-	margin: 1em 0;
-	line-height: 1.5em;
-}
-.documentByLine {
-	text-align: right;
-	font-size: 90%;
-	clear: both;
-	font-weight: normal;
-	color: #76797c;
-}
-
-/* emulate center */
-.center {
-	width: 100%;
-	text-align: center;
-}
-*.center * {
-	margin-left: auto;
-	margin-right: auto;
 }
 
 /*
@@ -546,12 +389,6 @@ special external link styling */
 .portlet h4 {
 	margin: 0;
 	padding: 0;
-}
-.portlet ul {
-	line-height: 1.5em;
-	list-style-type: square;
-	list-style-image: url(bullet.gif);
-	font-size: 95%;
 }
 .portlet li {
 	padding: 0;
