@@ -1144,20 +1144,29 @@ final class Template {
       } elseif ($this->has('doi') 
                 && preg_match(DOI_REGEXP, remove_comments($this->get('doi')), $doi)) {
         $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
-      } elseif ($this->has('title')) {
-        $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
-        if ($result->numFound == 0) return FALSE;
-        $record = $result->docs[0];
-        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
-        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
-        if (
+      } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
+        if ($this->has('eprint')) {
+          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
+        } elseif ($this->has('arxiv')) {
+          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
+        } else {
+          $result = (object) array("numFound" => 0);
+        }
+        if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+          $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
+          if ($result->numFound == 0) return FALSE;
+          $record = $result->docs[0];
+          $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
+          $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
+          if (
              (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
                 ? (strlen($inTitle) != strlen($dbTitle)
                   || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
                 : levenshtein($inTitle, $dbTitle) > 3
             ) {
-          report_info("Similar title not found in database");
-          return FALSE;
+            report_info("Similar title not found in database");
+            return FALSE;
+          }
         }
       } else {
         $result = (object) array("numFound" => 0);
