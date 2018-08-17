@@ -272,4 +272,14 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EIS
  'translator-last', 'translator-last##','translator-first', 'translator-first##',
  'translator##-last', 'translator##-first',
  'interviewer##', 'interviewer##-first', 'interviewer##-last', 'interviewer##-link', 'interviewer##-mask', 'interviewer-first##', 'interviewer-last##', 'interviewer-link##', 'interviewer-mask##', 
- );
+ 'call-sign', 'chapter-link', 'day', 'publisherid', 'titleyear', 'air-date', 'book-title', 'chapter-url-access', 'contributor',
+ 'contributor-first', 'contributor-last', 'contributor-given', 'contributor-surname', 'contributor-link', 'contributor-mask',
+ 'doi-broken', 'doi-inactive-date', 'editor-given', 'editor-surname', 'event-url', 'lang', 'lay-date', 'lay-source', 'lay-summary',
+ 'lay-format', 'lay-url', 'no-pp', 'series-link', 'series-no', 'series-number', 'subject-link', 'template-doc-demo', 'time-caption',
+ 'translator', 'translator-given', 'translator-surname', 'translator-link', 'translator-mask', 'contributor##', 'contributor-first##',
+ 'contributor##-first', 'contributor-last##', 'contributor##-last', 'contributor-given##', 'contributor##-given',
+ 'contributor-surname##', 'contributor##-surname', 'contributor-link##', 'contributor##-link', 'contributor-mask##',
+ 'contributor##-mask', 'editor-first##', 'editor##-given', 'editor-given##', 'editor-last##', 'editor-link##', 'editorlink##',
+ 'editor-mask##', 'editormask##', 'editor##-surname', 'editor-surname##', 'subject-link##', 'subject##link', 'subject##-link',
+ 'translator##', 'translator-given##', 'translator##-given', 'translator-surname##', 'translator##-surname', 'translator-link##',
+ 'translator##-link', 'translator-mask##', 'translator##-mask', 'template-doc-demo');
