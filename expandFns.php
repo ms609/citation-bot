@@ -16,6 +16,15 @@ function html_echo($text, $alternate_text='') {
   echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
+function user_notice($symbol, $class, $text) {
+  echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
+     . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
+}
+
+function report_action($text) {
+  user_notice(">", "subitem", $text);
+}
+
 function quiet_echo($text, $alternate_text = '') {
   if (defined('VERBOSE') || HTML_OUTPUT ) {
     echo $text;

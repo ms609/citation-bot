@@ -735,7 +735,7 @@ final class Template {
           $this->forget('url');
         }
         if ($this->get('jstor')) {
-          quiet_echo ("\n   - Not using redundant URL (jstor parameter set)");
+          quiet_echo ("\n   . Not using redundant URL (jstor parameter set)");
         } else {
           quiet_echo ("\n   ~ Converting URL to JSTOR parameter");
           $this->set("jstor", urldecode($match[1]));
@@ -941,7 +941,7 @@ final class Template {
       }
       if (FAST_MODE || !$author || !($journal || $issn) || !$start_page ) return;
       // If fail, try again with fewer constraints...
-      echo "\n   x Full search failed. Dropping author & end_page... ";
+      echo "\n   Full search failed. Dropping author & end_page... ";
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME;
       if ($title) $url .= "&atitle=" . urlencode(de_wikify($title));
       if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(de_wikify($journal));
@@ -1136,7 +1136,7 @@ final class Template {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
     if ($SLOW_MODE || $this->has('bibcode')) {
-      echo "\n - Checking AdsAbs database";
+      echo "\n > Checking AdsAbs database";
       if ($bibcode = $this->has('bibcode')) {
         $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
       } elseif ($this->has('doi') 
@@ -1293,11 +1293,11 @@ final class Template {
       
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
         if ($rate_limit[2][2]) {
-          echo "\n   - AdsAbs search " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
+          echo "\n   AdsAbs search " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
                ":\n       " . str_replace("&", "\n       ", urldecode($options));
                // "; reset at " . date('r', $rate_limit[2][2]);
         } else {
-          echo "\n   - AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n";
+          echo "\n   ! AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n";
           return (object) array('numFound' => 0);
         }
       } else {
@@ -1822,7 +1822,7 @@ final class Template {
         }
         $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
         if ($string === FALSE) {
-            echo "\n Google APIs search failed for $url_token \n";
+            echo "\n ! Google APIs search failed for $url_token \n";
             return FALSE;
         }
         $result = @json_decode($string, FALSE);
@@ -2266,20 +2266,20 @@ final class Template {
           
             // Specific checks for particular templates:
             if ($subtemplate_name == 'asin' && $subtemplate->has("country")) {
-              echo "\n    - {{ASIN}} country parameter not supported: cannot convert.";
+              echo "\n    . {{ASIN}} country parameter not supported: cannot convert.";
               break;
             }
             if ($subtemplate_name == 'ol' && $subtemplate->has('author')) {
-              echo "\n    - {{OL}} author parameter not supported: cannot convert.";
+              echo "\n    . {{OL}} author parameter not supported: cannot convert.";
               break;
             }
             if ($subtemplate_name == 'jstor' && $subtemplate->has('sici') || $subtemplate->has('issn')) {
-              echo "\n    - {{JSTOR}} named parameters are not supported: cannot convert.";
+              echo "\n    . {{JSTOR}} named parameters are not supported: cannot convert.";
               break;
             }
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
-              echo "\n    - {{OCLC}} has multiple parameters: cannot convert.";
+              echo "\n    . {{OCLC}} has multiple parameters: cannot convert.";
               echo "\n    " . $subtemplate->parsed_text();
               break;
             }
@@ -2293,7 +2293,7 @@ final class Template {
             $id = str_replace($matches[0][$i], '', $id); // Could only do this if previous line evaluated to TRUE, but let's be aggressive here.
             break;
           default:
-            echo "\n    - No match found for " . $subtemplate_name;
+            echo "\n   No match found for " . $subtemplate_name;
         }
       }
     }
@@ -2335,7 +2335,7 @@ final class Template {
        * If it is valid, it should apply only when $p->param relates to authors,
        * not when it applies to e.g. pages, title.
       if ($this->initial_author_params) {
-        echo "\n * initial authors exist, not correcting " . echoable($p->param);
+        echo "\n   . initial authors exist, not correcting " . echoable($p->param);
         continue;
       }
       */
@@ -2457,7 +2457,7 @@ final class Template {
                 }
               }
             } else {
-              echo "\n * Initial authors exist, skipping authorlink in tidy";
+              echo "\n   . Initial authors exist, skipping authorlink in tidy";
             }
             break;
           case 'title':
@@ -2657,7 +2657,7 @@ final class Template {
         $doi = $try;
       }
     }
-    echo "\n   . Checking that DOI " . echoable($doi) . " is operational..." . tag();
+    report_action("Checking that DOI " . echoable($doi) . " is operational..." . tag());
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
