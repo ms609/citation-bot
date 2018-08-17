@@ -22,7 +22,7 @@ matrix:
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit --bootstrap expandFns.php tests/phpunit
     - stage: deploy
-      name: "Update WMFlabs servers"
+      name: "Update WMFlabs servers and test them"
       php: 5.6 # Avoid downloading and installing 5.5
       script:
         - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
