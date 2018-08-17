@@ -18,6 +18,11 @@ foreach ($argv as $arg) {
     }
   }
 }
+SLOW_MODE = FALSE;
+if (isset($_GET["slow"]) && $_GET["cat"]==1) {
+  SLOW_MODE = TRUE;
+}
+
 require_once __DIR__ . '/expandFns.php';
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
