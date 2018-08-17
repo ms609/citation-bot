@@ -7,27 +7,15 @@ language: php
     
 matrix:
   include:
-    - stage: test
-      php: 7.2
-      before_script:  
-        - travis_retry composer self-update
-        - composer require mediawiki/oauthclient
-        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
-      after_success: bash <(curl -s https://codecov.io/bash)
-    - php: 5.6
-      before_script:  
-        - travis_retry composer self-update
-        - composer require mediawiki/oauthclient
-        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit --bootstrap expandFns.php tests/phpunit
-    - stage: deploy
-      name: "Update WMFlabs servers"
+      name: "Update WMFlabs servers and test them"
       php: 5.6 # Avoid downloading and installing 5.5
       script:
-        - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
-        - if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php ; fi
+        - curl "https://tools.wmflabs.org/citations/category.phpsss?cat=X5"
+        - curl "https://tools.wmflabs.org/citations-dev/category.phpsss?cat=X5"
+        - curl "https://tools.wmflabs.org/citations/doibot.php?edit=toolbar&slow=1&user=TRAVIS_DEPLOY&page=User%3AAManWithNoPlan%2Fsandbox2"
+        - curl "https://tools.wmflabs.org/citations-dev/doibot.php?edit=toolbar&slow=1&user=TRAVIS_DEPLOY&page=User%3AAManWithNoPlan%2Fsandbox2"
+        - curl -F "text={{cite journal|journal=hello}}" "https://tools.wmflabs.org/citations/gadgetapi.php?slow=1"
+        - curl -F "text={{cite journal|journal=hello}}" "https://tools.wmflabs.org/citations-dev/gadgetapi.php?slow=1"
 
 git:
-  depth: 3
-  
+depth: 3
