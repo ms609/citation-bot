@@ -11,15 +11,10 @@
    The Wikipedia citation bot
   </title>
   <style media="all">
-   /*
-** MediaWiki 'monobook' style sheet for CSS2-capable browsers.
+/*
+** Modified from MediaWiki 'monobook' style sheet for CSS2-capable browsers.
 ** Copyright Gabriel Wicke - http://wikidev.net/
 ** License: GPL (http://www.gnu.org/copyleft/gpl.html)
-**
-** Loosely based on http://www.positioniseverything.net/ordered-floats.html by Big John
-** and the Plone 2.0 styles, see http://plone.org/ (Alexander Limi,Joe Geldart & Tom Croucher,
-** Michael Zeltner and Geir Bækholt)
-** All you guys rock :)
 */
 
 #column-content {
@@ -29,7 +24,6 @@
 	padding: 0;
 }
 #content {
-  
 	margin: 2.8em 0 0 13.2em;
 	padding: 0 1em 1.5em 1em;
 	position: relative;
@@ -43,17 +37,8 @@
 	border: 1px solid #aaa;
 	border-right: none;
 	line-height: 1.5em;
-	
 }
 /* the left column width is specified in class .portlet */
-
-/* Font size:
-** We take advantage of keyword scaling- browsers won't go below 9px
-** More at http://www.w3.org/2003/07/30-font-size
-** http://style.cleverchimp.com/font_size_intervals/altintervals.html
-*/
-
-
 
 body {
 	font: x-small sans-serif;
@@ -70,19 +55,8 @@ body {
 	margin: 0;
 	padding: 0;
 }
-.visualClear {
-	clear: both;
-}
 
 /* general styles */
-
-table {
-	font-size: 100%;
-	color: black;
-	/* we don't want the bottom borders of <h2>s to be visible through
-	   floated tables */
-	background: white;
-}
 a {
 	text-decoration: none;
 	color: #002bb8;
@@ -347,13 +321,6 @@ in the bottom-right corner of the content area */
 	margin-left: auto;
 	margin-right: auto;
 }
-/* small for tables and similar */
-.small, .small * {
-	font-size: 94%;
-}
-table.small {
-	font-size: 100%;
-}
 
 /*
 ** content styles
@@ -405,7 +372,7 @@ table.small {
 }
 
 /* images */
-div.floatright, table.floatright {
+div.floatright {
 	clear: right;
 	float: right;
 	position: relative;
@@ -417,7 +384,7 @@ div.floatright, table.floatright {
 */
 }
 div.floatright p { font-style: italic; }
-div.floatleft, table.floatleft {
+div.floatleft{
 	float: left;
 	clear: left;
 	position: relative;
@@ -852,9 +819,6 @@ li#ca-watch, li#ca-unwatch, li#ca-varlang-0, li#ca-print {
 }
 .prefsection legend {
 	font-weight: bold;   
-}
-.prefsection table, .prefsection legend {
-	background-color: #F9F9F9;
 }
 .mainLegend {
 	display: none;
