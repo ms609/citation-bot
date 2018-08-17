@@ -628,29 +628,39 @@ li#ca-watch, li#ca-unwatch, li#ca-varlang-0, li#ca-print {
     <div id="column-content"> 
      	<div id="content">
         <h1 class="firstHeading">
-          The Wikipedia citation bot
+          Wikipedia citation bot
 				</h1> 
         <div id="bodyContent"> 
-          <h3 id="siteSub">
-            by Smith609, design adapted from Luxo's</h3> 
-          <div id="contentSub">
-            Tidies Wikipedia citations, and adds missing data and DOIs
-          </div>
-					
           <!-- start content --> 
-          <div id="laden">
-						<form action="doibot.php" method="post">
-              <h3>Welcome to the Citation bot.</h3>
-              Enter the name of a page to fill in missing DOIs, and to complete other empty fields in {{cite journal}} family templates.
-              <br><input name="page" value="" /><br>
-              <br><input type="checkbox" name="slow" checked />Thorough mode - a slower, but more exhaustive, search. Finds PMID parameters and flags "broken" DOIs.
-              <br><input type="checkbox" name="edit" checked />Commit edits.  Leave blank to check Wikicode.
-              <br><br>Please enter your Wikipedia username below before submitting your query.<br><input name=user value="" /> 
-              <br><br><input type="submit" />
-              <br>
-              <br>Maintained by <a href="https://en.wikipedia.org/wiki/User:Smith609">Martin Smith</a>.
-						</form>
-					</div>
+          <form action="doibot.php" method="post">
+            <p>Populates empty fields in {{cite journal}} family templates, and 
+            fix other citation issues.</p>
+            <p>
+              <label for="page">Page name:</label><br />
+              <input name="page" value="" />
+            </p>
+            <p>
+              <input type="checkbox" name="slow" checked />
+              <label for="slow">Thorough mode - a slower, but more exhaustive, search. Finds PMID parameters and flags "broken" DOIs.</label>
+            </p>
+            <p>
+              <input type="checkbox" name="edit" checked />
+              <label for="edit">Commit edits.  Leave blank to check Wikicode.</label>
+            </p>
+            <p>
+              <label for="user">Please enter your Wikipedia username below before submitting your query.</</label><br />
+              <input name=user value="" />
+            </p>
+            <p>
+              <input type="submit" />
+            </p>
+          </form>
+          <p>Maintained by <a href="https://en.wikipedia.org/wiki/User:Smith609">Martin Smith</a>.</p>
+          <p>
+            <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using citaton bot">More details</a> | 
+            <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report bugs</a> |
+            <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
+          </p>
 				</div>
 			</div>
 		</div>
