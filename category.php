@@ -27,7 +27,6 @@ if ($category) {
   $pages_in_category = $api->category_members($category);
   shuffle($pages_in_category);
   $page = new Page();
-  #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     echo ("\n\n\n*** Processing page '{" . echoable($page_title) . "}' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
