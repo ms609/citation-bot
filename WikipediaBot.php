@@ -125,8 +125,8 @@ class WikipediaBot {
         return NULL;
       }
     } catch(OAuthException $E) {
-      echo " ! Exception caught!\n";
-      echo "   Response: ". $E->lastResponse . "\n";
+      report_warning("Exception caught!\n");
+      report_info("Response: ". $E->lastResponse);
     }
   }
   
@@ -208,7 +208,7 @@ class WikipediaBot {
         else echo "\n Written to " . echoable($myPage->title) . '.  ';
         return TRUE;
       } elseif (isset($result->edit->result)) {
-        echo "\n ! " . echoable($result->edit->result);
+        report_warning(echoable($result->edit->result));
         return FALSE;
       }
     } else {
@@ -334,7 +334,7 @@ class WikipediaBot {
         "titles" => $page,
         ]); 
     if (!isset($res->query->pages)) {
-        echo "\n Failed to get article namespace \n";
+        report_warning("Failed to get article namespace");
         return FALSE;
     }
     return (int) reset($res->query->pages)->ns;
@@ -349,7 +349,7 @@ class WikipediaBot {
         ), 'POST');
     
     if (!isset($res->query->pages)) {
-        echo "\n Failed to get redirect status \n";
+        report_warning("Failed to get redirect status");
         return -1;
     }
     $res = reset($res->query->pages);
