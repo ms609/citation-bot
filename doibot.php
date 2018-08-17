@@ -99,6 +99,6 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
 ?>
 </pre>
 <footer>
-<a href="../" title="Use Citation Bot again">Another&nbsp;page</a>? 
+<a href="./" title="Use Citation Bot again">Another&nbsp;page</a>? 
 </footer>
 </body></html>
