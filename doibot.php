@@ -21,10 +21,10 @@
       }
       footer {
         border-top: 1px solid #335;
-        border-bottom: 100% solid #eed;
+        box-shadow: 0 50vh 0 50vh #eed;
       }
       
-      .header a, .footer a {
+      header a, footer a {
         text-decoration: none;
       }
     </style>
