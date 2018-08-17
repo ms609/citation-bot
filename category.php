@@ -2,6 +2,13 @@
 <?php
 
 error_reporting(E_ALL^E_NOTICE);
+
+if (php_sapi_name() == 'cli') {
+  define("HTML_OUTPUT", FALSE);
+} else {
+  define("HTML_OUTPUT", TRUE);
+}
+
 $argument["cat"] = NULL;
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
@@ -29,9 +36,11 @@ if ($category) {
   $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
-    echo ("\n\n\n*** Processing page '{" . echoable($page_title) . "}' : " . date("H:i:s") . "\n");
+    html_echo ("<br><br><br>*** Processing page '{" . echoable($page_title) . "}' : " . date("H:i:s") . "<br>",
+               "\n\n\n*** Processing page '{" . echoable($page_title) . "}' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
-      echo "\n # Writing to " . echoable($page_title) . '... ';
+      html_echo ("<br> # Writing to " . echoable($page_title) . '... ',
+                 "\n # Writing to " . echoable($page_title) . '... ');
       while (!$page->write($api) && $attempts < 2) ++$attempts;
       safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
@@ -41,14 +50,19 @@ if ($category) {
         . get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br>"
         , ".");
       } else {
-         echo "\n # Failed. \n";
+         html_echo ("<br> # Failed. <br>",
+                    "\n # Failed. \n");
       }
     } else {
-      echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
+      html_echo ( "<br> # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "<br> # # # ",
+                  "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ");
     }
   }
 
-  exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
+  html_echo("<br> Done all " . count($pages_in_category) . " pages in Category:$category. <br>",
+            "\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
+  html_echo("You must specify a category.  Try appending ?cat=Blah+blah to the URL" ,
+            "You must specify a category.  Try appending -cat Category_name at the command line.");
 }
+exit(0);
