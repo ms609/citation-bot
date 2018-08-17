@@ -20,13 +20,13 @@
 	</head>
 <body class="mediawiki ns-2 ltr">
   <div class="header">
-    <p>Follow the progress of <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> below.  
+    <p>Follow the progress of <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a> below.  
      </p>
     <p>
-      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More details</a> | 
-      <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" title="Recent contributions">View bot's recent edits</a> | 
-      <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report bugs</a> |
-      <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
+      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More&nbsp;details</a> | 
+      <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" title="Recent contributions">View&nbsp;bot&rsquo;s&nbsp;recent&nbsp;edits</a> | 
+      <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report&nbsp;bugs</a> |
+      <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source&nbsp;code</a>
     </p>
   </div>
 
