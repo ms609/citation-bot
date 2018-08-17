@@ -6,11 +6,20 @@
 		<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
 		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
 		<title>Citation bot: Preparing to run</title>
+    <style>
+      .header {
+        font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
+        background-color: #eed; 
+        padding: 0.5em 1em;
+        margin: -9px;
+        text-align: center;
+        text-decoration: none;
+        border-bottom: 1px solid #335;
+      }
+    </style>
 	</head>
 <body class="mediawiki ns-2 ltr">
-  <div style="font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
-              background-color: #eed; 
-              border-bottom: 1px solid #335;">
+  <div class="header">
     <p>Follow the progress of <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> below.  
      </p>
     <p>
