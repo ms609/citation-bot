@@ -33,6 +33,7 @@
       span.subitem    { color: #666;}
       span.boring     { color: #999;}
       span.subsubitem { color: #999;}
+      span.missedone { color: #aa0; font-weight:bold;}
     </style>
 	</head>
 <body class="mediawiki ns-2 ltr">
@@ -105,12 +106,12 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
 </pre>
 <script>
   output = document.getElementById('botOutput');
-  output.innerHTML = output.innerHTML.replace(/\n( +\+.*)/g, "\n<span class='added'>$1</span>")
-                                     .replace(/\n( +\~.*)/g, "\n<span class='changed'>$1</span>")
-                                     .replace(/\n( +\!.*)/g, "\n<span class='warning'>$1</span>")
-                                     .replace(/\n( +\..*)/g, "\n<span class='boring'>$1</span>")
-                                     .replace(/\n( > .*)/g, "\n<span class='subitem'>$1</span>")
-                                     .replace(/\n(   [ \->\.]+.*)/g, "\n<span class='subsubitem'>$1</span>");
+  output.innerHTML = output.innerHTML.replace(/\n( +\+.*)/g, "\n<span class='missedone'>$1</span>")
+                                     .replace(/\n( +\~.*)/g, "\n<span class='missedone'>$1</span>")
+                                     .replace(/\n( +\!.*)/g, "\n<span class='missedone'>$1</span>")
+                                     .replace(/\n( +\..*)/g, "\n<span class='missedone'>$1</span>")
+                                     .replace(/\n( > .*)/g, "\n<span class='missedone'>$1</span>")
+                                     .replace(/\n(   [ \->\.]+.*)/g, "\n<span class='missedone'>$1</span>");
 </script>
 <footer>
 <a href="./" title="Use Citation Bot again">Another&nbsp;page</a>? 
