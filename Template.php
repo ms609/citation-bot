@@ -3003,6 +3003,7 @@ final class Template {
        }
        $sum = ((10-$sum%10)%10) ;
        $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
+       quietly(report_modification, "Converted ISBN10 to ISBN13");
        return $isbn13;
   }
 }
