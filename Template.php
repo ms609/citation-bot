@@ -792,7 +792,10 @@ final class Template {
         
       } elseif (extract_doi($url)[1]) {
         
-        quietly(report_modification, "Recognized DOI in URL; dropping URL");
+        quietly(report_modification, "Recognized DOI in URL;converting to use DOI parameter.");
+        if (is_null($url_sent)) {
+          $this->forget('url');
+        }
         return $this->add_if_new('doi', extract_doi($url)[1]);
         
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
