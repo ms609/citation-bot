@@ -16,6 +16,9 @@
         text-decoration: none;
         border-bottom: 1px solid #335;
       }
+      .header a {
+        text-decoration: none;
+      }
     </style>
 	</head>
 <body class="mediawiki ns-2 ltr">
