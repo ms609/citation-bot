@@ -32,6 +32,10 @@
       .added {
         color: green;
       }
+      
+      .changed {
+        color: #4488bb;
+      }
     </style>
 	</head>
 <body class="mediawiki ns-2 ltr">
@@ -45,7 +49,7 @@
     </p>
   </header>
 
-<pre><?php
+<pre id="botOutput"><?php
 ## Set up - including DOT_DECODE array
 define("HTML_OUTPUT", TRUE);
 require_once("expandFns.php");
@@ -88,6 +92,7 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
 <script>
   output = document.getElementById('botOutput');
   output.innerHTML = output.innerHTML.replace(/\n( +\+.*)/, "\n<span class='added'>$1</span>")
+  output.innerHTML = output.innerHTML.replace(/\n( +\~.*)/, "\n<span class='changed'>$1</span>")
 </script>
 <form method="post" action="doibot.php">
   <input type="hidden" name="page" value="<?php echo $title;?>" />
