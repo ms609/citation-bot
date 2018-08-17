@@ -27,6 +27,12 @@ matrix:
       script:
         - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
         - if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php ; fi
+        - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then curl "https://tools.wmflabs.org/citations/category.phpsss?cat=X5" ; fi
+        - if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then curl "https://tools.wmflabs.org/citations-dev/category.phpsss?cat=X5" ; fi
+        - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then curl "https://tools.wmflabs.org/citations/doibot.php?edit=toolbar&slow=1&user=TRAVIS_DEPLOY&page=User%3AAManWithNoPlan%2Fsandbox2" ; fi
+        - if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then curl "https://tools.wmflabs.org/citations-dev/doibot.php?edit=toolbar&slow=1&user=TRAVIS_DEPLOY&page=User%3AAManWithNoPlan%2Fsandbox2" ; fi
+        - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then curl -F "text={{cite journal|journal=hello}}" "https://tools.wmflabs.org/citations/gadgetapi.php?slow=1" ; fi
+        - if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then curl -F "text={{cite journal|journal=hello}}" "https://tools.wmflabs.org/citations-dev/gadgetapi.php?slow=1" ; fi
 
 git:
   depth: 3
