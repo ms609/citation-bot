@@ -19,7 +19,7 @@ foreach ($argv as $arg) {
   }
 }
 $SLOW_MODE = FALSE;
-if (isset($_GET["slow"]) && $_GET["cat"]==1) {
+if (isset($_GET["slow"])) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
 }
 
