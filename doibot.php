@@ -25,17 +25,13 @@
         box-shadow: 0 50vh 0 50vh #eed;
       }
       
-      header a, footer a {
-        text-decoration: none;
-      }
+      header a, footer a { text-decoration: none; }
       
-      .added {
-        color: green;
-      }
-      
-      .changed {
-        color: #4488bb;
-      }
+      span.warning    { color: red; }
+      span.added      { color: green;}
+      span.changed    { color: #4488bb;}
+      span.subitem    { color: #666;}
+      span.subsubitem { color: #999;}
     </style>
 	</head>
 <body class="mediawiki ns-2 ltr">
@@ -85,14 +81,17 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
       echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());
     }
   } elseif (!$ON) {
-    echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre id='botOutput'>";
+    echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
     safely_echo($my_page->parsed_text());
     echo "</pre>";
 ?>
 <script>
   output = document.getElementById('botOutput');
-  output.innerHTML = output.innerHTML.replace(/\n( +\+.*)/, "\n<span class='added'>$1</span>")
-  output.innerHTML = output.innerHTML.replace(/\n( +\~.*)/, "\n<span class='changed'>$1</span>")
+  output.innerHTML = output.innerHTML.replace(/\n( +\+.*)/g, "\n<span class='added'>$1</span>")
+                                     .replace(/\n( +\~.*)/g, "\n<span class='changed'>$1</span>")
+                                     .replace(/\n( +\!.*)/g, "\n<span class='warning'>$1</span>")
+                                     .replace(/\n( \-.*)/g, "\n<span class='subitem'>$1</span>")
+                                     .replace(/\n(   [ \-\.]+.*)/g, "\n<span class='subsubitem'>$1</span>");
 </script>
 <form method="post" action="doibot.php">
   <input type="hidden" name="page" value="<?php echo $title;?>" />
