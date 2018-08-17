@@ -171,7 +171,10 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
   }
     
   public function testWhiteList() {
-      $our_whitelist = str_replace('##', '#', PARAMETER_LIST); // We use double #, wikipedia uses one #
+      $we_failed = FALSE;
+      
+      $our_original_whitelist = str_replace('##', '#', PARAMETER_LIST); // We use double #, wikipedia uses one #
+      $our_whitelist = array_unique($our_original_whitelist);
 
       $context = stream_context_create(array(
         'http' => array('ignore_errors' => true),
@@ -179,17 +182,26 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       $wikipedia_response = @file_get_contents('https://en.wikipedia.org/w/index.php?title=Module:Citation/CS1/Whitelist&action=raw', FALSE, $context);
       preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
       $their_whitelist = $matches[1];
+      $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
 
       $our_extra = array_diff($our_whitelist, $their_whitelist);
-      $out_missing = array_diff($their_whitelist, $our_whitelist);
+      $our_missing = array_diff($their_whitelist, $our_whitelist);
+      $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
+      if (count($our_extra) !== 0) {
+         echo "\n \n What the Citation Bot has more than one copy of\n";
+         print_r($our_internal_extra);
+         $we_failed = TRUE;
+      }
       if (count($our_extra) !== 0) {
          echo "\n \n What the Citation Bot has that Wikipedia does not\n";
          print_r($our_extra);
+         $we_failed = TRUE;
       }
       if (count($their_extra) !== 0) {
          echo "\n \n What Wikipedia has that the Citation Bot does not\n";
          print_r($their_extra);
+         $we_failed = TRUE;
       }
-      $this->assertEquals(0,count($their_extra)+count($our_extra));
+      $this->assertEquals(FALSE,$we_failed);
   }
 }
