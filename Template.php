@@ -2270,7 +2270,7 @@ final class Template {
               break;
             }
             if ($subtemplate_name == 'ol' && $subtemplate->has('author')) {
-              report_info("{{OL}} author parameter not supported: cannot convert."):
+              report_info("{{OL}} author parameter not supported: cannot convert.");
               break;
             }
             if ($subtemplate_name == 'jstor' && $subtemplate->has('sici') || $subtemplate->has('issn')) {
@@ -2664,7 +2664,7 @@ final class Template {
       $url_test = "https://dx.doi.org/" . $doi;
       $headers_test = @get_headers($url_test, 1);
       if ($headers_test === FALSE) {
-        report_warning("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi);
+        report_warning("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
         return FALSE;
       }
       $this->forget("doi_inactivedate");
