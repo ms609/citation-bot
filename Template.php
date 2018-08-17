@@ -2533,7 +2533,7 @@ final class Template {
           case 'pages': case 'page': case 'issue': case 'year':
             if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(TO_EN_DASH, $p->val) && (stripos($p->val, "http") === FALSE)) {
               $this->mod_dashes = TRUE;
-              echo ( "\n   ~ Upgrading to en-dash in " . echoable($p->param) .
+              report_modification("Upgrading to en-dash in " . echoable($p->param) .
                     " parameter" . tag());
               $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
             }
@@ -2710,7 +2710,7 @@ final class Template {
      
      if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
     {
-      echo "\n - Checking that URL is live...";
+      report_action("Checking that URL is live...");
       $formatSet = isset($p["format"]);
       $p["format"][0] = assessUrl($p["url"][0]);
       if (!$formatSet && trim($p["format"][0]) == "") {
