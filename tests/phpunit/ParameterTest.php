@@ -193,9 +193,8 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
          $we_failed = TRUE;
       }
       if (count($our_extra) !== 0) {
-         echo "\n \n What the Citation Bot has that Wikipedia does not\n";
+         echo "\n \n What the Citation Bot has that Wikipedia does not: mostly related to cite patent\n";
          print_r($our_extra);
-         $we_failed = TRUE;
       }
       if (count($our_missing) !== 0) {
          echo "\n \n What Wikipedia has that the Citation Bot does not\n";
