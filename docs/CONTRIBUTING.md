@@ -33,11 +33,13 @@ Always write a clear log message for your commits. One-line messages are fine fo
 ## Bot output conventions
 The bot reports its activity to users using:
   * A new line beginning with an asterisk `*_` to announce that a new item is being analysed
-  * A new line beginning with a space and a hyphen `_-_` to announce that it is undertaking an expansion activity
+  * A new line beginning with a space and a right angle bracket `_>_` to announce that it is undertaking an expansion activity
+  * A new line beginning with three, five, seven or more spaces to announce sub-steps of the expansion activity
   * A new line beginning with three spaces and a symbol `___X_` to denote that it is changing the value of a parameter:
     * `+` denotes a newly added parameter
     * `-` denotes the removal of a parameter
     * `~` denotes that the name or value of an existing parameter is being modified
+    * `.` denotes that a change has been considered but deemed unnecessary or unsuitable
     * `!` is used to denote an outcome that may require review by the user or bot maintainer
       
-  
+  We recommend using the "report_" family of functions defined in `expandFns.php` to communicate with the user.
