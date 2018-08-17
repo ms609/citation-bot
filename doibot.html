@@ -100,10 +100,10 @@ a:hover {
 a.stub {
 	color: #772233;
 }
-a.new, #p-personal a.new {
+a.new {
 	color: #ba0000;
 }
-a.new:visited, #p-personal a.new:visited {
+a.new:visited{
 	color: #a55858;
 }
 
@@ -223,11 +223,6 @@ q {
 	font-family: Times, "Times New Roman", serif;
 	font-style: italic;
 }
-/* disabled for now
-blockquote {
-	font-family: Times, "Times New Roman", serif;
-	font-style: italic;
-}*/
 code {
 	background-color: #f9f9f9;
 }
@@ -497,82 +492,6 @@ img.thumbborder {
 */
 
 /*
-** classes for special content elements like town boxes
-** intended to be referenced directly from the wiki src
-*/
-
-/*
-** User styles
-*/
-/* table standards */
-table.rimage {
-	float: right;
-	position: relative;
-	margin-left: 1em;
-	margin-bottom: 1em;
-	text-align: center;
-}
-.toccolours {
-	border: 1px solid #aaa;
-	background-color: #f9f9f9;
-	padding: 5px;
-	font-size: 95%;
-}
-div.townBox {
-	position: relative;
-	float: right;
-	background: white;
-	margin-left: 1em;
-	border: 1px solid gray;
-	padding: .3em;
-	width: 200px;
-	overflow: hidden;
-	clear: right;
-}
-div.townBox dl {
-	padding: 0;
-	margin: 0 0 .3em;
-	font-size: 96%;
-}
-div.townBox dl dt {
-	background: none;
-	margin: .4em 0 0;
-}
-div.townBox dl dd {
-	margin: .1em 0 0 1.1em;
-	background-color: #f3f3f3;
-}
-
-/*
-** edit views etc
-*/
-.special li {
-	line-height: 1.4em;
-	margin: 0;
-	padding: 0;
-}
-
-/* Page history styling */
-/* the auto-generated edit comments */
-.autocomment {
-	color: gray;
-}
-#pagehistory span.user {
-	margin-left: 1.4em;
-	margin-right: .4em;
-}
-#pagehistory span.minor {
-	font-weight: bold;
-}
-#pagehistory li {
-	border: 1px solid white;
-}
-#pagehistory li.selected {
-	background-color: #f9f9f9;
-	border: 1px dashed #aaa;
-}
-
-/*
 ** keep the whitespace in front of the ^=, hides rule from konqueror
 ** this is css3, the validator doesn't like it when validating as css2
 */
@@ -793,160 +712,6 @@ input.searchButton {
 	text-align: center;
 }
 
-/*
-** the personal toolbar
-*/
-#p-personal {
-	position: absolute;
-	left: 0;
-	top: 0;
-	z-index: 0;
-}
-#p-personal {
-	width: 100%;
-	white-space: nowrap;
-	padding: 0;
-	margin: 0;
-	border: none;
-	background: none;
-	overflow: visible;
-	line-height: 1.2em;
-}
-#p-personal h5 {
-	display: none;
-}
-#p-personal .portlet,
-#p-personal .pBody {
-	z-index: 0;
-	padding: 0;
-	margin: 0;
-	border: none;
-	overflow: visible;
-	background: none;
-}
-/* this is the ul contained in the portlet */
-#p-personal ul {
-	border: none;
-	line-height: 1.4em;
-	color: #2f6fab;
-	padding: 0 2em 0 3em;
-	margin: 0;
-	text-align: right;
-	list-style: none;
-	z-index: 0;
-	background: none;
-	cursor: default;
-}
-#p-personal li {
-	z-index: 0;
-	border: none;
-	padding: 0;
-	display: inline;
-	color: #2f6fab;
-	margin-left: 1em;
-	line-height: 1.2em;
-	background: none;
-}
-#p-personal li a {
-	text-decoration: none;
-	color: #005896;
-	padding-bottom: .2em;
-	background: none;
-}
-#p-personal li a:hover {
-	background-color: white;
-	padding-bottom: .2em;
-	text-decoration: none;
-}
-#p-personal li.active a:hover {
-	background-color: transparent;
-}
-/* the icon in front of the user name, single quotes
-in bg url to hide it from iemac */
-li#pt-userpage,
-li#pt-anonuserpage,
-li#pt-login {
-	background: url(user.gif) top left no-repeat;
-	padding-left: 20px;
-	text-transform: none;
-}
-#p-personal ul {
-	text-transform: lowercase;
-}
-#p-personal li.active {
-	font-weight: bold;
-}
-/*
-** the page-related actions- page/talk, edit etc
-*/
-#p-cactions {
-	position: absolute;
-	top: 1.3em;
-	left: 11.5em;
-	margin: 0;
-	white-space: nowrap;
-	width: 76%;
-	line-height: 1.1em;
-	overflow: visible;
-	background: none;
-	border-collapse: collapse;
-	padding-left: 1em;
-	list-style: none;
-	font-size: 95%;
-}
-#p-cactions ul {
-	list-style: none;
-}
-#p-cactions li {
-	display: inline;
-	border: 1px solid #aaa;
-	border-bottom: none;
-	padding: 0 0 .1em 0;
-	margin: 0 .3em 0 0;
-	overflow: visible;
-	background: white;
-}
-#p-cactions li.selected {
-	border-color: #129023;
-	padding: 0 0 .2em 0;
-	font-weight: bold;
-}
-#p-cactions li a {
-	background-color: #fbfbfb;
-	color: #002bb8;
-	border: none;
-	padding: 0 .8em .3em;
-	position: relative;
-	z-index: 0;
-	margin: 0;
-	text-decoration: none;
-}
-#p-cactions li.selected a {
-	z-index: 3;
-	padding: 0 1em .2em!important;
-	background-color: white;
-}
-#p-cactions .new a {
-	color: #ba0000;
-}
-#p-cactions li a:hover {
-	z-index: 3;
-	text-decoration: none;
-	background-color: white;
-}
-#p-cactions h5 {
-	display: none;
-}
-#p-cactions li.istalk {
-	margin-right: 0;
-}
-#p-cactions li.istalk a {
-	padding-right: .5em;
-}
-#p-cactions #ca-addsection a {
-	padding-left: .4em;
-	padding-right: .4em;
-}
 /* offsets to distinguish the tab groups */
 li#ca-talk {
 	margin-right: 1.6em;
@@ -1223,16 +988,16 @@ table.gallery td {
 }
   </style> 
    
-<script type="text/javascript">
+  <script type="text/javascript">
     function onSubmit() {
-            document.title = "Please Wait....";
-            var laden_display = document.getElementById('laden');
-            laden_display.innerHTML = "<h3>Wait for the Citation bot to complete your request.</h3><h4>Upon completion this page will change to the results.......</h4>"
-            return true;
+      document.title = "Please Wait....";
+      var laden_display = document.getElementById('laden');
+      laden_display.innerHTML = "<h3>Wait for the Citation bot to complete your request.</h3><h4>Upon completion this page will change to the results.......</h4>"
+      return true;
     }
-</script>
-
+  </script>
 </head>
+
 <body style="direction: ltr;" class="mediawiki ns--1 ltr page-Spezial_Beiträge"> 
   <div id="globalWrapper">
     <div id="column-content"> 
