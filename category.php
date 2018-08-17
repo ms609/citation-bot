@@ -65,3 +65,4 @@ if ($category) {
   html_echo("You must specify a category.  Try appending ?cat=Blah+blah to the URL" ,
             "You must specify a category.  Try appending -cat Category_name at the command line.");
 }
+exit(0);
