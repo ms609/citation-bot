@@ -171,7 +171,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
   }
     
   public function testWhiteList() {
-      $our_whitelist = PARAMETER_LIST;
+      $our_whitelist = str_replace('##', '#', PARAMETER_LIST); // We use double #, wikipedia uses one #
       $context = stream_context_create(array(
         'http' => array('ignore_errors' => true),
       ));
