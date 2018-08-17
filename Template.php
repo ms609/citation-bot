@@ -791,8 +791,10 @@ final class Template {
         return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
         
       } elseif (extract_doi($url)[1]) {
-        
-        quietly('report_modification', "Recognized DOI in URL; dropping URL");
+        if (is_null($url_sent)) {
+          quietly('report_forget', "Recognized DOI in URL; dropping URL");
+          $this->forget('url');
+        }
         return $this->add_if_new('doi', extract_doi($url)[1]);
         
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
