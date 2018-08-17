@@ -6,18 +6,20 @@
 		<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
 		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
 		<title>Citation bot: Preparing to run</title>
-    <style>body {font-family: Arial;}</style>
 	</head>
 <body class="mediawiki ns-2 ltr">
-<p>Follow the progress of <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> below.  
- </p>
-<p>
-  <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More details</a> | 
-  <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" title="Recent contributions">View bot's recent edits</a> | 
-  <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report bugs</a> |
-  <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
-</p>
-
+  <div style="font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
+              background-color: #eed; 
+              border-bottom: 1px solid #335;">
+    <p>Follow the progress of <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation bot</a> below.  
+     </p>
+    <p>
+      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More details</a> | 
+      <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" title="Recent contributions">View bot's recent edits</a> | 
+      <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report bugs</a> |
+      <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
+    </p>
+  </div>
 
 <pre><?php
 ## Set up - including DOT_DECODE array
