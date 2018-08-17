@@ -93,15 +93,7 @@ p img {
 	margin: 0;
 }
 
-hr {
-	height: 1px;
-	color: #aaa;
-	background-color: #aaa;
-	border: 0;
-	margin: .2em 0 .2em 0;
-}
-
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4 {
 	color: grey;
 	background: none;
 	font-weight: normal;
@@ -124,35 +116,9 @@ form {
 	margin: 0;
 }
 
-textarea {
-	width: 100%;
-	padding: .1em;
-}
-code {
-	background-color: #f9f9f9;
-}
-pre {
-	padding: 1em;
-	border: 1px dashed #FF6666;
-	color: black;
-	background-color: #f9f9f9;
-	line-height: 1.1em;
-}
-
 /*
 ** the main content area
 */
-
-#contentSub, #contentSub2 {
-	font-size: 84%;
-	line-height: 1.2em;
-	margin: 0 0 1.4em 1em;
-	color: #7d7d7d;
-	width: auto;
-}
-span.subpages {
-	display: block;
-}
 
 /* Some space under the headers in the content area */
 #bodyContent h1, #bodyContent h2 {
@@ -164,176 +130,6 @@ span.subpages {
 .firstHeading {
 	margin-bottom: .1em;
 }
-
-/*
-** content styles
-*/
-
-/* images */
-div.floatright {
-	clear: right;
-	float: right;
-	position: relative;
-	margin: 0 0 .5em .5em;
-	border: 0;
-/*
-	border: .5em solid white;
-	border-width: .5em 0 .8em 1.4em;
-*/
-}
-div.floatright p { font-style: italic; }
-div.floatleft{
-	float: left;
-	clear: left;
-	position: relative;
-	margin: 0 .5em .5em 0;
-	border: 0;
-/*
-	margin: .3em .5em .5em 0;
-	border: .5em solid white;
-	border-width: .5em 1.4em .8em 0;
-*/
-}
-div.floatleft p { font-style: italic; }
-/* thumbnails */
-div.thumb {
-	margin-bottom: .5em;
-	border-style: solid;
-	border-color: white;
-	width: auto;
-}
-div.thumbinner {
-	border: 1px solid #ccc;
-	padding: 3px !important;
-	background-color: #f9f9f9;
-	font-size: 94%;
-	text-align: center;
-	overflow: hidden;
-}
-html .thumbimage {
-	border: 1px solid #ccc;
-}
-html .thumbcaption {
-	border: none;
-	text-align: left;
-	line-height: 1.4em;
-	padding: 3px !important;
-	font-size: 94%;
-}
-div.magnify {
-	float: right;
-	border: none !important;
-	background: none !important;
-}
-div.magnify a, div.magnify img {
-	display: block;
-	border: none !important;
-	background: none !important;
-}
-div.tright {
-	clear: right;
-	float: right;
-	border-width: .5em 0 .8em 1.4em;
-}
-div.tleft {
-	float: left;
-	clear: left;
-	margin-right: .5em;
-	border-width: .5em 1.4em .8em 0;
-}
-img.thumbborder {
-	border: 1px solid #dddddd;
-}
-.hiddenStructure {
-	display: none;
-}
-
-/* Have a checkered background on images on the description pages and in galleries
-   to make transparency visible
-
-#file img, .gallerybox .thumb img {
-	background: url(Checker-16x16.png) repeat;
-}
-*/
-
-/*
-** keep the whitespace in front of the ^=, hides rule from konqueror
-** this is css3, the validator doesn't like it when validating as css2
-*/
-#bodyContent a.external,
-#bodyContent a[href ^="gopher://"] {
-	background: url(external.png) center right no-repeat;
-	padding-right: 13px;
-}
-/*#bodyContent a[href ^="https://"],
-.link-https {
-	background: url(lock_icon.gif) center right no-repeat;
-	padding-right: 16px;
-}*/
-#bodyContent a[href ^="mailto:"],
-.link-mailto {
-	background: url(mail_icon.gif) center right no-repeat;
-	padding-right: 18px;
-}
-#bodyContent a[href ^="news://"] {
-	background: url(news_icon.png) center right no-repeat;
-	padding-right: 18px;
-}
-#bodyContent a[href ^="ftp://"],
-.link-ftp {
-	background: url(file_icon.gif) center right no-repeat;
-	padding-right: 18px;
-}
-#bodyContent a[href ^="irc://"],
-.link-irc {
-	background: url(discussionitem_icon.gif) center right no-repeat;
-	padding-right: 18px;
-}
-#bodyContent a.external[href $=".ogg"], #bodyContent a.external[href $=".OGG"],
-#bodyContent a.external[href $=".mid"], #bodyContent a.external[href $=".MID"],
-#bodyContent a.external[href $=".midi"], #bodyContent a.external[href $=".MIDI"],
-#bodyContent a.external[href $=".mp3"], #bodyContent a.external[href $=".MP3"],
-#bodyContent a.external[href $=".wav"], #bodyContent a.external[href $=".WAV"],
-#bodyContent a.external[href $=".wma"], #bodyContent a.external[href $=".WMA"],
-.link-audio {
-	background: url("audio.png") center right no-repeat;
-	padding-right: 13px;
-}
-#bodyContent a.external[href $=".ogm"], #bodyContent a.external[href $=".OGM"],
-#bodyContent a.external[href $=".avi"], #bodyContent a.external[href $=".AVI"],
-#bodyContent a.external[href $=".mpeg"], #bodyContent a.external[href $=".MPEG"],
-#bodyContent a.external[href $=".mpg"], #bodyContent a.external[href $=".MPG"],
-.link-video {
-	background: url("video.png") center right no-repeat;
-	padding-right: 13px;
-}
-#bodyContent a.external[href $=".pdf"], #bodyContent a.external[href $=".PDF"],
-#bodyContent a.external[href *=".pdf#"], #bodyContent a.external[href *=".PDF#"],
-#bodyContent a.external[href *=".pdf?"], #bodyContent a.external[href *=".PDF?"],
-.link-document {
-	background: url("document.png") center right no-repeat;
-	padding-right: 12px;
-}
-
-/* disable interwiki styling */
-#bodyContent a.extiw,
-#bodyContent a.extiw:active {
-	color: #36b;
-	background: none;
-	padding: 0;
-}
-#bodyContent a.external {
-	color: #36b;
-}
-/* this can be used in the content area to switch off
-special external link styling */
-#bodyContent .plainlinks a {
-	background: none !important;
-	padding: 0 !important;
-}
-/*
-** Structural Elements
-*/
 
 /*
 ** general portlet styles (elements in the quickbar)
@@ -471,155 +267,42 @@ input.searchButton {
 	text-align: center;
 }
 
-/* offsets to distinguish the tab groups */
-li#ca-talk {
-	margin-right: 1.6em;
-}
-li#ca-watch, li#ca-unwatch, li#ca-varlang-0, li#ca-print {
-	margin-left: 1.6em;
-}
-#p-cactions .pBody {
-	font-size: 1em;
-	background-color: transparent;
-	color: inherit;
-	border-collapse: inherit;
-	border: 0;
-	padding: 0;
-	
-}
-#p-cactions .hiddenStructure {
-	display: none;
-}
-#p-cactions li a {
-	text-transform: lowercase;
-}
-
-/*
-** the remaining portlets
-*/
-#p-tbx,
-#p-lang {
-	position: relative;
-	z-index: 3;
-}
-
-/* TODO: #t-iscite is only used by the Cite extension, come up with some
- * system which allows extensions to add to this file on the fly
- */
-#t-ispermalink, #t-iscite {
-	color: #999;
-}
-/*
-** footer
-*/
-#footer {
-	background-color: white;
-	border: 1px solid #fabd23;
-	-moz-border-radius: 10px;
-	margin: 10px;
-	padding: 10px;
-	text-align: center;
-	font-size: 90%;
-}
-#footer li {
-	display: inline;
-	margin: 0 1.3em;
-}
-#f-poweredbyico, #f-copyrightico {
-	margin: 0 8px;
-	position: relative;
-	top: -2px; /* Bump it up just a tad */
-}
-#f-poweredbyico {
-	float: right;
-	height: 1%;
-}
-#f-copyrightico {
-	float: left;
-	height: 1%;
-}
-
-/* js pref toc */
-#preftoc {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	clear: both;
-}
-#preftoc li {
-	background-color: #f0f0f0;
-	color: #000;
-}
-#preftoc li {
-	margin: 1px -2px 1px 2px;
-	float: left;
-	padding: 2px 0 3px 0;
-	border: 1px solid #fff;
-	border-right-color: #716f64;
-	border-bottom: 0;
-	position: relative;
-	white-space: nowrap;
-	list-style-type: none;
-	list-style-image: none;
-	z-index: 3;
-}
-#preftoc li.selected {
-	font-weight: bold;
-	background-color: #f9f9f9;
-	border: 1px solid #aaa;
-	border-bottom: none;
-	cursor: default;
-	top: 1px;
-	padding-top: 2px;
-	margin-right: -3px;
-}
-#preftoc > li.selected {
-	top: 2px;
-}
-#preftoc a,
-#preftoc a:active {
-	display: block;
-	color: #000;
-	padding: 0 .7em;
-	position: relative;
-	text-decoration: none;
-}
-#prefcontrol {
-	padding-top: 2em;
-	clear: both;
-}
-#preferences {
-	margin: 0;
-	border: 1px solid #aaa;
-	clear: both;
-	padding: 1.5em;
-	background-color: #F9F9F9;
-}
-.prefsection {
-	border: none;
-	padding: 0;
-	margin: 0;
-}
-.prefsection fieldset {
-	border: 1px solid #aaa;
-	float: left;
-	margin-right: 2em;
-}
-.prefsection legend {
-	font-weight: bold;   
-}
-.mainLegend {
-	display: none;
+.error {
+  background-color: #eebbbb;
+  border-color: #ee4444;
 }
   </style> 
    
   <script type="text/javascript">
-    function onSubmit() {
-      document.title = "Please Wait....";
-      var laden_display = document.getElementById('laden');
-      laden_display.innerHTML = "<h3>Wait for the Citation bot to complete your request.</h3><h4>Upon completion this page will change to the results.......</h4>"
-      return true;
+    function ValidateForm() {
+      var botPage = document.getElementById("botPage");
+      if (botPage.value.trim() == "") {
+        botPage.classList.add("error");
+        return false;
+      } else {
+      console.log(botPage.value);
+        document.getElementById("SubmitButton").disabled = "disabled";
+        document.getElementById("WaitSpinner").style.display = "inline-block";
+        return true;
+      }
     }
+    
+    function ValidatePageName() {
+      if (this.value.trim() == "") {
+        this.classList.add("error");
+        document.getElementById("SubmitButton").disabled = "disabled";
+      } else {
+        this.classList.remove("error");
+        document.getElementById("SubmitButton").disabled = false;
+      }
+    }
+    
+    function InitializeForm() {
+      document.getElementById("botForm").onsubmit = ValidateForm;
+      document.getElementById("botPage").onchange = ValidatePageName;
+    }
+    
+    window.onload = InitializeForm;
   </script>
 </head>
 
@@ -632,12 +315,12 @@ li#ca-watch, li#ca-unwatch, li#ca-varlang-0, li#ca-print {
 				</h1> 
         <div id="bodyContent"> 
           <!-- start content --> 
-          <form action="doibot.php" method="post">
+          <form id="botForm" action="doibot.php" method="post">
             <p>Populates empty fields in {{cite journal}} family templates, and 
             fix other citation issues.</p>
             <p>
-              <label for="page">Page name:</label><br />
-              <input name="page" value="" />
+              <label for="page">Page to process:</label><br />
+              <input name="page" id="botPage" value="" />
             </p>
             <p>
               <input type="checkbox" name="slow" checked />
@@ -652,7 +335,7 @@ li#ca-watch, li#ca-unwatch, li#ca-varlang-0, li#ca-print {
               <input name=user value="" />
             </p>
             <p>
-              <input type="submit" />
+              <input type="submit" id="SubmitButton" /> <img style="display:none" src="img/spinner_18_18.gif" id="WaitSpinner" />
             </p>
           </form>
           <p>Maintained by <a href="https://en.wikipedia.org/wiki/User:Smith609">Martin Smith</a>.</p>
