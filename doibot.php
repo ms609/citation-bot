@@ -31,6 +31,7 @@
       span.added      { color: green;}
       span.changed    { color: #4488bb;}
       span.subitem    { color: #666;}
+      span.boring     { color: #999;}
       span.subsubitem { color: #999;}
     </style>
 	</head>
@@ -85,14 +86,6 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
     safely_echo($my_page->parsed_text());
     echo "</pre>";
 ?>
-<script>
-  output = document.getElementById('botOutput');
-  output.innerHTML = output.innerHTML.replace(/\n( +\+.*)/g, "\n<span class='added'>$1</span>")
-                                     .replace(/\n( +\~.*)/g, "\n<span class='changed'>$1</span>")
-                                     .replace(/\n( +\!.*)/g, "\n<span class='warning'>$1</span>")
-                                     .replace(/\n( \-.*)/g, "\n<span class='subitem'>$1</span>")
-                                     .replace(/\n(   [ \-\.]+.*)/g, "\n<span class='subsubitem'>$1</span>");
-</script>
 <form method="post" action="doibot.php">
   <input type="hidden" name="page" value="<?php echo $title;?>" />
   <input type="hidden" name="user" value="<?php echo $user;?>" />
@@ -110,6 +103,15 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
 
 ?>
 </pre>
+<script>
+  output = document.getElementById('botOutput');
+  output.innerHTML = output.innerHTML.replace(/\n( +\+.*)/g, "\n<span class='added'>$1</span>")
+                                     .replace(/\n( +\~.*)/g, "\n<span class='changed'>$1</span>")
+                                     .replace(/\n( +\!.*)/g, "\n<span class='warning'>$1</span>")
+                                     .replace(/\n( +\..*)/g, "\n<span class='boring'>$1</span>")
+                                     .replace(/\n( > .*)/g, "\n<span class='subitem'>$1</span>")
+                                     .replace(/\n(   [ \->\.]+.*)/g, "\n<span class='subsubitem'>$1</span>");
+</script>
 <footer>
 <a href="./" title="Use Citation Bot again">Another&nbsp;page</a>? 
 </footer>
