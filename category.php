@@ -18,9 +18,9 @@ foreach ($argv as $arg) {
     }
   }
 }
-SLOW_MODE = FALSE;
+$SLOW_MODE = FALSE;
 if (isset($_GET["slow"]) && $_GET["cat"]==1) {
-  SLOW_MODE = TRUE;
+  $SLOW_MODE = TRUE;
 }
 
 require_once __DIR__ . '/expandFns.php';
