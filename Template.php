@@ -1750,7 +1750,7 @@ final class Template {
           $headers_test = @get_headers($this->get('url'), 1);
           if($headers_test ===FALSE) {
             $this->forget('url');
-            report_warning("Open access URL was was unreachable from oiDOI API for doi: " . echoable($doi);
+            report_warning("Open access URL was was unreachable from oiDOI API for doi: " . echoable($doi));
             return FALSE;
           }
           $response_code = intval(substr($headers_test[0], 9, 3)); 
