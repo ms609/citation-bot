@@ -20,6 +20,7 @@
         border-bottom: 1px solid #335;
       }
       footer {
+        margin-top: 3em;
         border-top: 1px solid #335;
         box-shadow: 0 50vh 0 50vh #eed;
       }
