@@ -28,10 +28,10 @@
       header a, footer a { text-decoration: none; }
       
       span.warning    { color: red; }
-      span.added      { color: green;}
-      span.changed    { color: #4488bb;}
+      span.added      { color: green; font-weight: bold;}
+      span.changed    { color: #4ea0de; font-weight: bold;}
       span.subitem    { color: #666;}
-      span.boring     { color: #999;}
+      span.boring     { color: #bbb;}
       span.subsubitem { color: #999;}
     </style>
 	</head>
@@ -103,15 +103,6 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
 
 ?>
 </pre>
-<script>
-  output = document.getElementById('botOutput');
-  output.innerHTML = output.innerHTML.replace(/\n( +\+.*)/g, "\n<span class='added'>$1</span>")
-                                     .replace(/\n( +\~.*)/g, "\n<span class='changed'>$1</span>")
-                                     .replace(/\n( +\!.*)/g, "\n<span class='warning'>$1</span>")
-                                     .replace(/\n( +\..*)/g, "\n<span class='boring'>$1</span>")
-                                     .replace(/\n( > .*)/g, "\n<span class='subitem'>$1</span>")
-                                     .replace(/\n(   [ \->\.]+.*)/g, "\n<span class='subsubitem'>$1</span>");
-</script>
 <footer>
 <a href="./" title="Use Citation Bot again">Another&nbsp;page</a>? 
 </footer>

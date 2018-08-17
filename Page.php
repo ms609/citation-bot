@@ -24,8 +24,8 @@ class Page {
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
     if (!isset($details->query)) {
-      echo "\n ! Error: Could not fetch page. \n";
-      if (isset($details->error)) echo "   - " . $details->error->info;
+      report_warning("Error: Could not fetch page.");
+      if (isset($details->error)) report_info($details->error->info);
       return FALSE;
     }
     foreach ($details->query->pages as $p) {
@@ -35,12 +35,12 @@ class Page {
     
     $details = $my_details;
     if (isset($details->invalid)) {
-      echo "\n ! Page invalid: ". $details->invalidreason;
+      report_warning("Page invalid: ". $details->invalidreason);
       return FALSE;
     }
     if ( !isset($details->touched) || !isset($details->lastrevid)) {
-       echo "\n ! Could not even get the page.  Perhaps non-existent? ";
-       return FALSE; 
+       report_warning("Could not even get the page.  Perhaps non-existent?");
+       return FALSE;
     }
     
     $this->title = $details->title;
@@ -89,7 +89,7 @@ class Page {
     $text = $this->text;
     $this->modifications = array();
     if (!$text) {
-      echo "\n\n  ! No text retrieved.\n";
+      report_warning("No text retrieved.\n");
       return FALSE;
     }
 
@@ -97,7 +97,7 @@ class Page {
     $comments = $this->extract_object('Comment');
     $nowiki   = $this->extract_object('Nowiki');
     if (!$this->allow_bots()) {
-      echo "\n ! Page marked with {{nobots}} template.  Skipping.";
+      report_warning("Page marked with {{nobots}} template.  Skipping.");
       return FALSE;
     }
 
