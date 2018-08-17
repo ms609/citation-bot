@@ -187,7 +187,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       $our_extra = array_diff($our_whitelist, $their_whitelist);
       $our_missing = array_diff($their_whitelist, $our_whitelist);
       $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
-      if (count($our_extra) !== 0) {
+      if (count($our_internal_extra) !== 0) {
          echo "\n \n What the Citation Bot has more than one copy of\n";
          print_r($our_internal_extra);
          $we_failed = TRUE;
@@ -197,9 +197,9 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
          print_r($our_extra);
          $we_failed = TRUE;
       }
-      if (count($their_extra) !== 0) {
+      if (count($our_missing) !== 0) {
          echo "\n \n What Wikipedia has that the Citation Bot does not\n";
-         print_r($their_extra);
+         print_r($our_missing);
          $we_failed = TRUE;
       }
       $this->assertEquals(FALSE,$we_failed);
