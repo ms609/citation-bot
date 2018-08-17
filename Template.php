@@ -1142,7 +1142,7 @@ final class Template {
       } elseif ($this->has('doi') 
                 && preg_match(DOI_REGEXP, remove_comments($this->get('doi')), $doi)) {
         $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
-      } elseif ($this->has('title') || this->has('eprint') || $this->has('arxiv')) {
+      } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
         if ($this->has('eprint')) {
           $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
         } elseif ($this->has('arxiv')) {
