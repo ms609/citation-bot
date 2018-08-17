@@ -2876,7 +2876,7 @@ final class Template {
   protected function lacks($par) {return !$this->has($par);}
 
   protected function add($par, $val) {
-    report_add("Adding $par" .tag());
+    report_add("Adding $par: $val" .tag());
     return $this->set($par, $val);
   }
   
