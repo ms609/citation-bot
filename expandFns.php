@@ -29,11 +29,9 @@ function report_modification($text) { user_notice("  ~", "changed", $text); }
 function report_add($text) { user_notice("  +", "added", $text); }
 function report_forget($text) { user_notice("  -", "removed", $text); }
 
-function quiet_echo($text, $alternate_text = '') {
+function quietly($function = report_info, $text) {
   if (defined('VERBOSE') || HTML_OUTPUT ) {
-    echo $text;
-  } else {
-    echo $alternate_text;
+    $function($text);
   }
 }
 

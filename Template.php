@@ -645,7 +645,7 @@ final class Template {
       case 'asin':
         if ($this->blank($param_name)) {
           if($this->has('isbn')) { // Already have ISBN
-            quiet_echo("\n   . Not adding ASIN: redundant to existing ISBN.");
+            quietly(report_inaction, "Not adding ASIN: redundant to existing ISBN.");
             return FALSE;
           } elseif (preg_match("~^\d~", $value) && substr($value, 0, 3) !== '630') { // 630 ones are not ISBNs
             $possible_isbn = sanitize_string($value);
@@ -686,7 +686,7 @@ final class Template {
           if (preg_match ($pattern, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
           $this->rename('website', 'url'); // Rename it first, so that parameters stay in same order
           $this->set('url', $url);
-          quiet_echo("\n   ~ website is actually HTTP URL; converting to use url parameter.");
+          quietly(report_modification, "website is actually HTTP URL; converting to use url parameter.");
         } else {
           // If no URL or website, nothing to worth with.
           return FALSE;
@@ -735,9 +735,9 @@ final class Template {
           $this->forget('url');
         }
         if ($this->get('jstor')) {
-          quiet_echo ("\n   . Not using redundant URL (jstor parameter set)");
+          quietly(report_inaction, "Not using redundant URL (jstor parameter set)");
         } else {
-          quiet_echo ("\n   ~ Converting URL to JSTOR parameter");
+          quietly(report_modification, "Converting URL to JSTOR parameter");
           $this->set("jstor", urldecode($match[1]));
         }
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
@@ -748,7 +748,7 @@ final class Template {
     } else {
       if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
         if ($this->blank('bibcode')) {
-          quiet_echo("\n   ~ Converting url to bibcode parameter");
+          quietly(report_modification, "Converting url to bibcode parameter");
           if (is_null($url_sent)) {
             $this->forget('url');
           }
@@ -760,7 +760,7 @@ final class Template {
                         
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         if ($this->blank('pmc')) {
-          quiet_echo("\n   ~ Converting URL to PMC parameter");
+          quietly(report_modification, "Converting URL to PMC parameter");
           if (is_null($url_sent)) {
             $this->forget('url');
           }
@@ -769,21 +769,21 @@ final class Template {
       } elseif (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $url, $match)) {
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         if ($this->blank('pmc')) {
-          quiet_echo("\n   ~ Converting Europe URL to PMC parameter");
+          quietly(report_modification, "Converting Europe URL to PMC parameter");
           if (is_null($url_sent)) {
             $this->forget('url');
           }
           return $this->add_if_new("pmc", $match[1]);
         }
       } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~", $url, $match)) {
-        quiet_echo("\n   ~ URL is hard-coded DOI; converting to use DOI parameter.");
+        quietly(report_modification, "URL is hard-coded DOI; converting to use DOI parameter.");
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         if (is_null($url_sent)) {
           $this->forget('url');
         }
         return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
       } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/summary\?doi=([0-9.]*)~", $url, $match)) {
-        quiet_echo("\n   ~ URL is hard-coded citeseerx; converting to use citeseerx parameter.");
+        quietly(report_modification, "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if (strpos($this->name, 'web')) $this->name = 'Cite journal';
         if (is_null($url_sent)) {
           $this->forget('url');
@@ -792,7 +792,7 @@ final class Template {
         
       } elseif (extract_doi($url)[1]) {
         
-        quiet_echo("\n   ~ Recognized DOI in URL; dropping URL");
+        quietly(report_modification, "Recognized DOI in URL; dropping URL");
         return $this->add_if_new('doi', extract_doi($url)[1]);
         
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
@@ -803,7 +803,7 @@ final class Template {
         if (   preg_match("~[A-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
             || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
             ) {
-          quiet_echo("\n   ~ Converting URL to arXiv parameter");
+          quietly(report_modification, "Converting URL to arXiv parameter");
           if (is_null($url_sent)) {
             $this->forget('url');
           }
@@ -812,7 +812,7 @@ final class Template {
         if (strpos($this->name, 'web')) $this->name = 'Cite arxiv';
         
       } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
-        quiet_echo("\n   ~ Converting URL to PMID parameter");
+        quietly(report_modification, "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget('url');
         }
@@ -827,60 +827,60 @@ final class Template {
             $this->forget('url');
           }
           if ($this->blank('asin')) {
-            quiet_echo("\n   ~ Converting URL to ASIN parameter");
+            quietly(report_modification, "Converting URL to ASIN parameter");
             return $this->add_if_new('asin', $match['id']);
           }
         } else {
-          quiet_echo("\n   ~ Converting URL to ASIN template");
+          quietly(report_modification, "Converting URL to ASIN template");
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
           if (is_null($url_sent)) {
             $this->forget('url'); // will forget accessdate too
           }
         }
       } elseif (preg_match("~^https?://hdl\.handle\.net/([^\?]*)~", $url, $match)) {
-          quiet_echo("\n   ~ Converting URL to HDL parameter");
+          quietly(report_modification, "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('hdl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~", $url, $match)) {
-          quiet_echo("\n   ~ Converting URL to ZBL parameter");
+          quietly(report_modification, "Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('zbl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~", $url, $match)) {
-          quiet_echo("\n   ~ Converting URL to JFM parameter");
+          quietly(report_modification, "Converting URL to JFM parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('jfm', $match[1]);
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~", $url, $match)) {
-          quiet_echo("\n   ~ Converting URL to MR parameter");
+          quietly(report_modification, "Converting URL to MR parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('mr', $match[1]);
       } elseif (preg_match("~^https?://papers\.ssrn\.com/sol3/papers\.cfm\?abstract_id=([0-9]+)~", $url, $match)) {
-          quiet_echo("\n   ~ Converting URL to SSRN parameter");
+          quietly(report_modification, "Converting URL to SSRN parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('ssrn', $match[1]);
       } elseif (preg_match("~^https?://www\.osti\.gov/biblio/([0-9]+)~", $url, $match)) {
-          quiet_echo("\n   ~ Converting URL to OSTI parameter");
+          quietly(report_modification, "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
           if (preg_match("~\bweb\b~", $this->name)) $this->name = 'Cite journal';  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://www\.osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~", $url, $match)) {
-          quiet_echo("\n   ~ Converting URL to OSTI parameter");
+          quietly(report_modification, "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
           }
@@ -1655,7 +1655,7 @@ final class Template {
 
   protected function use_sici() {
     if (preg_match(SICI_REGEXP, urldecode($this->parsed_text()), $sici)) {
-      quiet_echo("\n * Extracting information from SICI");
+      quietly(report_action, "Extracting information from SICI");
       $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       $this->add_if_new("year", $sici[2]);
@@ -2045,7 +2045,7 @@ final class Template {
       }
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tentative matches
-        quiet_echo("\n   + Found URL floating in template; setting url");
+        report_add("Found URL floating in template; setting url");
         $this->set('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
@@ -2097,7 +2097,7 @@ final class Template {
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
-          quiet_echo("\n   + Found $parameter floating around in template; converted to parameter");
+          report_add("Found $parameter floating around in template; converted to parameter");
           if (!$param_recycled) {
             $this->param[$param_key]->param = $parameter;
             $this->param[$param_key]->val = $parameter_value;
