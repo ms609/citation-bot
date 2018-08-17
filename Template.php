@@ -2657,7 +2657,7 @@ final class Template {
         $doi = $try;
       }
     }
-    echo "\n > Checking that DOI " . echoable($doi) . " is operational..." . tag();
+    report_action("Checking that DOI " . echoable($doi) . " is operational..." . tag());
     if ($this->query_crossref() === FALSE) {
       // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
       // if present, with new "doi-broken-date"
