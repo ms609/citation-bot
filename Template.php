@@ -1822,7 +1822,7 @@ final class Template {
         }
         $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
         if ($string === FALSE) {
-            echo "\n Google APIs search failed for $url_token \n";
+            echo "\n ! Google APIs search failed for $url_token \n";
             return FALSE;
         }
         $result = @json_decode($string, FALSE);
