@@ -1142,6 +1142,10 @@ final class Template {
       } elseif ($this->has('doi') 
                 && preg_match(DOI_REGEXP, remove_comments($this->get('doi')), $doi)) {
         $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
+      } elseif ($this->has('eprint')) {
+        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'))
+      } elseif ($this->has('arxiv')) {
+        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'))
       } elseif ($this->has('title')) {
         $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
         if ($result->numFound == 0) return FALSE;
