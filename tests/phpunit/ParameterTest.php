@@ -192,7 +192,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
          print_r($our_internal_extra);
          $we_failed = TRUE;
       }
-      if (count($our_extra) !== 0) {
+      if (count($our_extra) !== 0) { // Should consider parsing https://en.wikipedia.org/w/index.php?title=Template:Cite_patent&action=raw
          echo "\n \n What the Citation Bot has that Wikipedia does not: mostly related to cite patent\n";
          print_r($our_extra);
       }
