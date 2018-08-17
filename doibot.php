@@ -7,31 +7,38 @@
 		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
 		<title>Citation bot: Preparing to run</title>
     <style>
-      .header {
+      header, footer {
         font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
         background-color: #eed; 
         padding: 0.5em 1em;
         margin: -9px;
         text-align: center;
         text-decoration: none;
+      }
+      
+      header {
         border-bottom: 1px solid #335;
       }
-      .header a {
+      footer {
+        border-top: 1px solid #335;
+        border-bottom: 100% solid #eed;
+      }
+      
+      .header a, .footer a {
         text-decoration: none;
       }
     </style>
 	</head>
 <body class="mediawiki ns-2 ltr">
-  <div class="header">
-    <p>Follow the progress of <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a> below.  
-     </p>
+  <header>
+    <p>Follow <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a>&rsquo;s progress below.</p>
     <p>
-      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More&nbsp;details</a> | 
-      <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" title="Recent contributions">Bot&rsquo;s&nbsp;recent&nbsp;edits</a> | 
-      <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report&nbsp;bugs</a> |
-      <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source&nbsp;code</a>
+      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">More&nbsp;details</a> | 
+      <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent contributions">Bot&rsquo;s&nbsp;recent&nbsp;edits</a> | 
+      <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank">Report&nbsp;bugs</a> |
+      <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository">Source&nbsp;code</a>
     </p>
-  </div>
+  </header>
 
 <pre><?php
 ## Set up - including DOT_DECODE array
@@ -89,6 +96,8 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
 }
 
 ?>
-
 </pre>
+<footer>
+<a href="../" title="Use Citation Bot again">Another&nbsp;page</a>? 
+</footer>
 </body></html>
