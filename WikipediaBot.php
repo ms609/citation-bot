@@ -111,7 +111,7 @@ class WikipediaBot {
           
           $ret = @json_decode($data = curl_exec($this->ch));
           if ( !$data ) {
-            echo "\n ! Curl error: " . echoable(curl_error($this->ch));
+            report_warning("Curl error: " . echoable(curl_error($this->ch)));
             exit(0);
           }
           
@@ -121,7 +121,7 @@ class WikipediaBot {
           
           return ($this->ret_okay($ret)) ? $ret : FALSE;
           
-        echo " ! Unrecognized method."; // @codecov ignore - will only be hit if error in our code
+        report_warning("Unrecognized method."); // @codecov ignore - will only be hit if error in our code
         return NULL;
       }
     } catch(OAuthException $E) {
@@ -367,7 +367,7 @@ class WikipediaBot {
         "titles" => $page,
         ), 'POST');
     if (!isset($res->pages->page)) {
-        echo "\n Failed to get redirect target \n";
+        report_warning("Failed to get redirect target");
         return FALSE;
     }
     return $xml->pages->page["title"];

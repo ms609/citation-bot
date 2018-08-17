@@ -22,7 +22,12 @@ function user_notice($symbol, $class, $text) {
 }
 
 function report_action($text)  { user_notice(">", "subitem", $text); }
+function report_info($text)  { user_notice("  >", "subsubitem", $text); }
+function report_inaction($text)  { user_notice("  .", "boring", $text); }
 function report_warning($text) { user_notice("  !", "warning", $text); }
+function report_modification($text) { user_notice("  ~", "changed", $text); }
+function report_add($text) { user_notice("  +", "added", $text); }
+function report_forget($text) { user_notice("  -", "removed", $text); }
 
 function quiet_echo($text, $alternate_text = '') {
   if (defined('VERBOSE') || HTML_OUTPUT ) {
