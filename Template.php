@@ -1147,6 +1147,8 @@ final class Template {
           $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
         } elseif ($this->has('arxiv')) {
           $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
+        } else {
+          $result = (object) array("numFound" => 0);
         }
         if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
           $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
