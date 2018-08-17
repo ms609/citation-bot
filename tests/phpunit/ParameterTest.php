@@ -172,16 +172,24 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
     
   public function testWhiteList() {
       $our_whitelist = str_replace('##', '#', PARAMETER_LIST); // We use double #, wikipedia uses one #
+
       $context = stream_context_create(array(
         'http' => array('ignore_errors' => true),
       ));
       $wikipedia_response = @file_get_contents('https://en.wikipedia.org/w/index.php?title=Module:Citation/CS1/Whitelist&action=raw', FALSE, $context);
       preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
       $their_whitelist = $matches[1];
-      echo "\n \n What they have that we missed\n";
-      print_r(array_diff($their_whitelist, $our_whitelist));
-      echo "\n \n What we have that they do not\n";
-      print_r(array_diff($our_whitelist, $their_whitelist));
-      $this->assertNull(NULL);
+
+      $our_extra = array_diff($our_whitelist, $their_whitelist);
+      $out_missing = array_diff($their_whitelist, $our_whitelist);
+      if (count($our_extra) !== 0) {
+         echo "\n \n What the Citation Bot has that Wikipedia does not\n";
+         print_r($our_extra);
+      }
+      if (count($their_extra) !== 0) {
+         echo "\n \n What Wikipedia has that the Citation Bot does not\n";
+         print_r($their_extra);
+      }
+      $this->assertEquals(0,count($their_extra)+count($our_extra));
   }
 }
