@@ -182,6 +182,8 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       $wikipedia_response = @file_get_contents('https://en.wikipedia.org/w/index.php?title=Module:Citation/CS1/Whitelist&action=raw', FALSE, $context);
       preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
       $their_whitelist = $matches[1];
+      $patent_whitelist = array('inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last', 'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first', 'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor1link#', 'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description', 'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#', 'assignee', 'assign');
+      $their_whitelist = array_merge($patent_whitelist,$their_whitelist);
       $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
 
       $our_extra = array_diff($our_whitelist, $their_whitelist);
@@ -195,6 +197,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       if (count($our_extra) !== 0) { // Should consider parsing https://en.wikipedia.org/w/index.php?title=Template:Cite_patent&action=raw
          echo "\n \n What the Citation Bot has that Wikipedia does not: mostly related to cite patent\n";
          print_r($our_extra);
+         $we_failed = TRUE;
       }
       if (count($our_missing) !== 0) {
          echo "\n \n What Wikipedia has that the Citation Bot does not\n";
@@ -204,3 +207,6 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals(FALSE,$we_failed);
   }
 }
+
+
+
