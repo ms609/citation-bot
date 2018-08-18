@@ -282,4 +282,6 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'BIBCODE', 'DOI', 'EIS
  'contributor##-mask', 'editor-first##', 'editor##-given', 'editor-given##', 'editor-last##', 'editor-link##', 'editorlink##',
  'editor-mask##', 'editormask##', 'editor##-surname', 'editor-surname##', 'subject-link##', 'subject##link', 'subject##-link',
  'translator##', 'translator-given##', 'translator##-given', 'translator-surname##', 'translator##-surname', 'translator-link##',
- 'translator##-link', 'translator-mask##', 'translator##-mask', 'template-doc-demo');
+ 'translator##-link', 'translator-mask##', 'translator##-mask', 'template-doc-demo', 'inventor', 'inventor##', 'inventor##-surname',
+ 'inventor##-given', 'inventor-link', 'inventor##-link', 'inventor-link##', 'inventor##link', 'country-code',
+ 'country', 'status', 'invent##', 'assignee', 'assign');
