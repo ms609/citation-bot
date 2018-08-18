@@ -184,7 +184,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       $their_whitelist = $matches[1];
       $patent_whitelist = array('inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
                                 'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
-                                'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor1link#',
+                                'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
                                 'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
                                 'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
                                 'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
