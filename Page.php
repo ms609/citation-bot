@@ -15,6 +15,10 @@ class Page {
 
   protected $text, $title, $modifications;
 
+  function __construct() {
+    $this->api = new WikipediaBot();
+  }
+    
   public function get_text_from($title, $api) {    
     $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
