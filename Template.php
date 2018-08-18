@@ -2505,6 +2505,7 @@ final class Template {
             break;
           case 'journal': 
             $this->forget('publisher');
+            $this->forget('location');
           case 'periodical': 
             if (substr(strtolower($p->val), 0, 7) === 'http://' || substr(strtolower($p->val), 0, 8) === 'https://') {
                if ($this->blank('url')) $this->rename($pmatch[1], 'url');
