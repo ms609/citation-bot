@@ -567,7 +567,7 @@ final class Template {
         return FALSE;
         
       case 'class':
-        if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE && $this->wikiname() === 'cite arxiv' ) {
+        if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === FALSE ) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
