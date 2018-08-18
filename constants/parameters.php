@@ -218,7 +218,7 @@ const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'Author#', 'Author', '
 'Ref', 'SSRN', 'URL', 'ZBL', 'access-date', 'accessdate', 'agency',
 'air-date', 'airdate', 'albumlink', 'albumtype', 'archive-date',
 'archive-format', 'archive-url', 'archivedate', 'archiveurl',
-'article', 'artist', 'arxiv', 'asin', 'asin-tld', 'assign#', 'assign'
+'article', 'artist', 'arxiv', 'asin', 'asin-tld', 'assign#', 'assign',
 'assignee', 'at', 'author#', 'author#-first', 'author#-last',
 'author#-link', 'author#-mask', 'author#link', 'author#mask',
 'author', 'author-first#', 'author-first', 'author-format',
