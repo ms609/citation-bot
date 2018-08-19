@@ -973,7 +973,7 @@ ER -  }}';
  public function testRemoveQuotes() {
      $text = '{{cite journal|title="Strategic Acupuncture"}}';
      $expanded = $this->process_citation($text);
-     $this->assertEquals($expanded->get('title','Strategic Acupuncture'));  
+     $this->assertEquals($expanded->get('title'),'Strategic Acupuncture');  
  }
     
  public function testTrimResearchGateETC() {
