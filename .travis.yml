@@ -10,6 +10,6 @@ matrix:
       name: "Update WMFlabs servers and test them"
       php: 5.6 # Avoid downloading and installing 5.5
       script:
-        - php category cat=X5"
+        - php category -cat X5
 git:
 depth: 3
