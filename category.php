@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-error_reporting(E_ALL^E_NOTICE);
+error_reporting(E_ALL);
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
 foreach ($argv as $arg) {
