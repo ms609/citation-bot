@@ -10,12 +10,6 @@ matrix:
       name: "Update WMFlabs servers and test them"
       php: 5.6 # Avoid downloading and installing 5.5
       script:
-        - curl "https://tools.wmflabs.org/citations/category.php?cat=X5"
-        - curl "https://tools.wmflabs.org/citations-dev/category.php?cat=X5"
-        - curl "https://tools.wmflabs.org/citations/doibot.php?edit=toolbar&slow=1&user=TRAVIS_DEPLOY&page=User%3AAManWithNoPlan%2Fsandbox2"
-        - curl "https://tools.wmflabs.org/citations-dev/doibot.php?edit=toolbar&slow=1&user=TRAVIS_DEPLOY&page=User%3AAManWithNoPlan%2Fsandbox2"
-        - curl -F "text={{cite journal|journal=hello}}" "https://tools.wmflabs.org/citations/gadgetapi.php?slow=1"
-        - curl -F "text={{cite journal|journal=hello}}" "https://tools.wmflabs.org/citations-dev/gadgetapi.php?slow=1"
-
+        - php category cat=X5"
 git:
 depth: 3
