@@ -56,12 +56,7 @@ if ($category) {
       echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
     }
   }
-
-  echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
-  if (php_sapi_name() !== 'cli')  echo '</pre>';
-  exit(0);
+  exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  echo ("\n You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line. \n ");
-  if (php_sapi_name() !== 'cli')  echo '</pre>';
-  exit(2);
+  exit ("\n You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line. \n ");
 }
