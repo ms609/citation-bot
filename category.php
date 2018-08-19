@@ -59,7 +59,14 @@ if ($category) {
     }
   }
 
-  exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
+  echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
+  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
+
+if (php_sapi_name() !== 'cli') {
+  echo '</pre>';
+} else {
+  exit(0);
+}
+
