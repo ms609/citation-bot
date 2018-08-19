@@ -202,7 +202,6 @@ final class Template {
         $this->get_open_access_url();
         $this->find_pmid();
         $this->tidy();
-        if($this->has('doi') && $this->blank('doi-broken-date')) $this->forget('class');
         
         // Convert from journal to book, if there is a unique chapter name or has an ISBN
         if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
@@ -567,8 +566,10 @@ final class Template {
         return FALSE;
         
       case 'class':
-        if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === FALSE ) {
-          return $this->add($param_name, sanitize_string($value));
+        if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === FALSE ) { // Not already in erprint number
+          if ($this->wikiname === 'citation' || $this->wikiname === 'cite arxiv') {
+            return $this->add($param_name, sanitize_string($value));
+          }
         }
         return FALSE;
         
