@@ -175,7 +175,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       
       $our_original_whitelist = PARAMETER_LIST;
       $our_whitelist = array_unique($our_original_whitelist);
-
+      $our_whitelist_sorted = sort($our_original_whitelist);
       $context = stream_context_create(array(
         'http' => array('ignore_errors' => true),
       ));
@@ -191,11 +191,12 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
                                 'inventorlink', 'inventorlink#', 'issue-date', 'fdate'); // Some are not valid, but people use them anyway
       $their_whitelist = array_merge($patent_whitelist,$their_whitelist);
       $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
-      $their_whitelist =  array_diff($their_whitelist, ["template doc demo"]);
+      $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
 
       $our_extra = array_diff($our_whitelist, $their_whitelist);
       $our_missing = array_diff($their_whitelist, $our_whitelist);
       $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
+ 
       if (count($our_internal_extra) !== 0) {
          echo "\n \n What the Citation Bot has more than one copy of\n";
          print_r($our_internal_extra);
@@ -211,6 +212,12 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
          print_r($our_missing);
          $we_failed = TRUE;
       }
+      if ($our_white_list !== $our_whitelist_sorted) {
+         echo "\n \n What the Citation Bot has vales out of order\n";
+         print_r($our_whitelist_sorted);
+         $we_failed = TRUE;
+      }
+      
       $this->assertEquals(FALSE,$we_failed);
   }
 }
