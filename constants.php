@@ -47,7 +47,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints");
 
 // dontCap is am array of strings that should not be capitalized in their titlecase format; 
 // unCapped is their correct capitalization. Remember to enclose any word in spaces.
-// WARNING: order does matter and 'a' gets done after these
+// WARNING: order does matter and 'a' gets done after these are used.  "Los Angeles" =>"los Angeles" =>"Los Angeles"
 
 const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' its ',
                              ' then ',' else ',' when ', ' at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',
@@ -57,7 +57,7 @@ const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',
                              ' NYT ', ' PCR ', ' PNAS ', ' RNA ',  ' zu ' , ' des ', ' aus ', ' dem ', ' del ', ' dei ', 
                              ' di ', ' ed ', ' du ', ' de ', ' dans ', ' les ', ' e ', ' den ', ' die ', ' das ', ' ein ', 
                              ' eine ', ' einen ', ' NYC ', ' d\'une ', ' d\'un ', ' el ',  ' los ', ' las ', ' as ',
-                             ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' för ', ' da ');
+                             ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' för ', ' da ', ' Los Angeles' );
 const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Its ',
                              ' Then ',' Else ',' When ', ' At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',
                              ' To ',' Into ',' With ',' U S A ',' Usa ',' Y ', ' Für ', ' De ', ' Zur ', ' Der ', ' Und ',
@@ -66,7 +66,7 @@ const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',
                              ' Nyt ', ' Pcr ', ' Pnas ', ' Rna ',  ' Zu ' , ' Des ', ' Aus ', ' Dem ', ' Del ', ' Dei ', 
                              ' Di ', ' Ed ', ' Du ', ' De ', ' Dans ', ' Les ', ' E ', ' Den ', ' Die ', ' Das ', ' Ein ', 
                              ' Eine ', ' Einen ', ' Nyc ', ' D\'une ', ' D\'un ', ' El ',  ' Los ', ' Las ', ' As ',
-                             ' Nor ',' At ', ' Up ', ' Ny ', ' N y ', ' För ', ' Da ');
+                             ' Nor ',' At ', ' Up ', ' Ny ', ' N y ', ' För ', ' Da ', ' los Angeles' );
 
 const JOURNAL_ACRONYMS = array(
 ' ACM SIGPLAN Notices ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ',
