@@ -175,7 +175,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       
       $our_original_whitelist = PARAMETER_LIST;
       $our_whitelist = array_unique($our_original_whitelist);
-      $our_whitelist_sorted = sort($our_original_whitelist);
+      $our_whitelist_sorted = sort($our_whitelist);
       $context = stream_context_create(array(
         'http' => array('ignore_errors' => true),
       ));
@@ -198,22 +198,22 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
  
       if (count($our_internal_extra) !== 0) {
-         echo "\n \n What the Citation Bot has more than one copy of\n";
+         echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
          print_r($our_internal_extra);
          $we_failed = TRUE;
       }
       if (count($our_extra) !== 0) {
-         echo "\n \n What the Citation Bot has that Wikipedia does not\n";
+         echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
          print_r($our_extra);
          $we_failed = TRUE;
       }
       if (count($our_missing) !== 0) {
-         echo "\n \n What Wikipedia has that the Citation Bot does not\n";
+         echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
          print_r($our_missing);
          $we_failed = TRUE;
       }
       if ($our_whitelist !== $our_whitelist_sorted) {
-         echo "\n \n What the Citation Bot has vales out of order\n";
+         echo "\n \n testWhiteList:  Citation Bot has vales out of order.  Expected order:\n";
          print_r($our_whitelist_sorted);
          $we_failed = TRUE;
       }
