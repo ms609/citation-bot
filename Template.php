@@ -2473,6 +2473,11 @@ final class Template {
             break;
           case 'title':
             $p->val = trim($p->val);
+            if(mb_substr($p->val, 0, 1) === '\"'   &&
+               mb_substr($p->val, -1)   === '\"'   &&
+               mb_substr_count($p->val,'\"') == 1} {
+               $p->val = mb_substr($p->val, 1, -1);   // Remove quotes -- if only one set that wraps entire title
+            }
             if(mb_substr($p->val, 0, 2) !== "[["   ||   // Completely remove partial links
                mb_substr($p->val, -2) !== "]]"     ||
                mb_substr_count($p->val,'[[') !== 1 ||
