@@ -14,6 +14,8 @@ require_once('WikipediaBot.php');
 class Page {
 
   protected $text, $title, $modifications;
+  protected $read_at, $api, $namespace, $touched, $start_text;
+  public $lastrevid;
 
   function __construct() {
     $this->api = new WikipediaBot();
