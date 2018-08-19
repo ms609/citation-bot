@@ -2483,8 +2483,8 @@ final class Template {
                mb_substr_count($p->val, "'") == 2) {
                $p->val = mb_substr($p->val, 1, -1);   // Remove quotes -- if only one set that wraps entire title
             }
-            if (mb_substr($p->val, -1) === "." || mb_substr($p->val, -1) === "," ) {
-              $p->val = mb_substr($p->val, 0, -1);  // Remove trailing period or comma
+            if (mb_substr($p->val, -1) === "," ) {
+              $p->val = mb_substr($p->val, 0, -1);  // Remove trailing comma
             }
             if(mb_substr($p->val, 0, 2) !== "[["   ||   // Completely remove partial links
                mb_substr($p->val, -2) !== "]]"     ||
@@ -2520,8 +2520,8 @@ final class Template {
             $this->forget('publisher');
             $this->forget('location');
           case 'periodical': 
-            if (mb_substr($p->val, -1) === "." || mb_substr($p->val, -1) === "," ) {
-              $p->val = mb_substr($p->val, 0, -1);  // Remove trailing period or comma
+            if (mb_substr($p->val, -1) === "," ) {
+              $p->val = mb_substr($p->val, 0, -1);  // Remove comma
             }
             if (substr(strtolower($p->val), 0, 7) === 'http://' || substr(strtolower($p->val), 0, 8) === 'https://') {
                if ($this->blank('url')) $this->rename($pmatch[1], 'url');
