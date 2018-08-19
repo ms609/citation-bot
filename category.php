@@ -3,9 +3,7 @@
 
 error_reporting(E_ALL); // This API is hard to debug.  We need all the information we can get!!!
 
-if (php_sapi_name() !== 'cli') {
-  echo '<pre id="botOutput">';
-}
+if (php_sapi_name() !== 'cli') echo '<pre id="botOutput">';
 
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
@@ -60,13 +58,10 @@ if ($category) {
   }
 
   echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
+  if (php_sapi_name() !== 'cli')  echo '</pre>';
+  exit(0);
 } else {
   echo ("\n You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line. \n ");
+  if (php_sapi_name() !== 'cli')  echo '</pre>';
+  exit(2);
 }
-
-if (php_sapi_name() !== 'cli') {
-  echo '</pre>';
-} else {
-  exit(0);
-}
-
