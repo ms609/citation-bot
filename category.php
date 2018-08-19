@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-error_reporting(E_ALL); // This API is hard to debug.  We need all the information we can get!!!
+error_reporting(E_ALL^E_NOTICE);
 
 if (php_sapi_name() !== 'cli') echo '<pre id="botOutput">';
 
