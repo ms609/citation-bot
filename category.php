@@ -54,8 +54,9 @@ if ($category) {
       echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
     }
   }
-
-  exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
+  echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
+  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
+html_echo('</pre>','\n');
+exit(0);
