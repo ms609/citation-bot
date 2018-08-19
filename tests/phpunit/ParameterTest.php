@@ -216,10 +216,11 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       }
       if ($our_whitelist !== $our_whitelist_sorted) {
          echo "\n \n testWhiteList:  Citation Bot has vales out of order.  Expected order:\n";
-         print_r($our_whitelist_sorted);
+         foreach($our_whitelist_sorted as $value) {
+           echo "'" . $value . "', ";
+         }
          $we_failed = TRUE;
       }
-      
       $this->assertEquals(FALSE,$we_failed);
   }
 }
