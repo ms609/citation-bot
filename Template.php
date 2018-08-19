@@ -236,13 +236,27 @@ final class Template {
         }
       }
       // "Work is a troublesome parameter
-      if ($this->get('work') !== NULL) { // We want to catch {{Cite|work=}} also, so do not use $this->has('work')
+      if ($this->has('work')) {
         if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
             ($this->has('title') && (strcasecmp($this->get('work'), $this->get('title')) === 0))     ||
             ($this->has('series') && (strcasecmp($this->get('work'), $this->get('series')) === 0))   || 
-            ($this->has('chapter') && (strcasecmp($this->get('work'), $this->get('chapter')) === 0)) ||
-            ($this->blank('work'))  ){
+            ($this->has('chapter') && (strcasecmp($this->get('work'), $this->get('chapter')) === 0))) {
            $this->forget('work');
+        }
+        if ($this->get('work') !== NULL && $this->blank('work')) { // Have work=, but it is blank
+          if ($this->has('journal') ||
+              $this->has('newspaper') ||
+              $this->has('magazine') ||
+              $this->has('periodical') ||
+              $this->has('website')) {
+            $this->forget('work'); // Delete if we have alias
+          } elseif ($this->wikiname() === 'cite web') {
+            $this->rename('work', 'website');
+          } elseif ($this->wikiname() === 'cite journal') {
+            $this->rename('work', 'journal');
+          } elseif ($this->wikiname() === 'cite magazine') {
+            $this->rename('work', 'magazine');
+          }
         }
       }
       $this->correct_param_spelling();
