@@ -970,6 +970,12 @@ ER -  }}';
      $this->assertNull($expanded->get('publisher'));  
  }
     
+ public function testRemoveQuotes() {
+     $text = '{{cite journal|title="Strategic Acupuncture"}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($expanded->get('title','Strategic Acupuncture'));  
+ }
+    
  public function testTrimResearchGateETC() {
      $want = 'https://www.researchgate.net/publication/320041870';
      $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870}}';
