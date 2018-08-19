@@ -1,7 +1,12 @@
 #!/usr/bin/php
 <?php
 
-error_reporting(E_ALL^E_NOTICE);
+error_reporting(E_ALL); // This API is hard to debug.  We need all the information we can get!!!
+
+if (php_sapi_name() !== 'cli') {
+  echo '<pre id="botOutput">';
+}
+
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
 foreach ($argv as $arg) {
