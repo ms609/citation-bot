@@ -2,8 +2,7 @@
 <?php
 
 error_reporting(E_ALL^E_NOTICE);
-
-if (php_sapi_name() !== 'cli') echo '<pre>';
+html_echo('<br><pre>','\n');
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
 foreach ($argv as $arg) {
