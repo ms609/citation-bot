@@ -566,8 +566,8 @@ final class Template {
         return FALSE;
         
       case 'class':
-        if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === FALSE ) { // Not already in erprint number
-          if ($this->wikiname === 'citation' || $this->wikiname === 'cite arxiv') {
+        if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === FALSE ) { // Old eprints include class in the ID
+          if ($this->wikiname() === 'citation' || $this->wikiname() === 'cite arxiv') {  // Only relevent for cite arxiv
             return $this->add($param_name, sanitize_string($value));
           }
         }
