@@ -191,6 +191,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
                                 'inventorlink', 'inventorlink#', 'issue-date', 'fdate'); // Some are not valid, but people use them anyway
       $their_whitelist = array_merge($patent_whitelist,$their_whitelist);
       $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
+      $their_whitelist =  array_diff($their_whitelist, ["template doc demo"]);
 
       $our_extra = array_diff($our_whitelist, $their_whitelist);
       $our_missing = array_diff($their_whitelist, $our_whitelist);
