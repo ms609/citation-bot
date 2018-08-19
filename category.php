@@ -48,6 +48,7 @@ if ($category) {
         , ".");
       } else {
          echo "\n # Failed. \n";
+         exit(1);
       }
     } else {
       echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
