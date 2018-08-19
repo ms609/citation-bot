@@ -175,6 +175,9 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       
       $our_original_whitelist = PARAMETER_LIST;
       $our_whitelist = array_unique($our_original_whitelist);
+      $our_whitelist_sorted = $our_whitelist;
+      sort($our_whitelist_sorted);
+
       $context = stream_context_create(array(
         'http' => array('ignore_errors' => true),
       ));
@@ -211,11 +214,9 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
          print_r($our_missing);
          $we_failed = TRUE;
       }
-      if ($our_whitelist !== sort($our_whitelist)) {
+      if ($our_whitelist !== $our_whitelist_sorted) {
          echo "\n \n testWhiteList:  Citation Bot has vales out of order.  Expected order:\n";
-         print_r(sort($our_whitelist));
-         echo "\n \n testWhiteList:  Citation Bot has vales out of order.  Given order:\n";
-         print_r($our_whitelist);
+         print_r($our_whitelist_sorted);
          $we_failed = TRUE;
       }
       
