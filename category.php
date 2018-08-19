@@ -4,7 +4,6 @@
 error_reporting(E_ALL^E_NOTICE);
 
 if (php_sapi_name() !== 'cli') echo '<pre>';
-
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
 foreach ($argv as $arg) {
@@ -45,7 +44,7 @@ if ($category) {
       safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
-        " </pre><br>\n<small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
+        " </pre><br><small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br><pre>"
         , ".");
