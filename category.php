@@ -44,7 +44,7 @@ if ($category) {
         html_echo(
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . $api->get_last_revision($page_title) . ">last edit</a></small>\n\n<br>"
+        . $api->get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br>"
         , "\n ". $page_title . " done \n");
       } else {
          echo "\n # Failed. \n";
