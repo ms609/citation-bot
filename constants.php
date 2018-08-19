@@ -57,7 +57,7 @@ const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',
                              ' NYT ', ' PCR ', ' PNAS ', ' RNA ',  ' zu ' , ' des ', ' aus ', ' dem ', ' del ', ' dei ', 
                              ' di ', ' ed ', ' du ', ' de ', ' dans ', ' les ', ' e ', ' den ', ' die ', ' das ', ' ein ', 
                              ' eine ', ' einen ', ' NYC ', ' d\'une ', ' d\'un ', ' el ',  ' los ', ' las ', ' as ',
-                             ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' för ', ' da ', ' Los Angeles');
+                             ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' för ', ' da ', ' Los Angeles ');
 const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Its ',
                              ' Then ',' Else ',' When ', ' At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',
                              ' To ',' Into ',' With ',' U S A ',' Usa ',' Y ', ' Für ', ' De ', ' Zur ', ' Der ', ' Und ',
