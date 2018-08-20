@@ -2591,8 +2591,8 @@ final class Template {
             }      
             break;
           case 'pmc':
-            if (preg_match("~(PMC|pmc)([0-9]+)$~", $p->val, $matches)) {
-               $p->val = $matches[2];
+            if (preg_match("~pmc(\d+)$~i", $p->val, $matches)) {
+               $p->val = $matches[1];
             }
             break;
         }
