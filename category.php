@@ -2,7 +2,6 @@
 <?php
 
 error_reporting(E_ALL^E_NOTICE);
-html_echo('<br><pre>','\n');
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
 foreach ($argv as $arg) {
@@ -26,7 +25,7 @@ if (isset($_GET["slow"]) || isset($argument["slow"])) {
 }
 
 require_once __DIR__ . '/expandFns.php';
-
+html_echo('<br><pre>','\n');
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if ($category) {
   $attempts = 0;
