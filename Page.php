@@ -102,10 +102,10 @@ class Page {
     }
 
     // EMPTY URLS //
-    $this->text = preg_replace_callback(
+    $text = preg_replace_callback(
                       "~(<ref[^>]*?>)(\s*)(https?:\/\/[^ \>\}\{\]\[]+)(\s*)(<\s*?\/\s*?ref>)~",
                       function($matches) {return $matches[1] . '{{cite web|url=' . $matches[3] . '|CITATION_BOT_URL=' . base64_encode($matches[3]) . '}}' . $matches[5] ;},
-                      $this->text
+                      $text
                       );
     // TEMPLATES //
     $templates = $this->extract_object('Template');
