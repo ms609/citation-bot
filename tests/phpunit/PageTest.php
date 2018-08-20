@@ -78,5 +78,10 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $page = $this->process_page('daf sdda <ref name="bob">http://doi.org/10.1007/s12668-011-0022-5< / ref> dfadsf <ref >  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/ </ref> dsfadfsd');
       $this->assertEquals('Not sure what to put here', $page->parsed_text());
   }
-  
+  public function testUrlReferencesThatFail() {
+      $text_in  = 'daf sdda <ref name="bob">http://this.fails/nothing< / ref> dfadsf <ref >  http://this.fails/nothing </ref> dsfadfsd';
+      $text_out = 'daf sdda <ref name="bob">http://this.fails/nothing< / ref> dfadsf<ref >http://this.fails/nothing</ref> dsfadfsd';
+      $page = $this->process_page($text_in);
+      $this->assertEquals($text_out, $page->parsed_text()); // It removes spaces around URLs
+  }
 }
