@@ -1662,7 +1662,7 @@ final class Template {
 
   protected function use_sici() {
     if (preg_match(SICI_REGEXP, urldecode($this->parsed_text()), $sici)) {
-      quietly(report_action, "Extracting information from SICI");
+      quietly('report_action', "Extracting information from SICI");
       $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       $this->add_if_new("year", $sici[2]);
