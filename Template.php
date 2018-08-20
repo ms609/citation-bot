@@ -90,7 +90,7 @@ final class Template {
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->tidy();
-        if (strpos($this->get('url') , "books\.google\.") && $this->expand_by_google_books()) { // Could be any countries google
+        if (preg_match($this->get('url') "~^https?://books\.google\.~") && $this->expand_by_google_books()) { // Could be any countries google
           report_action("Expanded from Google Books API");
           $this->name = 'Cite book'; // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
         }
