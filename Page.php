@@ -88,9 +88,8 @@ class Page {
       . "document.title=\"Citation bot: '"
       . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
       "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
-    $text = $this->text;
     $this->modifications = array();
-    if (!$text) {
+    if (!$this->text) {
       report_warning("No text retrieved.\n");
       return FALSE;
     }
@@ -119,7 +118,7 @@ class Page {
         }
       }
     }
-    $text = $this->replace_object($templates);
+    $this->replace_object($templates);
 
     $this->replace_object($comments);
     $this->replace_object($nowiki);
