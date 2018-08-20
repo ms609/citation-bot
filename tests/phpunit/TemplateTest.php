@@ -214,9 +214,11 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Pure Evil', $expanded->get('title-link'));
     $expanded = $this->process_citation("{{Cite journal|title=[[Dark]] Lord of the [[Sith (Star Wars)|Sith]] [[Pure Evil]]}}");
     $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
-  
+    $expanded = $this->process_citation("{{Cite journal|title=Dark Lord of the [[Sith (Star Wars)|Sith]] Pure Evil}}");
+    $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
+    $this->assertEquals('Sith (Star Wars)', $expanded->get('title-link'));
   }
-      
+  
   public function testJournalCapitalization() {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
     $this->assertEquals('Molecular and Cellular Biology', $expanded->get('journal'));
@@ -505,7 +507,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('The ATLAS Collaboration', $expanded->first_author());
-    $this->assertEquals('hep-ex', $expanded->get('class'));
+    $this->assertNull($expanded->get('class'));
     
     // Same paper, but CrossRef records full list of authors instead of collaboration name
     $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
@@ -968,6 +970,12 @@ ER -  }}';
      $text = '{{cite journal|jstor=1148172|title=Strategic Acupuncture|work=Foreign Policy|issue=Winter 1980|pages=44–61|publisher=Washingtonpost.Newsweek Interactive, LLC|year=1980}}';
      $expanded = $this->process_citation($text);
      $this->assertNull($expanded->get('publisher'));  
+ }
+    
+ public function testRemoveQuotes() {
+     $text = '{{cite journal|title="Strategic Acupuncture"}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('Strategic Acupuncture', $expanded->get('title'));  
  }
     
  public function testTrimResearchGateETC() {

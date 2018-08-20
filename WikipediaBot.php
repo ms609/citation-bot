@@ -139,7 +139,10 @@ class WikipediaBot {
             'titles' => $page
           ));
     
-    if (!$response) return FALSE;
+    if (!$response) {
+      trigger_error("Write request failed", E_USER_WARNING);
+      return FALSE;
+    }
     if (isset($response->warnings)) {
       if (isset($response->warnings->prop)) {
         trigger_error((string) $response->warnings->prop->{'*'}, E_USER_WARNING);

@@ -566,8 +566,10 @@ final class Template {
         return FALSE;
         
       case 'class':
-        if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE ) {
-          return $this->add($param_name, sanitize_string($value));
+        if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === FALSE ) { // Old eprints include class in the ID
+          if ($this->wikiname() === 'citation' || $this->wikiname() === 'cite arxiv') {  // Only relevent for cite arxiv
+            return $this->add($param_name, sanitize_string($value));
+          }
         }
         return FALSE;
         
@@ -1755,6 +1757,11 @@ final class Template {
              return TRUE;
           }
         }
+        if (preg_match("~^https?://d?x?\.?doi\.org/*~", $oa_url, $match)) {
+          if ($this->has('doi')) {
+             return TRUE;
+          }
+        }
 
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
@@ -2473,10 +2480,21 @@ final class Template {
             break;
           case 'title':
             $p->val = trim($p->val);
-            if(mb_substr($p->val, 0, 2) !== "[["   ||   // Completely remove partial links
-               mb_substr($p->val, -2) !== "]]"     ||
-               mb_substr_count($p->val,'[[') !== 1 ||
-               mb_substr_count($p->val,']]') !== 1) {
+            if(mb_substr($p->val, 0, 1) === '"'   &&
+               mb_substr($p->val, -1)   === '"'   &&
+               mb_substr_count($p->val, '"') == 2) {
+               $p->val = mb_substr($p->val, 1, -1);   // Remove quotes -- if only one set that wraps entire title
+            }
+            if(mb_substr($p->val, 0, 1) === "'"   &&
+               mb_substr($p->val, -1)   === "'"   &&
+               mb_substr_count($p->val, "'") == 2) {
+               $p->val = mb_substr($p->val, 1, -1);   // Remove quotes -- if only one set that wraps entire title
+            }
+            if (mb_substr($p->val, -1) === "," ) {
+              $p->val = mb_substr($p->val, 0, -1);  // Remove trailing comma
+            }
+            if( mb_substr_count($p->val,'[[') !== 1 ||  // Completely remove multiple wikilinks
+                mb_substr_count($p->val,']]') !== 1) {
                $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
                       function($matches) {return $matches[2];},
@@ -2487,25 +2505,30 @@ final class Template {
                       function($matches) {return $matches[4];},
                       $p->val
                       );
-            } elseif (mb_substr($p->val, 0, 2) === "[["   &&  // Convert full wikilinks to title-link
-               mb_substr($p->val, -2) === "]]"            &&
-               mb_substr_count($p->val,'[[') === 1        &&
-               mb_substr_count($p->val,']]') === 1) {
-               $pipe = mb_strpos($p->val, '|');
-               if ($pipe === FALSE) {
-                  $tval1 = mb_substr($p->val, 2, -2);
-                  $tval2 = $tval1;
-               } else {
-                  $tval1 = mb_substr($p->val, 2, $pipe-2);
-                  $tval2 = mb_substr($p->val, $pipe+1, -2);
+               $p->val= preg_replace("~\[\[~", "", $p->val); // Remove any extra [[ or ]] that should not be there
+               $p->val= preg_replace("~\]\]~", "", $p->val);
+            } else { // Convert a single link to a title-link
+               if (preg_match('~(\[\[)([^|]+?)(\]\])~', $p->val, $matches)) { // Convert [[X]] wikilinks into X
+                 $this->add_if_new('title-link', $matches[2]);
+                 $p->val= preg_replace("~\[\[~", "", $p->val);
+                 $p->val= preg_replace("~\]\]~", "", $p->val);
+               } elseif (preg_match('~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~', $p->val, $matches)) { // Convert [[Y|X]] wikilinks into X
+                 $this->add_if_new('title-link', $matches[2]);
+                 $p->val = preg_replace_callback(
+                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   
+                      function($matches) {return $matches[4];},
+                      $p->val
+                      );
                }
-               $p->val = $tval2;
-               $this->add_if_new('title-link', $tval1);
             }
             break;
           case 'journal': 
             $this->forget('publisher');
+            $this->forget('location');
           case 'periodical': 
+            if (mb_substr($p->val, -1) === "," ) {
+              $p->val = mb_substr($p->val, 0, -1);  // Remove comma
+            }
             if (substr(strtolower($p->val), 0, 7) === 'http://' || substr(strtolower($p->val), 0, 8) === 'https://') {
                if ($this->blank('url')) $this->rename($pmatch[1], 'url');
                break;
