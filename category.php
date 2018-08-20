@@ -23,9 +23,11 @@ $SLOW_MODE = FALSE;
 if (isset($_GET["slow"]) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
 }
-
+if (php_sapi_name() !== "cli") {
+    define("HTML_OUTPUT", TRUE);// Not in cli-mode
+}
 require_once __DIR__ . '/expandFns.php';
-
+html_echo('<br><pre>','\n');
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if ($category) {
   $attempts = 0;
@@ -42,9 +44,9 @@ if ($category) {
       safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
-        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
+        " </pre><br><small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . $api->get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br>"
+        . $api->get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br><pre>"
         , ".");
       } else {
          echo "\n # Failed. \n";
@@ -53,8 +55,9 @@ if ($category) {
       echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
     }
   }
-
-  exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
+  echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
+  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
+html_echo('</pre>','\n');
+exit(0);
