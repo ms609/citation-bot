@@ -74,4 +74,9 @@ class PageTest extends PHPUnit\Framework\TestCase {
     }
   }
   
+  public function testUrlReferences() {
+      $page = $this->process_page('daf sdda <ref name="bob">http://doi.org/10.1007/s12668-011-0022-5< / ref> dfadsf <ref >  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/ </ref> dsfadfsd');
+      $this->assertEquals('Not sure what to put here', $page->parsed_text());
+  }
+  
 }
