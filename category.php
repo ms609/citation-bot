@@ -23,7 +23,9 @@ $SLOW_MODE = FALSE;
 if (isset($_GET["slow"]) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
 }
-
+if (php_sapi_name() !== "cli") {
+    define("HTML_OUTPUT", TRUE);// Not in cli-mode
+}
 require_once __DIR__ . '/expandFns.php';
 html_echo('<br><pre>','\n');
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
