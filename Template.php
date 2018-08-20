@@ -1757,7 +1757,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match("~https?://d?x?/.?doi.org/*~", $oa_url, $match)) {
+        if (preg_match("~^https?://d?x?\.?doi\.org/*~", $oa_url, $match)) {
           if ($this->has('doi')) {
              return TRUE;
           }
