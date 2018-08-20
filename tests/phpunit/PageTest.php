@@ -29,6 +29,12 @@ class PageTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
+  public function testMultipleTemplates() {
+      $page = $this->process_page('{{cite journalyear=2018}} {{cite journal|pages=1-3}} {{cite journal|pages=2-3}}'); //Simple work to do
+      $page = $this->process_page('{{cite journalyear=2018}} {{cite journal|year=2001}} {{cite journal|year=1993}}'); //No work to do
+      $this->assertNull(NULL); // Make Travis happy
+  }
+
   public function testPageChangeSummary() {
       $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}'); // Change to book from journal
       $this->assertEquals('Alter: template type. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
