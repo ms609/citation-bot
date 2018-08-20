@@ -218,7 +218,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
     $this->assertEquals('Sith (Star Wars)', $expanded->get('title-link'));
   }
-      
+  
   public function testJournalCapitalization() {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
     $this->assertEquals('Molecular and Cellular Biology', $expanded->get('journal'));
