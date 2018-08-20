@@ -79,6 +79,6 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $page = $this->process_page('  ');
       $page = $this->process_page('  move along, nothing to see here ');
       $page = $this->process_page('  move along, nothing to see here {{}} ');
-      $this-assertNULL(Null);
+      $this-assertNull(NULL);
   }
 }
