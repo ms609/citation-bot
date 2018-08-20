@@ -114,8 +114,10 @@ class Page {
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
           $this->modifications[$key] = $template_mods[$key];
-        } else {
+        } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
+        } else {
+          $this->modifications[$key] = $this->modifications[$key] ||  $template_mods[$key]; // Boolean like mod_dashes
         }
       }
     }
