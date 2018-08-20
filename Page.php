@@ -103,8 +103,8 @@ class Page {
 
     // EMPTY URLS //
     $this->text = preg_replace_callback(
-                      "~(<ref[^>]*?>)(\s*?)(http(s)?:\/\/[^ \>]+?)(\s*?)(<\s*?\/\s*?ref>)~",
-                      function($matches) {return $matches[1] . '{{cite web|url=' . $matches[3] . '|CITATION_BOT_URL=' . base64_encode($matches[3]) . '}} . $matches[5] ;},
+                      "~(<ref[^>]*?>)(\s*?)(http(s)?:\/\/[^ \>\}\{\]\[+?)(\s*?)(<\s*?\/\s*?ref>)~",
+                      function($matches) {return $matches[1] . '{{cite web|url=' . $matches[3] . '|CITATION_BOT_URL=' . base64_encode($matches[3]) . '}}' . $matches[5] ;},
                       $this->text
                       );
     // TEMPLATES //
