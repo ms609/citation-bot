@@ -119,13 +119,6 @@ class Page {
         if (!isset($this->modifications[$key])) {
           $this->modifications[$key] = $template_mods[$key];
         } else {
-          if (!is_array($this->modifications[$key])) {
-            echo "\n\n KURT \n" ;
-            print_r($key);
-            echo "\n\n KURT \n" ;
-            print_r($this->modifications[$key]);
-            echo "\n\n KURT \n" ;
-          }
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         }
       }
