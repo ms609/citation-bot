@@ -505,7 +505,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('The ATLAS Collaboration', $expanded->first_author());
-    $this->assertEquals('hep-ex', $expanded->get('class'));
+    $this->assertNull($expanded->get('class'));
     
     // Same paper, but CrossRef records full list of authors instead of collaboration name
     $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
