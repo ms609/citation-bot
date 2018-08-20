@@ -101,10 +101,10 @@ class Page {
       return FALSE;
     }
 
-    // EMPTY URLS //
+    // EMPTY URLS Converted to Templates //
     $text = preg_replace_callback(
                       "~(<ref[^>]*?>)(\s*)(https?:\/\/[^ \>\}\{\]\[]+)(\s*)(<\s*?\/\s*?ref>)~",
-                      function($matches) {return $matches[1] . '{{cite web|url=' . $matches[3] . '|CITATION_BOT_URL=' . base64_encode($matches[3]) . '}}' . $matches[5] ;},
+                      function($matches) {return $matches[1] . '{{cite web|url=' . $matches[3] . '|CITATION_BOT_PLACEHOLDER_BARE_URL=' . base64_encode($matches[3]) . '}}' . $matches[5] ;},
                       $text
                       );
     // TEMPLATES //
