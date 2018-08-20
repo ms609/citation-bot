@@ -57,7 +57,7 @@ final class Template {
   // Re-assemble parsed template into string
   public function parsed_text() {
     if ($this->has('CITATION_BOT_URL')) {
-      if ($this->blank('title') {
+      if ($this->blank('title')) {
         return base64_decode($this->get('CITATION_BOT_URL'));
       } else {
         $this->forget('CITATION_BOT_URL');
