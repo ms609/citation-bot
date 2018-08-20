@@ -1757,6 +1757,11 @@ final class Template {
              return TRUE;
           }
         }
+        if (preg_match("~https?://d?x?/.?doi.org/*~", $oa_url, $match)) {
+          if ($this->has('doi')) {
+             return TRUE;
+          }
+        }
 
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
