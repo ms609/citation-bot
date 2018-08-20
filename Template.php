@@ -2996,7 +2996,7 @@ final class Template {
         $ret['modifications'] = array_keys($new);
       }
     }
-    $ret['dashes'] = array($this->mod_dashes);
+    $ret['dashes'] = $this->mod_dashes;
     if (in_array($type, array_keys($ret))) return $ret[$type];
     return $ret;
   }
