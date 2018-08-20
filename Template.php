@@ -2594,6 +2594,11 @@ final class Template {
                 $p->val = 'https://www.academia.edu/' . $matches[1];
             }      
             break;
+          case 'pmc':
+            if (preg_match("~pmc(\d+)$~i", $p->val, $matches)) {
+               $p->val = $matches[1];
+            }
+            break;
         }
       }
     }
