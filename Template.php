@@ -2503,7 +2503,7 @@ final class Template {
                $p->val= preg_replace("~\[\[~", "", $p->val); // Remove any extra [[ or ]] that should not be there
                $p->val= preg_replace("~\]\]~", "", $p->val);
             } else { // Convert a single link to a title-link
-               if (preg_match('~(\[\[)([^|]+?)(\]\])~', $p->val, $matches) { // Convert [[X]] wikilinks into X
+               if (preg_match('~(\[\[)([^|]+?)(\]\])~', $p->val, $matches)) { // Convert [[X]] wikilinks into X
                  $this->add_if_new('title-link', $matches[2]);
                  $p->val= preg_replace("~\[\[~", "", $p->val);
                  $p->val= preg_replace("~\]\]~", "", $p->val);
