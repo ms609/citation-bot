@@ -27,7 +27,16 @@ if (php_sapi_name() !== "cli") {
     define("HTML_OUTPUT", TRUE);// Not in cli-mode
 }
 require_once __DIR__ . '/expandFns.php';
-html_echo('<br><pre>', "\n");
+if (HTML_OUTPUT) {?>
+<html>
+  <body>
+  <head>
+  <title>Citation bot: Category mode</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="css/results.css" />
+  </head>
+  <body>
+<?} else echo "\n";
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if ($category) {
   $attempts = 0;
@@ -59,5 +68,5 @@ if ($category) {
 } else {
   echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
-html_echo('</pre>','\n');
+html_echo('</pre></body></html>','\n');
 exit(0);
