@@ -169,4 +169,61 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($parameter->val, "9 August 2006 <!--DASHBot-->");
     $this->assertEquals($parameter->post, "");
   }
+    
+  public function testWhiteList() {
+      $we_failed = FALSE;
+      
+      $our_original_whitelist = PARAMETER_LIST;
+      $our_whitelist = array_unique($our_original_whitelist);
+      $our_whitelist_sorted = $our_whitelist;
+      sort($our_whitelist_sorted);
+
+      $context = stream_context_create(array(
+        'http' => array('ignore_errors' => true),
+      ));
+      $wikipedia_response = @file_get_contents('https://en.wikipedia.org/w/index.php?title=Module:Citation/CS1/Whitelist&action=raw', FALSE, $context);
+      preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
+      $their_whitelist = $matches[1];
+      $patent_whitelist = array('inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
+                                'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
+                                'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
+                                'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
+                                'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
+                                'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
+                                'inventorlink', 'inventorlink#', 'issue-date', 'fdate'); // Some are not valid, but people use them anyway
+      $their_whitelist = array_merge($patent_whitelist,$their_whitelist);
+      $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
+      $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
+
+      $our_extra = array_diff($our_whitelist, $their_whitelist);
+      $our_missing = array_diff($their_whitelist, $our_whitelist);
+      $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
+ 
+      if (count($our_internal_extra) !== 0) {
+         echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
+         print_r($our_internal_extra);
+         $we_failed = TRUE;
+      }
+      if (count($our_extra) !== 0) {
+         echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
+         print_r($our_extra);
+         $we_failed = TRUE;
+      }
+      if (count($our_missing) !== 0) {
+         echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
+         print_r($our_missing);
+         $we_failed = TRUE;
+      }
+      if ($our_whitelist !== $our_whitelist_sorted) {
+         echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
+         foreach($our_whitelist_sorted as $value) {
+           echo "'" . $value . "', ";
+         }
+         $we_failed = TRUE;
+      }
+      $this->assertEquals(FALSE,$we_failed);
+  }
 }
+
+
+
