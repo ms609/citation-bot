@@ -14,6 +14,8 @@ require_once('WikipediaBot.php');
 class Page {
 
   protected $text, $title, $modifications;
+  protected $read_at, $api, $namespace, $touched, $start_text;
+  public $lastrevid;
 
   function __construct() {
     $this->api = new WikipediaBot();
@@ -86,9 +88,8 @@ class Page {
       . "document.title=\"Citation bot: '"
       . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
       "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
-    $text = $this->text;
     $this->modifications = array();
-    if (!$text) {
+    if (!$this->text) {
       report_warning("No text retrieved.\n");
       return FALSE;
     }
@@ -118,12 +119,14 @@ class Page {
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
           $this->modifications[$key] = $template_mods[$key];
-        } else {
+        } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
+        } else {
+          $this->modifications[$key] = $this->modifications[$key] ||  $template_mods[$key]; // Boolean like mod_dashes
         }
       }
     }
-    $text = $this->replace_object($templates);
+    $this->replace_object($templates);
 
     $this->replace_object($comments);
     $this->replace_object($nowiki);
@@ -172,10 +175,10 @@ class Page {
     return $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
 
-  public function write($api, $edit_summary = NULL) {
+  public function write($api, $edit_summary_end = NULL) {
     if ($this->allow_bots()) {
       return $api->write_page($this->title, $this->text,
-              $edit_summary ? $edit_summary : $this->edit_summary(),
+              $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at);
     } else {
       trigger_error("Can't write to " . htmlspecialchars($this->title) . 

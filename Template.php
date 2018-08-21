@@ -97,6 +97,10 @@ final class Template {
         $this->use_unnamed_params();
         $this->get_identifiers_from_url();
         $this->tidy();
+        if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any countries google
+          report_action("Expanded from Google Books API");
+          $this->name = 'Cite book'; // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
+        }
         if ($this->has('journal') || $this->has('bibcode') 
            || $this->has('jstor') || $this->has('doi') 
            || $this->has('pmid') || $this->has('pmc')
@@ -243,14 +247,27 @@ final class Template {
         }
       }
       // "Work is a troublesome parameter
-      if ($this->get('work') !== NULL) { // We want to catch {{Cite|work=}} also, so do not use $this->has('work')
-        if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
+      if ($this->has('work')) {
+         if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
             ($this->has('title') && (strcasecmp($this->get('work'), $this->get('title')) === 0))     ||
             ($this->has('series') && (strcasecmp($this->get('work'), $this->get('series')) === 0))   || 
-            ($this->has('chapter') && (strcasecmp($this->get('work'), $this->get('chapter')) === 0)) ||
-            ($this->blank('work'))  ){
+            ($this->has('chapter') && (strcasecmp($this->get('work'), $this->get('chapter')) === 0))) {
            $this->forget('work');
-        }
+         }
+      } elseif ($this->get('work') !== NULL && $this->blank('work')) { // Have work=, but it is blank
+         if ($this->has('journal') ||
+             $this->has('newspaper') ||
+             $this->has('magazine') ||
+             $this->has('periodical') ||
+             $this->has('website')) {
+              $this->forget('work'); // Delete if we have alias
+         } elseif ($this->wikiname() === 'cite web') {
+            $this->rename('work', 'website');
+         } elseif ($this->wikiname() === 'cite journal') {
+            $this->rename('work', 'journal');
+         } elseif ($this->wikiname() === 'cite magazine') {
+            $this->rename('work', 'magazine');
+         }
       }
       $this->correct_param_spelling();
       // $this->check_url(); // Function currently disabled
@@ -573,8 +590,10 @@ final class Template {
         return FALSE;
         
       case 'class':
-        if ($this->blank($param_name) && strpos($this->get('eprint'), '/') === FALSE ) {
-          return $this->add($param_name, sanitize_string($value));
+        if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === FALSE ) { // Old eprints include class in the ID
+          if ($this->wikiname() === 'citation' || $this->wikiname() === 'cite arxiv') {  // Only relevent for cite arxiv
+            return $this->add($param_name, sanitize_string($value));
+          }
         }
         return FALSE;
         
@@ -1762,6 +1781,11 @@ final class Template {
              return TRUE;
           }
         }
+        if (preg_match("~^https?://d?x?\.?doi\.org/*~", $oa_url, $match)) {
+          if ($this->has('doi')) {
+             return TRUE;
+          }
+        }
 
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
@@ -1840,7 +1864,7 @@ final class Template {
         }
         $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
         if ($string === FALSE) {
-            report_warning("Google APIs search failed for $url_token");
+            report_warning("Google API search failed for $url_token");
             return FALSE;
         }
         $result = @json_decode($string, FALSE);
@@ -1849,7 +1873,7 @@ final class Template {
           $url = 'https://books.google.com/books?id=' . $gid;
           // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
         } else {
-          report_warning("Google APIs search failed with $url_token");
+          report_warning("Google API search failed with $url_token");
           return FALSE;
         }
       }
@@ -2338,7 +2362,7 @@ final class Template {
   foreach ($this->param as $p) {
     ++$i;
 
-    if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '##', $p->param), $parameter_list)) {
+    if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list)) {
      
       report_modification("Unrecognised parameter " . echoable($p->param) . " ");
       $mistake_id = array_search($p->param, $mistake_keys);
@@ -2480,10 +2504,21 @@ final class Template {
             break;
           case 'title':
             $p->val = trim($p->val);
-            if(mb_substr($p->val, 0, 2) !== "[["   ||   // Completely remove partial links
-               mb_substr($p->val, -2) !== "]]"     ||
-               mb_substr_count($p->val,'[[') !== 1 ||
-               mb_substr_count($p->val,']]') !== 1) {
+            if(mb_substr($p->val, 0, 1) === '"'   &&
+               mb_substr($p->val, -1)   === '"'   &&
+               mb_substr_count($p->val, '"') == 2) {
+               $p->val = mb_substr($p->val, 1, -1);   // Remove quotes -- if only one set that wraps entire title
+            }
+            if(mb_substr($p->val, 0, 1) === "'"   &&
+               mb_substr($p->val, -1)   === "'"   &&
+               mb_substr_count($p->val, "'") == 2) {
+               $p->val = mb_substr($p->val, 1, -1);   // Remove quotes -- if only one set that wraps entire title
+            }
+            if (mb_substr($p->val, -1) === "," ) {
+              $p->val = mb_substr($p->val, 0, -1);  // Remove trailing comma
+            }
+            if( mb_substr_count($p->val,'[[') !== 1 ||  // Completely remove multiple wikilinks
+                mb_substr_count($p->val,']]') !== 1) {
                $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
                       "~(\[\[)([^|]+?)(\]\])~",
                       function($matches) {return $matches[2];},
@@ -2494,25 +2529,30 @@ final class Template {
                       function($matches) {return $matches[4];},
                       $p->val
                       );
-            } elseif (mb_substr($p->val, 0, 2) === "[["   &&  // Convert full wikilinks to title-link
-               mb_substr($p->val, -2) === "]]"            &&
-               mb_substr_count($p->val,'[[') === 1        &&
-               mb_substr_count($p->val,']]') === 1) {
-               $pipe = mb_strpos($p->val, '|');
-               if ($pipe === FALSE) {
-                  $tval1 = mb_substr($p->val, 2, -2);
-                  $tval2 = $tval1;
-               } else {
-                  $tval1 = mb_substr($p->val, 2, $pipe-2);
-                  $tval2 = mb_substr($p->val, $pipe+1, -2);
+               $p->val= preg_replace("~\[\[~", "", $p->val); // Remove any extra [[ or ]] that should not be there
+               $p->val= preg_replace("~\]\]~", "", $p->val);
+            } else { // Convert a single link to a title-link
+               if (preg_match('~(\[\[)([^|]+?)(\]\])~', $p->val, $matches)) { // Convert [[X]] wikilinks into X
+                 $this->add_if_new('title-link', $matches[2]);
+                 $p->val= preg_replace("~\[\[~", "", $p->val);
+                 $p->val= preg_replace("~\]\]~", "", $p->val);
+               } elseif (preg_match('~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~', $p->val, $matches)) { // Convert [[Y|X]] wikilinks into X
+                 $this->add_if_new('title-link', $matches[2]);
+                 $p->val = preg_replace_callback(
+                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   
+                      function($matches) {return $matches[4];},
+                      $p->val
+                      );
                }
-               $p->val = $tval2;
-               $this->add_if_new('title-link', $tval1);
             }
             break;
           case 'journal': 
             $this->forget('publisher');
+            $this->forget('location');
           case 'periodical': 
+            if (mb_substr($p->val, -1) === "," ) {
+              $p->val = mb_substr($p->val, 0, -1);  // Remove comma
+            }
             if (substr(strtolower($p->val), 0, 7) === 'http://' || substr(strtolower($p->val), 0, 8) === 'https://') {
                if ($this->blank('url')) $this->rename($pmatch[1], 'url');
                break;
@@ -2577,6 +2617,11 @@ final class Template {
             } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $p->val, $matches)) {
                 $p->val = 'https://www.academia.edu/' . $matches[1];
             }      
+            break;
+          case 'pmc':
+            if (preg_match("~pmc(\d+)$~i", $p->val, $matches)) {
+               $p->val = $matches[1];
+            }
             break;
         }
       }

@@ -73,6 +73,13 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
     }
   }
+
+  public function testEmptyPage() {
+      $page = $this->process_page('');
+      $page = $this->process_page('  ');
+      $page = $this->process_page('  move along, nothing to see here ');
+      $page = $this->process_page('  move along, nothing to see here {{}} ');
+      $this->assertNull(NULL);
   
   public function testUrlReferences() {
       $page = $this->process_page('daf sdda <ref name="bob">http://doi.org/10.1007/s12668-011-0022-5< / ref> dfadsf <ref >  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/ </ref> dsfadfsd');

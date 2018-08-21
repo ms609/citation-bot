@@ -33,7 +33,7 @@ if (is_valid_user($user)) {
 
 $title = trim(ucfirst(strip_tags($_REQUEST["page"])));
 if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
-   echo "\n\n No page given.  Aborting. \n\n";
+   echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
    exit(0);
 }
 echo "\n\n Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
@@ -42,7 +42,7 @@ $api = new WikipediaBot();
 if ($my_page->get_text_from($_REQUEST["page"], $api)) {
   $text_expanded = $my_page->expand_text();
   if ($text_expanded && $ON) {
-    while (!$my_page->write($api) && $attempts < 2) {
+    while (!$my_page->write($api, $edit_summary_end) && $attempts < 2) {
       ++$attempts;
     }
     if ($attempts < 3 ) {
