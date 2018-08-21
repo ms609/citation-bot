@@ -1895,7 +1895,7 @@ final class Template {
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
           default:
-            report_forget(echoable($part));
+            if ($removed_redundant !==0) report_forget(echoable($part)); // http:// is counted as first parameter
             $removed_redundant++;
         }
       }
