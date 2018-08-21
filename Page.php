@@ -169,10 +169,10 @@ class Page {
     return $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
 
-  public function write($api, $edit_summary = NULL) {
+  public function write($api, $edit_summary_end = NULL) {
     if ($this->allow_bots()) {
       return $api->write_page($this->title, $this->text,
-              $edit_summary ? $edit_summary : $this->edit_summary(),
+              $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at);
     } else {
       trigger_error("Can't write to " . htmlspecialchars($this->title) . 

@@ -42,7 +42,7 @@ $api = new WikipediaBot();
 if ($my_page->get_text_from($_REQUEST["page"], $api)) {
   $text_expanded = $my_page->expand_text();
   if ($text_expanded && $ON) {
-    while (!$my_page->write($api) && $attempts < 2) {
+    while (!$my_page->write($api, $edit_summary_end) && $attempts < 2) {
       ++$attempts;
     }
     if ($attempts < 3 ) {
