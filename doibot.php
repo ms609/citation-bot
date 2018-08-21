@@ -6,34 +6,7 @@
 		<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
 		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
 		<title>Citation bot: Preparing to run</title>
-    <style>
-      header, footer {
-        font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
-        background-color: #eed; 
-        padding: 0.5em 1em;
-        margin: -9px;
-        text-align: center;
-        text-decoration: none;
-      }
-      
-      header {
-        border-bottom: 1px solid #335;
-      }
-      footer {
-        margin-top: 3em;
-        border-top: 1px solid #335;
-        box-shadow: 0 50vh 0 50vh #eed;
-      }
-      
-      header a, footer a { text-decoration: none; }
-      
-      span.warning    { color: red; }
-      span.added      { color: green; font-weight: bold;}
-      span.changed    { color: #4ea0de; font-weight: bold;}
-      span.subitem    { color: #666;}
-      span.boring     { color: #bbb;}
-      span.subsubitem { color: #999;}
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/results.css" />
 	</head>
 <body class="mediawiki ns-2 ltr">
   <header>

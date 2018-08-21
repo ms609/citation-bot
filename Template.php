@@ -798,8 +798,10 @@ final class Template {
         return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
         
       } elseif (extract_doi($url)[1]) {
-        
-        quietly('report_modification', "Recognized DOI in URL; dropping URL");
+        if (is_null($url_sent)) {
+          quietly('report_forget', "Recognized DOI in URL; dropping URL");
+          $this->forget('url');
+        }
         return $this->add_if_new('doi', extract_doi($url)[1]);
         
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
@@ -1149,20 +1151,29 @@ final class Template {
       } elseif ($this->has('doi') 
                 && preg_match(DOI_REGEXP, remove_comments($this->get('doi')), $doi)) {
         $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
-      } elseif ($this->has('title')) {
-        $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
-        if ($result->numFound == 0) return FALSE;
-        $record = $result->docs[0];
-        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
-        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
-        if (
+      } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
+        if ($this->has('eprint')) {
+          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
+        } elseif ($this->has('arxiv')) {
+          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
+        } else {
+          $result = (object) array("numFound" => 0);
+        }
+        if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+          $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
+          if ($result->numFound == 0) return FALSE;
+          $record = $result->docs[0];
+          $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
+          $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
+          if (
              (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
                 ? (strlen($inTitle) != strlen($dbTitle)
                   || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
                 : levenshtein($inTitle, $dbTitle) > 3
             ) {
-          report_info("Similar title not found in database");
-          return FALSE;
+            report_info("Similar title not found in database");
+            return FALSE;
+          }
         }
       } else {
         $result = (object) array("numFound" => 0);
@@ -2883,7 +2894,7 @@ final class Template {
   protected function lacks($par) {return !$this->has($par);}
 
   protected function add($par, $val) {
-    report_add("Adding $par" .tag());
+    report_add("Adding $par: $val" .tag());
     return $this->set($par, $val);
   }
   
@@ -3020,6 +3031,7 @@ final class Template {
        }
        $sum = ((10-$sum%10)%10) ;
        $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
+       quietly('report_modification', "Converted ISBN10 to ISBN13");
        return $isbn13;
   }
 }
