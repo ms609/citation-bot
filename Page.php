@@ -21,7 +21,8 @@ class Page {
     $this->api = new WikipediaBot();
   }
     
-    $details = $api->fetch(['action'=>'query', 
+    public function get_text_from($title, $api) {    
+      $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
     if (!isset($details->query)) {
