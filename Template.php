@@ -1283,7 +1283,7 @@ final class Template {
   // $options should be a series of field names, colons (optionally urlencoded), and
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
-  protected function query_adsabs ($options) {  
+  protected function query_adsabs($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     
     if (!getenv('PHP_ADSABSAPIKEY')) {
@@ -1907,7 +1907,7 @@ final class Template {
     }
   }
 
-  protected function google_book_details ($gid) {
+  protected function google_book_details($gid) {
     $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", @file_get_contents($google_book_url))
@@ -2682,7 +2682,7 @@ final class Template {
     return TRUE;
   }
 
-  protected function verify_doi () {
+  protected function verify_doi() {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     // DOI not correctly formatted
@@ -2979,7 +2979,7 @@ final class Template {
     }
   }
 
-  protected function forget ($par) {
+  protected function forget($par) {
     if ($par == 'url') {
       $this->forget('format');
       $this->forget('accessdate');
@@ -2996,7 +2996,7 @@ final class Template {
   }
 
   // Record modifications
-  protected function modified ($param, $type='modifications') {
+  protected function modified($param, $type='modifications') {
     switch ($type) {
       case '+': $type='additions'; break;
       case '-': $type='deletions'; break;
@@ -3007,7 +3007,7 @@ final class Template {
   }
   protected function added($param) {return $this->modified($param, '+');}
 
-  public function modifications ($type='all') {
+  public function modifications($type='all') {
     if ($this->param) {
       foreach ($this->param as $p) {
         $new[$p->param] = $p->val;
@@ -3040,11 +3040,11 @@ final class Template {
     return $ret;
   }
 
-  public function is_modified () {
+  public function is_modified() {
     return (bool) count($this->modifications('modifications'));
   }
   
-  protected function isbn10Toisbn13 ($isbn10) {
+  protected function isbn10Toisbn13($isbn10) {
        $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
        $isbn10 = str_replace(array('—', '?', '–', '-', '?'), '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
        if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
