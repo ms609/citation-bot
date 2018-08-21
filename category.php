@@ -23,6 +23,12 @@ $SLOW_MODE = FALSE;
 if (isset($_GET["slow"]) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
 }
+
+if (php_sapi_name() !== "cli") {
+    define("HTML_OUTPUT", TRUE);// Not in cli-mode
+}
+require_once __DIR__ . '/expandFns.php';
+
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   echo " Activated by $user.\n";
@@ -31,10 +37,6 @@ if (is_valid_user($user)) {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
-if (php_sapi_name() !== "cli") {
-    define("HTML_OUTPUT", TRUE);// Not in cli-mode
-}
-require_once __DIR__ . '/expandFns.php';
 if (HTML_OUTPUT) {
 ?>
 <html>
