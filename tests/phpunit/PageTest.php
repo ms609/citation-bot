@@ -73,7 +73,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
     }
   }
-
+ 
   public function testEmptyPage() {
       $page = $this->process_page('');
       $page = $this->process_page('  ');
