@@ -1857,7 +1857,7 @@ final class Template {
         }
         $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
         if ($string === FALSE) {
-            report_warning("Google APIs search failed for $url_token");
+            report_warning("Google API search failed for $url_token");
             return FALSE;
         }
         $result = @json_decode($string, FALSE);
@@ -1866,7 +1866,7 @@ final class Template {
           $url = 'https://books.google.com/books?id=' . $gid;
           // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
         } else {
-          report_warning("Google APIs search failed with $url_token");
+          report_warning("Google API search failed with $url_token");
           return FALSE;
         }
       }
