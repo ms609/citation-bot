@@ -2984,6 +2984,10 @@ final class Template {
       $this->forget('format');
       $this->forget('accessdate');
       $this->forget('access-date');
+      $this->forget('archive-url');
+      $this->forget('archiveurl');
+      $this->forget('archive-date');
+      $this->forget('archivedate');
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
