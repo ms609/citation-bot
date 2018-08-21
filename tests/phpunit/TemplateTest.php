@@ -1003,6 +1003,11 @@ ER -  }}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('https://www.academia.edu/123456', $expanded->get('url')); 
  }
+    
+ public function testingNotSure() {
+     $text = '{{cite book |title=Bad Astronomy: Misconceptions and Misuses Revealed, from Astrology to the Moon Landing "Hoax" |first1=Philip C. |last1=Plait |publisher=John Wiley & Sons |year=2002 |isbn=978-0-471-42207-5 |page=123 |url=https://books.google.com/books?id=eInnwg77gbkC}}';
+     $expanded = $this->process_citation($text);
+ }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
