@@ -27,7 +27,7 @@ if (php_sapi_name() !== "cli") {
     define("HTML_OUTPUT", TRUE);// Not in cli-mode
 }
 require_once __DIR__ . '/expandFns.php';
-html_echo('<br><pre>','\n');
+html_echo('<br><pre>', "\n");
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if ($category) {
   $attempts = 0;
