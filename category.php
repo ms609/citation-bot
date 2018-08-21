@@ -37,6 +37,7 @@ if (HTML_OUTPUT) {
   <link rel="stylesheet" type="text/css" href="css/results.css" />
   </head>
   <body>
+    <pre>
 <?php
 } else {
   echo "\n";
