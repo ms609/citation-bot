@@ -23,6 +23,14 @@ $SLOW_MODE = FALSE;
 if (isset($_GET["slow"]) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
 }
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
+if (is_valid_user($user)) {
+  echo " Activated by $user.\n";
+  $edit_summary_end = " | [[User:$user|$user]]";
+} else {
+  $edit_summary_end = " | [[WP:UCB|User-activated]].";
+}
+
 if (php_sapi_name() !== "cli") {
     define("HTML_OUTPUT", TRUE);// Not in cli-mode
 }
@@ -55,7 +63,7 @@ if ($category) {
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       echo "\n # Writing to " . echoable($page_title) . '... ';
-      while (!$page->write($api) && $attempts < 2) ++$attempts;
+      while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
       safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
