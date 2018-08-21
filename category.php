@@ -59,7 +59,7 @@ if ($category) {
   $pages_in_category = $api->category_members($category);
   shuffle($pages_in_category);
   $page = new Page();
-  $pages_in_category = array('User:DOI bot/Zandbox');
+  #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
