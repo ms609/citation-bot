@@ -231,11 +231,10 @@ class WikipediaBot {
     do {
       set_time_limit(8);
       $res = $this->fetch($vars, 'POST');
-      echo "<pre>";
-      var_dump($res->query);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
-          $list[] = (string) $page->title;
+          // We probably only want to visit pages in the main namespace.  Remove any talk: etc at the start of the page name.
+          $list[] = (string) preg_replace('~.+:~', '', $page->title); 
         }
       } else {
         trigger_error('Error reading API from ' . echoable($url) . "\n\n", E_USER_WARNING);
