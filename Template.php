@@ -2970,7 +2970,7 @@ final class Template {
   protected function added($param) {return $this->modified($param, '+');}
 
   public function modifications ($type='all') {
-    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')) { // Never forgot it meaning that we did nothing
+    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) { // Never forgot it meaning that we did nothing
         $ret = array();
         $ret['modifications'] = array();
         $ret['additions'] = array();
