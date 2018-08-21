@@ -456,13 +456,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('{{citation|journal=Xyz}}',$expanded->parsed_text());
       $text = '{{citation|work=|chapter=abc}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{citation|chapter=abc}}',$expanded->parsed_text());
+      $this->assertEquals('{{citation|work=|chapter=abc}}',$expanded->parsed_text());
       $text = '{{cite journal|work=xyz}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{cite journal|journal=xyz}}',$expanded->parsed_text());
       $text = '{{cite magazine|work=abc}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{cite magazine|magazine=abc}}',$expanded->parsed_text());
+      $text = '{{cite journal|work=}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('{{cite journal|journal=}}',$expanded->parsed_text());
   }
   
   public function testOrigYearHandling() {
