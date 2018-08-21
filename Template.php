@@ -472,7 +472,7 @@ final class Template {
       ### JOURNAL IDENTIFIERS ###
       
       case "issn":
-        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work")) {
+        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work") && $this->blank($param_name)) {
           // Only add ISSN if journal is unspecified
           return $this->add($param_name, $value);
         }
@@ -498,9 +498,11 @@ final class Template {
         return FALSE;
         
       case 'series':
-        $value = wikify_external_text($value);
-        if ($this->has('journal') && (strcasecmp($this->get('journal'), $value) === 0)) return FALSE ;
-        return $this->add($param_name, $value);
+        if ($this->blank($param_name)) {
+          $value = wikify_external_text($value);
+          if ($this->has('journal') && (strcasecmp($this->get('journal'), $value) === 0)) return FALSE ;
+          return $this->add($param_name, $value);
+        }
         return FALSE;
 
       case 'chapter': case 'contribution':
