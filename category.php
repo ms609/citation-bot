@@ -26,6 +26,7 @@ if ($category) {
   $attempts = 0;
   $api = new WikipediaBot();
   $pages_in_category = $api->category_members($category);
+  print_r($pages_in_category);die;
   shuffle($pages_in_category);
   $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
