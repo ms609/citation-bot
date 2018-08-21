@@ -27,7 +27,8 @@ if (php_sapi_name() !== "cli") {
     define("HTML_OUTPUT", TRUE);// Not in cli-mode
 }
 require_once __DIR__ . '/expandFns.php';
-if (HTML_OUTPUT) {?>
+if (HTML_OUTPUT) {
+?>
 <html>
   <body>
   <head>
@@ -36,7 +37,10 @@ if (HTML_OUTPUT) {?>
   <link rel="stylesheet" type="text/css" href="css/results.css" />
   </head>
   <body>
-<?} else echo "\n";
+<?php
+} else {
+  echo "\n";
+}
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
 if ($category) {
   $attempts = 0;
@@ -68,5 +72,5 @@ if ($category) {
 } else {
   echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
-html_echo('</pre></body></html>','\n');
+html_echo('</pre></body></html>', "\n");
 exit(0);
