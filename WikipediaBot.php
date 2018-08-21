@@ -236,7 +236,8 @@ class WikipediaBot {
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
-          $list[] = (string) $page->title;
+          // We probably only want to visit pages in the main namespace.  Remove any talk: etc at the start of the page name.
+          $list[] = (string) preg_replace('~.+:~', '', $page->title); 
         }
       } else {
         trigger_error('Error reading API from ' . echoable($url) . "\n\n", E_USER_WARNING);
