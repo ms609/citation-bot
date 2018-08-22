@@ -84,11 +84,9 @@ final class Template {
     }
   }
 
-  public function process() {
-    switch ($this->wikiname()) {
+  public function prepare() {
+   switch ($this->wikiname()) {
       case 'cite web':
-        $this->use_unnamed_params();
-        $this->get_identifiers_from_url();
         $this->tidy();
         if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any countries google
           report_action("Expanded from Google Books API");
@@ -112,7 +110,6 @@ final class Template {
       break;
       case 'cite arxiv':
         $this->citation_template = TRUE;
-        $this->use_unnamed_params();
         $this->expand_by_arxiv();
 
         // Forget dates so that DOI can update with publication date, not ARXIV date
@@ -144,8 +141,6 @@ final class Template {
       case 'cite book':
         $this->citation_template = TRUE;
 
-        $this->use_unnamed_params();
-        $this->get_identifiers_from_url();
         $this->id_to_param();
         echo "\n* " . echoable($this->get('title'));
         $this->correct_param_spelling();
@@ -171,8 +166,6 @@ final class Template {
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
         $this->citation_template = TRUE;
         echo "\n\n* Expand citation: " . echoable($this->get('title'));
-        $this->use_unnamed_params();
-        $this->get_identifiers_from_url();
 
         if ($this->use_sici()) {
           report_action("Found and used SICI");
@@ -220,6 +213,144 @@ final class Template {
           $this->rename('work', 'magazine');
         }
         break;
+    }
+  }
+  
+  public function process() {
+    if (in_array($this->wikiname, TEMPLATES_WE_PROCESS)) {
+      $this->use_unnamed_params();
+      $this->get_identifiers_from_url();
+      $this->prepare();
+        case 'cite web':
+          $this->tidy();
+          if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any countries google
+            report_action("Expanded from Google Books API");
+            $this->name = 'Cite book'; // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
+          }
+          if ($this->has('journal') || $this->has('bibcode') 
+             || $this->has('jstor') || $this->has('doi') 
+             || $this->has('pmid') || $this->has('pmc')
+              ) {
+            $this->name = 'Cite journal';
+            $this->process();
+          } elseif ($this->has('arxiv')) {
+            $this->name = 'Cite arxiv';
+            $this->rename('arxiv', 'eprint');
+            $this->process();
+          } elseif ($this->has('eprint')) {
+            $this->name = 'Cite arxiv';
+            $this->process();
+          }
+          $this->citation_template = TRUE;
+        break;
+        case 'cite arxiv':
+          $this->citation_template = TRUE;
+          $this->expand_by_arxiv();
+
+          // Forget dates so that DOI can update with publication date, not ARXIV date
+          $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
+          $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
+          $this->expand_by_doi();
+          if ($this->blank('year') && $this->blank('date')) {
+              $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
+              $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
+          } else {
+              $this->forget('CITATION_BOT_PLACEHOLDER_year');
+              $this->forget('CITATION_BOT_PLACEHOLDER_date');        
+          }
+
+          $this->tidy();
+          if ($this->has('journal')) {
+            $this->name = 'Cite journal';
+            $this->rename('eprint', 'arxiv');
+            $this->forget('class');
+            $this->forget('publisher');  // This is either bad data, or refers to ARXIV preprint, not the journal that we have just added.
+                                         // Therefore remove incorrect data
+          } else if ($this->has('doi')) { // cite arxiv does not support DOI's
+            $this->name = 'Cite journal';
+            $this->rename('eprint', 'arxiv');
+            // $this->forget('class');      Leave this for now since no journal title
+            $this->forget('publisher');  // Since we have no journal, we cannot have a publisher
+          }
+        break;
+        case 'cite book':
+          $this->citation_template = TRUE;
+
+          $this->get_identifiers_from_url();
+          $this->id_to_param();
+          echo "\n* " . echoable($this->get('title'));
+          $this->correct_param_spelling();
+          if ($this->expand_by_google_books()) {
+            report_action("Expanded from Google Books API");
+          }
+          $no_isbn_before_doi = $this->blank("isbn");
+          if ($this->verify_doi()) {
+            $this->expand_by_doi();
+          }
+          $this->tidy();
+          if ($no_isbn_before_doi && $this->has("isbn")) {
+            if ($this->expand_by_google_books()) {
+               report_action("Expanded from Google Books API");
+            }
+          }
+
+          // If the et al. is from added parameters, go ahead and handle
+          if (!$this->initial_author_params) {
+            $this->handle_et_al();
+          }
+        break;
+        case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
+          $this->citation_template = TRUE;
+          echo "\n\n* Expand citation: " . echoable($this->get('title'));
+
+
+          if ($this->use_sici()) {
+            report_action("Found and used SICI");
+          }
+
+          $this->id_to_param();
+          $this->get_doi_from_text();
+          $this->correct_param_spelling();
+          // TODO: Check for the doi-inline template in the title
+
+          // If the et al. is from added parameters, go ahead and handle
+          if (!$this->initial_author_params) {
+            $this->handle_et_al();
+          }
+
+          $this->expand_by_pubmed(); //partly to try to find DOI
+
+          if ($this->expand_by_google_books()) {
+            report_action("Expanded from Google Books API");
+          }
+          if ($this->expand_by_jstor()) {
+            report_action("Expanded from JSTOR API");
+          }
+          $this->sanitize_doi();
+          if ($this->verify_doi()) {
+            $this->expand_by_doi();
+          }
+          $this->tidy(); // Do now to maximize quality of metadata for DOI searches, etc
+          $this->expand_by_adsabs(); //Primarily to try to find DOI
+          $this->get_doi_from_crossref();
+          $this->get_open_access_url();
+          $this->find_pmid();
+          $this->tidy();
+          
+          // Convert from journal to book, if there is a unique chapter name or has an ISBN
+          if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
+            $this->name = 'Cite book';
+          }
+          if ($this->wikiname() === 'cite journal' && $this->has('work') && $this->blank('journal')) { // Never did get a journal name....
+            $this->rename('work', 'journal');
+          }
+          break;
+        case 'cite magazine':
+          if ($this->blank('magazine') && $this->has('work')) { // This is all we do with cite magazine
+            $this->rename('work', 'magazine');
+          }
+          break;
+      }
     }
     if ($this->citation_template) {
       // Sometimes title and chapter come from different databases

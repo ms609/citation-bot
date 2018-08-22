@@ -108,16 +108,28 @@ class Page {
        $templates[$i]->all_templates = &$templates; // Has to be pointer
     }
     for ($i = 0; $i < count($templates); $i++) {
-      $templates[$i]->process();
-      $template_mods = $templates[$i]->modifications();
-      foreach (array_keys($template_mods) as $key) {
-        if (!isset($this->modifications[$key])) {
-          $this->modifications[$key] = $template_mods[$key];
-        } elseif (is_array($this->modifications[$key])) {
-          $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
-        } else {
-          $this->modifications[$key] = $this->modifications[$key] ||  $template_mods[$key]; // Boolean like mod_dashes
+      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
+        $this_template = $templates[$i];
+        $this_template->use_unnamed_params();
+        $this_template->get_identifiers_from_url();
+        $this_template->prepare();
+        // The objective in breaking this down into stages is to be able to send a single request to each API,
+        // rather than a separate request for each template.
+        // This is a work in progress...
+        $templates[$i]->process();
+        $template_mods = $templates[$i]->modifications();
+        foreach (array_keys($template_mods) as $key) {
+          if (!isset($this->modifications[$key])) {
+            $this->modifications[$key] = $template_mods[$key];
+          } elseif (is_array($this->modifications[$key])) {
+            $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
+          } else {
+            $this->modifications[$key] = $this->modifications[$key] ||  $template_mods[$key]; // Boolean like mod_dashes
+          }
         }
+      } else if ($templates[$i]->wikiname() == 'cite magazine' && $templates[$i]->blank('magazine') && $templates[$i]->has('work')) {
+        // This is all we do with cite magazine
+        $templates[$i]->rename('work', 'magazine');
       }
     }
     $this->replace_object($templates);
