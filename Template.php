@@ -238,11 +238,46 @@ final class Template {
           $this->rename('work', 'journal');
         }
         break;
-      case 'cite magazine':
-        if ($this->blank('magazine') && $this->has('work')) { // This is all we do with cite magazine
-          $this->rename('work', 'magazine');
+    }
+  }
+  
+  public function update_template_name() {
+    switch ($this->wikiname()) {
+      case 'cite web':
+        if ($this->has('journal') || $this->has('bibcode') 
+           || $this->has('jstor') || $this->has('doi') 
+           || $this->has('pmid') || $this->has('pmc')
+            ) {
+          $this->name = 'Cite journal';
+        } elseif ($this->has('arxiv')) {
+          $this->name = 'Cite arxiv';
+          $this->rename('arxiv', 'eprint');
+        } elseif ($this->has('eprint')) {
+          $this->name = 'Cite arxiv';
         }
-        break;
+        $this->citation_template = TRUE;
+      break;
+      case 'cite arxiv':
+        $this->citation_template = TRUE;
+        if ($this->has('journal')) {
+          $this->name = 'Cite journal';
+          $this->rename('eprint', 'arxiv');
+          $this->forget('class');
+          $this->forget('publisher');  // This is either bad data, or refers to ARXIV preprint, not the journal that we have just added.
+                                       // Therefore remove incorrect data
+        } else if ($this->has('doi')) { // cite arxiv does not support DOI's
+          $this->name = 'Cite journal';
+          $this->rename('eprint', 'arxiv');
+          // $this->forget('class');      Leave this for now since no journal title
+          $this->forget('publisher');  // Since we have no journal, we cannot have a publisher
+        }
+      break;
+      case "cite journal":
+        // Convert from journal to book, if there is a unique chapter name or has an ISBN
+        if ($this->has('chapter') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
+          $this->name = 'Cite book';
+        }
+      break;
     }
   }
   
