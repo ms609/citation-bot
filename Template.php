@@ -1842,6 +1842,22 @@ final class Template {
     return FALSE;
   }
 
+  protected function doi_active($doi = FALSE) {
+    if (!$doi) {
+      $doi = $this->get_without_comments_and_placeholders('doi');
+    }
+    if (!$doi) {
+      warn('doi_active called with with no doi');
+      return FALSE;
+    }
+    $response = get_headers("https://api.crossref.org/works/$doi")[0]
+    if (stripos($response, '200 OK') !== FALSE) return TRUE;
+    if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
+    report_warning("Crossref server error loading headers for DOI " . echoable($doi) . ": $response");
+    return FALSE;
+  }
+
+  
   protected function get_open_access_url() {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
