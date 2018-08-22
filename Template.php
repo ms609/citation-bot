@@ -115,65 +115,19 @@ final class Template {
     }
   }
   
+  public function api_calls() {
    switch ($this->wikiname()) {
       case 'cite web':
-        $this->tidy();
-        if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any countries google
+        if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
           report_action("Expanded from Google Books API");
           $this->name = 'Cite book'; // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
         }
-        if ($this->has('journal') || $this->has('bibcode') 
-           || $this->has('jstor') || $this->has('doi') 
-           || $this->has('pmid') || $this->has('pmc')
-            ) {
-          $this->name = 'Cite journal';
-          $this->process();
-        } elseif ($this->has('arxiv')) {
-          $this->name = 'Cite arxiv';
-          $this->rename('arxiv', 'eprint');
-          $this->process();
-        } elseif ($this->has('eprint')) {
-          $this->name = 'Cite arxiv';
-          $this->process();
-        }
-        $this->citation_template = TRUE;
       break;
       case 'cite arxiv':
-        $this->citation_template = TRUE;
         $this->expand_by_arxiv();
 
-        // Forget dates so that DOI can update with publication date, not ARXIV date
-        $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
-        $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
-        $this->expand_by_doi();
-        if ($this->blank('year') && $this->blank('date')) {
-            $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
-            $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
-        } else {
-            $this->forget('CITATION_BOT_PLACEHOLDER_year');
-            $this->forget('CITATION_BOT_PLACEHOLDER_date');        
-        }
-
-        $this->tidy();
-        if ($this->has('journal')) {
-          $this->name = 'Cite journal';
-          $this->rename('eprint', 'arxiv');
-          $this->forget('class');
-          $this->forget('publisher');  // This is either bad data, or refers to ARXIV preprint, not the journal that we have just added.
-                                       // Therefore remove incorrect data
-        } else if ($this->has('doi')) { // cite arxiv does not support DOI's
-          $this->name = 'Cite journal';
-          $this->rename('eprint', 'arxiv');
-          // $this->forget('class');      Leave this for now since no journal title
-          $this->forget('publisher');  // Since we have no journal, we cannot have a publisher
-        }
       break;
       case 'cite book':
-        $this->citation_template = TRUE;
-
-        $this->id_to_param();
-        echo "\n* " . echoable($this->get('title'));
-        $this->correct_param_spelling();
         if ($this->expand_by_google_books()) {
           report_action("Expanded from Google Books API");
         }
@@ -181,38 +135,14 @@ final class Template {
         if ($this->verify_doi()) {
           $this->expand_by_doi();
         }
-        $this->tidy();
         if ($no_isbn_before_doi && $this->has("isbn")) {
           if ($this->expand_by_google_books()) {
              report_action("Expanded from Google Books API");
           }
         }
-
-        // If the et al. is from added parameters, go ahead and handle
-        if (!$this->initial_author_params) {
-          $this->handle_et_al();
-        }
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
-        $this->citation_template = TRUE;
-        echo "\n\n* Expand citation: " . echoable($this->get('title'));
-
-        if ($this->use_sici()) {
-          report_action("Found and used SICI");
-        }
-
-        $this->id_to_param();
-        $this->get_doi_from_text();
-        $this->correct_param_spelling();
-        // TODO: Check for the doi-inline template in the title
-
-        // If the et al. is from added parameters, go ahead and handle
-        if (!$this->initial_author_params) {
-          $this->handle_et_al();
-        }
-
         $this->expand_by_pubmed(); //partly to try to find DOI
-
         if ($this->expand_by_google_books()) {
           report_action("Expanded from Google Books API");
         }
@@ -228,16 +158,7 @@ final class Template {
         $this->get_doi_from_crossref();
         $this->get_open_access_url();
         $this->find_pmid();
-        $this->tidy();
-        
-        // Convert from journal to book, if there is a unique chapter name or has an ISBN
-        if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
-          $this->name = 'Cite book';
-        }
-        if ($this->wikiname() === 'cite journal' && $this->has('work') && $this->blank('journal')) { // Never did get a journal name....
-          $this->rename('work', 'journal');
-        }
-        break;
+      break;
     }
   }
   
@@ -280,6 +201,7 @@ final class Template {
       break;
     }
   }
+  
   
   public function process() {
     if (in_array($this->wikiname, TEMPLATES_WE_PROCESS)) {
@@ -3071,7 +2993,7 @@ final class Template {
   }
 
   // Amend parameters
-  protected function rename($old_param, $new_param, $new_value = FALSE) {
+  public function rename($old_param, $new_param, $new_value = FALSE) {
     if($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
@@ -3124,8 +3046,8 @@ final class Template {
     return NULL;
   }
 
-  protected function has($par) {return (bool) strlen($this->get($par));}
-  protected function lacks($par) {return !$this->has($par);}
+  public function has($par) {return (bool) strlen($this->get($par));}
+  public function lacks($par) {return !$this->has($par);}
 
   protected function add($par, $val) {
     report_add("Adding $par: $val" .tag());

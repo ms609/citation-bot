@@ -120,6 +120,10 @@ class Page {
         
         // Now clean up:
         $this_template->update_template_name();
+        $this_template->tidy();
+        if (!$this_template->initial_author_params) {
+          $this_template->handle_et_al();
+        }
         
         // The below is left over from before we started on this errand:
         $this_template->prepare();
