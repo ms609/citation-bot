@@ -202,7 +202,6 @@ final class Template {
     }
   }
   
-  
   public function process() {
     if (in_array($this->wikiname, TEMPLATES_WE_PROCESS)) {
       $this->use_unnamed_params();
@@ -2562,7 +2561,7 @@ final class Template {
   }
 
   ### Tidying and formatting
-  protected function tidy() {
+  public function tidy() {
     $to_add = array();
     $others = '';
 
@@ -2972,6 +2971,10 @@ final class Template {
     return NULL;
   }
 
+  public function initial_author_params() {
+    return $initial_author_params;
+  }
+  
   protected function first_surname() {
     // Fetch the surname of the first author only
     if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {

@@ -131,7 +131,7 @@ class Page {
         // Clean up:
         $this_template->update_template_name();
         $this_template->tidy();
-        if (!$this_template->initial_author_params) {
+        if (!$this_template->initial_author_params()) {
           $this_template->handle_et_al();
         }
         
