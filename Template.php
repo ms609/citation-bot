@@ -2993,7 +2993,7 @@ final class Template {
   }
 
   // Amend parameters
-  public function rename($old_param, $new_param, $new_value = FALSE) {
+  protected function rename($old_param, $new_param, $new_value = FALSE) {
     if($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
@@ -3046,8 +3046,8 @@ final class Template {
     return NULL;
   }
 
-  public function has($par) {return (bool) strlen($this->get($par));}
-  public function lacks($par) {return !$this->has($par);}
+  protected function has($par) {return (bool) strlen($this->get($par));}
+  protected function lacks($par) {return !$this->has($par);}
 
   protected function add($par, $val) {
     report_add("Adding $par: $val" .tag());
