@@ -1733,7 +1733,7 @@ final class Template {
         . ' for more details' . tag());
     $xml = @simplexml_load_file("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
     if ($xml === FALSE) {
-      report_warning("\n - Unable to do PubMed search");
+      report_warning("Unable to do PubMed search");
       return;
     }
     // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
@@ -2899,7 +2899,7 @@ final class Template {
    * if no author parameters were specified at the start of the 
    * expansion process.
   */
-  protected function handle_et_al() {
+  public function handle_et_al() {
     foreach (AUTHOR_PARAMETERS as $author_cardinality => $group) {
       foreach ($group as $param) {
         if (strpos($this->get($param), 'et al')) {
@@ -2971,9 +2971,7 @@ final class Template {
     return NULL;
   }
 
-  public function initial_author_params() {
-    return $initial_author_params;
-  }
+  public function initial_author_params() { return $this->initial_author_params; }
   
   protected function first_surname() {
     // Fetch the surname of the first author only
@@ -3050,8 +3048,8 @@ final class Template {
     return NULL;
   }
 
-  protected function has($par) {return (bool) strlen($this->get($par));}
-  protected function lacks($par) {return !$this->has($par);}
+  public function has($par) {return (bool) strlen($this->get($par));}
+  public function lacks($par) {return !$this->has($par);}
 
   protected function add($par, $val) {
     report_add("Adding $par: $val" .tag());

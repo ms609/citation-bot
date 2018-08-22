@@ -9,6 +9,7 @@
 
 require_once('Comment.php');
 require_once('Template.php');
+require_once('apiFunctions.php');
 require_once('WikipediaBot.php');
 
 class Page {
@@ -77,6 +78,21 @@ class Page {
     return $this->text;
   }
   
+  // $parameter: parameter to send to api_function, e.g. "pmid"
+  // $templates: Array of pointers to the templates
+  // $api_function: string naming a function (specified in apiFunctions.php) 
+  //                that takes the value of $templates->get($parameter) as an array;
+  //                returns key-value array of items to be set, if new, in each template.
+  public function expand_templates_from($parameter, $templates, $api_function) {
+    $ids = array();
+    for ($i = 0; $i < count($templates); $i++) {
+      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
+        if ($templates[$i]->has($parameter)) $ids[$i] = $templates[$i]->get($parameter);
+      }
+    }
+    $api_function($ids, $templates);
+  }
+  
   public function expand_text() {
     date_default_timezone_set('UTC');
     $url_encoded_title =  urlencode($this->title);
@@ -119,13 +135,11 @@ class Page {
         $templates[$i]->rename('work', 'magazine');
       }
     }
-    for ($i = 0; $i < count($templates); $i++) {
-      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
-        
-        // Now queue API calls:
-        $this_template->api_calls(); // For now...
-      }
-    }
+    
+    
+    ////////////API CALLS
+    $this->expand_templates_from('pmid', $templates, 'pmid_api');
+
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
         // Clean up:
