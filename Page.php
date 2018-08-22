@@ -109,13 +109,20 @@ class Page {
     }
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
-        $this_template = $templates[$i];
-        $this_template->use_unnamed_params();
-        $this_template->get_identifiers_from_url();
-        $this_template->prepare();
         // The objective in breaking this down into stages is to be able to send a single request to each API,
         // rather than a separate request for each template.
         // This is a work in progress...
+        $this_template = $templates[$i];
+        $this_template->prepare();
+        
+        // Now queue API calls:
+        
+        
+        // Now clean up:
+        $this_template->update_template_name();
+        
+        // The below is left over from before we started on this errand:
+        $this_template->prepare();
         $templates[$i]->process();
         $template_mods = $templates[$i]->modifications();
         foreach (array_keys($template_mods) as $key) {
