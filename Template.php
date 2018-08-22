@@ -1192,11 +1192,11 @@ final class Template {
       return array(NULL, 0);
     }
 
-    return $xml?array((string)$xml->IdList->Id[0], (string)$xml->Count):array(NULL, 0);// first results; number of results
+    return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
   }
 
   ### Obtain data from external database
-  protected function expand_by_arxiv() {
+  public function expand_by_arxiv() {
     if ($this->wikiname() == 'cite arxiv') {
       $arxiv_param = 'eprint';
       $this->rename('arxiv', 'eprint');
@@ -1279,7 +1279,7 @@ final class Template {
       if ($bibcode = $this->has('bibcode')) {
         $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
       } elseif ($this->has('doi') 
-                && preg_match(DOI_REGEXP, remove_comments($this->get('doi')), $doi)) {
+                && preg_match(DOI_REGEXP, $this->get_without_comments_and_placeholders('doi'), $doi)) {
         $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
       } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
         if ($this->has('eprint')) {
@@ -1402,7 +1402,7 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs ($options) {  
-    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
@@ -1433,7 +1433,12 @@ final class Template {
       $decoded = @json_decode($body);
       
       if (is_object($decoded) && isset($decoded->error)) {
-        throw new Exception($decoded->error->msg . "\n - URL was:  " . $adsabs_url, $decoded->error->code);
+        if (is_object($decoded) && isset($decoded->error)) {
+          throw new Exception(
+          ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
+          . "\n - URL was:  " . $adsabs_url,
+          (isset($decoded->error->code) ? $decoded->error->code : 999));
+        }
       }
       if ($http_response != 200) {
         throw new Exception(strtok($header, "\n"), $http_response);
@@ -1478,7 +1483,7 @@ final class Template {
     }
   }
   
-  protected function expand_by_doi($force = FALSE) {
+  public function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $this->add_if_new('jstor', substr($doi, 8));
@@ -1850,7 +1855,7 @@ final class Template {
       warn('doi_active called with with no doi');
       return FALSE;
     }
-    $response = get_headers("https://api.crossref.org/works/$doi")[0]
+    $response = get_headers("https://api.crossref.org/works/$doi")[0];
     if (stripos($response, '200 OK') !== FALSE) return TRUE;
     if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
     report_warning("Crossref server error loading headers for DOI " . echoable($doi) . ": $response");
@@ -1944,13 +1949,13 @@ final class Template {
     }
   }
   
-  protected function expand_by_google_books() {
+  public function expand_by_google_books() {
     $url = $this->get('url');
     if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) { // No Google URL yet.
       $google_books_worked = FALSE ;
-      $isbn= $this->get('isbn');
-      $lccn= $this->get('lccn');
-      $oclc= $this->get('oclc');
+      $isbn = $this->get('isbn');
+      $lccn = $this->get('lccn');
+      $oclc = $this->get('oclc');
       if ($isbn) {
         $isbn = str_replace(array(" ", "-"), "", $isbn);
         if (preg_match("~[^0-9Xx]~", $isbn) === 1) $isbn='' ;
@@ -2777,8 +2782,15 @@ final class Template {
       case 'yes': case 'y': case 'TRUE': case 'no': case 'n': case 'FALSE': $this->forget('quotes');
     }
 
-    if ($this->get('doi') == "10.1267/science.040579197") $this->forget('doi'); // This is a bogus DOI from the PMID example file
 
+    if ($this->has('doi')) {
+      if ($this->get('doi') == "10.1267/science.040579197") $this->forget('doi'); // This is a bogus DOI from the PMID example file
+      if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
+        $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
+      }
+    }
+
+    
     /*/ If we have any unused data, check to see if any is redundant!
     if (is("unused_data")) {
       $freeDat = explode("|", trim($this->get('unused_data')));
@@ -2816,7 +2828,7 @@ final class Template {
     return TRUE;
   }
 
-  protected function verify_doi () {
+  public function verify_doi () {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     // DOI not correctly formatted
@@ -2842,35 +2854,38 @@ final class Template {
     if (isset($trial)) foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
-      if ($this->expand_by_doi($try)) {
+      if ($this->doi_active($try)) {
+        $this->expand_by_doi($try);
         $this->set('doi', $try);
         $doi = $try;
+        break;
       }
-    }
-    report_action("Checking that DOI " . echoable($doi) . " is operational..." . tag());
-    if ($this->query_crossref() === FALSE) {
-      // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
-      // if present, with new "doi-broken-date"
-      $url_test = "https://dx.doi.org/" . $doi;
-      $headers_test = @get_headers($url_test, 1);
-      if ($headers_test === FALSE) {
-        report_warning("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+    } else {    
+      report_action("Checking that DOI " . echoable($doi) . " is operational..." . tag());
+      if ($this->doi_active() === FALSE) {
+        // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
+        // if present, with new "doi-broken-date"
+        $url_test = "https://dx.doi.org/" . $doi;
+        $headers_test = @get_headers($url_test, 1);
+        if ($headers_test === FALSE) {
+          report_warning("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+          return FALSE;
+        }
+        $this->forget("doi_inactivedate");
+        $this->forget("doi-inactive-date");
+        $this->forget("doi_brokendate");
+        if(empty($headers_test['Location']))
+           $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
+        report_warning("Broken doi: " . echoable($doi));
         return FALSE;
+      } else {
+        $this->forget('doi_brokendate');
+        $this->forget('doi_inactivedate');
+        $this->forget('doi-broken-date');
+        $this->forget('doi-inactive-date');
+        echo ' DOI ok.';
+        return TRUE;
       }
-      $this->forget("doi_inactivedate");
-      $this->forget("doi-inactive-date");
-      $this->forget("doi_brokendate");
-      if(empty($headers_test['Location']))
-         $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if cross-ref fails
-      report_warning("Broken doi: " . echoable($doi));
-      return FALSE;
-    } else {
-      $this->forget('doi_brokendate');
-      $this->forget('doi_inactivedate');
-      $this->forget('doi-broken-date');
-      $this->forget('doi-inactive-date');
-      echo ' DOI ok.';
-      return TRUE;
     }
   }
 
@@ -3045,7 +3060,7 @@ final class Template {
     return $this->param_with_index($i)->val;
   }
   
-  protected function get_without_comments_and_placeholders($name) {
+  public function get_without_comments_and_placeholders($name) {
     $ret = $this->get($name);
     $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
     $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
@@ -3067,7 +3082,7 @@ final class Template {
   public function has($par) {return (bool) strlen($this->get($par));}
   public function lacks($par) {return !$this->has($par);}
 
-  protected function add($par, $val) {
+  public function add($par, $val) {
     report_add("Adding $par: $val" .tag());
     return $this->set($par, $val);
   }

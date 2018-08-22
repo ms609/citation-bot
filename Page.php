@@ -87,7 +87,9 @@ class Page {
     $ids = array();
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
-        if ($templates[$i]->has($parameter)) $ids[$i] = $templates[$i]->get($parameter);
+        if ($templates[$i]->has($parameter)) {
+          $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($parameter);
+        }
       }
     }
     $api_function($ids, $templates);
@@ -138,8 +140,19 @@ class Page {
     
     
     ////////////API CALLS
-    $this->expand_templates_from('pmid', $templates, 'pmid_api');
-
+    // $this->expand_templates_from('pmid',    $templates, 'pmid_api');
+    // $this->expand_templates_from('pmc',     $templates, 'pmc_api');
+    var_dump($this->expand_templates_from('bibcode', $templates, 'bibcode_api'));
+    var_dump($this->expand_templates_from('doi', $templates, 'adsabs_doi_api'));
+    
+    
+    for ($i = 0; $i < count($templates); $i++) {
+      $templates[$i]->expand_by_google_books();
+      if ($templates[$i]->verify_doi()) {
+        $templates[$i]->expand_by_doi();
+      }
+    }
+    
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
         // Clean up:

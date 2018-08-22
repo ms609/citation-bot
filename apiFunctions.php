@@ -78,4 +78,142 @@ function entrez_api($ids, $templates, $db) {
     }
   }
 }
+
+function bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
+function adsabs_doi_api($dois, $templates) { 
+  // TODO Don't run this on anything with a bibcode -- as we've already done that. A waste of search effort!
+  return adsabs_api($bibcodes, $templates, 'doi'); 
+}
+
+function adsabs_api($ids, $templates, $identifier) {
+  // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
+  $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/bigquery?q=*:*"
+              . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
+              . "issue,page,pub,pubdate,title,volume,year&rows=2000";
+
+  if (!getenv('PHP_ADSABSAPIKEY')) {
+    report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
+    return FALSE;
+  }
+  
+  try {
+    report_action("Expanding from BibCodes via AdsAbs API");
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $adsabs_url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: big-query/csv', 
+      'Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_HEADER, TRUE);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
+    if (getenv('TRAVIS')) {
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
+    }
+    $return = curl_exec($ch);
+    if ($return === FALSE) {
+      throw new Exception(curl_error($ch), curl_errno($ch));
+    } 
+    $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    curl_close($ch);
+    $header = substr($return, 0, $header_length);
+    $body = substr($return, $header_length);
+    $decoded = @json_decode($body);
+    if (is_object($decoded) && isset($decoded->error)) {
+      throw new Exception(
+      ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
+      . "\n - URL was:  " . $adsabs_url,
+      (isset($decoded->error->code) ? $decoded->error->code : 999));
+    }
+    if ($http_response != 200) {
+      throw new Exception(strtok($header, "\n"), $http_response);
+    }
+    
+    if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
+      if ($rate_limit[2][2]) {
+        report_info("AdsAbs search " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
+             ":\n       " . implode("\n       ", $ids));
+             // "; reset at " . date('r', $rate_limit[2][2]);
+      } else {
+        report_warning("AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n");
+        return (object) array('numFound' => 0);
+      }
+    } else {
+      throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);
+    }
+    if (!is_object($decoded)) {
+      throw new Exception("Could not decode API response:\n" . $body, 5000);
+    }
+    
+    if (isset($decoded->response)) {
+      $response = $decoded->response;
+    } else {
+      if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // "". to force string
+      throw new Exception("Could not decode AdsAbs response", 5000);
+    }
+  } catch (Exception $e) {
+    if ($e->getCode() == 5000) { // made up code for AdsAbs error
+      trigger_error(sprintf("API Error in query_adsabs: %s",
+                    $e->getMessage()), E_USER_NOTICE);
+    } else if (strpos($e->getMessage(), 'HTTP') === 0) {
+      trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
+                    $e->getCode(), $e->getMessage()), E_USER_NOTICE);
+    } else {
+      trigger_error(sprintf("Error %d in query_adsabs: %s",
+                    $e->getCode(), $e->getMessage()), E_USER_WARNING);
+      curl_close($ch);
+    }
+  }
+  foreach ($response->docs as $record) {
+    $this_template = $templates[array_search((string) $record->bibcode, $templates)];
+    if ($this_template->blank('bibcode')) $this_template->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+    $this_template->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
+    $i = 0;
+    if (isset($record->author)) {
+     foreach ($record->author as $author) {
+      $this_template->add_if_new("author" . ++$i, $author);
+     }
+    }
+    if (isset($record->pub)) {
+      $journal_string = explode(",", (string) $record->pub);
+      $journal_start = mb_strtolower($journal_string[0]);
+      if (preg_match("~\bthesis\b~ui", $journal_start)) {
+        // Do nothing
+      } elseif (substr($journal_start, 0, 6) == "eprint") {
+        if (substr($journal_start, 7, 6) == "arxiv:") {
+          if (isset($record->arxivclass)) $this_template->add_if_new("class", $record->arxivclass);
+        } else {
+          $this_template->append_to('id', ' ' . substr($journal_start, 13));
+        }
+      } else {
+        $this_template->add_if_new('journal', $journal_string[0]);
+      }          
+    }
+    if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
+       unset($record->page);
+       unset($record->volume);
+       unset($record->issue);
+    }
+    if (isset($record->volume)) {
+      $this_template->add_if_new("volume", (string) $record->volume);
+    }
+    if (isset($record->issue)) {
+      $this_template->add_if_new("issue", (string) $record->issue);
+    }
+    if (isset($record->year)) {
+      $this_template->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
+    }
+    if (isset($record->page)) {
+      $this_template->add_if_new("pages", implode('–', $record->page));
+    }
+    if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
+      foreach ($record->identifier as $recid) {
+        if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+           if (isset($record->arxivclass)) $this_template->add_if_new("class", $record->arxivclass);
+        }
+      }
+    }
+  }
+}
+
 ?>
