@@ -208,6 +208,7 @@ final class Template {
       $this->use_unnamed_params();
       $this->get_identifiers_from_url();
       $this->prepare();
+      switch ($this->wikiname()) {
         case 'cite web':
           $this->tidy();
           if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any countries google
