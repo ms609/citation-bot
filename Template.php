@@ -2688,7 +2688,7 @@ final class Template {
                 }
               }
             } else {
-              report_inaction("Initial authors exist, skipping authorlink in tidy");
+              report_inaction("Initial authors exist: skipping authorlink whlist tidying citation");
             }
             break;
           case 'title':
