@@ -8,7 +8,7 @@
  *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
  *       switch statement handles various parameters differently.
  *     tidy() cleans up citations and the templates, but it includes various other functions
- *       and side effects as well. Beware!
+ *       and side effects as w==0ell. Beware!
  *
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
  * to find information that can be added to existing citations.
@@ -1895,7 +1895,7 @@ final class Template {
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
           default:
-            report_forget(echoable($part));
+            if ($removed_redundant !== 0) report_forget(echoable($part)); // http://blah-blah is first parameter and it is not actually dropped
             $removed_redundant++;
         }
       }
