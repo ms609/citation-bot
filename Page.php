@@ -114,20 +114,28 @@ class Page {
         // This is a work in progress...
         $this_template = $templates[$i];
         $this_template->prepare();
+      } else if ($templates[$i]->wikiname() == 'cite magazine' && $templates[$i]->blank('magazine') && $templates[$i]->has('work')) {
+        // This is all we do with cite magazine
+        $templates[$i]->rename('work', 'magazine');
+      }
+    }
+    for ($i = 0; $i < count($templates); $i++) {
+      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
         
         // Now queue API calls:
-        
-        
-        // Now clean up:
+        $this_template->api_calls(); // For now...
+      }
+    }
+    for ($i = 0; $i < count($templates); $i++) {
+      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
+        // Clean up:
         $this_template->update_template_name();
         $this_template->tidy();
         if (!$this_template->initial_author_params) {
           $this_template->handle_et_al();
         }
         
-        // The below is left over from before we started on this errand:
-        $this_template->prepare();
-        $templates[$i]->process();
+        // Record any modifications that have been made:
         $template_mods = $templates[$i]->modifications();
         foreach (array_keys($template_mods) as $key) {
           if (!isset($this->modifications[$key])) {
@@ -135,12 +143,9 @@ class Page {
           } elseif (is_array($this->modifications[$key])) {
             $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
           } else {
-            $this->modifications[$key] = $this->modifications[$key] ||  $template_mods[$key]; // Boolean like mod_dashes
+            $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // Boolean like mod_dashes
           }
         }
-      } else if ($templates[$i]->wikiname() == 'cite magazine' && $templates[$i]->blank('magazine') && $templates[$i]->has('work')) {
-        // This is all we do with cite magazine
-        $templates[$i]->rename('work', 'magazine');
       }
     }
     $this->replace_object($templates);
