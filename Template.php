@@ -85,6 +85,36 @@ final class Template {
   }
 
   public function prepare() {
+    $this->use_unnamed_params();
+    $this->get_identifiers_from_url();
+    $this->tidy();
+    $this->id_to_param();
+    $this->correct_param_spelling();
+    $this->get_doi_from_text();
+
+    
+    switch ($this->wikiname()) {
+      case "cite arxiv":
+         // Forget dates so that DOI can update with publication date, not ARXIV date
+        $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
+        $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
+        $this->expand_by_doi();
+        if ($this->blank('year') && $this->blank('date')) {
+            $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
+            $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
+        } else {
+            $this->forget('CITATION_BOT_PLACEHOLDER_year');
+            $this->forget('CITATION_BOT_PLACEHOLDER_date');        
+        }
+        break;
+      case "cite journal":       
+        if ($this->use_sici()) {
+          report_action("Found and used SICI");
+        }
+
+    }
+  }
+  
    switch ($this->wikiname()) {
       case 'cite web':
         $this->tidy();
