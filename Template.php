@@ -56,6 +56,13 @@ final class Template {
 
   // Re-assemble parsed template into string
   public function parsed_text() {
+    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+      if ($this->blank('title')) {
+        return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
+      } else {
+        $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+      }
+    }
     return '{{' . $this->name . $this->join_params() . '}}';
   }
 
@@ -3011,7 +3018,9 @@ final class Template {
   }
   protected function added($param) {return $this->modified($param, '+');}
 
+
   public function modifications($type='all') {
+    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     if ($this->param) {
       foreach ($this->param as $p) {
         $new[$p->param] = $p->val;
