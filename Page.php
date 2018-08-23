@@ -83,8 +83,15 @@ class Page {
   // $api_function: string naming a function (specified in apiFunctions.php) 
   //                that takes the value of $templates->get($parameter) as an array;
   //                returns key-value array of items to be set, if new, in each template.
-  public function expand_templates_from($parameter, $templates, $api_function) {
+  public function expand_templates_from_identifier($identifier, $templates) {
     $ids = array();
+    switch ($identifier) {
+      case 'pubmed': 
+      case 'pmc':     $api = 'entrez';   break;
+      case 'bibcode': $api = 'adsabs';   break;
+      case 'doi':     $api = 'crossref'; break;
+      default:        $api = $api;
+    }
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
         if ($templates[$i]->has($parameter)) {
@@ -92,20 +99,14 @@ class Page {
         }
       }
     }
+    
+    $api_function = 'query_' . $api . '_api';
     $api_function($ids, $templates);
   }
   
   public function expand_text() {
     date_default_timezone_set('UTC');
-    $url_encoded_title =  urlencode($this->title);
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title' style='text-weight:bold;'>" 
-      . htmlspecialchars($this->title)
-      . "</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
-      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
-      . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
-      . "document.title=\"Citation bot: '"
-      . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
-      "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
+    $this->announce_page();
     $this->modifications = array();
     if (!$this->text) {
       report_warning("No text retrieved.\n");
@@ -120,14 +121,13 @@ class Page {
       return FALSE;
     }
 
-    // EMPTY URLS Converted to Templates //
-    $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
-                      "~(<ref[^>]*?>)(\s*\[?)(https?:\/\/[^ >}{\]\[]+)(\]?\s*)(<\s*?\/\s*?ref>)~",
-                      function($matches) {return $matches[1] . '{{cite web|url=' . $matches[3] . '|' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4]) . '}}' . $matches[5] ;},
-                      $this->text
-                      );
+    // EMPTY URLS Converted to Templates
+    // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
+    $this->text = preg_replace("~(<ref[^>]*?>)(\s*\[?)(https?:\/\/[^ >}{\]\[]+)(\]?\s*)(<\s*?\/\s*?ref>)~",
+                               "$1{{cite web | url=$3 | CITATION_BOT_PLACEHOLDER_BARE_URL=$2$3$4}}$5",
+                               $this->text);
 
-    // TEMPLATES //
+    // TEMPLATES
     $all_templates = $this->extract_object('Template');
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
@@ -151,11 +151,11 @@ class Page {
       }
     }
     
+    // BATCH API CALLS
     report_phase('Consulting APIs to expand templates');
-    //////////// BATCH API CALLS
-    $this->expand_templates_from('pmid',    $our_templates, 'pmid_api');
-    $this->expand_templates_from('pmc',     $our_templates, 'pmc_api');
-    $this->expand_templates_from('bibcode', $our_templates, 'bibcode_api');
+    $this->expand_templates_from_identifier('pmid',    $our_templates);
+    $this->expand_templates_from_identifier('pmc',     $our_templates);
+    $this->expand_templates_from_identifier('bibcode', $our_templates);
     expand_arxiv_templates($our_templates);
     
     report_phase('Expanding individual templates by API calls');
@@ -275,6 +275,18 @@ class Page {
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
 
+  protected function announce_page() {
+    $url_encoded_title =  urlencode($this->title);
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title' style='text-weight:bold;'>" 
+        . htmlspecialchars($this->title)
+        . "</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
+        . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
+        . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
+        . "document.title=\"Citation bot: '"
+        . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
+        "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
+  }
+  
   protected function allow_bots() {
     // from https://en.wikipedia.org/wiki/Template:Bots
     $bot_username = '(?:Citation|DOI)[ _]bot';

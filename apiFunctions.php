@@ -1,18 +1,21 @@
 <?php
-function pmid_api ($pmids, $templates) { return entrez_api($pmids, $templates, 'pubmed'); }
-function pmc_api  ($pmcs, $templates)  { return entrez_api($pmcs,  $templates, 'pmc'); }
+function query_pmid_api ($pmids, $templates) { return entrez_api($pmids, $templates, 'pubmed'); }
+function query_pmc_api  ($pmcs, $templates)  { return entrez_api($pmcs,  $templates, 'pmc'); }
   
 function entrez_api($ids, $templates, $db) {
   if (!count($ids)) return FALSE;
   $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=$db&id=" 
                . implode(',', $ids);
-  report_action("Using PMID API to retrieve publication details: ");
+  report_action("Using $db API to retrieve publication details: ");
   $xml = @simplexml_load_file($url);
   if ($xml === FALSE) {
     report_warning("Unable to do PubMed search");
     return;
   }
   
+  foreach (array_keys($ids) as $i) {
+    $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc')
+  }
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     $this_template = $templates[array_search($document->Id, $ids)];
     report_info("Found match for $db identifier " . $document->Id);
@@ -78,7 +81,7 @@ function entrez_api($ids, $templates, $db) {
   }
 }
 
-function bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
+function query_adsabs_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
 
 function expand_arxiv_templates ($templates) {
   $ids = array();
@@ -100,7 +103,7 @@ function expand_arxiv_templates ($templates) {
   return arxiv_api($ids, $arxiv_templates);
 }
 
-function arxiv_api($ids, $templates) {
+function query_arxiv_api($ids, $templates) {
   if (count($ids) == 0) return FALSE;
   report_action("Getting data from arXiv API");
   $context = stream_context_create(array(

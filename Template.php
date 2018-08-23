@@ -23,10 +23,17 @@ final class Template {
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
+            $used_in_api,
             $mod_dashes;
 
   public function parse_text($text) {
     $this->initial_author_params = NULL; // Will be populated later if there are any
+    $this->used_in_api = array(
+      'adsabs' = array(), 
+      'arxiv' = array(), 
+      'crossref' = array(), 
+      'entrez' = array(), 
+    );
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
     }
@@ -145,6 +152,14 @@ final class Template {
         $this->find_pmid();
       break;
     }
+  }
+  
+  public function record_api_usage($api, $param) {
+    foreach ($p in $param) $api_used[$api][] = $p;
+  }
+  
+  public function api_has_used($api, $param) {
+    return count(array_intersect($param, $api_used[$api]));
   }
   
   public function process() {
