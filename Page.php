@@ -128,61 +128,63 @@ class Page {
                       );
 
     // TEMPLATES //
-    $templates = $this->extract_object('Template');
-    for ($i = 0; $i < count($templates); $i++) {
-       $templates[$i]->all_templates = &$templates; // Has to be pointer
+    $all_templates = $this->extract_object('Template');
+    for ($i = 0; $i < count($all_templates); $i++) {
+       $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
     }
-    for ($i = 0; $i < count($templates); $i++) {
-      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
+    $our_templates = array();
+    for ($i = 0; $i < count($all_templates); $i++) {
+      if (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
         // The objective in breaking this down into stages is to be able to send a single request to each API,
         // rather than a separate request for each template.
         // This is a work in progress...
-        $this_template = $templates[$i];
+        $this_template = $all_templates[$i];
+        array_push($our_templates, $this_template);
         $this_template->prepare();
-      } else if ($templates[$i]->wikiname() == 'cite magazine' && $templates[$i]->blank('magazine') && $templates[$i]->has('work')) {
+      } else if ($all_templates[$i]->wikiname() == 'cite magazine' 
+                 && $all_templates[$i]->blank('magazine') 
+                 && $all_templates[$i]->has('work')) {
         // This is all we do with cite magazine
-        $templates[$i]->rename('work', 'magazine');
+        $all_templates[$i]->rename('work', 'magazine');
       }
     }
-    
     
     ////////////API CALLS
-    // $this->expand_templates_from('pmid',    $templates, 'pmid_api');
-    // $this->expand_templates_from('pmc',     $templates, 'pmc_api');
-    var_dump($this->expand_templates_from('bibcode', $templates, 'bibcode_api'));
-    var_dump($this->expand_templates_from('doi', $templates, 'adsabs_doi_api'));
+    $this->expand_templates_from('pmid',    $our_templates, 'pmid_api');
+    $this->expand_templates_from('pmc',     $our_templates, 'pmc_api');
+    $this->expand_templates_from('bibcode', $our_templates, 'bibcode_api');
+    $this->expand_templates_from('doi',     $our_templates, 'adsabs_doi_api');
     
     
-    for ($i = 0; $i < count($templates); $i++) {
-      $templates[$i]->expand_by_google_books();
-      if ($templates[$i]->verify_doi()) {
-        $templates[$i]->expand_by_doi();
+    for ($i = 0; $i < count($our_templates); $i++) {
+      $our_templates[$i]->expand_by_google_books();
+      if ($our_templates[$i]->verify_doi()) {
+        $our_templates[$i]->expand_by_doi();
       }
     }
     
-    for ($i = 0; $i < count($templates); $i++) {
-      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
-        // Clean up:
-        $this_template->update_template_name();
-        $this_template->tidy();
-        if (!$this_template->initial_author_params()) {
-          $this_template->handle_et_al();
-        }
-        
-        // Record any modifications that have been made:
-        $template_mods = $templates[$i]->modifications();
-        foreach (array_keys($template_mods) as $key) {
-          if (!isset($this->modifications[$key])) {
-            $this->modifications[$key] = $template_mods[$key];
-          } elseif (is_array($this->modifications[$key])) {
-            $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
-          } else {
-            $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // Boolean like mod_dashes
-          }
+    for ($i = 0; $i < count($our_templates); $i++) {
+      $this_template = $our_templates[$i];
+      // Clean up:
+      $this_template->update_template_name();
+      $this_template->tidy();
+      if (!$this_template->initial_author_params()) {
+        $this_template->handle_et_al();
+      }
+      
+      // Record any modifications that have been made:
+      $template_mods = $this_template->modifications();
+      foreach (array_keys($template_mods) as $key) {
+        if (!isset($this->modifications[$key])) {
+          $this->modifications[$key] = $template_mods[$key];
+        } elseif (is_array($this->modifications[$key])) {
+          $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
+        } else {
+          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // Boolean like mod_dashes
         }
       }
     }
-    $this->replace_object($templates);
+    $this->replace_object($all_templates);
 
     $this->replace_object($comments);
     $this->replace_object($nowiki);
