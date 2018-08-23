@@ -726,7 +726,7 @@ ER -  }}';
        
   public function testInternalCaps() { // checks for title formating in tidy() not breaking things
     $text = '{{cite journal|journal=ZooTimeKids}}';
-    $expanded = $this->prepare_citation($text);
+    $prepared = $this->prepare_citation($text);
     $this->assertEquals('ZooTimeKids', $prepared->get('journal'));
   }
   
