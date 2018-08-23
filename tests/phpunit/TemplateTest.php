@@ -128,7 +128,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testArxivExpansion() {    
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
           . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
-          . '{{Cite arxiv |eprint=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}';
+          . '{{Cite arxiv |eprint=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
+          . '{{cite arXiv|eprint=hep-th/0303241}}' // tests line feeds
+          ;
     $expanded = $this->process_page($text);
     $templates = $expanded->extract_object('Template');
     
@@ -142,6 +144,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($templates[1]->get('publisher'));
       
     $this->assertEquals('2018', $templates[2]->get('year'));
+  
+    $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics', $templates[3]->get('title'));
+  
   }
   
   public function testAmazonExpansion() {
@@ -665,59 +670,54 @@ ER -  }}';
   }
    
   public function testEtAl() {
-      $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('Albertstein, Alfred A', $expanded->first_author());
-      $this->assertEquals('Charlie C', $expanded->get('first3'));
-      $this->assertEquals('etal', $expanded->get('displayauthors'));
+    $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('Albertstein, Alfred A', $prepared->first_author());
+    $this->assertEquals('Charlie C', $prepared->get('first3'));
+    $this->assertEquals('etal', $prepared->get('displayauthors'));
   }
        
   public function testWebsite2Url() {
       $text = '{{cite book |website=ttp://example.org }}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('http://example.org', $expanded->get('url'));
+      $prepared = $this->prepare_citation($text);
+      $this->assertEquals('http://example.org', $prepared->get('url'));
       
       $text = '{{cite book |website=example.org }}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('http://example.org', $expanded->get('url'));
+      $prepared = $this->prepare_citation($text);
+      $this->assertEquals('http://example.org', $prepared->get('url'));
       
       $text = '{{cite book |website=ttp://jstor.org/pdf/123456 | jstor=123456 }}';
-      $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->get('url'));
+      $prepared = $this->prepare_citation($text);
+      $this->assertNull($prepared->get('url'));
       
       $text = '{{cite book |website=ABC}}';
-      $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->get('url'));
-      $this->assertEquals('ABC', $expanded->get('website'));
+      $prepared = $this->prepare_citation($text);
+      $this->assertNull($prepared->get('url'));
+      $this->assertEquals('ABC', $prepared->get('website'));
       
       $text = '{{cite book |website=ABC XYZ}}';
-      $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->get('url'));
-      $this->assertEquals('ABC XYZ', $expanded->get('website'));
+      $prepared = $this->prepare_citation($text);
+      $this->assertNull($prepared->get('url'));
+      $this->assertEquals('ABC XYZ', $prepared->get('website'));
       
       $text = '{{cite book |website=http://ABC/ I have Spaces in Me}}';
-      $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->get('url'));
-      $this->assertEquals('http://ABC/ I have Spaces in Me', $expanded->get('website'));
+      $prepared = $this->prepare_citation($text);
+      $this->assertNull($prepared->get('url'));
+      $this->assertEquals('http://ABC/ I have Spaces in Me', $prepared->get('website'));
   }
   
   public function testHearst () {
-       $text = '{{cite book|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('Hearst Magazines', $expanded->get('publisher'));
-       $this->assertNull($expanded->get('last1'));
-       $this->assertNull($expanded->get('last'));
-       $this->assertNull($expanded->get('author'));
-       $this->assertNull($expanded->get('author1'));
-       $this->assertNull($expanded->get('authors'));
+    $text = '{{cite book|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Hearst Magazines', $expanded->get('publisher'));
+    $this->assertNull($expanded->get('last1'));
+    $this->assertNull($expanded->get('last'));
+    $this->assertNull($expanded->get('author'));
+    $this->assertNull($expanded->get('author1'));
+    $this->assertNull($expanded->get('authors'));
   }
        
-  public function testLinefeeds(){
-       $text = '{{cite arXiv|eprint=hep-th/0303241}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics', $expanded->get('title'));
-  }
-   public function testInternalCaps() { // checks for title formating in tidy() not breaking things
+  public function testInternalCaps() { // checks for title formating in tidy() not breaking things
       $text = '{{cite journal|journal=ZooTimeKids}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
