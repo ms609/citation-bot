@@ -447,10 +447,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{citation|title=Rubbish|chapter=Dog}}', $prepared->parsed_text());
-      $text = '{{cite book|series=LoSe mE|work=lose Me}}';
+      $text = '{{cite book|series=Keep Series, Lose Work|work=Keep Series, Lose Work}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertEquals('{{cite book|series=LoSe mE}}', $prepared->parsed_text());
+      $this->assertEquals('{{cite book|series=Keep Series, Lose Work}}', $prepared->parsed_text());
       $text = '{{cite journal|chapter=A book chapter|work=A book chapter}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
@@ -467,10 +467,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{citation|journal=Xyz}}', $prepared->parsed_text());
-      $text = '{{citation|work=|chapter=abc}}';
+      $text = '{{citation|work=|chapter=Keep work in Citation template}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertEquals('{{citation|work=|chapter=abc}}', $prepared->parsed_text());
+      $this->assertEquals('{{citation|work=|chapter=Keep work in Citation template}}', $prepared->parsed_text());
       $text = '{{cite journal|work=xyz}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();

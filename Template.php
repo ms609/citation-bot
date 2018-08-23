@@ -2545,8 +2545,12 @@ final class Template {
           $this->change_name_to('Cite journal', FALSE);
           
         case 'chapter': 
-          if ($this->has('chapter') && strcasecmp($this->get('chapter'), $this->get('title')) === 0) {
-            $this->forget('chapter'); break; // Nonsense to have both.
+          if ($this->has('chapter')) {
+            if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
+            if (!strcasecmp($this->get('chapter'), $this->get('title'))) {
+              $this->forget('chapter'); 
+              break; // Nonsense to have both.
+            }
           }
           if ($this->has('chapter') && $this->lacks('journal') 
             && $this->lacks('bibcode') && $this->lacks('jstor') && $this->lacks('pmid')) {
@@ -2595,6 +2599,7 @@ final class Template {
             report_warning('Citation should not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . $this->get('isbn'));
           }
+          if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
           $this->forget('publisher');
           $this->forget('location');
           // No break here: Continue on from journal into periodical
@@ -2649,7 +2654,10 @@ final class Template {
           }
           break;
 
-  
+        case 'series':
+          if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
+          break;
+          
         case 'title':
           $title = $this->get($param);
           $title = straighten_quotes(in_array(mb_substr($title, -1), array('.', ',')) ? mb_substr($title, 0, -1) : $title);
@@ -2679,6 +2687,7 @@ final class Template {
              }
           }
           $this->set($param, $title);
+          if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
           break;
      
         case 'url':
@@ -2690,13 +2699,26 @@ final class Template {
           break;
         
         case 'work':
+          if ($this->has('work')
+          && (  !strcasecmp($this->get('work'), $this->get('series'))
+             || !strcasecmp($this->get('work'), $this->get('title'))
+             || !strcasecmp($this->get('work'), $this->get('journal'))
+             || !strcasecmp($this->get('work'), $this->get('website'))
+             )
+          ) {
+            $this->forget('work');
+            break;
+          }
           switch ($this->wikiname()) {
             case 'cite book': $work_becomes = 'title'; break;
             case 'cite journal': $work_becomes = 'journal'; break;
             case 'cite web': $work_becomes = 'website'; break;
             default: $work_becomes = 'work';
           }
-          if ($this->blank($work_becomes)) {$this->rename('work', $work_becomes);}
+          if ($this->get($param) !== NULL && $this->blank($work_becomes)) {
+            $this->rename('work', $work_becomes);
+          }
+          break;
           
         case 'year':
           if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
@@ -2766,14 +2788,7 @@ final class Template {
         }
       }
       // "Work is a troublesome parameter
-      if ($this->has('work')) {
-         if ((strcasecmp($this->get('work'), $this->get('journal')) === 0)
-         ||  (strcasecmp($this->get('work'), $this->get('title')) === 0)
-         ||  (strcasecmp($this->get('work'), $this->get('series')) === 0) 
-         ||  (strcasecmp($this->get('work'), $this->get('chapter')) === 0)) {
-           $this->forget('work');
-         }
-      } elseif ($this->get('work') !== NULL && $this->blank('work')) { // Have work=, but it is blank
+      if ($this->get('work') !== NULL && $this->blank('work')) { // Have work=, but it is blank
          if ($this->has('journal') ||
              $this->has('newspaper') ||
              $this->has('magazine') ||
