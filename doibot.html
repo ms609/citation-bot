@@ -328,8 +328,9 @@ input.searchButton {
               <label for="edit">Commit edits.  Leave blank to check Wikicode.</label>
             </p>
             <p>
-              <label for="user">Please enter your Wikipedia username below before submitting your query.</</label><br />
-              <input name=user value="" />
+              <label for="user">Please enter your Wikipedia username below before submitting your query.</label><br />
+              <input name=user value="" /> <input type="checkbox" id="saveUsername" name="saveUsername" /> 
+              <label for="saveUsername">Save username?</label>
             </p>
             <p>
               <input type="submit" id="SubmitButton" /> <img style="display:none" src="img/spinner_18_18.gif" id="WaitSpinner" />
