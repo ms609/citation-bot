@@ -1151,7 +1151,9 @@ final class Template {
   public function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
-    if ($SLOW_MODE || $this->has('bibcode')) {
+    if (($SLOW_MODE || $this->has('bibcode')) 
+    &&  !$this->api_has_used('adsabs', equivalent_parameters('bibcode'))
+    ) {
       report_action("Checking AdsAbs database");
       if ($bibcode = $this->has('bibcode')) {
         $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
