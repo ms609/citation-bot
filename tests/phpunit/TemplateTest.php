@@ -78,9 +78,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testJstorExpansion() {
     $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true}}";
-    $expanded = $this->prepare_citation($text);
-    $this->assertEquals('cite journal', $expanded->wikiname());
-    $this->assertEquals('1701972'     , $expanded->get('jstor'));
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $prepared->wikiname());
+    $this->assertEquals('1701972'     , $prepared->get('jstor'));
   }
     
    public function testRISJstorExpansion() {

@@ -1545,7 +1545,7 @@ final class Template {
     }
   }
   
-  protected function expand_by_jstor() {
+  public function expand_by_jstor() {
     if ($this->incomplete() === FALSE) return FALSE;
     if ($this->blank('jstor')) return FALSE;
     $jstor = trim($this->get('jstor'));
