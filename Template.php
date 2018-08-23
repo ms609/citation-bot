@@ -156,7 +156,6 @@ final class Template {
         if ($this->expand_by_jstor()) {
           report_action("Expanded from JSTOR API");
         }
-        $this->sanitize_doi();
         if ($this->verify_doi()) {
           $this->expand_by_doi();
         }
@@ -320,7 +319,6 @@ final class Template {
           if ($this->expand_by_jstor()) {
             report_action("Expanded from JSTOR API");
           }
-          $this->sanitize_doi();
           if ($this->verify_doi()) {
             $this->expand_by_doi();
           }
@@ -2643,6 +2641,9 @@ final class Template {
               report_inaction("Initial authors exist: skipping authorlink whlist tidying citation");
             }
             break;
+          case 'doi': 
+            $p->val = sanitize_doi($p->val);
+            break;
           case 'title':
             $p->val = trim($p->val);
             if(mb_substr($p->val, 0, 1) === '"'   &&
@@ -2828,16 +2829,7 @@ final class Template {
     }
   }
 
-  protected function sanitize_doi($doi = FALSE) {
-    if (!$doi) {
-      $doi = $this->get('doi');
-      if (!$doi) return FALSE;
-    }
-    $this->set('doi', sanitize_doi($doi));
-    return TRUE;
-  }
-
-  protected function verify_doi() {
+  public function verify_doi() {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     // DOI not correctly formatted
