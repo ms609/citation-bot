@@ -153,7 +153,7 @@ class Page {
     $this->expand_templates_from('pmid',    $our_templates, 'pmid_api');
     $this->expand_templates_from('pmc',     $our_templates, 'pmc_api');
     $this->expand_templates_from('bibcode', $our_templates, 'bibcode_api');
-    $this->expand_templates_from('doi',     $our_templates, 'adsabs_doi_api');
+    expand_arxiv_templates($our_templates);
     
     
     for ($i = 0; $i < count($our_templates); $i++) {

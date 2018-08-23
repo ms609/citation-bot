@@ -80,9 +80,95 @@ function entrez_api($ids, $templates, $db) {
 }
 
 function bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
-function adsabs_doi_api($dois, $templates) { 
-  // TODO Don't run this on anything with a bibcode -- as we've already done that. A waste of search effort!
-  return adsabs_api($bibcodes, $templates, 'doi'); 
+
+function expand_arxiv_templates ($templates) {
+  $ids = array();
+  $arxiv_templates = array();
+  foreach ($templates as $this_template) {
+    if ($this_template->wikiname() == 'cite arxiv') {
+      $arxiv_param = 'eprint';
+      $this_template->rename('arxiv', 'eprint');
+    } else {
+      $arxiv_param = 'arxiv';
+      $this_template->rename('eprint', 'arxiv');
+    }
+    $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
+    if ($eprint) {
+      $class = $this_template->get('class');
+      if ($class && stripos($eprint, '/') === FALSE) $eprint = $class . '/' . $eprint;
+      array_push($ids, $eprint);
+      array_push($arxiv_templates, $this_template);
+    }
+  }
+  return arxiv_api($ids, $arxiv_templates);
+}
+
+function arxiv_api($ids, $templates) {
+  if (count($ids) == 0) return FALSE;
+  report_action("Getting data from arXiv API");
+  $context = stream_context_create(array(
+    'http' => array('ignore_errors' => true),
+  ));
+  $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode($ids, ',');
+  var_dump($request);
+  $response = @file_get_contents($request, FALSE, $context);
+  if ($response) {
+    $xml = @simplexml_load_string(
+      preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response)
+    );
+  } else {
+    report_warning("No response from arXiv.");
+    return FALSE;
+  }
+  if ($xml) {
+    if ((string)$xml->entry->title === "Error") {
+      report_warning("arXiv search failed; please report error: " . (string)$xml->entry->summary);
+      return FALSE;
+    }
+  }
+  
+  $this_template = current($templates); // advance at end of foreach loop
+  foreach ($xml->entry as $entry) {
+    $i = 0;
+    foreach ($xml->entry->author as $auth) {
+      $i++;
+      $name = $auth->name;
+      if (preg_match("~(.+\.)(.+?)$~", $name, $names) || preg_match('~^\s*(\S+) (\S+)\s*$~', $name, $names)) {
+        $this_template->add_if_new("last$i", $names[2]);
+        $this_template->add_if_new("first$i", $names[1]);
+      } else {
+        $this_template->add_if_new("author$i", $name);
+      }
+    }
+    $this_template->add_if_new("title", (string) $entry->title); // Formatted by add_if_new
+    $this_template->add_if_new("class", (string) $entry->category["term"]);
+    $this_template->add_if_new("year", substr($entry->published, 0, 4));
+    $this_template->add_if_new("doi", (string) $entry->arxivdoi);
+
+    if ($entry->arxivjournal_ref) {
+      $journal_data = (string) $entry->arxivjournal_ref;
+      if (preg_match("~,(\(?([12]\d{3})\)?).*?$~u", $journal_data, $match)) {
+        $journal_data = str_replace($match[1], "", $journal_data);
+        $this_template->add_if_new("year", $match[1]);
+      }
+      if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
+        $journal_data = str_replace($match[0], "", $journal_data);
+        $this_template->add_if_new("pages", str_replace("--", EN_DASH, $match[0]));
+      }
+      if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
+        $this_template->add_if_new("volume", $match[1]);
+        if (isset($match[2])) {
+          $this_template->add_if_new("issue", $match[2]);
+        }
+        $journal_data = preg_replace("~[\s:,;]*$~", "",
+                str_replace($match[-0], "", $journal_data));
+      }
+      $this_template->add_if_new("journal", wikify_external_text($journal_data));
+    } else {
+      $this_template->add_if_new("year", date("Y", strtotime((string)$entry->published)));
+    }
+    $this_template = next($templates);
+  }
 }
 
 function adsabs_api($ids, $templates, $identifier) {
