@@ -90,10 +90,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testUrlReferencesThatFail() {
-      $text = 'daf sdda <ref name="bob">http://this.fails/nothing< / ref> dfadsf <ref >  http://this.fails/nothing </ref> dsfadfsd';
-      $page = $this->process_page($text);
-      $this->assertEquals($text, $page->parsed_text());
-      $text = 'daf sdda <ref name="bob">[http://this.fails/nothing[< / ref> dfadsf <ref >  [http://this.fails/nothing] </ref> dsfadfsd';
+      $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail';
       $page = $this->process_page($text);
       $this->assertEquals($text, $page->parsed_text());
   }
