@@ -576,7 +576,6 @@ final class Template {
       case 'arxiv':
         if ($this->blank($param_name)) {
           $this->add('arxiv', $value);
-          $this->expand_by_arxiv();
           return TRUE;
         }
         return FALSE;
@@ -1211,7 +1210,7 @@ final class Template {
           } elseif (substr($journal_start, 0, 6) == "eprint") {
             if (substr($journal_start, 7, 6) == "arxiv:") {
               if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
-              if ($this->add_if_new("arxiv", substr($journal_start, 13))) $this->expand_by_arxiv();
+              $this->add_if_new("arxiv", substr($journal_start, 13));
             } else {
               $this->append_to('id', ' ' . substr($journal_start, 13));
             }
@@ -1240,7 +1239,7 @@ final class Template {
           foreach ($record->identifier as $recid) {
             if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
                if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
-               if ($this->add_if_new("arxiv", substr($recid, 6))) $this->expand_by_arxiv();
+               $this->add_if_new("arxiv", substr($recid, 6));
             }
           }
         }
@@ -2475,6 +2474,7 @@ final class Template {
   }
   
   public function tidy_parameter($param) {
+    if (!$param) return FALSE;
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
