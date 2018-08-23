@@ -1408,13 +1408,8 @@ final class Template {
   // $options should be a series of field names, colons (optionally urlencoded), and
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
-<<<<<<< HEAD
-  protected function query_adsabs ($options) {  
-    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-=======
   protected function query_adsabs($options) {  
-    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
->>>>>>> master
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
