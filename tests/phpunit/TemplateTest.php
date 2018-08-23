@@ -755,11 +755,6 @@ ER -  }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals("The macro- and microfossil record of the Cambrian priapulid ''Ottoia''", $expanded->get('title'));
   }
-  public function testTitleCAPS(){
-      $text = 'THIS A JOURNAL';
-      $expanded = title_capitalization($text, TRUE);
-      $this->assertEquals("This a Journal", $expanded);
-  }
   public function testSpeciesCaps() {
     $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
     $expanded = $this->process_citation($text);
