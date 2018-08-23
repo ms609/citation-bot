@@ -137,9 +137,7 @@ final class Template {
           report_action("Expanded from Google Books API");
         }
         $no_isbn_before_doi = $this->blank("isbn");
-        if ($this->verify_doi()) {
-          $this->expand_by_doi();
-        }
+        $this->expand_by_doi();
         if ($no_isbn_before_doi && $this->has("isbn")) {
           if ($this->expand_by_google_books()) {
              report_action("Expanded from Google Books API");
@@ -154,9 +152,7 @@ final class Template {
         if ($this->expand_by_jstor()) {
           report_action("Expanded from JSTOR API");
         }
-        if ($this->verify_doi()) {
-          $this->expand_by_doi();
-        }
+        $this->expand_by_doi();
         $this->expand_by_adsabs(); //Primarily to try to find DOI
         $this->get_doi_from_crossref();
         $this->get_open_access_url();
@@ -272,9 +268,7 @@ final class Template {
             report_action("Expanded from Google Books API");
           }
           $no_isbn_before_doi = $this->blank("isbn");
-          if ($this->verify_doi()) {
-            $this->expand_by_doi();
-          }
+          $this->expand_by_doi();
           if ($no_isbn_before_doi && $this->has("isbn")) {
             if ($this->expand_by_google_books()) {
                report_action("Expanded from Google Books API");
@@ -313,9 +307,7 @@ final class Template {
           if ($this->expand_by_jstor()) {
             report_action("Expanded from JSTOR API");
           }
-          if ($this->verify_doi()) {
-            $this->expand_by_doi();
-          }
+          $this->expand_by_doi();
           $this->expand_by_adsabs(); //Primarily to try to find DOI
           $this->get_doi_from_crossref();
           $this->get_open_access_url();
@@ -711,7 +703,6 @@ final class Template {
       case 'doi':
         if ($this->blank($param_name) && preg_match(DOI_REGEXP, $value, $match)) {
           $this->add('doi', $match[0]);
-          $this->verify_doi();
           $this->expand_by_doi();
           
           return TRUE;
@@ -1037,7 +1028,7 @@ final class Template {
       $this->add_if_new('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
   }
 
-  protected function get_doi_from_crossref() { #TODO test
+  public function get_doi_from_crossref() { #TODO test
     if ($doi = $this->get('doi')) {
       return $doi;
     }
@@ -1099,7 +1090,7 @@ final class Template {
     }
   }
 
-  protected function find_pmid() {
+  public function find_pmid() {
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... " . tag());
     $results = ($this->query_pubmed());
@@ -1487,6 +1478,7 @@ final class Template {
   
   public function expand_by_doi($force = FALSE) {
     $doi = $this->get_without_comments_and_placeholders('doi');
+    if (!$this->verify_doi()) return FALSE;
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $this->add_if_new('jstor', substr($doi, 8));
     }
@@ -1865,7 +1857,7 @@ final class Template {
   }
 
   
-  protected function get_open_access_url() {
+  public function get_open_access_url() {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
