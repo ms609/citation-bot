@@ -2479,8 +2479,10 @@ final class Template {
         // Parameters are listed alphabetically, though those with numerical content are grouped under "year"
 
         case 'accessdate':
-          if ($this->lacks('url') && $this->lacks('chapter-url') && $this->lacks('chapterurl') 
-            && $this->lacks('contribution-url') && $this->lacks('contributionurl')) {
+          if ($this->has('accessdate') && $this->lacks('url') && $this->lacks('chapter-url') 
+          &&  $this->lacks('chapterurl') 
+          &&  $this->lacks('contribution-url') && $this->lacks('contributionurl')
+          ) {
             $this->forget('accessdate');
           }
           break;
