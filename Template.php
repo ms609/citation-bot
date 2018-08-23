@@ -86,7 +86,6 @@ final class Template {
       $this->id_to_param();
       $this->correct_param_spelling();
       $this->get_doi_from_text();
-
       
       switch ($this->wikiname()) {
         case "cite arxiv":
@@ -235,6 +234,7 @@ final class Template {
           break;
       }
     }
+    report_action('Tying up loose ends...');
     $this->final_tidy();
   }
 
