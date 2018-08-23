@@ -322,50 +322,7 @@ final class Template {
           break;
       }
     }
-    if ($this->citation_template) {
-      // Sometimes title and chapter come from different databases
-      if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
-        if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
-            $this->forget('title');
-        } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
-          $this->forget('chapter');
-        }
-      }
-      // Sometimes series and journal come from different databases
-      if ($this->has('series') && $this->has('journal') &&
-          (strcasecmp($this->get('series'), $this->get('journal')) === 0)) {  // Leave only one
-        if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
-            $this->forget('journal');
-        } elseif ($this->wikiname() === 'cite journal'|| $this->wikiname() === 'citation') {
-          $this->forget('series');
-        }
-      }
-      // "Work is a troublesome parameter
-      if ($this->has('work')) {
-         if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0)) ||
-            ($this->has('title') && (strcasecmp($this->get('work'), $this->get('title')) === 0))     ||
-            ($this->has('series') && (strcasecmp($this->get('work'), $this->get('series')) === 0))   || 
-            ($this->has('chapter') && (strcasecmp($this->get('work'), $this->get('chapter')) === 0))) {
-           $this->forget('work');
-         }
-      } elseif ($this->get('work') !== NULL && $this->blank('work')) { // Have work=, but it is blank
-         if ($this->has('journal') ||
-             $this->has('newspaper') ||
-             $this->has('magazine') ||
-             $this->has('periodical') ||
-             $this->has('website')) {
-              $this->forget('work'); // Delete if we have alias
-         } elseif ($this->wikiname() === 'cite web') {
-            $this->rename('work', 'website');
-         } elseif ($this->wikiname() === 'cite journal') {
-            $this->rename('work', 'journal');
-         } elseif ($this->wikiname() === 'cite magazine') {
-            $this->rename('work', 'magazine');
-         }
-      }
-      $this->correct_param_spelling();
-      // $this->check_url(); // Function currently disabled
-    }
+    $this->final_tidy();
   }
 
   protected function incomplete() {
@@ -2799,6 +2756,53 @@ final class Template {
     // Future tidying should occur when parameters are added using tidy_parameter.
     if (!$this->param) return TRUE;
     foreach ($this->param as $param) $this->tidy_parameter($param->param);
+  }
+  
+  public function final_tidy() {
+    if ($this->citation_template) {
+      // Sometimes title and chapter come from different databases
+      if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
+        if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+            $this->forget('title');
+        } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
+          $this->forget('chapter');
+        }
+      }
+      // Sometimes series and journal come from different databases
+      if ($this->has('series') && $this->has('journal') &&
+          (strcasecmp($this->get('series'), $this->get('journal')) === 0)) {  // Leave only one
+        if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+            $this->forget('journal');
+        } elseif ($this->wikiname() === 'cite journal'|| $this->wikiname() === 'citation') {
+          $this->forget('series');
+        }
+      }
+      // "Work is a troublesome parameter
+      if ($this->has('work')) {
+         if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0))
+         ||  ($this->has('title')    && (strcasecmp($this->get('work'), $this->get('title')) === 0)) 
+         ||  ($this->has('series')   && (strcasecmp($this->get('work'), $this->get('series')) === 0)) 
+         ||  ($this->has('chapter')  && (strcasecmp($this->get('work'), $this->get('chapter')) === 0))) {
+           $this->forget('work');
+         }
+      } elseif ($this->get('work') !== NULL && $this->blank('work')) { // Have work=, but it is blank
+         if ($this->has('journal') ||
+             $this->has('newspaper') ||
+             $this->has('magazine') ||
+             $this->has('periodical') ||
+             $this->has('website')) {
+              $this->forget('work'); // Delete if we have alias
+         } elseif ($this->wikiname() === 'cite web') {
+            $this->rename('work', 'website');
+         } elseif ($this->wikiname() === 'cite journal') {
+            $this->rename('work', 'journal');
+         } elseif ($this->wikiname() === 'cite magazine') {
+            $this->rename('work', 'magazine');
+         }
+      }
+      $this->correct_param_spelling();
+      // $this->check_url(); // Function currently disabled
+    }
   }
   
   public function verify_doi() {
