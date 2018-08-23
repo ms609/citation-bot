@@ -2778,10 +2778,10 @@ final class Template {
       }
       // "Work is a troublesome parameter
       if ($this->has('work')) {
-         if (($this->has('journal') && (strcasecmp($this->get('work'), $this->get('journal')) === 0))
-         ||  ($this->has('title')    && (strcasecmp($this->get('work'), $this->get('title')) === 0)) 
-         ||  ($this->has('series')   && (strcasecmp($this->get('work'), $this->get('series')) === 0)) 
-         ||  ($this->has('chapter')  && (strcasecmp($this->get('work'), $this->get('chapter')) === 0))) {
+         if ((strcasecmp($this->get('work'), $this->get('journal')) === 0)
+         ||  (strcasecmp($this->get('work'), $this->get('title')) === 0)
+         ||  (strcasecmp($this->get('work'), $this->get('series')) === 0) 
+         ||  (strcasecmp($this->get('work'), $this->get('chapter')) === 0)) {
            $this->forget('work');
          }
       } elseif ($this->get('work') !== NULL && $this->blank('work')) { // Have work=, but it is blank
