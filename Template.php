@@ -1723,7 +1723,7 @@ final class Template {
     return TRUE;
   }
 
-  protected function expand_by_pubmed($force = FALSE) {
+  public function expand_by_pubmed($force = FALSE) {
     if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) {
       $identifier = 'pmid';
