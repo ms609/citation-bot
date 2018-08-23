@@ -786,19 +786,18 @@ ER -  }}';
    $this->assertEquals('1', $expanded->get('issue'));
    $this->assertEquals('43', $expanded->get('pages'));
   }
+      
+  public function testJstorSICIEncoded() {
+    $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('594900', $expanded->get('jstor'));
+  }
     
-    
-   public function testJstorSICIEncoded() {
-     $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('594900', $expanded->get('jstor'));
-   }
-    
-   public function getDateAndYear($input){
-       if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
-       if (is_null($input->get('date'))) return $input->get('year') ;
-       return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
-   }
+  public function getDateAndYear($input){
+    if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
+    if (is_null($input->get('date'))) return $input->get('year') ;
+    return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
+  }
     
   public function testOverwriteBlanks() {
     $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
