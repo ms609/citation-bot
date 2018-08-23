@@ -2634,7 +2634,7 @@ final class Template {
           $this->change_name_to('Cite journal', FALSE);
           break;
           
-        case 'quote': case 'quotes':
+        case 'quotes':
           switch(strtolower(trim($this->get($param)))) {
             case 'yes': case 'y': case 'true': case 'no': case 'n': case 'false': $this->forget($param);
           }
