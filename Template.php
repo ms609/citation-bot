@@ -2491,14 +2491,14 @@ final class Template {
       
       if ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
-        echo " replaced with $closest (likelihood " . (24 - $shortest) . "/24)"; // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
+        report_inline("replaced with $closest (likelihood " . (24 - $shortest) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
       } else {
         $similarity = similar_text($p->param, $closest) / strlen($p->param);
         if ($similarity > 0.6) {
           $p->param = $closest;
-          echo " replaced with $closest (similarity " . (round(2 * 12 * $similarity, 1)) . "/24)"; // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
+          report_inline("replaced with $closest (similarity " . (round(2 * 12 * $similarity, 1)) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
         } else {
-          echo " could not be replaced with confidence.  Please check the citation yourself.";
+          report_inline("could not be replaced with confidence.  Please check the citation yourself.");
         }
       }
     }
