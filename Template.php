@@ -278,7 +278,6 @@ final class Template {
           $this->citation_template = TRUE;
           echo "\n\n* Expand citation: " . echoable($this->get('title'));
 
-
           if ($this->use_sici()) {
             report_action("Found and used SICI");
           }
@@ -286,7 +285,6 @@ final class Template {
           $this->id_to_param();
           $this->get_doi_from_text();
           $this->correct_param_spelling();
-          // TODO: Check for the doi-inline template in the title
 
           // If the et al. is from added parameters, go ahead and handle
           if (!$this->initial_author_params) {
