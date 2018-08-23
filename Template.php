@@ -206,7 +206,7 @@ final class Template {
   }
   
   public function process() {
-    if (in_array($this->wikiname, TEMPLATES_WE_PROCESS)) {
+    if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS)) {
       $this->use_unnamed_params();
       $this->get_identifiers_from_url();
       $this->prepare();
