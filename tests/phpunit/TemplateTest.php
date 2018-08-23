@@ -121,7 +121,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testPMC2PMID() {
     $text = '{{cite journal|pmc=58796}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('11573006',$expanded->get('pmid'));
+    $this->assertEquals('11573006', $expanded->get('pmid'));
   }
   
   public function testArxivExpansion() {
@@ -351,8 +351,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testDoi2PMID() {
     $text = "{{cite journal|doi=10.1073/pnas.171325998}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('11573006',$expanded->get('pmid'));
-    $this->assertEquals('58796',$expanded->get('pmc'));
+    $this->assertEquals('11573006', $expanded->get('pmid'));
+    $this->assertEquals('58796', $expanded->get('pmc'));
   }
  
   public function testSiciExtraction() {
@@ -449,31 +449,31 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('{{citation|title=Rubbish|chapter=Dog}}', $prepared->parsed_text());
       $text = '{{cite book|series=LoSe mE|work=lose Me}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite book|series=LoSe mE}}',$expanded->parsed_text());
+      $this->assertEquals('{{cite book|series=LoSe mE}}', $expanded->parsed_text());
       $text = '{{cite journal|chapter=abc|work=abc}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{Cite book|chapter=abc}}',$expanded->parsed_text());
+      $this->assertEquals('{{Cite book|chapter=abc}}', $expanded->parsed_text());
       $text = '{{citation|work=I Live}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals($text,$expanded->parsed_text());
+      $this->assertEquals($text, $expanded->parsed_text());
       $text = '{{not cite|work=xyz|chapter=xzy}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{not cite|work=xyz|chapter=xzy}}',$expanded->parsed_text());
+      $this->assertEquals('{{not cite|work=xyz|chapter=xzy}}', $expanded->parsed_text());
       $text = '{{citation|work=xyz|journal=xyz}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{citation|journal=Xyz}}',$expanded->parsed_text());
+      $this->assertEquals('{{citation|journal=Xyz}}', $expanded->parsed_text());
       $text = '{{citation|work=|chapter=abc}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{citation|work=|chapter=abc}}',$expanded->parsed_text());
+      $this->assertEquals('{{citation|work=|chapter=abc}}', $expanded->parsed_text());
       $text = '{{cite journal|work=xyz}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite journal|journal=xyz}}',$expanded->parsed_text());
+      $this->assertEquals('{{cite journal|journal=xyz}}', $expanded->parsed_text());
       $text = '{{cite magazine|work=abc}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite magazine|magazine=abc}}',$expanded->parsed_text());
+      $this->assertEquals('{{cite magazine|magazine=abc}}', $expanded->parsed_text());
       $text = '{{cite journal|work=}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite journal|journal=}}',$expanded->parsed_text());
+      $this->assertEquals('{{cite journal|journal=}}', $expanded->parsed_text());
   }
   
   public function testOrigYearHandling() {
