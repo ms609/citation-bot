@@ -165,8 +165,8 @@ function arxiv_api($ids, $templates) {
         $journal_data = preg_replace("~[\s:,;]*$~", "",
                 str_replace($match[-0], "", $journal_data));
       }
-      if ($this->has('publisher') && $journal_data) {
-        $this->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
+      if ($this_template->has('publisher') && $journal_data) {
+        $this_template->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
       }
       $this_template->add_if_new("journal", wikify_external_text($journal_data));
     } else {
