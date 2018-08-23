@@ -55,6 +55,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
+  protected function getDateAndYear($input){
+    // Generates string that makes debugging easy and will throw error
+    if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
+    if (is_null($input->get('date'))) return $input->get('year') ;
+    return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year');
+  }
+  
   public function testParameterWithNoParameters() {
     $text = "{{Cite web | text without equals sign  }}";
     $expanded = $this->process_citation($text);
@@ -793,12 +800,6 @@ ER -  }}';
     $this->assertEquals('594900', $expanded->get('jstor'));
   }
     
-  public function getDateAndYear($input){
-    if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
-    if (is_null($input->get('date'))) return $input->get('year') ;
-    return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year') ;  // Return string that makes debugging easy and will throw error
-  }
-    
   public function testOverwriteBlanks() {
     $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
     $expanded = $this->process_citation($text);
@@ -811,7 +812,7 @@ ER -  }}';
     $this->assertEquals('http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972', $expanded->get('url'));
     $this->assertNull($expanded->get('jstor'));
   }
-   
+  
   public function testBibcodeDotEnding() {
     $this->requires_secrets(function() {
       $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
@@ -828,76 +829,72 @@ ER -  }}';
     
   public function testPagesDash() {
     $text = '{{cite journal|pages=1-2|title=do change}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('1–2', $expanded->get('pages'));
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('1–2', $prepared->get('pages'));
     $text = '{{cite journal|at=1-2|title=do not change}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('1-2', $expanded->get('at'));
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('1-2', $prepared->get('at'));
     $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]', $expanded->get('pages'));
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]', $prepared->get('pages'));
   }
     
   public function testCollapseRanges() {
     $text = '{{cite journal|pages=1233-1233|year=1999-1999}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('1233', $expanded->get('pages'));
-    $this->assertEquals('1999', $expanded->get('year'));
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('1233', $prepared->get('pages'));
+    $this->assertEquals('1999', $prepared->get('year'));
   }
     
   public function testSmallWords() {
     $text = '{{cite journal|journal=A Word in ny and n y About cow And Then boys the U S A and y and z}}';
-    $expanded = $this->prepare_citation($text);
-    $this->assertEquals('A Word in NY and N Y About Cow and then Boys the U S A and y and Z', $expanded->get('journal')); 
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('A Word in NY and N Y About Cow and then Boys the U S A and y and Z', $prepared->get('journal')); 
     $text = '{{cite journal|journal=Ann of Math}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Ann of Math', $expanded->get('journal')); 
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('Ann of Math', $prepared->get('journal')); 
     $text = '{{cite journal|journal=Ann. of Math.}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Ann. of Math.', $expanded->get('journal')); 
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('Ann. of Math.', $prepared->get('journal')); 
     $text = '{{cite journal|journal=Ann. of Math}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('Ann. of Math', $prepared->get('journal')); 
   }
     
-  public function testSmallWordOrder() {
-    $this->assertEquals(strtoupper(implode(LC_SMALL_WORDS)), strtoupper(impliUC_SMALL_WORDS)); 
+  public function testDoNotAddYearIfDate() {
+    $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('year'));
   }
-  
-   public function testDoNotAddYearIfDate() {
-       $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
-       $expanded = $this->process_citation($text);
-       $this->assertNull($expanded->get('year'));
-   }
                          
-   public function testAccessDates() {
-       $text = '{{cite book |last1=Tanimoto |first1=Toshiro |editor=Thomas J. Ahrens |date=1995 |chapter=Crustal Structure of the Earth |title=Global Earth Physics: A Handbook of Physical Constants |chapter-url=http://www.agu.org/reference/gephys/15_tanimoto.pdf |accessdate=16 October 2006}}';
-       $expanded = $this->process_citation($text);
-       $this->assertNotNull($expanded->get('accessdate'));
-   }
+  public function testAccessDates() {
+    $text = '{{cite book |last1=Tanimoto |first1=Toshiro |editor=Thomas J. Ahrens |date=1995 |chapter=Crustal Structure of the Earth |title=Global Earth Physics: A Handbook of Physical Constants |chapter-url=http://www.agu.org/reference/gephys/15_tanimoto.pdf |accessdate=16 October 2006}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get('accessdate'));
+  }
 
-   public function testIgnoreUnkownCiteTemplates() {
-    $text = "{{Cite headcheese| http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.bad/bad }}";
+  public function testIgnoreUnkownCiteTemplates() {
+    $text = "{{Cite imaginary source | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.bad/bad }}";
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
-  } 
+  }
   
-   public function testJustAnISBN() {
-       $text = '{{cite book |isbn=0471186368}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('Explosives engineering', $expanded->get('title'));
-       $this->assertNull($expanded->get('url'));
-   }
+  public function testJustAnISBN() {
+     $text = '{{cite book |isbn=0471186368}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('Explosives engineering', $expanded->get('title'));
+     $this->assertNull($expanded->get('url'));
+  }
     
-   public function testJustAnOCLC() {
+  public function testJustAnOCLC() {
     $this->requires_secrets(function() {
-       $text = '{{cite book | oclc=9334453}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport', $expanded->get('title'));
+      $text = '{{cite book | oclc=9334453}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport', $expanded->get('title'));
     });
-   }
+  }
 
- public function testJustAnLCCN() {
+  public function testJustAnLCCN() {
     $this->requires_secrets(function() {
       $text = '{{cite book | lccn=2009925036}}';
       $expanded = $this->process_citation($text);
@@ -905,13 +902,13 @@ ER -  }}';
     });
   }
     
- public function testEmptyCitations() {
+  public function testEmptyCitations() {
     $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
     $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
- }
+  }
  
- public function testBadBibcodeARXIVPages() { // Some bibcodes have pages set to arXiv:1711.02260
+  public function testBadBibcodeARXIVPages() { // Some bibcodes have pages set to arXiv:1711.02260
     $text = '{{cite journal|bibcode=2017arXiv171102260L}}';
     $expanded = $this->process_citation($text);
     $pages = $expanded->get('pages');
@@ -919,110 +916,115 @@ ER -  }}';
     $this->assertEquals(FALSE, stripos($pages, 'arxiv'));
     $this->assertEquals(FALSE, stripos('1711', $volume));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
- }
+  }
     
- public function testCitationTemplateWithoutJournal() {
+  public function testCitationTemplateWithoutJournal() {
     $text = '{{citation|url=http://www.word-detective.com/2011/03/mexican-standoff/|title=Mexican standoff|work=The Word Detective|accessdate=2013-03-21}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('isbn')); // This citation used to crash code in ISBN search.  Mostly checking "something" to make Travis CI happy
- }
+  }
 
- public function testLatexMathInTitle() { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
+  public function testLatexMathInTitle() { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc', $expanded->get('title'));
- }
+  }
 
 
- public function testHornorificInTitle() { // compaints about this
+  public function testHornorificInTitle() { // compaints about this
     $text = "{{cite book|title=Letter from Sir Frederick Trench to the Viscount Duncannon on his proposal for a quay on the north bank of the Thames|url=https://books.google.com/books?id=oNBbAAAAQAAJ|year=1841}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('Trench', $expanded->get('last1'));
     $this->assertEquals('Frederick William', $expanded->get('first1')); 
- }
+  }
 
- public function testPageRange() {
-     $text = '{{Citation|doi=10.3406/befeo.1954.5607}}' ;
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('405–554', $expanded->get('pages'));
- }
+  public function testPageRange() {
+    $text = '{{Citation|doi=10.3406/befeo.1954.5607}}' ;
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('405–554', $expanded->get('pages'));
+  }
     
- public function testHDL() {
-     $text = '{{cite journal | pmid = 14527634 | doi = 10.1016/S1095-6433(02)00368-9 }}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('10397/34754', $expanded->get('hdl'));
- }
+  public function testFindHDL() {
+    $text = '{{cite journal | pmid = 14527634 | doi = 10.1016/S1095-6433(02)00368-9 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10397/34754', $expanded->get('hdl'));
+  }
 
- public function testUrlConversions() {
-     $text = '{{cite journal | url= https://mathscinet.ams.org/mathscinet-getitem?mr=0012343 }}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('0012343', $expanded->get('mr'));
-     $this->assertNull($expanded->get('url'));
-     $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('1234231', $expanded->get('ssrn'));
-     $this->assertNull($expanded->get('url'));
-     $text = '{{cite journal | url=https://www.osti.gov/biblio/2341}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('2341', $expanded->get('osti'));
-     $this->assertNull($expanded->get('url'));
-     $text = '{{cite journal | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('2341', $expanded->get('osti'));
-     $this->assertNull($expanded->get('url'));
-     $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:1111.22222}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('1111.22222', $expanded->get('zbl'));
-     $this->assertNull($expanded->get('url'));
-     $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:11.2222.44}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('11.2222.44', $expanded->get('jfm'));
-     $this->assertNull($expanded->get('url'));
- }
+  public function testUrlConversions() {
+    $text = '{{cite journal | url= https://mathscinet.ams.org/mathscinet-getitem?mr=0012343 }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('0012343', $prepared->get('mr'));
+    $this->assertNull($prepared->get('url'));
     
- public function testStripPDF() {
-     $text = '{{cite journal |url=https://link.springer.com/content/pdf/10.1007/BF00428580.pdf}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('10.1007/BF00428580', $expanded->get('doi'));
- }
+    $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('1234231', $prepared->get('ssrn'));
+    $this->assertNull($prepared->get('url'));
     
- public function testRemovePublisherWithWork() {
-     $text = '{{cite journal|jstor=1148172|title=Strategic Acupuncture|work=Foreign Policy|issue=Winter 1980|pages=44–61|publisher=Washingtonpost.Newsweek Interactive, LLC|year=1980}}';
-     $expanded = $this->process_citation($text);
-     $this->assertNull($expanded->get('publisher'));  
- }
+    $text = '{{cite journal | url=https://www.osti.gov/biblio/2341}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('2341', $prepared->get('osti'));
+    $this->assertNull($prepared->get('url'));
     
- public function testRemoveQuotes() {
-     $text = '{{cite journal|title="Strategic Acupuncture"}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('Strategic Acupuncture', $expanded->get('title'));  
- }
+    $text = '{{cite journal | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('2341', $prepared->get('osti'));
+    $this->assertNull($prepared->get('url'));
     
- public function testTrimResearchGateETC() {
-     $want = 'https://www.researchgate.net/publication/320041870';
-     $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals($want, $expanded->get('url'));
-     $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals($want, $expanded->get('url'));
-     $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals($want, $expanded->get('url'));
-     $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals($want, $expanded->get('url'));
-     $text = '{{cite journal|url=http://researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals($want, $expanded->get('url'));
-     
-     $text = '{{cite web|url=http://acADemia.EDU/123456/extra_stuff}}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('https://www.academia.edu/123456', $expanded->get('url')); 
- }
+    $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:1111.22222}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('1111.22222', $prepared->get('zbl'));
+    $this->assertNull($prepared->get('url'));
+    
+    $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:11.2222.44}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('11.2222.44', $prepared->get('jfm'));
+    $this->assertNull($prepared->get('url'));
+  }
+    
+  public function testStripPDF() {
+    $text = '{{cite journal |url=https://link.springer.com/content/pdf/10.1007/BF00428580.pdf}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('10.1007/BF00428580', $prepared->get('doi'));
+  }
+  
+  public function testRemovePublisherWithWork() {
+    $text = '{{cite journal|jstor=1148172|title=Strategic Acupuncture|work=Foreign Policy|issue=Winter 1980|pages=44–61|publisher=Washingtonpost.Newsweek Interactive, LLC|year=1980}}';
+    $expanded = $this->prepare_citation($text);
+    $this->assertNull($expanded->get('publisher'));  
+  }
+    
+  public function testRemoveQuotes() {
+    $text = '{{cite journal|title="Strategic Acupuncture"}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('Strategic Acupuncture', $prepared->get('title'));  
+  }
+    
+  public function testTrimResearchGateETC() {
+    $want = 'https://www.researchgate.net/publication/320041870';
+    $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals($want, $prepared->get('url'));
+    $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals($want, $prepared->get('url'));
+    $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals($want, $prepared->get('url'));
+    $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals($want, $prepared->get('url'));
+    $text = '{{cite journal|url=http://researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals($want, $prepared->get('url'));
+
+    $text = '{{cite web|url=http://acADemia.EDU/123456/extra_stuff}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('https://www.academia.edu/123456', $prepared->get('url')); 
+  }
+  
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
-  Test adding a doi-is-broken modifier to a broken DOI.
   */    
 }
