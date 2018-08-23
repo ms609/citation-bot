@@ -1855,17 +1855,21 @@ final class Template {
             return FALSE;
         }
         $result = @json_decode($string, FALSE);
-        if (isset($result) && isset($result->totalItems)) {
-          if ($result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
-            $gid=$result->items[0]->id;
-            $url = 'https://books.google.com/books?id=' . $gid;
-            // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
+        if (isset($result)) {
+          if (isset($result->totalItems)) {
+            if ($result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
+              $gid=$result->items[0]->id;
+              $url = 'https://books.google.com/books?id=' . $gid;
+              // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
+            } else {
+              report_info("No results for Google API search $url_token");
+            }
+          } elseif (isset($result->error)) {
+            report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));
           } else {
-            report_info("No results for Google API search $url_token");
+            report_warning("Could not parse Google API results for $url_token");
+            return FALSE;
           }
-        } else {
-          report_warning("Could not parse Google API results for $url_token");
-          return FALSE;
         }
       }
     }
