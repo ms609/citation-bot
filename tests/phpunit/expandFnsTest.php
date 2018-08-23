@@ -32,9 +32,9 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testFrenchCapitalization() {
-    $this->assertEquals("L'Aerotecnica", 
+    $this->assertEquals("L'Aerotecnica",
                         title_capitalization(title_case("L'Aerotecnica"), TRUE));
-    $this->assertEquals("Phénomènes d'Évaporation d'Hydrologie", 
+    $this->assertEquals("Phénomènes d'Évaporation d'Hydrologie",
                         title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), TRUE));
     $this->assertEquals("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica",
                         title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE));

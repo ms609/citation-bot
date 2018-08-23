@@ -209,12 +209,12 @@ function restore_italics ($text) {
 function title_capitalization($in, $caps_after_punctuation) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
-  if(mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
+  if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
   
-  if ( $new_case == mb_strtoupper($new_case) 
+  if ($new_case == mb_strtoupper($new_case) 
      && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
      ) {
     // ALL CAPS to Title Case
@@ -258,8 +258,8 @@ function title_capitalization($in, $caps_after_punctuation) {
   
   // Capitalization exceptions, e.g. Elife -> eLife
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
-  $new_case = mb_substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
-    
+  $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
+  
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
   if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
   
