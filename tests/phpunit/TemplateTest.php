@@ -201,9 +201,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     // ISSN should be retained when journal is originally present
     $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $prepared->parsed_text());
     
-    $text = "{{Cite web | Journal=My Journal| issn=1234-4321 | publisher=Unwarranted }}";
+    $text = "{{Cite web | Journal=My Journal| issn=1357-4321 | publisher=Unwarranted }}";
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('{{Cite journal| journal=My Journal| issn=1234-4321}}', $prepared->parsed_text());
+    $this->assertEquals('{{Cite journal| journal=My Journal| issn=1357-4321 }}', $prepared->parsed_text());
   }
 
   public function testRemoveWikilinks() {
