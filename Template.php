@@ -1211,11 +1211,10 @@ final class Template {
       $arxiv_param = 'arxiv';
       $this->rename('eprint', 'arxiv');
     }
-    $class = $this->get('class');
     $eprint = str_ireplace("arXiv:", "", $this->get('eprint') . $this->get('arxiv'));
-    //if ($class && substr($eprint, 0, strlen($class) + 1) == $class . '/')
-    //  $eprint = substr($eprint, strlen($class) + 1);
+    $class = $this->get('class');
     $this->set($arxiv_param, $eprint);
+    if ($class && stripos($eprint, '/') === FALSE) $eprint = $class . '/' . $eprint;
 
     if ($eprint) {
       report_action("Getting data from arXiv " . echoable($eprint));
@@ -1229,12 +1228,16 @@ final class Template {
           preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
         ); // TODO Explore why this is often failing
       } else {
+        report_warning("No response from arXiv.");
         return FALSE;
       }
     }
     
     if ($xml) {
-      if ((string)$xml->entry->title === "Error") return FALSE;
+      if ((string)$xml->entry->title === "Error") {
+        report_warning("arXiv search failed; please report error: " . (string)$xml->entry->summary);
+        return FALSE;
+      }
       $i = 0;
       foreach ($xml->entry->author as $auth) {
         $i++;
