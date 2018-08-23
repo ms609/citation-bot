@@ -2628,13 +2628,13 @@ final class Template {
           case 'last': case 'surname':
             if (!$this->initial_author_params) {
               if ($pmatch[2]) {
-                if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
+                if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $this->get($param), $match)) {
                   $this->add_if_new('authorlink' . $pmatch[2], ucfirst($match[2] ? $match[2] : $match[3]));
                   $this->set($param, $match[3]);
                   report_modification("Dissecting authorlink" . tag());
                 }
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
-                if (preg_match($translator_regexp, trim($p->val), $match)) {
+                if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
                   $others = "{$match[1]} {$match[5]}";
                   if ($this->has('others')) {
                     $this->append_to('others', '; ' . $others);
@@ -3072,7 +3072,9 @@ final class Template {
 
   public function add($par, $val) {
     report_add("Adding $par: $val" .tag());
-    return $this->set($par, $val);
+    $could_set = $this->set($par, $val);
+    $this->tidy_parameter($par);
+    return $could_set;
   }
   
   protected function set($par, $val) {
