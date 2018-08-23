@@ -32,7 +32,8 @@ final class Template {
       'adsabs'   => array(),
       'arxiv'    => array(), 
       'crossref' => array(), 
-      'entrez'   => array(), 
+      'entrez'   => array(),
+      'jstor'    => array(),
     );
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
@@ -2715,10 +2716,11 @@ final class Template {
       if ($this->doi_active($try)) {
         expand_by_doi($this, $try);
         $this->set('doi', $try);
+        $this->doi_valid = TRUE;
         $doi = $try;
         break;
       }
-    } else {    
+    } else {
       report_info("Checking that DOI " . echoable($doi) . " is operational..." . tag());
       if (doi_active($this->get_without_comments_and_placeholders('doi')) === FALSE) {
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
