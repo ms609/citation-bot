@@ -566,9 +566,7 @@ final class Template {
         
       case 'doi':
         if ($this->blank($param_name) && preg_match(REGEXP_DOI, $value, $match)) {
-          $this->add('doi', $match[0]);
-          $this->expand_by_doi();
-          
+          $this->add('doi', $match[0]);          
           return TRUE;
         }
         return FALSE;
@@ -1243,8 +1241,8 @@ final class Template {
             }
           }
         }
-        if (isset($record->doi) && $this->add_if_new('doi', (string) $record->doi[0])) {
-          $this->expand_by_doi();
+        if (isset($record->doi)) {
+          $this->add_if_new('doi', (string) $record->doi[0]);          
         }
         return TRUE;
       } else {
@@ -1650,9 +1648,7 @@ final class Template {
               case "doi": case "pii":
               default:
                 if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
-                  if ($this->add_if_new('doi', $match[0])) {
-                    $this->expand_by_doi();
-                  }
+                  $this->add_if_new('doi', $match[0]);
                 }
                 if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
                   $this->add_if_new('pmc', substr($match[0], 3));
@@ -2841,7 +2837,7 @@ final class Template {
         break;
       }
     } else {    
-      report_action("Checking that DOI " . echoable($doi) . " is operational..." . tag());
+      report_info("Checking that DOI " . echoable($doi) . " is operational..." . tag());
       if ($this->doi_active() === FALSE) {
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
         // if present, with new "doi-broken-date"
@@ -3115,7 +3111,7 @@ final class Template {
     }
   }
 
-  protected function forget($par) {
+  public function forget($par) {
     if ($par == 'url') {
       $this->forget('format');
       $this->forget('accessdate');
@@ -3129,7 +3125,7 @@ final class Template {
     if ($pos !== NULL) {
       if ($this->has($par) && strpos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
         // Do not mention forgetting empty parameters
-        report_forget("Dropping parameter " . echoable($par) . tag());
+        report_forget("Dropping parameter \"" . echoable($par) . '"' . tag());
       }
       unset($this->param[$pos]);
     }
