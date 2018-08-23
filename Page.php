@@ -173,7 +173,7 @@ class Page {
       if (!$this_template->initial_author_params()) {
         $this_template->handle_et_al();
       }
-      $this->template->final_tidy();
+      $this_template->final_tidy();
       
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
