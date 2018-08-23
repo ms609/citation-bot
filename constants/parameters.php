@@ -214,7 +214,9 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
 // that information can also be presented using the generic {{citation}} template, which we do modify.
 // This list even includes items that are no longer supported, since we need to leave fixing them to humans
 // See https://en.wikipedia.org/wiki/Module:Citation/CS1/Whitelist
-const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'Author', 'Author#', 'BIBCODE',
+const PARAMETER_LIST = array(
+'CITATION_BOT_PLACEHOLDER_BARE_URL',
+'ARXIV', 'ASIN', 'ASIN-TLD', 'Author', 'Author#', 'BIBCODE',
 'DOI', 'DoiBroken', 'EISSN', 'Editor', 'Editor#', 'EditorGiven',
 'EditorGiven#', 'EditorSurname', 'EditorSurname#', 'Embargo', 'HDL',
 'ID', 'ISBN', 'ISBN13', 'ISMN', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR',
