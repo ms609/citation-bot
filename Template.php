@@ -2730,7 +2730,7 @@ final class Template {
           if (mb_substr_count($title, '[[') !== 1 ||  // Completely remove multiple wikilinks
               mb_substr_count($title, ']]') !== 1) {
              $title = preg_replace("~\[\[([^|]+?)\]\]~", "$1", $title);   // Convert [[X]] wikilinks into X
-             $title = preg_replace("~\[\[[^|]+?\|([^|]+?)\]\]~", "$4", $title);   // Convert [[Y|X]] wikilinks into X
+             $title = preg_replace("~\[\[[^|]+?\|([^|]+?)\]\]~", "$1", $title);   // Convert [[Y|X]] wikilinks into X
              $title = preg_replace("~\[\[~", "", $title); // Remove any extra [[ or ]] that should not be there
              $title = preg_replace("~\]\]~", "", $title);
           } else { // Convert a single link to a title-link
