@@ -78,17 +78,6 @@ final class Template {
     }
   }
 
-  protected function parameter_names_to_lowercase() {
-    if (is_array($this->param)) {
-      $keys = array_keys($this->param);
-      for ($i=0; $i < count($keys); $i++) {
-        $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
-      }
-    } else {
-      $this->param = strtolower($this->param);
-    }
-  }
-
   public function prepare() {
     if ($this->should_be_processed()) {
       $this->use_unnamed_params();
@@ -129,7 +118,7 @@ final class Template {
       case 'cite web':
         if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
           report_action("Expanded from Google Books API");
-          $this->name = 'Cite book'; // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
+          $this->change_name_to('Cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
         }
       break;
       case 'cite arxiv':
@@ -159,44 +148,6 @@ final class Template {
     }
   }
   
-  public function update_template_name() {
-    switch ($this->wikiname()) {
-      case 'cite web':
-        if ($this->has('journal') || $this->has('bibcode') 
-           || $this->has('jstor') || $this->has('doi') 
-           || $this->has('pmid') || $this->has('pmc')
-            ) {
-          $this->name = 'Cite journal';
-        } elseif ($this->has('arxiv')) {
-          $this->name = 'Cite arxiv';
-          $this->rename('arxiv', 'eprint');
-        } elseif ($this->has('eprint')) {
-          $this->name = 'Cite arxiv';
-        }
-      break;
-      case 'cite arxiv':
-        if ($this->has('journal')) {
-          $this->name = 'Cite journal';
-          $this->rename('eprint', 'arxiv');
-          $this->forget('class');
-          $this->forget('publisher');  // This is either bad data, or refers to ARXIV preprint, not the journal that we have just added.
-                                       // Therefore remove incorrect data
-        } else if ($this->has('doi')) { // cite arxiv does not support DOI's
-          $this->name = 'Cite journal';
-          $this->rename('eprint', 'arxiv');
-          // $this->forget('class');      Leave this for now since no journal title
-          $this->forget('publisher');  // Since we have no journal, we cannot have a publisher
-        }
-      break;
-      case "cite journal":
-        // Convert from journal to book, if there is a unique chapter name or has an ISBN
-        if ($this->has('chapter') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
-          $this->name = 'Cite book';
-        }
-      break;
-    }
-  }
-  
   public function process() {
     if ($this->should_be_processed()) {
       $this->use_unnamed_params();
@@ -208,20 +159,7 @@ final class Template {
             report_action("Expanded from Google Books API");
             $this->name = 'Cite book'; // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
           }
-          if ($this->has('journal') || $this->has('bibcode') 
-             || $this->has('jstor') || $this->has('doi') 
-             || $this->has('pmid') || $this->has('pmc')
-              ) {
-            $this->name = 'Cite journal';
-            $this->process();
-          } elseif ($this->has('arxiv')) {
-            $this->name = 'Cite arxiv';
-            $this->rename('arxiv', 'eprint');
-            $this->process();
-          } elseif ($this->has('eprint')) {
-            $this->name = 'Cite arxiv';
-            $this->process();
-          }
+          $this->process();
         break;
         case 'cite arxiv':
           $this->expand_by_arxiv();
@@ -236,19 +174,6 @@ final class Template {
           } else {
               $this->forget('CITATION_BOT_PLACEHOLDER_year');
               $this->forget('CITATION_BOT_PLACEHOLDER_date');        
-          }
-
-          if ($this->has('journal')) {
-            $this->name = 'Cite journal';
-            $this->rename('eprint', 'arxiv');
-            $this->forget('class');
-            $this->forget('publisher');  // This is either bad data, or refers to ARXIV preprint, not the journal that we have just added.
-                                         // Therefore remove incorrect data
-          } else if ($this->has('doi')) { // cite arxiv does not support DOI's
-            $this->name = 'Cite journal';
-            $this->rename('eprint', 'arxiv');
-            // $this->forget('class');      Leave this for now since no journal title
-            $this->forget('publisher');  // Since we have no journal, we cannot have a publisher
           }
         break;
         case 'cite book':
@@ -1324,7 +1249,7 @@ final class Template {
         }
         return TRUE;
       } else {
-        echo ": no record retrieved." . tag();
+        report_inline('no record retrieved.');
         return FALSE;
       }
     } else {
@@ -1610,7 +1535,7 @@ final class Template {
         }
   }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
-  // For the specific implementation that we use, search fot citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
+  // For the specific implementation that we use, search for citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
   // This is just an API that calls the JSTOR RIS system above
   // Leave this code here, since Citoid can be used for many many things.
  /**
@@ -1798,7 +1723,6 @@ final class Template {
     return FALSE;
   }
 
-  
   public function get_open_access_url() {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
@@ -2043,6 +1967,24 @@ final class Template {
   }
 
   ### parameter processing
+  protected function parameter_names_to_lowercase() {
+    if (is_array($this->param)) {
+      $keys = array_keys($this->param);
+      $to_tidy = array();
+      for ($i = 0; $i < count($keys); $i++) {
+        if (!ctype_lower($this->param[$keys[$i]]->param)) {
+          $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
+          array_push($to_tidy, $this->param[$keys[$i]]->param);
+        }
+      }
+    } else {
+      $this->param = strtolower($this->param);
+      $to_tidy = array($this->param);
+    }
+    // Tidy afterwards, to avoid modifying array index
+    foreach ($to_tidy as $param) $this->tidy_parameter($param);
+  }
+
   protected function use_unnamed_params() {
     if (empty($this->param)) return;
     
@@ -2496,13 +2438,6 @@ final class Template {
   }
 }
 
-  // TODO this is not called from anywhere - it used to be.  Where is it useful?
-  protected function remove_non_ascii() {
-    for ($i = 0; $i < count($this->param); $i++) {
-      $this->param[$i]->val = preg_replace('/[^\x20-\x7e]/', '', $this->param[$i]->val); // Remove illegal non-ASCII characters such as invisible spaces
-    }
-  }
-
   protected function join_params() {
     $ret = '';
     if ($this->param) {
@@ -2513,6 +2448,24 @@ final class Template {
     return $ret;
   }
 
+  protected function change_name_to($new_name, $rename_cite_book = TRUE) {
+    if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
+    && ($rename_cite_book || $this->wikiname() != 'cite book')
+    &&  lcfirst($new_name) != $this->wikiname()
+    ) {
+      $this->name = ucfirst(strtolower($new_name));
+      switch (strtolower($new_name)) {
+        case 'cite journal': 
+          $this->rename('eprint', 'arxiv'); 
+          $this->forget('class'); 
+          break;
+        case 'cite arxiv': 
+          $this->rename('arxiv', 'eprint');
+          break;
+      }
+    }
+  }
+  
   public function wikiname() {
     return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
   }
@@ -2536,6 +2489,11 @@ final class Template {
           }
           break;
 
+        case 'arxiv':
+          if ($this->has($param) && $this->wikiname() == 'cite web') {
+            $this->change_name_to('cite arxiv');
+          }
+          
         case 'author': case 'authors':
           if (!$pmatch[2]) {
             if ($this->has('author') && $this->has('authors')) {
@@ -2583,10 +2541,16 @@ final class Template {
             }
             break;
 
+        case 'bibcode':
+          $this->change_name_to('Cite journal', FALSE);
+          
         case 'chapter': 
-          if (!$this->blank('chapter')
-          &&  in_array($this->wikiname(), array('cite journal', 'cite web'))) {
-            $this->name = 'Cite book';
+          if ($this->has('chapter') && strcasecmp($this->get('chapter'), $this->get('title')) === 0) {
+            $this->forget('chapter'); break; // Nonsense to have both.
+          }
+          if ($this->has('chapter') && $this->lacks('journal') 
+            && $this->lacks('bibcode') && $this->lacks('jstor') && $this->lacks('pmid')) {
+            $this->change_name_to('Cite book');
           }
           break;
     
@@ -2602,7 +2566,8 @@ final class Template {
             $this->forget('doi'); 
             break;
           }
-          $this->set($param, sanitize_doi($doi));              
+          $this->set($param, sanitize_doi($doi));
+          $this->change_name_to('Cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
@@ -2612,6 +2577,9 @@ final class Template {
           $this->set($param, preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
           break; // Don't want 'Edition ed.'
         
+        case 'eprint':
+          if ($this->wikiname == 'cite web') $this->change_name_to('cite arxiv');
+        
         case 'isbn':
           if ($this->lacks('isbn')) break;
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
@@ -2620,6 +2588,13 @@ final class Template {
           
         case 'journal':
           if ($this->lacks($param)) return;
+          if ($this->lacks('chapter') || $this->lacks('isbn')) {
+            // Avoid renaming between cite journal and cite book
+            $this->change_name_to('Cite journal');
+          } else {
+            report_warning('Citation should not have journal = ' . $this->get('journal')
+            . ' as well as chapter / ISBN ' . $this->get('chapter') . $this->get('isbn'));
+          }
           $this->forget('publisher');
           $this->forget('location');
           // No break here: Continue on from journal into periodical
@@ -2650,6 +2625,9 @@ final class Template {
           }
           break;
         
+        case 'jstor':
+          $this->change_name_to('Cite journal', FALSE);
+        
         case 'origyear':
           if ($this->has('origyear') && $this->blank(array('date', 'year'))) {
             $this->rename('origyear', 'year');
@@ -2660,6 +2638,9 @@ final class Template {
           if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
              $this->set($param, $matches[1]);
           }
+          // No break; continue from pmc to pmid:
+        case 'pmid':
+          $this->change_name_to('Cite journal', FALSE);
           break;
           
         case 'quotes':
@@ -3190,21 +3171,21 @@ final class Template {
   }
   
   protected function isbn10Toisbn13($isbn10) {
-       $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
-       $isbn10 = str_replace(array('—', '?', '–', '-', '?'), '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
-       if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
-       if (substr($isbn10, -1) === "-" || substr($isbn10, 0, 1) === "-") return $isbn10;  // Ends or starts with a dash
-       $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
-       if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
-       $isbn13 = '978' . substr($isbn13, 0, -1);  // Convert without check digit - do not need and might be X
-       if (preg_match("~[^0123456789]~", $isbn13) === 1)  return $isbn10;  // Not just numbers
-       $sum = 0;
-       for ($count=0; $count<12; $count++ ) {
-          $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
-       }
-       $sum = ((10-$sum%10)%10) ;
-       $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
-       quietly('report_modification', "Converted ISBN10 to ISBN13");
-       return $isbn13;
+    $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
+    $isbn10 = str_replace(array('—', '?', '–', '-', '?'), '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
+    if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
+    if (substr($isbn10, -1) === "-" || substr($isbn10, 0, 1) === "-") return $isbn10;  // Ends or starts with a dash
+    $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
+    if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
+    $isbn13 = '978' . substr($isbn13, 0, -1);  // Convert without check digit - do not need and might be X
+    if (preg_match("~[^0123456789]~", $isbn13) === 1)  return $isbn10;  // Not just numbers
+    $sum = 0;
+    for ($count=0; $count<12; $count++ ) {
+      $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
+    }
+    $sum = ((10-$sum%10)%10) ;
+    $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
+    quietly('report_modification', "Converted ISBN10 to ISBN13");
+    return $isbn13;
   }
 }

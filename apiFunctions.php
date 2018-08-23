@@ -140,21 +140,18 @@ function arxiv_api($ids, $templates) {
     }
     $this_template->add_if_new("title", (string) $entry->title); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"]);
-    if (isset($entry->arxivjournal_ref) && preg_match("~2[01]\d\d$~", $entry->arxivjournal_ref, $match)) {
-    $current_year = $this_template->get_without_comments_and_placeholders('year');
-      if (!$current_year
-      ||  preg_match('~\d{4}~', $current_year) && $current_year < $match[0]) {
-        $this_template->set('year', $match[0]);
-      }
-    }
     $this_template->add_if_new("year", substr($entry->published, 0, 4));
     $this_template->add_if_new("doi", (string) $entry->arxivdoi);
 
-    if ($entry->arxivjournal_ref) {
+    if ($entry->arxivjournal_ref) {  
       $journal_data = (string) $entry->arxivjournal_ref;
       if (preg_match("~,(\(?([12]\d{3})\)?).*?$~u", $journal_data, $match)) {
         $journal_data = str_replace($match[1], "", $journal_data);
-        $this_template->add_if_new("year", $match[1]);
+        $current_year = $this_template->get_without_comments_and_placeholders('year');
+        if (!$current_year
+        ||  preg_match('~\d{4}~', $current_year) && $current_year < $match[0]) {
+          $this_template->add('year', $match[0]);
+        }
       }
       if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
         $journal_data = str_replace($match[0], "", $journal_data);
@@ -167,6 +164,9 @@ function arxiv_api($ids, $templates) {
         }
         $journal_data = preg_replace("~[\s:,;]*$~", "",
                 str_replace($match[-0], "", $journal_data));
+      }
+      if ($this->has('publisher') && $journal_data) {
+        $this->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
       }
       $this_template->add_if_new("journal", wikify_external_text($journal_data));
     } else {

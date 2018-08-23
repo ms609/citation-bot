@@ -197,13 +197,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
     $text = "{{Cite web | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01|quotes=no}}";
-    $expanded = $this->process_citation($text);
+    $prepared = $this->prepare_citation($text);
     // ISSN should be retained when journal is originally present
-    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $expanded->parsed_text());
+    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $prepared->parsed_text());
     
     $text = "{{Cite web | Journal=My Journal| issn=1234-4321 | publisher=Unwarranted }}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('{{Cite journal| journal=My Journal| issn=1234-4321}}', $expanded->parsed_text());
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('{{Cite journal| journal=My Journal| issn=1234-4321}}', $prepared->parsed_text());
   }
 
   public function testRemoveWikilinks() {
