@@ -323,6 +323,9 @@ function query_doi_api($ids, $templates) {
 }
 
 function expand_by_doi($template, $force = FALSE) {
+  // Because it can recover rarely used parameters such as editors, series & isbn, 
+  // there will be few instances where it could not in principle be profitable to 
+  // run this function, so we don't check this first.
   $doi = $template->get_without_comments_and_placeholders('doi');
   if (!$template->verify_doi()) return FALSE;
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
@@ -332,7 +335,7 @@ function expand_by_doi($template, $force = FALSE) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
-      report_action("Expanding from crossRef record" . tag());
+      report_action("Expanding from crossRef record with doi:" . $doi);
 
       if ($crossRef->volume_title && $template->blank('journal')) {
         $template->add_if_new('chapter', $crossRef->article_title); // add_if_new formats this value as a title
@@ -386,7 +389,6 @@ function expand_by_doi($template, $force = FALSE) {
           $template->add_if_new("pages", $crossRef->first_page);
         }
       }
-      report_inline('(ok)');
     } else {
       report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
       $url_test = "https://dx.doi.org/".$doi ;

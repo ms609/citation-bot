@@ -23,7 +23,7 @@ final class Template {
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
-            $used_by_api,
+            $used_by_api, $doi_valid = FALSE,
             $mod_dashes;
 
   public function parse_text($text) {
@@ -2687,6 +2687,8 @@ final class Template {
   public function verify_doi() {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
+    if ($this->doi_valid) return TRUE;
+    
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
       case ".":
@@ -2739,6 +2741,7 @@ final class Template {
         $this->forget('doi_inactivedate');
         $this->forget('doi-broken-date');
         $this->forget('doi-inactive-date');
+        $this->doi_valid = TRUE;
         report_inline('DOI ok.');
         return TRUE;
       }
