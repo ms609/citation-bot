@@ -3005,6 +3005,7 @@ final class Template {
         }
       }
     }
+    report_modification("Renamed \"$old_param\" -> \"$new_param\"");
     $this->tidy_parameter($new_param);
   }
 
