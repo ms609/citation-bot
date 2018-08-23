@@ -140,6 +140,7 @@ class Page {
         // This is a work in progress...
         $this_template = $all_templates[$i];
         array_push($our_templates, $this_template);
+        
         $this_template->prepare();
       } else if ($all_templates[$i]->wikiname() == 'cite magazine' 
                  && $all_templates[$i]->blank('magazine') 
@@ -149,7 +150,7 @@ class Page {
       }
     }
     
-    ////////////API CALLS
+    //////////// BATCH API CALLS
     $this->expand_templates_from('pmid',    $our_templates, 'pmid_api');
     $this->expand_templates_from('pmc',     $our_templates, 'pmc_api');
     $this->expand_templates_from('bibcode', $our_templates, 'bibcode_api');

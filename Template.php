@@ -1202,7 +1202,6 @@ final class Template {
     return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
   }
 
-  ### Obtain data from external database
   public function expand_by_arxiv() {
     if ($this->wikiname() == 'cite arxiv') {
       $arxiv_param = 'eprint';
