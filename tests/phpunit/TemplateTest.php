@@ -170,9 +170,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testDoiExpansion() {
     $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded->wikiname());
-    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $prepared->wikiname());
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $prepared->get('doi'));
   }
 
   public function testDoiExpansionBook() {
@@ -444,35 +444,45 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
-      $prepared = $this->process_citation($text);
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
       $this->assertEquals('{{citation|title=Rubbish|chapter=Dog}}', $prepared->parsed_text());
       $text = '{{cite book|series=LoSe mE|work=lose Me}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite book|series=LoSe mE}}', $expanded->parsed_text());
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{cite book|series=LoSe mE}}', $prepared->parsed_text());
       $text = '{{cite journal|chapter=abc|work=abc}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('{{Cite book|chapter=abc}}', $expanded->parsed_text());
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{Cite book|chapter=abc}}', $prepared->parsed_text());
       $text = '{{citation|work=I Live}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals($text, $expanded->parsed_text());
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
       $text = '{{not cite|work=xyz|chapter=xzy}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('{{not cite|work=xyz|chapter=xzy}}', $expanded->parsed_text());
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{not cite|work=xyz|chapter=xzy}}', $prepared->parsed_text());
       $text = '{{citation|work=xyz|journal=xyz}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('{{citation|journal=Xyz}}', $expanded->parsed_text());
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|journal=Xyz}}', $prepared->parsed_text());
       $text = '{{citation|work=|chapter=abc}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('{{citation|work=|chapter=abc}}', $expanded->parsed_text());
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|work=|chapter=abc}}', $prepared->parsed_text());
       $text = '{{cite journal|work=xyz}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite journal|journal=xyz}}', $expanded->parsed_text());
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{cite journal|journal=xyz}}', $prepared->parsed_text());
       $text = '{{cite magazine|work=abc}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite magazine|magazine=abc}}', $expanded->parsed_text());
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{cite magazine|magazine=abc}}', $prepared->parsed_text());
       $text = '{{cite journal|work=}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite journal|journal=}}', $expanded->parsed_text());
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{cite journal|journal=}}', $prepared->parsed_text());
   }
   
   public function testOrigYearHandling() {
