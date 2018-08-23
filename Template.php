@@ -2570,7 +2570,6 @@ final class Template {
   }
   
   public function tidy_parameter($param) {
-    if ($this->lacks($param)) return NULL;
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
@@ -2640,6 +2639,7 @@ final class Template {
           
         case 'doi':
           $doi = $this->get($param);
+          if (!$doi) break;
           if ($doi == "10.1267/science.040579197") {
             // This is a bogus DOI from the PMID example file
             $this->forget('doi'); 
@@ -2656,11 +2656,13 @@ final class Template {
           break; // Don't want 'Edition ed.'
         
         case 'isbn':
+          if ($this->lacks('isbn')) break;
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
           $this->forget('asin');
           break;
           
         case 'journal': 
+          if ($this->lacks($param)) return;
           $this->forget('publisher');
           $this->forget('location');
           // No break here: Continue on from journal into periodical
@@ -2694,7 +2696,7 @@ final class Template {
           break;
         
         case 'origyear':
-          if ($this->blank(array('date', 'year'))) {
+          if ($this->has('origyear') && $this->blank(array('date', 'year'))) {
             $this->rename('origyear', 'year');
           }
           break;
@@ -2707,7 +2709,7 @@ final class Template {
           
         case 'quotes':
           switch(strtolower(trim($this->get('quotes')))) {
-            case 'yes': case 'y': case 'TRUE': case 'no': case 'n': case 'FALSE': $this->forget('quotes');
+            case 'yes': case 'y': case 'true': case 'no': case 'n': case 'false': $this->forget('quotes');
           }
           break;
 

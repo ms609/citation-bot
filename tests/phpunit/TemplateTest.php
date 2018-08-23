@@ -189,8 +189,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testEmptyCoauthor() {
     $text = '{{Cite journal|pages=2| coauthor= |coauthors= }}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('{{Cite journal|pages=2}}', $expanded->parsed_text());
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('{{Cite journal|pages=2}}', $prepared->parsed_text());
   }
 
   public function testGarbageRemovalAndSpacing() {
