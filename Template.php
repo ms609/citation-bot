@@ -2618,7 +2618,7 @@ final class Template {
           $this->forget('asin');
           break;
           
-        case 'journal': 
+        case 'journal':
           if ($this->lacks($param)) return;
           $this->forget('publisher');
           $this->forget('location');
@@ -3002,7 +3002,7 @@ final class Template {
 
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
-    if($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
+    if ($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
     if (!isset($this->param)) return FALSE;
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
@@ -3012,6 +3012,7 @@ final class Template {
         }
       }
     }
+    $this->tidy_parameter($new_param);
   }
 
   public function get($name) {
