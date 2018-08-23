@@ -23,10 +23,17 @@ final class Template {
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
+            $used_by_api,
             $mod_dashes;
 
   public function parse_text($text) {
     $this->initial_author_params = NULL; // Will be populated later if there are any
+    $this->used_by_api = array(
+      'adsabs'   => array(),
+      'arxiv'    => array(), 
+      'crossref' => array(), 
+      'entrez'   => array(), 
+    );
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
     }
@@ -145,6 +152,16 @@ final class Template {
         $this->find_pmid();
       break;
     }
+  }
+  
+  public function record_api_usage($api, $param) {
+    if (!is_array($param)) $param = array($param);
+    foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
+  }
+  
+  public function api_has_used($api, $param) {
+    if (!isset($this->used_by_api[$api])) trigger_error("Invalid API: $api", E_USER_ERROR);
+    return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
   public function process() {
@@ -1855,17 +1872,21 @@ final class Template {
             return FALSE;
         }
         $result = @json_decode($string, FALSE);
-        if (isset($result) && isset($result->totalItems)) {
-          if ($result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
-            $gid=$result->items[0]->id;
-            $url = 'https://books.google.com/books?id=' . $gid;
-            // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
+        if (isset($result)) {
+          if (isset($result->totalItems)) {
+            if ($result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
+              $gid=$result->items[0]->id;
+              $url = 'https://books.google.com/books?id=' . $gid;
+              // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
+            } else {
+              report_info("No results for Google API search $url_token");
+            }
+          } elseif (isset($result->error)) {
+            report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));
           } else {
-            report_info("No results for Google API search $url_token");
+            report_warning("Could not parse Google API results for $url_token");
+            return FALSE;
           }
-        } else {
-          report_warning("Could not parse Google API results for $url_token");
-          return FALSE;
         }
       }
     }

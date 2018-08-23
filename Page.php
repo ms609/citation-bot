@@ -81,31 +81,33 @@ class Page {
   // $parameter: parameter to send to api_function, e.g. "pmid"
   // $templates: Array of pointers to the templates
   // $api_function: string naming a function (specified in apiFunctions.php) 
-  //                that takes the value of $templates->get($parameter) as an array;
+  //                that takes the value of $templates->get($identifier) as an array;
   //                returns key-value array of items to be set, if new, in each template.
-  public function expand_templates_from($parameter, $templates, $api_function) {
+  public function expand_templates_from_identifier($identifier, $templates) {
     $ids = array();
+    switch ($identifier) {
+      case 'pmid': 
+      case 'pmc':     $api = 'entrez';   break;
+      case 'bibcode': $api = 'adsabs';   break;
+      case 'doi':     $api = 'crossref'; break;
+      default:        $api = $identifier;
+    }
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
-        if ($templates[$i]->has($parameter)) {
-          $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($parameter);
+      if ($templates[$i]->has($identifier)
+        && !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {
+          $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
+          $templates[$i]->record_api_usage($api, $identifier);
         }
       }
     }
+    $api_function = 'query_' . $identifier . '_api';
     $api_function($ids, $templates);
   }
   
   public function expand_text() {
     date_default_timezone_set('UTC');
-    $url_encoded_title =  urlencode($this->title);
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title' style='text-weight:bold;'>" 
-      . htmlspecialchars($this->title)
-      . "</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
-      . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
-      . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
-      . "document.title=\"Citation bot: '"
-      . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
-      "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
+    $this->announce_page();
     $this->modifications = array();
     if (!$this->text) {
       report_warning("No text retrieved.\n");
@@ -127,7 +129,7 @@ class Page {
                       $this->text
                       );
 
-    // TEMPLATES //
+    // TEMPLATES
     $all_templates = $this->extract_object('Template');
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
@@ -151,11 +153,11 @@ class Page {
       }
     }
     
+    // BATCH API CALLS
     report_phase('Consulting APIs to expand templates');
-    //////////// BATCH API CALLS
-    $this->expand_templates_from('pmid',    $our_templates, 'pmid_api');
-    $this->expand_templates_from('pmc',     $our_templates, 'pmc_api');
-    $this->expand_templates_from('bibcode', $our_templates, 'bibcode_api');
+    $this->expand_templates_from_identifier('pmid',    $our_templates);
+    $this->expand_templates_from_identifier('pmc',     $our_templates);
+    $this->expand_templates_from_identifier('bibcode', $our_templates);
     expand_arxiv_templates($our_templates);
     
     report_phase('Expanding individual templates by API calls');
@@ -275,6 +277,18 @@ class Page {
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
 
+  protected function announce_page() {
+    $url_encoded_title =  urlencode($this->title);
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title' style='text-weight:bold;'>" 
+        . htmlspecialchars($this->title)
+        . "</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
+        . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
+        . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
+        . "document.title=\"Citation bot: '"
+        . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
+        "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
+  }
+  
   protected function allow_bots() {
     // from https://en.wikipedia.org/wiki/Template:Bots
     $bot_username = '(?:Citation|DOI)[ _]bot';
