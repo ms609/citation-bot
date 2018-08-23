@@ -2523,7 +2523,7 @@ final class Template {
   }
   
   public function should_be_processed() {
-    return in_array($this->wikiname(), TEMPLATES_WE_PROCESS)
+    return in_array($this->wikiname(), TEMPLATES_WE_PROCESS);
   }
   
   public function tidy_parameter($param) {
