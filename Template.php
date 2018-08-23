@@ -2584,7 +2584,7 @@ final class Template {
             }
             // No break here
           case 'pages': case 'page': case 'issue': case 'year':
-            if (mb_stripos($p->val,'CITATION_BOT_PLACEHOLDER') !== FALSE) break
+            if (mb_stripos($p->val,'CITATION_BOT_PLACEHOLDER') !== FALSE) break;
             if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(TO_EN_DASH, $p->val) && (stripos($p->val, "http") === FALSE)) {
               $this->mod_dashes = TRUE;
               report_modification("Upgrading to en-dash in " . echoable($p->param) .
