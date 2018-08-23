@@ -3002,7 +3002,7 @@ final class Template {
       $this->forget('registration');
       $this->forget('subscription');
       $this->forget('via');
-      $this->foeget('website');
+      $this->forget('website');
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
