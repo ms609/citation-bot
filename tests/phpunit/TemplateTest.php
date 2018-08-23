@@ -859,10 +859,6 @@ ER -  }}';
     $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
   }
   
-  public function testSmallWordOrder() {
-    $this->assertEquals(strtoupper(implode(' ', LC_SMALL_WORDS)), strtoupper(implode(' ', UC_SMALL_WORDS))); 
-  }
-  
    public function testDoNotAddYearIfDate() {
        $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
        $expanded = $this->process_citation($text);
