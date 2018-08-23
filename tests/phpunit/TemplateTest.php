@@ -726,13 +726,13 @@ ER -  }}';
        
   public function testInternalCaps() { // checks for title formating in tidy() not breaking things
     $text = '{{cite journal|journal=ZooTimeKids}}';
-    $expanded = $this->proepare_citation($text);
+    $expanded = $this->prepare_citation($text);
     $this->assertEquals('ZooTimeKids', $prepared->get('journal'));
   }
   
   public function testCapsAfterColonAndPeriodJournalTidy() {
     $text = '{{Cite journal |journal=In Journal Titles: a word following punctuation needs capitals. Of course.}}';
-    $expanded = $this->prepare_citation($text);
+    $prepared = $this->prepare_citation($text);
     $this->assertEquals('In Journal Titles: A Word Following Punctuation Needs Capitals. Of Course.', 
                         $prepared->get('journal'));
   }      
