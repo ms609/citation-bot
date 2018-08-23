@@ -20,10 +20,11 @@ final class constantsTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testConstantsDefined() {
-    $this->assertEquals(PIPE_PLACEHOLDER, '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #');
+    $this->assertEquals(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
     for ($i = 0; $i < sizeof(JOURNAL_ACRONYMS); $i++) {
       $this->assertEquals(UCFIRST_JOURNAL_ACRONYMS[$i], mb_convert_case(JOURNAL_ACRONYMS[$i], MB_CASE_TITLE, "UTF-8"));
     }
+    $this->assertEquals(count(LC_SMALL_WORDS), count(UC_SMALL_WORDS));
     for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
       // Verify that they match
       if (substr_count(UC_SMALL_WORDS[$i], ' ') === 2) {
