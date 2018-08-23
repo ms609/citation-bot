@@ -7,9 +7,7 @@
  *     process() is what handles the different cite/Cite templates differently.
  *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
  *       switch statement handles various parameters differently.
- *     tidy() cleans up citations and the templates, but it includes various other functions
- *       and side effects as w==0ell. Beware!
- *
+ *     
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
  * to find information that can be added to existing citations.
  */
@@ -159,7 +157,6 @@ final class Template {
         if ($this->verify_doi()) {
           $this->expand_by_doi();
         }
-        $this->tidy(); // Do now to maximize quality of metadata for DOI searches, etc
         $this->expand_by_adsabs(); //Primarily to try to find DOI
         $this->get_doi_from_crossref();
         $this->get_open_access_url();
@@ -215,7 +212,6 @@ final class Template {
       $this->prepare();
       switch ($this->wikiname()) {
         case 'cite web':
-          $this->tidy();
           if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any countries google
             report_action("Expanded from Google Books API");
             $this->name = 'Cite book'; // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
@@ -252,7 +248,6 @@ final class Template {
               $this->forget('CITATION_BOT_PLACEHOLDER_date');        
           }
 
-          $this->tidy();
           if ($this->has('journal')) {
             $this->name = 'Cite journal';
             $this->rename('eprint', 'arxiv');
@@ -280,7 +275,6 @@ final class Template {
           if ($this->verify_doi()) {
             $this->expand_by_doi();
           }
-          $this->tidy();
           if ($no_isbn_before_doi && $this->has("isbn")) {
             if ($this->expand_by_google_books()) {
                report_action("Expanded from Google Books API");
@@ -322,12 +316,10 @@ final class Template {
           if ($this->verify_doi()) {
             $this->expand_by_doi();
           }
-          $this->tidy(); // Do now to maximize quality of metadata for DOI searches, etc
           $this->expand_by_adsabs(); //Primarily to try to find DOI
           $this->get_doi_from_crossref();
           $this->get_open_access_url();
           $this->find_pmid();
-          $this->tidy();
           
           // Convert from journal to book, if there is a unique chapter name or has an ISBN
           if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
@@ -616,6 +608,7 @@ final class Template {
               return FALSE;  // Cannot have both work and journal
             }
           }
+          $this->forget('issn');
           return $this->add($param_name, $value);
         }
         return FALSE;
@@ -2589,248 +2582,240 @@ final class Template {
   public function wikiname() {
     return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
   }
-
-  ### Tidying and formatting
-  public function tidy() {
-    $to_add = array();
-    $others = '';
-
-    if ($this->blank(array('date', 'year')) && $this->has('origyear')) {
-      $this->rename('origyear', 'year');
+  
+  public function tidy_parameter($param) {
+    if ($this->lacks($param)) {
+      trigger_error("Should not be tidying a parameter, $param, that does not exist. How did we end up here?", E_USER_WARNING);
+      return FALSE;
     }
-    
-    if ($this->has('isbn')) {
-      $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));  // Upgrade ISBN
-      $this->forget('asin');
-    }
+    if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
+      report_warning("Unrecognized parameter name format in $param");
+      return FALSE;
+    } else {
+      switch ($pmatch[1]) {
+        // Parameters are listed alphabetically, though those with numerical content are grouped under "year"
 
-    $authors = $this->get('authors');
-    if (!$authors) {
-      $authors = $this->get('author'); # Order _should_ be irrelevant as only one will be set... but prefer 'authors' if not.
-    }
+        case 'accessdate':
+          if ($this->lacks('url') && $this->lacks('chapter-url') && $this->lacks('chapterurl') 
+            && $this->lacks('contribution-url') && $this->lacks('contributionurl')) {
+            $this->forget('accessdate');
+          }
+          break;
 
-    if(!$this->initial_author_params) {
-      if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
-        $this->add_if_new('author-separator', $match[1] ? $match[1] : $match[2]);
-        $new_authors = explode($match[1] . $match[2], $authors);
-        $this->forget('author');
-        $this->forget('authors');
+        case 'author': case 'authors':
+          if (!$pmatch[2]) {
+            if ($this->has('author') && $this->has('authors')) {
+              $this->rename('author', 'DUPLICATE_authors');
+              $authors = $this->get('authors');
+            } else {
+              $authors = $this->get($param);
+            }
+          
+            if (!$this->initial_author_params) {
+              if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
+                $this->add_if_new('author-separator', $match[1] ? $match[1] : $match[2]);
+                $new_authors = explode($match[1] . $match[2], $authors);
+                $this->forget('author');
+                $this->forget('authors');
 
-        for ($i = 0; $i < count($new_authors); $i++) {
-          $this->add_if_new("author" . ($i + 1), trim($new_authors[$i]));
-        }
-      }
-    }
-
-    if ($this->param) foreach ($this->param as $p) {
-      if (preg_match('~(\D+)(\d*)~', $p->param, $pmatch)) {
-        switch ($pmatch[1]) {
-          case 'author': case 'authors': case 'last': case 'surname':
+                for ($i = 0; $i < count($new_authors); $i++) {
+                  $this->add_if_new("author" . ($i + 1), trim($new_authors[$i]));
+                }
+              }
+            }
+          }
+          // Continue from authors without break
+          case 'last': case 'surname':
             if (!$this->initial_author_params) {
               if ($pmatch[2]) {
                 if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $p->val, $match)) {
-                  $to_add['authorlink' . $pmatch[2]] = ucfirst($match[2]?$match[2]:$match[3]);
-                  $p->val = $match[3];
+                  $this->add_if_new('authorlink' . $pmatch[2], ucfirst($match[2] ? $match[2] : $match[3]));
+                  $this->set($param, $match[3]);
                   report_modification("Dissecting authorlink" . tag());
                 }
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
                 if (preg_match($translator_regexp, trim($p->val), $match)) {
                   $others = "{$match[1]} {$match[5]}";
-                  $p->val = preg_replace($translator_regexp, "", $p->val);
+                  if ($this->has('others')) {
+                    $this->append_to('others', '; ' . $others);
+                  } else {
+                    $this->set('others', $others);
+                  }
+                  $this->set($param, preg_replace($translator_regexp, "", $this->get($param)));
                 }
               }
             } else {
               report_inaction("Initial authors exist: skipping authorlink whlist tidying citation");
             }
             break;
-          case 'doi': 
-            $p->val = sanitize_doi($p->val);
-            break;
-          case 'title':
-            $p->val = trim($p->val);
-            if(mb_substr($p->val, 0, 1) === '"'   &&
-               mb_substr($p->val, -1)   === '"'   &&
-               mb_substr_count($p->val, '"') == 2) {
-               $p->val = mb_substr($p->val, 1, -1);   // Remove quotes -- if only one set that wraps entire title
-            }
-            if(mb_substr($p->val, 0, 1) === "'"   &&
-               mb_substr($p->val, -1)   === "'"   &&
-               mb_substr_count($p->val, "'") == 2) {
-               $p->val = mb_substr($p->val, 1, -1);   // Remove quotes -- if only one set that wraps entire title
-            }
-            if (mb_substr($p->val, -1) === "," ) {
-              $p->val = mb_substr($p->val, 0, -1);  // Remove trailing comma
-            }
-            if( mb_substr_count($p->val,'[[') !== 1 ||  // Completely remove multiple wikilinks
-                mb_substr_count($p->val,']]') !== 1) {
-               $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
-                      "~(\[\[)([^|]+?)(\]\])~",
-                      function($matches) {return $matches[2];},
-                      $p->val
-                      );
-               $p->val = preg_replace_callback(
-                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      function($matches) {return $matches[4];},
-                      $p->val
-                      );
-               $p->val= preg_replace("~\[\[~", "", $p->val); // Remove any extra [[ or ]] that should not be there
-               $p->val= preg_replace("~\]\]~", "", $p->val);
-            } else { // Convert a single link to a title-link
-               if (preg_match('~(\[\[)([^|]+?)(\]\])~', $p->val, $matches)) { // Convert [[X]] wikilinks into X
-                 $this->add_if_new('title-link', $matches[2]);
-                 $p->val= preg_replace("~\[\[~", "", $p->val);
-                 $p->val= preg_replace("~\]\]~", "", $p->val);
-               } elseif (preg_match('~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~', $p->val, $matches)) { // Convert [[Y|X]] wikilinks into X
-                 $this->add_if_new('title-link', $matches[2]);
-                 $p->val = preg_replace_callback(
-                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   
-                      function($matches) {return $matches[4];},
-                      $p->val
-                      );
-               }
-            }
-            break;
-          case 'journal': 
-            $this->forget('publisher');
-            $this->forget('location');
-          case 'periodical': 
-            if (mb_substr($p->val, -1) === "," ) {
-              $p->val = mb_substr($p->val, 0, -1);  // Remove comma
-            }
-            if (substr(strtolower($p->val), 0, 7) === 'http://' || substr(strtolower($p->val), 0, 8) === 'https://') {
-               if ($this->blank('url')) $this->rename($pmatch[1], 'url');
-               break;
-            } elseif (substr(strtolower($p->val), 0, 4) === 'www.') {
-               if ($this->blank('website')) $this->rename($pmatch[1], 'website');
-               break;
-            } elseif(mb_substr($p->val, 0, 2) !== "[["   ||
-               mb_substr($p->val, -2) !== "]]"     ||
-               mb_substr_count($p->val, '[[') !== 1 ||
-               mb_substr_count($p->val, ']]') !== 1) { // Only remove partial wikilinks
-                  $p->val = preg_replace_callback(  // Convert [[X]] wikilinks into X
-                      "~(\[\[)([^|]+?)(\]\])~",
-                      function($matches) {return $matches[2];},
-                      $p->val
-                      );
-                  $p->val = preg_replace_callback(
-                      "~(\[\[)([^|]+?)(\|)([^|]+?)(\]\])~",   // Convert [[Y|X]] wikilinks into X
-                      function($matches) {return $matches[4];},
-                      $p->val
-                      );
-            }
-            if(substr($p->val, 0, 1) !== "[" && substr($p->val, -1) !== "]") { 
-               $p->val = title_capitalization(ucwords($p->val), TRUE);
-            }
-            break;
-          case 'edition': 
-            $p->val = preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $p->val);
-            break; // Don't want 'Edition ed.'
-          case 'year':
-            if (preg_match ("~\d\d*\-\d\d*\-\d\d*~", $p->val)) { // We have more than one dash, must not be range of years.
-               if ($this->blank('date')) $this->set('date', $p->val);
-               $this->forget('year');
-               break; 
-            }
-            // No break here
-          case 'pages': case 'page': case 'issue': case 'year':
-            if (!preg_match("~^[A-Za-z ]+\-~", $p->val) && mb_ereg(TO_EN_DASH, $p->val) && (stripos($p->val, "http") === FALSE)) {
-              $this->mod_dashes = TRUE;
-              report_modification("Upgrading to en-dash in " . echoable($p->param) .
-                    " parameter" . tag());
-              $p->val = mb_ereg_replace(TO_EN_DASH, EN_DASH, $p->val);
-            }
-            if (   (mb_substr_count($p->val, "–") === 1) // Exactly one EN_DASH.  
-                && (mb_stripos($p->val, "http") === FALSE)) { 
-              $the_dash = mb_strpos($p->val, "–"); // ALL must be mb_ functions because of long dash
-              $part1 = mb_substr($p->val, 0, $the_dash);
-              $part2 = mb_substr($p->val, $the_dash + 1);
-              if ($part1 === $part2) {
-                $p->val = $part1;
-              }
-            }
-            break;
-          case 'coauthor': case 'coauthors':  // Commonly left there and empty and deprecated
-            if ($this->blank($pmatch[1])) $this->forget($pmatch[1]);
-            break;
-          case 'isbn':
-            $p->val = $this->isbn10Toisbn13($p->val);
-            break;
-          case 'url':
-            if (preg_match("~^https?://(?:www.|)researchgate.net/publication/([0-9]+)_*~i", $p->val, $matches)) {
-                $p->val = 'https://www.researchgate.net/publication/' . $matches[1];
-            } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $p->val, $matches)) {
-                $p->val = 'https://www.academia.edu/' . $matches[1];
-            }      
-            break;
-          case 'pmc':
-            if (preg_match("~pmc(\d+)$~i", $p->val, $matches)) {
-               $p->val = $matches[1];
-            }
-            break;
-        }
-      }
-    }
 
-    if ($to_add) foreach ($to_add as $key => $val) {
-      $this->add_if_new($key, $val);
-    }
-
-    if ($others) {
-      if ($this->has('others')) $this->append_to('others', '; ' . $others);
-      else $this->set('others', $others);
-    }
-
-    if ($this->added('journal')) {
-      $this->forget('issn');
-    }
-
-    // Remove leading zeroes
-    if (!$this->blank('issue') && $this->blank('number')) {
-      $new_issue =  preg_replace('~^0+~', '', $this->get('issue'));
-      if ($new_issue) $this->set('issue', $new_issue);
-      else $this->forget('issue');
-    }
-    switch(strtolower(trim($this->get('quotes')))) {
-      case 'yes': case 'y': case 'TRUE': case 'no': case 'n': case 'FALSE': $this->forget('quotes');
-    }
-
-
-    if ($this->has('doi')) {
-      if ($this->get('doi') == "10.1267/science.040579197") $this->forget('doi'); // This is a bogus DOI from the PMID example file
-      if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
-        $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
-      }
-    }
 
     
-    /*/ If we have any unused data, check to see if any is redundant!
-    if (is("unused_data")) {
-      $freeDat = explode("|", trim($this->get('unused_data')));
-      unset($this->get('unused_data');
-      foreach ($freeDat as $dat) {
-        $eraseThis = FALSE;
-        foreach ($p as $oP) {
-          similar_text(mb_strtolower($oP[0]), mb_strtolower($dat), $percentSim);
-          if ($percentSim >= 85)
-            $eraseThis = TRUE;
-        }
-        if (!$eraseThis)
-          $this->!et('unused_data') .= "|" . $dat;
-      }
-      if (trim(str_replace("|", "", $this->!et('unused_data'))) == "")
-        unset($this->!et('unused_data');
-      else {
-        if (substr(trim($this->!et('unused_data')), 0, 1) == "|")
-          $this->!et('unused_data') = substr(trim($this->!et('unused_data')), 1);
-      }
-    }*/
-    if ($this->has('accessdate') && $this->lacks('url') && $this->lacks('chapter-url') && $this->lacks('chapterurl') && $this->lacks('contribution-url') && $this->lacks('contributionurl')) $this->forget('accessdate');
+        case 'coauthor': case 'coauthors':  // Commonly left there and empty and deprecated
+          if ($this->blank($param)) $this->forget($param);
+          break;
+          
+        case 'doi':
+          $doi = $this->get($param);
+          if ($doi == "10.1267/science.040579197") {
+            // This is a bogus DOI from the PMID example file
+            $this->forget('doi'); 
+            break;
+          }
+          $this->set($param, sanitize_doi($doi));              
+          if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
+            $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
+          }
+          break;
+          
+        case 'edition': 
+          $this->set($param, preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get('param')));
+          break; // Don't want 'Edition ed.'
+        
+        case 'isbn':
+          $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
+          $this->forget('asin');
+          break;
+          
+        case 'journal': 
+          $this->forget('publisher');
+          $this->forget('location');
+          // No break here: Continue on from journal into periodical
+        case 'periodical':
+          $periodical = $this->get($param);
+          if (mb_substr($periodical, -1) === "," ) {
+            $periodical = mb_substr($periodical, 0, -1);
+            $this->set($param, $periodical);  // Remove comma
+          }
+          if (substr(strtolower($periodical, 0, 7)) === 'http://' || substr(strtolower($periodical), 0, 8) === 'https://') {
+             if ($this->blank('url')) $this->rename($param, 'url');
+             break;
+          } elseif (substr(strtolower($periodical), 0, 4) === 'www.') {
+             if ($this->blank('website')) $this->rename($param, 'website');
+             break;
+          } elseif ( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
+                    || mb_substr($periodical, -2) !== "]]"
+                    || mb_substr_count($periodical, '[[') !== 1 
+                    || mb_substr_count($periodical, ']]') !== 1
+                    )
+          {
+              // Convert [[X]] wikilinks into X
+              $this->set($param, preg_replace("~\[\[([^|]+?)\]\]~", "$1", $periodical));
+              // Convert [[Y|X]] wikilinks into X
+              $this->set($param, preg_replace("~\[\[[^|]+?\|([^|]+?)\]\]~", "$1", $this->get($param)));
+          }
+          $periodical = $this->get($param);
+          if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { 
+             $this->set($param, title_capitalization(ucwords($periodical), TRUE));
+          }
+          break;
+        
+        case 'origyear':
+          if ($this->blank(array('date', 'year'))) {
+            $this->rename('origyear', 'year');
+          }
+          break;
+        
+        case 'pmc':
+          if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
+             $this->set($param, $matches[1]);
+          }
+          break;
+          
+        case 'quotes':
+          switch(strtolower(trim($this->get('quotes')))) {
+            case 'yes': case 'y': case 'TRUE': case 'no': case 'n': case 'FALSE': $this->forget('quotes');
+          }
+          break;
 
-    if ($this->is_modified() && $this->has('title')) {
-      $this->set('title', straighten_quotes((mb_substr($this->get('title'), -1) == ".") ? mb_substr($this->get('title'), 0, -1) : $this->get('title')));
+  
+        case 'title':
+          $title = $this->get($param);
+          $title = straighten_quotes(in_array(mb_substr($title, -1), array('.', ',')) ? mb_substr($title, 0, -1) : $title);
+          if ((   mb_substr($title, 0, 1) === '"'
+               && mb_substr($title, -1)   === '"'
+               && mb_substr_count($title, '"') == 2)
+               || 
+               (   mb_substr($title, 0, 1) === "'"
+                && mb_substr($title, -1)   === "'"
+                && mb_substr_count($title, "'") == 2)
+          ) {
+            $title = mb_substr($title, 1, -1);   // Remove quotes -- if only one set that wraps entire title
+          }
+          if (mb_substr_count($title, '[[') !== 1 ||  // Completely remove multiple wikilinks
+              mb_substr_count($title, ']]') !== 1) {
+             $title = preg_replace("~\[\[([^|]+?)\]\]~", "$1", $title);   // Convert [[X]] wikilinks into X
+             $title = preg_replace("~\[\[[^|]+?\|([^|]+?)\]\]~", "$4", $title);   // Convert [[Y|X]] wikilinks into X
+             $title = preg_replace("~\[\[~", "", $title); // Remove any extra [[ or ]] that should not be there
+             $title = preg_replace("~\]\]~", "", $title);
+          } else { // Convert a single link to a title-link
+             if (preg_match('~\[\[([^|]+?)\]\]~', $title, $matches)) { // Convert [[X]] wikilinks into X
+               $this->add_if_new('title-link', $matches[1]);
+               $title = str_replace(array("[[", "]]"), "", $title);
+             } elseif (preg_match('~\[\[([^|]+?)\|([^|]+?)\]\]~', $title, $matches)) { // Convert [[Y|X]] wikilinks into X
+               $this->add_if_new('title-link', $matches[1]);
+               $title = preg_replace("~\[\[([^|]+?)(\|)[^|]+?\]\]~", "$1", $title);
+             }
+          }
+          $this->set($param, $title);
+          break;
+     
+        case 'url':
+          if (preg_match("~^https?://(?:www.|)researchgate.net/publication/([0-9]+)_*~i", $this->get($param), $matches)) {
+              $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
+          } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
+              $this->set($param, 'https://www.academia.edu/' . $matches[1]);
+          }
+          break;
+        
+        case 'year':
+          if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
+             if ($this->blank('date')) $this->rename('year', 'date');
+             $this->forget('year');
+             break;
+          }
+          // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
+        case 'issue':
+          // Remove leading zeroes
+          if (!$this->blank('issue') && $this->blank('number')) {
+            $new_issue = preg_replace('~^0+~', '', $this->get('issue'));
+            if ($new_issue) {
+              $this->set('issue', $new_issue);
+            } else {
+              $this->forget('issue');
+            }
+          }
+          // No break here: pages, issue and year (the previous case) should be treated in this fashion.
+        case 'pages': case 'page': # And case 'year': case 'issue':, following from previous
+          $value = $this->get($param);
+          if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(TO_EN_DASH, $value) && (stripos($value, "http") === FALSE)) {
+            $this->mod_dashes = TRUE;
+            report_modification("Upgrading to en-dash in " . echoable($param) .
+                  " parameter" . tag());
+            $value =  mb_ereg_replace(TO_EN_DASH, EN_DASH, $value);
+            $this->set($param, $value);
+          }
+          if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
+              && (mb_stripos($value, "http") === FALSE)) { 
+            $the_dash = mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
+            $part1 = mb_substr($value, 0, $the_dash);
+            $part2 = mb_substr($value, $the_dash + 1);
+            if ($part1 === $part2) {
+              $this->set($param, $part1);
+            }
+          }
+          break;
+      }
     }
   }
-
+  
+  public function tidy() {
+    // Should only be run once (perhaps when template is first loaded)
+    // Future tidying should occur when parameters are added using tidy_parameter.
+    if (!$this->param) return TRUE;
+    foreach ($this->param as $param) $this->tidy_parameter($param->param);
+  }
+  
   public function verify_doi() {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
@@ -3156,15 +3141,14 @@ final class Template {
   // Record modifications
   protected function modified($param, $type='modifications') {
     switch ($type) {
-      case '+': $type='additions'; break;
-      case '-': $type='deletions'; break;
-      case '~': $type='changeonly'; break;
-      default: $type='modifications';
+      case '+': $type = 'additions'; break;
+      case '-': $type = 'deletions'; break;
+      case '~': $type = 'changeonly'; break;
+      default: $type = 'modifications';
     }
     return in_array($param, $this->modifications($type));
   }
   protected function added($param) {return $this->modified($param, '+');}
-
 
   public function modifications($type='all') {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();

@@ -156,7 +156,6 @@ class Page {
     $this->expand_templates_from('bibcode', $our_templates, 'bibcode_api');
     expand_arxiv_templates($our_templates);
     
-    
     for ($i = 0; $i < count($our_templates); $i++) {
       $our_templates[$i]->expand_by_google_books();
       if ($our_templates[$i]->verify_doi()) {
@@ -168,7 +167,6 @@ class Page {
       $this_template = $our_templates[$i];
       // Clean up:
       $this_template->update_template_name();
-      $this_template->tidy();
       if (!$this_template->initial_author_params()) {
         $this_template->handle_et_al();
       }
