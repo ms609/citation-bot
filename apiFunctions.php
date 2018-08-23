@@ -95,8 +95,6 @@ function expand_arxiv_templates ($templates) {
     }
     $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
     if ($eprint) {
-      $class = $this_template->get('class');
-      if ($class && stripos($eprint, '/') === FALSE) $eprint = $class . '/' . $eprint;
       array_push($ids, $eprint);
       array_push($arxiv_templates, $this_template);
     }
