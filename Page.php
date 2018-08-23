@@ -124,9 +124,11 @@ class Page {
 
     // EMPTY URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
-    $this->text = preg_replace("~(<ref[^>]*?>)(\s*\[?)(https?:\/\/[^ >}{\]\[]+)(\]?\s*)(<\s*?\/\s*?ref>)~",
-                               "$1{{cite web | url=$3 | CITATION_BOT_PLACEHOLDER_BARE_URL=$2$3$4}}$5",
-                               $this->text);
+    $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
+                      "~(<ref[^>]*?>)(\s*\[?)(https?:\/\/[^ >}{\]\[]+)(\]?\s*)(<\s*?\/\s*?ref>)~",
+                      function($matches) {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4]) . '}}' . $matches[5] ;},
+                      $this->text
+                      );
 
     // TEMPLATES
     $all_templates = $this->extract_object('Template');
