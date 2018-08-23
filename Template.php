@@ -2641,10 +2641,8 @@ final class Template {
                     || mb_substr_count($periodical, ']]') !== 1
                     )
           {
-              // Convert [[X]] wikilinks into X
-              $this->set($param, preg_replace("~\[\[([^|]+?)\]\]~", "$1", $periodical));
-              // Convert [[Y|X]] wikilinks into X
-              $this->set($param, preg_replace("~\[\[[^|]+?\|([^|]+?)\]\]~", "$1", $this->get($param)));
+              $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
+              $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $this->get($param)));
           }
           $periodical = $this->get($param);
           if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { 
@@ -2686,17 +2684,17 @@ final class Template {
           }
           if (mb_substr_count($title, '[[') !== 1 ||  // Completely remove multiple wikilinks
               mb_substr_count($title, ']]') !== 1) {
-             $title = preg_replace("~\[\[([^|]+?)\]\]~", "$1", $title);   // Convert [[X]] wikilinks into X
-             $title = preg_replace("~\[\[([^|]+?)\|[^|]+?\]\]~", "$1", $title);   // Convert [[Y|X]] wikilinks into X
+             $title = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $title);   // Convert [[X]] wikilinks into X
+             $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);   // Convert [[Y|X]] wikilinks into X
              $title = preg_replace("~\[\[~", "", $title); // Remove any extra [[ or ]] that should not be there
              $title = preg_replace("~\]\]~", "", $title);
           } else { // Convert a single link to a title-link
-             if (preg_match('~\[\[([^|]+?)\]\]~', $title, $matches)) { // Convert [[X]] wikilinks into X
+             if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
                $this->add_if_new('title-link', $matches[1]);
                $title = str_replace(array("[[", "]]"), "", $title);
-             } elseif (preg_match('~\[\[([^|]+?)\|([^|]+?)\]\]~', $title, $matches)) { // Convert [[Y|X]] wikilinks into X
+             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches)) {
                $this->add_if_new('title-link', $matches[1]);
-               $title = preg_replace("~\[\[([^|]+?)(\|)[^|]+?\]\]~", "$1", $title);
+               $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
              }
           }
           $this->set($param, $title);
