@@ -2789,8 +2789,6 @@ final class Template {
             $this->rename('work', 'magazine');
          }
       }
-      $this->correct_param_spelling();
-      // $this->check_url(); // Function currently disabled
     }
   }
   
