@@ -133,6 +133,7 @@ class Page {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
     }
     $our_templates = array();
+    report_action('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       if (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
         // The objective in breaking this down into stages is to be able to send a single request to each API,
@@ -150,12 +151,14 @@ class Page {
       }
     }
     
+    report_action('Consulting APIs to expand templates');
     //////////// BATCH API CALLS
     $this->expand_templates_from('pmid',    $our_templates, 'pmid_api');
     $this->expand_templates_from('pmc',     $our_templates, 'pmc_api');
     $this->expand_templates_from('bibcode', $our_templates, 'bibcode_api');
     expand_arxiv_templates($our_templates);
     
+    report_action('Expanding individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
@@ -166,6 +169,7 @@ class Page {
       $this_template->find_pmid();  // #TODO Could probably batch this
     }
     
+    report_action('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       // Clean up:

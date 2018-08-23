@@ -2789,8 +2789,6 @@ final class Template {
             $this->rename('work', 'magazine');
          }
       }
-      $this->correct_param_spelling();
-      // $this->check_url(); // Function currently disabled
     }
   }
   
@@ -3005,6 +3003,7 @@ final class Template {
         }
       }
     }
+    report_modification("Renamed \"$old_param\" -> \"$new_param\"");
     $this->tidy_parameter($new_param);
   }
 
