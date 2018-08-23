@@ -101,7 +101,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testPmidExpansion() {
     $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pubmed/1941451?dopt=AbstractPlus}}";
-    $expanded = $this->process_citation($text);
+    $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('1941451', $expanded->get('pmid'));
   }
@@ -113,7 +113,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   public function testPMCExpansion() {
     $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pmc/articles/PMC154623/}}";
-    $expanded = $this->process_citation($text);
+    $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('154623', $expanded->get('pmc'));
   }
@@ -145,7 +145,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testAmazonExpansion() {
     $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn=}}";
-    $expanded = $this->process_citation($text);
+    $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
