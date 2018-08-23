@@ -349,3 +349,10 @@ function prior_parameters($par, $list=array()) {
     default: return $list;
   }
 }
+
+function equivalent_parameters($par) {
+  switch ($par) {
+    case 'pmid': case 'pmc': return array('pmc', 'pmid');
+    default: return array($par);
+  }
+}

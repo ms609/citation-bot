@@ -14,7 +14,7 @@ function entrez_api($ids, $templates, $db) {
   }
   
   foreach (array_keys($ids) as $i) {
-    $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc')
+    $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
   }
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     $this_template = $templates[array_search($document->Id, $ids)];
@@ -81,7 +81,7 @@ function entrez_api($ids, $templates, $db) {
   }
 }
 
-function query_adsabs_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
+function query_bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
 
 function expand_arxiv_templates ($templates) {
   $ids = array();
@@ -103,7 +103,7 @@ function expand_arxiv_templates ($templates) {
   return arxiv_api($ids, $arxiv_templates);
 }
 
-function query_arxiv_api($ids, $templates) {
+function arxiv_api($ids, $templates) {
   if (count($ids) == 0) return FALSE;
   report_action("Getting data from arXiv API");
   $context = stream_context_create(array(

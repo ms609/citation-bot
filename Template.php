@@ -23,16 +23,16 @@ final class Template {
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
-            $used_in_api,
+            $used_by_api,
             $mod_dashes;
 
   public function parse_text($text) {
     $this->initial_author_params = NULL; // Will be populated later if there are any
-    $this->used_in_api = array(
-      'adsabs' = array(), 
-      'arxiv' = array(), 
-      'crossref' = array(), 
-      'entrez' = array(), 
+    $this->used_by_api = array(
+      'adsabs'   => array(),
+      'arxiv'    => array(), 
+      'crossref' => array(), 
+      'entrez'   => array(), 
     );
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
@@ -155,11 +155,13 @@ final class Template {
   }
   
   public function record_api_usage($api, $param) {
-    foreach ($p in $param) $api_used[$api][] = $p;
+    if (!is_array($param)) $param = array($param);
+    foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
   }
   
   public function api_has_used($api, $param) {
-    return count(array_intersect($param, $api_used[$api]));
+    if (!isset($this->used_by_api[$api])) trigger_error("Invalid API: $api", E_USER_ERROR);
+    return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
   public function process() {

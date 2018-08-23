@@ -81,26 +81,27 @@ class Page {
   // $parameter: parameter to send to api_function, e.g. "pmid"
   // $templates: Array of pointers to the templates
   // $api_function: string naming a function (specified in apiFunctions.php) 
-  //                that takes the value of $templates->get($parameter) as an array;
+  //                that takes the value of $templates->get($identifier) as an array;
   //                returns key-value array of items to be set, if new, in each template.
   public function expand_templates_from_identifier($identifier, $templates) {
     $ids = array();
     switch ($identifier) {
-      case 'pubmed': 
+      case 'pmid': 
       case 'pmc':     $api = 'entrez';   break;
       case 'bibcode': $api = 'adsabs';   break;
       case 'doi':     $api = 'crossref'; break;
-      default:        $api = $api;
+      default:        $api = $identifier;
     }
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
-        if ($templates[$i]->has($parameter)) {
-          $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($parameter);
+      if ($templates[$i]->has($identifier)
+        && !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {
+          $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
+          $templates[$i]->record_api_usage($api, $identifier);
         }
       }
     }
-    
-    $api_function = 'query_' . $api . '_api';
+    $api_function = 'query_' . $identifier . '_api';
     $api_function($ids, $templates);
   }
   
