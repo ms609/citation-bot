@@ -23,7 +23,7 @@ final class Template {
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
-            $citation_template, $mod_dashes;
+            $mod_dashes;
 
   public function parse_text($text) {
     $this->initial_author_params = NULL; // Will be populated later if there are any
@@ -90,33 +90,34 @@ final class Template {
   }
 
   public function prepare() {
-    $this->use_unnamed_params();
-    $this->get_identifiers_from_url();
-    $this->tidy();
-    $this->id_to_param();
-    $this->correct_param_spelling();
-    $this->get_doi_from_text();
+    if ($this->should_be_processed()) {
+      $this->use_unnamed_params();
+      $this->get_identifiers_from_url();
+      $this->tidy();
+      $this->id_to_param();
+      $this->correct_param_spelling();
+      $this->get_doi_from_text();
 
-    
-    switch ($this->wikiname()) {
-      case "cite arxiv":
-         // Forget dates so that DOI can update with publication date, not ARXIV date
-        $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
-        $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
-        $this->expand_by_doi();
-        if ($this->blank('year') && $this->blank('date')) {
-            $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
-            $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
-        } else {
-            $this->forget('CITATION_BOT_PLACEHOLDER_year');
-            $this->forget('CITATION_BOT_PLACEHOLDER_date');        
-        }
-        break;
-      case "cite journal":       
-        if ($this->use_sici()) {
-          report_action("Found and used SICI");
-        }
-
+      
+      switch ($this->wikiname()) {
+        case "cite arxiv":
+           // Forget dates so that DOI can update with publication date, not ARXIV date
+          $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
+          $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
+          $this->expand_by_doi();
+          if ($this->blank('year') && $this->blank('date')) {
+              $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
+              $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
+          } else {
+              $this->forget('CITATION_BOT_PLACEHOLDER_year');
+              $this->forget('CITATION_BOT_PLACEHOLDER_date');        
+          }
+          break;
+        case "cite journal":       
+          if ($this->use_sici()) {
+            report_action("Found and used SICI");
+          }
+      }
     }
   }
   
@@ -169,10 +170,8 @@ final class Template {
         } elseif ($this->has('eprint')) {
           $this->name = 'Cite arxiv';
         }
-        $this->citation_template = TRUE;
       break;
       case 'cite arxiv':
-        $this->citation_template = TRUE;
         if ($this->has('journal')) {
           $this->name = 'Cite journal';
           $this->rename('eprint', 'arxiv');
@@ -196,7 +195,7 @@ final class Template {
   }
   
   public function process() {
-    if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS)) {
+    if ($this->should_be_processed()) {
       $this->use_unnamed_params();
       $this->get_identifiers_from_url();
       $this->prepare();
@@ -220,10 +219,8 @@ final class Template {
             $this->name = 'Cite arxiv';
             $this->process();
           }
-          $this->citation_template = TRUE;
         break;
         case 'cite arxiv':
-          $this->citation_template = TRUE;
           $this->expand_by_arxiv();
 
           // Forget dates so that DOI can update with publication date, not ARXIV date
@@ -252,7 +249,6 @@ final class Template {
           }
         break;
         case 'cite book':
-          $this->citation_template = TRUE;
 
           $this->get_identifiers_from_url();
           $this->id_to_param();
@@ -275,7 +271,6 @@ final class Template {
           }
         break;
         case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
-          $this->citation_template = TRUE;
           echo "\n\n* Expand citation: " . echoable($this->get('title'));
 
           if ($this->use_sici()) {
@@ -2527,6 +2522,10 @@ final class Template {
     return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
   }
   
+  public function should_be_processed() {
+    return in_array($this->wikiname(), TEMPLATES_WE_PROCESS)
+  }
+  
   public function tidy_parameter($param) {
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
@@ -2758,7 +2757,7 @@ final class Template {
   }
   
   public function final_tidy() {
-    if ($this->citation_template) {
+    if ($this->should_be_processed()) {
       // Sometimes title and chapter come from different databases
       if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
