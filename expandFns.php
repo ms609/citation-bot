@@ -13,7 +13,7 @@ if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
 }  
 
 function html_echo($text, $alternate_text='') {
-  echo HTML_OUTPUT ? $text : $alternate_text;
+  if (!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
 function user_notice($symbol, $class, $text) {
@@ -30,6 +30,7 @@ function report_warning($text) { user_notice("  !", "warning", $text); }
 function report_modification($text) { user_notice("  ~", "changed", $text); }
 function report_add($text) { user_notice("  +", "added", $text); }
 function report_forget($text) { user_notice("  -", "removed", $text); }
+function report_inline($text) { if (!getenv('TRAVIS')) echo " $text"; }
 
 function quietly($function = report_info, $text) {
   if (defined('VERBOSE') || HTML_OUTPUT ) {

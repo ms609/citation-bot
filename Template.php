@@ -1091,7 +1091,7 @@ final class Template {
     if ($results[1] == 1) {
       $this->add_if_new('pmid', $results[0]);
     } else {
-      echo " nothing found.";
+      report_inline("nothing found.");
     }
   }
 
@@ -1534,7 +1534,7 @@ final class Template {
             $this->add_if_new("pages", $crossRef->first_page);
           }
         }
-        echo " (ok)";
+        report_inline('(ok)');
       } else {
         report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
         $url_test = "https://dx.doi.org/".$doi ;
@@ -2856,7 +2856,7 @@ final class Template {
         $this->forget('doi_inactivedate');
         $this->forget('doi-broken-date');
         $this->forget('doi-inactive-date');
-        echo ' DOI ok.';
+        report_inline('DOI ok.');
         return TRUE;
       }
     }
