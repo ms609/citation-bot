@@ -111,7 +111,6 @@ function arxiv_api($ids, $templates) {
     'http' => array('ignore_errors' => true),
   ));
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode($ids, ',');
-  var_dump($request);
   $response = @file_get_contents($request, FALSE, $context);
   if ($response) {
     $xml = @simplexml_load_string(
