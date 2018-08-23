@@ -82,10 +82,10 @@ final class Template {
     if ($this->should_be_processed()) {
       $this->use_unnamed_params();
       $this->get_identifiers_from_url();
-      $this->tidy();
       $this->id_to_param();
       $this->correct_param_spelling();
       $this->get_doi_from_text();
+      $this->tidy();
       
       switch ($this->wikiname()) {
         case "cite arxiv":
@@ -2498,18 +2498,8 @@ final class Template {
             } else {
               $authors = $this->get($param);
             }
-          
             if (!$this->initial_author_params) {
-              if (preg_match('~([,;])\s+\[\[|\]\]([;,])~', $authors, $match)) {
-                $this->add_if_new('author-separator', $match[1] ? $match[1] : $match[2]);
-                $new_authors = explode($match[1] . $match[2], $authors);
-                $this->forget('author');
-                $this->forget('authors');
-
-                for ($i = 0; $i < count($new_authors); $i++) {
-                  $this->add_if_new("author" . ($i + 1), trim($new_authors[$i]));
-                }
-              }
+              $this->handle_et_al();
             }
           }
           // Continue from authors without break
@@ -2533,7 +2523,7 @@ final class Template {
                 }
               }
             } else {
-              report_inaction("Initial authors exist: skipping authorlink whlist tidying citation");
+              report_inaction("Initial authors exist: skipping authorlink whilst tidying citation");
             }
             break;
 
@@ -2935,6 +2925,7 @@ final class Template {
       }
     }
   }
+  
 /********************************************************
  *   Functions to retrieve values that may be specified 
  *   in various ways
