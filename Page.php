@@ -248,7 +248,7 @@ class Page {
     }
   }
   
-  protected function extract_object ($class) {
+  public function extract_object ($class) {
     $i = 0;
     $text = $this->text;
     $regexp = $class::REGEXP;

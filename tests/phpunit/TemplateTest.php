@@ -66,14 +66,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testUseUnusedData() {
     $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('cite web',          $expanded->wikiname());
-    $this->assertEquals('http://google.com', $expanded->get('url'));
-    $this->assertEquals('I am a title',      $expanded->get('title')); 
-    $this->assertEquals('Other, A. N.',      $expanded->get('author'));
-    $this->assertEquals('9'           ,      $expanded->get('issue'));
-    $this->assertEquals('22'          ,      $expanded->get('volume'));
-    $this->assertEquals('5–6'         ,      $expanded->get('pages'));
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite web',          $prepared->wikiname());
+    $this->assertEquals('http://google.com', $prepared->get('url'));
+    $this->assertEquals('I am a title',      $prepared->get('title')); 
+    $this->assertEquals('Other, A. N.',      $prepared->get('author'));
+    $this->assertEquals('9'           ,      $prepared->get('issue'));
+    $this->assertEquals('22'          ,      $prepared->get('volume'));
+    $this->assertEquals('5–6'         ,      $prepared->get('pages'));
   }
   
   public function testJstorExpansion() {
@@ -111,6 +111,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $expanded = $this->process_citation($text);
       $this->assertNull($expanded->get('pmid'));
   }
+  
   public function testPMCExpansion() {
     $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pmc/articles/PMC154623/}}";
     $expanded = $this->prepare_citation($text);
@@ -124,23 +125,23 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('11573006', $expanded->get('pmid'));
   }
   
-  public function testArxivExpansion() {
-    $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded->wikiname());
-    $this->assertEquals('0806.0013', $expanded->get('arxiv'));
+  public function testArxivExpansion() {    
+    $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
+          . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
+          . '{{Cite arxiv |eprint=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}';
+    $expanded = $this->process_page($text);
+    $templates = $expanded->extract_object('Template');
     
-    $text = "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('cite journal', $expanded->wikiname());
-    $this->assertEquals('0806.0013', $expanded->get('arxiv'));
-    $this->assertNull($expanded->get('class'));
-    $this->assertNull($expanded->get('eprint'));
-    $this->assertNull($expanded->get('publisher'));
+    $this->assertEquals('cite journal', $templates[0]->wikiname());
+    $this->assertEquals('0806.0013', $templates[0]->get('arxiv'));
+    
+    $this->assertEquals('cite journal', $templates[1]->wikiname());
+    $this->assertEquals('0806.0013', $templates[1]->get('arxiv'));
+    $this->assertNull($templates[1]->get('class'));
+    $this->assertNull($templates[1]->get('eprint'));
+    $this->assertNull($templates[1]->get('publisher'));
       
-    $text = '{{Cite arxiv |eprint=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('2018', $expanded->get('year'));
+    $this->assertEquals('2018', $templates[2]->get('year'));
   }
   
   public function testAmazonExpansion() {
@@ -504,7 +505,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testGoogleDates() {
     $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('February 1935'   , $expanded->get('date'));
+    $this->assertEquals('February 1935', $expanded->get('date'));
   }
   
   public function testErrantAuthor() {
