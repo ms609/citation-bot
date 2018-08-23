@@ -280,6 +280,9 @@ function mb_ucfirst($string)
 }
 
 function tag($long = FALSE) {
+  return FALSE; // I suggest that this function is no longer useful in the Travis era
+  // If it's not been missed by 2018-10-01, I suggest that we delete it and all calls thereto.
+  
   $dbg = array_reverse(debug_backtrace());
   array_pop($dbg);
   array_shift($dbg);
