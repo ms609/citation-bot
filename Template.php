@@ -2582,7 +2582,7 @@ final class Template {
           break; // Don't want 'Edition ed.'
         
         case 'eprint':
-          if ($this->wikiname == 'cite web') $this->change_name_to('cite arxiv');
+          if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
         
         case 'isbn':
           if ($this->lacks('isbn')) break;
