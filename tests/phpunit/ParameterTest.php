@@ -191,7 +191,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
                                 'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
                                 'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
                                 'inventorlink', 'inventorlink#', 'issue-date', 'fdate'); // Some are not valid, but people use them anyway
-      $their_whitelist = array_merge($patent_whitelist,$their_whitelist);
+      $their_whitelist = array_merge('CITATION_BOT_PLACEHOLDER_BARE_URL', $patent_whitelist, $their_whitelist);
       $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
       $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
 
@@ -221,7 +221,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
          }
          $we_failed = TRUE;
       }
-      $this->assertEquals(FALSE,$we_failed);
+      $this->assertEquals(FALSE, $we_failed);
   }
 }
 
