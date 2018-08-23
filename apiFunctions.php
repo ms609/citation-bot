@@ -316,7 +316,7 @@ function adsabs_api($ids, $templates, $identifier) {
   }
 }
 
-function query_crossref_api($ids, $templates) {
+function query_doi_api($ids, $templates) {
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
@@ -329,7 +329,7 @@ function expand_by_doi($template, $force = FALSE) {
       $template->add_if_new('jstor', substr($doi, 8));
   }
   if ($doi && ($force || $template->incomplete())) {
-    $crossRef = $template->query_crossref($doi);
+    $crossRef = query_crossref($doi);
     if ($crossRef) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
       report_action("Expanding from crossRef record" . tag());
@@ -395,6 +395,34 @@ function expand_by_doi($template, $force = FALSE) {
               $template->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
     }
   }
+}
+
+function query_crossref($doi) {
+  $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
+  for ($i = 0; $i < 2; $i++) {
+    $xml = @simplexml_load_file($url);
+    if ($xml) {
+      $result = $xml->query_result->body->query;
+      if ($result["status"] == "resolved") {
+        return $result;
+      } else {
+        return FALSE;
+      }
+    } else {
+      sleep(1);
+      // Keep trying...
+    }
+  }
+  report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");
+  return FALSE;
+}
+
+function doi_active($doi) {
+  $response = get_headers("https://api.crossref.org/works/$doi")[0];
+  if (stripos($response, '200 OK') !== FALSE) return TRUE;
+  if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
+  report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");
+  return FALSE;
 }
 
 function query_jstor_api($ids, $templates) {

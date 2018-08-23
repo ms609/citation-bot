@@ -1156,7 +1156,7 @@ final class Template {
      return FALSE;
     }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
-      report_info("Skipping AdsAbs API: already recovered info from bibcode");
+      report_info("No need to repeat AdsAbs search for " . $this->get('bibcode'));
       return FALSE;
     }
   
@@ -1600,48 +1600,6 @@ final class Template {
       $this->add_if_new("pages", 1*$sici[7]);
       return TRUE;
     } else return FALSE;
-  }
-
-  protected function query_crossref($doi = FALSE) {
-    if (!$doi) {
-      $doi = $this->get_without_comments_and_placeholders('doi');
-    }
-    if (!$doi) {
-      warn('query_crossref called with with no doi');
-      return FALSE;
-    }
-    $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME ."&id=doi:$doi&noredirect=TRUE";
-    for ($i = 0; $i < 2; $i++) {
-      $xml = @simplexml_load_file($url);
-      if ($xml) {
-        $result = $xml->query_result->body->query;
-        if ($result["status"] == "resolved") {
-          return $result;
-        } else {
-          return FALSE;
-        }
-      } else {
-        sleep(1);
-        // Keep trying...
-      }
-    }
-    report_warning("Error loading CrossRef file from DOI " . echoable($doi) ."!");
-    return FALSE;
-  }
-
-  protected function doi_active($doi = FALSE) {
-    if (!$doi) {
-      $doi = $this->get_without_comments_and_placeholders('doi');
-    }
-    if (!$doi) {
-      warn('doi_active called with with no doi');
-      return FALSE;
-    }
-    $response = get_headers("https://api.crossref.org/works/$doi")[0];
-    if (stripos($response, '200 OK') !== FALSE) return TRUE;
-    if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
-    report_warning("Crossref server error loading headers for DOI " . echoable($doi) . ": $response");
-    return FALSE;
   }
 
   public function get_open_access_url() {
@@ -2760,7 +2718,7 @@ final class Template {
       }
     } else {    
       report_info("Checking that DOI " . echoable($doi) . " is operational..." . tag());
-      if ($this->doi_active() === FALSE) {
+      if (doi_active($this->get_without_comments_and_placeholders('doi')) === FALSE) {
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
         // if present, with new "doi-broken-date"
         $url_test = "https://dx.doi.org/" . $doi;
