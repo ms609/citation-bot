@@ -13,12 +13,14 @@ if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
 }  
 
 function html_echo($text, $alternate_text='') {
-  echo HTML_OUTPUT ? $text : $alternate_text;
+  if (!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
 function user_notice($symbol, $class, $text) {
-  echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
+  if (!getenv('TRAVIS')) {
+    echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
+  }
 }
 
 function report_action($text)  { user_notice(">", "subitem", $text); }
@@ -28,6 +30,7 @@ function report_warning($text) { user_notice("  !", "warning", $text); }
 function report_modification($text) { user_notice("  ~", "changed", $text); }
 function report_add($text) { user_notice("  +", "added", $text); }
 function report_forget($text) { user_notice("  -", "removed", $text); }
+function report_inline($text) { if (!getenv('TRAVIS')) echo " $text"; }
 
 function quietly($function = report_info, $text) {
   if (defined('VERBOSE') || HTML_OUTPUT ) {
@@ -206,19 +209,19 @@ function restore_italics ($text) {
 function title_capitalization($in, $caps_after_punctuation) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
-  if(substr($new_case, 0, 1) === "[" && substr($new_case, -1) === "]") {
+  if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
   
-  if ( $new_case == mb_strtoupper($new_case) 
+  if ($new_case == mb_strtoupper($new_case) 
      && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
      ) {
     // ALL CAPS to Title Case
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
-  $new_case = substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
-    
+  $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
+  
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
@@ -255,20 +258,11 @@ function title_capitalization($in, $caps_after_punctuation) {
   
   // Capitalization exceptions, e.g. Elife -> eLife
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
-  $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
-    
-  // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
-  $new_case = preg_replace_callback(
-    "~( [a-z])$~",
-    function ($matches) {return strtoupper($matches[1]);},
-    $new_case);
+  $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
   
-  /* I believe we can do without this now
-  if (preg_match("~^(the|into|at?|of)\b~", $new_case)) {
-    // If first word is a little word, it should still be capitalized
-    $new_case = ucfirst($new_case);
-  }
-  */
+  // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
+  if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
+  
   return $new_case;
 }
 
@@ -278,6 +272,9 @@ function mb_ucfirst($string)
 }
 
 function tag($long = FALSE) {
+  return FALSE; // I suggest that this function is no longer useful in the Travis era
+  // If it's not been missed by 2018-10-01, I suggest that we delete it and all calls thereto.
+  
   $dbg = array_reverse(debug_backtrace());
   array_pop($dbg);
   array_shift($dbg);

@@ -1,4 +1,8 @@
 <?php 
+const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite document', 
+                             'cite encyclopaedia', 'cite encyclopedia', 'cite journal', 'cite web');
+const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web');
+
 const AUTHOR_PARAMETERS = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author',
                 'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1', 'authors', 'vauthors'),
