@@ -2584,10 +2584,7 @@ final class Template {
   }
   
   public function tidy_parameter($param) {
-    if ($this->lacks($param)) {
-      trigger_error("Should not be tidying a parameter, $param, that does not exist. How did we end up here?", E_USER_WARNING);
-      return FALSE;
-    }
+    if ($this->lacks($param)) return NULL;
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
