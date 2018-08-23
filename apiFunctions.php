@@ -21,17 +21,17 @@ function entrez_api($ids, $templates, $db) {
     report_info("Found match for $db identifier " . $document->Id);
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
-        $this_template->add_if_new('doi', $match[0]);
+        $this_template->add_if_new('doi', $match[0], 'entrez');
       }
       switch ($item["Name"]) {
-                case "Title":   $this_template->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item)); // add_if_new will format the title
+                case "Title":   $this_template->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item), 'entrez'); // add_if_new will format the title
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
-                                $this_template->add_if_new('year', (string) $match[1]);
-        break;  case "FullJournalName": $this_template->add_if_new('journal',  ucwords((string) $item)); // add_if_new will format the title
-        break;  case "Volume":  $this_template->add_if_new('volume', (string) $item);
-        break;  case "Issue":   $this_template->add_if_new('issue', (string) $item);
-        break;  case "Pages":   $this_template->add_if_new('pages', (string) $item);
-        break;  case "PmId":    $this_template->add_if_new('pmid', (string) $item);
+                                $this_template->add_if_new('year', (string) $match[1], 'entrez');
+        break;  case "FullJournalName": $this_template->add_if_new('journal',  ucwords((string) $item), 'entrez'); // add_if_new will format the title
+        break;  case "Volume":  $this_template->add_if_new('volume', (string) $item, 'entrez');
+        break;  case "Issue":   $this_template->add_if_new('issue', (string) $item, 'entrez');
+        break;  case "Pages":   $this_template->add_if_new('pages', (string) $item, 'entrez');
+        break;  case "PmId":    $this_template->add_if_new('pmid', (string) $item, 'entrez');
         break;  case "AuthorList":
           $i = 0;
           foreach ($item->Item as $subItem) {
@@ -45,11 +45,11 @@ function entrez_api($ids, $templates, $db) {
                 if (strpos($first, '.') && substr($first, -1) != '.') {
                   $first = $first . '.';
                 }
-                $this_template->add_if_new("author$i", $names[1] . $junior . ',' . $first);
+                $this_template->add_if_new("author$i", $names[1] . $junior . ',' . $first, 'entrez');
               }
             } else {
               // We probably have a committee or similar.  Just use 'author$i'.
-              $this_template->add_if_new("author$i", (string) $subItem);
+              $this_template->add_if_new("author$i", (string) $subItem, 'entrez');
             }
           }
         break; case "LangList": case 'ISSN':
@@ -58,21 +58,20 @@ function entrez_api($ids, $templates, $db) {
             switch ($subItem["Name"]) {
               case "pubmed": case "pmid":
                   preg_match("~\d+~", (string) $subItem, $match);
-                  if ($this_template->add_if_new("pmid", $match[0])) $this_template->expand_by_pubmed();
+                  $this_template->add_if_new("pmid", $match[0], 'entrez');
                   break; ### TODO PLACEHOLDER YOU ARE HERE CONTINUATION POINT ###
               case "pmc":
                 preg_match("~\d+~", (string) $subItem, $match);
-                $this_template->add_if_new('pmc', $match[0]);
+                $this_template->add_if_new('pmc', $match[0], 'entrez');
                 break;
               case "doi": case "pii":
               default:
                 if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
-                  $this_template->add_if_new('doi', $match[0]);
+                  $this_template->add_if_new('doi', $match[0], 'entrez');
                 }
                 if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
-                  $this_template->add_if_new('pmc', substr($match[0], 3));
+                  $this_template->add_if_new('pmc', substr($match[0], 3), 'entrez');
                 }
-                break;
             }
           }
         break;

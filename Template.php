@@ -292,10 +292,11 @@ final class Template {
 
   /* function add_if_new
    * Adds a parameter to a template if the parameter and its equivalents are blank
-   * If the parameter is useful for expansion (e.g. a doi), immediately uses the new
-   * data to further expand the citation
+   * $api (string) specifies the API route by which a parameter was found; this will log the 
+   *      parameter so it is not used to trigger a new search via the same API.
+   *
    */
-  public function add_if_new($param_name, $value) {
+  public function add_if_new($param_name, $value, $api = NULL) {
     if (trim($value) == '') {
       return FALSE;
     }
@@ -303,6 +304,8 @@ final class Template {
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
       $param_name = COMMON_MISTAKES[$param_name];
     }
+    
+    if (!is_null($api)) $this->record_api_usage($api, $param_name);
     
     // If we already have name parameters for author, don't add more
     if ($this->initial_author_params && in_array($param_name, FLATTENED_AUTHOR_PARAMETERS)) {
