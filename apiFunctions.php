@@ -3,6 +3,7 @@ function pmid_api ($pmids, $templates) { return entrez_api($pmids, $templates, '
 function pmc_api  ($pmcs, $templates)  { return entrez_api($pmcs,  $templates, 'pmc'); }
   
 function entrez_api($ids, $templates, $db) {
+  if (!count($ids)) return FALSE;
   $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=$db&id=" 
                . implode(',', $ids);
   report_action("Using PMID API to retrieve publication details: ");
@@ -172,6 +173,8 @@ function arxiv_api($ids, $templates) {
 }
 
 function adsabs_api($ids, $templates, $identifier) {
+  if (count($ids) == 0) return FALSE;
+  
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/bigquery?q=*:*"
               . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
