@@ -38,7 +38,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
 
   public function testBotRead() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
-      echo "\n[Test skipped] in pull requests, to protect Bot secrets";
+      echo 'S'; // Test skipped in pull requests, to protect Bot secrets
       $this->assertNull(NULL); // Make Travis happy
     } else {
       $page = new TestPage();
