@@ -139,19 +139,13 @@ final class Template {
         $no_isbn_before_doi = $this->blank("isbn");
         $this->expand_by_doi();
         if ($no_isbn_before_doi && $this->has("isbn")) {
-          if ($this->expand_by_google_books()) {
-             report_action("Expanded from Google Books API");
-          }
+          $this->expand_by_google_books();
         }
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
         $this->expand_by_pubmed(); //partly to try to find DOI
-        if ($this->expand_by_google_books()) {
-          report_action("Expanded from Google Books API");
-        }
-        if ($this->expand_by_jstor()) {
-          report_action("Expanded from JSTOR API");
-        }
+        $this->expand_by_google_books();
+        $this->expand_by_jstor();
         $this->expand_by_doi();
         $this->expand_by_adsabs(); //Primarily to try to find DOI
         $this->get_doi_from_crossref();
