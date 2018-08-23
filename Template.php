@@ -2752,7 +2752,9 @@ final class Template {
   protected function check_url() {
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
-     * Also, dead-link notifications should be placed ''after'', not within, the template.
+     * Also, dead-link notifications should be placed ''after'', not within, the template. i.e. in parsed_text()
+     * https://github.com/wikimedia/DeadlinkChecker is a good repository/dependency to check if a link is dead
+     * TODO re-enable
 
      function assessUrl($url){
         echo "assessing URL ";
