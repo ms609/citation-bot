@@ -316,4 +316,113 @@ function adsabs_api($ids, $templates, $identifier) {
   }
 }
 
+function query_crossref_api($ids, $templates) {
+  foreach ($templates as $template) {
+    expand_by_doi($template);
+  }
+}
+
+function expand_by_doi($template, $force = FALSE) {
+  $doi = $template->get_without_comments_and_placeholders('doi');
+  if (!$template->verify_doi()) return FALSE;
+  if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
+      $template->add_if_new('jstor', substr($doi, 8));
+  }
+  if ($doi && ($force || $template->incomplete())) {
+    $crossRef = $template->query_crossref($doi);
+    if ($crossRef) {
+      if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+      report_action("Expanding from crossRef record" . tag());
+
+      if ($crossRef->volume_title && $template->blank('journal')) {
+        $template->add_if_new('chapter', $crossRef->article_title); // add_if_new formats this value as a title
+        if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
+          $template->forget('title');
+        }
+        $template->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will wikify title and sanitize the string
+      } else {
+        $template->add_if_new('title', restore_italics($crossRef->article_title)); // add_if_new will wikify title and sanitize the string
+      }
+      $template->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
+      $template->add_if_new("year", $crossRef->year);
+      if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
+          && $crossRef->contributors->contributor
+        ) {
+        $au_i = 0;
+        $ed_i = 0;
+        // Check to see whether a single author is already set
+        // This might be, for example, a collaboration
+        $existing_author = $template->first_author();
+        $add_authors = is_null($existing_author)
+                    || $existing_author = ''
+                    || author_is_human($existing_author);
+        
+        foreach ($crossRef->contributors->contributor as $author) {
+          if ($author["contributor_role"] == 'editor') {
+            ++$ed_i;
+            if ($ed_i < 31 && $crossRef->journal_title === NULL) {
+              $template->add_if_new("editor$ed_i-last", format_surname($author->surname));
+              $template->add_if_new("editor$ed_i-first", format_forename($author->given_name));
+            }
+          } elseif ($author['contributor_role'] == 'author' && $add_authors) {
+            ++$au_i;
+            $template->add_if_new("last$au_i", format_surname($author->surname));
+            $template->add_if_new("first$au_i", format_forename($author->given_name));
+          }
+        }
+      }
+      $template->add_if_new('isbn', $crossRef->isbn);
+      $template->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
+      if ($crossRef->volume > 0) $template->add_if_new('volume', $crossRef->volume);
+      if ((integer) $crossRef->issue > 1) {
+      // "1" may refer to a journal without issue numbers,
+      //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
+        $template->add_if_new('issue', $crossRef->issue);
+      }
+      if ($template->blank("page")) {
+        if ($crossRef->last_page && (strcmp($crossRef->first_page, $crossRef->last_page) !== 0)) {
+          $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
+        } else {
+          $template->add_if_new("pages", $crossRef->first_page);
+        }
+      }
+      report_inline('(ok)');
+    } else {
+      report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
+      $url_test = "https://dx.doi.org/".$doi ;
+      $headers_test = @get_headers($url_test, 1);
+      if($headers_test !==FALSE && empty($headers_test['Location']))
+              $template->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
+    }
+  }
+}
+
+function query_jstor_api($ids, $templates) {
+  foreach ($templates as $template) expand_by_jstor($template);
+}
+
+function expand_by_jstor($template) {
+  if ($template->incomplete() === FALSE) return FALSE;
+  if ($template->blank('jstor')) return FALSE;
+  $jstor = trim($template->get('jstor'));
+  if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors.  We do not want i12342 kind
+  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor) ;
+  if ($dat === FALSE) {
+    report_info("JSTOR API returned nothing for JSTOR ". $jstor);
+    return FALSE;
+  }
+  if (stripos($dat, 'No RIS data found for') !== FALSE) {
+    report_info("JSTOR API found nothing for JSTOR ". $jstor);
+    return FALSE;
+  }
+  $has_a_url = $template->has('url');
+  $template->expand_by_RIS($dat);
+  if ($template->has('url') && !$has_a_url) { // added http://www.jstor.org/stable/12345, so remove (do not use forget, since that echos)
+      $pos = $template->get_param_key('url');
+      unset($template->param[$pos]);
+  }
+  return TRUE;
+}
+
+
 ?>
