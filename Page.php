@@ -182,7 +182,7 @@ class Page {
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
-          $this-aa>modifications[$key] = $template_mods[$key];
+          $this->modifications[$key] = $template_mods[$key];
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         } else {
