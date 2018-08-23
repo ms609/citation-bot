@@ -818,6 +818,12 @@ ER -  }}';
        $this->assertEquals('1999', $expanded->get('year'));
    }
     
+  public function testDoiInline() {
+    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Nature', $expanded->get('journal'));
+  }
+    
    public function testSmallWords() {
        $text = '{{cite journal|journal=A Word in ny and n y About cow And Then boys the U S A and y and z}}';
        $expanded = $this->process_citation($text);
