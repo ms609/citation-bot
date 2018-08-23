@@ -167,7 +167,7 @@ class Page {
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
-      $this_template->expand_by_doi();
+      expand_by_doi($this_template);
       $this_template->get_doi_from_crossref();
       $this_template->get_open_access_url();
       $this_template->find_pmid();  // #TODO Could probably batch this
