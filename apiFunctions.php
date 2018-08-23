@@ -174,6 +174,12 @@ function arxiv_api($ids, $templates) {
 
 function adsabs_api($ids, $templates, $identifier) {
   if (count($ids) == 0) return FALSE;
+  if (count($ids) < 5) {
+    foreach ($templates as $template) {
+      $template->expand_by_adsabs();
+    }
+    return TRUE;
+  }
   
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/bigquery?q=*:*"
