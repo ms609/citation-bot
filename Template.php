@@ -2687,7 +2687,7 @@ final class Template {
             $periodical = mb_substr($periodical, 0, -1);
             $this->set($param, $periodical);  // Remove comma
           }
-          if (substr(strtolower($periodical, 0, 7)) === 'http://' || substr(strtolower($periodical), 0, 8) === 'https://') {
+          if (substr(strtolower($periodical), 0, 7) === 'http://' || substr(strtolower($periodical), 0, 8) === 'https://') {
              if ($this->blank('url')) $this->rename($param, 'url');
              break;
           } elseif (substr(strtolower($periodical), 0, 4) === 'www.') {
