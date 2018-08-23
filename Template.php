@@ -1126,9 +1126,12 @@ final class Template {
       return array(NULL, 0);
     }
     if ($check_for_errors && $xml->ErrorList) {
-      echo $xml->ErrorList->PhraseNotFound
-              ? " no results."
-              : "\n - Errors detected in PMID search (" . echoable(print_r($xml->ErrorList, 1)) . "); abandoned.";
+      if (isset($xml->ErrorList->PhraseNotFound)) {
+        report_warning("Phrase not found in PMID search with query $query: "
+        . echoable(print_r($xml->ErrorList, 1)));
+      } else {
+        report_inline('no results.');
+      }
       return array(NULL, 0);
     }
 
