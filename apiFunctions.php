@@ -140,6 +140,13 @@ function arxiv_api($ids, $templates) {
     }
     $this_template->add_if_new("title", (string) $entry->title); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"]);
+    if (isset($entry->arxivjournal_ref) && preg_match("~2[01]\d\d$~", $entry->arxivjournal_ref, $match)) {
+    $current_year = $this_template->get_without_comments_and_placeholders('year');
+      if (!$current_year
+      ||  preg_match('~\d{4}~', $current_year) && $current_year < $match[0]) {
+        $this_template->set('year', $match[0]);
+      }
+    }
     $this_template->add_if_new("year", substr($entry->published, 0, 4));
     $this_template->add_if_new("doi", (string) $entry->arxivdoi);
 

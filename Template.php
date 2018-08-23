@@ -3067,9 +3067,9 @@ final class Template {
     return $could_set;
   }
   
-  protected function set($par, $val) {
-    if (($pos = $this->get_param_key($par)) !== NULL) {
-      return $this->param[$pos]->val = $val;
+  public function set($par, $val) {
+    if (($pos = $this->get_param_key((string) $par)) !== NULL) {
+      return $this->param[$pos]->val = (string) $val;
     }
     if (isset($this->param[0])) {
       $p = new Parameter;
@@ -3080,8 +3080,8 @@ final class Template {
       $p = new Parameter;
       $p->parse_text('| param = val');
     }
-    $p->param = $par;
-    $p->val = $val;
+    $p->param = (string) $par;
+    $p->val = (string) $val;
     
     $insert_after = prior_parameters($par);
     foreach (array_reverse($insert_after) as $after) {
