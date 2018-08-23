@@ -155,7 +155,7 @@ function arxiv_api($ids, $templates) {
       }
       if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
         $journal_data = str_replace($match[0], "", $journal_data);
-        $this_template->add_if_new("pages", str_replace("--", EN_DASH, $match[0]));
+        $this_template->add_if_new("pages", str_replace("--", REGEXP_EN_DASH, $match[0]));
       }
       if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
         $this_template->add_if_new("volume", $match[1]);

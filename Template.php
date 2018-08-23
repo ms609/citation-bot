@@ -565,7 +565,7 @@ final class Template {
         return FALSE;
         
       case 'doi':
-        if ($this->blank($param_name) && preg_match(DOI_REGEXP, $value, $match)) {
+        if ($this->blank($param_name) && preg_match(REGEXP_DOI, $value, $match)) {
           $this->add('doi', $match[0]);
           $this->expand_by_doi();
           
@@ -738,7 +738,7 @@ final class Template {
         return FALSE; // Jstor URL yielded nothing
       }
     } else {
-      if (preg_match(BIBCODE_REGEXP, urldecode($url), $bibcode)) {
+      if (preg_match(REGEXP_BIBCODE, urldecode($url), $bibcode)) {
         if ($this->blank('bibcode')) {
           quietly('report_modification', "Converting url to bibcode parameter");
           if (is_null($url_sent)) {
@@ -1112,7 +1112,7 @@ final class Template {
         }
         if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
           $journal_data = str_replace($match[0], "", $journal_data);
-          $this->add_if_new("pages", str_replace("--", EN_DASH, $match[0]));
+          $this->add_if_new("pages", str_replace("--", REGEXP_EN_DASH, $match[0]));
         }
         if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
           $this->add_if_new("volume", $match[1]);
@@ -1139,7 +1139,7 @@ final class Template {
       if ($bibcode = $this->has('bibcode')) {
         $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
       } elseif ($this->has('doi') 
-                && preg_match(DOI_REGEXP, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+                && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
         $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
       } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
         if ($this->has('eprint')) {
@@ -1524,7 +1524,7 @@ final class Template {
         if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
         if (isset($start_page)) { // Have to do at end since might get end pages before start pages
           if (isset($end_page)) {
-             $this->add_if_new("pages", $start_page . EN_DASH . $end_page);
+             $this->add_if_new("pages", $start_page . REGEXP_EN_DASH . $end_page);
           } else {
              $this->add_if_new("pages", $start_page);
           }
@@ -1668,7 +1668,7 @@ final class Template {
   }
 
   protected function use_sici() {
-    if (preg_match(SICI_REGEXP, urldecode($this->parsed_text()), $sici)) {
+    if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
       $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
@@ -1763,7 +1763,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match(BIBCODE_REGEXP, urldecode($oa_url), $bibcode)) {
+        if (preg_match(REGEXP_BIBCODE, urldecode($oa_url), $bibcode)) {
            if ($this->has('bibcode')) {
              return TRUE;
           }
@@ -2740,11 +2740,11 @@ final class Template {
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
-          if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(TO_EN_DASH, $value) && (stripos($value, "http") === FALSE)) {
+          if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value) && (stripos($value, "http") === FALSE)) {
             $this->mod_dashes = TRUE;
             report_modification("Upgrading to en-dash in " . echoable($param) .
                   " parameter" . tag());
-            $value =  mb_ereg_replace(TO_EN_DASH, EN_DASH, $value);
+            $value =  mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
             $this->set($param, $value);
           }
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
