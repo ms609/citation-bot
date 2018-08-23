@@ -12,7 +12,7 @@ function entrez_api($ids, $templates, $db) {
     return;
   }
   
-  if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
+  if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     $this_template = $templates[array_search($document->Id, $ids)];
     report_info("Found match for $db identifier " . $document->Id);
     foreach ($document->Item as $item) {
