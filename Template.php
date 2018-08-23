@@ -255,7 +255,7 @@ final class Template {
     $this->final_tidy();
   }
 
-  protected function incomplete() {
+  public function incomplete() {
     if (strtolower($this->wikiname()) =='cite book' || (strtolower($this->wikiname()) =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
@@ -1151,129 +1151,131 @@ final class Template {
   public function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
-    if (($SLOW_MODE || $this->has('bibcode')) 
-    &&  !$this->api_has_used('adsabs', equivalent_parameters('bibcode'))
-    ) {
-      report_action("Checking AdsAbs database");
-      if ($bibcode = $this->has('bibcode')) {
-        $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
-      } elseif ($this->has('doi') 
-                && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
-        $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
-      } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
-        if ($this->has('eprint')) {
-          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
-        } elseif ($this->has('arxiv')) {
-          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
-        } else {
-          $result = (object) array("numFound" => 0);
-        }
-        if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
-          $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
-          if ($result->numFound == 0) return FALSE;
-          $record = $result->docs[0];
-          $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
-          $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
-          if (
-             (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-                ? (strlen($inTitle) != strlen($dbTitle)
-                  || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
-                : levenshtein($inTitle, $dbTitle) > 3
-            ) {
-            report_info("Similar title not found in database");
-            return FALSE;
-          }
-        }
+    if (!$SLOW_MODE && $this->lacks('bibcode')) {
+     report_info("Skipping AdsAbs API: not in slow mode");
+     return FALSE;
+    }
+    if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
+      report_info("Skipping AdsAbs API: already recovered info from bibcode");
+      return FALSE;
+    }
+  
+    report_action("Checking AdsAbs database");
+    if ($bibcode = $this->has('bibcode')) {
+      $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+    } elseif ($this->has('doi') 
+              && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+      $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
+    } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
+      if ($this->has('eprint')) {
+        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
+      } elseif ($this->has('arxiv')) {
+        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
       } else {
         $result = (object) array("numFound" => 0);
       }
-      if ($result->numFound != 1 && $this->has('journal')) {
-        $journal = $this->get('journal');
-        // try partial search using bibcode components:
-        $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
-          . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
-          . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
-          . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-          . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
-        );
+      if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+        $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
         if ($result->numFound == 0) return FALSE;
-        if (!isset($result->docs[0]->pub)) return FALSE;
-        $journal_string = explode(",", (string) $result->docs[0]->pub);
-        $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
-        if (strlen($journal_string[0]) 
-        &&  strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
-                   mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))
-                   ) === FALSE
-        ) {
-          report_info("Match for pagination but database journal \"" .
-            echoable($journal_string[0]) . "\" didn't match \"" .
-            echoable($journal) . "\"." . tag());
+        $record = $result->docs[0];
+        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
+        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
+        if (
+           (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
+              ? (strlen($inTitle) != strlen($dbTitle)
+                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
+              : levenshtein($inTitle, $dbTitle) > 3
+          ) {
+          report_info("Similar title not found in database");
           return FALSE;
         }
       }
-      if ($result->numFound == 1) {
-        $record = $result->docs[0];
-        echo tag();
-        if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
-        $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
-        $i = 0;
-        if (isset($record->author)) {
-         foreach ($record->author as $author) {
-          $this->add_if_new("author" . ++$i, $author);
-         }
-        }
-        if (isset($record->pub)) {
-          $journal_string = explode(",", (string) $record->pub);
-          $journal_start = mb_strtolower($journal_string[0]);
-          if (preg_match("~\bthesis\b~ui", $journal_start)) {
-            // Do nothing
-          } elseif (substr($journal_start, 0, 6) == "eprint") {
-            if (substr($journal_start, 7, 6) == "arxiv:") {
-              if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
-              $this->add_if_new("arxiv", substr($journal_start, 13));
-            } else {
-              $this->append_to('id', ' ' . substr($journal_start, 13));
-            }
-          } else {
-            $this->add_if_new('journal', $journal_string[0]);
-          }          
-        }
-        if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
-           unset($record->page);
-           unset($record->volume);
-           unset($record->issue);
-        }
-        if (isset($record->volume)) {
-          $this->add_if_new("volume", (string) $record->volume);
-        }
-        if (isset($record->issue)) {
-          $this->add_if_new("issue", (string) $record->issue);
-        }
-        if (isset($record->year)) {
-          $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
-        }
-        if (isset($record->page)) {
-          $this->add_if_new("pages", implode('–', $record->page));
-        }
-        if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
-          foreach ($record->identifier as $recid) {
-            if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-               if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
-               $this->add_if_new("arxiv", substr($recid, 6));
-            }
-          }
-        }
-        if (isset($record->doi)) {
-          $this->add_if_new('doi', (string) $record->doi[0]);          
-        }
-        return TRUE;
-      } else {
-        report_inline('no record retrieved.');
+    } else {
+      $result = (object) array("numFound" => 0);
+    }
+    if ($result->numFound != 1 && $this->has('journal')) {
+      $journal = $this->get('journal');
+      // try partial search using bibcode components:
+      $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
+        . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
+        . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
+        . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
+        . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
+      );
+      if ($result->numFound == 0) return FALSE;
+      if (!isset($result->docs[0]->pub)) return FALSE;
+      $journal_string = explode(",", (string) $result->docs[0]->pub);
+      $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
+      if (strlen($journal_string[0]) 
+      &&  strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
+                 mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))
+                 ) === FALSE
+      ) {
+        report_info("Match for pagination but database journal \"" .
+          echoable($journal_string[0]) . "\" didn't match \"" .
+          echoable($journal) . "\"." . tag());
         return FALSE;
       }
+    }
+    if ($result->numFound == 1) {
+      $record = $result->docs[0];
+      echo tag();
+      if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
+      $i = 0;
+      if (isset($record->author)) {
+       foreach ($record->author as $author) {
+        $this->add_if_new("author" . ++$i, $author);
+       }
+      }
+      if (isset($record->pub)) {
+        $journal_string = explode(",", (string) $record->pub);
+        $journal_start = mb_strtolower($journal_string[0]);
+        if (preg_match("~\bthesis\b~ui", $journal_start)) {
+          // Do nothing
+        } elseif (substr($journal_start, 0, 6) == "eprint") {
+          if (substr($journal_start, 7, 6) == "arxiv:") {
+            if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
+            $this->add_if_new("arxiv", substr($journal_start, 13));
+          } else {
+            $this->append_to('id', ' ' . substr($journal_start, 13));
+          }
+        } else {
+          $this->add_if_new('journal', $journal_string[0]);
+        }          
+      }
+      if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
+         unset($record->page);
+         unset($record->volume);
+         unset($record->issue);
+      }
+      if (isset($record->volume)) {
+        $this->add_if_new("volume", (string) $record->volume);
+      }
+      if (isset($record->issue)) {
+        $this->add_if_new("issue", (string) $record->issue);
+      }
+      if (isset($record->year)) {
+        $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
+      }
+      if (isset($record->page)) {
+        $this->add_if_new("pages", implode('–', $record->page));
+      }
+      if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
+        foreach ($record->identifier as $recid) {
+          if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+             if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
+             $this->add_if_new("arxiv", substr($recid, 6));
+          }
+        }
+      }
+      if (isset($record->doi)) {
+        $this->add_if_new('doi', (string) $record->doi[0]);          
+      }
+      return TRUE;
     } else {
-       report_info("Skipping AdsAbs database: not in slow mode" . tag());
-       return FALSE;
+      report_inline('no record retrieved.');
+      return FALSE;
     }
   }
   
