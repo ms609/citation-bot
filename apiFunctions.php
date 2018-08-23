@@ -64,9 +64,7 @@ function entrez_api($ids, $templates, $db) {
               case "doi": case "pii":
               default:
                 if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
-                  if ($this_template->add_if_new('doi', $match[0])) {
-                    $this_template->expand_by_doi();
-                  }
+                  $this_template->add_if_new('doi', $match[0]);
                 }
                 if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
                   $this_template->add_if_new('pmc', substr($match[0], 3));
@@ -128,6 +126,7 @@ function arxiv_api($ids, $templates) {
   $this_template = current($templates); // advance at end of foreach loop
   foreach ($xml->entry as $entry) {
     $i = 0;
+    report_info("Found match for arXiv " . $ids[$i]);
     foreach ($xml->entry->author as $auth) {
       $i++;
       $name = $auth->name;
@@ -143,14 +142,14 @@ function arxiv_api($ids, $templates) {
     $this_template->add_if_new("year", substr($entry->published, 0, 4));
     $this_template->add_if_new("doi", (string) $entry->arxivdoi);
 
-    if ($entry->arxivjournal_ref) {  
+    if ($entry->arxivjournal_ref) {
       $journal_data = (string) $entry->arxivjournal_ref;
-      if (preg_match("~,(\(?([12]\d{3})\)?).*?$~u", $journal_data, $match)) {
+      if (preg_match("~(, *\(?([12]\d{3})\)?).*?$~u", $journal_data, $match)) {
         $journal_data = str_replace($match[1], "", $journal_data);
         $current_year = $this_template->get_without_comments_and_placeholders('year');
         if (!$current_year
-        ||  preg_match('~\d{4}~', $current_year) && $current_year < $match[0]) {
-          $this_template->add('year', $match[0]);
+        ||  (preg_match('~\d{4}~', $current_year) && $current_year < $match[2])) {
+          $this_template->add('year', $match[2]);
         }
       }
       if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
