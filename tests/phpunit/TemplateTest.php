@@ -718,43 +718,50 @@ ER -  }}';
   }
        
   public function testInternalCaps() { // checks for title formating in tidy() not breaking things
-      $text = '{{cite journal|journal=ZooTimeKids}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('ZooTimeKids', $expanded->get('journal'));
+    $text = '{{cite journal|journal=ZooTimeKids}}';
+    $expanded = $this->proepare_citation($text);
+    $this->assertEquals('ZooTimeKids', $prepared->get('journal'));
   }
+  
   public function testCapsAfterColonAndPeriodJournalTidy() {
-      $text = '{{Cite journal |journal=In Journal Titles: a word following punctuation needs capitals. Of course.}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('In Journal Titles: A Word Following Punctuation Needs Capitals. Of Course.', $expanded->get('journal'));
+    $text = '{{Cite journal |journal=In Journal Titles: a word following punctuation needs capitals. Of course.}}';
+    $expanded = $this->prepare_citation($text);
+    $this->assertEquals('In Journal Titles: A Word Following Punctuation Needs Capitals. Of Course.', 
+                        $prepared->get('journal'));
   }      
+
   public function testExistingWikiText() { // checks for formating in tidy() not breaking things
-      $text = '{{cite journal|title=[[Zootimeboys]] and Girls|journal=[[Zootimeboys]] and Girls}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('Zootimeboys and Girls', $expanded->get('journal'));
-      $this->assertEquals('Zootimeboys and Girls', $expanded->get('title'));
+    $text = '{{cite journal|title=[[Zootimeboys]] and Girls|journal=[[Zootimeboys]] and Girls}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('Zootimeboys and Girls', $prepared->get('journal'));
+    $this->assertEquals('Zootimeboys and Girls', $prepared->get('title'));
   }
+  
   public function testNewWikiText() { // checks for new information that looks like wiki text and needs escaped
-      $text = '{{Cite journal|doi=10.1021/jm00193a001}}';  // This has greek letters, [, ], (, and ).
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-&#91;2-carboxy-2-(4-hydroxyphenyl)acetamido&#93;-7.alpha.-methoxy-3-&#91;&#91;(1-methyl-1H-tetrazol-5-yl)thio&#93;methyl&#93;-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems', $expanded->get('title'));
+    $text = '{{Cite journal|doi=10.1021/jm00193a001}}';  // This has greek letters, [, ], (, and ).
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-&#91;2-carboxy-2-(4-hydroxyphenyl)acetamido&#93;-7.alpha.-methoxy-3-&#91;&#91;(1-methyl-1H-tetrazol-5-yl)thio&#93;methyl&#93;-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems', $expanded->get('title'));
   }
+  
   public function testZooKeys() {
-      $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('ZooKeys', $expanded->get('journal'));
-      $this->assertEquals('445', $expanded->get('issue'));
-      $this->assertNull($expanded->get('volume'));
-      $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[Zookeys]]}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('[[Zookeys]]', $expanded->get('journal'));  // This is wrong capitalization, but because of [[ ]], we leave alone, not wanting to break links
-      $this->assertEquals('445', $expanded->get('issue'));
-      $this->assertNull($expanded->get('volume'));
+    $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('ZooKeys', $expanded->get('journal'));
+    $this->assertEquals('445', $expanded->get('issue'));
+    $this->assertNull($expanded->get('volume'));
+    $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[Zookeys]]}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('[[Zookeys]]', $expanded->get('journal'));  // This is wrong capitalization, but because of [[ ]], we leave alone, not wanting to break links
+    $this->assertEquals('445', $expanded->get('issue'));
+    $this->assertNull($expanded->get('volume'));
   }
+  
   public function testTitleItalics(){
-      $text = '{{cite journal|doi=10.1111/pala.12168}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals("The macro- and microfossil record of the Cambrian priapulid ''Ottoia''", $expanded->get('title'));
+    $text = '{{cite journal|doi=10.1111/pala.12168}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("The macro- and microfossil record of the Cambrian priapulid ''Ottoia''", $expanded->get('title'));
   }
+  
   public function testSpeciesCaps() {
     $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
     $expanded = $this->process_citation($text);
