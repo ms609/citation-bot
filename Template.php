@@ -2999,10 +2999,10 @@ final class Template {
         if ($new_value) {
           $p->val = $new_value;
         }
+        report_modification("Renamed \"$old_param\" -> \"$new_param\"");
+        $this->tidy_parameter($new_param);
       }
     }
-    report_modification("Renamed \"$old_param\" -> \"$new_param\"");
-    $this->tidy_parameter($new_param);
   }
 
   public function get($name) {
