@@ -123,7 +123,7 @@ class Page {
     // EMPTY URLS Converted to Templates //
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
                       "~(<ref[^>]*?>)(\s*\[?)(https?:\/\/[^ >}{\]\[]+)(\]?\s*)(<\s*?\/\s*?ref>)~",
-                      function($matches) {return $matches[1] . '{{cite web|url=' . $matches[3] . '|' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4]) . '}}' . $matches[5] ;},
+                      function($matches) {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4]) . '}}' . $matches[5] ;},
                       $this->text
                       );
 
