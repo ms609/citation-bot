@@ -496,14 +496,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testOrigYearHandling() {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('2000', $expanded->get('origyear'));
-      $this->assertEquals('2009', $this->getDateAndYear($expanded));
+      $prepared = $this->process_citation($text);
+      $this->assertEquals('2000', $prepared->get('origyear'));
+      $this->assertEquals('2009', $this->getDateAndYear($prepared));
       
       $text = '{{cite book | origyear = 2000 }}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('2000', $this->getDateAndYear($expanded));
-      $this->assertNull($expanded->get('origyear'));
+      $prepared = $this->process_citation($text);
+      $this->assertEquals('2000', $this->getDateAndYear($prepared));
+      $this->assertNull($prepared->get('origyear'));
   }
   
   public function testGoogleBooksExpansion() {
@@ -549,22 +549,17 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('last31'));
   }
   
-
-  public function testInPress() {
+  public function testInPress() {  
     $text = '{{Cite journal|pmid=9858585|date =in press}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('1999', $this->getDateAndYear($expanded));
-
-    $text = '{{cite journal|pmid=9858585|year=in press}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('1999', $this->getDateAndYear($expanded));
   }
   
  public function testISODates() {
-      $text = '{{cite book |author=Me |title=Title |year=2007-08-01 }}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('2007-08-01', $expanded->get('date'));
-      $this->assertNull($expanded->get('year'));
+    $text = '{{cite book |author=Me |title=Title |year=2007-08-01 }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('2007-08-01', $prepared->get('date'));
+    $this->assertNull($prepared->get('year'));
   }
   
   public function testRIS() {
@@ -577,18 +572,17 @@ SP - 379
 EP - 423
 VL - 27
 ER -  }}';
-     $expanded = $this->process_citation($text);
-     $this->assertEquals('A Mathematical Theory of Communication', $expanded->get('title'));
-     $this->assertEquals('1948-07', $expanded->get('date'));
-     $this->assertEquals('Bell System Technical Journal', $expanded->get('journal'));
-     $this->assertEquals('Shannon, Claude E', $expanded->first_author());
-     $this->assertEquals('Shannon', $expanded->get('last1'));
-     $this->assertEquals('Claude E', $expanded->get('first1'));
-     $this->assertEquals('379–423', $expanded->get('pages'));
-     $this->assertEquals('27', $expanded->get('volume'));   
+     $prepared = $this->prepare_citation($text);
+     $this->assertEquals('A Mathematical Theory of Communication', $prepared->get('title'));
+     $this->assertEquals('1948-07', $prepared->get('date'));
+     $this->assertEquals('Bell System Technical Journal', $prepared->get('journal'));
+     $this->assertEquals('Shannon, Claude E', $prepared->first_author());
+     $this->assertEquals('Shannon', $prepared->get('last1'));
+     $this->assertEquals('Claude E', $prepared->get('first1'));
+     $this->assertEquals('379–423', $prepared->get('pages'));
+     $this->assertEquals('27', $prepared->get('volume'));   
   }
     
-
   public function testEndNote() {
       $book = '{{Cite book |
 %0 Book
@@ -617,51 +611,57 @@ ER -  }}';
 %I University of California, Berkeley
 %R 10.1038/ntheses.01928
 %9 Dissertation}}';
-       $expanded = $this->process_citation($book);
-       $this->assertEquals('Chaucer, Geoffrey', $expanded->first_author());
-       $this->assertEquals('The Works of Geoffrey Chaucer', $expanded->get('title'));
-       $this->assertEquals('1957', $this->getDateAndYear($expanded));
-       $this->assertEquals('Houghton', $expanded->get('publisher'));
-       $this->assertEquals('Boston', $expanded->get('location'));
+       $prepared = $this->prepare_citation($book);
+       $this->assertEquals('Chaucer, Geoffrey', $prepared->first_author());
+       $this->assertEquals('The Works of Geoffrey Chaucer', $prepared->get('title'));
+       $this->assertEquals('1957', $this->getDateAndYear($prepared));
+       $this->assertEquals('Houghton', $prepared->get('publisher'));
+       $this->assertEquals('Boston', $prepared->get('location'));
        
-       $expanded = $this->process_citation($article);
-       $this->assertEquals('Clark, Herbert H', $expanded->first_author());
-       $this->assertEquals('1982', $this->getDateAndYear($expanded));
-       $this->assertEquals('Hearers and Speech Acts', $expanded->get('title'));
-       $this->assertEquals('58', $expanded->get('volume'));
-       $this->assertEquals('332–373', $expanded->get('pages'));
+       $prepared = $this->process_citation($article);
+       $this->assertEquals('Clark, Herbert H', $prepared->first_author());
+       $this->assertEquals('1982', $this->getDateAndYear($prepared));
+       $this->assertEquals('Hearers and Speech Acts', $prepared->get('title'));
+       $this->assertEquals('58', $prepared->get('volume'));
+       $this->assertEquals('332–373', $prepared->get('pages'));
        
        
-       $expanded = $this->process_citation($thesis);
-       $this->assertEquals('Cantucci, Elena', $expanded->first_author());
-       $this->assertEquals('Permian strata in South-East Asia', $expanded->get('title'));
-       $this->assertEquals('1990', $this->getDateAndYear($expanded));
-       $this->assertEquals('University of California, Berkeley', $expanded->get('publisher'));
-       $this->assertEquals('10.1038/ntheses.01928', $expanded->get('doi'));  
+       $prepared = $this->process_citation($thesis);
+       $this->assertEquals('Cantucci, Elena', $prepared->first_author());
+       $this->assertEquals('Permian strata in South-East Asia', $prepared->get('title'));
+       $this->assertEquals('1990', $this->getDateAndYear($prepared));
+       $this->assertEquals('University of California, Berkeley', $prepared->get('publisher'));
+       $this->assertEquals('10.1038/ntheses.01928', $prepared->get('doi'));  
   }
    
   public function testConvertingISBN10intoISBN13() { // URLS present just to speed up tests
     $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('978-0-9749009-0-2', $expanded->get('isbn'));  // Convert with dashes
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('978-0-9749009-0-2', $prepared->get('isbn'));  // Convert with dashes
+    
     $text = "{{cite book|isbn=978-0-9749009-0-2|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('978-0-9749009-0-2', $expanded->get('isbn'));  // Unchanged with dashes
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('978-0-9749009-0-2', $prepared->get('isbn'));  // Unchanged with dashes
+    
     $text = "{{cite book|isbn=9780974900902|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('9780974900902', $expanded->get('isbn'));   // Unchanged without dashes
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('9780974900902', $prepared->get('isbn'));   // Unchanged without dashes
+    
     $text = "{{cite book|isbn=0974900907|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('978-0974900902', $expanded->get('isbn'));   // Convert without dashes
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('978-0974900902', $prepared->get('isbn'));   // Convert without dashes
+    
     $text = "{{cite book|isbn=1-84309-164-X|url=https://books.google.com/books?id=GvjwAQAACAAJ}}";
-    $expanded = $this->process_citation($text);  
-    $this->assertEquals('978-1-84309-164-6', $expanded->get('isbn'));  // Convert with dashes and a big X
+    $prepared = $this->prepare_citation($text);  
+    $this->assertEquals('978-1-84309-164-6', $prepared->get('isbn'));  // Convert with dashes and a big X
+    
     $text = "{{cite book|isbn=184309164x|url=https://books.google.com/books?id=GvjwAQAACAAJ}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('978-1843091646', $expanded->get('isbn'));  // Convert without dashes and a tiny x
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('978-1843091646', $prepared->get('isbn'));  // Convert without dashes and a tiny x
+    
     $text = "{{cite book|isbn=Hello Brother}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Hello Brother', $expanded->get('isbn')); // Rubbish unchanged
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('Hello Brother', $prepared->get('isbn')); // Rubbish unchanged
   }
    
   public function testEtAl() {
@@ -846,7 +846,7 @@ ER -  }}';
     
   public function testSmallWords() {
     $text = '{{cite journal|journal=A Word in ny and n y About cow And Then boys the U S A and y and z}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->prepare_citation($text);
     $this->assertEquals('A Word in NY and N Y About Cow and then Boys the U S A and y and Z', $expanded->get('journal')); 
     $text = '{{cite journal|journal=Ann of Math}}';
     $expanded = $this->process_citation($text);
@@ -857,6 +857,10 @@ ER -  }}';
     $text = '{{cite journal|journal=Ann. of Math}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
+  }
+    
+  public function testSmallWordOrder() {
+    $this->assertEquals(strtoupper(implode(LC_SMALL_WORDS)), strtoupper(impliUC_SMALL_WORDS)); 
   }
   
    public function testDoNotAddYearIfDate() {
