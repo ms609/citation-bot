@@ -169,7 +169,6 @@ class Page {
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       // Clean up:
-      $this_template->update_template_name();
       if (!$this_template->initial_author_params()) {
         $this_template->handle_et_al();
       }
