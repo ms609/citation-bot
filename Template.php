@@ -2652,7 +2652,7 @@ final class Template {
           break;
           
         case 'edition': 
-          $this->set($param, preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get('param')));
+          $this->set($param, preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
           break; // Don't want 'Edition ed.'
         
         case 'isbn':
