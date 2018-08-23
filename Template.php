@@ -2522,8 +2522,6 @@ final class Template {
                   $this->set($param, preg_replace($translator_regexp, "", $this->get($param)));
                 }
               }
-            } else {
-              report_inaction("Initial authors exist: skipping authorlink whilst tidying citation");
             }
             break;
 
