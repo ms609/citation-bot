@@ -23,6 +23,7 @@ function user_notice($symbol, $class, $text) {
   }
 }
 
+function report_phase($text)  { user_notice("\n>", "phase", $text); }
 function report_action($text)  { user_notice(">", "subitem", $text); }
 function report_info($text)  { user_notice("  >", "subsubitem", $text); }
 function report_inaction($text)  { user_notice("  .", "boring", $text); }
