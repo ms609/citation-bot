@@ -100,7 +100,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
    
   public function testChangeNothing() {
-     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->}}';
+     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals($text, $expanded->parsed_text());   
   }
