@@ -118,6 +118,9 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
+    } else if ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
+      // This is all we do with cite magazine
+      $this->rename('work', 'magazine');
     }
   }
   
@@ -303,14 +306,6 @@ final class Template {
           // Convert from journal to book, if there is a unique chapter name or has an ISBN
           if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
             $this->name = 'Cite book';
-          }
-          if ($this->wikiname() === 'cite journal' && $this->has('work') && $this->blank('journal')) { // Never did get a journal name....
-            $this->rename('work', 'journal');
-          }
-          break;
-        case 'cite magazine':
-          if ($this->blank('magazine') && $this->has('work')) { // This is all we do with cite magazine
-            $this->rename('work', 'magazine');
           }
           break;
       }
@@ -2588,7 +2583,12 @@ final class Template {
             }
             break;
 
-
+        case 'chapter': 
+          if (!$this->blank('chapter')
+          &&  in_array($this->wikiname(), array('cite journal', 'cite web'))) {
+            $this->name = 'Cite book';
+          }
+          break;
     
         case 'coauthor': case 'coauthors':  // Commonly left there and empty and deprecated
           if ($this->blank($param)) $this->forget($param);
@@ -2708,6 +2708,15 @@ final class Template {
           }
           break;
         
+        case 'work':
+          switch ($this->wikiname()) {
+            case 'cite book': $work_becomes = 'title'; break;
+            case 'cite journal': $work_becomes = 'journal'; break;
+            case 'cite web': $work_becomes = 'website'; break;
+            default: $work_becomes = 'work';
+          }
+          if ($this->blank($work_becomes)) {$this->rename('work', $work_becomes);}
+          
         case 'year':
           if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
              if ($this->blank('date')) $this->rename('year', 'date');
@@ -3002,6 +3011,7 @@ final class Template {
 
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
+    if ($old_param == $new_param) return FALSE;
     if ($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
     if (!isset($this->param)) return FALSE;
     foreach ($this->param as $p) {

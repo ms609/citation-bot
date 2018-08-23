@@ -451,10 +451,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite book|series=LoSe mE}}', $prepared->parsed_text());
-      $text = '{{cite journal|chapter=abc|work=abc}}';
+      $text = '{{cite journal|chapter=A book chapter|work=A book chapter}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertEquals('{{Cite book|chapter=abc}}', $prepared->parsed_text());
+      $this->assertEquals('{{Cite book|chapter=A book chapter}}', $prepared->parsed_text());
       $text = '{{citation|work=I Live}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
