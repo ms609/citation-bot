@@ -447,38 +447,47 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{citation|title=Rubbish|chapter=Dog}}', $prepared->parsed_text());
+      
       $text = '{{cite book|series=Keep Series, Lose Work|work=Keep Series, Lose Work}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite book|series=Keep Series, Lose Work}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|chapter=A book chapter|work=A book chapter}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{Cite book|chapter=A book chapter}}', $prepared->parsed_text());
+      
       $text = '{{citation|work=I Live}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
+      
       $text = '{{not cite|work=xyz|chapter=xzy}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{not cite|work=xyz|chapter=xzy}}', $prepared->parsed_text());
+      
       $text = '{{citation|work=xyz|journal=xyz}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{citation|journal=Xyz}}', $prepared->parsed_text());
+      
       $text = '{{citation|work=|chapter=Keep work in Citation template}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{citation|work=|chapter=Keep work in Citation template}}', $prepared->parsed_text());
-      $text = '{{cite journal|work=xyz}}';
+      
+      $text = '{{cite journal|work=work should become journal}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertEquals('{{cite journal|journal=xyz}}', $prepared->parsed_text());
+      $this->assertEquals('{{cite journal|journal=Work Should Become Journal}}', $prepared->parsed_text());
+      
       $text = '{{cite magazine|work=abc}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite magazine|magazine=abc}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|work=}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
@@ -849,19 +858,9 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
   }
-    
-  public function testSmallWordsOneGiantTest() {
-    $text_in  = 'Start ';
-    $text_out = 'Start ';
-    for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
-      $text_out = $text_out . LC_SMALL_WORDS[$i];
-      $text_in  = $text_in  . UC_SMALL_WORDS[$i];
-    }
-    $text_in  = $text_in  . ' Ending';
-    $text_out = $text_out . ' Ending';
-    $text = '{{cite journal|journal=' . $text_in . '}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals($text_out, $expanded->get('journal')); 
+  
+  public function testSmallWordOrder() {
+    $this->assertEquals(strtoupper(implode(' ', LC_SMALL_WORDS)), strtoupper(implode(' ', UC_SMALL_WORDS))); 
   }
   
    public function testDoNotAddYearIfDate() {
