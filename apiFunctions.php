@@ -265,6 +265,7 @@ function adsabs_api($ids, $templates, $identifier) {
     }
   }
   foreach ($response->docs as $record) {
+    report_info("Found match for bibcode " . $record->bibcode);
     $this_template = $templates[array_search((string) $record->bibcode, $ids)];
     $this_template->add_if_new("title", (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
     $i = 0;
