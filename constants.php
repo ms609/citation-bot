@@ -57,6 +57,7 @@ const LC_SMALL_WORDS = array(' and then ', ' of ',' the ',' and ',' an ',' or ',
                              ' di ', ' ed ', ' du ', ' de ', ' dans ', ' les ', ' e ', ' den ', ' die ', ' das ', ' ein ', 
                              ' eine ', ' einen ', ' NYC ', ' d\'une ', ' d\'un ', ' el ',  ' los ', ' las ', ' as ',
                              ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' för ', ' da ', ' SSRN ', ' AI ', ' woor ', ' do ',
+                             ' um ', ' von ', ' della ',
                              // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
                              ' El Dorado ', ' Las Vegas ', ' Los Angeles ');
 const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Its ',
@@ -68,6 +69,7 @@ const UC_SMALL_WORDS = array(' and Then ', ' Of ',' The ',' And ',' An ',' Or ',
                              ' Di ', ' Ed ', ' Du ', ' De ', ' Dans ', ' Les ', ' E ', ' Den ', ' Die ', ' Das ', ' Ein ', 
                              ' Eine ', ' Einen ', ' Nyc ', ' D\'une ', ' D\'un ', ' El ',  ' Los ', ' Las ', ' As ',
                              ' Nor ',' At ', ' Up ', ' Ny ', ' N y ', ' För ', ' Da ', ' Ssrn ', ' Ai ', ' Woor ', ' Do ',
+                             ' Um ', ' Von ', ' Della ',
                              // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
                              ' el Dorado ', ' las Vegas ', ' los Angeles ');
 
