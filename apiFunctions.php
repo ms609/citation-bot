@@ -151,6 +151,8 @@ function arxiv_api($ids, $templates) {
         $current_year = $this_template->get_without_comments_and_placeholders('year');
         if (!$current_year
         ||  (preg_match('~\d{4}~', $current_year) && $current_year < $match[2])) {
+          $this_template->forget('date');
+          $this_template->forget('year');
           $this_template->add('year', $match[2]);
         }
       }
