@@ -28,6 +28,11 @@ form {
   margin: 3em 1em 0;
 }
 
+input.error {
+  background-color: #eebbbb;
+  border-color: #ee4444;
+}
+
 header a, footer a { text-decoration: none; }
 
 a { color: #0773b3; }
