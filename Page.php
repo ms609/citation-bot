@@ -245,16 +245,7 @@ class Page {
 
   public function write($api, $edit_summary_end = NULL) {
     if ($this->allow_bots()) {
-      $time_since_last_write = time() - $this->last_write_time;
-      if ($time_since_last_write < 10) {
-        $time_to_pause = floor(9 - $time_since_last_write);
-        report_warning("Throttling: waiting $time_to_pause seconds...");
-        for ($i = 0; $i < $time_to_pause; $i++) {
-          sleep(1); 
-          report_inline(' .');
-        }
-      }
-      $this->last_write_time = time();
+      throttle(10);
       return $api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at);
