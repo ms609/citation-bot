@@ -326,6 +326,7 @@ function expand_by_doi($template, $force = FALSE) {
   // Because it can recover rarely used parameters such as editors, series & isbn, 
   // there will be few instances where it could not in principle be profitable to 
   // run this function, so we don't check this first.
+  
   $doi = $template->get_without_comments_and_placeholders('doi');
   if (!$template->verify_doi()) return FALSE;
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
@@ -420,6 +421,14 @@ function query_crossref($doi) {
 }
 
 function doi_active($doi) {
+  static $cache = [];
+  if (!isset($cache[$doi])) {
+    $cache[$doi] = is_doi_active($doi);
+  }
+  return $cache[$doi];
+}
+
+function is_doi_active($doi) {
   $response = get_headers("https://api.crossref.org/works/$doi")[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
