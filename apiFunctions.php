@@ -290,7 +290,7 @@ function adsabs_api($ids, $templates, $identifier) {
         $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
       }          
     }
-    if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
+    if (isset($record->page) && (stripos(implode('Â–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
@@ -305,7 +305,7 @@ function adsabs_api($ids, $templates, $identifier) {
       $this_template->add_if_new("year", preg_replace("~\D~", "", (string) $record->year), 'adsabs');
     }
     if (isset($record->page)) {
-      $this_template->add_if_new("pages", implode('–', $record->page), 'adsabs');
+      $this_template->add_if_new("pages", implode('Â–', $record->page), 'adsabs');
     }
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
       foreach ($record->identifier as $recid) {
