@@ -8,6 +8,7 @@
           
           
           
+          
           <?php
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' AI ', ' AJHG ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ', ' aus ', ' BBA ', 
@@ -19,7 +20,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' NEJM ', 
           ' nor ', ' nor ', ' NY ', ' NYC ', ' NYT ', ' of ', ' off ', ' on ', 
           ' or ', ' over ', ' PCR ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' to ', 
-          ' UK ', ' und ', ' up ', ' USA ', ' U S A ', ' van ', ' von ', ' when ', ' with ', 
+          ' UK ', ' und ', ' up ', ' U S A ', ' USA ', ' van ', ' von ', ' when ', ' with ', 
           ' woor ', ' y ', ' zu ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', );
@@ -33,7 +34,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Nejm ', 
           ' Nor ', ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Of ', ' Off ', ' On ', 
           ' Or ', ' Over ', ' Pcr ', ' Pnas ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' To ', 
-          ' Uk ', ' Und ', ' Up ', ' Usa ', ' U S A ', ' Van ', ' Von ', ' When ', ' With ', 
+          ' Uk ', ' Und ', ' Up ', ' U S A ', ' Usa ', ' Van ', ' Von ', ' When ', ' With ', 
           ' Woor ', ' Y ', ' Zu ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', );
