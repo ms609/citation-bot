@@ -336,7 +336,7 @@ function expand_by_doi($template, $force = FALSE) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
-      report_action("Expanding from crossRef record with doi:" . $doi);
+      report_action("Querying Crossref: doi:" . $doi);
 
       if ($crossRef->volume_title && $template->blank('journal')) {
         $template->add_if_new('chapter', $crossRef->article_title); // add_if_new formats this value as a title
