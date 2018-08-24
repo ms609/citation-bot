@@ -51,5 +51,5 @@ function bibcode_link($id) {
 function doi_link($doi) {
   return HTML_OUTPUT
     ? '<a href="http://dx.doi.org/' . urlencode($doi) . '" target="_blank">'
-    : $id;
+    : $doi;
 }
