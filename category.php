@@ -32,6 +32,7 @@ if (is_valid_user($user)) {
   echo " Activated by $user.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
 } else {
+  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits";
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
