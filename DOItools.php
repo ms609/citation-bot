@@ -106,20 +106,13 @@ function author_is_human($author) {
   return TRUE;
 }
 
-function replace_html_entities ($text) {
-  $text = preg_replace_callback('~&#x([a-f0-9]+);~', function ($matches) {
-    return chr(hexdec($matches[1]));
-  }, $text);
-  return $text;
-}
-
 // Returns the author's name formatted as Surname, F.I.
 function format_author($author){
   
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = NULL;
   // Google sometimes has these
-  $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", replace_html_entities($author));
+  $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, NULL, 'UTF-8'));
 
   if (substr(trim($author), -1) === ".") {
      $ends_with_period = TRUE;
