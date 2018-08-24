@@ -18,7 +18,7 @@ footer {
   margin-top: 3em;
   border-top: 1px solid #335;
   box-shadow: 0 50vh 0 50vh #eed;
-  background: #eed url('../img/Powered-By-Toolforge.png') no-repeat right;
+  background: #eed url('../img/Powered-by-Toolforge.png') no-repeat right;
   background-position-y: 20px;
   min-height: 80px;
 }
