@@ -62,17 +62,17 @@ if ($category) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
-      echo "\n # Writing to " . echoable($page_title) . '... ';
+      report_phase("Writing to " . echoable($page_title) . '... ');
       while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
-      safely_echo($page->parsed_text());
+      // Parsed text can be viewed by diff link; don't clutter page. 
+      // print "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
-        " </pre><br><small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
-        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . $api->get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br><pre>"
-        , ".");
+        "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . $api->get_last_revision($page_title) . ">diff</a>" .
+        "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / ", ".");
       } else {
-         echo "\n # Failed. \n";
+         report_warning("Write failed.");
       }
     } else {
       report_phase($page->parsed_text() ? 'No changes required.' : 'Blank page');
@@ -83,5 +83,5 @@ if ($category) {
 } else {
   echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
-html_echo('</pre></body></html>', "\n");
+html_echo(' # # #</pre></body></html>', "\n");
 exit(0);
