@@ -1003,6 +1003,12 @@ ER -  }}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('https://www.academia.edu/123456', $expanded->get('url')); 
  }
+ 
+  public function testDoiValidation() {
+    $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013}}'
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('10.1093/acref/9780199204632.001.0001', $prepared->get('doi'));
+  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
