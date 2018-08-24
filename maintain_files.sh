@@ -5,11 +5,11 @@ set -e
 [ -z "${GITHUB_PAT}" ] && exit 99
 git config --global user.email "martins@gmail.com"
 git config --global user.name "Martin Smith"
-if [ ${TRAVIS_PULL_REQUEST} -gt 0 ]
+if [ "${TRAVIS_PULL_REQUEST}" = false ]
 then
-  ${TRAVIS_PULL_REQUEST_BRANCH}
-else
   BRANCH_NAME = ${TRAVIS_BRANCH}
+else
+  ${TRAVIS_PULL_REQUEST_BRANCH}
 fi;
 git clone -b $BRANCH_NAME https://${GITHUB_PAT}@github.com/${TRAVIS_REPO_SLUG}.git file-maintenance
 cd file-maintenance
