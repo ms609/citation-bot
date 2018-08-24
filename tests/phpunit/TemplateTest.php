@@ -110,6 +110,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('url'));
   }
   
+  public function testBrokenDoiUrlRetention() {
+    $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|title=Israel, Occupied Territories|publisher=|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1301|doi-broken-date=2018-07-07}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get('doi-broken-date'));
+    $this->assertNotNull($expanded->get('url'));
+  }
+  
   public function testPmidExpansion() {
     $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pubmed/1941451?dopt=AbstractPlus}}";
     $expanded = $this->prepare_citation($text);
