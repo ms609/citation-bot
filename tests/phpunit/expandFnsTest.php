@@ -49,5 +49,10 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
                         extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract')[1]);
     $this->assertEquals('10.1016/j.physletb.2010.03.064', 
                         extract_doi(' 10.1016%2Fj.physletb.2010.03.064')[1]);
-  }  
+  }
+  
+  public function testExtractDoi() {
+    $this->assertEquals('10.1093/acref/9780199204632.001.0001', extract_doi('http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022'));
+    $this->assertEquals('10.1038/nature11111', extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation'));
+  }
 }
