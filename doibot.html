@@ -1,325 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>					
-  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-  <meta content="Smith609" name="author">
+<html lang="en" dir="ltr">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
+		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
+    <link rel="stylesheet" type="text/css" href="css/results.css" />
   <meta content="A bot to automatically tidy and complete citations on Wikipedia, the free encyclopaedia" name="description" />
   <title>
    Citation bot
-  </title>
-  <style media="all">
-/*
-** Modified from MediaWiki 'monobook' style sheet for CSS2-capable browsers.
-** Copyright Gabriel Wicke - http://wikidev.net/
-** License: GPL (http://www.gnu.org/copyleft/gpl.html)
-*/
-
-#column-content {
-	width: 100%;
-	float: right;
-	margin: 0 0 .6em -12.2em;
-	padding: 0;
-}
-#content {
-	margin: 2.8em 0 0 13.2em;
-	padding: 0 1em 1.5em 1em;
-	position: relative;
-	z-index: 2;
-}
-#column-one {
-	padding-top: 160px;
-}
-#content {
-  color: black;
-	border: 1px solid #aaa;
-	border-right: none;
-	line-height: 1.5em;
-}
-/* the left column width is specified in class .portlet */
-
-body {
-	font: x-small sans-serif;
-	background: #ffffff 0 0 no-repeat;
-	color: black;
-	margin: 0;
-	padding: 0;
-}
-
-/* scale back up to a sane default */
-#globalWrapper {
-	font-size: 127%;
-	width: 100%;
-	margin: 0;
-	padding: 0;
-}
-
-/* general styles */
-a {
-	text-decoration: none;
-	color: #002bb8;
-	background: none;
-}
-a:visited {
-	color: #5a3696;
-}
-a:active {
-	color: #faa700;
-}
-a:hover {
-	text-decoration: underline;
-}
-a.stub {
-	color: #772233;
-}
-a.new {
-	color: #ba0000;
-}
-a.new:visited{
-	color: #a55858;
-}
-
-img {
-	border: none;
-	vertical-align: middle;
-}
-p {
-	margin: .4em 0 .5em 0;
-	line-height: 1.5em;
-}
-p img {
-	margin: 0;
-}
-
-h1, h2, h3, h4 {
-	color: grey;
-	background: none;
-	font-weight: normal;
-	margin: 0;
-	padding-top: .5em;
-	padding-bottom: .17em;
-	border-bottom: 1px solid #aaa;
-}
-h1 { font-size: 188%; }
-h2 { font-size: 150%; }
-h3, h4, h5, h6 {
-	border-bottom: none;
-	font-weight: bold;
-}
-h3 { font-size: 132%; }
-h4 { font-size: 116%; }
-
-form {
-	border: none;
-	margin: 0;
-}
-
-/*
-** the main content area
-*/
-
-/* Some space under the headers in the content area */
-#bodyContent h1, #bodyContent h2 {
-	margin-bottom: .6em;
-}
-#bodyContent h3, #bodyContent h4, #bodyContent h5 {
-	margin-bottom: .3em;
-}
-.firstHeading {
-	margin-bottom: .1em;
-}
-
-/*
-** general portlet styles (elements in the quickbar)
-*/
-.portlet {
-	border: none;
-	margin: 0 0 .5em;
-	padding: 0;
-	float: none;
-	width: 12.6em;
-	overflow: hidden;
-}
-.portlet h4 {
-	font-size: 95%;
-	font-weight: normal;
-	white-space: nowrap;
-}
-.portlet h5 {
-	background: transparent;
-	color: black;
-	padding: 0 1em 0 .5em;
-	display: inline;
-	height: 1em;
-	text-transform: lowercase;
-	font-size: 91%;
-	font-weight: normal;
-	white-space: nowrap;
-}
-.portlet h6 {
-	background: #ffae2e;
-	border: 1px solid #2f6fab;
-	border-style: solid solid none solid;
-	padding: 0 1em 0 1em;
-	text-transform: lowercase;
-	display: block;
-	font-size: 1em;
-	height: 1.2em;
-	font-weight: normal;
-	white-space: nowrap;
-}
-.pBody {
-	font-size: 95%;
-	background-color: white;
-	color: black;
-	border-collapse: collapse;
-	border: 1px solid #aaa;
-	-moz-border-radius: 10px;
-	padding: 1px .8em .3em .5em;
-}
-.portlet h1,
-.portlet h2,
-.portlet h3,
-.portlet h4 {
-	margin: 0;
-	padding: 0;
-}
-.portlet li {
-	padding: 0;
-	margin: 0;
-}
-
-/*
-** Logo properties
-*/
-
-#p-logo {
-	top: 0;
-	left: 0;
-	position: absolute; /*needed to use z-index */
-	z-index: 3;
-	height: 155px;
-	width: 12em;
-	overflow: visible;
-}
-#p-logo h5 {
-	display: none;
-}
-#p-logo a,
-#p-logo a:hover {
-	display: block;
-	height: 155px;
-	width: 12.2em;
-	background-repeat: no-repeat;
-	background-position: 35% 50% !important;
-	text-decoration: none;
-}
-/*
-** the navigation portlet
-*/
-
-#p-navigation {
-	position: relative;
-	z-index: 3;
-}
-#p-navigation a {
-	display: block;
-}
-#p-navigation li.active a, #p-navigation li.active a:hover {
-	display: inline;
-}
-
-#p-navigation .pBody {
-	padding-right: 0;
-}
-
-#p-navigation li.active a, #p-navigation li.active a:hover {
-	text-decoration: none;
-	font-weight: bold;
-}
-
-
-/*
-** Search portlet
-*/
-#p-search {
-	position: relative;
-	z-index: 3;
-}
-input.searchButton {
-	margin-top: 1px;
-	font-size: 95%;
-}
-#searchGoButton {
-	padding-left: .5em;
-	padding-right: .5em;
-	font-weight: bold;
-}
-#searchInput {
-	width: 10.9em;
-	margin: 0;
-	font-size: 95%;
-}
-#p-search .pBody {
-	padding: .5em .4em .4em .4em;
-	text-align: center;
-}
-
-.error {
-  background-color: #eebbbb;
-  border-color: #ee4444;
-}
-  </style> 
-   
+  </title>   
   <script type="text/javascript" src="js/doibot.js"></script>
-</head>
-<body style="direction: ltr;" class="mediawiki ns--1 ltr page-Spezial_Beiträge"> 
-  <div id="globalWrapper">
-    <div id="column-content"> 
-     	<div id="content">
-        <h1 class="firstHeading">
-          Wikipedia citation bot
-				</h1> 
-        <div id="bodyContent"> 
-          <!-- start content --> 
-          <form id="botForm" action="doibot.php" method="post">
-            <p>Populates empty fields in {{cite journal}} family templates, and 
-            fix other citation issues.</p>
-            <p>
-              <label for="page">Page to process:</label><br />
-              <input name="page" id="botPage" value="" />
-            </p>
-            <p>
-              <input type="checkbox" name="slow" checked />
-              <label for="slow">Thorough mode - a slower, but more exhaustive, search. Finds bibcodes and flags "broken" DOIs.</label>
-            </p>
-            <p>
-              <input type="checkbox" name="edit" checked />
-              <label for="edit">Commit edits.  Leave blank to check Wikicode.</label>
-            </p>
-            <p>
-              <label for="user">Please enter your Wikipedia username below before submitting your query.</label><br />
-              <input name="user" id="user" value="" onchange="SaveUsername();" /> 
-              <input type="checkbox" id="saveUsername" name="saveUsername" onchange="SaveUsername();" /> 
-              <label for="saveUsername">Save username?</label>
-            </p>
-            <p>
-              <input type="submit" id="SubmitButton" /> <img style="display:none" src="img/spinner_18_18.gif" id="WaitSpinner" />
-            </p>
-          </form>
-          <p>Maintained by <a href="https://en.wikipedia.org/wiki/User:Smith609">Martin Smith</a>.</p>
-          <p>
-            <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More details</a> | 
-            <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report bugs</a> |
-            <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
-          </p>
-				</div>
-			</div>
-		</div>
-		<div id="column-one">
-			<div class="portlet" id="p-logo">
-				<a style="background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Wikimedia_Community_Logo-Toolserver.svg/133px-Wikimedia_Community_Logo-Toolserver.svg.png);" >&nbsp;</a>
-			</div>
-		</div>
-	</div>
+</head>  
+<body style="direction: ltr;" class="mediawiki ns--1 ltr page-Spezial_Beiträge">
+  <header>
+    <h1>Wikipedia citation bot</h1>
+    <p>Populates empty fields in {{cite journal}} family templates, and 
+    fix other citation issues.</p>
+  </header>
+  <form id="botForm" action="doibot.php" method="post">
+    <p>
+      <label for="page">Page to process:</label><br />
+      <input name="page" id="botPage" value="" />
+    </p>
+    <p>
+      <input type="checkbox" name="slow" checked />
+      <label for="slow">Thorough mode - a slower, but more exhaustive, search. Finds bibcodes and flags "broken" DOIs.</label>
+    </p>
+    <p>
+      <input type="checkbox" name="edit" checked />
+      <label for="edit">Commit edits.  Leave blank to check Wikicode.</label>
+    </p>
+    <p>
+      <label for="user">Please enter your Wikipedia username below before submitting your query.</label><br />
+      <input name="user" id="user" value="" onchange="SaveUsername();" /> 
+      <input type="checkbox" id="saveUsername" name="saveUsername" onchange="SaveUsername();" /> 
+      <label for="saveUsername">Save username?</label>
+    </p>
+    <p>
+      <input type="submit" id="SubmitButton" /> <img style="display:none" src="img/spinner_18_18.gif" id="WaitSpinner" />
+    </p>
+  </form>
+  <footer>  
+    <p>Maintained by <a href="https://en.wikipedia.org/wiki/User:Smith609">Martin Smith</a>.</p>
+    <p>
+      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More details</a> | 
+      <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report bugs</a> |
+      <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
+    </p>
+  </footer>
 </body>
 </html>

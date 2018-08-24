@@ -1,10 +1,13 @@
  header, footer {
-  font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
   background-color: #eed; 
   padding: 0.5em 1em;
   margin: -9px;
   text-align: center;
   text-decoration: none;
+}
+
+header, footer, form {
+  font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
 }
 
 header {
@@ -15,6 +18,12 @@ footer {
   margin-top: 3em;
   border-top: 1px solid #335;
   box-shadow: 0 50vh 0 50vh #eed;
+}
+
+form {
+  background: url('../img/Powered-By-Toolforge.png') no-repeat bottom right;
+  padding-bottom: 2em;
+  margin: 3em 1em 0;
 }
 
 header a, footer a { text-decoration: none; }
