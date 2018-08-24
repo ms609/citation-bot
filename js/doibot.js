@@ -7,15 +7,18 @@ function ValidateForm() {
   } else if(typeof document.activeElement.value != 'undefined'){  // IE
     submitButton = document.activeElement;
   };
+  console.log(submitButton.id);
   if (submitButton.id == 'PageSubmit') {
     if (botPage.value.trim() == "") {
       botPage.classList.add("error");
+      submitButton.disabled = "disabled";
       return false;
     }
     document.getElementById("PageSpinner").style.display = "inline-block";
   } else if (submitButton.id == 'CatSubmit') {
     if (botCat.value.trim() == "") {
       botCat.classList.add("error");
+      submitButton.disabled = "disabled";
       return false;
     }
     document.getElementById("CatSpinner").style.display = "inline-block";
