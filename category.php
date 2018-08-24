@@ -64,9 +64,9 @@ if ($category) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
-      echo "\n # Writing to " . echoable($page_title) . '... ';
+      report_phase("Writing to " . echoable($page_title) . '... ');
       while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
-      safely_echo($page->parsed_text());
+      print "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
         " </pre><br><small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
@@ -74,7 +74,7 @@ if ($category) {
         . $api->get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br><pre>"
         , ".");
       } else {
-         echo "\n # Failed. \n";
+         report_warning("Write failed.");
       }
     } else {
       echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
