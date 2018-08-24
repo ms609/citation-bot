@@ -231,8 +231,8 @@ function adsabs_api($ids, $templates, $identifier) {
     
     if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
       if ($rate_limit[2][2]) {
-        report_info("AdsAbs search " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
-             ":\n       " . implode("\n       ", $ids));
+        report_info("AdsAbs 'big-query' request " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
+             ":\n       ");
              // "; reset at " . date('r', $rate_limit[2][2]);
       } else {
         report_warning("AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n");
@@ -265,8 +265,10 @@ function adsabs_api($ids, $templates, $identifier) {
     }
   }
   
+  $matched_ids = [];
   foreach ($response->docs as $record) {
     report_info("Found match for bibcode " . $record->bibcode);
+    $matched_ids[] = $record->bibcode;
     $this_template = $templates[array_search((string) $record->bibcode, $ids)];
     $this_template->add_if_new("title", (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
     $i = 0;
@@ -290,7 +292,7 @@ function adsabs_api($ids, $templates, $identifier) {
         $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
       }          
     }
-    if (isset($record->page) && (stripos(implode('', $record->page), 'arxiv') !== FALSE)) {  // Bad data
+    if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
@@ -305,7 +307,7 @@ function adsabs_api($ids, $templates, $identifier) {
       $this_template->add_if_new("year", preg_replace("~\D~", "", (string) $record->year), 'adsabs');
     }
     if (isset($record->page)) {
-      $this_template->add_if_new("pages", implode('', $record->page), 'adsabs');
+      $this_template->add_if_new("pages", implode('–', $record->page), 'adsabs');
     }
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
       foreach ($record->identifier as $recid) {
@@ -314,6 +316,10 @@ function adsabs_api($ids, $templates, $identifier) {
         }
       }
     }
+  }
+  $unmatched_ids = array_diff($ids, $matched_ids);
+  if (sizeof($unmatched_ids)) {
+    report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));
   }
 }
 
