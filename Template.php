@@ -951,7 +951,7 @@ final class Template {
            . ($data['end_page'] > $data['start_page'] ? "&epage=" . urlencode($data['end_page']) : '')
            . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
-           . ($data['issn'] ? "&issn=$issn" 
+           . ($data['issn'] ? ("&issn=" . $data['issn'])
                             : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         report_warning("Error loading simpleXML file from CrossRef.");
