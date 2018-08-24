@@ -1,24 +1,28 @@
 function ValidateForm() {
   var botPage = document.getElementById("botPage");
   var botCat = document.getElementById("botCat");
-  console.log(event);
-  console.log(Event.target);
-  var submitButton;
-  if(typeof event.explicitOriginalTarget != 'undefined'){  //
-                 submitButton = event.explicitOriginalTarget;
-             }else if(typeof document.activeElement.value != 'undefined'){  // IE
-                 submitButton = document.activeElement;
-             };
-             console.log(submitButton);
-  if (botPage.value.trim() == "") {
-    botPage.classList.add("error");
-    return false;
-  } else {
-    document.getElementById("PageSubmit").disabled = "disabled";
-    document.getElementById("CatSubmit").disabled = "disabled";
+  var submitButton; // From StackOverflow user3126867
+  if (typeof event.explicitOriginalTarget != 'undefined') {  
+    submitButton = event.explicitOriginalTarget;
+  } else if(typeof document.activeElement.value != 'undefined'){  // IE
+    submitButton = document.activeElement;
+  };
+  if (submitButton.id == 'PageSubmit') {
+    if (botPage.value.trim() == "") {
+      botPage.classList.add("error");
+      return false;
+    }
     document.getElementById("PageSpinner").style.display = "inline-block";
-    return true;
+  } else if (submitButton.id == 'CatSubmit') {
+    if (botCat.value.trim() == "") {
+      botCat.classList.add("error");
+      return false;
+    }
+    document.getElementById("CatSpinner").style.display = "inline-block";
   }
+  document.getElementById("PageSubmit").disabled = "disabled";
+  document.getElementById("CatSubmit").disabled = "disabled";
+  return true;
 }
 
 function ValidatePageName() {
