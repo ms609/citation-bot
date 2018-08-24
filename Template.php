@@ -2997,6 +2997,12 @@ final class Template {
       $this->forget('archiveurl');
       $this->forget('archive-date');
       $this->forget('archivedate');
+      $this->forget('url-access');
+      $this->forget('dead-url');
+      $this->forget('registration');
+      $this->forget('subscription');
+      $this->forget('via');
+      $this->forget('website');
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
