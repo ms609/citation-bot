@@ -88,6 +88,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $prepared->wikiname());
     $this->assertEquals('1701972'     , $prepared->get('jstor'));
+
+    $text = "{{Cite web | url = http://www.jstor.org/stable/10.1017/s0022381613000030}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertNull($prepared->get('jstor'));
   }
     
    public function testRISJstorExpansion() {
