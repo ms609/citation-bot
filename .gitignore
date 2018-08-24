@@ -1,5 +1,7 @@
 tests/phpunit/CurrentTest.php
 cookie*.txt
+clover.xml
 **/private*
 *.lock
 vendor/*
+tmp/*
