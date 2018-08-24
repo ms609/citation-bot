@@ -734,15 +734,14 @@ final class Template {
     
     if ($doi = extract_doi($url)[1]) {
       if (is_null($url_sent)) {
-          if (doi_active($doi)) {
-            report_forget("Recognized DOI in URL; dropping URL");
-            $this->forget('url');
-          } else {
-            $this->mark_inactive_doi($doi);
-          }
+        if (doi_active($doi)) {
+          report_forget("Recognized DOI in URL; dropping URL");
+          $this->forget('url');
+        } else {
+          $this->mark_inactive_doi($doi);
         }
-        return $this->add_if_new('doi', $doi);    
-      } 
+      }
+      return $this->add_if_new('doi', $doi);    
     }
   
     // JSTOR
