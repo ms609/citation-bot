@@ -2434,9 +2434,12 @@ final class Template {
             break;
 
         case 'bibcode':
-          if (stripos($this->get($param), 'arxiv') === FALSE) {
-            $this->change_name_to('Cite journal', FALSE);
+          $bibcode_journal = substr($this->get($param), 4);
+          foreach (NON_JOURNAL_BIBCODES as $exception) {
+            if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
           }
+          $this->change_name_to('Cite journal', FALSE);
+          return;
           
         case 'chapter': 
           if ($this->has('chapter')) {
