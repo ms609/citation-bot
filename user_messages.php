@@ -54,3 +54,9 @@ function doi_link($doi) {
     ? '<a href="http://dx.doi.org/' . urlencode($doi) . '" target="_blank">' . $doi . '</a>'
     : $doi;
 }
+
+function jstor_link($id) {
+  return HTML_OUTPUT
+    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . $id . '</a>'
+    : "JSTOR $id";
+}

@@ -452,13 +452,13 @@ function expand_by_jstor($template) {
   if ($template->blank('jstor')) return FALSE;
   $jstor = trim($template->get('jstor'));
   if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors.  We do not want i12342 kind
-  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor) ;
+  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
   if ($dat === FALSE) {
-    report_info("JSTOR API returned nothing for JSTOR ". $jstor);
+    report_info("JSTOR API returned nothing for ". jstor_link($jstor));
     return FALSE;
   }
   if (stripos($dat, 'No RIS data found for') !== FALSE) {
-    report_info("JSTOR API found nothing for JSTOR ". $jstor);
+    report_info("JSTOR API found nothing for ".  jstor_link($jstor));
     return FALSE;
   }
   $has_a_url = $template->has('url');
