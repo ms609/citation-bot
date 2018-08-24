@@ -28,7 +28,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', );
 
-const JOURNAL_ACRONYMS = array(
+const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
 ' ACM SIGPLAN Notices ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ',
 ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Neuroforum ', 
 ' Early Modern Japan: an Interdisciplinary Journal ', ' eLife ', ' EMBO J ', ' EMBO J. ', ' EMBO Journal ',
@@ -40,8 +40,9 @@ const JOURNAL_ACRONYMS = array(
 ' RNA ',
 ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ',     ' Tellus A ', ' The EMBO Journal ', ' Time Out London ',
 ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
-' ZooKeys ');
-const UCFIRST_JOURNAL_ACRONYMS = array(
+' ZooKeys '/* The above will be automatically updated to alphabetical order */ 
+);
+const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
 ' Acm Sigplan Notices ', ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Bmj ',
 ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
 ' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', ' Embo J ', ' Embo J. ', ' Embo Journal ', 
@@ -53,4 +54,5 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Rna ',
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' Tellus A ', ' The Embo Journal ', ' Time Out London ',
 ' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', 
-' Zookeys '); 
+' Zookeys '/* The above will be automatically updated to alphabetical order */ 
+); 
