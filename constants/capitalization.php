@@ -12,7 +12,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' und ', ' up ', ' USA ', ' van ', ' von ', ' when ', ' with ', ' woor ', ' y ', 
           ' zu ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
-          ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ,);
+          ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' Ai ', ' Ajhg ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ', ' Aus ', ' Bba ', 
           ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
