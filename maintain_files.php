@@ -2,6 +2,7 @@
 $start_alpha = '/* The following will be automatically updated to alphabetical order */';
 $end_alpha = '/* The above will be automatically updated to alphabetical order */';
 $filename = 'constants/capitalization.php';
+
 $contents = file_get_contents($filename);
 $sections = explode($start_alpha, $contents);
 foreach ($sections as &$section) {
@@ -26,6 +27,7 @@ foreach ($sections as &$section) {
       $line_length = 10;
     }
   }
+  if ($alphaed == $new_line) $alphaed = '';
   $section = $alphaed . substr($section, $alpha_end);
 }
 file_put_contents($filename, implode($start_alpha, $sections));
