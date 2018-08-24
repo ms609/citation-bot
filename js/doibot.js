@@ -29,6 +29,9 @@ function ValidateForm() {
 }
 
 function ValidatePageName() {
+  document.getElementById('PageSubmit').innerHTML = 'Process page' + 
+    ((document.getElementById('botPage').value.indexOf('|') > -1) ? 's' : '');
+    
   if (this.value.trim() == "") {
     this.classList.add("error");
     document.getElementById("PageSubmit").disabled = "disabled";
@@ -50,8 +53,8 @@ function ValidateCategory() {
 
 function InitializeForm() {
   document.getElementById("botForm").onsubmit = ValidateForm;
-  document.getElementById("botPage").onchange = ValidatePageName;
-  document.getElementById("botCat").onchange = ValidateCategory;
+  document.getElementById("botPage").oninput  = ValidatePageName;
+  document.getElementById("botCat").oninput   = ValidateCategory;
   username = localStorage.getItem('username');
   if (username) {
     document.getElementById("user").value = username;
