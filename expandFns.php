@@ -130,6 +130,16 @@ function extract_doi($text) {
     if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
     }
+    $doi_candidate = $doi;
+    while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_active($doi_candidate)) {
+      $last_delimiter = 0;
+      foreach (array('/', '.', '#') as $delimiter) {
+        $delimiter_position = strrpos($doi_candidate, '/');
+        $last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
+      }
+      $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
+    }
+    if (doi_active($doi_candidate)) $doi = $doi_candidate;
     return array($match[0], sanitize_doi($doi));
   }
   return NULL;
