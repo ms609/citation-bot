@@ -9,7 +9,7 @@ foreach ($sections as &$section) {
   $alpha_bit = substr($section, 0, $alpha_end);
   $alpha_bits = explode(',', $alpha_bit);
   $alpha_bits = array_map('trim', $alpha_bits);
-  sort($alpha_bits, SORT_NATURAL | SORT_FLAG_CASE);
+  sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
   $bits_length = array_map('strlen', $alpha_bits);
   $bit_length = current($bits_length);
   $chunk_length = 0;
