@@ -10,8 +10,8 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
                              ' eine ', ' einen ', ' NYC ', ' d\'une ', ' d\'un ', ' el ',  ' los ', ' las ', ' as ',
                              ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' för ', ' da ', ' SSRN ', ' AI ', ' woor ', ' do ', ' be ',
                              /* The above will be automatically updated to alphabetical order */ 
-                             // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
-                             ' El Dorado ', ' Las Vegas ', ' Los Angeles ');
+          // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
+          ' El Dorado ', ' Las Vegas ', ' Los Angeles ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */ 
                              ' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Its ',
                              ' Then ',' Else ',' When ', ' At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',
@@ -23,8 +23,8 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
                              ' Eine ', ' Einen ', ' Nyc ', ' D\'une ', ' D\'un ', ' El ',  ' Los ', ' Las ', ' As ',
                              ' Nor ',' At ', ' Up ', ' Ny ', ' N y ', ' För ', ' Da ', ' Ssrn ', ' Ai ', ' Woor ', ' Do ', ' Be ',
                              /* The above will be automatically updated to alphabetical order */ 
-                             // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
-                             ' el Dorado ', ' las Vegas ', ' los Angeles ');
+          // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
+          ' el Dorado ', ' las Vegas ', ' los Angeles ');
 
 const JOURNAL_ACRONYMS = array(
 ' ACM SIGPLAN Notices ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ',
