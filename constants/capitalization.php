@@ -2,13 +2,13 @@
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' AI ', ' AJHG ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ', ' aus ', ' BBA ', 
           ' be ', ' BMC ', ' BMJ ', ' but ', ' by ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
-          ' das ', ' de ', ' de ', ' dei ', ' del ', ' dem ', ' den ', ' der ', ' des ', 
+          ' das ', ' de ', ' de ', ' dei ', ' del ', ' della ', ' dem ', ' den ', ' der ', ' des ', 
           ' di ', ' die ', ' DNA ', ' do ', ' du ', ' du ', ' e ', ' ed ', ' ein ', ' eine ', 
           ' einen ', ' el ', ' else ', ' EMBO ', ' et ', ' FASEB ', ' FEBS ', ' FEMS ', 
           ' for ', ' from ', ' för ', ' für ', ' if ', ' in ', ' into ', ' is ', ' its ', 
           ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' NEJM ', ' nor ', 
           ' nor ', ' NY ', ' NYC ', ' NYT ', ' of ', ' off ', ' on ', ' or ', ' over ', 
-          ' PCR ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' to ', ' U S A ', ' UK ', 
+          ' PCR ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' to ', ' U S A ', ' UK ', ' um ',
           ' und ', ' up ', ' USA ', ' van ', ' von ', ' when ', ' with ', ' woor ', ' y ', 
           ' zu ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
@@ -16,13 +16,13 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' Ai ', ' Ajhg ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ', ' Aus ', ' Bba ', 
           ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
-          ' Das ', ' De ', ' De ', ' Dei ', ' Del ', ' Dem ', ' Den ', ' Der ', ' Des ', 
+          ' Das ', ' De ', ' De ', ' Dei ', ' Del ', ' Della ', ' Dem ', ' Den ', ' Der ', ' Des ', 
           ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' Du ', ' E ', ' Ed ', ' Ein ', ' Eine ', 
           ' Einen ', ' El ', ' Else ', ' Embo ', ' Et ', ' Faseb ', ' Febs ', ' Fems ', 
           ' For ', ' From ', ' För ', ' Für ', ' If ', ' In ', ' Into ', ' Is ', ' Its ', 
           ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Nejm ', ' Nor ', 
           ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Of ', ' Off ', ' On ', ' Or ', ' Over ', 
-          ' Pcr ', ' Pnas ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' To ', ' U S A ', ' Uk ', 
+          ' Pcr ', ' Pnas ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' To ', ' U S A ', ' Uk ', ' Um ',
           ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' When ', ' With ', ' Woor ', ' Y ', 
           ' Zu ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
