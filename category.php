@@ -69,10 +69,9 @@ if ($category) {
       print "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
-        " </pre><br><small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
-        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . $api->get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br><pre>"
-        , ".");
+        "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . $api->get_last_revision($page_title) . ">diff</a>" .
+        "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / ", ".");
       } else {
          report_warning("Write failed.");
       }
