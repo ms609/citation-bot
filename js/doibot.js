@@ -1,5 +1,7 @@
 function ValidateForm() {
   var botPage = document.getElementById("botPage");
+  var botCat = document.getElementById("botCat");
+  console.log(this.value);
   if (botPage.value.trim() == "") {
     botPage.classList.add("error");
     return false;
