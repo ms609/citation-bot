@@ -1388,10 +1388,7 @@ final class Template {
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
     // Convert &#x__; to characters
-    $dat = preg_replace_callback('~&#x([a-f0-9]+);~', function ($matches) {
-      return chr(hexdec($matches[1]));
-    }, $dat);
-    $ris = explode("\n", $dat);
+    $ris = explode("\n", replace_html_entities($dat));
     $ris_authors = 0;
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
