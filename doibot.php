@@ -1,3 +1,7 @@
+<?php
+## Set up - including DOT_DECODE array
+define("HTML_OUTPUT", !isset($argv));
+if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 	<head>
@@ -19,9 +23,9 @@
     </p>
   </header>
 
-<pre id="botOutput"><?php
-## Set up - including DOT_DECODE array
-define("HTML_OUTPUT", TRUE);
+<pre id="botOutput">
+<?php
+}
 require_once("expandFns.php");
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
@@ -31,7 +35,11 @@ if (is_valid_user($user)) {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
-$title = trim(ucfirst(strip_tags($_REQUEST["page"])));
+$title = (isset($argv) && isset($argv[1])) // argv set on command line
+       ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
+
+if (!isset($ON)) $ON = isset($argv[2]);
+       
 if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
    echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
    exit(0);
@@ -39,7 +47,7 @@ if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user 
 echo "\n\n Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
 $my_page = new Page();
 $api = new WikipediaBot();
-if ($my_page->get_text_from($_REQUEST["page"], $api)) {
+if ($my_page->get_text_from($title, $api)) {
   $text_expanded = $my_page->expand_text();
   if ($text_expanded && $ON) {
     while (!$my_page->write($api, $edit_summary_end) && $attempts < 2) {
@@ -54,7 +62,7 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
     } else {
       echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());
     }
-  } elseif (!$ON) {
+  } elseif (!$ON && HTML_OUTPUT) {
     echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
     safely_echo($my_page->parsed_text());
     echo "</pre>";
@@ -67,8 +75,9 @@ if ($my_page->get_text_from($_REQUEST["page"], $api)) {
   <input type=submit value="Submit edits" />
 </form>
 <?php
-  } else {
-    echo "\n # " . ($my_page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
+  } else {  
+    report_phase($my_page->parsed_text() ? 'No changes required.' : 'Blank page');
+    echo "\n\n    # # # ";
   }
 } else {
   echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
