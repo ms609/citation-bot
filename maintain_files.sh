@@ -9,7 +9,7 @@ if [ "${TRAVIS_PULL_REQUEST}" = false ]
 then
   BRANCH_NAME = ${TRAVIS_BRANCH}
 else
-  ${TRAVIS_PULL_REQUEST_BRANCH}
+  BRANCH_NAME = ${TRAVIS_PULL_REQUEST_BRANCH}
 fi;
 git clone -b $BRANCH_NAME https://${GITHUB_PAT}@github.com/${TRAVIS_REPO_SLUG}.git file-maintenance
 cd file-maintenance
