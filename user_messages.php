@@ -45,11 +45,12 @@ function pubmed_link($identifier, $pm) {
 function bibcode_link($id) {
   return HTML_OUTPUT
     ? '<a href="http://adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">'
+      . $id . '</a>'
     : $id;
 }
 
 function doi_link($doi) {
   return HTML_OUTPUT
-    ? '<a href="http://dx.doi.org/' . urlencode($doi) . '" target="_blank">'
+    ? '<a href="http://dx.doi.org/' . urlencode($doi) . '" target="_blank">' . $doi . '</a>'
     : $doi;
 }
