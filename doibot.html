@@ -32,7 +32,7 @@
       <label for="edit">Commit edits.  Leave blank to check Wikicode.</label>
     </p>
     <p>
-      <input name="page" id="botPage" value="" placeholder="Page name" />
+      <input name="page" id="botPage" value="" placeholder="Page name" onkeypress='CountPages();' onchange='CountPages();' />
       <label for="page">
         <button type="submit" name="pageSubmit" id="PageSubmit" value="Process page" formaction="doibot.php">Process page</button>
         <img style="display:none" src="img/spinner_18_18.gif" id="PageSpinner" />

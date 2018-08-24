@@ -28,6 +28,11 @@ function ValidateForm() {
   return true;
 }
 
+function CountPages() {
+  document.getElementById('PageSubmit').innerHTML = 'Process page' + 
+    ((document.getElementById('botPage').value.indexOf('|') > -1) ? 's' : '');
+}
+
 function ValidatePageName() {
   if (this.value.trim() == "") {
     this.classList.add("error");
