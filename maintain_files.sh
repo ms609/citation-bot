@@ -7,6 +7,8 @@ git config --global user.email "martins@gmail.com"
 git config --global user.name "Martin Smith"
 git clone -b file-edits https://${GITHUB_PAT}@github.com/${TRAVIS_REPO_SLUG}.git file-maintenance
 cd file-maintenance
+ls
+echo ls
 php maintain_files.php
 git add --all *
 git commit -m"Automated file maintenance" || true
