@@ -3000,13 +3000,19 @@ final class Template {
 
   public function forget($par) {
     if ($par == 'url') {
-      $this->forget('format');
       $this->forget('accessdate');
       $this->forget('access-date');
       $this->forget('archive-url');
       $this->forget('archiveurl');
       $this->forget('archive-date');
       $this->forget('archivedate');
+      $this->forget('dead-url');
+      $this->forget('format');
+      $this->forget('registration');
+      $this->forget('subscription');
+      $this->forget('url-access');
+      $this->forget('via');
+      $this->forget('website');
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
