@@ -247,6 +247,20 @@ function mb_ucfirst($string)
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
 
+function throttle ($min_interval) {
+  static $last_write_time = 0;
+  $time_since_last_write = time() - $last_write_time;
+  if ($time_since_last_write < $min_interval) {
+    $time_to_pause = floor($min_interval - $time_since_last_write);
+    report_warning("Throttling: waiting $time_to_pause seconds...");
+    for ($i = 0; $i < $time_to_pause; $i++) {
+      sleep(1); 
+      report_inline(' .');
+    }
+  }
+  $last_write_time = time();
+}
+
 function tag($long = FALSE) {
   return FALSE; // I suggest that this function is no longer useful in the Travis era
   // If it's not been missed by 2018-10-01, I suggest that we delete it and all calls thereto.
