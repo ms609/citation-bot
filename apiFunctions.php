@@ -422,7 +422,7 @@ function query_crossref($doi) {
 
 function doi_active($doi) {
   static $cache = [];
-  if (!isset($cache[$doi])) {
+  if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
     $cache[$doi] = is_doi_active($doi);
   }
   return $cache[$doi];
@@ -433,7 +433,7 @@ function is_doi_active($doi) {
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");
-  return FALSE;
+  return NULL;
 }
 
 function query_jstor_api($ids, $templates) {
