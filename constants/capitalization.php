@@ -1,10 +1,4 @@
-
-          
-          
-          
-          
-          
-          <?php
+<?php
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' AI ', ' AJHG ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ', ' aus ', ' BBA ', 
           ' be ', ' BMC ', ' BMJ ', ' but ', ' by ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
