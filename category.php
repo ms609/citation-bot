@@ -71,7 +71,7 @@ if ($category) {
         html_echo(
         " | <a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $api->get_last_revision($page_title) . ">diff</a>" .
-        " | <a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / ", ".");
+        " | <a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
       } else {
          report_warning("Write failed.");
       }
