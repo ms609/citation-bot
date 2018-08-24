@@ -1,28 +1,31 @@
-<?php
-const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */ 
-                             ' and then ', ' of ',' the ',' and ',' an ',' or ',' nor ',' but ',' is ',' if ',' its ',
-                             ' then ',' else ',' when ', ' at ',' from ',' by ',' on ',' off ',' for ',' in ',' over ',
-                             ' to ',' into ',' with ',' U S A ',' USA ',' y ', ' für ', ' de ', ' zur ', ' der ', ' und ',
-                             ' du ', ' et ', ' la ', ' le ', ' DNA ', ' UK ', ' FASEB ', ' van ', ' von ', ' AJHG ',
-                             ' BBA ', ' BMC ', ' BMJ ', ' EMBO ', ' FEBS ', ' FEMS ', ' JAMA ', ' MNRAS ', ' NEJM ', 
-                             ' NYT ', ' PCR ', ' PNAS ', ' RNA ',  ' zu ' , ' des ', ' aus ', ' dem ', ' del ', ' dei ', 
-                             ' di ', ' ed ', ' du ', ' de ', ' dans ', ' les ', ' e ', ' den ', ' die ', ' das ', ' ein ', 
-                             ' eine ', ' einen ', ' NYC ', ' d\'une ', ' d\'un ', ' el ',  ' los ', ' las ', ' as ',
-                             ' nor ',' at ', ' up ', ' NY ', ' N Y ', ' för ', ' da ', ' SSRN ', ' AI ', ' woor ', ' do ', ' be ',
-                             /* The above will be automatically updated to alphabetical order */ 
+
+          <?php
+const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
+          ' AI ', ' AJHG ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ', ' aus ', ' BBA ', 
+          ' be ', ' BMC ', ' BMJ ', ' but ', ' by ', ' da ', ' dans ', ' das ', ' de ', 
+          ' de ', ' dei ', ' del ', ' dem ', ' den ', ' der ', ' des ', ' di ', ' die ', 
+          ' DNA ', ' do ', ' du ', ' du ', ' d\'un ', ' d\'une ', ' e ', ' ed ', ' ein ', 
+          ' eine ', ' einen ', ' el ', ' else ', ' EMBO ', ' et ', ' FASEB ', ' FEBS ', 
+          ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' if ', ' in ', ' into ', ' is ', 
+          ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' NEJM ', 
+          ' nor ', ' nor ', ' NY ', ' N Y ', ' NYC ', ' NYT ', ' of ', ' off ', ' on ', 
+          ' or ', ' over ', ' PCR ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' to ', 
+          ' UK ', ' und ', ' up ', ' U S A ', ' USA ', ' van ', ' von ', ' when ', ' with ', 
+          ' woor ', ' y ', ' zu ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' El Dorado ', ' Las Vegas ', ' Los Angeles ');
-const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */ 
-                             ' and Then ', ' Of ',' The ',' And ',' An ',' Or ',' Nor ',' But ',' Is ',' If ',' Its ',
-                             ' Then ',' Else ',' When ', ' At ',' From ',' By ',' On ',' Off ',' For ',' In ',' Over ',
-                             ' To ',' Into ',' With ',' U S A ',' Usa ',' Y ', ' Für ', ' De ', ' Zur ', ' Der ', ' Und ',
-                             ' Du ', ' Et ', ' La ', ' Le ', ' Dna ', ' Uk ', ' Faseb ', ' Van ', ' Von ', ' Ajhg ',
-                             ' Bba ', ' Bmc ', ' Bmj ', ' Embo ', ' Febs ', ' Fems ', ' Jama ', ' Mnras ', ' Nejm ', 
-                             ' Nyt ', ' Pcr ', ' Pnas ', ' Rna ',  ' Zu ' , ' Des ', ' Aus ', ' Dem ', ' Del ', ' Dei ', 
-                             ' Di ', ' Ed ', ' Du ', ' De ', ' Dans ', ' Les ', ' E ', ' Den ', ' Die ', ' Das ', ' Ein ', 
-                             ' Eine ', ' Einen ', ' Nyc ', ' D\'une ', ' D\'un ', ' El ',  ' Los ', ' Las ', ' As ',
-                             ' Nor ',' At ', ' Up ', ' Ny ', ' N y ', ' För ', ' Da ', ' Ssrn ', ' Ai ', ' Woor ', ' Do ', ' Be ',
-                             /* The above will be automatically updated to alphabetical order */ 
+const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
+          ' Ai ', ' Ajhg ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ', ' Aus ', ' Bba ', 
+          ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', ' Da ', ' Dans ', ' Das ', ' De ', 
+          ' De ', ' Dei ', ' Del ', ' Dem ', ' Den ', ' Der ', ' Des ', ' Di ', ' Die ', 
+          ' Dna ', ' Do ', ' Du ', ' Du ', ' D\'un ', ' D\'une ', ' E ', ' Ed ', ' Ein ', 
+          ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' Et ', ' Faseb ', ' Febs ', 
+          ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' If ', ' In ', ' Into ', ' Is ', 
+          ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Nejm ', 
+          ' Nor ', ' Nor ', ' Ny ', ' N y ', ' Nyc ', ' Nyt ', ' Of ', ' Off ', ' On ', 
+          ' Or ', ' Over ', ' Pcr ', ' Pnas ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' To ', 
+          ' Uk ', ' Und ', ' Up ', ' U S A ', ' Usa ', ' Van ', ' Von ', ' When ', ' With ', 
+          ' Woor ', ' Y ', ' Zu ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' el Dorado ', ' las Vegas ', ' los Angeles ');
 
