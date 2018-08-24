@@ -75,8 +75,9 @@ if ($my_page->get_text_from($title, $api)) {
   <input type=submit value="Submit edits" />
 </form>
 <?php
-  } else {
-    echo "\n # " . ($my_page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
+  } else {  
+    report_phase($my_page->parsed_text() ? 'No changes required.' : 'Blank page');
+    echo "\n\n    # # # ";
   }
 } else {
   echo "\n Page      '" . htmlspecialchars($title) . "' not found.";

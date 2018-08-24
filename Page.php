@@ -155,7 +155,7 @@ class Page {
     }
     
     // BATCH API CALLS
-    report_phase('Consulting APIs to expand templates');
+    report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
@@ -163,7 +163,7 @@ class Page {
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
     
-    report_phase('Expanding individual templates by API calls');
+    report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
