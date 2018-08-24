@@ -1388,7 +1388,7 @@ final class Template {
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
     // Convert &#x__; to characters
-    $ris = explode("\n", replace_html_entities($dat));
+    $ris = explode("\n", html_entity_decode($dat, NULL, 'UTF-8'));
     $ris_authors = 0;
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
