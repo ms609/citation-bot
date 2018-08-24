@@ -11,42 +11,6 @@ include_once("./vendor/autoload.php");
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
   define("HTML_OUTPUT", FALSE);
 }  
-
-function html_echo($text, $alternate_text='') {
-  if (!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
-}
-
-function user_notice($symbol, $class, $text) {
-  if (!getenv('TRAVIS')) {
-    echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
-     . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
-  }
-}
-
-function report_phase($text)  { user_notice("\n>", "phase", $text); }
-function report_action($text)  { user_notice(">", "subitem", $text); }
-function report_info($text)  { user_notice("  >", "subsubitem", $text); }
-function report_inaction($text)  { user_notice("  .", "boring", $text); }
-function report_warning($text) { user_notice("  !", "warning", $text); }
-function report_modification($text) { user_notice("  ~", "changed", $text); }
-function report_add($text) { user_notice("  +", "added", $text); }
-function report_forget($text) { user_notice("  -", "removed", $text); }
-function report_inline($text) { if (!getenv('TRAVIS')) echo " $text"; }
-
-function quietly($function = report_info, $text) {
-  if (defined('VERBOSE') || HTML_OUTPUT ) {
-    $function($text);
-  }
-}
-
-function safely_echo ($string) {
-  echo echoable($string);
-}
-
-function echoable($string) {
-  return HTML_OUTPUT ? htmlspecialchars($string) : $string;
-}
-
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
@@ -54,6 +18,7 @@ require_once("Template.php");
 require_once("Parameter.php");
 require_once("Comment.php");
 require_once("wikiFunctions.php");
+require_once("user_messages.php");
 
 const CROSSREFUSERNAME = 'martins@gmail.com';
 // Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY and PHP_BOTUSERNAME environment variables

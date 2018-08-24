@@ -267,7 +267,7 @@ function adsabs_api($ids, $templates, $identifier) {
   
   $matched_ids = [];
   foreach ($response->docs as $record) {
-    report_info("Found match for bibcode " . $record->bibcode);
+    report_info("Found match for bibcode " . bibcode_link($record->bibcode));
     $matched_ids[] = $record->bibcode;
     $this_template = $templates[array_search((string) $record->bibcode, $ids)];
     $this_template->add_if_new("title", (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
@@ -343,7 +343,7 @@ function expand_by_doi($template, $force = FALSE) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
-      report_action("Querying Crossref: doi:" . $doi);
+      report_action("Querying CrossRef: doi:" . doi_link($doi));
 
       if ($crossRef->volume_title && $template->blank('journal')) {
         $template->add_if_new('chapter', $crossRef->article_title); // add_if_new formats this value as a title
