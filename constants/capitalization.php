@@ -29,30 +29,32 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', );
 
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-' ACM SIGPLAN Notices ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ',
-' CBD Ubiquitin ', ' CFSK-DT ', ' e-Neuroforum ', 
-' Early Modern Japan: an Interdisciplinary Journal ', ' eLife ', ' EMBO J ', ' EMBO J. ', ' EMBO Journal ',
-' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ',
-' HOAJ biology ', ' iConference ', ' IFAC-PapersOnLine ', ' ISRN Genetics ',
-' JABS : Journal of Applied Biological Sciences ', ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ',' Journal of the IEST ', 
-' Molecular and Cellular Biology ', ' NASA Tech Briefs ', ' Ocean Science Journal : OSJ ', 
-' PALAIOS ',  ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', ' PLOS ONE ', ' PNAS ',
-' RNA ',
-' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ',     ' Tellus A ', ' The EMBO Journal ', ' Time Out London ',
-' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
-' ZooKeys '/* The above will be automatically updated to alphabetical order */ 
+          ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ', ' CBD Ubiquitin ', 
+          ' CFSK-DT ', ' e-Neuroforum ', ' Early Modern Japan: an Interdisciplinary Journal ', ' eLife ', 
+          ' EMBO J ', ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', 
+          ' eNeuro ', ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', 
+          ' HOAJ biology ', ' iConference ', ' IFAC-PapersOnLine ', ' ISRN Genetics ', ' JABS : Journal of Applied Biological Sciences ', 
+          ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the IEST ', 
+          ' Molecular and Cellular Biology ', ' NASA Tech Briefs ', ' Ocean Science Journal : OSJ ', 
+          ' PALAIOS ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
+          ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
+          ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', 
+          ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
+          ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys ', 
+          /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-' Acm Sigplan Notices ', ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Bmj ',
-' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
-' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', ' Embo J ', ' Embo J. ', ' Embo Journal ', 
-' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ',
-' Hoaj Biology ', ' Iconference ', ' Ifac-Papersonline ', ' Isrn Genetics ',
-' Jabs : Journal Of Applied Biological Sciences ', ' Jama Psychiatry ', ' Journal Of Materials Chemistry A ', ' Journal Of The Iest ', 
-' Molecular And Cellular Biology ', ' Nasa Tech Briefs ', ' Ocean Science Journal : Osj ', 
-' Palaios ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', ' Plos One ', ' Pnas ', 
-' Rna ',
-' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' Tellus A ', ' The Embo Journal ', ' Time Out London ',
-' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', 
-' Zookeys '/* The above will be automatically updated to alphabetical order */ 
+          ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Bmj ', ' Cbd Ubiquitin ', 
+          ' Cfsk-Dt ', ' E-Neuroforum ', ' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', 
+          ' Embo J ', ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', 
+          ' Eneuro ', ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', 
+          ' Hoaj Biology ', ' Iconference ', ' Ifac-Papersonline ', ' Isrn Genetics ', ' Jabs : Journal Of Applied Biological Sciences ', 
+          ' Jama Psychiatry ', ' Journal Of Materials Chemistry A ', ' Journal Of The Iest ', 
+          ' Molecular And Cellular Biology ', ' Nasa Tech Briefs ', ' Ocean Science Journal : Osj ', 
+          ' Palaios ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
+          ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
+          ' Tellus A ', ' The Embo Journal ', ' Time Out London ', 
+          ' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', 
+          ' Zeitschrift Für Physik A: Hadrons And Nuclei ', ' Zookeys ', 
+          /* The above will be automatically updated to alphabetical order */ 
 ); 
