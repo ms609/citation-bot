@@ -264,9 +264,9 @@ function adsabs_api($ids, $templates, $identifier) {
       curl_close($ch);
     }
   }
+  
   foreach ($response->docs as $record) {
-    $this_template = $templates[array_search((string) $record->bibcode, $templates)];
-    $this_template->add_if_new('bibcode', (string) $record->bibcode, 'adsabs');
+    $this_template = $templates[array_search((string) $record->bibcode, $ids)];
     $this_template->add_if_new("title", (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
     $i = 0;
     if (isset($record->author)) {
