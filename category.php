@@ -75,7 +75,8 @@ if ($category) {
          echo "\n # Failed. \n";
       }
     } else {
-      echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
+      report_phase($page->parsed_text() ? 'No changes required.' : 'Blank page');
+      echo "\n\n    # # # ";
     }
   }
   echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
