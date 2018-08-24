@@ -12,7 +12,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' und ', ' up ', ' USA ', ' van ', ' von ', ' when ', ' with ', ' woor ', ' y ', 
           ' zu ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
-          ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', );
+          ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ,);
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' Ai ', ' Ajhg ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ', ' Aus ', ' Bba ', 
           ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
@@ -26,7 +26,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' When ', ' With ', ' Woor ', ' Y ', 
           ' Zu ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
-          ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', );
+          ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', ' U S a ');
 
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Neuroforum ', 
