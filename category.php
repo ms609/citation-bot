@@ -66,7 +66,8 @@ if ($category) {
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
       while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
-      print "\n\n"; safely_echo($page->parsed_text());
+      // Parsed text can be viewed by diff link; don't clutter page. 
+      // print "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
         "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
