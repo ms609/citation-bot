@@ -18,8 +18,10 @@
   </header>
   <form id="botForm" action="doibot.php" method="post">
     <p>
-      <label for="page">Page to process:</label><br />
-      <input name="page" id="botPage" value="" />
+      <label for="user">Please enter your Wikipedia username to sign the bot's edits.</label><br />
+      <input name="user" id="user" value="" onchange="SaveUsername();" placeholder="Username" /> 
+      <input type="checkbox" id="saveUsername" name="saveUsername" onchange="SaveUsername();" /> 
+      <label for="saveUsername">Remember?</label>
     </p>
     <p>
       <input type="checkbox" name="slow" checked />
@@ -30,13 +32,23 @@
       <label for="edit">Commit edits.  Leave blank to check Wikicode.</label>
     </p>
     <p>
-      <label for="user">Please enter your Wikipedia username below before submitting your query.</label><br />
-      <input name="user" id="user" value="" onchange="SaveUsername();" /> 
-      <input type="checkbox" id="saveUsername" name="saveUsername" onchange="SaveUsername();" /> 
-      <label for="saveUsername">Save username?</label>
+      <input name="page" id="botPage" value="" placeholder="Page name" />
+      <label for="page">
+        <button type="submit" name="pageSubmit" id="PageSubmit" value="Process page" formaction="doibot.php">Process page</button>
+        <img style="display:none" src="img/spinner_18_18.gif" id="PageSpinner" />
+        <!--<br />Separate multiple pages with a pipe (<code>Page 1|Page 2</code>)-->
+      </label>
+    </p>
+    <p>– or –</p>
+    <p>
+      <code>Category:&nbsp;</code>
+      <input name="cat" id="botCat" value="" placeholder="Category name" />
+      <label for="cat">
+        <button type="submit" name="catSubmit" id="CatSubmit" value="Process category" formaction="category.php">Process pages in category</button>
+        <img style="display:none" src="img/spinner_18_18.gif" id="CatSpinner" />
+      </label><br />
     </p>
     <p>
-      <input type="submit" id="SubmitButton" /> <img style="display:none" src="img/spinner_18_18.gif" id="WaitSpinner" />
     </p>
   </form>
   <footer>  
