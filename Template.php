@@ -685,6 +685,16 @@ final class Template {
     }
   }
 
+  protected function mark_inactive_doi($doi = NULL) {
+    if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
+    // Only mark as broken if dx.doi.org also fails to resolve
+    $url_test = "https://dx.doi.org/" . $doi;
+    $headers_test = @get_headers($url_test, 1);
+    if ($headers_test !== FALSE && empty($headers_test['Location'])) {
+      $this->add_if_new('doi-broken-date', date('Y-m-d'));  
+    }
+  }
+  
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
   protected function get_identifiers_from_url($url_sent = NULL) {
@@ -807,12 +817,16 @@ final class Template {
         }
         return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
         
-      } elseif (extract_doi($url)[1]) {
+      } elseif ($doi = extract_doi($url)[1]) {
         if (is_null($url_sent)) {
-          quietly('report_forget', "Recognized DOI in URL; dropping URL");
-          $this->forget('url');
+          if (doi_active($doi)) {
+            report_forget("Recognized DOI in URL; dropping URL");
+            $this->forget('url');
+          } else {
+            $this->mark_inactive_doi($doi);
+          }
         }
-        return $this->add_if_new('doi', extract_doi($url)[1]);
+        return $this->add_if_new('doi', $doi);
         
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         
