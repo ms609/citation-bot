@@ -55,9 +55,9 @@ if ($my_page->get_text_from($title, $api)) {
     }
     if ($attempts < 3 ) {
       html_echo(
-        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
-        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
-        . urlencode($api->get_last_revision($title)) . ">last edit</a></small></i>\n\n<br>"
+        "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
+        . urlencode($api->get_last_revision($title)) . ">diff</a></small></i>\n\n<br>"
+        . " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
         , ".");
     } else {
       echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());

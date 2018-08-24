@@ -26,14 +26,13 @@ matrix:
       if: branch = master AND type != pull_request
       php: 5.6 # Avoid downloading and installing 5.5
       script:
-        wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
+        wget -O- https://tools.wmflabs.org/citations/gitpull.php
     - stage: deploy-to-development
       name: "Update WMFlabs test servers"
       if: branch = development AND type != pull_request
       php: 5.6 # Avoid downloading and installing 5.5
       script:
-        wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php ; fi
-
+        wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php
 
 git:
   depth: 3

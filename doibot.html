@@ -270,39 +270,8 @@ input.searchButton {
 }
   </style> 
    
-  <script type="text/javascript">
-    function ValidateForm() {
-      var botPage = document.getElementById("botPage");
-      if (botPage.value.trim() == "") {
-        botPage.classList.add("error");
-        return false;
-      } else {
-      console.log(botPage.value);
-        document.getElementById("SubmitButton").disabled = "disabled";
-        document.getElementById("WaitSpinner").style.display = "inline-block";
-        return true;
-      }
-    }
-    
-    function ValidatePageName() {
-      if (this.value.trim() == "") {
-        this.classList.add("error");
-        document.getElementById("SubmitButton").disabled = "disabled";
-      } else {
-        this.classList.remove("error");
-        document.getElementById("SubmitButton").disabled = false;
-      }
-    }
-    
-    function InitializeForm() {
-      document.getElementById("botForm").onsubmit = ValidateForm;
-      document.getElementById("botPage").onchange = ValidatePageName;
-    }
-    
-    window.onload = InitializeForm;
-  </script>
+  <script type="text/javascript" src="js/doibot.js"></script>
 </head>
-
 <body style="direction: ltr;" class="mediawiki ns--1 ltr page-Spezial_Beiträge"> 
   <div id="globalWrapper">
     <div id="column-content"> 
@@ -321,15 +290,17 @@ input.searchButton {
             </p>
             <p>
               <input type="checkbox" name="slow" checked />
-              <label for="slow">Thorough mode - a slower, but more exhaustive, search. Finds PMID parameters and flags "broken" DOIs.</label>
+              <label for="slow">Thorough mode - a slower, but more exhaustive, search. Finds bibcodes and flags "broken" DOIs.</label>
             </p>
             <p>
               <input type="checkbox" name="edit" checked />
               <label for="edit">Commit edits.  Leave blank to check Wikicode.</label>
             </p>
             <p>
-              <label for="user">Please enter your Wikipedia username below before submitting your query.</</label><br />
-              <input name=user value="" />
+              <label for="user">Please enter your Wikipedia username below before submitting your query.</label><br />
+              <input name="user" id="user" value="" onchange="SaveUsername();" /> 
+              <input type="checkbox" id="saveUsername" name="saveUsername" onchange="SaveUsername();" /> 
+              <label for="saveUsername">Save username?</label>
             </p>
             <p>
               <input type="submit" id="SubmitButton" /> <img style="display:none" src="img/spinner_18_18.gif" id="WaitSpinner" />

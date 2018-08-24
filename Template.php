@@ -456,8 +456,10 @@ final class Template {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
-        if (   ($this->blank("date") || in_array(trim(strtolower($this->get('date'))), IN_PRESS_ALIASES))
-            && ($this->blank("year") || in_array(trim(strtolower($this->get('year'))), IN_PRESS_ALIASES))
+        if (   ($this->blank("date")
+               || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES))
+            && ($this->blank("year") 
+               || in_array(trim(strtolower($this->get_without_comments_and_placeholders('year'))), IN_PRESS_ALIASES))
           ) {
           if ($param_name != 'date') $this->forget('date'); // Delete any "in press" dates.
           if ($param_name != 'year') $this->forget('year'); // We only unset the other one so that parameters stay in order as much as possible
@@ -467,14 +469,15 @@ final class Template {
       
       ### JOURNAL IDENTIFIERS ###
       
-      case "issn":
+      case 'issn':
         if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work") && $this->blank($param_name)) {
           // Only add ISSN if journal is unspecified
           return $this->add($param_name, $value);
         }
         return FALSE;
         
-      case "periodical": case "journal":
+      case 'periodical': case 'journal':
+      
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
         if ($this->blank("journal") && $this->blank("periodical")) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
