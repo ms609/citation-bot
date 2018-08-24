@@ -165,6 +165,10 @@ final class Template {
     return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
+  public function api_has_not_used($api, $param) {
+    return !$this->api_has_used($api, $param);
+  }
+  
   public function process() {
     if ($this->should_be_processed()) {
       $this->use_unnamed_params();
@@ -910,65 +914,76 @@ final class Template {
       $this->add_if_new('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
   }
 
-  public function get_doi_from_crossref() { #TODO test
-    if ($doi = $this->get('doi')) {
-      return $doi;
+  public function get_doi_from_crossref() {
+    if ($this->has('doi')) {
+      return $this->get_without_comments_and_placeholders('doi');
     }
     report_action("Checking CrossRef database for doi. " . tag());
-    $title = $this->get('title');
-    $journal = $this->get('journal');
-    $author = $this->first_surname();
-    $year = $this->get('year');
-    $volume = $this->get('volume');
-    $page_range = $this->page_range();
-    $start_page = isset($page_range[1]) ? $page_range[1] : NULL;
-    $end_page   = isset($page_range[2]) ? $page_range[2] : NULL;
-    $issn = $this->get('issn');
-    $url1 = trim($this->get('url'));
-    $input = array($title, $journal, $author, $year, $volume, $start_page, $end_page, $issn, $url1);
-    global $priorP;
-    if ($input == $priorP['crossref']) {
-      report_info("Data not changed since last CrossRef search." . tag());
+    $data = [
+      'title'      => $this->get('title'),
+      'journal'    => $this->get('journal'),
+      'author'     => $this->first_surname(),
+      'year'       => $this->get('year'),
+      'volume'     => $this->get('volume'),
+      'page_range' => $this->page_range(),
+      'start_page' => isset($page_range[1]) ? $page_range[1] : NULL,
+      'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
+      'issn'       => $this->get('issn'),
+      'url'        => trim($this->get('url')),
+    ];
+    
+    $novel_data = FALSE;
+    foreach ($data as $key => $value) if ($value) {
+      if ($this->api_has_not_used('crossref', equivalent_parameters($key))) $novel_data = TRUE;
+      $this->record_api_usage('crossref', $key);    
+    }
+
+    if (!$novel_data) {
+      report_info("No new data since last CrossRef search.");
       return FALSE;
-    } else {
-      $priorP['crossref'] = $input;
-      if ($journal || $issn) {
-        $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-             . ($title ? "&atitle=" . urlencode(de_wikify($title)) : "")
-             . ($author ? "&aulast=" . urlencode($author) : '')
-             . ($start_page ? "&spage=" . urlencode($start_page) : '')
-             . ($end_page > $start_page ? "&epage=" . urlencode($end_page) : '')
-             . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')
-             . ($volume ? "&volume=" . urlencode($volume) : '')
-             . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(de_wikify($journal)) : ''));
-        if (!($result = @simplexml_load_file($url)->query_result->body->query)){
-          report_warning("Error loading simpleXML file from CrossRef.");
-        }
-        elseif ($result['status'] == 'malformed') {
-          report_warning("Cannot search CrossRef: " . echoable($result->msg));
-        }
-        elseif ($result["status"] == "resolved") {
-          return $result;
-        }
-      }
-      if (FAST_MODE || !$author || !($journal || $issn) || !$start_page ) return;
-      // If fail, try again with fewer constraints...
-      report_info("Full search failed. Dropping author & end_page... ");
-      $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME;
-      if ($title) $url .= "&atitle=" . urlencode(de_wikify($title));
-      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(de_wikify($journal));
-      if ($year) $url .= "&date=" . urlencode($year);
-      if ($volume) $url .= "&volume=" . urlencode($volume);
-      if ($start_page) $url .= "&spage=" . urlencode($start_page);
-      if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
-        report_warning("Error loading simpleXML file from CrossRef." . tag());
+    } 
+  
+    if ($data['journal'] || $data['issn']) {
+      $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
+           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
+           . ($data['author'] ? "&aulast=" . urlencode($data['author']) : '')
+           . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '')
+           . ($data['end_page'] > $data['start_page'] ? "&epage=" . urlencode($data['end_page']) : '')
+           . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
+           . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
+           . ($data['issn'] ? "&issn=$issn" 
+                            : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
+      if (!($result = @simplexml_load_file($url)->query_result->body->query)){
+        report_warning("Error loading simpleXML file from CrossRef.");
       }
       elseif ($result['status'] == 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));
-      } elseif ($result["status"]=="resolved") {
-        echo " Successful!";
+      }
+      elseif ($result["status"] == "resolved") {
         return $result;
       }
+    }
+    
+    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return;
+    
+    // If fail, try again with fewer constraints...
+    report_info("Full search failed. Dropping author & end_page... ");
+    $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
+           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
+           . ($data['issn'] ? "&issn=$issn" 
+                            : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''))
+           . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
+           . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
+           . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
+    
+    if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
+      report_warning("Error loading simpleXML file from CrossRef." . tag());
+    }
+    elseif ($result['status'] == 'malformed') {
+      report_warning("Cannot search CrossRef: " . echoable($result->msg));
+    } elseif ($result["status"]=="resolved") {
+      echo " Successful!";
+      return $result;
     }
   }
 
@@ -2723,6 +2738,7 @@ final class Template {
     } else {
       report_info("Checking that DOI " . echoable($doi) . " is operational..." . tag());
       if (doi_active($this->get_without_comments_and_placeholders('doi')) === FALSE) {
+        report_inline("It's not; checking for user input error...");
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
         // if present, with new "doi-broken-date"
         $url_test = "https://dx.doi.org/" . $doi;

@@ -352,7 +352,13 @@ function prior_parameters($par, $list=array()) {
 
 function equivalent_parameters($par) {
   switch ($par) {
-    case 'pmid': case 'pmc': return array('pmc', 'pmid');
+    case 'author': case 'authors': case 'author1': case 'last1': 
+      return FLATTENED_AUTHOR_PARAMETERS;
+    case 'pmid': case 'pmc': 
+      return array('pmc', 'pmid');
+    case 'page_range': case 'start_page': case 'end_page': # From doi_crossref
+    case 'pages': case 'page':
+      return array('page_range', 'pages', 'page', 'end_page', 'start_page');
     default: return array($par);
   }
 }
