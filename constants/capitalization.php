@@ -33,7 +33,7 @@ const JOURNAL_ACRONYMS = array(
 ' PALAIOS ',  ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', ' PLOS ONE ', ' PNAS ',
 ' RNA ',
 ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ',     ' Tellus A ', ' The EMBO Journal ', ' Time Out London ',
-' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ',
+' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
 ' ZooKeys ');
 const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Acm Sigplan Notices ', ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Bmj ',
@@ -46,5 +46,5 @@ const UCFIRST_JOURNAL_ACRONYMS = array(
 ' Palaios ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', ' Plos One ', ' Pnas ', 
 ' Rna ',
 ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', ' Tellus A ', ' The Embo Journal ', ' Time Out London ',
-' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ',
+' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift Für Physik A: Hadrons And Nuclei ', ' Zeitschrift Für Physik A Hadrons And Nuclei ', 
 ' Zookeys '); 
