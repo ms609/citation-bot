@@ -3,6 +3,13 @@ function ValidateForm() {
   var botCat = document.getElementById("botCat");
   console.log(event);
   console.log(Event.target);
+  var submitButton;
+  if(typeof event.explicitOriginalTarget != 'undefined'){  //
+                 submitButton = event.explicitOriginalTarget;
+             }else if(typeof document.activeElement.value != 'undefined'){  // IE
+                 submitButton = document.activeElement;
+             };
+             console.log(submitButton);
   if (botPage.value.trim() == "") {
     botPage.classList.add("error");
     return false;
