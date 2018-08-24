@@ -6,6 +6,7 @@ $contents = file_get_contents($filename);
 $sections = explode($start_alpha, $contents);
 foreach ($sections as &$section) {
   $alpha_end = stripos($section, $end_alpha);
+  if (!$alpha_end) continue;
   $alpha_bit = substr($section, 0, $alpha_end);
   $alpha_bits = explode(',', $alpha_bit);
   $alpha_bits = array_map('trim', $alpha_bits);
