@@ -5,7 +5,7 @@ set -e
 [ -z "${GITHUB_PAT}" ] && exit 99
 git config --global user.email "martins@gmail.com"
 git config --global user.name "Martin Smith"
-if [ TRAVIS_PULL_REQUEST -gt 0 ]
+if [ ${TRAVIS_PULL_REQUEST} -gt 0 ]
 then
   ${TRAVIS_PULL_REQUEST_BRANCH}
 else
