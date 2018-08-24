@@ -838,7 +838,19 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
   }
-    
+
+  public function testRenameToJournal() {
+    $text = "{{cite arxiv | bibcode = 2013natur1305.7450M}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $prepared->wikiname());
+    $text = "{{cite arxiv | bibcode = 2013arXiv1305.7450M}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite arxiv', $prepared->wikiname());
+    $text = "{{cite arxiv | bibcode = 2013physics305.7450M}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite arxiv', $prepared->wikiname());    
+  }
+  
   public function testPagesDash() {
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
