@@ -2434,7 +2434,9 @@ final class Template {
             break;
 
         case 'bibcode':
-          $this->change_name_to('Cite journal', FALSE);
+          if (stripos($this->get($param), 'arxiv') === FALSE) {
+            $this->change_name_to('Cite journal', FALSE);
+          }
           
         case 'chapter': 
           if ($this->has('chapter')) {
