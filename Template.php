@@ -2481,6 +2481,7 @@ final class Template {
         case 'isbn':
           if ($this->lacks('isbn')) break;
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
+          $this->change_name_to('cite book');
           $this->forget('asin');
           break;
           

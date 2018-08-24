@@ -180,6 +180,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('asin'));
   }
   
+  public function testTemplateRenaming() {
+    $text = "{{cite web|url=https://books.google.com/books?id=ecrwrKCRr7YC&pg=PA85&lpg=PA85&dq=vestibular+testing+lab+gianoli|title=Practical Management of the Dizzy Patient|first=Joel A.|last=Goebel|date=6 December 2017|publisher=Lippincott Williams & Wilkins|via=Google Books}}";
+    // Should add ISBN and thus convert to Cite book
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('9780781765626', $expanded->get('isbn'));
+    $this->assertEquals('cite book', $expanded->wikiname());
+  }
+  
   public function testDoiExpansion() {
     $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
     $prepared = $this->prepare_citation($text);
