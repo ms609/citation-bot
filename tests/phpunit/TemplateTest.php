@@ -88,6 +88,15 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $prepared->wikiname());
     $this->assertEquals('1701972'     , $prepared->get('jstor'));
+
+    $text = "{{Cite web | url = http://www.jstor.org/stable/10.1017/s0022381613000030}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertNull($prepared->get('jstor'));
+    
+    $text = '{{cite web | via = UTF8 characters from JSTOR | url = https://www.jstor.org/stable/27695659}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Mórdha', $expanded->get('last1'));
+    
   }
     
    public function testRISJstorExpansion() {
@@ -104,6 +113,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('publisher'));
     $this->assertNull($expanded->get('issn'));
     $this->assertNull($expanded->get('url'));
+  }
+  
+  public function testBrokenDoiUrlRetention() {
+    $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|title=Israel, Occupied Territories|publisher=|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1301|doi-broken-date=2018-07-07}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get('doi-broken-date'));
+    $this->assertNotNull($expanded->get('url'));
   }
   
   public function testPmidExpansion() {
@@ -178,6 +194,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
+  }
+  
+  public function testTemplateRenaming() {
+    $text = "{{cite web|url=https://books.google.com/books?id=ecrwrKCRr7YC&pg=PA85&lpg=PA85&dq=vestibular+testing+lab+gianoli|title=Practical Management of the Dizzy Patient|first=Joel A.|last=Goebel|date=6 December 2017|publisher=Lippincott Williams & Wilkins|via=Google Books}}";
+    // Should add ISBN and thus convert to Cite book
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('9780781765626', $expanded->get('isbn'));
+    $this->assertEquals('cite book', $expanded->wikiname());
   }
   
   public function testDoiExpansion() {
@@ -826,7 +850,19 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
   }
-    
+
+  public function testRenameToJournal() {
+    $text = "{{cite arxiv | bibcode = 2013natur1305.7450M}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $prepared->wikiname());
+    $text = "{{cite arxiv | bibcode = 2013arXiv1305.7450M}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite arxiv', $prepared->wikiname());
+    $text = "{{cite arxiv | bibcode = 2013physics305.7450M}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite arxiv', $prepared->wikiname());    
+  }
+  
   public function testPagesDash() {
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);

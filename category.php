@@ -32,6 +32,7 @@ if (is_valid_user($user)) {
   echo " Activated by $user.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
 } else {
+  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits";
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
@@ -68,9 +69,9 @@ if ($category) {
       // print "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
-        "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        " | <a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $api->get_last_revision($page_title) . ">diff</a>" .
-        "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / ", ".");
+        " | <a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / ", ".");
       } else {
          report_warning("Write failed.");
       }

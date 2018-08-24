@@ -685,6 +685,16 @@ final class Template {
     }
   }
 
+  protected function mark_inactive_doi($doi = NULL) {
+    if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
+    // Only mark as broken if dx.doi.org also fails to resolve
+    $url_test = "https://dx.doi.org/" . $doi;
+    $headers_test = @get_headers($url_test, 1);
+    if ($headers_test !== FALSE && empty($headers_test['Location'])) {
+      $this->add_if_new('doi-broken-date', date('Y-m-d'));  
+    }
+  }
+  
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
   protected function get_identifiers_from_url($url_sent = NULL) {
@@ -747,7 +757,7 @@ final class Template {
       }
       if (strpos($url, "plants.jstor.org")) {
         return FALSE; # Plants database, not journal
-      } elseif (preg_match("~(?|(\d{6,})$|(\d{6,})[^\d%\-])~", $url, $match)) {
+      } elseif (preg_match("~^(?:\w+/)*(\d{6,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match)) {
         if (is_null($url_sent)) {
           $this->forget('url');
         }
@@ -807,12 +817,16 @@ final class Template {
         }
         return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
         
-      } elseif (extract_doi($url)[1]) {
+      } elseif ($doi = extract_doi($url)[1]) {
         if (is_null($url_sent)) {
-          quietly('report_forget', "Recognized DOI in URL; dropping URL");
-          $this->forget('url');
+          if (doi_active($doi)) {
+            report_forget("Recognized DOI in URL; dropping URL");
+            $this->forget('url');
+          } else {
+            $this->mark_inactive_doi($doi);
+          }
         }
-        return $this->add_if_new('doi', extract_doi($url)[1]);
+        return $this->add_if_new('doi', $doi);
         
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         
@@ -1387,7 +1401,8 @@ final class Template {
     $ris_review    = FALSE;
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
-    $ris = explode("\n", $dat);
+    // Convert &#x__; to characters
+    $ris = explode("\n", html_entity_decode($dat, NULL, 'UTF-8'));
     $ris_authors = 0;
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
@@ -2434,7 +2449,12 @@ final class Template {
             break;
 
         case 'bibcode':
+          $bibcode_journal = substr($this->get($param), 4);
+          foreach (NON_JOURNAL_BIBCODES as $exception) {
+            if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
+          }
           $this->change_name_to('Cite journal', FALSE);
+          return;
           
         case 'chapter': 
           if ($this->has('chapter')) {
@@ -2479,6 +2499,7 @@ final class Template {
         case 'isbn':
           if ($this->lacks('isbn')) break;
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
+          $this->change_name_to('cite book');
           $this->forget('asin');
           break;
           
