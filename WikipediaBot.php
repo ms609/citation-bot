@@ -204,7 +204,7 @@ class WikipediaBot {
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
-          echo "\n <span style='color: #e21'>Written to <a href='" 
+          echo "\n <span style='reddish'>Written to <a href='" 
           . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
           . echoable($myPage->title) . '</a></span>';
         }

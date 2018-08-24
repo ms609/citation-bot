@@ -6,13 +6,14 @@ if (HTML_OUTPUT) {?>
 <html lang="en" dir="ltr">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="Smith609" name="author">
 		<meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
 		<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
 		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
 		<title>Citation bot: Preparing to run</title>
     <link rel="stylesheet" type="text/css" href="css/results.css" />
 	</head>
-<body class="mediawiki ns-2 ltr">
+<body>
   <header>
     <p>Follow <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a>&rsquo;s progress below.</p>
     <p>

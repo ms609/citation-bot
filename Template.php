@@ -1533,12 +1533,7 @@ final class Template {
     } else {
       return FALSE;
     }
-    html_echo ("\n - Checking " . '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' .
-        urlencode($pm) . '" target="_blank">' .
-        echoable(strtoupper($identifier) . ' ' . $pm) . "</a> for more details" .
-        tag(),
-        "\n - Checking " . echoable(strtoupper($identifier) . ' ' . $pm)
-        . ' for more details' . tag());
+    report_action('Checking ' . pubmed_link($identifier, $pm) . 'for more details');
     $xml = @simplexml_load_file("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
     if ($xml === FALSE) {
       report_warning("Unable to do PubMed search");
