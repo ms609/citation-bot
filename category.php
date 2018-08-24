@@ -1,6 +1,4 @@
-#!/usr/bin/php
 <?php
-
 error_reporting(E_ALL^E_NOTICE);
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
@@ -77,7 +75,8 @@ if ($category) {
          report_warning("Write failed.");
       }
     } else {
-      echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
+      report_phase($page->parsed_text() ? 'No changes required.' : 'Blank page');
+      echo "\n\n    # # # ";
     }
   }
   echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");

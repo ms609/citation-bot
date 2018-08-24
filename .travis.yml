@@ -21,12 +21,19 @@ matrix:
         - composer require mediawiki/oauthclient
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit --bootstrap expandFns.php tests/phpunit
-    - stage: deploy
+    - stage: deploy-to-master
       name: "Update WMFlabs servers"
+      if: branch = master AND type != pull_request
       php: 5.6 # Avoid downloading and installing 5.5
       script:
-        - if [ "$TRAVIS_BRANCH" = "master"      -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
-        - if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php ; fi
+        wget -O- https://tools.wmflabs.org/citations/gitpull.php ; fi
+    - stage: deploy-to-development
+      name: "Update WMFlabs test servers"
+      if: branch = development AND type != pull_request
+      php: 5.6 # Avoid downloading and installing 5.5
+      script:
+        wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php ; fi
+
 
 git:
   depth: 3
