@@ -4,7 +4,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' be ', ' BMC ', ' BMJ ', ' but ', ' by ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
           ' das ', ' de ', ' de ', ' dei ', ' del ', ' della ', ' dem ', ' den ', ' der ', ' des ', 
           ' di ', ' die ', ' DNA ', ' do ', ' du ', ' du ', ' e ', ' ed ', ' ein ', ' eine ', 
-          ' einen ', ' el ', ' else ',  ' EMBO ', ' en ', ' et ', ' FASEB ', ' FEBS ', ' FEMS ', 
+          ' einen ', ' el ', ' else ', ' EMBO ', ' en ', ' et ', ' FASEB ', ' FEBS ', ' FEMS ', 
           ' for ', ' from ', ' för ', ' für ', ' if ', ' in ', ' into ', ' is ', ' its ', 
           ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' NEJM ', ' nor ', 
           ' nor ', ' NY ', ' NYC ', ' NYT ', ' of ', ' off ', ' on ', ' or ', ' over ', 
