@@ -122,10 +122,11 @@ class Page {
       return FALSE;
     }
 
-    // EMPTY URLS Converted to Templates //
+    // EMPTY URLS Converted to Templates
+    // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
-                      "~(<ref[^>]*?>)(\s*\[?)(https?:\/\/[^ >}{\]\[]+)(\]?\s*)(<\s*?\/\s*?ref>)~",
-                      function($matches) {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4]) . '}}' . $matches[5] ;},
+                      "~(<ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+)\]?\s*)(<\s*?\/\s*?ref>)~",
+                      function($matches) {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
                       $this->text
                       );
 
@@ -158,14 +159,15 @@ class Page {
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
+    $this->expand_templates_from_identifier('jstor',   $our_templates);
+    $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
     
     report_phase('Expanding individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
-      $this_template->expand_by_jstor();
-      $this_template->expand_by_doi();
+      expand_by_doi($this_template);
       $this_template->get_doi_from_crossref();
       $this_template->get_open_access_url();
       $this_template->find_pmid();  // #TODO Could probably batch this

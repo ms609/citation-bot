@@ -23,7 +23,7 @@ final class Template {
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
-            $used_by_api,
+            $used_by_api, $doi_valid = FALSE,
             $mod_dashes;
 
   public function parse_text($text) {
@@ -32,7 +32,8 @@ final class Template {
       'adsabs'   => array(),
       'arxiv'    => array(), 
       'crossref' => array(), 
-      'entrez'   => array(), 
+      'entrez'   => array(),
+      'jstor'    => array(),
     );
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
@@ -99,7 +100,7 @@ final class Template {
            // Forget dates so that DOI can update with publication date, not ARXIV date
           $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
           $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
-          $this->expand_by_doi();
+          expand_by_doi($this);
           if ($this->blank('year') && $this->blank('date')) {
               $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
               $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
@@ -136,7 +137,7 @@ final class Template {
           report_action("Expanded from Google Books API");
         }
         $no_isbn_before_doi = $this->blank("isbn");
-        $this->expand_by_doi();
+        expand_by_doi($this);
         if ($no_isbn_before_doi && $this->has("isbn")) {
           $this->expand_by_google_books();
         }
@@ -144,8 +145,8 @@ final class Template {
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
         $this->expand_by_pubmed(); //partly to try to find DOI
         $this->expand_by_google_books();
-        $this->expand_by_jstor();
-        $this->expand_by_doi();
+        expand_by_jstor($this);
+        expand_by_doi($this);
         $this->expand_by_adsabs(); //Primarily to try to find DOI
         $this->get_doi_from_crossref();
         $this->get_open_access_url();
@@ -162,6 +163,10 @@ final class Template {
   public function api_has_used($api, $param) {
     if (!isset($this->used_by_api[$api])) trigger_error("Invalid API: $api", E_USER_ERROR);
     return count(array_intersect($param, $this->used_by_api[$api]));
+  }
+  
+  public function api_has_not_used($api, $param) {
+    return !$this->api_has_used($api, $param);
   }
   
   public function process() {
@@ -183,7 +188,7 @@ final class Template {
           // Forget dates so that DOI can update with publication date, not ARXIV date
           $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
           $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
-          $this->expand_by_doi();
+          expand_by_doi($this);
           if ($this->blank('year') && $this->blank('date')) {
               $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
               $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
@@ -202,7 +207,7 @@ final class Template {
             report_action("Expanded from Google Books API");
           }
           $no_isbn_before_doi = $this->blank("isbn");
-          $this->expand_by_doi();
+          expand_by_doi($this);
           if ($no_isbn_before_doi && $this->has("isbn")) {
             if ($this->expand_by_google_books()) {
                report_action("Expanded from Google Books API");
@@ -235,10 +240,10 @@ final class Template {
           if ($this->expand_by_google_books()) {
             report_action("Expanded from Google Books API");
           }
-          if ($this->expand_by_jstor()) {
+          if (expand_by_jstor($this)) {
             report_action("Expanded from JSTOR API");
           }
-          $this->expand_by_doi();
+          expand_by_doi($this);
           $this->expand_by_adsabs(); //Primarily to try to find DOI
           $this->get_doi_from_crossref();
           $this->get_open_access_url();
@@ -255,7 +260,7 @@ final class Template {
     $this->final_tidy();
   }
 
-  protected function incomplete() {
+  public function incomplete() {
     if (strtolower($this->wikiname()) =='cite book' || (strtolower($this->wikiname()) =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
@@ -292,10 +297,11 @@ final class Template {
 
   /* function add_if_new
    * Adds a parameter to a template if the parameter and its equivalents are blank
-   * If the parameter is useful for expansion (e.g. a doi), immediately uses the new
-   * data to further expand the citation
+   * $api (string) specifies the API route by which a parameter was found; this will log the 
+   *      parameter so it is not used to trigger a new search via the same API.
+   *
    */
-  public function add_if_new($param_name, $value) {
+  public function add_if_new($param_name, $value, $api = NULL) {
     if (trim($value) == '') {
       return FALSE;
     }
@@ -303,6 +309,8 @@ final class Template {
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
       $param_name = COMMON_MISTAKES[$param_name];
     }
+    
+    if (!is_null($api)) $this->record_api_usage($api, $param_name);
     
     // If we already have name parameters for author, don't add more
     if ($this->initial_author_params && in_array($param_name, FLATTENED_AUTHOR_PARAMETERS)) {
@@ -906,65 +914,76 @@ final class Template {
       $this->add_if_new('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
   }
 
-  public function get_doi_from_crossref() { #TODO test
-    if ($doi = $this->get('doi')) {
-      return $doi;
+  public function get_doi_from_crossref() {
+    if ($this->has('doi')) {
+      return $this->get_without_comments_and_placeholders('doi');
     }
     report_action("Checking CrossRef database for doi. " . tag());
-    $title = $this->get('title');
-    $journal = $this->get('journal');
-    $author = $this->first_surname();
-    $year = $this->get('year');
-    $volume = $this->get('volume');
-    $page_range = $this->page_range();
-    $start_page = isset($page_range[1]) ? $page_range[1] : NULL;
-    $end_page   = isset($page_range[2]) ? $page_range[2] : NULL;
-    $issn = $this->get('issn');
-    $url1 = trim($this->get('url'));
-    $input = array($title, $journal, $author, $year, $volume, $start_page, $end_page, $issn, $url1);
-    global $priorP;
-    if ($input == $priorP['crossref']) {
-      report_info("Data not changed since last CrossRef search." . tag());
+    $data = [
+      'title'      => $this->get('title'),
+      'journal'    => $this->get('journal'),
+      'author'     => $this->first_surname(),
+      'year'       => $this->get('year'),
+      'volume'     => $this->get('volume'),
+      'page_range' => $this->page_range(),
+      'start_page' => isset($page_range[1]) ? $page_range[1] : NULL,
+      'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
+      'issn'       => $this->get('issn'),
+      'url'        => trim($this->get('url')),
+    ];
+    
+    $novel_data = FALSE;
+    foreach ($data as $key => $value) if ($value) {
+      if ($this->api_has_not_used('crossref', equivalent_parameters($key))) $novel_data = TRUE;
+      $this->record_api_usage('crossref', $key);    
+    }
+
+    if (!$novel_data) {
+      report_info("No new data since last CrossRef search.");
       return FALSE;
-    } else {
-      $priorP['crossref'] = $input;
-      if ($journal || $issn) {
-        $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-             . ($title ? "&atitle=" . urlencode(de_wikify($title)) : "")
-             . ($author ? "&aulast=" . urlencode($author) : '')
-             . ($start_page ? "&spage=" . urlencode($start_page) : '')
-             . ($end_page > $start_page ? "&epage=" . urlencode($end_page) : '')
-             . ($year ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $year)) : '')
-             . ($volume ? "&volume=" . urlencode($volume) : '')
-             . ($issn ? "&issn=$issn" : ($journal ? "&title=" . urlencode(de_wikify($journal)) : ''));
-        if (!($result = @simplexml_load_file($url)->query_result->body->query)){
-          report_warning("Error loading simpleXML file from CrossRef.");
-        }
-        elseif ($result['status'] == 'malformed') {
-          report_warning("Cannot search CrossRef: " . echoable($result->msg));
-        }
-        elseif ($result["status"] == "resolved") {
-          return $result;
-        }
-      }
-      if (FAST_MODE || !$author || !($journal || $issn) || !$start_page ) return;
-      // If fail, try again with fewer constraints...
-      report_info("Full search failed. Dropping author & end_page... ");
-      $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME;
-      if ($title) $url .= "&atitle=" . urlencode(de_wikify($title));
-      if ($issn) $url .= "&issn=$issn"; elseif ($journal) $url .= "&title=" . urlencode(de_wikify($journal));
-      if ($year) $url .= "&date=" . urlencode($year);
-      if ($volume) $url .= "&volume=" . urlencode($volume);
-      if ($start_page) $url .= "&spage=" . urlencode($start_page);
-      if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
-        report_warning("Error loading simpleXML file from CrossRef." . tag());
+    } 
+  
+    if ($data['journal'] || $data['issn']) {
+      $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
+           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
+           . ($data['author'] ? "&aulast=" . urlencode($data['author']) : '')
+           . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '')
+           . ($data['end_page'] > $data['start_page'] ? "&epage=" . urlencode($data['end_page']) : '')
+           . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
+           . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
+           . ($data['issn'] ? ("&issn=" . $data['issn'])
+                            : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
+      if (!($result = @simplexml_load_file($url)->query_result->body->query)){
+        report_warning("Error loading simpleXML file from CrossRef.");
       }
       elseif ($result['status'] == 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));
-      } elseif ($result["status"]=="resolved") {
-        echo " Successful!";
+      }
+      elseif ($result["status"] == "resolved") {
         return $result;
       }
+    }
+    
+    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return;
+    
+    // If fail, try again with fewer constraints...
+    report_info("Full search failed. Dropping author & end_page... ");
+    $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
+           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
+           . ($data['issn'] ? "&issn=$issn" 
+                            : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''))
+           . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
+           . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
+           . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
+    
+    if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
+      report_warning("Error loading simpleXML file from CrossRef." . tag());
+    }
+    elseif ($result['status'] == 'malformed') {
+      report_warning("Cannot search CrossRef: " . echoable($result->msg));
+    } elseif ($result["status"]=="resolved") {
+      echo " Successful!";
+      return $result;
     }
   }
 
@@ -1148,127 +1167,131 @@ final class Template {
   public function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
-    if ($SLOW_MODE || $this->has('bibcode')) {
-      report_action("Checking AdsAbs database");
-      if ($bibcode = $this->has('bibcode')) {
-        $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
-      } elseif ($this->has('doi') 
-                && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
-        $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
-      } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
-        if ($this->has('eprint')) {
-          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
-        } elseif ($this->has('arxiv')) {
-          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
-        } else {
-          $result = (object) array("numFound" => 0);
-        }
-        if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
-          $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
-          if ($result->numFound == 0) return FALSE;
-          $record = $result->docs[0];
-          $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
-          $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
-          if (
-             (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-                ? (strlen($inTitle) != strlen($dbTitle)
-                  || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
-                : levenshtein($inTitle, $dbTitle) > 3
-            ) {
-            report_info("Similar title not found in database");
-            return FALSE;
-          }
-        }
+    if (!$SLOW_MODE && $this->lacks('bibcode')) {
+     report_info("Skipping AdsAbs API: not in slow mode");
+     return FALSE;
+    }
+    if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
+      report_info("No need to repeat AdsAbs search for " . $this->get('bibcode'));
+      return FALSE;
+    }
+  
+    report_action("Checking AdsAbs database");
+    if ($bibcode = $this->has('bibcode')) {
+      $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+    } elseif ($this->has('doi') 
+              && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+      $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
+    } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
+      if ($this->has('eprint')) {
+        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
+      } elseif ($this->has('arxiv')) {
+        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
       } else {
         $result = (object) array("numFound" => 0);
       }
-      if ($result->numFound != 1 && $this->has('journal')) {
-        $journal = $this->get('journal');
-        // try partial search using bibcode components:
-        $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
-          . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
-          . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
-          . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-          . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
-        );
+      if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+        $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
         if ($result->numFound == 0) return FALSE;
-        if (!isset($result->docs[0]->pub)) return FALSE;
-        $journal_string = explode(",", (string) $result->docs[0]->pub);
-        $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
-        if (strlen($journal_string[0]) 
-        &&  strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
-                   mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))
-                   ) === FALSE
-        ) {
-          report_info("Match for pagination but database journal \"" .
-            echoable($journal_string[0]) . "\" didn't match \"" .
-            echoable($journal) . "\"." . tag());
+        $record = $result->docs[0];
+        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
+        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
+        if (
+           (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
+              ? (strlen($inTitle) != strlen($dbTitle)
+                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
+              : levenshtein($inTitle, $dbTitle) > 3
+          ) {
+          report_info("Similar title not found in database");
           return FALSE;
         }
       }
-      if ($result->numFound == 1) {
-        $record = $result->docs[0];
-        echo tag();
-        if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
-        $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
-        $i = 0;
-        if (isset($record->author)) {
-         foreach ($record->author as $author) {
-          $this->add_if_new("author" . ++$i, $author);
-         }
-        }
-        if (isset($record->pub)) {
-          $journal_string = explode(",", (string) $record->pub);
-          $journal_start = mb_strtolower($journal_string[0]);
-          if (preg_match("~\bthesis\b~ui", $journal_start)) {
-            // Do nothing
-          } elseif (substr($journal_start, 0, 6) == "eprint") {
-            if (substr($journal_start, 7, 6) == "arxiv:") {
-              if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
-              $this->add_if_new("arxiv", substr($journal_start, 13));
-            } else {
-              $this->append_to('id', ' ' . substr($journal_start, 13));
-            }
-          } else {
-            $this->add_if_new('journal', $journal_string[0]);
-          }          
-        }
-        if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
-           unset($record->page);
-           unset($record->volume);
-           unset($record->issue);
-        }
-        if (isset($record->volume)) {
-          $this->add_if_new("volume", (string) $record->volume);
-        }
-        if (isset($record->issue)) {
-          $this->add_if_new("issue", (string) $record->issue);
-        }
-        if (isset($record->year)) {
-          $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
-        }
-        if (isset($record->page)) {
-          $this->add_if_new("pages", implode('–', $record->page));
-        }
-        if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
-          foreach ($record->identifier as $recid) {
-            if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-               if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
-               $this->add_if_new("arxiv", substr($recid, 6));
-            }
-          }
-        }
-        if (isset($record->doi)) {
-          $this->add_if_new('doi', (string) $record->doi[0]);          
-        }
-        return TRUE;
-      } else {
-        report_inline('no record retrieved.');
+    } else {
+      $result = (object) array("numFound" => 0);
+    }
+    if ($result->numFound != 1 && $this->has('journal')) {
+      $journal = $this->get('journal');
+      // try partial search using bibcode components:
+      $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
+        . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
+        . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
+        . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
+        . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
+      );
+      if ($result->numFound == 0) return FALSE;
+      if (!isset($result->docs[0]->pub)) return FALSE;
+      $journal_string = explode(",", (string) $result->docs[0]->pub);
+      $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
+      if (strlen($journal_string[0]) 
+      &&  strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
+                 mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))
+                 ) === FALSE
+      ) {
+        report_info("Match for pagination but database journal \"" .
+          echoable($journal_string[0]) . "\" didn't match \"" .
+          echoable($journal) . "\"." . tag());
         return FALSE;
       }
+    }
+    if ($result->numFound == 1) {
+      $record = $result->docs[0];
+      echo tag();
+      if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
+      $i = 0;
+      if (isset($record->author)) {
+       foreach ($record->author as $author) {
+        $this->add_if_new("author" . ++$i, $author);
+       }
+      }
+      if (isset($record->pub)) {
+        $journal_string = explode(",", (string) $record->pub);
+        $journal_start = mb_strtolower($journal_string[0]);
+        if (preg_match("~\bthesis\b~ui", $journal_start)) {
+          // Do nothing
+        } elseif (substr($journal_start, 0, 6) == "eprint") {
+          if (substr($journal_start, 7, 6) == "arxiv:") {
+            if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
+            $this->add_if_new("arxiv", substr($journal_start, 13));
+          } else {
+            $this->append_to('id', ' ' . substr($journal_start, 13));
+          }
+        } else {
+          $this->add_if_new('journal', $journal_string[0]);
+        }          
+      }
+      if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
+         unset($record->page);
+         unset($record->volume);
+         unset($record->issue);
+      }
+      if (isset($record->volume)) {
+        $this->add_if_new("volume", (string) $record->volume);
+      }
+      if (isset($record->issue)) {
+        $this->add_if_new("issue", (string) $record->issue);
+      }
+      if (isset($record->year)) {
+        $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
+      }
+      if (isset($record->page)) {
+        $this->add_if_new("pages", implode('–', $record->page));
+      }
+      if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
+        foreach ($record->identifier as $recid) {
+          if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+             if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
+             $this->add_if_new("arxiv", substr($recid, 6));
+          }
+        }
+      }
+      if (isset($record->doi)) {
+        $this->add_if_new('doi', (string) $record->doi[0]);          
+      }
+      return TRUE;
     } else {
-       report_info("Skipping AdsAbs database: not in slow mode" . tag());
-       return FALSE;
+      report_inline('no record retrieved.');
+      return FALSE;
     }
   }
   
@@ -1357,196 +1380,98 @@ final class Template {
     }
   }
   
-  public function expand_by_doi($force = FALSE) {
-    $doi = $this->get_without_comments_and_placeholders('doi');
-    if (!$this->verify_doi()) return FALSE;
-    if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
-        $this->add_if_new('jstor', substr($doi, 8));
-    }
-    if ($doi && ($force || $this->incomplete())) {
-      $crossRef = $this->query_crossref($doi);
-      if ($crossRef) {
-        if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
-        report_action("Expanding from crossRef record" . tag());
-
-        if ($crossRef->volume_title && $this->blank('journal')) {
-          $this->add_if_new('chapter', $crossRef->article_title); // add_if_new formats this value as a title
-          if (strtolower($this->get('title')) == strtolower($crossRef->article_title)) {
-            $this->forget('title');
-          }
-          $this->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will wikify title and sanitize the string
-        } else {
-          $this->add_if_new('title', restore_italics($crossRef->article_title)); // add_if_new will wikify title and sanitize the string
-        }
-        $this->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
-        $this->add_if_new("year", $crossRef->year);
-        if (   $this->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
-            && $crossRef->contributors->contributor
+  public function expand_by_RIS(&$dat) { // Pass by pointer to wipe this data when called from use_unnamed_params()
+    $ris_review    = FALSE;
+    $ris_issn      = FALSE;
+    $ris_publisher = FALSE;
+    $ris = explode("\n", $dat);
+    $ris_authors = 0;
+    foreach ($ris as $ris_line) {
+      $ris_part = explode(" - ", $ris_line . " ");
+      switch (trim($ris_part[0])) {
+        case "T1":
+        case "TI":
+          $ris_parameter = "title";
+          break;
+        case "AU":
+          $ris_authors++;
+          $ris_parameter = "author$ris_authors";
+          $ris_part[1] = format_author($ris_part[1]);
+          break;
+        case "Y1":
+          $ris_parameter = "date";
+          break;
+        case "PY":
+          $ris_parameter = "date";
+          $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
+          break;
+        case "SP":
+          $start_page = trim($ris_part[1]);
+          $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+          $ris_parameter = FALSE; // Deal with start pages later
+          break;
+        case "EP":
+          $end_page = trim($ris_part[1]);
+          $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+          $ris_parameter = FALSE; // Deal with end pages later
+          break;
+        case "DO":
+          $ris_parameter = "doi";
+          break;
+        case "JO":
+        case "JF":
+        case "T2":
+          $ris_parameter = "journal";
+          break;
+        case "VL":
+          $ris_parameter = "volume";
+          break;
+        case "IS":
+          $ris_parameter = "issue";
+          break;
+        case "RI":
+          $ris_review = "Reviewed work: " . trim($ris_part[1]);  // Get these from JSTOR
+          $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+          $ris_parameter = FALSE; // Deal with review titles later
+          break;
+        case "SN":
+          $ris_parameter = "issn";
+          $ris_issn = trim($ris_part[1]);
+          $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+          $ris_parameter = FALSE; // Deal with ISSN later
+          break;
+        case "UR":
+          $ris_parameter = "url";
+          break;
+        case "PB":
+          $ris_publisher = trim($ris_part[1]);  // Get these from JSTOR
+          $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+          $ris_parameter = FALSE; // Deal with publisher later
+          break;
+        case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
+          $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
+        default:
+          $ris_parameter = FALSE;
+      }
+      unset($ris_part[0]);
+      if ($ris_parameter
+              && $this->add_if_new($ris_parameter, trim(implode($ris_part)))
           ) {
-          $au_i = 0;
-          $ed_i = 0;
-          // Check to see whether a single author is already set
-          // This might be, for example, a collaboration
-          $existing_author = $this->first_author();
-          $add_authors = is_null($existing_author)
-                      || $existing_author = ''
-                      || author_is_human($existing_author);
-          
-          foreach ($crossRef->contributors->contributor as $author) {
-            if ($author["contributor_role"] == 'editor') {
-              ++$ed_i;
-              if ($ed_i < 31 && $crossRef->journal_title === NULL) {
-                $this->add_if_new("editor$ed_i-last", format_surname($author->surname));
-                $this->add_if_new("editor$ed_i-first", format_forename($author->given_name));
-              }
-            } elseif ($author['contributor_role'] == 'author' && $add_authors) {
-              ++$au_i;
-              $this->add_if_new("last$au_i", format_surname($author->surname));
-              $this->add_if_new("first$au_i", format_forename($author->given_name));
-            }
-          }
-        }
-        $this->add_if_new('isbn', $crossRef->isbn);
-        $this->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
-        if ($crossRef->volume > 0) $this->add_if_new('volume', $crossRef->volume);
-        if ((integer) $crossRef->issue > 1) {
-        // "1" may refer to a journal without issue numbers,
-        //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
-          $this->add_if_new('issue', $crossRef->issue);
-        }
-        if ($this->blank("page")) {
-          if ($crossRef->last_page && (strcmp($crossRef->first_page, $crossRef->last_page) !== 0)) {
-            $this->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
-          } else {
-            $this->add_if_new("pages", $crossRef->first_page);
-          }
-        }
-        report_inline('(ok)');
-      } else {
-        report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
-        $url_test = "https://dx.doi.org/".$doi ;
-        $headers_test = @get_headers($url_test, 1);
-        if($headers_test !==FALSE && empty($headers_test['Location']))
-                $this->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
+        $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
       }
     }
-  }
-  
-  public function expand_by_jstor() {
-    if ($this->incomplete() === FALSE) return FALSE;
-    if ($this->blank('jstor')) return FALSE;
-    $jstor = trim($this->get('jstor'));
-    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors.  We do not want i12342 kind
-    $dat=@file_get_contents('https://www.jstor.org/citation/ris/' . $jstor) ;
-    if ($dat === FALSE) {
-      report_info("JSTOR API returned nothing for JSTOR ". $jstor);
-      return FALSE;
+    if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
+    if (isset($start_page)) { // Have to do at end since might get end pages before start pages
+      if (isset($end_page)) {
+         $this->add_if_new("pages", $start_page . REGEXP_EN_DASH . $end_page);
+      } else {
+         $this->add_if_new("pages", $start_page);
+      }
     }
-    if (stripos($dat, 'No RIS data found for') !== FALSE) {
-      report_info("JSTOR API found nothing for JSTOR ". $jstor);
-      return FALSE;
+    if ($this->blank('journal')) { // doing at end avoids adding if we have journal title
+      if ($ris_issn) $this->add_if_new('issn', $ris_issn);
+      if ($ris_publisher) $this->add_if_new('publisher', $ris_publisher);
     }
-    $has_a_url = $this->has('url');
-    $this->expand_by_RIS($dat);
-    if ($this->has('url') && !$has_a_url) { // added http://www.jstor.org/stable/12345, so remove (do not use forget, since that echos)
-        $pos = $this->get_param_key('url');
-        unset($this->param[$pos]);
-    }
-    return TRUE;
-  }
-  
-  protected function expand_by_RIS(&$dat) { // Pass by pointer to wipe this data when called from use_unnamed_params()
-        $ris_review    = FALSE;
-        $ris_issn      = FALSE;
-        $ris_publisher = FALSE;
-        $ris = explode("\n", $dat);
-        $ris_authors = 0;
-        foreach ($ris as $ris_line) {
-          $ris_part = explode(" - ", $ris_line . " ");
-          switch (trim($ris_part[0])) {
-            case "T1":
-            case "TI":
-              $ris_parameter = "title";
-              break;
-            case "AU":
-              $ris_authors++;
-              $ris_parameter = "author$ris_authors";
-              $ris_part[1] = format_author($ris_part[1]);
-              break;
-            case "Y1":
-              $ris_parameter = "date";
-              break;
-            case "PY":
-              $ris_parameter = "date";
-              $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
-              break;
-            case "SP":
-              $start_page = trim($ris_part[1]);
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              $ris_parameter = FALSE; // Deal with start pages later
-              break;
-            case "EP":
-              $end_page = trim($ris_part[1]);
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              $ris_parameter = FALSE; // Deal with end pages later
-              break;
-            case "DO":
-              $ris_parameter = "doi";
-              break;
-            case "JO":
-            case "JF":
-            case "T2":
-              $ris_parameter = "journal";
-              break;
-            case "VL":
-              $ris_parameter = "volume";
-              break;
-            case "IS":
-              $ris_parameter = "issue";
-              break;
-            case "RI":
-              $ris_review = "Reviewed work: " . trim($ris_part[1]);  // Get these from JSTOR
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              $ris_parameter = FALSE; // Deal with review titles later
-              break;
-            case "SN":
-              $ris_parameter = "issn";
-              $ris_issn = trim($ris_part[1]);
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              $ris_parameter = FALSE; // Deal with ISSN later
-              break;
-            case "UR":
-              $ris_parameter = "url";
-              break;
-            case "PB":
-              $ris_publisher = trim($ris_part[1]);  // Get these from JSTOR
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-              $ris_parameter = FALSE; // Deal with publisher later
-              break;
-            case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
-              $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
-            default:
-              $ris_parameter = FALSE;
-          }
-          unset($ris_part[0]);
-          if ($ris_parameter
-                  && $this->add_if_new($ris_parameter, trim(implode($ris_part)))
-              ) {
-            $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          }
-        }
-        if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
-        if (isset($start_page)) { // Have to do at end since might get end pages before start pages
-          if (isset($end_page)) {
-             $this->add_if_new("pages", $start_page . REGEXP_EN_DASH . $end_page);
-          } else {
-             $this->add_if_new("pages", $start_page);
-          }
-        }
-        if($this->blank('journal')) { // doing at end avoids adding if we have journal title
-          if ($ris_issn) $this->add_if_new('issn', $ris_issn);
-          if ($ris_publisher) $this->add_if_new('publisher', $ris_publisher);
-        }
   }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search for citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
@@ -1691,48 +1616,6 @@ final class Template {
       $this->add_if_new("pages", 1*$sici[7]);
       return TRUE;
     } else return FALSE;
-  }
-
-  protected function query_crossref($doi = FALSE) {
-    if (!$doi) {
-      $doi = $this->get_without_comments_and_placeholders('doi');
-    }
-    if (!$doi) {
-      warn('query_crossref called with with no doi');
-      return FALSE;
-    }
-    $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME ."&id=doi:$doi&noredirect=TRUE";
-    for ($i = 0; $i < 2; $i++) {
-      $xml = @simplexml_load_file($url);
-      if ($xml) {
-        $result = $xml->query_result->body->query;
-        if ($result["status"] == "resolved") {
-          return $result;
-        } else {
-          return FALSE;
-        }
-      } else {
-        sleep(1);
-        // Keep trying...
-      }
-    }
-    report_warning("Error loading CrossRef file from DOI " . echoable($doi) ."!");
-    return FALSE;
-  }
-
-  protected function doi_active($doi = FALSE) {
-    if (!$doi) {
-      $doi = $this->get_without_comments_and_placeholders('doi');
-    }
-    if (!$doi) {
-      warn('doi_active called with with no doi');
-      return FALSE;
-    }
-    $response = get_headers("https://api.crossref.org/works/$doi")[0];
-    if (stripos($response, '200 OK') !== FALSE) return TRUE;
-    if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
-    report_warning("Crossref server error loading headers for DOI " . echoable($doi) . ": $response");
-    return FALSE;
   }
 
   public function get_open_access_url() {
@@ -2820,6 +2703,8 @@ final class Template {
   public function verify_doi() {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
+    if ($this->doi_valid) return TRUE;
+    
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
       case ".":
@@ -2844,14 +2729,16 @@ final class Template {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
       if ($this->doi_active($try)) {
-        $this->expand_by_doi($try);
+        expand_by_doi($this, $try);
         $this->set('doi', $try);
+        $this->doi_valid = TRUE;
         $doi = $try;
         break;
       }
-    } else {    
+    } else {
       report_info("Checking that DOI " . echoable($doi) . " is operational..." . tag());
-      if ($this->doi_active() === FALSE) {
+      if (doi_active($this->get_without_comments_and_placeholders('doi')) === FALSE) {
+        report_inline("It's not; checking for user input error...");
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
         // if present, with new "doi-broken-date"
         $url_test = "https://dx.doi.org/" . $doi;
@@ -2872,6 +2759,7 @@ final class Template {
         $this->forget('doi_inactivedate');
         $this->forget('doi-broken-date');
         $this->forget('doi-inactive-date');
+        $this->doi_valid = TRUE;
         report_inline('DOI ok.');
         return TRUE;
       }
@@ -3128,13 +3016,19 @@ final class Template {
 
   public function forget($par) {
     if ($par == 'url') {
-      $this->forget('format');
       $this->forget('accessdate');
       $this->forget('access-date');
       $this->forget('archive-url');
       $this->forget('archiveurl');
       $this->forget('archive-date');
       $this->forget('archivedate');
+      $this->forget('dead-url');
+      $this->forget('format');
+      $this->forget('registration');
+      $this->forget('subscription');
+      $this->forget('url-access');
+      $this->forget('via');
+      $this->forget('website');
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {

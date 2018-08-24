@@ -40,4 +40,12 @@ final class constantsTest extends PHPUnit\Framework\TestCase {
     }
   }
   
+  public function testConstantsOrder() {
+    $acronyms = JOURNAL_ACRONYMS; sort($acronyms, SORT_NATURAL | SORT_FLAG_CASE);
+    $expected = current($acronyms);
+    foreach (JOURNAL_ACRONYMS as $actual) {
+      $this->assertEquals(strtolower($expected), strtolower($actual));
+      $expected = next($acronyms);
+    }
+  }
 }
