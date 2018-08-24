@@ -2,7 +2,7 @@
 
 set -e
 
-[ -z "${GITHUB_PAT}" ] && exit 99
+[ -z "${GITHUB_PAT}" ] && exit 0
 git config --global user.email "martins@gmail.com"
 git config --global user.name "Martin Smith"
 if [ "${TRAVIS_PULL_REQUEST}" = false ]
