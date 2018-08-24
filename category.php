@@ -18,7 +18,7 @@ foreach ($argv as $arg) {
   }
 }
 $SLOW_MODE = FALSE;
-if (isset($_GET["slow"]) || isset($argument["slow"])) {
+if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
 }
 
@@ -51,7 +51,7 @@ if (HTML_OUTPUT) {
 } else {
   echo "\n";
 }
-$category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
+$category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 if ($category) {
   $attempts = 0;
   $api = new WikipediaBot();
