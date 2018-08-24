@@ -108,11 +108,11 @@ function author_is_human($author) {
 
 // Returns the author's name formatted as Surname, F.I.
 function format_author($author){
-
+  
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = NULL;
   // Google sometimes has these
-  $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", $author);
+  $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, NULL, 'UTF-8'));
 
   if (substr(trim($author), -1) === ".") {
      $ends_with_period = TRUE;
