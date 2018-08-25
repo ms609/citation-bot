@@ -732,6 +732,18 @@ final class Template {
       }
     }
     
+    if ($doi = extract_doi($url)[1]) {
+      if (is_null($url_sent)) {
+        if (doi_active($doi)) {
+          report_forget("Recognized DOI in URL; dropping URL");
+          $this->forget('url');
+        } else {
+          $this->mark_inactive_doi($doi);
+        }
+      }
+      return $this->add_if_new('doi', $doi);    
+    }
+  
     // JSTOR
     if (strpos($url, "jstor.org") !== FALSE) {
       $sici_pos = strpos($url, "sici");
@@ -816,17 +828,6 @@ final class Template {
           $this->forget('url');
         }
         return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
-        
-      } elseif ($doi = extract_doi($url)[1]) {
-        if (is_null($url_sent)) {
-          if (doi_active($doi)) {
-            report_forget("Recognized DOI in URL; dropping URL");
-            $this->forget('url');
-          } else {
-            $this->mark_inactive_doi($doi);
-          }
-        }
-        return $this->add_if_new('doi', $doi);
         
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $url, $match)) {
         
