@@ -15,7 +15,7 @@ require_once('WikipediaBot.php');
 class Page {
 
   protected $text, $title, $modifications;
-  protected $read_at, $api, $namespace, $touched, $start_text;
+  protected $read_at, $api, $namespace, $touched, $start_text, $last_write_time;
   public $lastrevid;
 
   function __construct() {
@@ -245,6 +245,7 @@ class Page {
 
   public function write($api, $edit_summary_end = NULL) {
     if ($this->allow_bots()) {
+      throttle(10);
       return $api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at);

@@ -28,6 +28,11 @@ form {
   margin: 3em 1em 0;
 }
 
+input.error {
+  background-color: #f1e545;
+  border-color: #e79f26;
+}
+
 header a, footer a { text-decoration: none; }
 
 a { color: #0773b3; }
@@ -37,7 +42,6 @@ span.added      { color: #02a074; font-weight: bold;}
 span.removed    { color: #e79f26; font-weight: bold;}
 span.changed    { color: #5eb3e5; font-weight: bold;}
 span.reddish    { color: #cc79a7; }
-/* Other colours from colourblind palette: Yellow: #f1e545; */
 span.subitem    { color: #666; }
 span.boring     { color: #bbb; }
 span.subsubitem { color: #999; }

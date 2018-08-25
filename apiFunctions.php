@@ -399,10 +399,7 @@ function expand_by_doi($template, $force = FALSE) {
       }
     } else {
       report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
-      $url_test = "https://dx.doi.org/".$doi ;
-      $headers_test = @get_headers($url_test, 1);
-      if($headers_test !==FALSE && empty($headers_test['Location']))
-              $template->add_if_new('doi-broken-date', date('Y-m-d'));  // Only mark as broken if dx.doi.org also fails to resolve
+      $template->mark_inactive_doi($doi);
     }
   }
 }
@@ -452,13 +449,13 @@ function expand_by_jstor($template) {
   if ($template->blank('jstor')) return FALSE;
   $jstor = trim($template->get('jstor'));
   if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors.  We do not want i12342 kind
-  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor) ;
+  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
   if ($dat === FALSE) {
-    report_info("JSTOR API returned nothing for JSTOR ". $jstor);
+    report_info("JSTOR API returned nothing for ". jstor_link($jstor));
     return FALSE;
   }
   if (stripos($dat, 'No RIS data found for') !== FALSE) {
-    report_info("JSTOR API found nothing for JSTOR ". $jstor);
+    report_info("JSTOR API found nothing for ".  jstor_link($jstor));
     return FALSE;
   }
   $has_a_url = $template->has('url');

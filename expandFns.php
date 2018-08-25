@@ -26,7 +26,8 @@ const CROSSREFUSERNAME = 'martins@gmail.com';
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Optimisation
-#ob_start(); //Faster, but output is saved until page finshed.
+ob_implicit_flush();
+ob_start();
 ini_set("memory_limit", "256M");
 
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
@@ -245,6 +246,20 @@ function title_capitalization($in, $caps_after_punctuation) {
 function mb_ucfirst($string)
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+}
+
+function throttle ($min_interval) {
+  static $last_write_time = 0;
+  $time_since_last_write = time() - $last_write_time;
+  if ($time_since_last_write < $min_interval) {
+    $time_to_pause = floor($min_interval - $time_since_last_write);
+    report_warning("Throttling: waiting $time_to_pause seconds...");
+    for ($i = 0; $i < $time_to_pause; $i++) {
+      sleep(1); 
+      report_inline(' .');
+    }
+  }
+  $last_write_time = time();
 }
 
 function tag($long = FALSE) {

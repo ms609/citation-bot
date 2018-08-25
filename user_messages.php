@@ -9,6 +9,7 @@ function user_notice($symbol, $class, $text) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
   }
+  if (in_array($class, array('phase', 'subitem', 'warning'))) ob_flush();
 }
 
 function report_phase($text)  { user_notice("\n>", "phase", $text); }
@@ -53,4 +54,10 @@ function doi_link($doi) {
   return HTML_OUTPUT
     ? '<a href="http://dx.doi.org/' . urlencode($doi) . '" target="_blank">' . $doi . '</a>'
     : $doi;
+}
+
+function jstor_link($id) {
+  return HTML_OUTPUT
+    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . $id . '</a>'
+    : "JSTOR $id";
 }
