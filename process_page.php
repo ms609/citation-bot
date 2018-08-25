@@ -86,6 +86,7 @@ foreach (explode('|', $pages) as $title) {
     echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
   }
 }
+ob_end_flush(); 
 ?>
     </pre>
     <footer>
