@@ -2657,6 +2657,7 @@ final class Template {
               $this->set('issue', $new_issue);
             } else {
               $this->forget('issue');
+              return;
             }
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
@@ -2678,6 +2679,7 @@ final class Template {
               $this->set($param, $part1);
             }
           }
+          $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
           return;
       }
     }
