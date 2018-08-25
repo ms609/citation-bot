@@ -2407,7 +2407,7 @@ final class Template {
           ) {
             $this->forget('accessdate');
           }
-          return TRUE;
+          break;
 
         case 'arxiv':
           if ($this->has($param) && $this->wikiname() == 'cite web') {
@@ -2447,7 +2447,7 @@ final class Template {
                 }
               }
             }
-            return TRUE;
+            break;
 
         case 'bibcode':
           $bibcode_journal = substr($this->get($param), 4);
@@ -2462,47 +2462,47 @@ final class Template {
             if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
             if (!strcasecmp($this->get('chapter'), $this->get('title'))) {
               $this->forget('chapter'); 
-              return TRUE; // Nonsense to have both.
+              break; // Nonsense to have both.
             }
           }
           if ($this->has('chapter') && $this->lacks('journal') 
             && $this->lacks('bibcode') && $this->lacks('jstor') && $this->lacks('pmid')) {
             $this->change_name_to('Cite book');
           }
-          return TRUE;
+          break;
     
         case 'coauthor': case 'coauthors':  // Commonly left there and empty and deprecated
           if ($this->blank($param)) $this->forget($param);
-          return TRUE;
+          break;
           
         case 'doi':
           $doi = $this->get($param);
-          if (!$doi) return TRUE;
+          if (!$doi) break;
           if ($doi == "10.1267/science.040579197") {
             // This is a bogus DOI from the PMID example file
             $this->forget('doi'); 
-            return TRUE;
+            break;
           }
           $this->set($param, sanitize_doi($doi));
           $this->change_name_to('Cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
-          return TRUE;
+          break;
           
         case 'edition': 
           $this->set($param, preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
-          return TRUE; // Don't want 'Edition ed.'
+          break; // Don't want 'Edition ed.'
         
         case 'eprint':
           if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
         
         case 'isbn':
-          if ($this->lacks('isbn')) return TRUE;
+          if ($this->lacks('isbn')) break;
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
           $this->change_name_to('cite book');
           $this->forget('asin');
-          return TRUE;
+          break;
           
         case 'journal':
           if ($this->lacks($param)) return;
@@ -2525,10 +2525,10 @@ final class Template {
           }
           if (substr(strtolower($periodical), 0, 7) === 'http://' || substr(strtolower($periodical), 0, 8) === 'https://') {
              if ($this->blank('url')) $this->rename($param, 'url');
-             return TRUE;
+             break;
           } elseif (substr(strtolower($periodical), 0, 4) === 'www.') {
              if ($this->blank('website')) $this->rename($param, 'website');
-             return TRUE;
+             break;
           } elseif ( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
                     || mb_substr($periodical, -2) !== "]]"
                     || mb_substr_count($periodical, '[[') !== 1 
@@ -2542,17 +2542,16 @@ final class Template {
           if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { 
              $this->set($param, title_capitalization(ucwords($periodical), TRUE));
           }
-          return TRUE;
+          break;
         
         case 'jstor':
           $this->change_name_to('Cite journal', FALSE);
-          return;
         
         case 'origyear':
           if ($this->has('origyear') && $this->blank(array('date', 'year'))) {
             $this->rename('origyear', 'year');
           }
-          return TRUE;
+          break;
         
         case 'pmc':
           if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
@@ -2561,17 +2560,17 @@ final class Template {
           // No break; continue from pmc to pmid:
         case 'pmid':
           $this->change_name_to('Cite journal', FALSE);
-          return TRUE;
+          break;
           
         case 'quotes':
           switch(strtolower(trim($this->get($param)))) {
             case 'yes': case 'y': case 'true': case 'no': case 'n': case 'false': $this->forget($param);
           }
-          return TRUE;
+          break;
 
         case 'series':
           if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
-          return TRUE;
+          break;
           
         case 'title':
           $title = $this->get($param);
@@ -2603,7 +2602,7 @@ final class Template {
           }
           $this->set($param, $title);
           if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
-          return TRUE;
+          break;
      
         case 'url':
           if (preg_match("~^https?://(?:www.|)researchgate.net/publication/([0-9]+)_*~i", $this->get($param), $matches)) {
@@ -2611,7 +2610,7 @@ final class Template {
           } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
           }
-          return TRUE;
+          break;
         
         case 'work':
           if ($this->has('work')
@@ -2622,24 +2621,24 @@ final class Template {
              )
           ) {
             $this->forget('work');
-            return TRUE;
+            break;
           }
           switch ($this->wikiname()) {
-            case 'cite book': $work_becomes = 'title'; return TRUE;
-            case 'cite journal': $work_becomes = 'journal'; return TRUE;
-            case 'cite web': $work_becomes = 'website'; return TRUE;
+            case 'cite book': $work_becomes = 'title'; break;
+            case 'cite journal': $work_becomes = 'journal'; break;
+            case 'cite web': $work_becomes = 'website'; break;
             default: $work_becomes = 'work';
           }
           if ($this->get($param) !== NULL && $this->blank($work_becomes)) {
             $this->rename('work', $work_becomes);
           }
-          return TRUE;
+          break;
           
         case 'year':
           if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
              if ($this->blank('date')) $this->rename('year', 'date');
              $this->forget('year');
-             return TRUE;
+             break;
           }
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
@@ -2671,7 +2670,7 @@ final class Template {
               $this->set($param, $part1);
             }
           }
-          return TRUE;
+          break;
       }
     }
   }
