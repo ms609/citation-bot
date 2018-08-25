@@ -37,7 +37,8 @@ if (!getenv('GITHUB_PAT') && file_exists('env.php')) {
 }
 function git_echo($cmd) {
   exec ($cmd, $output, $return_var);
-  echo "\n$ $cmd: result $return_var\n   "
+  echo "\n$ " . str_replace(getenv('GITHUB_PAT'), '[[[GITHUB_PAT]]]', $cmd) 
+     . ": result $return_var\n   "
      . implode("\n   ", $output) . "\n";
 }
 if (getenv('GITHUB_PAT')) {
@@ -46,7 +47,7 @@ if (getenv('GITHUB_PAT')) {
   git_echo('git config --global user.name "Martin Smith"');
   git_echo('git add --all *');
   git_echo('git commit -m"Automated file maintenance" || true');
-  git_echo('git push -q origin');
+  git_echo('git push https://ms609:' . getenv('GITHUB_PAT') '@github.com/ms609/citation-bot.git -q origin');
 } else {
   echo "Github PAT not set.\n";
 }
