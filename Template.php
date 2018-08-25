@@ -2671,6 +2671,7 @@ final class Template {
               $this->set($param, $part1);
             }
           }
+          $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
           return;
       }
     }
