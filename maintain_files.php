@@ -47,7 +47,7 @@ if (getenv('GITHUB_PAT')) {
   git_echo('git config --global user.name "Martin Smith"');
   git_echo('git add --all *');
   git_echo('git commit -m"Automated file maintenance" || true');
-  git_echo('git push https://ms609:' . getenv('GITHUB_PAT') . '@github.com/ms609/citation-bot.git');
+  git_echo('git push https://ms609-bot:' . getenv('GITHUB_PAT') . '@github.com/ms609/citation-bot.git');
 } else {
   echo "Github PAT not set.\n";
 }
