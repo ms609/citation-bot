@@ -31,7 +31,7 @@ matrix:
       name: "Update WMFlabs test servers"
       if: branch = development AND type != pull_request
       script:
-        - bash <(git pull)
+        - git pull
 git:
   depth: 3
   
