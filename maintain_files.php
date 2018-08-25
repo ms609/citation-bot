@@ -31,4 +31,15 @@ foreach ($sections as &$section) {
   $section = $alphaed . substr($section, $alpha_end);
 }
 file_put_contents($filename, implode($start_alpha, $sections));
+
+if (getenv('GITHUB_PAT')) {
+  exec('git config --global user.email "martins@gmail.com"');
+  exec('git config --global user.name "Martin Smith"');
+  exec('git add --all *', $output, $return_var);
+  var_dump($return_var);
+  var_dump($output);
+  exec('git commit -m"Automated file maintenance" || true', $output, $return_var)
+  #exec('git push -q origin');
+} else echo "Github PAT not set.";
+
 ?>
