@@ -21,7 +21,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Einen ', ' El ', ' Else ', ' Embo ', ' Et ', ' Faseb ', ' Febs ', ' Fems ', 
           ' For ', ' From ', ' För ', ' Für ', ' If ', ' In ', ' Into ', ' Is ', ' Its ', 
           ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Nejm ', ' Nor ', 
-          ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Of ', ' Off ', ' On ', ' og ', ' Or ', ' Over ', 
+          ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', ' Over ', 
           ' Pcr ', ' Pnas ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' To ', ' U S A ', ' Uk ', 
           ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' When ', ' With ', ' Woor ', ' Y ', 
           ' Zu ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
