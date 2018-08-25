@@ -2548,6 +2548,13 @@ final class Template {
           $this->change_name_to('Cite journal', FALSE);
           return;
         
+        case 'magazine':
+          // Remember, we don't process cite magazine.
+          if ($this->wikiname() == 'cite journal' && !$this->has('journal')) {
+            $this->rename('magazine', 'journal');
+          }
+          return;
+        
         case 'origyear':
           if ($this->has('origyear') && $this->blank(array('date', 'year'))) {
             $this->rename('origyear', 'year');
