@@ -2413,6 +2413,7 @@ final class Template {
           if ($this->has($param) && $this->wikiname() == 'cite web') {
             $this->change_name_to('cite arxiv');
           }
+          break;
           
         case 'author': case 'authors':
           if (!$pmatch[2]) {
@@ -2455,7 +2456,7 @@ final class Template {
             if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
           }
           $this->change_name_to('Cite journal', FALSE);
-          return;
+          break;
           
         case 'chapter': 
           if ($this->has('chapter')) {
@@ -2496,6 +2497,7 @@ final class Template {
         
         case 'eprint':
           if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
+          break;
         
         case 'isbn':
           if ($this->lacks('isbn')) break;
@@ -2505,7 +2507,7 @@ final class Template {
           break;
           
         case 'journal':
-          if ($this->lacks($param)) return;
+          if ($this->lacks($param)) break;
           if ($this->lacks('chapter') || $this->lacks('isbn')) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('Cite journal');
@@ -2546,6 +2548,7 @@ final class Template {
         
         case 'jstor':
           $this->change_name_to('Cite journal', FALSE);
+          break;
         
         case 'origyear':
           if ($this->has('origyear') && $this->blank(array('date', 'year'))) {
