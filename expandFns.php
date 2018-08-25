@@ -11,38 +11,6 @@ include_once("./vendor/autoload.php");
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
   define("HTML_OUTPUT", FALSE);
 }  
-
-function html_echo($text, $alternate_text='') {
-  echo HTML_OUTPUT ? $text : $alternate_text;
-}
-
-function user_notice($symbol, $class, $text) {
-  echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
-     . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
-}
-
-function report_action($text)  { user_notice(">", "subitem", $text); }
-function report_info($text)  { user_notice("  >", "subsubitem", $text); }
-function report_inaction($text)  { user_notice("  .", "boring", $text); }
-function report_warning($text) { user_notice("  !", "warning", $text); }
-function report_modification($text) { user_notice("  ~", "changed", $text); }
-function report_add($text) { user_notice("  +", "added", $text); }
-function report_forget($text) { user_notice("  -", "removed", $text); }
-
-function quietly($function = report_info, $text) {
-  if (defined('VERBOSE') || HTML_OUTPUT ) {
-    $function($text);
-  }
-}
-
-function safely_echo ($string) {
-  echo echoable($string);
-}
-
-function echoable($string) {
-  return HTML_OUTPUT ? htmlspecialchars($string) : $string;
-}
-
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
@@ -50,6 +18,7 @@ require_once("Template.php");
 require_once("Parameter.php");
 require_once("Comment.php");
 require_once("wikiFunctions.php");
+require_once("user_messages.php");
 
 const CROSSREFUSERNAME = 'martins@gmail.com';
 // Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY and PHP_BOTUSERNAME environment variables
@@ -57,7 +26,8 @@ const CROSSREFUSERNAME = 'martins@gmail.com';
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Optimisation
-#ob_start(); //Faster, but output is saved until page finshed.
+ob_implicit_flush();
+ob_start();
 ini_set("memory_limit", "256M");
 
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
@@ -126,6 +96,16 @@ function extract_doi($text) {
     if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
     }
+    $doi_candidate = $doi;
+    while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_active($doi_candidate)) {
+      $last_delimiter = 0;
+      foreach (array('/', '.', '#') as $delimiter) {
+        $delimiter_position = strrpos($doi_candidate, '/');
+        $last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
+      }
+      $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
+    }
+    if (doi_active($doi_candidate)) $doi = $doi_candidate;
     return array($match[0], sanitize_doi($doi));
   }
   return NULL;
@@ -206,19 +186,19 @@ function restore_italics ($text) {
 function title_capitalization($in, $caps_after_punctuation) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
-  if(substr($new_case, 0, 1) === "[" && substr($new_case, -1) === "]") {
+  if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
   
-  if ( $new_case == mb_strtoupper($new_case) 
+  if ($new_case == mb_strtoupper($new_case) 
      && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
      ) {
     // ALL CAPS to Title Case
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
-  $new_case = substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
-    
+  $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
+  
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
@@ -255,20 +235,11 @@ function title_capitalization($in, $caps_after_punctuation) {
   
   // Capitalization exceptions, e.g. Elife -> eLife
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
-  $new_case = substr($new_case, 1, strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
-    
-  // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
-  $new_case = preg_replace_callback(
-    "~( [a-z])$~",
-    function ($matches) {return strtoupper($matches[1]);},
-    $new_case);
+  $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
   
-  /* I believe we can do without this now
-  if (preg_match("~^(the|into|at?|of)\b~", $new_case)) {
-    // If first word is a little word, it should still be capitalized
-    $new_case = ucfirst($new_case);
-  }
-  */
+  // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
+  if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
+  
   return $new_case;
 }
 
@@ -277,7 +248,24 @@ function mb_ucfirst($string)
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
 
+function throttle ($min_interval) {
+  static $last_write_time = 0;
+  $time_since_last_write = time() - $last_write_time;
+  if ($time_since_last_write < $min_interval) {
+    $time_to_pause = floor($min_interval - $time_since_last_write);
+    report_warning("Throttling: waiting $time_to_pause seconds...");
+    for ($i = 0; $i < $time_to_pause; $i++) {
+      sleep(1); 
+      report_inline(' .');
+    }
+  }
+  $last_write_time = time();
+}
+
 function tag($long = FALSE) {
+  return FALSE; // I suggest that this function is no longer useful in the Travis era
+  // If it's not been missed by 2018-10-01, I suggest that we delete it and all calls thereto.
+  
   $dbg = array_reverse(debug_backtrace());
   array_pop($dbg);
   array_shift($dbg);
@@ -349,5 +337,18 @@ function prior_parameters($par, $list=array()) {
     case 'pmid':       return prior_parameters('doi', $list);
     case 'pmc':       return prior_parameters('pmid', $list);
     default: return $list;
+  }
+}
+
+function equivalent_parameters($par) {
+  switch ($par) {
+    case 'author': case 'authors': case 'author1': case 'last1': 
+      return FLATTENED_AUTHOR_PARAMETERS;
+    case 'pmid': case 'pmc': 
+      return array('pmc', 'pmid');
+    case 'page_range': case 'start_page': case 'end_page': # From doi_crossref
+    case 'pages': case 'page':
+      return array('page_range', 'pages', 'page', 'end_page', 'start_page');
+    default: return array($par);
   }
 }

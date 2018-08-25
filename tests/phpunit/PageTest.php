@@ -38,7 +38,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
 
   public function testBotRead() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
-      echo "\n[Test skipped] in pull requests, to protect Bot secrets";
+      echo 'S'; // Test skipped in pull requests, to protect Bot secrets
       $this->assertNull(NULL); // Make Travis happy
     } else {
       $page = new TestPage();
@@ -50,7 +50,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
   
   public function testBotExpandWrite() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
-      echo "\n[Test skipped] in pull requests, to protect Bot secrets";
+      echo 'S'; // Test skipped in pull requests, to protect Bot secrets
       $this->assertNull(NULL); // Make Travis happy
     } else {
       $api = new WikipediaBot();
@@ -81,4 +81,18 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $page = $this->process_page('  move along, nothing to see here {{}} ');
       $this->assertNull(NULL);
   }
+
+  public function testUrlReferences() {
+      $page = $this->process_page('daf sdda <ref name="bob">http://doi.org/10.1007/s12668-011-0022-5< / ref> dfadsf <ref >  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/ </ref> dsfadfsd');
+      $this->assertEquals('daf sdda <ref name="bob">{{Cite journal|doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I|last3 = Buehler|first3 = Markus J}}< / ref> dfadsf <ref >{{Cite journal|pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|last2 = Pimple|first2 = P|last3 = Palsetia|first3 = D|last4 = Dave|first4 = N|last5 = De Sousa|first5 = A|pmid = 23858264|doi = 10.4103/0019-5545.105547}}</ref> dsfadfsd', $page->parsed_text());
+      $page = $this->process_page('daf sdda <ref name="bob">[http://doi.org/10.1007/s12668-011-0022-5]< / ref> dfadsf <ref >  [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/] </ref> dsfadfsd');
+      $this->assertEquals('daf sdda <ref name="bob">{{Cite journal|doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I|last3 = Buehler|first3 = Markus J}}< / ref> dfadsf <ref >{{Cite journal|pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|last2 = Pimple|first2 = P|last3 = Palsetia|first3 = D|last4 = Dave|first4 = N|last5 = De Sousa|first5 = A|pmid = 23858264|doi = 10.4103/0019-5545.105547}}</ref> dsfadfsd', $page->parsed_text());
+  }
+
+  public function testUrlReferencesThatFail() {
+      $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail';
+      $page = $this->process_page($text);
+      $this->assertEquals($text, $page->parsed_text());
+  }
+
 }

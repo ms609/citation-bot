@@ -6,8 +6,8 @@
 
 ## GitHub repository details
 There are two main branches of the bot: 
-- The **master** code is implemented at https://tools.wmflabs.org/citations/doibot.html, and is intended for public use.
-- The **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/doibot.html .  
+- The **master** code is implemented at https://tools.wmflabs.org/citations/, and is intended for public use.
+- The **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/ .  
 
 ## Overview
 
@@ -15,7 +15,7 @@ This is some basic documentation about what this bot is and how some of the part
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
-* DOIBot, found in doibot.html (web frontend) and doibot.php (information is
+* DOIBot, found in index.html (web frontend) and process_page.php (information is
   POSTed to this and it does the citation expansion; backend). This automatically
   posts a new page revision with expanded citations and thus requires a bot account.
   All activity takes place on Tool Labs.
@@ -33,16 +33,13 @@ Basic structure of a Citation bot script:
 
 
 A quick tour of the main files:
-* `credentials/doibot.login`: on-wiki login credentials
 * `constants.php`: constants defined
 * `wikiFunctions.php`: functions related to Wikipedia ineractions, including some marked
    as "untested".
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
 * `DOItools.php`: defines Crossref-related functions
-* `expandFns.php`: sets up needed functions and global variables, requires most
-  of the other files listed here
-* `credentials/crossref.login` allows crossref searches.
-* `login.php`: Logs the bot in to Wikipedia servers
+* `expandFns.php`: sets up needed functions, requires most of the other files listed here
+* `apiFunctions.php`: sets up needed functions
 
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are

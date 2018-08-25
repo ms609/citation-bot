@@ -1,4 +1,8 @@
 <?php 
+const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite document', 
+                             'cite encyclopaedia', 'cite encyclopedia', 'cite journal', 'cite web');
+const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web');
+
 const AUTHOR_PARAMETERS = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author',
                 'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1', 'authors', 'vauthors'),
@@ -210,7 +214,9 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
 // that information can also be presented using the generic {{citation}} template, which we do modify.
 // This list even includes items that are no longer supported, since we need to leave fixing them to humans
 // See https://en.wikipedia.org/wiki/Module:Citation/CS1/Whitelist
-const PARAMETER_LIST = array('ARXIV', 'ASIN', 'ASIN-TLD', 'Author', 'Author#', 'BIBCODE',
+const PARAMETER_LIST = array(
+'ARXIV', 'ASIN', 'ASIN-TLD', 'Author', 'Author#', 'BIBCODE',
+'CITATION_BOT_PLACEHOLDER_BARE_URL',
 'DOI', 'DoiBroken', 'EISSN', 'Editor', 'Editor#', 'EditorGiven',
 'EditorGiven#', 'EditorSurname', 'EditorSurname#', 'Embargo', 'HDL',
 'ID', 'ISBN', 'ISBN13', 'ISMN', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR',
