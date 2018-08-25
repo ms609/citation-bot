@@ -37,13 +37,14 @@ if (!getenv('GITHUB_PAT') && file_exists('env.php')) {
 }
 function git_echo($cmd) {
   exec ($cmd, $output, $return_var);
-  echo "\nExecuted $$cmd: result $return_var\n$output\n\n";
+  echo "\n\nExecuted $$cmd: result $return_var\n"
+     . print_r($output, 1) . "\n\n";
 }
 if (getenv('GITHUB_PAT')) {
   git_echo('git config --global user.email "martins@gmail.com"');
   git_echo('git config --global user.name "Martin Smith"');
-  git_echo('git add --all *', $output, $return_var);
-  git_echo('git commit -m"Automated file maintenance" || true', $output, $return_var);
+  git_echo('git add --all *');
+  git_echo('git commit -m"Automated file maintenance" || true');
   git_echo('git push -q origin');
 } else {
   echo "Github PAT not set.\n";
