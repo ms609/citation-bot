@@ -5,3 +5,5 @@ clover.xml
 *.lock
 vendor/*
 tmp/*
+env.php
+core

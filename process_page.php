@@ -71,12 +71,12 @@ foreach (explode('|', $pages) as $title) {
       safely_echo($my_page->parsed_text());
       echo "</pre>";
   ?>
-  <form method="post" action="doibot.php">
+  <form method="post" action="process_page.php">
     <input type="hidden" name="page" value="<?php echo $title;?>" />
     <input type="hidden" name="user" value="<?php echo $user;?>" />
     <input type="hidden" name="edit" value="on" />
     <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>" />
-    <input type=submit value="Submit edits" />
+    <input type="submit" value="Submit edits" />
   </form>
   <?php
     } else {  
@@ -86,6 +86,7 @@ foreach (explode('|', $pages) as $title) {
     echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
   }
 }
+ob_end_flush(); 
 ?>
     </pre>
     <footer>
