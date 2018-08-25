@@ -37,10 +37,11 @@ if (!getenv('GITHUB_PAT') && file_exists('env.php')) {
 }
 function git_echo($cmd) {
   exec ($cmd, $output, $return_var);
-  echo "\n\nExecuted $$cmd: result $return_var\n   "
-     . implode("\n   ", $output) . "\n\n";
+  echo "\n$ $cmd: result $return_var\n   "
+     . implode("\n   ", $output) . "\n";
 }
 if (getenv('GITHUB_PAT')) {
+  echo "<pre>";
   git_echo('git config --global user.email "martins@gmail.com"');
   git_echo('git config --global user.name "Martin Smith"');
   git_echo('git add --all *');
