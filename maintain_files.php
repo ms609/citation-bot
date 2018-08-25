@@ -31,4 +31,25 @@ foreach ($sections as &$section) {
   $section = $alphaed . substr($section, $alpha_end);
 }
 file_put_contents($filename, implode($start_alpha, $sections));
+
+if (!getenv('GITHUB_PAT') && file_exists('env.php')) {
+  require_once('env.php');
+}
+function git_echo($cmd) {
+  exec ($cmd, $output, $return_var);
+  echo "\n$ " . str_replace(getenv('GITHUB_PAT'), '[[[GITHUB_PAT]]]', $cmd) 
+     . ": result $return_var\n   "
+     . implode("\n   ", $output) . "\n";
+}
+if (getenv('GITHUB_PAT')) {
+  echo "<pre>";
+  git_echo('git config --global user.email "martins@gmail.com"');
+  git_echo('git config --global user.name "Martin Smith"');
+  git_echo('git add --all *');
+  git_echo('git commit -m"Automated file maintenance" || true');
+  git_echo('git push https://ms609-bot:' . getenv('GITHUB_PAT') . '@github.com/ms609/citation-bot.git');
+} else {
+  echo "Github PAT not set.\n";
+}
+
 ?>

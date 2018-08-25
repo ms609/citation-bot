@@ -14,7 +14,7 @@
         <directory>./constants</directory>
         <directory>./tests</directory>
         <file>./constants.php</file>
-        <file>./doibot.php</file>
+        <file>./process_page.php</file>
         <file>./gadgetapi.php</file>
         <file>./login.php</file>
         <file>./Snoopy.class.php</file>
