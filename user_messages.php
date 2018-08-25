@@ -9,6 +9,7 @@ function user_notice($symbol, $class, $text) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
   }
+  if (in_array($class, array('phase', 'subitem', 'warning')) ob_flush();
 }
 
 function report_phase($text)  { user_notice("\n>", "phase", $text); }
