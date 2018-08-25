@@ -37,8 +37,8 @@ if (!getenv('GITHUB_PAT') && file_exists('env.php')) {
 }
 function git_echo($cmd) {
   exec ($cmd, $output, $return_var);
-  echo "\n\nExecuted $$cmd: result $return_var\n"
-     . print_r($output, 1) . "\n\n";
+  echo "\n\nExecuted $$cmd: result $return_var\n   "
+     . implode("\n   ", $output) . "\n\n";
 }
 if (getenv('GITHUB_PAT')) {
   git_echo('git config --global user.email "martins@gmail.com"');
