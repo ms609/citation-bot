@@ -36,8 +36,6 @@ matrix:
       script:
         - git pull
         - wget -O- https://tools.wmflabs.org/citations/maintain_files.php
-        - git add all * && git commit -m"Automated file maintenance" || true
-        - git push https://ms609-bot:' . ${GITHUB_PAT} . '@github.com/ms609/citation-bot.git
 git:
   depth: 3
   
