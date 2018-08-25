@@ -1157,7 +1157,7 @@ final class Template {
 
       if ($xml->entry->arxivjournal_ref) {
         $journal_data = (string) $xml->entry->arxivjournal_ref;
-        if (preg_match("~,(\(?([12]\d{3})\)?).*?$~u", $journal_data, $match)) {
+        if (preg_match("~,(\(?([12]\d{3})\)?)[^\n\r0-9]*?$~u", $journal_data, $match)) {
           $journal_data = str_replace($match[1], "", $journal_data);
           $this->add_if_new("year", $match[1]);
         }
