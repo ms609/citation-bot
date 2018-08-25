@@ -26,7 +26,7 @@ matrix:
       if: branch = master AND type != pull_request
       php: 5.6 # Avoid downloading and installing 5.5
       script:
-        - wget -O- https://tools.wmflabs.org/citations/gitpull.php
+        - git pull
         - wget -O- https://tools.wmflabs.org/citations/maintain_files.php
     - stage: deploy-to-development
       name: "Update WMFlabs test servers"
@@ -34,8 +34,6 @@ matrix:
       script:
         - git pull
         - wget -O- https://tools.wmflabs.org/citations/maintain_files.php
-        - git add all * && git commit -m"Automated file maintenance" || true
-        - git push https://ms609-bot:' . ${GITHUB_PAT} . '@github.com/ms609/citation-bot.git
 git:
   depth: 3
   
