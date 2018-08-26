@@ -1,5 +1,4 @@
  header, footer {
-  font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
   background-color: #eed; 
   padding: 0.5em 1em;
   margin: -9px;
@@ -7,22 +6,42 @@
   text-decoration: none;
 }
 
+header, footer, form {
+  font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
+}
+
 header {
   border-bottom: 1px solid #335;
 }
+
 footer {
   margin-top: 3em;
   border-top: 1px solid #335;
   box-shadow: 0 50vh 0 50vh #eed;
+  background: #eed url('../img/Powered-by-Toolforge.png') no-repeat right;
+  background-position-y: 20px;
+  min-height: 80px;
+}
+
+form {
+  padding-bottom: 2em;
+  margin: 3em 1em 0;
+}
+
+input.error {
+  background-color: #f1e545;
+  border-color: #e79f26;
 }
 
 header a, footer a { text-decoration: none; }
+
+a { color: #0773b3; }
 
 span.warning    { color: #d36027; } 
 span.added      { color: #02a074; font-weight: bold;}
 span.removed    { color: #e79f26; font-weight: bold;}
 span.changed    { color: #5eb3e5; font-weight: bold;}
-/* Other colours from colourblind palette: Yellow: #f1e545; Blue: #0773b3; Reddish purple: #cc79a7  */
-span.subitem    { color: #666;}
-span.boring     { color: #bbb;}
-span.subsubitem { color: #999;}
+span.reddish    { color: #cc79a7; }
+span.subitem    { color: #666; }
+span.boring     { color: #bbb; }
+span.subsubitem { color: #999; }

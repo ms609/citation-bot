@@ -204,7 +204,7 @@ class WikipediaBot {
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
-          echo "\n <span style='color: #e21'>Written to <a href='" 
+          echo "\n <span style='reddish'>Written to <a href='" 
           . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
           . echoable($myPage->title) . '</a></span>';
         }
@@ -237,7 +237,7 @@ class WikipediaBot {
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
           // We probably only want to visit pages in the main namespace.  Remove any talk: etc at the start of the page name.
-          $list[] = (string) preg_replace('~.+:~', '', $page->title); 
+          $list[] = str_replace(array('_talk:', ' talk:'), ':', (string) $page->title); 
         }
       } else {
         trigger_error('Error reading API from ' . echoable($url) . "\n\n", E_USER_WARNING);
