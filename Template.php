@@ -8,7 +8,7 @@
  *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
  *       switch statement handles various parameters differently.
  *     tidy() cleans up citations and the templates, but it includes various other functions
- *       and side effects as w==0ell. Beware!
+ *       and side effects as well. Beware!
  *
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
  * to find information that can be added to existing citations.
