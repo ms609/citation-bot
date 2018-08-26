@@ -2548,6 +2548,13 @@ final class Template {
           $this->change_name_to('Cite journal', FALSE);
           return;
         
+        case 'magazine':
+          // Remember, we don't process cite magazine.
+          if ($this->wikiname() == 'cite journal' && !$this->has('journal')) {
+            $this->rename('magazine', 'journal');
+          }
+          return;
+        
         case 'origyear':
           if ($this->has('origyear') && $this->blank(array('date', 'year'))) {
             $this->rename('origyear', 'year');
@@ -2650,6 +2657,7 @@ final class Template {
               $this->set('issue', $new_issue);
             } else {
               $this->forget('issue');
+              return;
             }
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
@@ -2671,6 +2679,7 @@ final class Template {
               $this->set($param, $part1);
             }
           }
+          $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
           return;
       }
     }

@@ -25,6 +25,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Over ', ' Pcr ', ' Pnas ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' To ', ' Uk ', 
           ' Um ', ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' When ', ' With ', ' Woor ', 
           ' Y ', ' Zu ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
+
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', ' U S a ');
 
