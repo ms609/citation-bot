@@ -7,7 +7,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' eine ', ' einen ', ' el ', ' else ', ' EMBO ', ' en ', ' et ', ' FASEB ', ' FEBS ', 
           ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' if ', ' in ', ' into ', ' is ', 
           ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' NEJM ', 
-          ' nor ', ' nor ', ' NY ', ' NYC ', ' NYT ', ' of ', ' off ', ' on ', ' og ', ' or ', 
+          ' nor ', ' NY ', ' NYC ', ' NYT ', ' of ', ' off ', ' on ', ' og ', ' or ', 
           ' over ', ' PCR ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' to ', ' UK ', 
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' von ', ' when ', ' with ', ' woor ', 
           ' y ', ' zu ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
@@ -21,7 +21,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' En ', ' Et ', ' Faseb ', ' Febs ', 
           ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' If ', ' In ', ' Into ', ' Is ', 
           ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Nejm ', 
-          ' Nor ', ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
+          ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
           ' Over ', ' Pcr ', ' Pnas ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' To ', ' Uk ', 
           ' Um ', ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' When ', ' With ', ' Woor ', 
           ' Y ', ' Zu ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
