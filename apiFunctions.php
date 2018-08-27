@@ -20,7 +20,7 @@ function entrez_api($ids, $templates, $db) {
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     report_info("Found match for $db identifier " . $document->Id);
     $template_key = array_search($document->Id, $ids);
-    if (!$template_key) {
+    if ($template_key === FALSE) {
       report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");
       continue;
     }
