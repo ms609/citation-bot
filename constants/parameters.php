@@ -216,7 +216,7 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
 // See https://en.wikipedia.org/wiki/Module:Citation/CS1/Whitelist
 const PARAMETER_LIST = array(
 'ARXIV', 'ASIN', 'ASIN-TLD', 'Author', 'Author#', 'BIBCODE',
-'CITATION_BOT_PLACEHOLDER_BARE_URL',
+'CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url',
 'DOI', 'DoiBroken', 'EISSN', 'Editor', 'Editor#', 'EditorGiven',
 'EditorGiven#', 'EditorSurname', 'EditorSurname#', 'Embargo', 'HDL',
 'ID', 'ISBN', 'ISBN13', 'ISMN', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR',
