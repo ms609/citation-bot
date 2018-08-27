@@ -1038,19 +1038,7 @@ ER -  }}';
     
   public function testTrimResearchGateETC() {
     $want = 'https://www.researchgate.net/publication/320041870';
-    $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals($want, $prepared->get('url'));
-    $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals($want, $prepared->get('url'));
-    $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals($want, $prepared->get('url'));
-    $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals($want, $prepared->get('url'));
-    $text = '{{cite journal|url=http://researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
+    $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals($want, $prepared->get('url'));
     $text = '{{cite journal|url=https://www.researchgate.net/profile/hello_user-person/publication/320041870_EXTRA_STUFF_ON_EN}}';
