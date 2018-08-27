@@ -16,15 +16,13 @@ function entrez_api($ids, $templates, $db) {
   foreach (array_keys($ids) as $i) {
     $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
   }
-  var_dump($ids[$i]);
-  var_dump($templates[$i]->get('pmid'));
-  var_dump($templates[$i]->get('title'));
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
-    $this_template = $templates[array_search($document->Id, $ids)];
-    var_dump(array_search($document->Id, $ids));
-    var_dump(array_keys($ids)[array_search($document->Id, $ids)]);
-    
     report_info("Found match for $db identifier " . $document->Id);
+    $this_template = $templates[array_search($document->Id, $ids)];
+    print "\n - ID = " . $document->Id
+        . "\n - which is ID with key " . array_search($document->Id, $ids)
+        . "\n   I'll prove it: " . $this_template->get('pmid');
+    
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');
