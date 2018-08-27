@@ -7,9 +7,10 @@ function entrez_api($ids, $templates, $db) {
   $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=$db&id=" 
                . implode(',', $ids);
   report_action("Using $db API to retrieve publication details: ");
+  
   $xml = @simplexml_load_file($url);
   if ($xml === FALSE) {
-    report_warning("Unable to do PubMed search");
+    report_warning("Error in PubMed search: No response from Entrez server");
     return;
   }
   
@@ -19,17 +20,10 @@ function entrez_api($ids, $templates, $db) {
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     report_info("Found match for $db identifier " . $document->Id);
     $template_key = array_search($document->Id, $ids);
-    print "h2";
     if (!$template_key) {
-      print "asag";
-      report_error("Pubmed returned an identifier, " . $document->Id . " that we didn't search for.");
-      var_dump($document);
-      print "\n\n\n\n\n\n\n";
-      var_dump($xml);
-      ob_flush_end();
-      die;
+      report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");
+      continue;
     }
-    print "gh4r";
     $this_template = $templates[$template_key];
     
     foreach ($document->Item as $item) {
