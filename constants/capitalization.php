@@ -49,7 +49,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', 
           ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Hoaj Biology ', 
           ' Iconference ', ' Ifac-Papersonline ', ' Isrn Genetics ', ' Jabs : Journal of Applied Biological Sciences ', 
-          ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of The Iest ', 
+          ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the Iest ', 
           ' Molecular and Cellular Biology ', ' Nasa Tech Briefs ', ' Ocean Science Journal : Osj ', 
           ' Palaios ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
