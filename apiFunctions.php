@@ -7,9 +7,10 @@ function entrez_api($ids, $templates, $db) {
   $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=$db&id=" 
                . implode(',', $ids);
   report_action("Using $db API to retrieve publication details: ");
+  
   $xml = @simplexml_load_file($url);
   if ($xml === FALSE) {
-    report_warning("Unable to do PubMed search");
+    report_warning("Error in PubMed search: No response from Entrez server");
     return;
   }
   
@@ -17,8 +18,14 @@ function entrez_api($ids, $templates, $db) {
     $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
   }
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
-    $this_template = $templates[array_search($document->Id, $ids)];
     report_info("Found match for $db identifier " . $document->Id);
+    $template_key = array_search($document->Id, $ids);
+    if (!$template_key) {
+      report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");
+      continue;
+    }
+    $this_template = $templates[$template_key];
+  
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');
