@@ -58,12 +58,13 @@ final class apiFunctionsTest extends PHPUnit\Framework\TestCase {
        '1995Sci...267...77R',
        '1995Geo....23..967E',
        ];
-      $text = '{{Cite journal | bibcode = ' . implode($bibcodes, '}}{{Cite journal | bibcode = ') . '}}';
+      $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
       $page = new TestPage();
       $page->parse_text($text);
       $templates = $page->extract_object('Template');
       $page->expand_templates_from_identifier('bibcode', $templates);
       $this->assertEquals('Nature', $templates[3]->get('journal'));
+      $this->assertEquals('Geology', $templates[5]->get('journal'));
       $this->assertEquals('14879', $templates[0]->get('pages'));
     });
   }
