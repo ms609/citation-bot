@@ -2370,7 +2370,8 @@ final class Template {
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     &&  lcfirst($new_name) != $this->wikiname()
     ) {
-      $this->name = ucfirst(strtolower($new_name));
+      preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+      $this->name = $spacing[1] . ucfirst(strtolower(trim($new_name))) . $spacing[2];
       switch (strtolower($new_name)) {
         case 'cite journal': 
           $this->rename('eprint', 'arxiv'); 
