@@ -24,6 +24,7 @@ function entrez_api($ids, $templates, $db) {
       var_dump($document);
       print "\n\n\n\n\n\n\n";
       var_dump($xml);
+      ob_flush_end();
       die;
     }
     $this_template = $templates[$template_key];
