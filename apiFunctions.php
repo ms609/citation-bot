@@ -16,20 +16,16 @@ function entrez_api($ids, $templates, $db) {
   foreach (array_keys($ids) as $i) {
     $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
   }
+
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     report_info("Found match for $db identifier " . $document->Id);
+    
     $template_key = array_search($document->Id, $ids);
-    print "h2";
     if (!$template_key) {
-      print "asag";
-      report_error("Pubmed returned an identifier, " . $document->Id . " that we didn't search for.");
-      var_dump($document);
-      print "\n\n\n\n\n\n\n";
-      var_dump($xml);
-      ob_flush_end();
-      die;
+      report_warning("Pubmed returned an identifier [" . $document->Id . "] that wasn't in our search string:\n     $url.");
+      continue;
     }
-    print "gh4r";
+    
     $this_template = $templates[$template_key];
     
     foreach ($document->Item as $item) {
