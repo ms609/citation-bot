@@ -20,12 +20,12 @@ function entrez_api($ids, $templates, $db) {
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     report_info("Found match for $db identifier " . $document->Id);
     $template_key = array_search($document->Id, $ids);
-    if (!$template_key) {
+    if ($template_key === FALSE) {
       report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");
       continue;
     }
     $this_template = $templates[$template_key];
-    
+  
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');

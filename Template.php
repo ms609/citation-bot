@@ -1435,7 +1435,7 @@ final class Template {
           $ris_parameter = FALSE; // Deal with end pages later
           break;
         case "DO":
-          $ris_parameter = "doi";
+          $ris_parameter = doi_active($ris_part[1]) ? "doi" : FALSE;
           break;
         case "JO":
         case "JF":
