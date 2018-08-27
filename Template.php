@@ -2572,7 +2572,7 @@ final class Template {
           
         case 'publisher':
           $publisher = strtolower($this->get($param));
-          foreach (array('books.google', 'google books') as $not_publisher) {
+          foreach (NON_PUBLISHERS as $not_publisher) {
             if (strpos($publisher, $not_publisher) !== FALSE) {
               $this->forget($param);
               return;
