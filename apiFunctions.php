@@ -17,7 +17,8 @@ function entrez_api($ids, $templates, $db) {
     $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
   }
   var_dump($ids[$i]);
-  var_dump($templates[$i]);
+  var_dump($templates[$i]->get('pmid'));
+  var_dump($templates[$i]->get('title'));
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     $this_template = $templates[array_search($document->Id, $ids)];
     var_dump(array_search($document->Id, $ids));
