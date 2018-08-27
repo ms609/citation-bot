@@ -2370,7 +2370,8 @@ final class Template {
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     &&  lcfirst($new_name) != $this->wikiname()
     ) {
-      $this->name = ucfirst(strtolower($new_name));
+      preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+      $this->name = $spacing[1] . ucfirst(strtolower(trim($new_name))) . $spacing[2];
       switch (strtolower($new_name)) {
         case 'cite journal': 
           $this->rename('eprint', 'arxiv'); 
@@ -2595,7 +2596,7 @@ final class Template {
           
         case 'title':
           $title = $this->get($param);
-          $title = straighten_quotes(in_array(mb_substr($title, -1), array('.', ',')) ? mb_substr($title, 0, -1) : $title);
+          $title = straighten_quotes($title);
           if ((   mb_substr($title, 0, 1) === '"'
                && mb_substr($title, -1)   === '"'
                && mb_substr_count($title, '"') == 2)
@@ -2620,6 +2621,14 @@ final class Template {
                $this->add_if_new('title-link', $matches[1]);
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
              }
+          }
+          if (in_array(mb_substr($title, -1), array('.', ','))) {
+            if (mb_substr($title, mb_strlen($title) - 3) == '...') {
+              $title = mb_substr($title, 0, mb_strlen($title) - 3) 
+                     . html_entity_decode("&hellip;", NULL, 'UTF-8');
+            } else {
+              $title = mb_substr($title, 0, -1);
+            }
           }
           $this->set($param, $title);
           if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
