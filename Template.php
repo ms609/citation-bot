@@ -2611,7 +2611,7 @@ final class Template {
           if (in_array(mb_substr($title, -1), array('.', ','))) {
             if (mb_substr($title, mb_strlen($title) - 3) == '...') {
               $title = mb_substr($title, 0, mb_strlen($title) - 3) 
-                     . html_entity_decode("&hellips;", NULL, 'UTF-8');
+                     . html_entity_decode("&hellip;", NULL, 'UTF-8');
             } else {
               $title = mb_substr($title, 0, -1);
             }
