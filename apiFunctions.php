@@ -18,10 +18,15 @@ function entrez_api($ids, $templates, $db) {
   }
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     report_info("Found match for $db identifier " . $document->Id);
-    $this_template = $templates[array_search($document->Id, $ids)];
-    print "\n - ID = " . $document->Id
-        . "\n - which is ID with key " . array_search($document->Id, $ids)
-        . "\n   I'll prove it: " . $this_template->get('pmid');
+    $template_key = array_search($document->Id, $ids);
+    if (!$template_key) {
+      report_error("Pubmed returned an identifier, " . $document->Id . " that we didn't search for.");
+      var_dump($document);
+      print "\n\n\n\n\n\n\n";
+      var_dump($xml);
+      die;
+    }
+    $this_template = $templates[$template_key];
     
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
