@@ -2582,7 +2582,7 @@ final class Template {
           
         case 'title':
           $title = $this->get($param);
-          $title = straighten_quotes(in_array(mb_substr($title, -1), array('.', ',')) ? mb_substr($title, 0, -1) : $title);
+          $title = straighten_quotes($title);
           if ((   mb_substr($title, 0, 1) === '"'
                && mb_substr($title, -1)   === '"'
                && mb_substr_count($title, '"') == 2)
@@ -2607,6 +2607,13 @@ final class Template {
                $this->add_if_new('title-link', $matches[1]);
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
              }
+          }
+          if (in_array(mb_substr($title, -1), array('.', ','))) {
+            if (mb_substr($title, mb_strlen($title) - 3) == '...') {
+              $title = mb_substr($title, 0, mb_strlen($title) - 3) . chr(133); // Ellipsis
+            } else {
+              $title = mb_substr($title, 0, -1);
+            }
           }
           $this->set($param, $title);
           if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
