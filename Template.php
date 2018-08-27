@@ -2570,6 +2570,19 @@ final class Template {
           $this->change_name_to('Cite journal', FALSE);
           return;
           
+        case 'publisher':
+          $publisher = strtolower($this->get($param));
+          foreach (NON_PUBLISHERS as $not_publisher) {
+            if (strpos($publisher, $not_publisher) !== FALSE) {
+              $this->forget($param);
+              return;
+            }
+          }
+          if (str_replace(array('[', ' ', ']'), '', $publisher) == 'google') {
+            $this->forget($param);
+          }
+          return;
+          
         case 'quotes':
           switch(strtolower(trim($this->get($param)))) {
             case 'yes': case 'y': case 'true': case 'no': case 'n': case 'false': $this->forget($param);

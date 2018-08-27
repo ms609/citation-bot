@@ -241,6 +241,15 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('{{Cite journal| journal=My Journal| issn=1357-4321 }}', $prepared->parsed_text());
   }
+    
+  public function testPublisherRemoval() {
+    foreach (array('Google News Archive', '[[Google]]', 'Google News',
+                   'Google.com', '[[Google News]]') as $publisher) {
+      $text = "{{cite journal | publisher = $publisher}}";
+      $prepared = $this->prepare_citation($text);
+      $this->assertNull($prepared->get('publisher'));
+    }
+  }
 
   public function testRemoveWikilinks() {
     $expanded = $this->process_citation("{{Cite journal|journal=[[Pure Evil]]}}");
