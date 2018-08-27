@@ -2578,7 +2578,7 @@ final class Template {
               return;
             }
           }
-          if ($publisher == 'google') {
+          if (str_replace(array('[', ' ', ']'), '', $publisher) == 'google') {
             $this->forget($param);
           }
           return;
