@@ -239,7 +239,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     
     $text = "{{Cite web | Journal=My Journal| issn=1357-4321 | publisher=Unwarranted }}";
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('{{Cite journal| journal=My Journal| issn=1357-4321 }}', $prepared->parsed_text());
+    $this->assertEquals('{{Cite journal | journal=My Journal| issn=1357-4321 }}', $prepared->parsed_text());
   }
 
   public function testRemoveWikilinks() {
