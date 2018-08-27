@@ -2976,6 +2976,7 @@ final class Template {
     $ret = $this->get($name);
     $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
     $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
+    $ret = str_replace('\xc2\xa0', ' ', $ret); // Replace non-breaking with breaking spaces, which are trimmable
     $ret = trim($ret);
     return ($ret ? $ret : FALSE);
   }
