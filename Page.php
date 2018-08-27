@@ -199,7 +199,7 @@ class Page {
     $this->replace_object($comments);
     $this->replace_object($nowiki);
 
-    return strcasecmp($this->text, $this->start_text) != 0;
+    return strcmp($this->text, $this->start_text) != 0; // we often just fix Journal caps
   }
 
   public function edit_summary() {
