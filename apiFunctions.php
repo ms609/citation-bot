@@ -153,6 +153,11 @@ function arxiv_api($ids, $templates) {
 
     if ($entry->arxivjournal_ref) {
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
+      $arxiv_journal=FALSE;
+      $arxiv_volume=FALSE;
+      $arxiv_issue=FALSE;
+      $arxiv_pages=FALSE;
+      $arxiv_year=FALSE;
       // JournalVolume:Pages,Year
       if (preg_match("~^([a-zA-ZÀ-ÿ \.]+)([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+),([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
         $arxiv_journal=$matches[1];
@@ -172,22 +177,25 @@ function arxiv_api($ids, $templates) {
         $arxiv_pages=$matches[3];
         $arxiv_year=$matches[4];
       // Journal, Volume:Pages, Year
-      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), XXXXX ([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+), ([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), ([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+), ([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
         $arxiv_journal=$matches[1];
         $arxiv_volume=$matches[2];
         $arxiv_pages=$matches[3];
         $arxiv_year=$matches[4];
+      // Journal Volume (issue), Pages (year)   // Allow up to three didgets in issue to avoid years
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), ([0-9]+) \(([0-9][0-9]?[0-9]?)\), ([0-9]+[\-]+[0-9]+|[0-9]+) \(([12][0-9][0-9][0-9])\)$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_issue=$matches[3];
+        $arxiv_pages=$matches[4];
+        $arxiv_year=$matches[5];
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
-          trigger_error("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+          trigger_error("Unexpected data found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
         } else {
-          report_warning("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+          report_info("Unexpected data found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
         }
-        $arxiv_journal=FALSE;
-        $arxiv_volume=FALSE;
-        $arxiv_pages=FALSE;
-        $arxiv_year=FALSE;
       }
       if ($arxiv_journal) { // if no journal then doomed
         if ($arxiv_year) {
@@ -206,6 +214,9 @@ function arxiv_api($ids, $templates) {
         }
         if ($arxiv_volume) {
           $this_template->add_if_new("volume", $arxiv_volume, 'arxiv');
+        }
+        if ($arxiv_issue) {
+          $this_template->add_if_new("issue", $arxiv_issue, 'arxiv');
         }
         $this_template->add_if_new("journal", wikify_external_text($arxiv_journal), 'arxiv');
         $this_template->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
