@@ -85,4 +85,5 @@ if ($category) {
   echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
 html_echo(' # # #</pre></body></html>', "\n");
+ob_end_flush(); 
 exit(0);

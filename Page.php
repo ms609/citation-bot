@@ -97,12 +97,16 @@ class Page {
       if ($templates[$i]->has($identifier)
         && !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {
           $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
-          $templates[$i]->record_api_usage($api, $identifier);
         }
       }
     }
     $api_function = 'query_' . $identifier . '_api';
     $api_function($ids, $templates);
+    
+    foreach (array_keys($ids) as $i) {
+      // Record this afterwards so we don't block the api_function itself
+      $templates[$i]->record_api_usage($api, $identifier);
+    }
   }
   
   public function expand_text() {
@@ -199,7 +203,7 @@ class Page {
     $this->replace_object($comments);
     $this->replace_object($nowiki);
 
-    return strcasecmp($this->text, $this->start_text) != 0;
+    return strcmp($this->text, $this->start_text) != 0; // we often just fix Journal caps
   }
 
   public function edit_summary() {

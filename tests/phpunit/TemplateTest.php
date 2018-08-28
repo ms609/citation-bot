@@ -232,14 +232,23 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
 
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
-    $text = "{{Cite web | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01}}";
+    $text = "{{Cite web | title=Ellipsis... | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01}}";
     $prepared = $this->prepare_citation($text);
     // ISSN should be retained when journal is originally present
-    $this->assertEquals('{{Cite journal| pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $prepared->parsed_text());
+    $this->assertEquals('{{Cite journal | title=Ellipsis… | pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $prepared->parsed_text());
     
     $text = "{{Cite web | Journal=My Journal| issn=1357-4321 | publisher=Unwarranted }}";
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('{{Cite journal| journal=My Journal| issn=1357-4321 }}', $prepared->parsed_text());
+    $this->assertEquals('{{Cite journal | journal=My Journal| issn=1357-4321 }}', $prepared->parsed_text());
+  }
+    
+  public function testPublisherRemoval() {
+    foreach (array('Google News Archive', '[[Google]]', 'Google News',
+                   'Google.com', '[[Google News]]') as $publisher) {
+      $text = "{{cite journal | publisher = $publisher}}";
+      $prepared = $this->prepare_citation($text);
+      $this->assertNull($prepared->get('publisher'));
+    }
   }
 
   public function testRemoveWikilinks() {
@@ -1035,22 +1044,13 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('Strategic Acupuncture', $prepared->get('title'));  
   }
-    
+  
   public function testTrimResearchGateETC() {
     $want = 'https://www.researchgate.net/publication/320041870';
-    $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870}}';
+    $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals($want, $prepared->get('url'));
-    $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals($want, $prepared->get('url'));
-    $text = '{{cite journal|url=https://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals($want, $prepared->get('url'));
-    $text = '{{cite journal|url=http://www.researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals($want, $prepared->get('url'));
-    $text = '{{cite journal|url=http://researchgate.net/publication/320041870_EXTRA_STUFF_ON_END}}';
+    $text = '{{cite journal|url=https://www.researchgate.net/profile/hello_user-person/publication/320041870_EXTRA_STUFF_ON_EN}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals($want, $prepared->get('url'));
 
@@ -1058,7 +1058,7 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('https://www.academia.edu/123456', $prepared->get('url')); 
   }
-  
+ 
   public function testDoiValidation() {
     $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013}}';
     $prepared = $this->prepare_citation($text);
