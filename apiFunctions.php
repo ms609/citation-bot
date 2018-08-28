@@ -172,14 +172,18 @@ function arxiv_api($ids, $templates) {
         $arxiv_pages=$matches[3];
         $arxiv_year=$matches[4];
       // Journal, Volume:Pages, Year
-      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), ([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+), \(([12][0-9][0-9][0-9])\)$~u", $journal_data, $matches)) {
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), XXXXX ([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+), ([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
         $arxiv_journal=$matches[1];
         $arxiv_volume=$matches[2];
         $arxiv_pages=$matches[3];
         $arxiv_year=$matches[4];
       // Future formats -- print diagnostic message
       } else {
-        report_error("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+        if (getenv('TRAVIS')) {
+          trigger_error("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+        } else {
+          report_warning("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+        }
         $arxiv_journal=FALSE;
         $arxiv_volume=FALSE;
         $arxiv_pages=FALSE;
