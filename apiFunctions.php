@@ -197,7 +197,7 @@ function arxiv_api($ids, $templates) {
         if ($arxiv_volume) {
           $this_template->add_if_new("volume", $arxiv_volume, 'arxiv');
         }
-        $this_template->add_if_new("journal", wikify_external_text($journal_data), 'arxiv');
+        $this_template->add_if_new("journal", wikify_external_text($arxiv_journal), 'arxiv');
         $this_template->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
       }
     } else {
