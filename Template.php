@@ -1156,24 +1156,75 @@ final class Template {
       $this->add_if_new("doi", (string) $xml->entry->arxivdoi);
 
       if ($xml->entry->arxivjournal_ref) {
-        $journal_data = (string) $xml->entry->arxivjournal_ref;
-        if (preg_match("~,(\(?([12]\d{3})\)?)[^\n\r0-9]*?$~u", $journal_data, $match)) {
-          $journal_data = str_replace($match[1], "", $journal_data);
-          $this->add_if_new("year", $match[1]);
+      $journal_data = trim((string) $xml->entry->arxivjournal_ref); // this is human readble text
+      $arxiv_journal=FALSE;
+      $arxiv_volume=FALSE;
+      $arxiv_issue=FALSE;
+      $arxiv_pages=FALSE;
+      $arxiv_year=FALSE;
+      // JournalVolume:Pages,Year
+      if (preg_match("~^([a-zA-ZÀ-ÿ \.]+)([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+),([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[3];
+        $arxiv_year=$matches[4];
+      // Journal Volume (Year) Pages
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \(([12][0-9][0-9][0-9])\) ([0-9]+[\-]+[0-9]+|[0-9]+)$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_year=$matches[3];
+        $arxiv_pages=$matches[4];
+      // Journal, Volume, Pages (Year)
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), ([0-9]+), ([0-9]+[\-]+[0-9]+|[0-9]+) \(([12][0-9][0-9][0-9])\)$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[3];
+        $arxiv_year=$matches[4];
+      // Journal, Volume:Pages, Year
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), ([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+), ([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[3];
+        $arxiv_year=$matches[4];
+      // Journal Volume (issue), Pages (year)   // Allow up to three didgets in issue to avoid years
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \(([0-9][0-9]?[0-9]?)\), ([0-9]+[\-]+[0-9]+|[0-9]+) \(([12][0-9][0-9][0-9])\)$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_issue=$matches[3];
+        $arxiv_pages=$matches[4];
+        $arxiv_year=$matches[5];
+      // Future formats -- print diagnostic message
+      } else {
+        if (getenv('TRAVIS')) {
+          trigger_error("Unexpected data found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+        } else {
+          report_info("Unexpected data found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
         }
-        if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
-          $journal_data = str_replace($match[0], "", $journal_data);
-          $this->add_if_new("pages", str_replace("--", REGEXP_EN_DASH, $match[0]));
-        }
-        if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
-          $this->add_if_new("volume", $match[1]);
-          if (isset($match[2])) {
-            $this->add_if_new("issue", $match[2]);
+      }
+      if ($arxiv_journal) { // if no journal then doomed
+        if ($arxiv_year) {
+          $current_year = $this_template->get_without_comments_and_placeholders('year');
+          if (!$current_year
+          ||  (preg_match('~\d{4}~', $current_year) && $current_year < $arxiv_year)) {
+            if ($this_template->has('date')) {
+              $this_template->rename('date', 'year',$arxiv_year);
+            } else {
+              $this_template->add('year',$arxiv_year);
+            }
           }
-          $journal_data = preg_replace("~[\s:,;]*$~", "",
-                  str_replace($match[-0], "", $journal_data));
         }
-        $this->add_if_new("journal", wikify_external_text($journal_data));
+        if ($arxiv_pages) {
+           $this_template->add_if_new("pages", str_replace("--", REGEXP_EN_DASH, $arxiv_pages), 'arxiv');
+        }
+        if ($arxiv_volume) {
+          $this_template->add_if_new("volume", $arxiv_volume, 'arxiv');
+        }
+        if ($arxiv_issue) {
+          $this_template->add_if_new("issue", $arxiv_issue, 'arxiv');
+        }
+        $this_template->add_if_new("journal", wikify_external_text($arxiv_journal), 'arxiv');
+        $this_template->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
+      }
       } else {
         $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       }
