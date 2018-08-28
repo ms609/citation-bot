@@ -179,7 +179,7 @@ function arxiv_api($ids, $templates) {
         $arxiv_year=$matches[4];
       // Future formats -- print diagnostic message
       } else {
-        report_warning("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+        report_error("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
         $arxiv_journal=FALSE;
         $arxiv_volume=FALSE;
         $arxiv_pages=FALSE;
