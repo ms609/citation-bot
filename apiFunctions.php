@@ -152,7 +152,7 @@ function arxiv_api($ids, $templates) {
     $this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv');
 
     if ($entry->arxivjournal_ref) {
-      $journal_data = (string) $entry->arxivjournal_ref; // this is human readble text
+      $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
       // JournalVolume:Pages,Year
       if (preg_match("~^([a-zA-ZÀ-ÿ \.]+)([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+),([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
         $arxiv_journal=$matches[1];
