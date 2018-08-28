@@ -1029,7 +1029,10 @@ ER -  }}';
     $text = '{{cite journal |url=http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.923.345&rep=rep1&type=pdf}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('10.1.1.923.345', $prepared->get('citeseerx'));
-  
+    $text = '{{cite journal |url=http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.923.345}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('10.1.1.923.345', $prepared->get('citeseerx'));
+ 
   }
     
   public function testStripPDF() {
