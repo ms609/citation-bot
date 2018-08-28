@@ -166,30 +166,28 @@ function arxiv_api($ids, $templates) {
         $arxiv_year=$matches[4];
         // Future formats -- print diagnostic message
       } else {
-         report_info("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+        report_info("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
         $arxiv_journal=FALSE;
         $arxiv_volume=FALSE;
         $arxiv_pages=FALSE;
         $arxiv_year=FALSE;
       }
-      if ($arxiv_year) {
-        $current_year = $this_template->get_without_comments_and_placeholders('year');
-        if (!$current_year
-        ||  (preg_match('~\d{4}~', $current_year) && $current_year < $arxiv_year)) {
-          $this_template->add('year', $arxiv_year);
+      if ($arxiv_journal) { // if no journal then doomed
+        if ($arxiv_year) {
+          $current_year = $this_template->get_without_comments_and_placeholders('year');
+          if (!$current_year
+          ||  (preg_match('~\d{4}~', $current_year) && $current_year < $arxiv_year)) {
+            $this_template->add('year', $arxiv_year);
+          }
         }
-      }
-      if ($arxiv_pages) {
-        $this_template->add_if_new("pages", str_replace("--", REGEXP_EN_DASH, $arxiv_pages), 'arxiv');
-      }
-      if ($arxiv_volume) {
-        $this_template->add_if_new("volume", $arxiv_volume, 'arxiv');
-      }
-      if ($this_template->has('publisher') && $journal_data) {
-        $this_template->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
-      }
-      if ($arxiv_journal) {
+        if ($arxiv_pages) {
+           $this_template->add_if_new("pages", str_replace("--", REGEXP_EN_DASH, $arxiv_pages), 'arxiv');
+        }
+        if ($arxiv_volume) {
+          $this_template->add_if_new("volume", $arxiv_volume, 'arxiv');
+        }
         $this_template->add_if_new("journal", wikify_external_text($journal_data), 'arxiv');
+        $this_template->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
       }
     } else {
       $this_template->add_if_new("year", date("Y", strtotime((string)$entry->published)), 'arxiv');
