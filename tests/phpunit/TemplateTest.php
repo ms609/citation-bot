@@ -1035,7 +1035,7 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('Strategic Acupuncture', $prepared->get('title'));  
   }
-    
+  
   public function testTrimResearchGateETC() {
     $want = 'https://www.researchgate.net/publication/320041870';
     $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup}}';
@@ -1049,7 +1049,7 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('https://www.academia.edu/123456', $prepared->get('url')); 
   }
-  
+ 
   public function testDoiValidation() {
     $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013}}';
     $prepared = $this->prepare_citation($text);
