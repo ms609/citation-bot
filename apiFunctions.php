@@ -147,14 +147,31 @@ function arxiv_api($ids, $templates) {
     if ($entry->arxivjournal_ref) {
       $journal_data = (string) $entry->arxivjournal_ref;
       // JournalVolume:Pages,Year
-      // if (preg_match("~^([a-zA-ZÀ-ÿ \.]+)([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+),([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
+      if (preg_match("~^([a-zA-ZÀ-ÿ \.]+)([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+),([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[3];
+        $arxiv_year=$matches[4];
       // Journal Volume (Year) Pages
-      // elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \(([12][0-9][0-9][0-9])\) ([0-9]+[\-]+[0-9]+|[0-9]+)$~u", $journal_data, $matches)) {
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \(([12][0-9][0-9][0-9])\) ([0-9]+[\-]+[0-9]+|[0-9]+)$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_year=$matches[3];
+        $arxiv_pages=$matches[4];
       // Journal, Volume, Pages (Year)
-      // elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), ([0-9]+), ([0-9]+[\-]+[0-9]+|[0-9]+) \(([12][0-9][0-9][0-9])\)$~u", $journal_data, $matches)) {
-      // Future formats -- print diagnostic message
-      // else {
-      // }
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), ([0-9]+), ([0-9]+[\-]+[0-9]+|[0-9]+) \(([12][0-9][0-9][0-9])\)$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[3];
+        $arxiv_year=$matches[4];
+        // Future formats -- print diagnostic message
+      } else {
+         report_info("Unexpected date found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+        $arxiv_journal=NULL;
+        $arxiv_volume=NULL;
+        $arxiv_pages=NULL;
+        $arxiv_year=NULL;
+      }
       if (preg_match("~(, *\(?([12]\d{3})\)?)[^\n\r0-9]*?$~u", $journal_data, $match)) {
         $journal_data = str_replace($match[1], "", $journal_data);
         $current_year = $this_template->get_without_comments_and_placeholders('year');
