@@ -146,10 +146,15 @@ function arxiv_api($ids, $templates) {
 
     if ($entry->arxivjournal_ref) {
       $journal_data = (string) $entry->arxivjournal_ref;
-      // Three formats
       // JournalVolume:Pages,Year
+      // if (preg_match("~^([a-zA-ZÀ-ÿ \.]+)([0-9]+):([0-9]+[\-]+[0-9]+|[0-9]+),([12][0-9][0-9][0-9])$~u", $journal_data, $matches)) {
       // Journal Volume (Year) Pages
+      // elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \(([12][0-9][0-9][0-9])\) ([0-9]+[\-]+[0-9]+|[0-9]+)$~u", $journal_data, $matches)) {
       // Journal, Volume, Pages (Year)
+      // elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), ([0-9]+), ([0-9]+[\-]+[0-9]+|[0-9]+) \(([12][0-9][0-9][0-9])\)$~u", $journal_data, $matches)) {
+      // Future formats -- print diagnostic message
+      // else {
+      // }
       if (preg_match("~(, *\(?([12]\d{3})\)?)[^\n\r0-9]*?$~u", $journal_data, $match)) {
         $journal_data = str_replace($match[1], "", $journal_data);
         $current_year = $this_template->get_without_comments_and_placeholders('year');
