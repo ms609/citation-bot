@@ -183,7 +183,7 @@ function arxiv_api($ids, $templates) {
         $arxiv_pages=$matches[3];
         $arxiv_year=$matches[4];
       // Journal Volume (issue), Pages (year)   // Allow up to three didgets in issue to avoid years
-      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), ([0-9]+) \(([0-9][0-9]?[0-9]?)\), ([0-9]+[\-]+[0-9]+|[0-9]+) \(([12][0-9][0-9][0-9])\)$~u", $journal_data, $matches)) {
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \(([0-9][0-9]?[0-9]?)\), ([0-9]+[\-]+[0-9]+|[0-9]+) \(([12][0-9][0-9][0-9])\)$~u", $journal_data, $matches)) {
         $arxiv_journal=$matches[1];
         $arxiv_volume=$matches[2];
         $arxiv_issue=$matches[3];
