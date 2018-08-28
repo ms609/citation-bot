@@ -1193,6 +1193,12 @@ final class Template {
         $arxiv_issue=$matches[3];
         $arxiv_pages=$matches[4];
         $arxiv_year=$matches[5];
+      // Journal volume (Year), ArticleID, #OfPages pages
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \(([12][0-9][0-9][0-9])\), ([0-9]+), ([0-9]+) pages$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_year=$matches[3];
+        $arxiv_pages=$matches[4]; // Not exactly pages
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
