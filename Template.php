@@ -544,7 +544,7 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
-        if (( $this->blank("pages") && $this->blank("page") && $this->blank("pp")  && $this->blank("p"))
+        if (( $this->blank("pages") && $this->blank("page") && $this->blank("pp")  && $this->blank("p") && $this->blank('at'))
                 || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
                 || (strpos($value, chr(2013)) || (strpos($value, '-'))
                   && !strpos($this->get('pages'), chr(2013))
@@ -557,6 +557,7 @@ final class Template {
             if ($param_name !== "page")$this->forget("page");
             if ($param_name !== "pp")$this->forget("pp");
             if ($param_name !== "p")$this->forget("p");
+            if ($param_name !== "at")$this->forget("at");
             $param_key = $this->get_param_key($param_name);
             if (!is_null($param_key)) {
               $this->param[$param_key]->val = sanitize_string($value); // Minimize template changes (i.e. location) when upgrading from page=123 to pages=123-456
