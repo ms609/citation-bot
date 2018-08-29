@@ -82,7 +82,7 @@ class WikipediaBot {
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
     $request->signRequest(new HmacSha1(), $this->consumer, $this->token);
     $authenticationHeader = $request->toHeader();
-    
+   
     try {
       switch (strtolower($method)) {
         case 'get':
@@ -91,8 +91,9 @@ class WikipediaBot {
             CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
-          
+          set_time_limit(45);
           $ret = @json_decode($data = curl_exec($this->ch));
+          set_time_limit(120);
           if (!$data) {
             trigger_error("Curl error: " . echoable(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
@@ -108,8 +109,9 @@ class WikipediaBot {
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
-          
+          set_time_limit(45);
           $ret = @json_decode($data = curl_exec($this->ch));
+          set_time_limit(120);
           if ( !$data ) {
             report_warning("Curl error: " . echoable(curl_error($this->ch)));
             exit(0);
@@ -244,6 +246,7 @@ class WikipediaBot {
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
+    set_time_limit(120);
     return $list;
   }
   
@@ -277,6 +280,7 @@ class WikipediaBot {
       }
       $vars["eicontinue"] = isset($res->continue) ? (string) $res->continue->eicontinue : FALSE;
     } while ($vars["eicontinue"]);
+    set_time_limit(120);
     return $list;
   }
 
@@ -327,7 +331,7 @@ class WikipediaBot {
       }
       $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
     } while ($vars["apfrom"]);
-    set_time_limit(45);
+    set_time_limit(120);
     return $page_titles;
   }
 
