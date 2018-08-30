@@ -59,7 +59,8 @@ class WikipediaBot {
         CURLOPT_HTTPGET => TRUE, // Reset to default GET
         CURLOPT_RETURNTRANSFER => TRUE,
         
-        CURLOPT_CONNECTTIMEOUT_MS => 1200,
+        CURLOPT_CONNECTTIMEOUT => 2,
+        CURLOPT_TIMEOUT => 20,
         
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
