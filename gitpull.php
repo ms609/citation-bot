@@ -1,4 +1,6 @@
 <?php
+$output = [];
+exec ("git fetch --all", $output);
 exec ("git reset --hard", $output);
 exec ("git pull", $output, $return_var);
 ?><pre>
