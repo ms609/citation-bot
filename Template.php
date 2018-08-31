@@ -553,6 +553,8 @@ final class Template {
                   && !strpos($this->get('pages'), '-')
                   && !strpos($this->get('pages'), '&ndash;'))
         ) {
+            $all_page_parameters = $this->get("pages") . $this->get("page") . $this->get("pp") . $this->get("p");
+            if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
             if ($param_name !== "page")$this->forget("page");
             if ($param_name !== "pp")$this->forget("pp");
