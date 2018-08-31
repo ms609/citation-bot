@@ -44,6 +44,11 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys ', 
           /* The above will be automatically updated to alphabetical order */ 
 );
+eLife  eJournal e-Journal 
+iPhone bioRxiv eNeuro engrXiv ePlasty 
+ePrints eVolo hprints mAbs mBio mSphere mSystems
+
+
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
           ' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', ' Embo J ', 
