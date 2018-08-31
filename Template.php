@@ -2292,7 +2292,7 @@ final class Template {
   foreach ($this->param as $p) {
     ++$i;
 
-    if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list)) {
+    if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list) && ($p->param !== strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
      
       report_modification("Unrecognised parameter " . echoable($p->param) . " ");
       $mistake_id = array_search($p->param, $mistake_keys);
