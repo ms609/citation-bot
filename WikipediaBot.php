@@ -66,7 +66,8 @@ class WikipediaBot {
         CURLOPT_COOKIEFILE => 'cookie.txt',
         CURLOPT_COOKIEJAR => 'cookiejar.txt',
         CURLOPT_URL => API_ROOT,
-        CURLOPT_USERAGENT => 'Citation bot'
+        CURLOPT_USERAGENT => 'Citation bot',
+        CURLOPT_BUFFERSIZE => 524288  // 512kB
       ]);
   }
   
