@@ -93,12 +93,14 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
           set_time_limit(45);
-          $ret = @json_decode($data = curl_exec($this->ch));
-          set_time_limit(120);
+          $data = curl_exec($this->ch);
           if (!$data) {
             trigger_error("Curl error: " . echoable(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
           }
+          $ret = @json_decode($data);
+          unset($data);
+          set_time_limit(120);
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
             return $this->fetch($params, $method);
           }
@@ -111,26 +113,27 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
           set_time_limit(45);
-          $ret = @json_decode($data = curl_exec($this->ch));
-          set_time_limit(120);
+          $data = curl_exec($this->ch);
           if ( !$data ) {
             report_warning("Curl error: " . echoable(curl_error($this->ch)));
             exit(0);
           }
-          
+          $ret = @json_decode($data);
+          unset($data);
+          set_time_limit(120);    
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
             return $this->fetch($params, $method);
           }
-          
           return ($this->ret_okay($ret)) ? $ret : FALSE;
           
         report_warning("Unrecognized method."); // @codecov ignore - will only be hit if error in our code
-        return NULL;
+        return FALSE;
       }
     } catch(OAuthException $E) {
       report_warning("Exception caught!\n");
       report_info("Response: ". $E->lastResponse);
     }
+    return FALSE;
   }
   
   public function write_page($page, $text, $editSummary, $lastRevId = NULL, $startedEditing = NULL) {
