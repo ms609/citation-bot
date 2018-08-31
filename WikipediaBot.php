@@ -99,7 +99,6 @@ class WikipediaBot {
             return FALSE;
           }
           $ret = @json_decode($data);
-          unset($data);
           set_time_limit(120);
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
             return $this->fetch($params, $method);
@@ -119,7 +118,6 @@ class WikipediaBot {
             exit(0);
           }
           $ret = @json_decode($data);
-          unset($data);
           set_time_limit(120);    
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
             return $this->fetch($params, $method);
