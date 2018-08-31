@@ -2625,13 +2625,12 @@ final class Template {
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
              }
           }
-          if (in_array(mb_substr($title, -1), array('.', ','))) {
-            if (mb_substr($title, mb_strlen($title) - 3) == '...') {
-              $title = mb_substr($title, 0, mb_strlen($title) - 3) 
-                     . html_entity_decode("&hellip;", NULL, 'UTF-8');
-            } else {
+          if (mb_substr($title, mb_strlen($title) - 3) == '...') {
+            $title = mb_substr($title, 0, mb_strlen($title) - 3) 
+                   . html_entity_decode("&hellip;", NULL, 'UTF-8');
+          }
+          if (in_array(mb_substr($title, -1), array(',',';',':'))) { // Not periods because they are abreviations often
               $title = mb_substr($title, 0, -1);
-            }
           }
           $this->set($param, $title);
           if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
