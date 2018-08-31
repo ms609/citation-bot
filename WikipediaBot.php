@@ -100,6 +100,8 @@ class WikipediaBot {
             return FALSE;
           }
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
+            unset($data);
+            unset($ret);
             return $this->fetch($params, $method);
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
@@ -119,6 +121,8 @@ class WikipediaBot {
           }
           
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+            unset($data);
+            unset($ret);
             return $this->fetch($params, $method);
           }
           
