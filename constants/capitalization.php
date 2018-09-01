@@ -46,8 +46,6 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' ePrints ', ' eVolo ', ' hprints ', ' mAbs ', ' mBio  ', ' mSphere ', ' mSystems '
           /* The above will be automatically updated to alphabetical order */ 
 );
-
-
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
           ' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', ' Embo J ', 
