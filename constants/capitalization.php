@@ -60,6 +60,6 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
           ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys ',   ' Ejournal ', ' E-journal ',
           ' Iphone ', ' Biorxiv ', ' Engrxiv ', ' Eplasty ',
-          ' Eprints ', ' Evolo ', ' Hprints ', ' Mabs ', ' Mbo  ', ' Msphere ', ' Msystems '
+          ' Eprints ', ' Evolo ', ' Hprints ', ' Mabs ', ' Mbio ', ' Msphere ', ' Msystems '
           /* The above will be automatically updated to alphabetical order */ 
 ); 
