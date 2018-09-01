@@ -30,36 +30,32 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', ' U S a ');
 
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Neuroforum ', 
+          ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' bioRxiv ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Neuroforum ', 
           ' Early Modern Japan: an Interdisciplinary Journal ', ' eJournal ', ' e-Journal ', ' eLife ', ' EMBO J ', 
-          ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', 
+          ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', ' engrXiv ', ' ePlasty ',' ePrints ', ' eVolo ', ' hprints ', 
           ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', ' HOAJ biology ', 
-          ' iConference ', ' IFAC-PapersOnLine ', ' ISRN Genetics ', ' JABS : Journal of Applied Biological Sciences ', 
-          ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the IEST ', 
+          ' iConference ', ' IFAC-PapersOnLine ', ' ISRN Genetics ', ' iPhone ', ' JABS : Journal of Applied Biological Sciences ', 
+          ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the IEST ', ' mAbs ', ' mBio  ', ' mSphere ', ' mSystems ', 
           ' Molecular and Cellular Biology ', ' NASA Tech Briefs ', ' Ocean Science Journal : OSJ ', 
           ' PALAIOS ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', 
           ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
-          ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys ',
-          ' iPhone ', ' bioRxiv ', ' engrXiv ', ' ePlasty ',
-          ' ePrints ', ' eVolo ', ' hprints ', ' mAbs ', ' mBio  ', ' mSphere ', ' mSystems '
+          ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys '
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
+          ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Biorxiv ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
           ' Early Modern Japan: An Interdisciplinary Journal ', ' Ejournal ', ' E-journal ', ' Elife ', ' Embo J ', 
-          ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', 
+          ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', ' Engrxiv ', ' Eplasty ',' Eprints ', ' Evolo ', ' Hprints ', 
           ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Hoaj Biology ', 
-          ' Iconference ', ' Ifac-Papersonline ', ' Isrn Genetics ', ' Jabs : Journal of Applied Biological Sciences ', 
-          ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the Iest ', 
+          ' Iconference ', ' Ifac-Papersonline ', ' Isrn Genetics ', ' Iphone ', ' Jabs : Journal of Applied Biological Sciences ', 
+          ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the Iest ', ' Mabs ', ' Mbio ', ' Msphere ', ' Msystems ', 
           ' Molecular and Cellular Biology ', ' Nasa Tech Briefs ', ' Ocean Science Journal : Osj ', 
           ' Palaios ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus a ', ' The Embo Journal ', ' Time Out London ', 
           ' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
-          ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys ',
-          ' Iphone ', ' Biorxiv ', ' Engrxiv ', ' Eplasty ',
-          ' Eprints ', ' Evolo ', ' Hprints ', ' Mabs ', ' Mbio ', ' Msphere ', ' Msystems '
+          ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys '
           /* The above will be automatically updated to alphabetical order */ 
 ); 
