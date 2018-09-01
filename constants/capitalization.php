@@ -41,12 +41,11 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', 
           ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
-          ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys ', 
+          ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys ',   ' eJournal ', ' e-Journal ',
+          ' iPhone ', ' bioRxiv ', ' engrXiv ', ' ePlasty ',
+          ' ePrints ', ' eVolo ', ' hprints ', ' mAbs ', ' mBio  ', ' mSphere ', ' mSystems '
           /* The above will be automatically updated to alphabetical order */ 
 );
-eLife  eJournal e-Journal 
-iPhone bioRxiv eNeuro engrXiv ePlasty 
-ePrints eVolo hprints mAbs mBio mSphere mSystems
 
 
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -61,6 +60,8 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus a ', ' The Embo Journal ', ' Time Out London ', 
           ' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
-          ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys ', 
+          ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys ',   ' Ejournal ', ' E-journal ',
+          ' Iphone ', ' Biorxiv ', ' Engrxiv ', ' Eplasty ',
+          ' Eprints ', ' Evolo ', ' Hprints ', ' Mabs ', ' Mbo  ', ' Msphere ', ' Msystems '
           /* The above will be automatically updated to alphabetical order */ 
 ); 
