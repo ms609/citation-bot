@@ -31,7 +31,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Neuroforum ', 
-          ' Early Modern Japan: an Interdisciplinary Journal ', ' eLife ', ' EMBO J ', 
+          ' Early Modern Japan: an Interdisciplinary Journal ', ' eJournal ', ' e-Journal ', ' eLife ', ' EMBO J ', 
           ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', 
           ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', ' HOAJ biology ', 
           ' iConference ', ' IFAC-PapersOnLine ', ' ISRN Genetics ', ' JABS : Journal of Applied Biological Sciences ', 
@@ -41,14 +41,14 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', 
           ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
-          ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys ',   ' eJournal ', ' e-Journal ',
+          ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys ',
           ' iPhone ', ' bioRxiv ', ' engrXiv ', ' ePlasty ',
           ' ePrints ', ' eVolo ', ' hprints ', ' mAbs ', ' mBio  ', ' mSphere ', ' mSystems '
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-Neuroforum ', 
-          ' Early Modern Japan: An Interdisciplinary Journal ', ' Elife ', ' Embo J ', 
+          ' Early Modern Japan: An Interdisciplinary Journal ', ' Ejournal ', ' E-journal ', ' Elife ', ' Embo J ', 
           ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', 
           ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Hoaj Biology ', 
           ' Iconference ', ' Ifac-Papersonline ', ' Isrn Genetics ', ' Jabs : Journal of Applied Biological Sciences ', 
@@ -58,7 +58,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus a ', ' The Embo Journal ', ' Time Out London ', 
           ' Z/journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
-          ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys ',   ' Ejournal ', ' E-journal ',
+          ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys ',
           ' Iphone ', ' Biorxiv ', ' Engrxiv ', ' Eplasty ',
           ' Eprints ', ' Evolo ', ' Hprints ', ' Mabs ', ' Mbio ', ' Msphere ', ' Msystems '
           /* The above will be automatically updated to alphabetical order */ 
