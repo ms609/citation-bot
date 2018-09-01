@@ -9,6 +9,6 @@ exec ("git fetch --all", $output, $return_var);
     echo "\n<br /> Check that there are no uncommitted changes on the server.";
   }
 } else {
-  echo "Operation successful.";
+  echo "Git Fetch operation successful.";
 }
 ?>
