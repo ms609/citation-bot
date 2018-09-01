@@ -1,5 +1,5 @@
 <?php
-exec ("git pull", $output, $return_var);
+exec ("git fetch --all", $output, $return_var);
 ?><pre>
 <?php foreach($output as $line) print "$line \n"; ?>
 </pre>
