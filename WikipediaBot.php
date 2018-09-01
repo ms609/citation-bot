@@ -59,7 +59,8 @@ class WikipediaBot {
         CURLOPT_HTTPGET => TRUE, // Reset to default GET
         CURLOPT_RETURNTRANSFER => TRUE,
         
-        CURLOPT_CONNECTTIMEOUT_MS => 1200,
+        CURLOPT_CONNECTTIMEOUT => 2,
+        CURLOPT_TIMEOUT => 20,
         
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
@@ -91,13 +92,16 @@ class WikipediaBot {
             CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
-          
+          set_time_limit(45);
           $ret = @json_decode($data = curl_exec($this->ch));
+          set_time_limit(120);
           if (!$data) {
             trigger_error("Curl error: " . echoable(curl_error($this->ch)), E_USER_NOTICE);
             return FALSE;
           }
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
+            unset($data);
+            unset($ret);
             return $this->fetch($params, $method);
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
@@ -108,14 +112,17 @@ class WikipediaBot {
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
-          
+          set_time_limit(45);
           $ret = @json_decode($data = curl_exec($this->ch));
+          set_time_limit(120);
           if ( !$data ) {
             report_warning("Curl error: " . echoable(curl_error($this->ch)));
             exit(0);
           }
           
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+            unset($data);
+            unset($ret);
             return $this->fetch($params, $method);
           }
           
@@ -244,6 +251,7 @@ class WikipediaBot {
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
+    set_time_limit(120);
     return $list;
   }
   
@@ -277,6 +285,7 @@ class WikipediaBot {
       }
       $vars["eicontinue"] = isset($res->continue) ? (string) $res->continue->eicontinue : FALSE;
     } while ($vars["eicontinue"]);
+    set_time_limit(120);
     return $list;
   }
 
@@ -327,7 +336,7 @@ class WikipediaBot {
       }
       $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
     } while ($vars["apfrom"]);
-    set_time_limit(45);
+    set_time_limit(120);
     return $page_titles;
   }
 

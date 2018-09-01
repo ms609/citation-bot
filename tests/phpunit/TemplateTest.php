@@ -128,6 +128,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('1941451', $expanded->get('pmid'));
   }
+   
+  public function testChangeNothing() {
+     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->}}';
+     $expanded = $this->process_page($text);
+     $this->assertEquals($text, $expanded->parsed_text());   
+  }
     
   public function testPmidIsZero() {
       $text = '{{cite journal|pmc=2676591}}';
@@ -1025,6 +1031,14 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('11.2222.44', $prepared->get('jfm'));
     $this->assertNull($prepared->get('url'));
+      
+    $text = '{{cite journal |url=http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.923.345&rep=rep1&type=pdf}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('10.1.1.923.345', $prepared->get('citeseerx'));
+    $text = '{{cite journal |url=http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.923.345}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('10.1.1.923.345', $prepared->get('citeseerx'));
+ 
   }
     
   public function testStripPDF() {
