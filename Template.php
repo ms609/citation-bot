@@ -738,7 +738,8 @@ final class Template {
     if ($doi = extract_doi($url)[1]) {
       if (is_null($url_sent)) {
         if (doi_active($doi)) {
-          if (mb_strpos(strtolower($url), ".pdf") === FALSE) {
+          if ((mb_strpos(strtolower($url), ".pdf") === FALSE) ||   // Below we remove a lot of publisher websites
+               FALSE !== preg_match("~(elsevier\.com)|(springer\.com)|(sciencedirect\.com)|(tandfonline\.com)|(taylorandfrancis\.com)|(wiley\.com)|(sagepub\.com)|(sagepublications\.com)|(scielo\.org)|(scielo\.br)|(degruyter\.com)|(hindawi\.com)|(inderscience\.com)|(cambridge\.org)|(\.oup\.com)|(nature\.com)|(macmillan\.com)|(ieeexplore\.ieee\.org)|(worldscientific\.com)|(iospress\.com)|(iospress\.nl)~u", $url)){
             report_forget("Recognized DOI in URL; dropping URL");
             $this->forget('url');
           }
