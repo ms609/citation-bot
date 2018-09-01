@@ -738,8 +738,10 @@ final class Template {
     if ($doi = extract_doi($url)[1]) {
       if (is_null($url_sent)) {
         if (doi_active($doi)) {
-          report_forget("Recognized DOI in URL; dropping URL");
-          $this->forget('url');
+          if (mb_strpos(strtolower($url), ".pdf") === FALSE) {
+            report_forget("Recognized DOI in URL; dropping URL");
+            $this->forget('url');
+          }
         } else {
           $this->mark_inactive_doi($doi);
         }
