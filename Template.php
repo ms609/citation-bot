@@ -142,7 +142,7 @@ final class Template {
           $this->expand_by_google_books();
         }
       break;
-      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article'
+      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
         $this->expand_by_pubmed(); //partly to try to find DOI
         $this->expand_by_google_books();
         expand_by_jstor($this);
