@@ -2417,6 +2417,7 @@ final class Template {
           if ($this->has($param) && $this->wikiname() == 'cite web') {
             $this->change_name_to('cite arxiv');
           }
+          return;
           
         case 'author': case 'authors':
           if (!$pmatch[2]) {
@@ -2500,6 +2501,7 @@ final class Template {
         
         case 'eprint':
           if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
+          return;
         
         case 'isbn':
           if ($this->lacks('isbn')) return;
