@@ -139,6 +139,13 @@ final class doiToolsTest extends PHPUnit\Framework\TestCase {
     $page->expand_text();
     $this->assertNotNull($page->edit_summary());
   }
+ 
+  public function testArrowAreQuotes() {
+    $text = "This » That";
+    $this->assertEquals($text,straighten_quotes($text));
+    $text = "X«Y»Z";
+    $this->assertEquals('X"Y"Z',straighten_quotes($text));
+  }
   
   public function testMathInTitle() {
     // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
