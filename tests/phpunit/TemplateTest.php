@@ -286,8 +286,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('eJournal', $expanded->get('journal'));
     $expanded = $this->process_citation("{{Cite journal|journal=ejournal}}");
     $this->assertEquals('eJournal', $expanded->get('journal'));
-    $expanded = $this->process_citation("{{Cite journal|journal=EJourNal}}");
-    $this->assertEquals('eJournal', $expanded->get('journal'));
   }
     
   public function testWebsiteAsJournal() {
