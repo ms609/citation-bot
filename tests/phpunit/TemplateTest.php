@@ -1086,12 +1086,12 @@ ER -  }}';
     $this->assertEquals('12', $prepared->get('volume'));
     $text = '{{cite journal|volume = 12(44-33)}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('44-33', $prepared->get('issue'));
+    $this->assertEquals('44–33', $prepared->get('issue'));
     $this->assertEquals('12', $prepared->get('volume'));
     $text = '{{cite journal|volume = 12(44-33)| number=222}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('222', $prepared->get('number'));
-    $this->assertEquals('12(44–33)', $prepared->get('volume'));
+    $this->assertEquals('12(44-33)', $prepared->get('volume'));
   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
