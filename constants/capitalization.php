@@ -31,7 +31,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' bioRxiv ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
-          ' Early Modern Japan: an Interdisciplinary Journal ', ' eJournal ', ' eJournal ', ' eLife ' ' eLife ', ' EMBO J ', 
+          ' Early Modern Japan: an Interdisciplinary Journal ', ' eJournal ', ' eJournal ', ' eLife ', ' eLife ', ' EMBO J ', 
           ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', ' eNeuro ', ' engrXiv ', ' ePlasty ',' ePlasty ',
           ' ePrints ', ' ePrints ', ' eVolo ', ' eVolo ',
           ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', ' HOAJ biology ', ' hprints ', 
