@@ -2667,7 +2667,7 @@ final class Template {
           return;
           
         case 'volume':
-          if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume'))), $matches) {
+          if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches) {
             $possible_volume=$matches[1];
             $possible_issue=$matches[2];
             if ($this->blank('issue') && $this->blank('number')) {
