@@ -2679,7 +2679,7 @@ final class Template {
           }
           return;
         case 'year':
-          if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year')), matches) { // We have more than one dash, must not be range of years.
+          if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
              if ($this->blank('date')) $this->rename('year', 'date');
              $this->forget('year');
              return;
