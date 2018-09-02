@@ -2666,6 +2666,18 @@ final class Template {
           }
           return;
           
+        case 'volume':
+          if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
+            $possible_volume=$matches[1];
+            $possible_issue=$matches[2];
+            if ($this->blank('issue') && $this->blank('number')) {
+              $this->add_if_new('issue',$possible_issue);
+              $this->set('volume',$possible_volume); 
+            } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
+              $this->set('volume',$possible_volume);
+            }               
+          }
+          return;
         case 'year':
           if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
              if ($this->blank('date')) $this->rename('year', 'date');
