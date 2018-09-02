@@ -29,6 +29,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', ' U S a ');
 
+          // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' bioRxiv ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
           ' Early Modern Japan: an Interdisciplinary Journal ', ' eJournal ', ' eJournal ', ' eLife ', ' eLife ', ' EMBO J ', 
