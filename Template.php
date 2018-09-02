@@ -2630,7 +2630,7 @@ final class Template {
           if (mb_substr($title, mb_strlen($title) - 3) == '...') {
             $title = mb_substr($title, 0, mb_strlen($title) - 3) 
                    . html_entity_decode("&hellip;", NULL, 'UTF-8');
-          } elseif (in_array(mb_substr($title, -1), array(',', ';', ':'))) { 
+          } elseif (in_array(mb_substr($title, -1), array(',', ':'))) { 
               // Do not remove periods, which legitimately occur at the end of abreviations
               $title = mb_substr($title, 0, -1);
           }
