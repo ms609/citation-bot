@@ -142,7 +142,7 @@ final class Template {
           $this->expand_by_google_books();
         }
       break;
-      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
+      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
         $this->expand_by_pubmed(); //partly to try to find DOI
         $this->expand_by_google_books();
         expand_by_jstor($this);
@@ -219,7 +219,7 @@ final class Template {
             $this->handle_et_al();
           }
         break;
-        case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation':
+        case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
           echo "\n\n* Expand citation: " . echoable($this->get('title'));
 
           if ($this->use_sici()) {
@@ -249,6 +249,10 @@ final class Template {
           $this->get_open_access_url();
           $this->find_pmid();
           
+          if($this->wikiname() == 'cite document' || $this->wikiname() == 'cite article') {
+            if ($this->has('journal')) $this->name = 'Cite journal';
+          }
+                
           // Convert from journal to book, if there is a unique chapter name or has an ISBN
           if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
             $this->name = 'Cite book';
