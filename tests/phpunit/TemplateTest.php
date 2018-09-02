@@ -1078,6 +1078,21 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('10.1093/acref/9780199204632.001.0001', $prepared->get('doi'));
   }
+    
+  public function testVolumeIssueDemixing() {
+    $text = '{{cite journal|volume = 12(44)}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('44', $prepared->get('issue'));
+    $this->assertEquals('12', $prepared->get('volume'));
+    $text = '{{cite journal|volume = 12(44-33)}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('44-33', $prepared->get('issue'));
+    $this->assertEquals('12', $prepared->get('volume'));
+    $text = '{{cite journal|volume = 12(44-33)| number=222}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('222', $prepared->get('number'));
+    $this->assertEquals('12(44-33)', $prepared->get('volume'));
+  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
