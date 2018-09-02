@@ -245,6 +245,7 @@ function straighten_quotes($str) {
   if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
      (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE)) { // Only replace angle quotes if some of both
      $str = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]~u', '"', $str);                 // Websites tiles: Jobs » Iowa » Cows » Ames
-     return $str;
+  }
+  return $str;
 }
 
