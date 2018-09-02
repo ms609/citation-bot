@@ -243,7 +243,7 @@ function straighten_quotes($str) {
   $str = preg_replace('~&#821[679];|&#x201[89];|[\x{2039}\x{203A}\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[ab]?quo;~u', "'", $str);
   $str = preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
   if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
-      mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE)) { // Only replace angle quotes if some of both
+     (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE)) { // Only replace angle quotes if some of both
      $str = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]~u', '"', $str);                 // Websites tiles: Jobs » Iowa » Cows » Ames
      return $str;
 }
