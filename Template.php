@@ -497,6 +497,7 @@ final class Template {
             }
           }
           $this->forget('issn');
+          $this->forget('class');
           return $this->add($param_name, $value);
         }
         return FALSE;
@@ -593,7 +594,7 @@ final class Template {
         
       case 'class':
         if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === FALSE ) { // Old eprints include class in the ID
-          if ($this->wikiname() === 'citation' || $this->wikiname() === 'cite arxiv') {  // Only relevent for cite arxiv
+          if (($this->wikiname() === 'citation' && $this->blank('journal'))|| $this->wikiname() === 'cite arxiv') {  // Only relevent for cite arxiv
             return $this->add($param_name, sanitize_string($value));
           }
         }
