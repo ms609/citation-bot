@@ -2770,6 +2770,9 @@ final class Template {
          }
       }
     }
+    if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
+      $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
+    }
   }
   
   public function verify_doi() {
