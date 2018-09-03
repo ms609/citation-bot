@@ -606,9 +606,10 @@ final class Template {
         }
         return FALSE;
       
+      case 'eprint':
       case 'arxiv':
-        if ($this->blank($param_name)) {
-          $this->add('arxiv', $value);
+        if ($this->blank('arxiv') && $this->blank('eprint')) {
+          $this->add($param_name, $value);
           return TRUE;
         }
         return FALSE;
