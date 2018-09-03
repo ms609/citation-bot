@@ -325,6 +325,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Cite arxiv', $expanded->name());
   }
   
+  public function testDoNotAddEprintTwice() {
+    $text = '{{Cite arxiv|last=Sussillo|first=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}';
+    $expanded = $this->process_citation($text);
+    $num_of_eprints = substr_count($expanded->parsed_text(),"eprint");
+    $this->assertEquals(1, $num_of_eprints);
+  }
+  
   public function testBrokenDoiDetection() {
     $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
     $expanded = $this->process_citation($text);
