@@ -280,6 +280,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testJournalCapitalization() {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
     $this->assertEquals('Molecular and Cellular Biology', $expanded->get('journal'));
+    $expanded = $this->process_citation("{{Cite journal|journal=eJournal}}");
+    $this->assertEquals('eJournal', $expanded->get('journal'));
+    $expanded = $this->process_citation("{{Cite journal|journal=EJournal}}");
+    $this->assertEquals('eJournal', $expanded->get('journal'));
+    $expanded = $this->process_citation("{{Cite journal|journal=ejournal}}");
+    $this->assertEquals('eJournal', $expanded->get('journal'));
   }
     
   public function testWebsiteAsJournal() {
