@@ -917,7 +917,14 @@ ER -  }}';
     $this->assertEquals('1234', $expanded->get('pages'));
     $this->assertEquals('37', $expanded->get('volume'));
   }
-    
+
+  public function testArxivMore6() {
+    $text = "{{cite arxiv}}";
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("", $expanded, TRUE);  // Make sure that empty string does not crash
+    $this->assertEquals('cite arxiv', $expanded->wikiname());
+  }
+   
   public function testArxivMore7() {
     $text = "{{cite arxiv}}"; // eprint=made up
     $expanded = $this->process_citation($text);
