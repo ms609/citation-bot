@@ -148,7 +148,7 @@ function arxiv_api($ids, $templates) {
     }
     $this_template->add_if_new("title", (string) $entry->title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
-    $this_template->add_if_new("year", substr($entry->published, 0, 4), 'arxiv');
+    $this_templates->add_if_new("year", date("Y", strtotime((string)$entry->published)));
     $this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv');
 
     if ($entry->arxivjournal_ref) {
