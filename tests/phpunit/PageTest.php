@@ -24,7 +24,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
  
   
   public function testHugePage() {
-    $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=Vietnam_War&action=raw');
+    $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=User:AManWithNoPlan/sandbox2&action=raw');
     $page = new TestPage();
     $page->parse_text($text);
     // We do get to here
