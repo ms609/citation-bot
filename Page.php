@@ -270,6 +270,7 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
+    $match = array();
     while(preg_match($regexp, $text, $match) ) {
       // $obj = new $class();
       // $obj->parse_text($match[0]);
@@ -285,6 +286,7 @@ class Page {
       fwrite(STDERR, "\n ". $match[0] . " \n");
       $text = mb_substr($text,0,$pos) . $replacement_text . mb_substr($text,$pos+$length,-1);
       fwrite(STDERR, "\n Made new text \n");
+      unset($match);
       // $objects[] = $obj;
     }
     $this->text = $text;
