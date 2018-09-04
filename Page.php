@@ -270,7 +270,11 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    while(preg_match($regexp, $text, $match)  && ($i < 5)) {
+    ob_end_flush() ;
+    ob_end_flush() ;
+    ob_end_flush() ;
+    ob_end_flush() ;
+    while(preg_match($regexp, $text, $match) ) {
       // $obj = new $class();
       // $obj->parse_text($match[0]);
       if ($treat_identical_separately) {
@@ -278,9 +282,10 @@ class Page {
       } else {
         $explode_limit = 2;
       }
-      $replacement_text = sprintf($placeholder_text, $i++);
+      $replacement_text  = sprintf($placeholder_text, $i++);
       $pos = mb_strpos($text, $match[0]);
       $length = mb_strlen($match[0]);
+      echo "\n $replacement_text $pos $length \n";
       $new_text = mb_substr($text,0,$pos) . $replacement_text . mb_substr($text,$pos+$length,-1);
       unset($text);
       $text=$new_text;
