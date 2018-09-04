@@ -269,7 +269,7 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    while(preg_match($regexp, $text, $match) ) {
+    while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
       fwrite(STDERR, "\n replacing text $i \n");
@@ -279,7 +279,7 @@ class Page {
       if (137 === $i ) fwrite(STDERR, $text);
       $objects[] = $obj;
     }
-    $this->text = trim($text);
+    $this->text = $text;
     return $objects;
   }
 
