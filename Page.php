@@ -264,7 +264,7 @@ class Page {
   
   public function extract_object ($class) {
     $i = 0;
-    $text = iconv('', 'utf-8', $this->text));
+    $text = iconv('', 'utf-8', $this->text);
     unset($this->text); // Save memory
     $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
