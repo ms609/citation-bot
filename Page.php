@@ -272,6 +272,7 @@ class Page {
     $objects = array();
     $match = array();
     while(preg_match($regexp, $text, $match) ) {
+       fwrite(STDERR, "\n Got new match \n");
       // $obj = new $class();
       // $obj->parse_text($match[0]);
       if ($treat_identical_separately) {
