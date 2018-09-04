@@ -284,6 +284,7 @@ class Page {
       fwrite(STDERR, "\n $replacement_text $pos $length \n");
       fwrite(STDERR, "\n ". $match[0] . " \n");
       $text = mb_substr($text,0,$pos) . $replacement_text . mb_substr($text,$pos+$length,-1);
+      fwrite(STDERR, "\n Made new text \n");
       // $objects[] = $obj;
     }
     $this->text = $text;
