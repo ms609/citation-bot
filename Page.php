@@ -281,7 +281,7 @@ class Page {
       $replacement_text = sprintf($placeholder_text, $i++);
       $pos = mb_strpos($text, $match[0]);
       $length = mb_strlen($match[0]);
-      $text  = mb_substr_replace($text, $replacement_text, $pos, $length);
+      $text = mb_substr($text,0,$pos) . $replacement_text . mb_substr($text,$pos+$length,-1);
 
       // $objects[] = $obj;
     }
