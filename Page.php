@@ -276,7 +276,7 @@ class Page {
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       fwrite(STDERR, "\n Made new text $i \n");
-      if (137 === $i ) fwrite(STDERR, $text);
+      if (133 === $i ) fwrite(STDERR, $text);
       $objects[] = $obj;
     }
     $this->text = $text;
