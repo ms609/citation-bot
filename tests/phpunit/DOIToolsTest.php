@@ -139,7 +139,7 @@ final class doiToolsTest extends PHPUnit\Framework\TestCase {
     $page->expand_text();
     $this->assertNotNull($page->edit_summary());
   }
- 
+
   public function testArrowAreQuotes() {
     $text = "This » That";
     $this->assertEquals($text,straighten_quotes($text));
