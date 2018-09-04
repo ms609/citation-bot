@@ -864,14 +864,43 @@ ER -  }}';
     $text = "{{cite arxiv | bibcode = 2013natur1305.7450M}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $prepared->wikiname());
+    $this->assertEquals('2013', $prepared->get('year'));
     $text = "{{cite arxiv | bibcode = 2013arXiv1305.7450M}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite arxiv', $prepared->wikiname());
+    $this->assertEquals('2013', $prepared->get('year'));
     $text = "{{cite arxiv | bibcode = 2013physics305.7450M}}";
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('cite arxiv', $prepared->wikiname());    
+    $this->assertEquals('cite arxiv', $prepared->wikiname()); 
+    $this->assertEquals('2013', $prepared->get('year'));
   }
-  
+    
+  public function testArxivMore() {
+    $text = "{{cite arxiv | eprint=1606.02558}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $prepared->wikiname());
+    $this->assertEquals('2016', $prepared->get('year'));
+    $this->assertEquals('211101', $prepared->get('pages'));
+      
+    $text = "{{cite arxiv | eprint=1208.3207}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $prepared->wikiname());
+    $this->assertEquals('2013', $prepared->get('2009'));
+    $this->assertEquals('115202', $prepared->get('pages'));
+    
+    $text = "{{cite arxiv | eprint=0905.1039}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $prepared->wikiname());
+    $this->assertEquals('2010', $prepared->get('year'));
+    $this->assertEquals('2325–2333', $prepared->get('pages'));
+      
+    $text = "{{cite arxiv | eprint=0809.0880}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $prepared->wikiname());
+    $this->assertEquals('2008', $prepared->get('year'));
+    $this->assertEquals('245315', $prepared->get('pages'));
+  }
+
   public function testPagesDash() {
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
