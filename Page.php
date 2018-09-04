@@ -125,7 +125,7 @@ class Page {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       return FALSE;
     }
-    return TRUE ;// This far?
+    // We get this far  DEBUG HUGE PAGE
     // EMPTY URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
@@ -136,6 +136,7 @@ class Page {
 
     // TEMPLATES
     $all_templates = $this->extract_object('Template');
+    return TRUE ; // DEBUG this far?
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
     }
