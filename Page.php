@@ -272,21 +272,12 @@ class Page {
     $objects = array();
     $match = array();
     while(preg_match($regexp, $text, $match) ) {
-       fwrite(STDERR, "\n Got new match \n");
       // $obj = new $class();
       // $obj->parse_text($match[0]);
-      if ($treat_identical_separately) {
-        $explode_limit = 1;
-      } else {
-        $explode_limit = 2;
-      }
-      $replacement_text  = sprintf($placeholder_text, $i++);
-      $pos = mb_strpos($text, $match[0]);
-      $length = mb_strlen($match[0]);
-      fwrite(STDERR, "\n $replacement_text $pos $length \n");
-      fwrite(STDERR, "\n ". $match[0] . " \n");
-      $text = mb_substr($text,0,$pos) . $replacement_text . mb_substr($text,$pos+$length,-1);
-      fwrite(STDERR, "\n Made new text \n");
+      fwrite(STDERR, "\n replacing text $i \n");
+      $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
+      $text = implode(sprintf($placeholder_text, $i++), $exploded);
+      fwrite(STDERR, "\n Made new text $i \n");
       unset($match);
       if (217 === $i ) fwrite(STDERR, $text);
       // $objects[] = $obj;
