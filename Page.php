@@ -279,7 +279,7 @@ class Page {
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       fwrite(STDERR, "\n Made new text $i \n");
       unset($match);
-      if (217 === $i ) fwrite(STDERR, $text);
+      if (137 === $i ) fwrite(STDERR, $text);
       // $objects[] = $obj;
     }
     $this->text = $text;
