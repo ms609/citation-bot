@@ -277,7 +277,9 @@ class Page {
       } else {
         $explode_limit = 2;
       }
-      $text = implode(sprintf($placeholder_text, $i++),explode($match[0], $text, $explode_limit));
+      
+      $text  = substr_replace($text, sprintf($placeholder_text, $i++), strpos($text, $match[0]), strlen($match[0]));
+
       // $objects[] = $obj;
     }
     $this->text = $text;
