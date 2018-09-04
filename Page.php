@@ -270,11 +270,11 @@ class Page {
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
     while(preg_match($regexp, $text, $match)) {
-      $obj = new $class();
+      // $obj = new $class();
       // $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
-      $objects[] = $obj;
+      // $objects[] = $obj;
     }
     $this->text = $text;
     return $objects;
