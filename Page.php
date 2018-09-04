@@ -135,8 +135,9 @@ class Page {
                       );
 
     // TEMPLATES
+    return TRUE ;
     $all_templates = $this->extract_object('Template');
-    return TRUE ; // DEBUG this far?
+    // DEBUG : we do not get to here!
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
     }
