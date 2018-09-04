@@ -265,6 +265,7 @@ class Page {
   public function extract_object ($class) {
     $i = 0;
     $text = $this->text;
+    unset($this->text); // Save memory
     $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
@@ -273,9 +274,7 @@ class Page {
       // $obj = new $class();
       // $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
-      unset($text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
-      unset($exploded);
       // $objects[] = $obj;
     }
     $this->text = $text;
