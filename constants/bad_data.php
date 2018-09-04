@@ -18,4 +18,8 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
 const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 
                                    'math.ph', 'math', 'nucl.ex', 'nucl.th', 'physics');
 const NON_PUBLISHERS = array('books.google', 'google books', 'google news', 'google.co'); // Google Inc is a valid publisher, however.
-                                   
+const PUBLISHER_WEBSITES = array('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
+                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
+                                 'scielo.org', 'scielo.br', 'degruyter.com', 'hindawi.com', 'inderscience.com',
+                                 'cambridge.org', '.oup.com', 'nature.com', 'macmillan.com', 'ieeexplore.ieee.org',
+                                 'worldscientific.com', 'iospress.com', 'iospress.nl');  // We delete these urls, if they are doi
