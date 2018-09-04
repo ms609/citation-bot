@@ -918,15 +918,6 @@ ER -  }}';
     $this->assertEquals('37', $expanded->get('volume'));
   }
     
-  public function testArxivMore6() {
-    $text = "{{cite arxiv}}"; // eprint=made up
-    $expanded = $this->process_citation($text);
-    parse_plain_text_reference("", $expanded, TRUE);
-    $this->assertEquals('cite journal', $expanded->wikiname());
-    $this->assertEquals('', $expanded->get('year'));
-    $this->assertEquals('', $expanded->get('pages'));
-  }
-    
   public function testArxivMore7() {
     $text = "{{cite arxiv}}"; // eprint=made up
     $expanded = $this->process_citation($text);
