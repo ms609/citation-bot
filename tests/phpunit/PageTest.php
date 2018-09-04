@@ -21,18 +21,14 @@ class PageTest extends PHPUnit\Framework\TestCase {
 
   protected function tearDown() {
   }
-  
-  protected function process_page($text) {
-    $page = new TestPage();
-    $page->parse_text($text);
-    $page->expand_text();
-    return $page;
-  }
+ 
   
   public function testHugePage() {
-      $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=Vietnam_War&action=raw');
-     // $this->process_page($text);
-     // $this->assertNull(NULL);
+    $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=Vietnam_War&action=raw');
+    $page = new TestPage();
+    // We do get to here
+    $page->parse_text($text);
+    // $page->expand_text();
   }
 
 }
