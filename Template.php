@@ -1152,12 +1152,13 @@ final class Template {
       }
       $this->add_if_new("title", (string) $xml->entry->title); // Formatted by add_if_new
       $this->add_if_new("class", (string) $xml->entry->category["term"]);
-      $this->add_if_new("year", substr($xml->entry->published, 0, 4));
+      $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       $this->add_if_new("doi", (string) $xml->entry->arxivdoi);
 
       if ($xml->entry->arxivjournal_ref) {
-      $journal_data = trim((string) $xml->entry->arxivjournal_ref); // this is human readble text
-      parse_plain_text_reference($journal_data, $this, TRUE);
+        $journal_data = trim((string) $xml->entry->arxivjournal_ref); // this is human readble text
+        parse_plain_text_reference($journal_data, $this, TRUE);
+      }
       return TRUE;
     }
     return FALSE;
