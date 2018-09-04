@@ -265,6 +265,7 @@ class Page {
   public function extract_object ($class) {
     $i = 0;
     $text = $this->text;
+    unset($this->text);
     $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
@@ -277,8 +278,10 @@ class Page {
       } else {
         $explode_limit = 2;
       }
-      
-      $text  = substr_replace($text, sprintf($placeholder_text, $i++), strpos($text, $match[0]), strlen($match[0]));
+      $replacement_text = sprintf($placeholder_text, $i++);
+      $pos = mb_strpos($text, $match[0]);
+      $length = mb_strlen($match[0]);
+      $text  = mb_substr_replace($text, $replacement_text, $pos, $length);
 
       // $objects[] = $obj;
     }
