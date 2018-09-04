@@ -125,7 +125,7 @@ class Page {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       return FALSE;
     }
-
+    return TRUE ;// This far?
     // EMPTY URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
