@@ -11,7 +11,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 }
 
 // Initialize bot configuration
-if (!defined('VERBOSE')) define('VERBOSE', TRUE);
+if (!defined('VERBOSE')) define('VERBOSE', TRUE);arxiv
 $SLOW_MODE = TRUE;
  
 final class TemplateTest extends PHPUnit\Framework\TestCase {
@@ -869,7 +869,7 @@ ER -  }}';
     $this->assertEquals('cite arxiv', $prepared->wikiname());
     $text = "{{cite arxiv | bibcode = 2013physics305.7450M}}";
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('cite arxiv', $prepared->wikiname()); 
+    $this->assertEquals('cite arxiv', $prepared->wikiname());    
   }
     
   public function testArxivMore1() {
