@@ -874,34 +874,34 @@ ER -  }}';
     
   public function testArxivMore1() {
     $text = "{{cite arxiv | eprint=1606.02558}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals('cite journal', $prepared->wikiname());
-    $this->assertEquals('2016', $prepared->get('year'));
-    $this->assertEquals('211101', $prepared->get('pages'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2016', $expanded->get('year'));
+    $this->assertEquals('211101', $expanded->get('pages'));
   }
     
   public function testArxivMore2() {
     $text = "{{cite arxiv | eprint=1208.3207}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals('cite journal', $prepared->wikiname());
-    $this->assertEquals('2013', $prepared->get('2009'));
-    $this->assertEquals('115202', $prepared->get('pages'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2013', $expanded->get('2009'));
+    $this->assertEquals('115202', $expanded->get('pages'));
   }
     
   public function testArxivMore3() {
     $text = "{{cite arxiv | eprint=0905.1039}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals('cite journal', $prepared->wikiname());
-    $this->assertEquals('2010', $prepared->get('year'));
-    $this->assertEquals('2325–2333', $prepared->get('pages'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2010', $expanded->get('year'));
+    $this->assertEquals('2325–2333', $expanded->get('pages'));
   }
     
   public function testArxivMore4() {
     $text = "{{cite arxiv | eprint=0809.0880}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertEquals('cite journal', $prepared->wikiname());
-    $this->assertEquals('2008', $prepared->get('year'));
-    $this->assertEquals('245315', $prepared->get('pages'));
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2008', $expanded->get('year'));
+    $this->assertEquals('245315', $expanded->get('pages'));
   }
 
   public function testPagesDash() {
