@@ -282,11 +282,8 @@ class Page {
       $pos = mb_strpos($text, $match[0]);
       $length = mb_strlen($match[0]);
       fwrite(STDERR, "\n $replacement_text $pos $length \n");
-      $new_text = mb_substr($text,0,$pos) . $replacement_text . mb_substr($text,$pos+$length,-1);
-      unset($text);
-      $text=$new_text;
-      unset($new_text);
-
+      fwrite(STDERR, "\n ". $match[0] . " \n");
+      $text = mb_substr($text,0,$pos) . $replacement_text . mb_substr($text,$pos+$length,-1);
       // $objects[] = $obj;
     }
     $this->text = $text;
