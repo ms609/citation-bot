@@ -926,7 +926,7 @@ ER -  }}';
   }
    
   public function testArxivMore7() {
-    $text = "{{cite arxiv}}"; // eprint=made up
+    $text = "{{cite arxiv|date=1999}}"; // eprint=made up, also will upgrade and convert date
     $expanded = $this->process_citation($text);
     parse_plain_text_reference("Journal 78 (2011) 888-999", $expanded, TRUE);
     $this->assertEquals('cite journal', $expanded->wikiname());
@@ -935,7 +935,7 @@ ER -  }}';
   }
 
   public function testArxivMore8() {
-    $text = "{{cite arxiv}}"; // eprint=made up
+    $text = "{{cite arxiv|year=1999}}"; // eprint=made up, will upgrade year
     $expanded = $this->process_citation($text);
     parse_plain_text_reference("Journal, 11, 62 (2001)", $expanded, TRUE);
     $this->assertEquals('cite journal', $expanded->wikiname());
