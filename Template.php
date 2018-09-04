@@ -497,13 +497,13 @@ final class Template {
               return FALSE;  // Cannot have both work and journal
             }
           }
+          $this->forget('issn');
           if ($this->has('website')) { // alias for journal
              $this->rename('website', $param_name, $value);
-             $this->forget('issn');
              return TRUE;
+          } else {   
+             return $this->add($param_name, $value);
           }
-          $this->forget('issn');
-          return $this->add($param_name, $value);
         }
         return FALSE;
         
