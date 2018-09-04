@@ -11,7 +11,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 }
 
 // Initialize bot configuration
-if (!defined('VERBOSE')) define('VERBOSE', TRUE);arxiv
+if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
  
 final class TemplateTest extends PHPUnit\Framework\TestCase {
