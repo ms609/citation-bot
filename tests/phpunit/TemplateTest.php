@@ -884,7 +884,7 @@ ER -  }}';
     $text = "{{cite arxiv | eprint=1208.3207}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
-    $this->assertEquals('2013', $expanded->get('2009'));
+    $this->assertEquals('2009', $expanded->get('year'));
     $this->assertEquals('115202', $expanded->get('pages'));
   }
     
