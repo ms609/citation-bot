@@ -264,23 +264,20 @@ class Page {
   
   public function extract_object ($class) {
     $i = 0;
-    $text = $this->text . '    ';
-    unset($this->text);
+    $text = $this->text;
     $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    $match = array();
     while(preg_match($regexp, $text, $match) ) {
-      // $obj = new $class();
-      // $obj->parse_text($match[0]);
+      $obj = new $class();
+      $obj->parse_text($match[0]);
       fwrite(STDERR, "\n replacing text $i \n");
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
-      $text = implode(sprintf($placeholder_text, $i++), $exploded) . '    ';
+      $text = implode(sprintf($placeholder_text, $i++), $exploded);
       fwrite(STDERR, "\n Made new text $i \n");
-      unset($match);
       if (137 === $i ) fwrite(STDERR, $text);
-      // $objects[] = $obj;
+      $objects[] = $obj;
     }
     $this->text = trim($text);
     return $objects;
