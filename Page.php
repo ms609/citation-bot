@@ -270,10 +270,7 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    ob_end_flush() ;
-    ob_end_flush() ;
-    ob_end_flush() ;
-    ob_end_flush() ;
+    @ob_end_flush() ;
     while(preg_match($regexp, $text, $match) ) {
       // $obj = new $class();
       // $obj->parse_text($match[0]);
