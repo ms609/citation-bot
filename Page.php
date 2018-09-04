@@ -273,7 +273,9 @@ class Page {
       // $obj = new $class();
       // $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
+      unset($text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
+      unset($exploded);
       // $objects[] = $obj;
     }
     $this->text = $text;
