@@ -211,6 +211,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testDoiExpansion() { // using real DOIs but fake urls
+    $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $prepared->wikiname());
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $prepared->get('doi'));
     $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/files.pdf}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
