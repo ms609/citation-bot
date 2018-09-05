@@ -119,13 +119,12 @@ class Page {
     }
 
     // COMMENTS AND NOWIKI //
-    $comments = $this->extract_object('Comment');
-    $nowiki   = $this->extract_object('Nowiki');
+    // $comments = $this->extract_object('Comment');
+    // $nowiki   = $this->extract_object('Nowiki');
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       return FALSE;
     }
-
     // EMPTY URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
@@ -135,7 +134,10 @@ class Page {
                       );
 
     // TEMPLATES
+     // We get this far  DEBUG HUGE PAGE
     $all_templates = $this->extract_object('Template');
+    // DEBUG : we do not get to here!
+    return FALSE;
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
     }
@@ -262,7 +264,7 @@ class Page {
   
   public function extract_object ($class) {
     $i = 0;
-    $text = $this->text;
+    $text =$this->text;
     $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
@@ -270,8 +272,10 @@ class Page {
     while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
+      fwrite(STDERR, "\n replacing text $i \n");
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
+      fwrite(STDERR, "\n Made new text $i \n");
       $objects[] = $obj;
     }
     $this->text = $text;

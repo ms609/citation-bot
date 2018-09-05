@@ -8,32 +8,13 @@ language: php
 matrix:
   include:
     - stage: test
-      php: 7.2
-      before_script:  
-        - travis_retry composer self-update
-        - composer require mediawiki/oauthclient
-        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit --coverage-clover coverage.xml --bootstrap expandFns.php tests/phpunit
-      after_success: bash <(curl -s https://codecov.io/bash)
-    - php: 5.6
+      php: 5.6
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit --bootstrap expandFns.php tests/phpunit
-    - stage: deploy-to-master
-      name: "Update WMFlabs servers"
-      if: branch = master AND type != pull_request
-      php: 5.6 # Avoid downloading and installing 5.5
-      script:
-        - git pull
-        - wget -O- https://tools.wmflabs.org/citations/maintain_files.php
-    - stage: deploy-to-development
-      name: "Update WMFlabs test servers"
-      if: branch = development AND type != pull_request
-      script:
-        - git pull
-        - wget -O- https://tools.wmflabs.org/citations/maintain_files.php
+
 git:
   depth: 3
   
