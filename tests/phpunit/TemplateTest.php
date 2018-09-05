@@ -215,7 +215,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
-    $this->assertNull($prepared->get('url'));
+    $this->assertNull($expanded->get('url'));
     $text = "{{Cite web | http://freecopies.com/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}";
     $expanded= $this->process_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
