@@ -1059,6 +1059,12 @@ ER -  }}';
     $this->assertEquals('Strategic Acupuncture', $prepared->get('title'));  
   }
   
+  public function testArxivPDf() {
+    $text = '{{cite web|url=https://arxiv.org/ftp/arxiv/papers/1312/1312.7288.pdf}}';
+    $expanded = $this->prepare_citation($text);
+    $this->assertEquals('1312.7288', $expanded->get('arxiv'));  
+  }
+    
   public function testTrimResearchGateETC() {
     $want = 'https://www.researchgate.net/publication/320041870';
     $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup}}';
