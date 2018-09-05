@@ -264,7 +264,7 @@ class Page {
   
   public function extract_object ($class) {
     $i = 0;
-    $text = iconv("UTF-8", "", $this->text);
+    $text =$this->text;
     $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
@@ -276,7 +276,6 @@ class Page {
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       fwrite(STDERR, "\n Made new text $i \n");
-      if (133 === $i ) fwrite(STDERR, $text);
       $objects[] = $obj;
     }
     $this->text = $text;
