@@ -1161,30 +1161,12 @@ final class Template {
       }
       $this->add_if_new("title", (string) $xml->entry->title); // Formatted by add_if_new
       $this->add_if_new("class", (string) $xml->entry->category["term"]);
-      $this->add_if_new("year", substr($xml->entry->published, 0, 4));
+      $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
       $this->add_if_new("doi", (string) $xml->entry->arxivdoi);
 
       if ($xml->entry->arxivjournal_ref) {
-        $journal_data = (string) $xml->entry->arxivjournal_ref;
-        if (preg_match("~,(\(?([12]\d{3})\)?).*?$~u", $journal_data, $match)) {
-          $journal_data = str_replace($match[1], "", $journal_data);
-          $this->add_if_new("year", $match[1]);
-        }
-        if (preg_match("~\w?\d+-\w?\d+~", $journal_data, $match)) {
-          $journal_data = str_replace($match[0], "", $journal_data);
-          $this->add_if_new("pages", str_replace("--", REGEXP_EN_DASH, $match[0]));
-        }
-        if (preg_match("~(\d+)(?:\D+(\d+))?~", $journal_data, $match)) {
-          $this->add_if_new("volume", $match[1]);
-          if (isset($match[2])) {
-            $this->add_if_new("issue", $match[2]);
-          }
-          $journal_data = preg_replace("~[\s:,;]*$~", "",
-                  str_replace($match[-0], "", $journal_data));
-        }
-        $this->add_if_new("journal", wikify_external_text($journal_data));
-      } else {
-        $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
+        $journal_data = trim((string) $xml->entry->arxivjournal_ref); // this is human readble text
+        parse_plain_text_reference($journal_data, $this, TRUE);
       }
       return TRUE;
     }
