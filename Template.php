@@ -2258,7 +2258,7 @@ final class Template {
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               
               report_info("{{OCLC}} has multiple parameters: cannot convert.");
-              echo "\n    " . $subtemplate->parsed_text();
+              report_info("$subtemplate->parsed_text()");
               break;
             }
           
