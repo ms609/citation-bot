@@ -738,7 +738,7 @@ final class Template {
     if ($doi = extract_doi($url)[1]) {
       if (is_null($url_sent)) {
         if (doi_active($doi)) {
-          if ((mb_strpos(strtolower($url), ".pdf") === FALSE) || (str_ireplace($url, '', PUBLISHER_WEBSITES) != $url)) {
+          if ((mb_strpos(strtolower($url), ".pdf") === FALSE) || (str_ireplace(PUBLISHER_WEBSITES, '', $url) != $url)) {
             report_forget("Recognized DOI in URL; dropping URL");
             $this->forget('url');
           }
