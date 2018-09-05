@@ -832,7 +832,7 @@ final class Template {
         }
         return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
         
-      } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs|/ftp/arxiv/papers/\d{4})/(.+)(?:\.pdf)?$~us", $url, $match)) {
+      } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs|tp/arxiv/papers/\d{4})/(.+)(?:\.pdf)?$~us", $url, $match)) {
 
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
