@@ -491,6 +491,7 @@ final class Template {
           if ($this->has('work')) {
             if (strcasecmp($this->get('work'), $value) === 0) {
               $this->rename('work', $param_name);
+              $this->forget('issn');
               return TRUE;
             } else {
               return FALSE;  // Cannot have both work and journal
@@ -498,7 +499,13 @@ final class Template {
           }
           $this->forget('issn');
           $this->forget('class');
-          return $this->add($param_name, $value);
+          
+          if ($this->has('website')) { // alias for journal
+             $this->rename('website', $param_name, $value);
+             return TRUE;
+          } else {   
+             return $this->add($param_name, $value);
+          }
         }
         return FALSE;
         
