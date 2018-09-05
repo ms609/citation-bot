@@ -1035,8 +1035,10 @@ final class Template {
  *
  */
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
-      $results = $this->do_pumbed_query(array("doi"), TRUE);
-      if ($results[1] == 1) return $results;
+      if (!strpos($doi, "[")) { // Doi's with square brackets cannot search PUBMED (yes, we asked).
+        $results = $this->do_pumbed_query(array("doi"), TRUE);
+        if ($results[1] == 1) return $results;
+      }
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
 
