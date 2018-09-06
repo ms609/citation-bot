@@ -22,4 +22,4 @@ const PUBLISHER_WEBSITES = array('elsevier.com', 'springer.com', 'sciencedirect.
                                  'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
                                  'scielo.org', 'scielo.br', 'degruyter.com', 'hindawi.com', 'inderscience.com',
                                  'cambridge.org', '.oup.com', 'nature.com', 'macmillan.com', 'ieeexplore.ieee.org',
-                                 'worldscientific.com', 'iospress.com', 'iospress.nl');  // We delete these urls, if they are doi
+                                 'worldscientific.com', 'iospress.com', 'iospress.nl', 'pubs.acs.org');  // We delete these urls, if they are doi
