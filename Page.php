@@ -261,6 +261,7 @@ class Page {
   }
   
   public function extract_object ($class) {
+    $ierr = TRUE;
     $i = 0;
     $text = $this->text;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
