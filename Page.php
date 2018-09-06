@@ -261,18 +261,23 @@ class Page {
   }
   
   public function extract_object ($class) {
+    $error = TRUE;
     $i = 0;
     $text = $this->text;
     $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    while(preg_match($regexp, $text, $match)) {
+    while($error = preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $objects[] = $obj;
+    }
+    if ($error === FALSE) {
+       trigger_error("Internal PHP error in " . htmlspecialchars($this->title)) ;
+       exit(1); // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.
     }
     $this->text = $text;
     return $objects;
