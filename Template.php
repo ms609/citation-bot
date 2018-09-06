@@ -17,7 +17,7 @@ require_once("Parameter.php");
 
 final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
-  const REGEXP_FAST = '~\{\{[^\{\}]+?\}\}~su';
+  //const REGEXP_FAST = '~\{\{[^\{\}]+?\}\}~su';
   const REGEXP = '~\{\{(?:!.*\{\{|\}\}|\<math\>|\<\/math\>|\<chem\>|\<\/chem\>).*\}\}~su';
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
