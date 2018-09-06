@@ -267,6 +267,15 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
+    if (isset($class::REGEXP_FAST)) {
+     while(preg_match($class::REGEXP_FAST, $text, $match)) {
+      $obj = new $class();
+      $obj->parse_text($match[0]);
+      $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
+      $text = implode(sprintf($placeholder_text, $i++), $exploded);
+      $objects[] = $obj;
+     }
+    }
     while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
