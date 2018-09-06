@@ -269,6 +269,7 @@ class Page {
     if (defined("$class::REGEXP_FAST")) {
      $regexp = $class::REGEXP_FAST;
      while(preg_match($regexp, $text, $match)) {
+      if ($class=="Template") printf(STDERR, "\n B $i");
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
@@ -278,6 +279,7 @@ class Page {
     }
     $regexp = $class::REGEXP;
     while(preg_match($regexp, $text, $match)) {
+      if ($class=="Template") printf(STDERR, "\n B $i");
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
