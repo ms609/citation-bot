@@ -261,18 +261,39 @@ class Page {
   }
   
   public function extract_object ($class) {
+    $ierr = TRUE;
     $i = 0;
     $text = $this->text;
-    $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    while(preg_match($regexp, $text, $match)) {
+    if (defined("$class::REGEXP_FAST")) {
+     $regexp = $class::REGEXP_FAST;
+     while($ierr = preg_match($regexp, $text, $match)) {
+      fwrite(STDERR, "\n fast $class $i");
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $objects[] = $obj;
+     }
+    }
+    if ($ierr === FALSE) {
+      fwrite(STDERR, "\n\n$text\n\n");
+      exit(0);
+    }
+    $regexp = $class::REGEXP;
+    while($ierr = preg_match($regexp, $text, $match)) {
+      fwrite(STDERR, "\n $class $i");
+      $obj = new $class();
+      $obj->parse_text($match[0]);
+      $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
+      $text = implode(sprintf($placeholder_text, $i++), $exploded);
+      $objects[] = $obj;
+    }
+    if ($ierr === FALSE) {
+      fwrite(STDERR, "\n\n$text\n\n");
+      exit(0);
     }
     $this->text = $text;
     return $objects;
