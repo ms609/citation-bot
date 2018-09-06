@@ -263,12 +263,12 @@ class Page {
   public function extract_object ($class) {
     $i = 0;
     $text = $this->text;
-    $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    if ($class::REGEXP_FAST !== NULL) {
-     while(preg_match($class::REGEXP_FAST, $text, $match)) {
+    if (defined($class::REGEXP_FAST)) {
+     $regexp = $class::REGEXP_FAST;
+     while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
@@ -276,6 +276,7 @@ class Page {
       $objects[] = $obj;
      }
     }
+    $regexp = $class::REGEXP;
     while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
