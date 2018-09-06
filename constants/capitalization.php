@@ -10,7 +10,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' nor ', ' NY ', ' NYC ', ' NYT ', ' och ', ' of ', ' off ', ' on ', ' og ', ' or ', 
           ' over ', ' PCR ', ' per ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' von ', ' voor ', ' when ', ' with ', ' woor ', 
-          ' y ', ' zu ', 'zum ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
+          ' y ', ' zu ', ' zum ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
