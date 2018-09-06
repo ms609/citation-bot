@@ -266,7 +266,7 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    if (defined($class::REGEXP_FAST)) {
+    if (defined("$class::REGEXP_FAST")) {
      $regexp = $class::REGEXP_FAST;
      while(preg_match($regexp, $text, $match)) {
       $obj = new $class();
