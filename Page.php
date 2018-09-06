@@ -287,7 +287,7 @@ class Page {
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $objects[] = $obj;
     }
-    if (ierr === FALSE) exit(0);
+    if ($ierr === FALSE) exit(0);
     $this->text = $text;
     return $objects;
   }
