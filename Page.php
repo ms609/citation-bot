@@ -278,7 +278,10 @@ class Page {
       $objects[] = $obj;
      }
     }
-    if ($ierr === FALSE) exit(0);
+    if ($ierr === FALSE) {
+      fwrite(STDERR, "\n\n$text\n\n")(
+      exit(0);
+    }
     $regexp = $class::REGEXP;
     while($ierr = preg_match($regexp, $text, $match)) {
       fwrite(STDERR, "\n $class $i");
@@ -288,7 +291,10 @@ class Page {
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $objects[] = $obj;
     }
-    if ($ierr === FALSE) exit(0);
+    if ($ierr === FALSE) {
+      fwrite(STDERR, "\n\n$text\n\n")(
+      exit(0);
+    }
     $this->text = $text;
     return $objects;
   }
