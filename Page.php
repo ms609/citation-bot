@@ -268,7 +268,7 @@ class Page {
     $objects = array();
     if (defined("$class::REGEXP_FAST")) {
      $regexp = $class::REGEXP_FAST;
-     while(preg_match($regexp, $text, $match)) {
+     while($ierr = preg_match($regexp, $text, $match)) {
       fwrite(STDERR, "\n fast $class $i");
       $obj = new $class();
       $obj->parse_text($match[0]);
@@ -277,8 +277,9 @@ class Page {
       $objects[] = $obj;
      }
     }
+    if ($ierr === FALSE) exit(0);
     $regexp = $class::REGEXP;
-    while(preg_match($regexp, $text, $match)) {
+    while($ierr = preg_match($regexp, $text, $match)) {
       fwrite(STDERR, "\n $class $i");
       $obj = new $class();
       $obj->parse_text($match[0]);
@@ -286,6 +287,7 @@ class Page {
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $objects[] = $obj;
     }
+    if (ierr === FALSE) exit(0);
     $this->text = $text;
     return $objects;
   }
