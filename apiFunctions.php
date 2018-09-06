@@ -514,7 +514,7 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
           report_info("Unexpected data found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
         }
       }
-      if ($arxiv_journal) { // if no journal then doomed
+      if ($arxiv_journal && $arxiv_year && (intval($arxiv_year) > 1900) && (intval($arxiv_year) < (1+intval(date("Y"))))) { // if no journal then doomed.  If bad date then doomed.
         if ($arxiv_year) {
           $current_year = $this_template->get_without_comments_and_placeholders('year');
           if (!$current_year
