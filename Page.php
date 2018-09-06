@@ -279,7 +279,7 @@ class Page {
      }
     }
     if ($ierr === FALSE) {
-      fwrite(STDERR, "\n\n$text\n\n")(
+      fwrite(STDERR, "\n\n$text\n\n");
       exit(0);
     }
     $regexp = $class::REGEXP;
@@ -292,7 +292,7 @@ class Page {
       $objects[] = $obj;
     }
     if ($ierr === FALSE) {
-      fwrite(STDERR, "\n\n$text\n\n")(
+      fwrite(STDERR, "\n\n$text\n\n");
       exit(0);
     }
     $this->text = $text;
