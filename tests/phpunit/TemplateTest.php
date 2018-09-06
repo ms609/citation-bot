@@ -1057,6 +1057,12 @@ ER -  }}';
     });
   }
     
+  public function testArxivPDf() {
+    $text = '{{cite web|url=https://arxiv.org/ftp/arxiv/papers/1312/1312.7288.pdf}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('1312.7288', $expanded->get('arxiv'));  
+  }
+  
   public function testEmptyCitations() {
     $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
