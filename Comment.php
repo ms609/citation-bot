@@ -34,7 +34,6 @@ final class Nowiki {
   }
 }
 
-
 final class Chemistry {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_CHEMISTRY %s # # #';
   const REGEXP = '~<chem>.*?</chem>~us'; 
@@ -50,10 +49,39 @@ final class Chemistry {
   }
 }
 
-
 final class Mathematics {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MATHEAMTICS %s # # #';
+  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MATHEMATICS %s # # #';
   const REGEXP = '~<math>.*?</math>~us'; 
+  const TREAT_IDENTICAL_SEPARATELY = FALSE;
+  protected $rawtext;
+  
+  public function parse_text($text) {
+    $this->rawtext = $text;
+  }
+  
+  public function parsed_text() {
+    return $this->rawtext;
+  }
+}
+
+final class Musicscores {
+  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MUSIC %s # # #';
+  const REGEXP = '~<score>.*?</score>~us'; 
+  const TREAT_IDENTICAL_SEPARATELY = FALSE;
+  protected $rawtext;
+  
+  public function parse_text($text) {
+    $this->rawtext = $text;
+  }
+  
+  public function parsed_text() {
+    return $this->rawtext;
+  }
+}
+
+final class Preformated {
+  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_PREFORMAT %s # # #';
+  const REGEXP = '~<pre>.*?</pre>~us'; 
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   protected $rawtext;
   
