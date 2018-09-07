@@ -73,7 +73,16 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
 }
 
 function sanitize_doi($doi) {
-  return str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
+  $doi = str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
+  $extension = substr($doi, strrpos($doi, '.'));
+  if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
+      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  }
+  $extension = substr($doi, strrpos($doi, '/'));
+  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf'))) {
+      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  }
+  return $doi;
 }
 
 /* extract_doi
