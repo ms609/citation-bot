@@ -57,6 +57,7 @@ final class apiFunctionsTest extends PHPUnit\Framework\TestCase {
        '1966Natur.211..116M',
        '1995Sci...267...77R',
        '1995Geo....23..967E',
+       '2003hoe..book.....K',
        ];
       $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
       $page = new TestPage();
@@ -66,6 +67,7 @@ final class apiFunctionsTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('Nature', $templates[3]->get('journal'));
       $this->assertEquals('Geology', $templates[5]->get('journal'));
       $this->assertEquals('14879', $templates[0]->get('pages'));
+      $this->assertNull($templates[5]->get('journal'));
     });
   }
 }
