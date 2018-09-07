@@ -1190,7 +1190,7 @@ final class Template {
      return FALSE;
     }
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
-      report_info(" Ignoring Book bibcode " . $ll . " \n");
+      report_info(" Ignoring Book bibcode " . $this->get('bibcode') . " \n");
       return FALSE;
     }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
