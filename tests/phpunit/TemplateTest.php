@@ -1201,7 +1201,7 @@ ER -  }}';
   public function testBibcodeBook() {
       $text = '{{cite book|bibcode=2003hoe..book.....K}}';
       $expanded = $this->process_citation($text);
-      $this-assertEquals($text, $expanded->parsed_text());
+      $this->assertEquals($text, $expanded->parsed_text());
   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
