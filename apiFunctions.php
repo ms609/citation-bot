@@ -170,7 +170,7 @@ function adsabs_api($ids, $templates, $identifier) {
   
   foreach ($ids as $key => $ll) {
     if (strpos($ll,'book') !== false) {
-        report_info(" Ignoring Book bibcode " . $ll . " \n")'
+        report_info(" Ignoring Book bibcode " . $ll . " \n")';
         unset($ids[$key]);
     }
   }
