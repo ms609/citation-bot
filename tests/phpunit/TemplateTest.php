@@ -1197,6 +1197,12 @@ ER -  }}';
     $this->assertEquals('222', $prepared->get('number'));
     $this->assertEquals('12(44-33)', $prepared->get('volume'));
   }
+    
+  public function testBibcodeBook() {
+      $text = '{{cite book|bibcode=2003hoe..book.....K}}';
+      $expanded = $this->process_citation($text);
+      $this-assertEquals($text, $expanded->parsed_text());
+  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
