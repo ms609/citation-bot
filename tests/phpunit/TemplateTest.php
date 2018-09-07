@@ -982,6 +982,12 @@ ER -  }}';
     $this->assertEquals('032412332', $expanded->get('pages'));
   }
 
+  public function testArxivMore12() {
+    $text = "{{cite journal|year=2014 |doi=10.1103/PhysRevLett.89.210401|pmid=12443394|arxiv=quant-ph/0112136|bibcode=2002PhRvL..89u0401S|citeseerx=10.1.1.252.210}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('2014', $expanded->get('year'));
+  }
+    
   public function testPagesDash() {
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
