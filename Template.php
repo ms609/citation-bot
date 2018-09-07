@@ -2459,6 +2459,7 @@ final class Template {
           foreach (NON_JOURNAL_BIBCODES as $exception) {
             if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
           }
+          if (strpos($this->get($param), 'book') !== FALSE) return; // Not a journal
           $this->change_name_to('Cite journal', FALSE);
           return;
           
