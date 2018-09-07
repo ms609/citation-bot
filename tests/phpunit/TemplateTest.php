@@ -224,7 +224,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-981-10-3179-3', $expanded->get('isbn'));
   }
-    
+  
+  public function testDoiEndings() {
+    $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x', 
+                        extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full')[1]);
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', 
+                        extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract')[1]);  
+  }
   public function testSeriesIsJournal() {
     $text = '{{citation | series = Annals of the New York Academy of Sciences| doi = 10.1111/j.1749-6632.1979.tb32775.x}}';
     $expanded = $this->process_citation($text);
