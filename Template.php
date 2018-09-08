@@ -2716,6 +2716,9 @@ final class Template {
           }
           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
           return;
+        case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
+          if (($this->wikiname() !== 'citation') && ($this->get($param) === '.')) $this->forget($param);
+          return;
       }
     }
   }
