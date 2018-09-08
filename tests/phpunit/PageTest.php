@@ -39,7 +39,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
   public function testUtf8AndTemplateInsanity() {
       $text = 'Đỗ Cao Trí' . '{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{' . 'Ngô Đình Diệm' .
                              '}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}' . 'Trần Văn Hương';
-      $text = $text . $text . '}} unbalanced {{' . $text . $text . $text.
+      $text = $text . $text . '}} unbalanced {{' . $text . $text;
       $this->process_page($text);
       $this->assertNull(NULL);
   }
