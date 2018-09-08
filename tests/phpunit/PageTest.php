@@ -36,9 +36,9 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('Misc citation tidying. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
   }
 
-  public function testTemplateInsanity() {
-      $this->process_page('{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{' . ' # ' .
-                          '}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}');
+  public function testUtf8AndTemplateInsanity() {
+      $this->process_page('Đỗ Cao Trí' . '{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{' . 'Ngô Đình Diệm' .
+                                         '}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}' . 'Trần Văn Hương');
       $this->assertNull(NULL);
   }
   public function testBotRead() {
