@@ -36,6 +36,11 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('Misc citation tidying. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
   }
 
+  public function testTemplateInsanity() {
+      $this->process_page('{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{' . ' # ' .
+                          '}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}');
+      $this->assertNull(NULL);
+  }
   public function testBotRead() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
       echo 'S'; // Test skipped in pull requests, to protect Bot secrets
