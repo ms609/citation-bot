@@ -134,8 +134,8 @@ class Page {
                       $this->text
                       );
      // PLAIN DOIS Conerted to templates 
-     $this->text = preg_replace_callback(   // Ones like <ref>10.1244\abc</ref>
-                      "~(<ref[^>]*?>)(\s*10\.[0-9]+\\\S+\s*)(<\s*?\/\s*?ref>)~",
+     $this->text = preg_replace_callback(   // Ones like <ref>10.1244/abc</ref>
+                      "~(<ref[^>]*?>)(\s*10\.[0-9]+\/\S+\s*)(<\s*?\/\s*?ref>)~",
                       function($matches) {return $matches[1] . '{{cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
