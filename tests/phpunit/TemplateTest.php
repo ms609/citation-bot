@@ -992,9 +992,9 @@ ER -  }}';
     $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]', $prepared->get('pages'));
-    $text = '{{Cite journal|pages=167|doi=10.1007/s10658-006-9082-8|title=Assessment of sanitation and fungicide application directed at cocoa tree trunks for the control of Phytophthora black pod infections in pods growing in the canopy|journal=European Journal of Plant Pathology|volume=117|issue=2|year=2006|last1=Opoku|first1=Isaac Y|last2=Akrofi|first2=Andrews Y|last3=Appiah|first3=Alex A}}';
+    $text = '{{Cite journal|pages=15|doi=10.1016/j.biocontrol.2014.06.004}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('167–175', $expanded->get('pages')); // Converted should use long dashes
+    $this->assertEquals('15–22', $expanded->get('pages')); // Converted should use long dashes
   }
     
   public function testCollapseRanges() {
