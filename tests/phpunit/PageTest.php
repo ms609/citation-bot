@@ -96,7 +96,9 @@ class PageTest extends PHPUnit\Framework\TestCase {
   public function testHugePage() {
     $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=Vietnam_War&action=raw');
     $page = new TestPage();
+    ini_set('zend.enable_gc', 0);
     $page->parse_text($text);
     $page->expand_text();
+    ini_set('zend.enable_gc', 1);
   }
 }
