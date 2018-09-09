@@ -527,7 +527,7 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
           if (!$current_year) {
             $current_date = $this_template->get_without_comments_and_placeholders('date');
             if ($current_date && preg_match('~\d{4}~', $current_date, $matches) {
-               $current_year = $matches[1];
+               $current_year = $matches[0];
             }
           }
           if (!$current_year
