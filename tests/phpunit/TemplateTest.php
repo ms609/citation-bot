@@ -434,7 +434,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public fuction testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H. |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level |journal=Lichenologist |volume=23 |pages=309–321 |doi=10.1017/S0024282991000452 |issue=3}';
     $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->get('last1'));
+    $this->assertNull($expanded->get('last1'));
+    $this->assertNull($expanded->get('last2'));
+    $this->assertNull($expanded->get('first1'));
+    $this->assertNull($expanded->get('first2'));
   }
     
   public function testMisspeltParameters() {
