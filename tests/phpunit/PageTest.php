@@ -98,8 +98,8 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page = new TestPage();
     gc_disable();
     // essential for huge PCREs
-ini_set("pcre.backtrack_limit", "23001337");
-ini_set("pcre.recursion_limit", "23001337");
+    ini_set("pcre.backtrack_limit", "23001337");
+    ini_set("pcre.recursion_limit", "23001337");
     $page->parse_text($text);
     $page->expand_text();
     gc_enable();
