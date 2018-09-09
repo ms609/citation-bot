@@ -1495,11 +1495,11 @@ final class Template {
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search for citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
   // If you want to forget the url and such then wrap this functon
- /*
+ /**
  * Unused
  * @codeCoverageIgnore
  */
-  protected function expand_by_citoid($url) {
+  protected function expand_url_by_citoid($url) {
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
     $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));
     if ($json === FALSE) {
