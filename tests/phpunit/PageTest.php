@@ -41,7 +41,8 @@ class PageTest extends PHPUnit\Framework\TestCase {
                                '}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}' . 'Trần Văn Hương';
       $text = $text . $text . '}} unbalanced {{' . $text . $text . '���������������������������������������������������������������';
       $text = $text . $text . $text . $text . 'ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩயாமறிந்த' ; // push it to the limits
-      $tezt = '}}}}}{{{{{{{{{{{{{{ ' . $text . $text . $text . $text . $text ;
+      $text = '}}}}}{{{{{{{{{{{{{{ ' . $text . $text . $text . $text . $text ;
+      
       $this->process_page($text);
       $this->assertNull(NULL);
   }
