@@ -430,7 +430,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
   }
-  
+    
+  public fuction testParameterAlias() {
+    $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H. |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level |journal=Lichenologist |volume=23 |pages=309–321 |doi=10.1017/S0024282991000452 |issue=3}';
+    $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('last1'));
+  }
+    
   public function testMisspeltParameters() {
     $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
     $expanded = $this->process_citation($text);
