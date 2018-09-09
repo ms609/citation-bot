@@ -992,6 +992,9 @@ ER -  }}';
     $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]', $prepared->get('pages'));
+    $text = '{{Cite journal|pages=167|doi=10.1007/s10658-006-9082-8}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('167–175', $expanded->get('pages')); // Converted should use long dashes
   }
     
   public function testCollapseRanges() {
