@@ -6,10 +6,6 @@
 */
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
-// essential for huge PCREs
-//ini_set("pcre.backtrack_limit", "23001337");
-//ini_set("pcre.recursion_limit", "23001337");
- 
 include_once("./vendor/autoload.php");
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
@@ -32,7 +28,7 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 //Optimisation
 ob_implicit_flush();
 ob_start();
-ini_set("memory_limit", "-1");  // total bastard
+ini_set("memory_limit", "256M");
 
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
