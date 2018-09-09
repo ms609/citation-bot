@@ -42,7 +42,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $text = $text . $text . '}} unbalanced {{' . $text . $text . '���������������������������������������������������������������';
       $text = $text . $text . $text . $text . 'ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩயாமறிந்த' ; // push it to the limits
       $text = '}}}}}{{{{{{{{{{{{{{ ' . $text . $text . $text . $text . $text ;
-      
+      $text = $text . $text . $text . $text . $text . $text;
       $this->process_page($text);
       $this->assertNull(NULL);
   }
