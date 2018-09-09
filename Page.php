@@ -286,11 +286,11 @@ class Page {
 
   protected function announce_page() {
     $url_encoded_title =  urlencode($this->title);
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title' style='text-weight:bold;'>" 
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title' style='font-weight:bold;'>" 
         . htmlspecialchars($this->title)
         . "</a>' &mdash; <a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
-        . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
-        . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
+        . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title"
+        . "&action=history' style='font-weight:bold;'>history</a> <script type='text/javascript'>"
         . "document.title=\"Citation bot: '"
         . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
         "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
