@@ -93,4 +93,10 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals($text, $page->parsed_text());
   }
 
+  public function testHugePage() {
+    $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=Vietnam_War&action=raw');
+    $page = new TestPage();
+    $page->parse_text($text);
+    $page->expand_text();
+  }
 }

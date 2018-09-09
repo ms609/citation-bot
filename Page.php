@@ -261,19 +261,21 @@ class Page {
   }
   
   public function extract_object ($class) {
+    $it_worked = TRUE;
     $i = 0;
     $text = $this->text;
     $regexp = $class::REGEXP;
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    while(preg_match($regexp, $text, $match)) {
+    while($it_worked = preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $objects[] = $obj;
     }
+    if ($it_worked === FALSE) exit(99); // Verify that code change actually worked, and did not just turn segfault into FALSE
     $this->text = $text;
     return $objects;
   }
