@@ -1494,25 +1494,25 @@ final class Template {
   }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search for citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
+  // If you want to forget the url and such then wrap this functon
  /*
  * Unused
  * @codeCoverageIgnore
  */
-  blah
   protected function expand_by_citoid($url) {
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
-    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
+    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));
     if ($json === FALSE) {
-      report_info("Citoid API returned nothing for JSTOR ". $jstor);
+      report_info("Citoid API returned nothing for URl ". $url);
       return FALSE;
     }
     $data = @json_decode($json, FALSE);
     if (!isset($data) || !isset($data[0]) || !isset($data[0]->{'title'})) {
-      report_info("Citoid API returned invalid json for JSTOR ". $jstor);
+      report_info("Citoid API returned invalid json for URL ". $url);
       return FALSE;
     }
     if (strtolower(trim($data[0]->{'title'})) === 'not found.' || strtolower(trim($data[0]->{'title'})) === 'not found') {
-      report_info("Citoid API could not resolve JSTOR ". $jstor);
+      report_info("Citoid API could not resolve URL ". $url);
       return FALSE;
     }
     // Verify that Citoid did not think that this was a website and not a journal
