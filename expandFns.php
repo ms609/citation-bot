@@ -7,8 +7,8 @@
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 // essential for huge PCREs
-ini_set("pcre.backtrack_limit", "23001337");
-ini_set("pcre.recursion_limit", "23001337");
+//ini_set("pcre.backtrack_limit", "23001337");
+//ini_set("pcre.recursion_limit", "23001337");
  
 include_once("./vendor/autoload.php");
 
