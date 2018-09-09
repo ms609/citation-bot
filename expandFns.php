@@ -32,7 +32,7 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 //Optimisation
 ob_implicit_flush();
 ob_start();
-ini_set("memory_limit", "4000M");
+ini_set("memory_limit", "-1");  // total bastard
 
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
