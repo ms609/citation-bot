@@ -575,11 +575,11 @@ final class Template {
             $param_key = $this->get_param_key($param_name);
             if (!is_null($param_key)) {
               $this->param[$param_key]->val = sanitize_string($value); // Minimize template changes (i.e. location) when upgrading from page=123 to pages=123-456
-              $this->tidy_parameters($param_name);
+              $this->tidy_parameter($param_name); // Clean up dashes etc
               return TRUE;
             } else {
               $this->add($param_name, sanitize_string($value));
-              $this->tidy_parameters($param_name);
+              $this->tidy_parameter($param_name); // Clean up dashes etc
               return TRUE;
             }
         }
