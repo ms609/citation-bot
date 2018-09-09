@@ -36,6 +36,16 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('Misc citation tidying. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
   }
 
+  public function testUtf8AndTemplateInsanity() {
+      $text = 'Đỗ Cao Trí 𐐷' . '{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{' . 'Ngô Đình Diệm' .
+                               '}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}' . 'Trần Văn Hương';
+      $text = $text . $text . '}} unbalanced {{' . $text . $text . '���������������������������������������������������������������';
+      $text = $text . $text . $text . $text . 'ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩயாமறிந்த' ; // push it to the limits
+      $text = '}}}}}{{{{{{{{{{{{{{ ' . $text . $text . $text . $text . $text ;
+      $text = $text . $text . $text . $text . $text . $text;
+      $this->process_page($text);
+      $this->assertNull(NULL);
+  }
   public function testBotRead() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
       echo 'S'; // Test skipped in pull requests, to protect Bot secrets
