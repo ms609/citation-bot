@@ -268,13 +268,16 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
+    set_time_limit(360);
     while($it_worked = preg_match($regexp, $text, $match)) {
+      set_time_limit(360);
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $objects[] = $obj;
     }
+    set_time_limit(120);
     if ($it_worked === FALSE) exit(99); // Verify that code change actually worked, and did not just turn segfault into FALSE
     $this->text = $text;
     return $objects;
