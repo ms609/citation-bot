@@ -942,7 +942,7 @@ final class Template {
              $this->forget('url');
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite book');  // Better template choice
-          return $this->add_if_new('oclc', $match[1])  
+          return $this->add_if_new('oclc', $match[1]); 
     }
     return FALSE ;
   }
