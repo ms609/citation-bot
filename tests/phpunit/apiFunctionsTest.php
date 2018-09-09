@@ -72,7 +72,7 @@ final class apiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testArxivDateUpgradeSeesDate() {
       $text = '{{Cite journal|date=September 2010|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
-      $this->assertTrue('September 2010', $expanded->get('date'));
+      $this->assertEquals('September 2010', $expanded->get('date'));
       $this->assertNull($expanded->get('year'));  // Do not change to year=2010 based upon Arxiv publication date
   }
 }
