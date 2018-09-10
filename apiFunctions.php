@@ -380,7 +380,7 @@ function expand_by_doi($template, $force = FALSE) {
         }
       }
     } else {
-      fwrite(STDERR, "No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
+      report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
       $template->mark_inactive_doi($doi);
     }
   }
@@ -402,7 +402,7 @@ function query_crossref($doi) {
       // Keep trying...
     }
   }
-  fwrite(STDERR, "Error loading CrossRef file from DOI " . echoable($doi) . "!");
+  report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");
   return FALSE;
 }
 
@@ -418,7 +418,7 @@ function is_doi_active($doi) {
   $response = get_headers("https://api.crossref.org/works/". urlencode($doi))[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
-  fwrite(STDERR, "CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");
+  report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");
   return NULL;
 }
 
