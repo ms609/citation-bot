@@ -349,7 +349,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
-    // $this->assertEquals('{{MC Hammer says to not touch this}}', $expanded->get('doi')); This does not work right because we are not doing a "PAGE"
+    $this->assertEquals('{{MC Hammer says to not touch this}}', $expanded->get('doi'));
     $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
