@@ -701,7 +701,7 @@ final class Template {
     }
   }
 
-  protected function mark_inactive_doi($doi = NULL) {
+  public function mark_inactive_doi($doi = NULL) {
     if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
     // Only mark as broken if dx.doi.org also fails to resolve
     $url_test = "https://dx.doi.org/" . $doi;
