@@ -380,7 +380,7 @@ function expand_by_doi($template, $force = FALSE) {
         }
       }
     } else {
-      report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
+      fwrite(STDERR, "No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
       $template->mark_inactive_doi($doi);
     }
   }
@@ -402,7 +402,7 @@ function query_crossref($doi) {
       // Keep trying...
     }
   }
-  report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");
+  fwrite(STDERR, "Error loading CrossRef file from DOI " . echoable($doi) . "!");
   return FALSE;
 }
 
