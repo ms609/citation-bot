@@ -2809,13 +2809,13 @@ final class Template {
     } else {
       report_info("Checking that DOI " . echoable($doi) . " is operational..." . tag());
       if (doi_active($this->get_without_comments_and_placeholders('doi')) === FALSE) {
-        fwrite(STDERR, "It's not; checking for user input error...");
+        report_inline("It's not; checking for user input error...");
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
         // if present, with new "doi-broken-date"
         $url_test = "https://dx.doi.org/" . urlencode($doi);
         $headers_test = @get_headers($url_test, 1);
         if ($headers_test === FALSE) {
-          fwrite(STDERR, "DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+          report_inline("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
           return FALSE;
         }
         $this->forget("doi_inactivedate");
@@ -2823,7 +2823,7 @@ final class Template {
         $this->forget("doi_brokendate");
         if(empty($headers_test['Location'])) {
            $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
-           fwrite(STDERR, "Broken doi: " . echoable($doi));
+           report_inline("Broken doi: " . echoable($doi));
            return FALSE;
         } else {
           return TRUE;
