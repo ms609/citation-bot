@@ -303,10 +303,6 @@ class Page {
         . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title=$url_encoded_title"
         . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title=$url_encoded_title"
         . "&action=history' style='font-weight:bold;'>history</a> <script type='text/javascript'>"
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title' style='font-weight:bold;'>"
-        . "document.title=\"Citation bot: '"
-        . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
-        "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
   }
   
   protected function allow_bots() {
