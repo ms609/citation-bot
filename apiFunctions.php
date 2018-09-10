@@ -524,6 +524,12 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       if ($arxiv_journal && $arxiv_year && (intval($arxiv_year) > 1900) && (intval($arxiv_year) < (1+intval(date("Y"))))) { // if no journal then doomed.  If bad date then doomed.
         if ($arxiv_year) {
           $current_year = $this_template->get_without_comments_and_placeholders('year');
+          if (!$current_year) {
+            $current_date = $this_template->get_without_comments_and_placeholders('date');
+            if ($current_date && preg_match('~\d{4}~', $current_date, $match)) {
+               $current_year = $match[0];
+            }
+          }
           if (!$current_year
           ||  (preg_match('~\d{4}~', $current_year) && $current_year < $arxiv_year && $upgrade_years)) {
             if ($this_template->has('date')) {

@@ -499,7 +499,30 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
       $this->assertEquals($text, $expanded->parsed_text());
   }
-  
+    
+  public function testDropPostscript() {
+      $text = '{{citation|postscript=}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+      $text = '{{citation|postscript=.}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+      $text = '{{cite journal|postscript=}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      $text = '{{cite journal|postscript=.}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      $text = '{{cite journal|postscript=none}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+  }
+    
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
       $prepared = $this->prepare_citation($text);

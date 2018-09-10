@@ -126,11 +126,17 @@ class Page {
       return FALSE;
     }
 
-    // EMPTY URLS Converted to Templates
+    // PLAIN URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
                       "~(<ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+)\]?\s*)(<\s*?\/\s*?ref>)~",
                       function($matches) {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
+                      $this->text
+                      );
+     // PLAIN DOIS Converted to templates 
+     $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
+                      "~(<ref[^>]*?>)(\s*10\.[0-9]+\/\S+\s*)(<\s*?\/\s*?ref>)~",
+                      function($matches) {return $matches[1] . '{{cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
 
@@ -267,12 +273,18 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    while(preg_match($regexp, $text, $match)) {
+    
+    $preg_completed = TRUE;
+    while($preg_completed = preg_match($regexp, $text, $match)) {
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $objects[] = $obj;
+    }
+    if ($preg_completed === FALSE) {
+       // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.
+       trigger_error("Internal PHP error in " . htmlspecialchars($this->title), USER_ERROR) ;
     }
     $this->text = $text;
     return $objects;
@@ -286,11 +298,12 @@ class Page {
 
   protected function announce_page() {
     $url_encoded_title =  urlencode($this->title);
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='text-weight:bold;'>" 
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>" 
         . htmlspecialchars($this->title)
         . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title=$url_encoded_title"
-        . "&action=edit' style='text-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title=$url_encoded_title"
-        . "&action=history' style='text-weight:bold;'>history</a> <script type='text/javascript'>"
+        . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title=$url_encoded_title"
+        . "&action=history' style='font-weight:bold;'>history</a> <script type='text/javascript'>"
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='https://en.wikipedia.org/w/index.php?title=$url_encoded_title' style='font-weight:bold;'>"
         . "document.title=\"Citation bot: '"
         . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
         "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
