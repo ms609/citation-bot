@@ -704,7 +704,7 @@ final class Template {
   public function mark_inactive_doi($doi = NULL) {
     if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
     // Only mark as broken if dx.doi.org also fails to resolve
-    $url_test = "https://dx.doi.org/" . $doi;
+    $url_test = "https://dx.doi.org/" . urlencode($doi);
     $headers_test = @get_headers($url_test, 1);
     if ($headers_test !== FALSE && empty($headers_test['Location'])) {
       $this->add_if_new('doi-broken-date', date('Y-m-d'));  
@@ -2812,7 +2812,7 @@ final class Template {
         fwrite(STDERR, "It's not; checking for user input error...");
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
         // if present, with new "doi-broken-date"
-        $url_test = "https://dx.doi.org/" . $doi;
+        $url_test = "https://dx.doi.org/" . urlencode($doi);
         $headers_test = @get_headers($url_test, 1);
         if ($headers_test === FALSE) {
           fwrite(STDERR, "DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
