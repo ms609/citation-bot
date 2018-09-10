@@ -101,10 +101,7 @@ function extract_doi($text) {
         ) {
       $doi = $new_match[1];
     }
-    $extension = substr($doi, strrpos($doi, '.'));
-    if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
-      $doi = substr($doi, 0, (strrpos($doi, $extension)));
-    }
+    sanitize_doi($doi);
     $doi_candidate = $doi;
     while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_active($doi_candidate)) {
       $last_delimiter = 0;
@@ -124,7 +121,7 @@ function wikify_external_text($title) {
   $replacement = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     $placeholder = [];
-    for ($i = 0; $i < count($matches[0]); $i++) {
+    for ($i = 0; $i < count($matches[0]); $i++) {abst
       $replacement[$i] = '<math>' . 
         str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), 
           str_replace(['<mml:', '</mml:'], ['<', '</'], $matches[1][$i]))
