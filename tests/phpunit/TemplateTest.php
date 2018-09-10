@@ -353,6 +353,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
+    
+    $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi-broken-date'));
   }
 
   public function testOpenAccessLookup() {
