@@ -2809,22 +2809,25 @@ final class Template {
     } else {
       report_info("Checking that DOI " . echoable($doi) . " is operational..." . tag());
       if (doi_active($this->get_without_comments_and_placeholders('doi')) === FALSE) {
-        report_inline("It's not; checking for user input error...");
+        printf(STDERR, "It's not; checking for user input error...");
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
         // if present, with new "doi-broken-date"
         $url_test = "https://dx.doi.org/" . $doi;
         $headers_test = @get_headers($url_test, 1);
         if ($headers_test === FALSE) {
-          report_warning("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+          printf(STDERR, "DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
           return FALSE;
         }
         $this->forget("doi_inactivedate");
         $this->forget("doi-inactive-date");
         $this->forget("doi_brokendate");
-        if(empty($headers_test['Location']))
+        if(empty($headers_test['Location'])) {
            $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
-        report_warning("Broken doi: " . echoable($doi));
-        return FALSE;
+           printf(STDERR, "Broken doi: " . echoable($doi));
+           return FALSE;
+        } else {
+          return TRUE;
+        }
       } else {
         $this->forget('doi_brokendate');
         $this->forget('doi_inactivedate');
