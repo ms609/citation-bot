@@ -1520,13 +1520,22 @@ final class Template {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
          return FALSE; // Not really "expanded"
     }
-    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  , $data[0]->{'title'});
+    if ( isset($data[0]->{'bookTitle'})) {
+                                                $this->add_if_new('title'  , $data[0]->{'bookTitle'});
+          if ( isset($data[0]->{'title'}))      $this->add_if_new('chapter', $data[0]->{'title'});
+          if ( isset($data[0]->{'publisher'}))  $this->add_if_new('publisher', $data[0]->{'publisher'});
+    } else {
+          if ( isset($data[0]->{'title'}))      $this->add_if_new('title'  , $data[0]->{'title'});
+    }
+      
+    if ( isset($data[0]->{'ISBN'}))             $this->add_if_new('isbn'   , $data[0]->{'ISBN'});
     if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  , $data[0]->{'issue'});
     if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  , $data[0]->{'pages'});
     if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal', $data[0]->{'publicationTitle'});
     if ( isset($data[0]->{'volume'}))           $this->add_if_new('volume' , $data[0]->{'volume'});
     if ( isset($data[0]->{'date'}))             $this->add_if_new('date'   , $data[0]->{'date'});
     if ( isset($data[0]->{'DOI'}))              $this->add_if_new('doi'    , $data[0]->{'DOI'});
+    if ( isset($data[0]->{'series'}))           $this->add_if_new('series' , $data[0]->{'series'});
     $i = 0;
     while (isset($data[0]->{'author'}[$i])) {
         if ( isset($data[0]->{'author'}[$i][0])) $this->add_if_new('first' . ($i+1), $data[0]->{'author'}[$i][0]);
