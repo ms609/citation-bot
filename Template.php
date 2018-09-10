@@ -2815,7 +2815,7 @@ final class Template {
         $url_test = "https://dx.doi.org/" . urlencode($doi);
         $headers_test = @get_headers($url_test, 1);
         if ($headers_test === FALSE) {
-          report_inline("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+          report_warning("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
           return FALSE;
         }
         $this->forget("doi_inactivedate");
