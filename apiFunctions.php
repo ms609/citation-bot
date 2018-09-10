@@ -415,7 +415,7 @@ function doi_active($doi) {
 }
 
 function is_doi_active($doi) {
-  $response = get_headers("https://api.crossref.org/works/$doi")[0];
+  $response = get_headers("https://api.crossref.org/works/". urlencod($doi))[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
   fwrite(STDERR, "CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");
