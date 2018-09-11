@@ -1113,7 +1113,7 @@ final class Template {
       if (isset($xml->ErrorList->PhraseNotFound)) {
         fwrite(STDERR, "\n Phrase not found in PMID search with query $query: "
         . echoable(print_r($xml->ErrorList, 1)));
-        fwrite(STDERR, "\n " . $url . " \n";
+        fwrite(STDERR, "\n " . $url . " \n");
       } else {
         report_inline('no results.');
       }
