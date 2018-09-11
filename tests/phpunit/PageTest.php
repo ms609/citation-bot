@@ -36,6 +36,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
+    $page->parsed_text();
   }
 
 }
