@@ -66,7 +66,7 @@ final class Template {
       fwrite(STDERR, "\n\n" . $this->join_params() . "\n\n");
 $e = new \Exception;
       fwrite(STDERR, "\n\n" . var_dump($e->getTraceAsString()) . "\n\n");
-      if ($this->blank('title')) {
+      if ($this->blank('title') && $this->blank('journal') && $this->blank('chapter')) {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
       } else {
         $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
