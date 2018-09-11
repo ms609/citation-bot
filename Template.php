@@ -559,6 +559,7 @@ final class Template {
         if (( $this->blank("pages") && $this->blank("page") && $this->blank("pp")  && $this->blank("p") && $this->blank('at'))
                 || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
                 || (strpos($value, chr(2013)) || (strpos($value, '-')) || (strpos($value, REGEXP_EN_DASH))
+                  && !strpos($this->get('pages'), REGEXP_EN_DASH)
                   && !strpos($this->get('pages'), chr(2013))
                   && !strpos($this->get('pages'), chr(150)) // Also en-dash
                   && !strpos($this->get('pages'), chr(226)) // Also en-dash
