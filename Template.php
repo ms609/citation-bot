@@ -1494,29 +1494,25 @@ final class Template {
   }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search for citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
-  // This is just an API that calls the JSTOR RIS system above
-  // Leave this code here, since Citoid can be used for many many things.
+  // If you want to forget the url and such then wrap this functon
  /**
  * Unused
  * @codeCoverageIgnore
  */
-  protected function expand_by_jstor_citoid() {
-    if ($this->blank('jstor')) return FALSE;
-    $jstor = $this->get('jstor');
-    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
+  protected function expand_url_by_citoid($url) {
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
-    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
+    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));
     if ($json === FALSE) {
-      report_info("Citoid API returned nothing for JSTOR ". $jstor);
+      report_info("Citoid API returned nothing for URl ". $url);
       return FALSE;
     }
     $data = @json_decode($json, FALSE);
     if (!isset($data) || !isset($data[0]) || !isset($data[0]->{'title'})) {
-      report_info("Citoid API returned invalid json for JSTOR ". $jstor);
+      report_info("Citoid API returned invalid json for URL ". $url);
       return FALSE;
     }
     if (strtolower(trim($data[0]->{'title'})) === 'not found.' || strtolower(trim($data[0]->{'title'})) === 'not found') {
-      report_info("Citoid API could not resolve JSTOR ". $jstor);
+      report_info("Citoid API could not resolve URL ". $url);
       return FALSE;
     }
     // Verify that Citoid did not think that this was a website and not a journal
@@ -1524,13 +1520,22 @@ final class Template {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
          return FALSE; // Not really "expanded"
     }
-    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  , $data[0]->{'title'});
+    if ( isset($data[0]->{'bookTitle'})) {
+                                                $this->add_if_new('title'  , $data[0]->{'bookTitle'});
+          if ( isset($data[0]->{'title'}))      $this->add_if_new('chapter', $data[0]->{'title'});
+          if ( isset($data[0]->{'publisher'}))  $this->add_if_new('publisher', $data[0]->{'publisher'});
+    } else {
+          if ( isset($data[0]->{'title'}))      $this->add_if_new('title'  , $data[0]->{'title'});
+    }
+      
+    if ( isset($data[0]->{'ISBN'}))             $this->add_if_new('isbn'   , $data[0]->{'ISBN'});
     if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  , $data[0]->{'issue'});
     if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  , $data[0]->{'pages'});
     if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal', $data[0]->{'publicationTitle'});
     if ( isset($data[0]->{'volume'}))           $this->add_if_new('volume' , $data[0]->{'volume'});
     if ( isset($data[0]->{'date'}))             $this->add_if_new('date'   , $data[0]->{'date'});
     if ( isset($data[0]->{'DOI'}))              $this->add_if_new('doi'    , $data[0]->{'DOI'});
+    if ( isset($data[0]->{'series'}))           $this->add_if_new('series' , $data[0]->{'series'});
     $i = 0;
     while (isset($data[0]->{'author'}[$i])) {
         if ( isset($data[0]->{'author'}[$i][0])) $this->add_if_new('first' . ($i+1), $data[0]->{'author'}[$i][0]);
