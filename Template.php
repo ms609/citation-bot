@@ -3080,21 +3080,28 @@ final class Template {
     }
   }
 
-  public function forget($par, $echo_forgetting = TRUE) { // Do not call this with second parameter set, use quietly_forget()
+    
+  public function quietly_forget($par) {
+    $this->forgeter($par, FALSE);
+  }
+  public function forget($par) {
+    $this->forgeter($par, TRUE);
+  }
+  private function forgeter($par, $echo_forgetting) { // Do not call this function directly
     if ($par == 'url') {
-      $this->forget('accessdate');
-      $this->forget('access-date');
-      $this->forget('archive-url');
-      $this->forget('archiveurl');
-      $this->forget('archive-date');
-      $this->forget('archivedate');
-      $this->forget('dead-url');
-      $this->forget('format');
-      $this->forget('registration');
-      $this->forget('subscription');
-      $this->forget('url-access');
-      $this->forget('via');
-      $this->forget('website');
+      $this->forgeter('accessdate', $echo_forgetting);
+      $this->forgeter('access-date', $echo_forgetting);
+      $this->forgeter('archive-url', $echo_forgetting);
+      $this->forgeter('archiveurl', $echo_forgetting);
+      $this->forgeter('archive-date', $echo_forgetting);
+      $this->forgeter('archivedate', $echo_forgetting);
+      $this->forgeter('dead-url', $echo_forgetting);
+      $this->forgeter('format', $echo_forgetting);
+      $this->forgeter('registration', $echo_forgetting);
+      $this->forgeter('subscription', $echo_forgetting);
+      $this->forgeter('url-access', $echo_forgetting);
+      $this->forgeter('via', $echo_forgetting);
+      $this->forgeter('website', $echo_forgetting);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
@@ -3104,10 +3111,6 @@ final class Template {
       }
       unset($this->param[$pos]);
     }
-  }
-  
-  public function quietly_forget($par) {
-    $this->forget($par, FALSE);
   }
 
   // Record modifications
