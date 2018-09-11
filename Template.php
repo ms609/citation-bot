@@ -3080,7 +3080,7 @@ final class Template {
     }
   }
 
-  public function forget($par) {
+  public function forget($par, $echo_forgetting = TRUE) { // Do not call this with second parameter set, use quietly_forget()
     if ($par == 'url') {
       $this->forget('accessdate');
       $this->forget('access-date');
@@ -3098,12 +3098,16 @@ final class Template {
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
-      if ($this->has($par) && strpos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
+      if ($echo_forgetting && $this->has($par) && strpos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
         // Do not mention forgetting empty parameters
         report_forget("Dropping parameter \"" . echoable($par) . '"' . tag());
       }
       unset($this->param[$pos]);
     }
+  }
+  
+  public function quietly_forget($par) {
+    $this->forget($par, FALSE);
   }
 
   // Record modifications
