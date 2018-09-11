@@ -741,10 +741,7 @@ final class Template {
           if (mb_strpos(strtolower($url), ".pdf") === FALSE) {
             report_forget("Recognized DOI in URL; dropping URL");
             $this->forget('url');
-          } else if (str_ireplace(PUBLISHER_WEBSITES, '', $url) != $url) {
-            report_forget("Recognized DOI in publisher URL; dropping URL");
-            $this->forget('url');
-          } else { // Otherwise has ".pdf" in it and it is not known publisher.  Probably is a free copy, so leave url.
+          } else { // Otherwise has ".pdf", probably is a free copy, so leave url.
             quietly('report_add', "Recognized DOI in URL; adding DOI");
           }
         } else {
