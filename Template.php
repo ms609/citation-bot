@@ -2970,7 +2970,7 @@ final class Template {
     }
   }
 
-  protected function page() {
+  public function page() {
     $page = $this->get('pages');
     return ($page ? $page : $this->get('page'));
   }
