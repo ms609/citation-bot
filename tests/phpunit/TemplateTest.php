@@ -55,6 +55,11 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
+  public function debugPubmed() {
+    $text = "{{Cite journal|doi= 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-# }}";
+    $expanded = $this->process_citation($text);  
+  }
+    
   protected function getDateAndYear($input){
     // Generates string that makes debugging easy and will throw error
     if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
