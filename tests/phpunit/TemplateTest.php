@@ -405,7 +405,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   */
   
   public function testCommentHandling() {
-    $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}}";
+    $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}} {{cite book | pages=3<pre>-</pre>6}} {{cite book | pages=3<math>-</math>6}} {{cite book | pages=3<score>-</score>6}} {{cite book | pages=3<chem>-</chem>6}}";
     $expanded_page = $this->process_page($text);
     $this->assertEquals($text, $expanded_page->parsed_text());
   }

@@ -118,9 +118,13 @@ class Page {
       return FALSE;
     }
 
-    // COMMENTS AND NOWIKI //
-    $comments = $this->extract_object('Comment');
-    $nowiki   = $this->extract_object('Nowiki');
+    // COMMENTS AND NOWIKI ETC. //
+    $comments    = $this->extract_object('Comment');
+    $nowiki      = $this->extract_object('Nowiki');
+    $chemistry   = $this->extract_object('Chemistry');
+    $mathematics = $this->extract_object('Mathematics');
+    $musicality  = $this->extract_object('Musicscores');
+    $preformated = $this->extract_object('Preformated');
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       return FALSE;
@@ -206,6 +210,10 @@ class Page {
     }
     $this->replace_object($all_templates);
 
+    $this->replace_object($preformated);
+    $this->replace_object($musicality);
+    $this->replace_object($mathematics);
+    $this->replace_object($chemistry);
     $this->replace_object($comments);
     $this->replace_object($nowiki);
 
