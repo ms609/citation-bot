@@ -32,10 +32,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function prepare_citation($text) {
-    $template = new Template();
-    $template->parse_text($text);
-    $template->prepare();
-    return $template;
+    return $this->process_citation($text);
   }
   
   protected function process_citation($text) {
