@@ -846,7 +846,7 @@ ER -  }}';
    $this->assertEquals('1961', $expanded->get('year'));
    $this->assertEquals('81', $expanded->get('volume'));
    $this->assertEquals('1', $expanded->get('issue'));
-   $this->assertEquals('43', $expanded->get('pages'));
+   $this->assertEquals('43–52', $expanded->get('pages'));
   }
       
   public function testJstorSICIEncoded() {
