@@ -424,6 +424,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('215', $expanded->get('pages'));
   }
   
+  public function testNoBibcodesForArxiv() {
+    $text = "{{Cite arxiv|last=Sussillo|first=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('bibcode'));  // If this eventually gets a journal, we will have to change the test
+  }
+
   public function testMisspeltParameters() {
     $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
     $expanded = $this->process_citation($text);
