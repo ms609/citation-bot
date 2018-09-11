@@ -75,6 +75,7 @@ class Page {
   }  
 
   public function parsed_text() {
+    fwrite(STDERR,"\n\n" . $this->text);
     return $this->text;
   }
   
