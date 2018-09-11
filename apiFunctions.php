@@ -427,7 +427,7 @@ function query_jstor_api($ids, $templates) {
 }
 
 function expand_by_jstor($template) {
-  if ($template->incomplete() === FALSE) return FALSE;
+  if ($template->incomplete() === FALSE && strpos($template->page(), "–") !== FALSE) return FALSE; // If we do not have page range, go for it
   if ($template->blank('jstor')) return FALSE;
   $jstor = trim($template->get('jstor'));
   if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors.  We do not want i12342 kind
