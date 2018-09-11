@@ -101,8 +101,7 @@ function extract_doi($text) {
         ) {
       $doi = $new_match[1];
     }
-    sanitize_doi($doi);
-    $doi_candidate = $doi;
+    $doi_candidate = sanitize_doi($doi);
     while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_active($doi_candidate)) {
       $last_delimiter = 0;
       foreach (array('/', '.', '#') as $delimiter) {
