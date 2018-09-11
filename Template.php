@@ -1067,7 +1067,7 @@ final class Template {
     }
   }
 
-  protected function do_pumbed_query($terms, $check_for_errors = FALSE) {
+  protected function do_pumbed_query($terms, $check_for_errors = TRUE) {
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
