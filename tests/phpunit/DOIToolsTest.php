@@ -100,7 +100,27 @@ final class doiToolsTest extends PHPUnit\Framework\TestCase {
     $result=format_author($author,FALSE);
     $this->assertEquals('Smith, M.A.', $result);
   }
-
+  public function testFormatAuthor10() {  
+    $author = "MA";
+    $result=format_forename($author);
+    $this->assertEquals('MA', $result);
+  }
+  public function testFormatAuthor11() {  
+    $author = "M.A";
+    $result=format_forename($author);
+    $this->assertEquals('M.A.', $result);
+  }
+  public function testFormatAuthor12() {  
+    $author = "M.A.";
+    $result=format_forename($author);
+    $this->assertEquals('M.A.', $result);
+  }
+   public function testFormatAuthor13() {  
+    $author = "M. A.";
+    $result=format_forename($author);
+    $this->assertEquals('M. A.', $result);
+  }
+ 
    public function testJunior() {
        $text = ""; // Empty string should work
        $result = junior_test($text);
