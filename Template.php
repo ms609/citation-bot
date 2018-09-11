@@ -63,7 +63,7 @@ final class Template {
   // Re-assemble parsed template into string
   public function parsed_text() {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
-     if ($this->has('doi')) $this->mark_inactive_doi(); // Check it right now, or else we might forget CITATION_BOT_PLACEHOLDER_BARE_URL
+     if ($this->has('doi') && $this->blank('doi-broken-date')) $this->mark_inactive_doi(); // Check it right now!!!
      if ($this->blank('title') && ($this->blank('doi') || ($this->has('doi') && $this->has('doi-broken-date'))) && $this->blank('chapter') && $this->blank('isbn') && $this->blank('pmc') && $this->blank('pmid')) {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
       } else {
