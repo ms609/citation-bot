@@ -562,7 +562,7 @@ final class Template {
         if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
         if (    $all_page_parameters == ""     // Nothing
                 || (strpos(strtolower($all_page_parameters), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
-                || (strcasecmp($all_page_parameters,'no') || strcasecmp($all_page_parameters,'none')) // Is exactly "no" or "none"
+                || (strcasecmp($all_page_parameters,'no')===0 || strcasecmp($all_page_parameters,'none')===0) // Is exactly "no" or "none"
                 || (strpos($value, chr(2013)) || (strpos($value, '-'))    // New pages have dash, old did not
                   && !strpos($all_page_parameters, chr(2013))
                   && !strpos($all_page_parameters, chr(150)) // Also en-dash
