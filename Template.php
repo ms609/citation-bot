@@ -63,7 +63,7 @@ final class Template {
   // Re-assemble parsed template into string
   public function parsed_text() {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
-      if ($this->blank('title')) {
+      if ($this->blank('title') && $this->blank('journal') && $this->blank('chapter')) {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
       } else {
         $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
