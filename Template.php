@@ -556,22 +556,25 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
-        if (( $this->blank("pages") && $this->blank("page") && $this->blank("pp")  && $this->blank("p") && $this->blank('at'))
-                || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
-                || (strpos($value, chr(2013)) || (strpos($value, '-'))
-                  && !strpos($this->get('pages'), chr(2013))
-                  && !strpos($this->get('pages'), chr(150)) // Also en-dash
-                  && !strpos($this->get('pages'), chr(226)) // Also en-dash
-                  && !strpos($this->get('pages'), '-')
-                  && !strpos($this->get('pages'), '&ndash;'))
+        $all_page_parameters = $this->get("pages") . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get("at");
+        if (mb_stripos($all_page_parameters, 'see ') !== FALSE) return FALSE;  // Someone is pointing to a specific part
+        if (mb_stripos($all_page_parameters, 'table') !== FALSE) return FALSE; // Someone is pointing to a specific table
+        if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
+        if (    $all_page_parameters == ""     // Nothing
+                || (strpos(strtolower($all_page_parameters), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
+                || (strcasecmp($all_page_parameters,'no') || strcasecmp($all_page_parameters,'none')) // Is exactly "no" or "none"
+                || (strpos($value, chr(2013)) || (strpos($value, '-'))    // New pages have dash, old did not
+                  && !strpos($all_page_parameters, chr(2013))
+                  && !strpos($all_page_parameters, chr(150)) // Also en-dash
+                  && !strpos($all_page_parameters, chr(226)) // Also en-dash
+                  && !strpos($all_page_parameters, '-')
+                  && !strpos($all_page_parameters, '&ndash;'))
         ) {
-            $all_page_parameters = $this->get("pages") . $this->get("page") . $this->get("pp") . $this->get("p");
-            if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
-            if ($param_name !== "page")$this->forget("page");
-            if ($param_name !== "pp")$this->forget("pp");
-            if ($param_name !== "p")$this->forget("p");
-            if ($param_name !== "at")$this->forget("at");
+            if ($param_name !== "page") $this->forget("page");
+            if ($param_name !== "pp") $this->forget("pp");
+            if ($param_name !== "p") $this->forget("p");
+            if ($param_name !== "at") $this->forget("at");
             $param_key = $this->get_param_key($param_name);
             if (!is_null($param_key)) {
               $this->param[$param_key]->val = sanitize_string($value); // Minimize template changes (i.e. location) when upgrading from page=123 to pages=123-456
