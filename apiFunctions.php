@@ -168,9 +168,9 @@ function adsabs_api($ids, $templates, $identifier) {
     return TRUE;
   }
   
-  foreach ($ids as $key => $ll) {
-    if (strpos($ll,'book') !== false) {
-        report_info(" Ignoring Book bibcode " . $ll . " \n");
+  foreach ($ids as $key => $bibcode) {
+    if (strpos($bibcode, 'book') !== false) {
+        report_info("Ignoring Book bibcode " . $bibcode);
         unset($ids[$key]);
     }
   }
