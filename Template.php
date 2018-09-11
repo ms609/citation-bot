@@ -64,6 +64,8 @@ final class Template {
   public function parsed_text() {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
       fwrite(STDERR, "\n\n" . $this->join_params() . "\n\n");
+$e = new \Exception;
+      fwrite(STDERR, "\n\n" . var_dump($e->getTraceAsString()) . "\n\n");
       if ($this->blank('title')) {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
       } else {
