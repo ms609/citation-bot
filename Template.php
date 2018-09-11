@@ -3082,26 +3082,26 @@ final class Template {
 
     
   public function quietly_forget($par) {
-    $this->forgeter($par, FALSE);
+    $this->forgetter($par, FALSE);
   }
   public function forget($par) {
-    $this->forgeter($par, TRUE);
+    $this->forgetter($par, TRUE);
   }
-  private function forgeter($par, $echo_forgetting) { // Do not call this function directly
+  private function forgetter($par, $echo_forgetting) { // Do not call this function directly
     if ($par == 'url') {
-      $this->forgeter('accessdate', $echo_forgetting);
-      $this->forgeter('access-date', $echo_forgetting);
-      $this->forgeter('archive-url', $echo_forgetting);
-      $this->forgeter('archiveurl', $echo_forgetting);
-      $this->forgeter('archive-date', $echo_forgetting);
-      $this->forgeter('archivedate', $echo_forgetting);
-      $this->forgeter('dead-url', $echo_forgetting);
-      $this->forgeter('format', $echo_forgetting);
-      $this->forgeter('registration', $echo_forgetting);
-      $this->forgeter('subscription', $echo_forgetting);
-      $this->forgeter('url-access', $echo_forgetting);
-      $this->forgeter('via', $echo_forgetting);
-      $this->forgeter('website', $echo_forgetting);
+      $this->forgetter('accessdate', $echo_forgetting);
+      $this->forgetter('access-date', $echo_forgetting);
+      $this->forgetter('archive-url', $echo_forgetting);
+      $this->forgetter('archiveurl', $echo_forgetting);
+      $this->forgetter('archive-date', $echo_forgetting);
+      $this->forgetter('archivedate', $echo_forgetting);
+      $this->forgetter('dead-url', $echo_forgetting);
+      $this->forgetter('format', $echo_forgetting);
+      $this->forgetter('registration', $echo_forgetting);
+      $this->forgetter('subscription', $echo_forgetting);
+      $this->forgetter('url-access', $echo_forgetting);
+      $this->forgetter('via', $echo_forgetting);
+      $this->forgetter('website', $echo_forgetting);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
