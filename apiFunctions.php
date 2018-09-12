@@ -50,7 +50,7 @@ function entrez_api($ids, $templates, $db) {
               $junior = $jr_test[1];
               if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
                 $first = trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
-                  if (strpos($first, '.') && substr($first, -1) != '.') {
+                if (strpos($first, '.') && substr($first, -1) != '.') {
                   $first = $first . '.';
                 }
                 fwrite(STDERR, $i . "  " . $names[1]. "  " . $junior . "  " . $first . " \n");
