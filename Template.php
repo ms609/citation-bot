@@ -3097,25 +3097,32 @@ final class Template {
     }
   }
 
+    
+  public function quietly_forget($par) {
+    $this->forgetter($par, FALSE);
+  }
   public function forget($par) {
+    $this->forgetter($par, TRUE);
+  }
+  private function forgetter($par, $echo_forgetting) { // Do not call this function directly
     if ($par == 'url') {
-      $this->forget('accessdate');
-      $this->forget('access-date');
-      $this->forget('archive-url');
-      $this->forget('archiveurl');
-      $this->forget('archive-date');
-      $this->forget('archivedate');
-      $this->forget('dead-url');
-      $this->forget('format');
-      $this->forget('registration');
-      $this->forget('subscription');
-      $this->forget('url-access');
-      $this->forget('via');
-      $this->forget('website');
+      $this->forgetter('accessdate', $echo_forgetting);
+      $this->forgetter('access-date', $echo_forgetting);
+      $this->forgetter('archive-url', $echo_forgetting);
+      $this->forgetter('archiveurl', $echo_forgetting);
+      $this->forgetter('archive-date', $echo_forgetting);
+      $this->forgetter('archivedate', $echo_forgetting);
+      $this->forgetter('dead-url', $echo_forgetting);
+      $this->forgetter('format', $echo_forgetting);
+      $this->forgetter('registration', $echo_forgetting);
+      $this->forgetter('subscription', $echo_forgetting);
+      $this->forgetter('url-access', $echo_forgetting);
+      $this->forgetter('via', $echo_forgetting);
+      $this->forgetter('website', $echo_forgetting);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
-      if ($this->has($par) && strpos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
+      if ($echo_forgetting && $this->has($par) && strpos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
         // Do not mention forgetting empty parameters
         report_forget("Dropping parameter \"" . echoable($par) . '"' . tag());
       }
