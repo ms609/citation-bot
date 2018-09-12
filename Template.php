@@ -2665,7 +2665,7 @@ final class Template {
           switch ($this->wikiname()) {
             case 'cite book': $work_becomes = 'title'; break;
             case 'cite journal': $work_becomes = 'journal'; break;
-            case 'cite web': $work_becomes = 'website'; break;
+            // case 'cite web': $work_becomes = 'website'; break;  this change should correct, but way too much crap gets put in work that does not belong there.  Secondly this make no change to the what the user sees
             default: $work_becomes = 'work';
           }
           if ($this->get($param) !== NULL && $this->blank($work_becomes)) {
