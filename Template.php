@@ -410,7 +410,7 @@ final class Template {
           if (mb_strlen($value) === 1 || (mb_strlen($value) > 3 && mb_substr($value, -2, 1) === " ")) { // Single character at end
             $value .= '.';
           }
-          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ")) { // Special case for "F M" -- add dots to both
+          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ") { // Special case for "F M" -- add dots to both
             $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
           }
           return $this->add($param_name, $value);
@@ -439,7 +439,7 @@ final class Template {
           if (mb_strlen($value) === 1 || (mb_strlen($value) > 3 && mb_substr($value, -2, 1) === " ")) { // Single character at end
             $value .= '.';
           }
-          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ")) { // Special case for "F M" -- add dots to both
+          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ") { // Special case for "F M" -- add dots to both
             $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
           }
           return $this->add($param_name, $value);
