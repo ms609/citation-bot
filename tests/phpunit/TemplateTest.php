@@ -138,8 +138,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     
   public function testDots() {
      $text = '{{cite journal|pmid=4957203}}';
-     $expanded = $this->process_page($text);
-    $this->assertEquals('M. M.', $expanded->get('first3'));
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('M. M.', $expanded->get('first3'));
   }
  
   public function testPmidIsZero() {
