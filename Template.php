@@ -405,6 +405,7 @@ final class Template {
           if (strpos($value, ',') && substr($param_name, 0, 3) == 'aut') {
             $au = explode(',', $value);
             $this->add('last' . $auNo, format_surname($au[0]));
+            fwrite(STDERR,"\n  format_forename(trim($au[1]))     trim($au[1])   $au[1]   sanitize_string($au[1])\n");
             return $this->add_if_new('first' . $auNo, format_forename(trim($au[1])));
           } else {
             return $this->add($param_name, sanitize_string($value));
