@@ -27,13 +27,15 @@ if (php_sapi_name() !== "cli") {
 }
 require_once __DIR__ . '/expandFns.php';
 
+$category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
+
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   echo " Activated by $user.\n";
-  $edit_summary_end = " | [[User:$user|$user]]";
+  $edit_summary_end = " | [[User:$user|$user]] | Run on [[Category:$category]]";
 } else {
   echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits";
-  $edit_summary_end = " | [[WP:UCB|User-activated]].";
+  $edit_summary_end = " | [[WP:UCB|User-activated]] | Run on [[Category:$category]]";
 }
 
 if (HTML_OUTPUT) {
@@ -51,7 +53,6 @@ if (HTML_OUTPUT) {
 } else {
   echo "\n";
 }
-$category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 if ($category) {
   $attempts = 0;
   $api = new WikipediaBot();
