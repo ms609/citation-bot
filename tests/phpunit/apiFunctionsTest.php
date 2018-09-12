@@ -68,4 +68,16 @@ final class apiFunctionsTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('14879', $templates[0]->get('pages'));
     });
   }
+  
+  public function testArxivDateUpgradeSeesDate() {
+      $text = '{{Cite journal|date=September 2010|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('September 2010', $expanded->get('date'));
+      $this->assertNull($expanded->get('year'));
+      
+      $text = '{{Cite journal|date=September 2009|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('date'));
+      $this->assertEquals('2010', $expanded->get('year'));
+  }
 }
