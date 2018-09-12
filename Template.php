@@ -394,7 +394,7 @@ final class Template {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98":
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
 
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
           && $this->blank("coauthor") && $this->blank("coauthors")
