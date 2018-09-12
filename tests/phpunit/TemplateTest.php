@@ -224,7 +224,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-981-10-3179-3', $expanded->get('isbn'));
   }
-    
+  
+  public function testDoiEndings() {
+    $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full}}';
+    $expanded = $this->process_citation($text);   
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
+    $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
+  }
+
   public function testSeriesIsJournal() {
     $text = '{{citation | series = Annals of the New York Academy of Sciences| doi = 10.1111/j.1749-6632.1979.tb32775.x}}';
     $expanded = $this->process_citation($text);
@@ -434,7 +443,18 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
   }
-  
+    
+  public function testParameterAlias() {
+    $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
+    |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
+    |journal=Lichenologist |volume=23 |pages=309–321 |doi=10.1017/S0024282991000452 |issue=3}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('last1'));
+    $this->assertNull($expanded->get('last2'));
+    $this->assertNull($expanded->get('first1'));
+    $this->assertNull($expanded->get('first2'));
+  }
+    
   public function testMisspeltParameters() {
     $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
     $expanded = $this->process_citation($text);
@@ -1019,6 +1039,9 @@ ER -  }}';
     $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]', $prepared->get('pages'));
+    $text = '{{Cite journal|doi=10.1007/s11746-998-0245-y|at=pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures', $expanded->get('at')); // Leave complex at=
   }
     
   public function testCollapseRanges() {

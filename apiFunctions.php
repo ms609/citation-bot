@@ -442,9 +442,8 @@ function expand_by_jstor($template) {
   }
   $has_a_url = $template->has('url');
   $template->expand_by_RIS($dat);
-  if ($template->has('url') && !$has_a_url) { // added http://www.jstor.org/stable/12345, so remove (do not use forget, since that echos)
-      $pos = $template->get_param_key('url');
-      unset($template->param[$pos]);
+  if ($template->has('url') && !$has_a_url) { // we added http://www.jstor.org/stable/12345, so remove quietly
+      $template->quietly_forget('url');
   }
   return TRUE;
 }

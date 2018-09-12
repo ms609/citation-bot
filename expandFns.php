@@ -73,7 +73,16 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
 }
 
 function sanitize_doi($doi) {
-  return str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
+  $doi = str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
+  $extension = substr($doi, strrpos($doi, '.'));
+  if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
+      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  }
+  $extension = substr($doi, strrpos($doi, '/'));
+  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf'))) {
+      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  }
+  return $doi;
 }
 
 /* extract_doi
@@ -92,11 +101,7 @@ function extract_doi($text) {
         ) {
       $doi = $new_match[1];
     }
-    $extension = substr($doi, strrpos($doi, '.'));
-    if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
-      $doi = substr($doi, 0, (strrpos($doi, $extension)));
-    }
-    $doi_candidate = $doi;
+    $doi_candidate = sanitize_doi($doi);
     while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_active($doi_candidate)) {
       $last_delimiter = 0;
       foreach (array('/', '.', '#') as $delimiter) {
