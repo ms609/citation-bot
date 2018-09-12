@@ -884,7 +884,18 @@ ER -  }}';
    $this->assertEquals('1961', $expanded->get('year'));
    $this->assertEquals('81', $expanded->get('volume'));
    $this->assertEquals('1', $expanded->get('issue'));
-   $this->assertEquals('43–52', $expanded->get('pages'));
+   $this->assertEquals('43–52', $expanded->get('pages'));  // The jstor expansion add the page ending
+  }
+    
+  public function testSICI() {
+   $url = "https://www.bobs-burgers-and-brews.org/sici?sici=9999-9999(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
+   $text = "{{Cite journal|url=$url}}";  // We use a rubbish ISSN and website so that this does not expand any more -- only test SICI code
+   $expanded = $this->process_citation($text);
+     
+   $this->assertEquals('1961', $expanded->get('year'));
+   $this->assertEquals('81', $expanded->get('volume'));
+   $this->assertEquals('1', $expanded->get('issue'));
+   $this->assertEquals('43', $expanded->get('pages'));
   }
       
   public function testJstorSICIEncoded() {
