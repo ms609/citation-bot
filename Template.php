@@ -426,7 +426,7 @@ final class Template {
         if ($this->blank($param_name)
                 && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
-          if (mb_strpos($value, -1) === '.') {
+          if (mb_substr($value, -1) === '.') {
              $value = sanitize_string($value) . '.';
           } else {
              $value = sanitize_string($value);
