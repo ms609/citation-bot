@@ -248,6 +248,12 @@ class Page {
       $auto_summary .= "Removed accessdate with no specified URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
+    if ((count($this->modifications["deletions"]) !== 0)
+    && ($pos = array_search(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"])) !== FALSE
+    ) {
+      $auto_summary .= "Converted bare reference to cite template. ";
+      unset($this->modifications["deletions"][$pos]);
+    }
     $auto_summary .= ((count($this->modifications["deletions"]) !==0)
       ? "Removed parameters. "
       : ""
