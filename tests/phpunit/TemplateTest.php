@@ -667,9 +667,9 @@ ER -  }}';
      $this->assertEquals('A Mathematical Theory of Communication', $prepared->get('title'));
      $this->assertEquals('1948-07', $prepared->get('date'));
      $this->assertEquals('Bell System Technical Journal', $prepared->get('journal'));
-     $this->assertEquals('Shannon, Claude E', $prepared->first_author());
+     $this->assertEquals('Shannon, Claude E.', $prepared->first_author());
      $this->assertEquals('Shannon', $prepared->get('last1'));
-     $this->assertEquals('Claude E', $prepared->get('first1'));
+     $this->assertEquals('Claude E.', $prepared->get('first1'));
      $this->assertEquals('379–423', $prepared->get('pages'));
      $this->assertEquals('27', $prepared->get('volume'));   
   }
