@@ -431,7 +431,7 @@ final class Template {
           } else {
              $value = sanitize_string($value);
           }
-          if (mb_strlen($value) === 1) $value += '.';
+          if (mb_strlen($value) === 1) $value = $value . '.';
           return $this->add($param_name, $value);
         }
         return FALSE;
