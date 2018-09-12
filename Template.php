@@ -346,7 +346,7 @@ final class Template {
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
 
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
           if (strpos($value, ',')) {
@@ -359,12 +359,24 @@ final class Template {
         }
       return FALSE;
       case "first": case "first1":
-       $value = straighten_quotes($value);
-       if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
-          return $this->add($param_name, sanitize_string($value));
+       $value = trim(straighten_quotes($value));
+       if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))  {
+          if (mb_substr($value, -1) === '.') { // Do not lose last period
+             $value = sanitize_string($value) . '.';
+          } else {
+             $value = sanitize_string($value);
+          }
+          if (mb_strlen($value) === 1 || (mb_strlen($value) > 3 && mb_substr($value, -2, 1) === " ")) { // Single character at end
+            $value .= '.';
+          }
+          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ") { // Special case for "F M" -- add dots to both
+            $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
+          }
+          return $this->add($param_name, $value);
+      }
       return FALSE;
       case "coauthors": //FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
