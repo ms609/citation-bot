@@ -66,6 +66,7 @@ final class Template {
       if ($this->blank('title')) {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
       } else {
+        report_action("Converted Bare reference to template: " . trim(base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')))));
         $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
       }
     }
