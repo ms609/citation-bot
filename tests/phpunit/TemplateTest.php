@@ -710,7 +710,7 @@ ER -  }}';
        $this->assertEquals('Boston', $prepared->get('location'));
        
        $prepared = $this->process_citation($article);
-       $this->assertEquals('Clark, Herbert H', $prepared->first_author());
+       $this->assertEquals('Clark, Herbert H.', $prepared->first_author());
        $this->assertEquals('1982', $this->getDateAndYear($prepared));
        $this->assertEquals('Hearers and Speech Acts', $prepared->get('title'));
        $this->assertEquals('58', $prepared->get('volume'));
