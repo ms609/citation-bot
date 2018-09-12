@@ -54,7 +54,7 @@ function entrez_api($ids, $templates, $db) {
                   $first = $first . '.';
                 }
                 fwrite(STDERR, $i . "  " . $names[1]. "  " . $junior . "  " . $first . " \n");
-                $this_template->add_if_new("author$i", $names[1] . $junior . ',' . $first, 'entrez');
+                $this_template->add_if_new("author$i", $names[1] . $junior . ', ' . $first, 'entrez');
               }
             } else {
               // We probably have a committee or similar.  Just use 'author$i'.
