@@ -44,7 +44,6 @@ function entrez_api($ids, $templates, $db) {
           foreach ($item->Item as $subItem) {
             $i++;
             if (author_is_human((string) $subItem)) {
-              fwrite(STDERR,"\n" . (string) $subItem . '  ');
               $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
               $junior = $jr_test[1];
@@ -53,7 +52,6 @@ function entrez_api($ids, $templates, $db) {
                 if (strpos($first, '.') && substr($first, -1) != '.') {
                   $first = $first . '.';
                 }
-                fwrite(STDERR, $i . "  " . $names[1]. "  " . $junior . "  " . $first . " \n");
                 $this_template->add_if_new("author$i", $names[1] . $junior . ', ' . $first, 'entrez');
               }
             } else {
