@@ -55,6 +55,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
+  public function testWeird() {
+     $text = '{{cite journal|bibcode = 1951RvMP...23...69R }}';
+     $this->process_citation($text);
+  }
   protected function getDateAndYear($input){
     // Generates string that makes debugging easy and will throw error
     if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
