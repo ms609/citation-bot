@@ -35,6 +35,7 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $page = $this->process_page('{{cite book||quote=a quote}}'); // Just lose extra pipe
       $this->assertEquals('Misc citation tidying. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
       $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
+      $this->assertFalse(strpos($page->parsed_text(), 'onlinelibrary.wiley.com')); // URL is gone
       $this->assertEquals('Converted bare reference to cite template. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
   }
 
