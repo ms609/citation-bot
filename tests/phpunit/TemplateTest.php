@@ -136,6 +136,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
      $this->assertEquals($text, $expanded->parsed_text());   
   }
     
+  public function testDots() {
+     $text = '{{cite journal|pmid=4957203}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('M. M.', $expanded->get('first3'));
+  }
+ 
   public function testPmidIsZero() {
       $text = '{{cite journal|pmc=2676591}}';
       $expanded = $this->process_citation($text);
@@ -681,9 +687,9 @@ ER -  }}';
      $this->assertEquals('A Mathematical Theory of Communication', $prepared->get('title'));
      $this->assertEquals('1948-07', $prepared->get('date'));
      $this->assertEquals('Bell System Technical Journal', $prepared->get('journal'));
-     $this->assertEquals('Shannon, Claude E', $prepared->first_author());
+     $this->assertEquals('Shannon, Claude E.', $prepared->first_author());
      $this->assertEquals('Shannon', $prepared->get('last1'));
-     $this->assertEquals('Claude E', $prepared->get('first1'));
+     $this->assertEquals('Claude E.', $prepared->get('first1'));
      $this->assertEquals('379–423', $prepared->get('pages'));
      $this->assertEquals('27', $prepared->get('volume'));   
   }
@@ -724,7 +730,7 @@ ER -  }}';
        $this->assertEquals('Boston', $prepared->get('location'));
        
        $prepared = $this->process_citation($article);
-       $this->assertEquals('Clark, Herbert H', $prepared->first_author());
+       $this->assertEquals('Clark, Herbert H.', $prepared->first_author());
        $this->assertEquals('1982', $this->getDateAndYear($prepared));
        $this->assertEquals('Hearers and Speech Acts', $prepared->get('title'));
        $this->assertEquals('58', $prepared->get('volume'));
@@ -772,8 +778,8 @@ ER -  }}';
   public function testEtAl() {
     $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('Albertstein, Alfred A', $prepared->first_author());
-    $this->assertEquals('Charlie C', $prepared->get('first3'));
+    $this->assertEquals('Albertstein, Alfred A.', $prepared->first_author());
+    $this->assertEquals('Charlie C.', $prepared->get('first3'));
     $this->assertEquals('etal', $prepared->get('displayauthors'));
   }
        

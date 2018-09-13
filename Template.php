@@ -346,7 +346,7 @@ final class Template {
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
 
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
           if (strpos($value, ',')) {
@@ -359,12 +359,24 @@ final class Template {
         }
       return FALSE;
       case "first": case "first1":
-       $value = straighten_quotes($value);
-       if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
-          return $this->add($param_name, sanitize_string($value));
+       $value = trim(straighten_quotes($value));
+       if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))  {
+          if (mb_substr($value, -1) === '.') { // Do not lose last period
+             $value = sanitize_string($value) . '.';
+          } else {
+             $value = sanitize_string($value);
+          }
+          if (mb_strlen($value) === 1 || (mb_strlen($value) > 3 && mb_substr($value, -2, 1) === " ")) { // Single character at end
+            $value .= '.';
+          }
+          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ") { // Special case for "F M" -- add dots to both
+            $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
+          }
+          return $this->add($param_name, $value);
+      }
       return FALSE;
       case "coauthors": //FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
@@ -394,7 +406,7 @@ final class Template {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98":
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
 
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
           && $this->blank("coauthor") && $this->blank("coauthors")
@@ -421,12 +433,23 @@ final class Template {
       case "first70": case "first71": case "first72": case "first73": case "first74": case "first75": case "first76": case "first77": case "first78": case "first79":
       case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
 
         if ($this->blank($param_name)
                 && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
-          return $this->add($param_name, sanitize_string($value));
+          if (mb_substr($value, -1) === '.') { // Do not lose last period
+             $value = sanitize_string($value) . '.';
+          } else {
+             $value = sanitize_string($value);
+          }
+          if (mb_strlen($value) === 1 || (mb_strlen($value) > 3 && mb_substr($value, -2, 1) === " ")) { // Single character at end
+            $value .= '.';
+          }
+          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ") { // Special case for "F M" -- add dots to both
+            $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
+          }
+          return $this->add($param_name, $value);
         }
         return FALSE;
       
