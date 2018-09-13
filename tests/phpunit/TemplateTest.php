@@ -955,28 +955,7 @@ ER -  }}';
     $this->assertEquals('2009', $expanded->get('year'));
     $this->assertEquals('115202', $expanded->get('pages'));
   }
-    
-  public function testDoiInline() {
-    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Nature', $expanded->get('journal'));
-  }
-    
-   public function testSmallWords() {
-       $text = '{{cite journal|journal=A Word in ny and n y About cow And Then boys the U S A and y and z}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('A Word in NY and N Y About Cow and then Boys the U S A and y and Z', $expanded->get('journal')); 
-       $text = '{{cite journal|journal=Ann of Math}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('Ann of Math', $expanded->get('journal')); 
-       $text = '{{cite journal|journal=Ann. of Math.}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('Ann. of Math.', $expanded->get('journal')); 
-       $text = '{{cite journal|journal=Ann. of Math}}';
-       $expanded = $this->process_citation($text);
-       $this->assertEquals('Ann. of Math', $expanded->get('journal')); 
-   }
-
+  
   public function testArxivMore3() {
     $text = "{{cite arxiv}}"; //  0905.1039
     $expanded = $this->process_citation($text);
@@ -1056,6 +1035,12 @@ ER -  }}';
     $this->assertEquals('032412332', $expanded->get('pages'));
   }
 
+   public function testDoiInline() {
+    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Nature', $expanded->get('journal'));
+  } 
+  
   public function testPagesDash() {
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
