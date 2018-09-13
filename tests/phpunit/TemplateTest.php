@@ -955,7 +955,7 @@ ER -  }}';
     $this->assertEquals('2009', $expanded->get('year'));
     $this->assertEquals('115202', $expanded->get('pages'));
   }
-  
+    
   public function testArxivMore3() {
     $text = "{{cite arxiv}}"; //  0905.1039
     $expanded = $this->process_citation($text);
