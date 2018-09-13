@@ -1039,15 +1039,23 @@ ER -  }}';
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('1–2', $prepared->get('pages'));
+    
     $text = '{{cite journal|at=1-2|title=do not change}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('1-2', $prepared->get('at'));
+    
     $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]', $prepared->get('pages'));
+
+    $text = '{{Cite journal|pages=15|doi=10.1016/j.biocontrol.2014.06.004}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('15–22', $expanded->get('pages')); // Converted should use long dashes
+
     $text = '{{Cite journal|doi=10.1007/s11746-998-0245-y|at=pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures', $expanded->get('at')); // Leave complex at=
+
   }
     
   public function testCollapseRanges() {

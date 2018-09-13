@@ -601,10 +601,11 @@ final class Template {
             $param_key = $this->get_param_key($param_name);
             if (!is_null($param_key)) {
               $this->param[$param_key]->val = sanitize_string($value); // Minimize template changes (i.e. location) when upgrading from page=123 to pages=123-456
-              return TRUE;
             } else {
-              return $this->add($param_name, sanitize_string($value));
+              $this->add($param_name, sanitize_string($value));
             }
+            $this->tidy_parameter($param_name); // Clean up dashes etc
+            return TRUE;
         }
         return FALSE;
         
