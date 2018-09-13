@@ -110,11 +110,6 @@ class Page {
   public function expand_text() {
     date_default_timezone_set('UTC');
     $this->announce_page();
-    $this->modifications = array();
-    $this->modifications["changeonly"] = array();
-    $this->modifications['additions'] = array();
-    $this->modifications["deletions"] = array();
-    $this->modifications["dashes"] = FALSE;
     if (!$this->text) {
       report_warning("No text retrieved.\n");
       return FALSE;
