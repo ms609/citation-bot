@@ -228,7 +228,6 @@ class Page {
   }
 
   public function edit_summary() {
-    fwrite(STDERR, print_r($this->modifications));
     $auto_summary = "";
     if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
