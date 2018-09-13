@@ -54,6 +54,7 @@ class Page {
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     $this->start_text = $this->text;
     $this->modifications = array();
+
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
       return FALSE;
@@ -111,6 +112,7 @@ class Page {
   public function expand_text() {
     date_default_timezone_set('UTC');
     $this->announce_page();
+    $this->modifications = array();
     if (!$this->text) {
       report_warning("No text retrieved.\n");
       return FALSE;
