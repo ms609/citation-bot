@@ -28,24 +28,30 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('A Journal of Chemistry A',
                         title_capitalization('A Journal of Chemistry A', TRUE));
     $this->assertEquals('A Journal of Chemistry E',
-                        title_capitalization('A Journal of Chemistry E', TRUE));
+                        title_capitalization('A Journal of Chemistry E', TRUE));                      
+    $this->assertEquals('This a Journal', 
+                        title_capitalization('THIS A JOURNAL', TRUE));
   }
   
   public function testFrenchCapitalization() {
-    $this->assertEquals("L'Aerotecnica", 
+    $this->assertEquals("L'Aerotecnica",
                         title_capitalization(title_case("L'Aerotecnica"), TRUE));
-    $this->assertEquals("Phénomènes d'Évaporation d'Hydrologie", 
+    $this->assertEquals("Phénomènes d'Évaporation d'Hydrologie",
                         title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), TRUE));
     $this->assertEquals("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica",
                         title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE));
   }
     
-  public function testDoiRegExp() {
+  public function testExtractDoi() {
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', 
                         extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full')[1]);
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', 
                         extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract')[1]);
     $this->assertEquals('10.1016/j.physletb.2010.03.064', 
                         extract_doi(' 10.1016%2Fj.physletb.2010.03.064')[1]);
-  }  
+    $this->assertEquals('10.1093/acref/9780199204632.001.0001', 
+                        extract_doi('http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022')[1]);
+    $this->assertEquals('10.1038/nature11111', 
+                        extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
+  }
 }

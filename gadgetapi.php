@@ -39,5 +39,6 @@ $result = array(
 
 // Throw away all output
 ob_end_clean();
+@ob_end_clean(); @ob_end_clean();  // Other parts of the code might open a buffer
 
 echo @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE

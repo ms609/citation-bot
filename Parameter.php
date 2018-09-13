@@ -48,7 +48,7 @@ final class Parameter {
   protected function set_value($value) {
     switch ($this->param) {
       case 'pages':
-        if (stripos($value, "http") === FALSE) $value = mb_ereg_replace(TO_EN_DASH, EN_DASH, $value);
+        if (stripos($value, "http") === FALSE) $value = mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
         $this->val = $value;
       break;
       default: $this->val = $value;
