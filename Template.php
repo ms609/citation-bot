@@ -17,7 +17,7 @@ require_once("Parameter.php");
 
 final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
-  const REGEXP = '~\{\{(?:[^\{]|\{[^\{])+?\}\}~su';
+  const REGEXP = '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su';  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
   protected $rawtext;
@@ -346,7 +346,7 @@ final class Template {
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
 
         if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
           if (strpos($value, ',')) {
@@ -359,12 +359,24 @@ final class Template {
         }
       return FALSE;
       case "first": case "first1":
-       $value = straighten_quotes($value);
-       if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
-          return $this->add($param_name, sanitize_string($value));
+       $value = trim(straighten_quotes($value));
+       if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))  {
+          if (mb_substr($value, -1) === '.') { // Do not lose last period
+             $value = sanitize_string($value) . '.';
+          } else {
+             $value = sanitize_string($value);
+          }
+          if (mb_strlen($value) === 1 || (mb_strlen($value) > 3 && mb_substr($value, -2, 1) === " ")) { // Single character at end
+            $value .= '.';
+          }
+          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ") { // Special case for "F M" -- add dots to both
+            $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
+          }
+          return $this->add($param_name, $value);
+      }
       return FALSE;
       case "coauthors": //FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
         if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
@@ -394,7 +406,7 @@ final class Template {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98":
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
 
         if ($this->blank("last$auNo") && $this->blank("author$auNo")
           && $this->blank("coauthor") && $this->blank("coauthors")
@@ -421,12 +433,23 @@ final class Template {
       case "first70": case "first71": case "first72": case "first73": case "first74": case "first75": case "first76": case "first77": case "first78": case "first79":
       case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
-        $value = straighten_quotes($value);
+        $value = trim(straighten_quotes($value));
 
         if ($this->blank($param_name)
                 && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
                 && $this->blank("coauthor") && $this->blank("coauthors")) {
-          return $this->add($param_name, sanitize_string($value));
+          if (mb_substr($value, -1) === '.') { // Do not lose last period
+             $value = sanitize_string($value) . '.';
+          } else {
+             $value = sanitize_string($value);
+          }
+          if (mb_strlen($value) === 1 || (mb_strlen($value) > 3 && mb_substr($value, -2, 1) === " ")) { // Single character at end
+            $value .= '.';
+          }
+          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ") { // Special case for "F M" -- add dots to both
+            $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
+          }
+          return $this->add($param_name, $value);
         }
         return FALSE;
       
@@ -556,22 +579,25 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
-        if (( $this->blank("pages") && $this->blank("page") && $this->blank("pp")  && $this->blank("p") && $this->blank('at'))
-                || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
+        $all_page_parameters = $this->get("pages") . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get("at");
+        if (mb_stripos($all_page_parameters, 'see ') !== FALSE) return FALSE;  // Someone is pointing to a specific part
+        if (mb_stripos($all_page_parameters, 'table') !== FALSE) return FALSE; // Someone is pointing to a specific table
+        if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
+        if (    $all_page_parameters == ""     // Nothing
+                || (strpos(strtolower($all_page_parameters), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
+                || (strcasecmp($all_page_parameters,'no')===0 || strcasecmp($all_page_parameters,'none')===0) // Is exactly "no" or "none"
                 || (strpos($value, chr(2013)) || (strpos($value, '-'))
-                  && !strpos($this->get('pages'), chr(2013))
-                  && !strpos($this->get('pages'), chr(150)) // Also en-dash
-                  && !strpos($this->get('pages'), chr(226)) // Also en-dash
-                  && !strpos($this->get('pages'), '-')
-                  && !strpos($this->get('pages'), '&ndash;'))
+                  && !strpos($all_page_parameters, chr(2013))
+                  && !strpos($all_page_parameters, chr(150)) // Also en-dash
+                  && !strpos($all_page_parameters, chr(226)) // Also en-dash
+                  && !strpos($all_page_parameters, '-')
+                  && !strpos($all_page_parameters, '&ndash;'))
         ) {
-            $all_page_parameters = $this->get("pages") . $this->get("page") . $this->get("pp") . $this->get("p");
-            if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
-            if ($param_name !== "page")$this->forget("page");
-            if ($param_name !== "pp")$this->forget("pp");
-            if ($param_name !== "p")$this->forget("p");
-            if ($param_name !== "at")$this->forget("at");
+            if ($param_name !== "page") $this->forget("page");
+            if ($param_name !== "pp") $this->forget("pp");
+            if ($param_name !== "p") $this->forget("p");
+            if ($param_name !== "at") $this->forget("at");
             $param_key = $this->get_param_key($param_name);
             if (!is_null($param_key)) {
               $this->param[$param_key]->val = sanitize_string($value); // Minimize template changes (i.e. location) when upgrading from page=123 to pages=123-456
@@ -702,10 +728,10 @@ final class Template {
     }
   }
 
-  protected function mark_inactive_doi($doi = NULL) {
+  public function mark_inactive_doi($doi = NULL) {
     if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
     // Only mark as broken if dx.doi.org also fails to resolve
-    $url_test = "https://dx.doi.org/" . $doi;
+    $url_test = "https://dx.doi.org/" . urlencode($doi);
     $headers_test = @get_headers($url_test, 1);
     if ($headers_test !== FALSE && empty($headers_test['Location'])) {
       $this->add_if_new('doi-broken-date', date('Y-m-d'));  
@@ -1495,29 +1521,25 @@ final class Template {
   }
   // For information about Citoid, look at https://www.mediawiki.org/wiki/Citoid
   // For the specific implementation that we use, search for citoid on https://en.wikipedia.org/api/rest_v1/#!/Citation/getCitation
-  // This is just an API that calls the JSTOR RIS system above
-  // Leave this code here, since Citoid can be used for many many things.
+  // If you want to forget the url and such then wrap this functon
  /**
  * Unused
  * @codeCoverageIgnore
  */
-  protected function expand_by_jstor_citoid() {
-    if ($this->blank('jstor')) return FALSE;
-    $jstor = $this->get('jstor');
-    if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors
+  protected function expand_url_by_citoid($url) {
     if ( !$this->incomplete()) return FALSE; // Do not hassle Citoid, if we have nothing to gain
-    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode('http://www.jstor.org/stable/') . $jstor);
+    $json=@file_get_contents('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));
     if ($json === FALSE) {
-      report_info("Citoid API returned nothing for JSTOR ". $jstor);
+      report_info("Citoid API returned nothing for URl ". $url);
       return FALSE;
     }
     $data = @json_decode($json, FALSE);
     if (!isset($data) || !isset($data[0]) || !isset($data[0]->{'title'})) {
-      report_info("Citoid API returned invalid json for JSTOR ". $jstor);
+      report_info("Citoid API returned invalid json for URL ". $url);
       return FALSE;
     }
     if (strtolower(trim($data[0]->{'title'})) === 'not found.' || strtolower(trim($data[0]->{'title'})) === 'not found') {
-      report_info("Citoid API could not resolve JSTOR ". $jstor);
+      report_info("Citoid API could not resolve URL ". $url);
       return FALSE;
     }
     // Verify that Citoid did not think that this was a website and not a journal
@@ -1525,13 +1547,22 @@ final class Template {
          $this->add_if_new('title', substr(trim($data[0]->{'title'}), 0, -9)); // Add the title without " on jstor"
          return FALSE; // Not really "expanded"
     }
-    if ( isset($data[0]->{'title'}))            $this->add_if_new('title'  , $data[0]->{'title'});
+    if ( isset($data[0]->{'bookTitle'})) {
+                                                $this->add_if_new('title'  , $data[0]->{'bookTitle'});
+          if ( isset($data[0]->{'title'}))      $this->add_if_new('chapter', $data[0]->{'title'});
+          if ( isset($data[0]->{'publisher'}))  $this->add_if_new('publisher', $data[0]->{'publisher'});
+    } else {
+          if ( isset($data[0]->{'title'}))      $this->add_if_new('title'  , $data[0]->{'title'});
+    }
+      
+    if ( isset($data[0]->{'ISBN'}))             $this->add_if_new('isbn'   , $data[0]->{'ISBN'});
     if ( isset($data[0]->{'issue'}))            $this->add_if_new('issue'  , $data[0]->{'issue'});
     if ( isset($data[0]->{'pages'}))            $this->add_if_new('pages'  , $data[0]->{'pages'});
     if ( isset($data[0]->{'publicationTitle'})) $this->add_if_new('journal', $data[0]->{'publicationTitle'});
     if ( isset($data[0]->{'volume'}))           $this->add_if_new('volume' , $data[0]->{'volume'});
     if ( isset($data[0]->{'date'}))             $this->add_if_new('date'   , $data[0]->{'date'});
     if ( isset($data[0]->{'DOI'}))              $this->add_if_new('doi'    , $data[0]->{'DOI'});
+    if ( isset($data[0]->{'series'}))           $this->add_if_new('series' , $data[0]->{'series'});
     $i = 0;
     while (isset($data[0]->{'author'}[$i])) {
         if ( isset($data[0]->{'author'}[$i][0])) $this->add_if_new('first' . ($i+1), $data[0]->{'author'}[$i][0]);
@@ -2658,7 +2689,7 @@ final class Template {
           switch ($this->wikiname()) {
             case 'cite book': $work_becomes = 'title'; break;
             case 'cite journal': $work_becomes = 'journal'; break;
-            case 'cite web': $work_becomes = 'website'; break;
+            // case 'cite web': $work_becomes = 'website'; break;  this change should correct, but way too much crap gets put in work that does not belong there.  Secondly this make no change to the what the user sees
             default: $work_becomes = 'work';
           }
           if ($this->get($param) !== NULL && $this->blank($work_becomes)) {
@@ -2716,6 +2747,12 @@ final class Template {
             }
           }
           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+          return;
+        case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
+          if ($this->wikiname() !== 'citation') {
+            if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
+            if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
+          }
           return;
       }
     }
@@ -2807,7 +2844,7 @@ final class Template {
         report_inline("It's not; checking for user input error...");
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
         // if present, with new "doi-broken-date"
-        $url_test = "https://dx.doi.org/" . $doi;
+        $url_test = "https://dx.doi.org/" . urlencode($doi);
         $headers_test = @get_headers($url_test, 1);
         if ($headers_test === FALSE) {
           report_warning("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
@@ -2816,10 +2853,13 @@ final class Template {
         $this->forget("doi_inactivedate");
         $this->forget("doi-inactive-date");
         $this->forget("doi_brokendate");
-        if(empty($headers_test['Location']))
+        if(empty($headers_test['Location'])) {
            $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
-        report_warning("Broken doi: " . echoable($doi));
-        return FALSE;
+           report_inline("Broken doi: " . echoable($doi));
+           return FALSE;
+        } else {
+          return TRUE;
+        }
       } else {
         $this->forget('doi_brokendate');
         $this->forget('doi_inactivedate');
@@ -3081,25 +3121,32 @@ final class Template {
     }
   }
 
+    
+  public function quietly_forget($par) {
+    $this->forgetter($par, FALSE);
+  }
   public function forget($par) {
+    $this->forgetter($par, TRUE);
+  }
+  private function forgetter($par, $echo_forgetting) { // Do not call this function directly
     if ($par == 'url') {
-      $this->forget('accessdate');
-      $this->forget('access-date');
-      $this->forget('archive-url');
-      $this->forget('archiveurl');
-      $this->forget('archive-date');
-      $this->forget('archivedate');
-      $this->forget('dead-url');
-      $this->forget('format');
-      $this->forget('registration');
-      $this->forget('subscription');
-      $this->forget('url-access');
-      $this->forget('via');
-      $this->forget('website');
+      $this->forgetter('accessdate', $echo_forgetting);
+      $this->forgetter('access-date', $echo_forgetting);
+      $this->forgetter('archive-url', $echo_forgetting);
+      $this->forgetter('archiveurl', $echo_forgetting);
+      $this->forgetter('archive-date', $echo_forgetting);
+      $this->forgetter('archivedate', $echo_forgetting);
+      $this->forgetter('dead-url', $echo_forgetting);
+      $this->forgetter('format', $echo_forgetting);
+      $this->forgetter('registration', $echo_forgetting);
+      $this->forgetter('subscription', $echo_forgetting);
+      $this->forgetter('url-access', $echo_forgetting);
+      $this->forgetter('via', $echo_forgetting);
+      $this->forgetter('website', $echo_forgetting);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
-      if ($this->has($par) && strpos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
+      if ($echo_forgetting && $this->has($par) && strpos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
         // Do not mention forgetting empty parameters
         report_forget("Dropping parameter \"" . echoable($par) . '"' . tag());
       }

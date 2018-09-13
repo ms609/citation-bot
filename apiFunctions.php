@@ -415,7 +415,7 @@ function doi_active($doi) {
 }
 
 function is_doi_active($doi) {
-  $response = get_headers("https://api.crossref.org/works/$doi")[0];
+  $response = get_headers("https://api.crossref.org/works/" . urlencode($doi))[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");
@@ -442,9 +442,8 @@ function expand_by_jstor($template) {
   }
   $has_a_url = $template->has('url');
   $template->expand_by_RIS($dat);
-  if ($template->has('url') && !$has_a_url) { // added http://www.jstor.org/stable/12345, so remove (do not use forget, since that echos)
-      $pos = $template->get_param_key('url');
-      unset($template->param[$pos]);
+  if ($template->has('url') && !$has_a_url) { // we added http://www.jstor.org/stable/12345, so remove quietly
+      $template->quietly_forget('url');
   }
   return TRUE;
 }
@@ -516,14 +515,20 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
-          trigger_error("Unexpected data found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+          trigger_error("Unexpected data found in parse_plain_text_reference. " . $journal_data );
         } else {
-          report_info("Unexpected data found in arxivjournal_ref.  Citation bot cannot parse. Please report. " . $journal_data );
+          report_info("Unexpected data found in parse_plain_text_reference.  Citation bot cannot parse. Please report. " . $journal_data );
         }
       }
       if ($arxiv_journal && $arxiv_year && (intval($arxiv_year) > 1900) && (intval($arxiv_year) < (1+intval(date("Y"))))) { // if no journal then doomed.  If bad date then doomed.
         if ($arxiv_year) {
           $current_year = $this_template->get_without_comments_and_placeholders('year');
+          if (!$current_year) {
+            $current_date = $this_template->get_without_comments_and_placeholders('date');
+            if ($current_date && preg_match('~\d{4}~', $current_date, $match)) {
+               $current_year = $match[0];
+            }
+          }
           if (!$current_year
           ||  (preg_match('~\d{4}~', $current_year) && $current_year < $arxiv_year && $upgrade_years)) {
             if ($this_template->has('date')) {

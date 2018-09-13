@@ -136,6 +136,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
      $this->assertEquals($text, $expanded->parsed_text());   
   }
     
+  public function testDots() {
+     $text = '{{cite journal|pmid=4957203}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('M. M.', $expanded->get('first3'));
+  }
+ 
   public function testPmidIsZero() {
       $text = '{{cite journal|pmc=2676591}}';
       $expanded = $this->process_citation($text);
@@ -224,7 +230,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-981-10-3179-3', $expanded->get('isbn'));
   }
-    
+  
+  public function testDoiEndings() {
+    $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full}}';
+    $expanded = $this->process_citation($text);   
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
+    $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
+  }
+
   public function testSeriesIsJournal() {
     $text = '{{citation | series = Annals of the New York Academy of Sciences| doi = 10.1111/j.1749-6632.1979.tb32775.x}}';
     $expanded = $this->process_citation($text);
@@ -349,10 +364,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
-    // $this->assertEquals('{{MC Hammer says to not touch this}}', $expanded->get('doi')); This does not work right because we are not doing a "PAGE"
+    $this->assertEquals('{{MC Hammer says to not touch this}}', $expanded->get('doi'));
     $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
+    
+    $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi-broken-date'));
   }
 
   public function testOpenAccessLookup() {
@@ -401,7 +420,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   */
   
   public function testCommentHandling() {
-    $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}}";
+    $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}} {{cite book | pages=3<pre>-</pre>6}} {{cite book | pages=3<math>-</math>6}} {{cite book | pages=3<score>-</score>6}} {{cite book | pages=3<chem>-</chem>6}}";
     $expanded_page = $this->process_page($text);
     $this->assertEquals($text, $expanded_page->parsed_text());
   }
@@ -430,7 +449,18 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
   }
-  
+    
+  public function testParameterAlias() {
+    $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
+    |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
+    |journal=Lichenologist |volume=23 |pages=309–321 |doi=10.1017/S0024282991000452 |issue=3}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('last1'));
+    $this->assertNull($expanded->get('last2'));
+    $this->assertNull($expanded->get('first1'));
+    $this->assertNull($expanded->get('first2'));
+  }
+    
   public function testMisspeltParameters() {
     $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
     $expanded = $this->process_citation($text);
@@ -499,7 +529,30 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
       $this->assertEquals($text, $expanded->parsed_text());
   }
-  
+    
+  public function testDropPostscript() {
+      $text = '{{citation|postscript=}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+      $text = '{{citation|postscript=.}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+      $text = '{{cite journal|postscript=}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      $text = '{{cite journal|postscript=.}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      $text = '{{cite journal|postscript=none}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+  }
+    
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
       $prepared = $this->prepare_citation($text);
@@ -634,9 +687,9 @@ ER -  }}';
      $this->assertEquals('A Mathematical Theory of Communication', $prepared->get('title'));
      $this->assertEquals('1948-07', $prepared->get('date'));
      $this->assertEquals('Bell System Technical Journal', $prepared->get('journal'));
-     $this->assertEquals('Shannon, Claude E', $prepared->first_author());
+     $this->assertEquals('Shannon, Claude E.', $prepared->first_author());
      $this->assertEquals('Shannon', $prepared->get('last1'));
-     $this->assertEquals('Claude E', $prepared->get('first1'));
+     $this->assertEquals('Claude E.', $prepared->get('first1'));
      $this->assertEquals('379–423', $prepared->get('pages'));
      $this->assertEquals('27', $prepared->get('volume'));   
   }
@@ -677,7 +730,7 @@ ER -  }}';
        $this->assertEquals('Boston', $prepared->get('location'));
        
        $prepared = $this->process_citation($article);
-       $this->assertEquals('Clark, Herbert H', $prepared->first_author());
+       $this->assertEquals('Clark, Herbert H.', $prepared->first_author());
        $this->assertEquals('1982', $this->getDateAndYear($prepared));
        $this->assertEquals('Hearers and Speech Acts', $prepared->get('title'));
        $this->assertEquals('58', $prepared->get('volume'));
@@ -725,8 +778,8 @@ ER -  }}';
   public function testEtAl() {
     $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('Albertstein, Alfred A', $prepared->first_author());
-    $this->assertEquals('Charlie C', $prepared->get('first3'));
+    $this->assertEquals('Albertstein, Alfred A.', $prepared->first_author());
+    $this->assertEquals('Charlie C.', $prepared->get('first3'));
     $this->assertEquals('etal', $prepared->get('displayauthors'));
   }
        
@@ -986,15 +1039,23 @@ ER -  }}';
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('1–2', $prepared->get('pages'));
+    
     $text = '{{cite journal|at=1-2|title=do not change}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('1-2', $prepared->get('at'));
+    
     $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('[http://bogus.bogus/1–2/ 1–2]', $prepared->get('pages'));
+
     $text = '{{Cite journal|pages=15|doi=10.1016/j.biocontrol.2014.06.004}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('15–22', $expanded->get('pages')); // Converted should use long dashes
+
+    $text = '{{Cite journal|doi=10.1007/s11746-998-0245-y|at=pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures', $expanded->get('at')); // Leave complex at=
+
   }
     
   public function testCollapseRanges() {
