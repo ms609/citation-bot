@@ -2754,6 +2754,12 @@ final class Template {
             if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
           }
           return;
+        case 'website':
+          if ($this->wikiname() === 'cite book') {
+            if ($this->get($param) === 'Google.com') $this->forget($param);
+            if ($this->get($param) === 'google.com') $this->forget($param);
+          }
+          return;
       }
     }
   }
