@@ -240,6 +240,11 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
   }
 
+  public function testCrashing() {
+    $text = '{{Cite journal|title=Scientific Astronomy in Antiquity|author=A. Aaboe|journal=[[Philosophical Transactions of the Royal Society]]|volume=276|issue=1257|date=2 May 1974|pages=21–42|ref=harv|doi=10.1098/rsta.1974.0007|bibcode=1974RSPTA.276...21A|jstor=74272}}
+    $expanded = $this->process_citation($text);
+    $this->assertNull(NULL);
+  }
   public function testSeriesIsJournal() {
     $text = '{{citation | series = Annals of the New York Academy of Sciences| doi = 10.1111/j.1749-6632.1979.tb32775.x}}';
     $expanded = $this->process_citation($text);
