@@ -1737,7 +1737,7 @@ final class Template {
           switch ($best_location->version) {
             case 'acceptedVersion': $type = 'Accepted manuscript'; break;
             case 'submittedVersion': $type = 'Submitted manuscript'; break;
-            //  case 'publishedVersion': $type = 'Full text'; break; // This is the assumed default
+            // case 'publishedVersion': $type = 'Full text'; break; // This is the assumed default
             default: $type = NULL;
           }
           if ($type) $this->add('type', $type);
