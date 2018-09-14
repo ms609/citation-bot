@@ -1719,7 +1719,7 @@ final class Template {
              return TRUE;
           }
         }
-
+        if ($this->blank('url') this->quietly_forget('url'); // lose everything url related
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
@@ -1740,7 +1740,7 @@ final class Template {
             // case 'publishedVersion': $format = 'Full text'; break; // This is the assumed default
             default: $format = NULL;
           }
-          if ($format) $this->add('format', $format);
+          if ($format) $this->add('type', $format);
         }
         return TRUE;
       }
@@ -2752,6 +2752,14 @@ final class Template {
           if ($this->wikiname() !== 'citation') {
             if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
             if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
+          }
+          return; 
+        case 'format': // clean up bots old edits
+          if ($this->get($param) === 'Accepted manuscript' ||
+              $this->get($param) === 'Submitted manuscript') {
+            $this->rename('format','type');
+          } elseif ($this->get($param) === 'Full text') {
+            $this->forget('format');
           }
           return;
       }
