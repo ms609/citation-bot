@@ -241,7 +241,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testCrashing() {
-    $text = '{{Cite journal|title=Scientific Astronomy in Antiquity|author=A. Aaboe|journal=[[Philosophical Transactions of the Royal Society]]|volume=276|issue=1257|date=2 May 1974|pages=21–42|ref=harv|doi=10.1098/rsta.1974.0007|bibcode=1974RSPTA.276...21A|jstor=74272}}
+    $text = '{{Cite journal|title=Scientific Astronomy in Antiquity|author=A. Aaboe|journal=[[Philosophical Transactions of the Royal Society]]|volume=276|issue=1257|date=2 May 1974|pages=21–42|ref=harv|doi=10.1098/rsta.1974.0007|bibcode=1974RSPTA.276...21A|jstor=74272}}';
     $expanded = $this->process_citation($text);
     $this->assertNull(NULL);
   }
