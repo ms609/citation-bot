@@ -1156,7 +1156,7 @@ ER -  }}';
   }
 
   public function testDropGoogleWebsite() {
-    $text = "{{Cite book|website=Google.Com}}";
+    $text = "{{Cite book|website=Google.Com|url=http://Invalid.url.not-real.com/}}"; // Include a fake URL so that we are not testing: if (no url) then drop website
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('website'));
   }
