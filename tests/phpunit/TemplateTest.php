@@ -1027,12 +1027,21 @@ ER -  }}';
   }
     
   public function testArxivMore11() {
-    $text = "{{cite arxiv}}"; // eprint=made up
+    $text = "{{cite arxiv}}"; // eprint=real gr-qc/0103067
     $expanded = $this->process_citation($text);
     parse_plain_text_reference("ZooKeys 212 (1999), 032412332, 33 pages", $expanded, TRUE);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('1999', $expanded->get('year'));
     $this->assertEquals('032412332', $expanded->get('pages'));
+  }
+    
+  public function testArxivMore12() {
+    $text = "{{cite arxiv}}"; // eprint=made up
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("Lect.Notes Phys.562:195-212,2001", $expanded, TRUE);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2001', $expanded->get('year'));
+    $this->assertEquals('195–212', $expanded->get('pages'));
   }
 
   public function testPagesDash() {
