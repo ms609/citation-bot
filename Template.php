@@ -2756,7 +2756,7 @@ final class Template {
           return;
         case 'website':
           if ($this->wikiname() === 'cite book') {
-            if (strcasecmp($this->get($param), 'google.com') === 0) $this->forget($param);
+            if (strcasecmp((string)$this->get($param), 'google.com') === 0) $this->forget($param);
           }
           return;
       }
