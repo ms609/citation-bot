@@ -12,3 +12,9 @@ exec ("git fetch --all", $output, $return_var);
   echo "Git Fetch operation successful.";
 }
 ?>
+<pre>
+<?php>
+exec ("git show --oneline -s", $output, $return_var);
+foreach($output as $line) print "$line \n";
+?>
+</pre>
