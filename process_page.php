@@ -59,9 +59,9 @@ foreach (explode('|', $pages) as $title) {
       }
       if ($attempts < 3 ) {
         html_echo(
-          " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
+          " <small><a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&diff=prev&oldid="
           . urlencode($api->get_last_revision($title)) . ">diff</a> | "
-          . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a></small></i>\n\n"
+          . "<a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&action=history>history</a></small></i>\n\n"
           , ".");
       } else {
         echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());
