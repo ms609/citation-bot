@@ -1155,6 +1155,11 @@ ER -  }}';
     $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc', $expanded->get('title'));
   }
 
+  public function testDropGoogleWebsite() {
+    $text = "{{Cite book|website=Google.Com}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('website'));
+  }
 
   public function testHornorificInTitle() { // compaints about this
     $text = "{{cite book|title=Letter from Sir Frederick Trench to the Viscount Duncannon on his proposal for a quay on the north bank of the Thames|url=https://books.google.com/books?id=oNBbAAAAQAAJ|year=1841}}";
