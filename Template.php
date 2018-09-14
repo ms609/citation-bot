@@ -1735,12 +1735,12 @@ final class Template {
             return FALSE;
           }
           switch ($best_location->version) {
-            // case 'acceptedVersion': $format = 'Accepted manuscript'; break; // Lacks consensus & wrong parameter
-            // case 'submittedVersion': $format = 'Submitted manuscript'; break; // Lacks consensus & wrong parameter
-            // case 'publishedVersion': $format = 'Full text'; break; // This is the assumed default
-            default: $format = NULL;
+            // case 'acceptedVersion': $type = 'Accepted manuscript'; break; // Lacks consensus & wrong parameter
+            case 'submittedVersion': $type = 'Submitted manuscript'; break;
+            case 'publishedVersion': $type = 'Full text'; break;
+            default: $type = NULL;
           }
-          if ($format) $this->add('format', $format);
+          if ($type) $this->add('type', $type);
         }
         return TRUE;
       }
