@@ -77,7 +77,7 @@ final class Template {
     // Replace | characters that are inside template parameter/value pairs
     $text = preg_replace('~(\[\[[^\[\]]+)\|([^\[\]]+\]\])~', "$1" . PIPE_PLACEHOLDER . "$2", $text);
     $params = explode('|', $text);
-
+fwrite(STDERR,print_r($params));
     // TODO: this naming is confusing, distinguish between $text above and
     //       $text in the loop (derived from $text above via $params)
     foreach ($params as $i => $text) {
