@@ -141,7 +141,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
      $expanded = $this->process_citation($text);
      $this->assertEquals('M. M.', $expanded->get('first3'));
   }
- 
+    
+  public function testJusrBrackets() {
+     $text = '{{cite book|title=[[|]][[]]}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($text, $expanded->get_parsed());
+  }
+
   public function testPmidIsZero() {
       $text = '{{cite journal|pmc=2676591}}';
       $expanded = $this->process_citation($text);
