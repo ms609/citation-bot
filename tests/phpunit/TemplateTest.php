@@ -146,6 +146,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
      $text = '{{cite book|title=[[W|12px|alt=W]]}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals($text, $expanded->parsed_text());
+     $text = '{{cite book|title=[[File:Example.png|thumb|upright|alt=Example alt text|Example caption]]}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($text, $expanded->parsed_text());
   }
 
   public function testPmidIsZero() {
