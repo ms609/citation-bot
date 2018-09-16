@@ -75,19 +75,19 @@ final class Template {
   // Parts of each param: | [pre] [param] [eq] [value] [post]
   protected function split_params($text) {
     // Replace | characters that are inside template parameter/value pairs
-    const START = "~(\[\[[^\[\]\|]+)";
-    const STOP  =      "([^\[\]\|]+\]\])~";
-    const MID   =      "([^\[\]\|]+)";
-    const PIPE  = "\|";
-    $text = preg_replace(START . PIPE . STOP, "$1" . PIPE_PLACEHOLDER . "$2", $text);
-    $text = preg_replace(START . PIPE . MID . PIPE . STOP,
+    $START = "~(\[\[[^\[\]\|]+)";
+    $STOP  =      "([^\[\]\|]+\]\])~";
+    $MID   =      "([^\[\]\|]+)";
+    $PIPE  = "\|";
+    $text = preg_replace($START . $PIPE . $STOP, "$1" . PIPE_PLACEHOLDER . "$2", $text);
+    $text = preg_replace($START . $PIPE . $MID . $PIPE . $STOP,
                          "$1" . PIPE_PLACEHOLDER . "$2" .
                          PIPE_PLACEHOLDER . "$3", $text);
-    $text = preg_replace(START . PIPE . MID . PIPE . MID . PIPE . STOP,
+    $text = preg_replace($START . $PIPE . $MID . $PIPE . $MID . $PIPE . $STOP,
                          "$1" . PIPE_PLACEHOLDER . "$2" .
                          PIPE_PLACEHOLDER . "$3" .
                          PIPE_PLACEHOLDER . "$4", $text);
-    $text = preg_replace(START . PIPE . MID . PIPE . MID . PIPE . MID . PIPE . STOP,
+    $text = preg_replace($START . $PIPE . $MID . $PIPE . $MID . $PIPE . $MID . $PIPE . $STOP,
                          "$1" . PIPE_PLACEHOLDER . "$2" .
                          PIPE_PLACEHOLDER . "$3" .
                          PIPE_PLACEHOLDER . "$4" .
