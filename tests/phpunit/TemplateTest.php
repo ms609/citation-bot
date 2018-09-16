@@ -145,7 +145,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testJusrBrackets() {
      $text = '{{cite book|title=[[|]][[]]}}';
      $expanded = $this->process_citation($text);
-     $this->assertEquals($text, $expanded->get_parsed());
+     $this->assertEquals($text, $expanded->parsed_text());
   }
 
   public function testPmidIsZero() {
