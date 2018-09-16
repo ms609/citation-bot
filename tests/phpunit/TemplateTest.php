@@ -143,7 +143,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
     
   public function testJustBrackets() {
-     $text = '{{cite book|title=[[W|x|v=W]]}}';
+     $text = '{{cite book|title=[[W|12px|alt=W]]}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals($text, $expanded->parsed_text());
   }
