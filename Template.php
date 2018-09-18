@@ -2807,6 +2807,11 @@ final class Template {
             $this->rename('work', 'magazine');
          }
       }
+      if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+        if ($this->has('title') || $this->has('chapter')) {
+          $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+        }
+      }
     }
   }
   
