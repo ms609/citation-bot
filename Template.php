@@ -2112,7 +2112,7 @@ final class Template {
         if (preg_match('~\d+~', $dat, $match)) { // Deal with # values
            $parameter = preg_replace('~#~', $match[0], $parameter);
         }
-        if (strpos("#", $parameter) !== FALSE) break; // Do no use # items unless we have a number
+        if (strpos($parameter, '#') !== FALSE) break; // Do no use # items unless we have a number
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
@@ -2369,7 +2369,7 @@ final class Template {
         if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
            $parameter = preg_replace('~#~', $match[0], $parameter);
         }
-        if (strpos("#", $parameter) !== FALSE) break; // Do no use # items unless we have a number
+        if (strpos($parameter, '#') !== FALSE) break; // Do no use # items unless we have a number
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
