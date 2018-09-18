@@ -552,8 +552,8 @@ final class Template {
            || ((strpos($value, chr(2013)) || strpos($value, '-')) // Or our new value adds an en-dash to `pages`
                && str_replace([chr(2013), chr(150), chr(226), '-', '&ndash;'], '', $pages_value) == $pages_value)
         ) {
-            $all_page_parameters = $this->get("pages") . $this->get("page") . $this->get("pp") . $this->get("p");
-            if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
+            $all_page_values = $this->get("pages") . $this->get("page") . $this->get("pp") . $this->get("p");
+            if (mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
             if ($param_name !== "page")  $this->forget("page");
             if ($param_name !== "pp")    $this->forget("pp");
