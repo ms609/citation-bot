@@ -348,7 +348,7 @@ final class Template {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
 
-        if ($this->blank("last1") && $this->blank("last") && $this->blank("author") && $this->blank("author1")) {
+        if ($this->blank(["last1", "last", "author", "author1"])) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(format_Surname($au[0])));
@@ -360,14 +360,14 @@ final class Template {
       return FALSE;
       case "first": case "first1":
        $value = straighten_quotes($value);
-       if ($this->blank("first") && $this->blank("first1") && $this->blank("author") && $this->blank('author1'))
+       if ($this->blank(["first", "first1", "author", 'author1']))
           return $this->add($param_name, sanitize_string($value));
       return FALSE;
       case "coauthors": //FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
         $value = straighten_quotes($value);
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
-        if ($this->blank("last2") && $this->blank("coauthor") && $this->blank("coauthors") && $this->blank("author"))
+        if ($this->blank(["last2", "coauthor", "coauthors", "author"]))
           return $this->add($param_name, sanitize_string($value));
           // Note; we shouldn't be using this parameter ever....
       return FALSE;
