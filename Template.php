@@ -67,7 +67,7 @@ final class Template {
           $this->blank('title') && $this->blank('chapter')) {
                 $this->mark_inactive_doi(); // Check it right now-this routine is called from within TEMPLATE()
       }
-      if ($this->blank('title') && $this->blank('chapter')) {
+      if ($this->blank(['title', 'chapter'])) {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
       } else {
         $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
