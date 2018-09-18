@@ -546,14 +546,11 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
-        if (( $this->blank("pages") && $this->blank("page") && $this->blank("pp")  && $this->blank("p") && $this->blank('at'))
-                || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE
-                || (strpos($value, chr(2013)) || (strpos($value, '-'))
-                  && !strpos($this->get('pages'), chr(2013))
-                  && !strpos($this->get('pages'), chr(150)) // Also en-dash
-                  && !strpos($this->get('pages'), chr(226)) // Also en-dash
-                  && !strpos($this->get('pages'), '-')
-                  && !strpos($this->get('pages'), '&ndash;'))
+        $pages_value = $this->get('pages');
+        if ($this->blank(PAGE_ALIASES) // no page yet set
+           || strpos(strtolower($this->get('pages') . $this->get('page')), 'no') !== FALSE  // Or pages set to no-no
+           || ((strpos($value, chr(2013)) || strpos($value, '-')) // Or our new value adds an en-dash to `pages`
+               && str_replace([chr(2013), chr(150), chr(226), '-', '&ndash;'], '', $pages_value) == $pages_value)
         ) {
             $all_page_parameters = $this->get("pages") . $this->get("page") . $this->get("pp") . $this->get("p");
             if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
