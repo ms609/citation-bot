@@ -2345,6 +2345,11 @@ final class Template {
         continue;
       }
       
+      if ($this->blank($p->param)) {
+        report_modification("Dropping unrecognised empty parameter " . echoable($p->param) . " ");
+        $this->forget($p->param);
+        continue;
+      }
       /* Not clear why this exception exists.
        * If it is valid, it should apply only when $p->param relates to authors,
        * not when it applies to e.g. pages, title.
