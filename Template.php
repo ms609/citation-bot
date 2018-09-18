@@ -2131,8 +2131,8 @@ final class Template {
           $lev = levenshtein($test_dat, $parameter);
         }
         if ($lev == 0) {
-          if (preg_match("~\d~", $parameter)) {
-            $closest = preg_replace("~\d~", "_$0", $parameter);
+          if (preg_match("~\d~", $dat, $match)) {
+            $closest = preg_replace("~#~", $match[0], $parameter);
           } else {
             $closest = $parameter;
           }
@@ -2144,8 +2144,8 @@ final class Template {
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
           $comp = $closest;
-          if (preg_match("~\d~", $parameter)) {
-            $closest = preg_replace("~\d~", "_$0", $parameter);
+          if (preg_match("~\d~", $dat, $match)) {
+            $closest = preg_replace("~#~", $match[0], $parameter);
           } else {
             $closest = $parameter;
           }
@@ -2154,8 +2154,8 @@ final class Template {
         } elseif ($lev < $shortish) {
           // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
           $shortish = $lev;
-          if (preg_match("~\d~", $parameter)) {
-            $comp = preg_replace("~\d~", "_$0", $parameter);
+          if (preg_match("~\d~", $dat, $match)) {
+            $comp = preg_replace("~#~", $match[0], $parameter);
           } else {
             $comp = $parameter;
           }
@@ -2389,8 +2389,8 @@ final class Template {
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
           $comp = $closest;
-          if (preg_match("~\d~", $parameter)) {
-            $closest = preg_replace("~\d~", "_$0", $parameter);
+          if (preg_match("~\d~", $dat, $match)) {
+            $closest = preg_replace("~#~", $match[0], $parameter);
           } else {
             $closest = $parameter;
           }
@@ -2400,8 +2400,8 @@ final class Template {
         // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
         elseif ($lev < $shortish) {
           $shortish = $lev;
-          if (preg_match("~\d~", $parameter)) {
-            $comp = preg_replace("~\d~", "_$0", $parameter);
+          if (preg_match("~\d~", $dat, $match)) {
+            $comp = preg_replace("~#~", $match[0], $parameter);
           } else {
             $comp = $parameter;
           }
