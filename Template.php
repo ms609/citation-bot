@@ -2534,7 +2534,8 @@ final class Template {
         case 'eprint':
           if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
           return;
-                case 'format': // clean up bot's old (pre-2018-09-18) edits
+          
+        case 'format': // clean up bot's old (pre-2018-09-18) edits
           if ($this->get($param) === 'Accepted manuscript' ||
               $this->get($param) === 'Submitted manuscript') {
             $this->rename('format', 'type');
