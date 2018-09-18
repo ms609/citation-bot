@@ -2106,7 +2106,8 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list =PARAMETER_LIST;
+      $parameter_list = PARAMETER_LIST;
+      
       foreach ($parameter_list as $parameter) {
         if (preg_match('~\d+~', $dat, $match)) { // Deal with # values
            $parameter = preg_replace('~#~', $match[0], $parameter);
