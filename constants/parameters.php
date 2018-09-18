@@ -211,6 +211,18 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
 
 );
 
+// Just leave this code here for now   
+//     $parameter_list = [];
+//     foreach (PARAMETER_LIST as $param_list) {
+//       if (strpos($param_list, "#") !== FALSE) {
+//          $param_list = explode("#", $param_list);
+//          for ($i = 1; $i < 100; $i++) {
+//            $parameter_list[] = implode("$i", $param_list);
+//         }
+//        } else {
+//         $parameter_list[] = $param_list;
+//       }
+//      }
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
 // that information can also be presented using the generic {{citation}} template, which we do modify.
