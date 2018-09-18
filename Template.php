@@ -965,6 +965,13 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
+      } elseif (preg_match("~^https?://www\.worldcat\.org/oclc/([0-9]+)~", $url, $match)) {
+          quietly('report_modification', "Converting URL to OCLC parameter");
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite book');  // Better template choice
+          return $this->add_if_new('oclc', $match[1]); 
       }
     }
     return FALSE ;
