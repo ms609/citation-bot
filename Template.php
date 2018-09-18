@@ -2425,6 +2425,9 @@ final class Template {
   }
   
   public function tidy_parameter($param) {
+    // Note: Parameters are treated in alphabetical order, except where one
+    // case necessarily continues from the previous (without a return).
+    
     if (!$param) return FALSE;
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
@@ -2531,7 +2534,15 @@ final class Template {
         case 'eprint':
           if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
           return;
-        
+                case 'format': // clean up bot's old (pre-2018-09-18) edits
+          if ($this->get($param) === 'Accepted manuscript' ||
+              $this->get($param) === 'Submitted manuscript') {
+            $this->rename('format', 'type');
+          } elseif ($this->get($param) === 'Full text') {
+            $this->forget('format');
+          }
+          return;
+          
         case 'isbn':
           if ($this->lacks('isbn')) return;
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
@@ -2604,6 +2615,13 @@ final class Template {
         case 'pmid':
           $this->change_name_to('Cite journal', FALSE);
           return;
+        
+        case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
+          if ($this->wikiname() !== 'citation') {
+            if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
+            if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
+          }
+          return; 
           
         case 'publisher':
           $publisher = strtolower($this->get($param));
@@ -2747,20 +2765,6 @@ final class Template {
             }
           }
           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
-          return;
-        case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
-          if ($this->wikiname() !== 'citation') {
-            if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
-            if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
-          }
-          return; 
-        case 'format': // clean up bots old edits
-          if ($this->get($param) === 'Accepted manuscript' ||
-              $this->get($param) === 'Submitted manuscript') {
-            $this->rename('format','type');
-          } elseif ($this->get($param) === 'Full text') {
-            $this->forget('format');
-          }
           return;
       }
     }
