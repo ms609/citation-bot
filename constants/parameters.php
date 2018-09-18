@@ -209,6 +209,14 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
     'surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99',
 );
 
+const DISLPAY_AUTHORS = ['display-authors', 'displayauthors'];
+const DISLPAY_EDITORS = ['display-editors', 'displayeditors'];
+const TITLE_LINK_ALIASES = ['title-link', 'titlelink'];
+const COAUTHOR_ALIASES = ['coauthor', 'coauthors'];
+const CHAPTER_ALIASES = ['chapter', 'contribution'];
+const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
+const FIRST_AUTHOR_ALIASES = ["last1", "last", "author", "author1"];
+
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
 // that information can also be presented using the generic {{citation}} template, which we do modify.

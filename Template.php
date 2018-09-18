@@ -348,7 +348,7 @@ final class Template {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
 
-        if ($this->blank(["last1", "last", "author", "author1"])) {
+        if ($this->blank(FIRST_AUTHOR_ALIASES)) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(format_Surname($au[0])));
@@ -360,14 +360,14 @@ final class Template {
       return FALSE;
       case "first": case "first1":
        $value = straighten_quotes($value);
-       if ($this->blank(["first", "first1", "author", 'author1']))
+       if ($this->blank(FIRST_AUTHOR_ALIASES))
           return $this->add($param_name, sanitize_string($value));
       return FALSE;
       case "coauthors": //FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
         $value = straighten_quotes($value);
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
-        if ($this->blank(["last2", "coauthor", "coauthors", "author"]))
+        if ($this->blank(["last2", COAUTHOR_ALIASES, "author"]))
           return $this->add($param_name, sanitize_string($value));
           // Note; we shouldn't be using this parameter ever....
       return FALSE;
@@ -396,8 +396,7 @@ final class Template {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = straighten_quotes($value);
 
-        if ($this->blank("last$auNo") && $this->blank("author$auNo")
-          && $this->blank("coauthor") && $this->blank("coauthors")
+        if ($this->blank(["last$auNo", "author$auNo", COAUTHOR_ALIASES])
           && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
@@ -423,20 +422,19 @@ final class Template {
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
         $value = straighten_quotes($value);
 
-        if ($this->blank($param_name)
-                && under_two_authors($this->get('author')) && $this->blank("author" . $auNo)
-                && $this->blank("coauthor") && $this->blank("coauthors")) {
+        if ($this->blank([$param_name, "author" . $auNo, COAUTHOR_ALIASES])
+                && under_two_authors($this->get('author'))) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
       
       case 'display-authors': case 'displayauthors':
-        if ($this->blank('display-authors') && $this->blank('displayauthors')) {
+        if ($this->blank(DISPLAY_AUTHORS)) {
           return $this->add($param_name, $value);
         }
       return FALSE;
       case 'display-editors': case 'displayeditors':
-        if ($this->blank('display-editors') && $this->blank('displayeditors')) {
+        if ($this->blank(DISPLAY_EDITORS)) {
           return $this->add($param_name, $value);
         }
       return FALSE;
@@ -474,7 +472,7 @@ final class Template {
       ### JOURNAL IDENTIFIERS ###
       
       case 'issn':
-        if ($this->blank("journal") && $this->blank("periodical") && $this->blank("work") && $this->blank($param_name)) {
+        if ($this->blank(["journal", "periodical", "work", $param_name])) {
           // Only add ISSN if journal is unspecified
           return $this->add($param_name, $value);
         }
@@ -483,7 +481,7 @@ final class Template {
       case 'periodical': case 'journal':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
-        if ($this->blank("journal") && $this->blank("periodical")) {
+        if ($this->blank(["journal", "periodical"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
@@ -510,7 +508,7 @@ final class Template {
         return FALSE;
 
       case 'chapter': case 'contribution':
-        if ($this->blank("chapter") && $this->blank("contribution")) {
+        if ($this->blank(CHAPTER_ALIASES)) {
           return $this->add($param_name, wikify_external_text($value));
         }
         return FALSE;
@@ -542,7 +540,7 @@ final class Template {
       return FALSE;      
       
       case 'issue':
-        if ($this->blank("issue") && $this->blank("number")) {        
+        if ($this->blank(["issue", "number"])) {        
           return $this->add($param_name, $value);
         } 
       return FALSE;
@@ -560,10 +558,10 @@ final class Template {
             $all_page_parameters = $this->get("pages") . $this->get("page") . $this->get("pp") . $this->get("p");
             if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
-            if ($param_name !== "page")$this->forget("page");
-            if ($param_name !== "pp")$this->forget("pp");
-            if ($param_name !== "p")$this->forget("p");
-            if ($param_name !== "at")$this->forget("at");
+            if ($param_name !== "page")  $this->forget("page");
+            if ($param_name !== "pp")    $this->forget("pp");
+            if ($param_name !== "p")     $this->forget("p");
+            if ($param_name !== "at")    $this->forget("at");
             $param_key = $this->get_param_key($param_name);
             if (!is_null($param_key)) {
               $this->param[$param_key]->val = sanitize_string($value); // Minimize template changes (i.e. location) when upgrading from page=123 to pages=123-456
@@ -580,7 +578,7 @@ final class Template {
       
       case 'url': 
         // look for identifiers in URL - might be better to add a PMC parameter, say
-        if (!$this->get_identifiers_from_url($value) && $this->blank($param_name) && $this->blank('title-link') && $this->blank('titlelink')) {
+        if (!$this->get_identifiers_from_url($value) && $this->blank([$param_name, TITLE_LINK_ALIASES])) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
