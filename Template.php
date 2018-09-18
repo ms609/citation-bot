@@ -2337,7 +2337,17 @@ final class Template {
     }
   }
   
-  $parameter_list = PARAMETER_LIST;
+  $parameter_list = [];
+  foreach (PARAMETER_LIST as $param_list) {
+    if (strpos($param_list, "#") !== FALSE) {
+      $param_list = explode("#", $param_list);
+      for ($i = 1; $i < 100; $i++) {
+        $parameter_list[] = implode("$i", $param_list);
+      }
+    } else {
+      $parameter_list[] = $param_list;
+    }
+  }
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
   $i = 0; // FIXME: this would be better as a proper for loop rather than foreach with counter
