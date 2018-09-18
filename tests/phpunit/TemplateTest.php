@@ -496,8 +496,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       
     $text = "{{cite book|authorlinux=X}}";
     $expanded = $this->process_citation($text);
-    $this->assertNull('$expanded->get('authorlink#'));
-    $this->assertNull('$expanded->get('authorlinux'));
+    $this->assertNull($expanded->get('authorlink#'));
+    $this->assertNull($expanded->get('authorlinux'));
     $this->assertEquals('X', $expanded->get('authorlink'));
   }
        
