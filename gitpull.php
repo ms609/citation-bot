@@ -13,8 +13,8 @@ exec ("git fetch --all", $output, $return_var);
 }
 ?>
 <pre>
-<?php>
+<?php
 exec ("git show --oneline -s", $output, $return_var);
-foreach($output as $line) print "$line \n";
+foreach ($output as $line) print "$line \n";
 ?>
 </pre>
