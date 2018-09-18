@@ -2106,18 +2106,8 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list = [];
-      foreach (PARAMETER_LIST as $param_list) {
-        if (strpos($param_list, "#") !== FALSE) {
-          $param_list = explode("#", $param_list);
-          for ($i = 1; $i < 100; $i++) {
-            $parameter_list[] = implode("$i", $param_list);
-          }
-        } else {
-          $parameter_list[] = $param_list;
-        }
-      }
-      
+      $parameter_list = PARAMETER_LIST;
+
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
@@ -2141,7 +2131,11 @@ final class Template {
           $lev = levenshtein($test_dat, $parameter);
         }
         if ($lev == 0) {
-          $closest = $parameter;
+          if (preg_match("~\d~", $parameter)) {
+            $closest = preg_replace("~\d~", "_$0", $parameter);
+          } else {
+            $closest = $parameter;
+          }
           $shortest = 0;
           break;
         } else {
@@ -2150,13 +2144,21 @@ final class Template {
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
           $comp = $closest;
-          $closest = $parameter;
+          if (preg_match("~\d~", $parameter)) {
+            $closest = preg_replace("~\d~", "_$0", $parameter);
+          } else {
+            $closest = $parameter;
+          }
           $shortish = $shortest;
           $shortest = $lev;
         } elseif ($lev < $shortish) {
           // Keep track of the second shortest result, to ensure that our chosen parameter is an out and out winner
           $shortish = $lev;
-          $comp = $parameter;
+          if (preg_match("~\d~", $parameter)) {
+            $comp = preg_replace("~\d~", "_$0", $parameter);
+          } else {
+            $comp = $parameter;
+          }
         }
       }
 
