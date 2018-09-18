@@ -34,8 +34,11 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('Alter: template type. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
       $page = $this->process_page('{{cite book||quote=a quote}}'); // Just lose extra pipe
       $this->assertEquals('Misc citation tidying. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
+      $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
+      $this->assertFalse(strpos($page->parsed_text(), 'onlinelibrary.wiley.com')); // URL is gone
+      $this->assertEquals('Alter: template type. Add: year, pages, issue, volume, journal, title, doi, author pars. 1-2. Converted bare reference to cite template. Removed parameters. Formatted [[WP:ENDASH|dashes]]. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].' ,$page->edit_summary());                
   }
-
+ 
   public function testBotRead() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
       echo 'S'; // Test skipped in pull requests, to protect Bot secrets
@@ -94,5 +97,10 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $page = $this->process_page($text);
       $this->assertEquals($text, $page->parsed_text());
   }
-
+  
+  public function testWeirdTemplateInteraction() {  // For some reason this template crashed a version of the bot
+      $text = ' {{Cite web|url=https://www.nobelprize.org/nobel_prizes/chemistry/laureates/1966/mulliken-lecture.pdf|year=1966|last=Mulliken |first=Robert S.|title=Spectroscopy, molecular orbitals, and chemical bonding|website=nobelprize.org}}{{cite journal|doi=10.1103/RevModPhys.23.69|title=New Developments in Molecular Orbital Theory|journal=Reviews of Modern Physics|volume=23|issue=2|pages=69–89|year=1951|last1=Roothaan|first1=C. C. J.|bibcode = 1951RvMP...23...69R }} ';
+      $page = $this->process_page($text);
+      $this->assertEquals($text, $page->parsed_text());
+  }
 }

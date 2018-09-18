@@ -890,6 +890,17 @@ ER -  }}';
    $this->assertEquals('1961', $expanded->get('year'));
    $this->assertEquals('81', $expanded->get('volume'));
    $this->assertEquals('1', $expanded->get('issue'));
+   $this->assertEquals('43–52', $expanded->get('pages'));  // The jstor expansion add the page ending
+  }
+    
+  public function testSICI() {
+   $url = "https://www.bobs-burgers-and-brews.org/sici?sici=9999-9999(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
+   $text = "{{Cite journal|url=$url}}";  // We use a rubbish ISSN and website so that this does not expand any more -- only test SICI code
+   $expanded = $this->process_citation($text);
+     
+   $this->assertEquals('1961', $expanded->get('year'));
+   $this->assertEquals('81', $expanded->get('volume'));
+   $this->assertEquals('1', $expanded->get('issue'));
    $this->assertEquals('43', $expanded->get('pages'));
   }
       
@@ -1155,6 +1166,11 @@ ER -  }}';
     $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc', $expanded->get('title'));
   }
 
+  public function testDropGoogleWebsite() {
+    $text = "{{Cite book|website=Google.Com|url=http://Invalid.url.not-real.com/}}"; // Include a fake URL so that we are not testing: if (no url) then drop website
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('website'));
+  }
 
   public function testHornorificInTitle() { // compaints about this
     $text = "{{cite book|title=Letter from Sir Frederick Trench to the Viscount Duncannon on his proposal for a quay on the north bank of the Thames|url=https://books.google.com/books?id=oNBbAAAAQAAJ|year=1841}}";

@@ -66,6 +66,7 @@ final class Template {
       if ($this->blank('title')) {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
       } else {
+        report_action("Converted Bare reference to template: " . trim(base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')))));
         $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
       }
     }
@@ -586,7 +587,8 @@ final class Template {
         if (    $all_page_parameters == ""     // Nothing
                 || (strpos(strtolower($all_page_parameters), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
                 || (strcasecmp($all_page_parameters,'no')===0 || strcasecmp($all_page_parameters,'none')===0) // Is exactly "no" or "none"
-                || (strpos($value, chr(2013)) || (strpos($value, '-'))
+                || ((strpos($value, chr(2013)) || strpos($value, '-') || strpos($value, REGEXP_EN_DASH))
+                  && !strpos($all_page_parameters, REGEXP_EN_DASH)
                   && !strpos($all_page_parameters, chr(2013))
                   && !strpos($all_page_parameters, chr(150)) // Also en-dash
                   && !strpos($all_page_parameters, chr(226)) // Also en-dash
@@ -2767,6 +2769,17 @@ final class Template {
           }
           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
           return;
+        case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
+          if ($this->wikiname() !== 'citation') {
+            if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
+            if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
+          }
+          return;
+        case 'website':
+          if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0)) {
+            $this->forget($param);
+          }
+          return;
       }
     }
   }
@@ -2812,6 +2825,11 @@ final class Template {
          } elseif ($this->wikiname() === 'cite magazine') {
             $this->rename('work', 'magazine');
          }
+      }
+      if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+        if ($this->has('title') || $this->has('chapter')) {
+          $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+        }
       }
     }
   }
