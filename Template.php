@@ -1225,6 +1225,10 @@ final class Template {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
+    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
+      report_info(" Ignoring Book bibcode " . $this->get('bibcode') . " \n");
+      return FALSE;
+    }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . $this->get('bibcode'));
       return FALSE;
@@ -2500,7 +2504,11 @@ final class Template {
           foreach (NON_JOURNAL_BIBCODES as $exception) {
             if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
           }
-          $this->change_name_to('Cite journal', FALSE);
+          if (strpos($this->get($param), 'book') !== FALSE) {
+            $this->change_name_to('Cite book', FALSE);
+          } else {
+            $this->change_name_to('Cite journal', FALSE);
+          }
           return;
           
         case 'chapter': 

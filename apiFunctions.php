@@ -168,6 +168,13 @@ function adsabs_api($ids, $templates, $identifier) {
     return TRUE;
   }
   
+  foreach ($ids as $key => $bibcode) {
+    if (strpos($bibcode, 'book') !== false) {
+        report_info("Ignoring Book bibcode " . $bibcode);
+        unset($ids[$key]);
+    }
+  }
+
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/bigquery?q=*:*"
               . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
