@@ -2372,7 +2372,7 @@ final class Template {
       $shortest = -1;
       $closest = 0;
       foreach ($unused_parameters as $parameter) {
-        $lev = levenshtein($p->param, $parameter, 5, 4, 6);
+        $lev = levenshtein(preg_replace('~\d+~', '#', $p->param), $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
           $comp = $closest;
@@ -2388,6 +2388,10 @@ final class Template {
       }
       $str_len = strlen($p->param);
 
+      if (preg_match('~\d+~', $p->param, $match) { // Deal with # values
+        $closest = preg_replace('~#~', $match[0], $closest);
+        $comp    = preg_replace('~#~', $match[0], $comp);
+      }
       // Account for short words...
       if ($str_len < 4) {
         $shortest *= ($str_len / (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
