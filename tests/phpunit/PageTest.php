@@ -97,4 +97,5 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $page = $this->process_page($text);
       $this->assertEquals($text, $page->parsed_text());
   }
+  
 }

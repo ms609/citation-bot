@@ -449,7 +449,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
   }
-    
+  
+  public function testNoBibcodesForArxiv() {
+    $text = "{{Cite arxiv|last=Sussillo|first=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('bibcode'));  // If this eventually gets a journal, we will have to change the test
+  }
+
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
     |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
@@ -1118,8 +1124,11 @@ ER -  }}';
     
   public function testJustAnOCLC() {
     $this->requires_secrets(function() {
-      $text = '{{cite book | oclc=9334453}}';
+      $text = '{{cite web | url=http://www.worldcat.org/oclc/9334453}}';
       $expanded = $this->process_citation($text);
+      $this->assertEquals('cite_book', $expanded->wikiname());
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('9334453', $expanded->get('oclc'));
       $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport', $expanded->get('title'));
     });
   }
@@ -1282,6 +1291,12 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('222', $prepared->get('number'));
     $this->assertEquals('12(44-33)', $prepared->get('volume'));
+  }
+    
+  public function testBibcodeBook() {
+      $text = '{{cite book|bibcode=2003hoe..book.....K}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals($text, $expanded->parsed_text());
   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors

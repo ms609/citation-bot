@@ -965,6 +965,13 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
+      } elseif (preg_match("~^https?://www\.worldcat\.org/oclc/([0-9]+)~", $url, $match)) {
+          quietly('report_modification', "Converting URL to OCLC parameter");
+          if (is_null($url_sent)) {
+             $this->forget('url');
+          }
+          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite book');  // Better template choice
+          return $this->add_if_new('oclc', $match[1]); 
       }
     }
     return FALSE ;
@@ -1217,6 +1224,10 @@ final class Template {
     if (!$SLOW_MODE && $this->lacks('bibcode')) {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
+    }
+    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
+      report_info(" Ignoring Book bibcode " . $this->get('bibcode') . " \n");
+      return FALSE;
     }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . $this->get('bibcode'));
@@ -1742,7 +1753,7 @@ final class Template {
             // case 'publishedVersion': $format = 'Full text'; break; // This is the assumed default
             default: $format = NULL;
           }
-          if ($format) $this->add('format', $format);
+          if ($format) $this->add('type', $format);
         }
         return TRUE;
       }
@@ -2427,6 +2438,9 @@ final class Template {
   }
   
   public function tidy_parameter($param) {
+    // Note: Parameters are treated in alphabetical order, except where one
+    // case necessarily continues from the previous (without a return).
+    
     if (!$param) return FALSE;
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
@@ -2490,7 +2504,11 @@ final class Template {
           foreach (NON_JOURNAL_BIBCODES as $exception) {
             if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
           }
-          $this->change_name_to('Cite journal', FALSE);
+          if (strpos($this->get($param), 'book') !== FALSE) {
+            $this->change_name_to('Cite book', FALSE);
+          } else {
+            $this->change_name_to('Cite journal', FALSE);
+          }
           return;
           
         case 'chapter': 
@@ -2533,7 +2551,16 @@ final class Template {
         case 'eprint':
           if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
           return;
-        
+          
+        case 'format': // clean up bot's old (pre-2018-09-18) edits
+          if ($this->get($param) === 'Accepted manuscript' ||
+              $this->get($param) === 'Submitted manuscript') {
+            $this->rename('format', 'type');
+          } elseif ($this->get($param) === 'Full text') {
+            $this->forget('format');
+          }
+          return;
+          
         case 'isbn':
           if ($this->lacks('isbn')) return;
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
@@ -2711,6 +2738,7 @@ final class Template {
             }               
           }
           return;
+          
         case 'year':
           if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
              if ($this->blank('date')) $this->rename('year', 'date');
@@ -2750,12 +2778,14 @@ final class Template {
           }
           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
           return;
+          
         case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
           if ($this->wikiname() !== 'citation') {
             if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
             if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
           }
           return;
+          
         case 'website':
           if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0)) {
             $this->forget($param);
@@ -2812,6 +2842,9 @@ final class Template {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
+    }
+    if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
+      $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
     }
   }
   
