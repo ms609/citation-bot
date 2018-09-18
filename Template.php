@@ -290,7 +290,7 @@ final class Template {
   }
 
   public function blank($param) {
-    if (!$param) return ;
+    if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
@@ -333,7 +333,7 @@ final class Template {
       ### EDITORS
       case "editor": case "editor-last": case "editor-first":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        if ($this->blank('editor') && $this->blank("editor-last") && $this->blank("editor-first")) {
+        if ($this->blank(['editor', 'editor-last', 'editor-first'])) {
           return $this->add($param_name, sanitize_string($value));
         } else {
           return FALSE;
