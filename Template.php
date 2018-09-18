@@ -2106,19 +2106,24 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list = [];
-      foreach (PARAMETER_LIST as $param_list) {
-        if (strpos($param_list, "#") !== FALSE) {
-          $param_list = explode("#", $param_list);
-          for ($i = 1; $i < 100; $i++) {
-            $parameter_list[] = implode("$i", $param_list);
-          }
-        } else {
-          $parameter_list[] = $param_list;
-        }
-      }
-      
+ // Just leave this code here for now
+ //     $parameter_list = [];
+ //     foreach (PARAMETER_LIST as $param_list) {
+ //       if (strpos($param_list, "#") !== FALSE) {
+ //          $param_list = explode("#", $param_list);
+ //          for ($i = 1; $i < 100; $i++) {
+ //            $parameter_list[] = implode("$i", $param_list);
+ //         }
+ //        } else {
+ //         $parameter_list[] = $param_list;
+ //       }
+ //      }
+      $parameter_list =PARAMETER_LIST;
       foreach ($parameter_list as $parameter) {
+        if (preg_match('~\d+~', $dat, $match)) { // Deal with # values
+           $parameter = preg_replace('~#~', $match[0], $parameter);
+        }
+        if (strpos("#", $parameter) !== FALSE) break; // Do no use # items unless we have a number
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
