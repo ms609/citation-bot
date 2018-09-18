@@ -493,6 +493,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{Cite journal|pp. 1-5}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('1–5', $expanded->get('pages'));
+      
+    $text = "{{cite book|authorlinux=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('authorlink#'));
+    $this->assertNull($expanded->get('authorlinux'));
+    $this->assertEquals('X', $expanded->get('authorlink'));
   }
        
   public function testId2Param() {
