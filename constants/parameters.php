@@ -209,13 +209,17 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
     'surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99',
 );
 
-const DISLPAY_AUTHORS = ['display-authors', 'displayauthors'];
-const DISLPAY_EDITORS = ['display-editors', 'displayeditors'];
 const TITLE_LINK_ALIASES = ['title-link', 'titlelink'];
+const ARXIV_ALIASES = ['arxiv', 'eprint'];
 const COAUTHOR_ALIASES = ['coauthor', 'coauthors'];
 const CHAPTER_ALIASES = ['chapter', 'contribution'];
-const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
+const DISLPAY_AUTHORS = ['display-authors', 'displayauthors'];
+const DISLPAY_EDITORS = ['display-editors', 'displayeditors'];
+const DOI_BROKEN_ALIASES = ['doi_brokendate', 'doi-broken-date', 'doi_inactivedate', 'doi-inactive-date'];
 const FIRST_AUTHOR_ALIASES = ["last1", "last", "author", "author1"];
+const FIRST_EDITOR_ALIASES = ["editor1", "editor", "editor-last", "editor1-last"];
+const ISSUE_ALIASES = ['issue', 'number'];
+const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
 
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because

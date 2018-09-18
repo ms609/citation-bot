@@ -540,7 +540,7 @@ final class Template {
       return FALSE;      
       
       case 'issue':
-        if ($this->blank(["issue", "number"])) {        
+        if ($this->blank(ISSUE_ALIASES)) {        
           return $this->add($param_name, $value);
         } 
       return FALSE;
@@ -581,7 +581,7 @@ final class Template {
         return FALSE;
         
       case 'title-link':
-        if ($this->blank('title-link') && $this->blank('titlelink') && $this->blank('url')) {
+        if ($this->blank([TITLE_LINK_ALIASES, 'url'])) {
           return $this->add($param_name, $value); // We do not sanitize this, since it is not new data
         }
         return FALSE;
@@ -603,17 +603,14 @@ final class Template {
       
       case 'eprint':
       case 'arxiv':
-        if ($this->blank('arxiv') && $this->blank('eprint')) {
+        if ($this->blank(ARXIV_ALIASES)) {
           $this->add($param_name, $value);
           return TRUE;
         }
         return FALSE;
         
       case 'doi-broken-date':
-        if ($this->blank('doi_brokendate') &&
-            $this->blank('doi-broken-date') &&
-            $this->blank('doi_inactivedate') &&
-            $this->blank('doi-inactive-date')) {
+        if ($this->blank(DOI_BROKEN_ALIASES)) {
           return $this->add($param_name, $value);
         }
       return FALSE;
@@ -1853,7 +1850,7 @@ final class Template {
     }
     $this->add_if_new("isbn", $isbn);
     $i = 0;
-    if ($this->blank("editor") && $this->blank("editor1") && $this->blank("editor1-last") && $this->blank("editor-last") && $this->blank("author") && $this->blank("author1") && $this->blank("last") && $this->blank("last1") && $this->blank("publisher")) { // Too many errors in gBook database to add to existing data.   Only add if blank.
+    if ($this->blank([FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, 'publisher'])) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
           $author_parts  = explode(" ", $author);
@@ -2179,7 +2176,7 @@ final class Template {
         }
       }
       if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
-        if ($this->blank('year') && $this->blank('date')) {
+        if ($this->blank(['year', 'date'])) {
           $this->set('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
@@ -2562,7 +2559,7 @@ final class Template {
           return;
         
         case 'origyear':
-          if ($this->has('origyear') && $this->blank(array('date', 'year'))) {
+          if ($this->has('origyear') && $this->blank(['date', 'year'])) {
             $this->rename('origyear', 'year');
           }
           return;
@@ -2672,11 +2669,11 @@ final class Template {
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
             $possible_volume=$matches[1];
             $possible_issue=$matches[2];
-            if ($this->blank('issue') && $this->blank('number')) {
-              $this->add_if_new('issue',$possible_issue);
+            if ($this->blank(ISSUE_ALIASES)) {
+              $this->add_if_new('issue', $possible_issue);
               $this->set('volume',$possible_volume); 
             } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
-              $this->set('volume',$possible_volume);
+              $this->set('volume', $possible_volume);
             }               
           }
           return;
@@ -2689,7 +2686,7 @@ final class Template {
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
           // Remove leading zeroes
-          if (!$this->blank('issue') && $this->blank('number')) {
+          if (!$this->blank(ISSUE_ALIASES)) {
             $new_issue = preg_replace('~^0+~', '', $this->get('issue'));
             if ($new_issue) {
               $this->set('issue', $new_issue);
