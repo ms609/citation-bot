@@ -2767,7 +2767,7 @@ final class Template {
             if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
             if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
           }
-          return; 
+          return;
         case 'website':
           if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0)) {
             $this->forget($param);
