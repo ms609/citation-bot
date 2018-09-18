@@ -2106,7 +2106,17 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list = PARAMETER_LIST;
+      $parameter_list = [];
+      foreach (PARAMETER_LIST as $param_list) {
+        if (strpos($param_list, "#") !== FALSE) {
+          $param_list = explode("#", $param_list);
+          for ($i = 1; $i < 100; $i++) {
+            $parameter_list[] = implode("$i", $param_list);
+          }
+        } else {
+          $parameter_list[] = $param_list;
+        }
+      }
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
