@@ -2388,7 +2388,7 @@ final class Template {
       }
       $str_len = strlen($p->param);
 
-      if (preg_match('~\d+~', $p->param, $match) { // Deal with # values
+      if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
         $closest = preg_replace('~#~', $match[0], $closest);
         $comp    = preg_replace('~#~', $match[0], $comp);
       }
