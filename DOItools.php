@@ -114,11 +114,8 @@ function format_author($author){
   // Google sometimes has these
   $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, NULL, 'UTF-8'));
 
-  if (substr(trim($author), -1) === ".") {
-     $ends_with_period = TRUE;
-  } else {
-	 $ends_with_period = FALSE;
-  }
+  $ends_with_period = (substr(trim($author), -1) === ".");
+  
 	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
 	if ($author == "") {
