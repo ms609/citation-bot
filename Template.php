@@ -1159,63 +1159,7 @@ final class Template {
   }
 
   public function expand_by_arxiv() {
-    if ($this->wikiname() == 'cite arxiv') {
-      $arxiv_param = 'eprint';
-      $this->rename('arxiv', 'eprint');
-    } else {
-      $arxiv_param = 'arxiv';
-      $this->rename('eprint', 'arxiv');
-    }
-    $eprint = str_ireplace("arXiv:", "", $this->get('eprint') . $this->get('arxiv'));
-    $class = $this->get('class');
-    $this->set($arxiv_param, $eprint);
-    if ($class && stripos($eprint, '/') === FALSE) $eprint = $class . '/' . $eprint;
-
-    if ($eprint) {
-      report_action("Getting data from arXiv " . echoable($eprint));
-      $context = stream_context_create(array(
-        'http' => array('ignore_errors' => true),
-      ));
-      $arxiv_request = "https://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
-      $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
-      if ($arxiv_response) {
-        $xml = @simplexml_load_string(
-          preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
-        ); // TODO Explore why this is often failing
-      } else {
-        report_warning("No response from arXiv.");
-        return FALSE;
-      }
-    }
-    
-    if ($xml) {
-      if ((string)$xml->entry->title === "Error") {
-        report_warning("arXiv search failed; please report error: " . (string)$xml->entry->summary);
-        return FALSE;
-      }
-      $i = 0;
-      foreach ($xml->entry->author as $auth) {
-        $i++;
-        $name = $auth->name;
-        if (preg_match("~(.+\.)(.+?)$~", $name, $names) || preg_match('~^\s*(\S+) (\S+)\s*$~', $name, $names)) {
-          $this->add_if_new("last$i", $names[2]);
-          $this->add_if_new("first$i", $names[1]);
-        } else {
-          $this->add_if_new("author$i", $name);
-        }
-      }
-      $this->add_if_new("title", (string) $xml->entry->title); // Formatted by add_if_new
-      $this->add_if_new("class", (string) $xml->entry->category["term"]);
-      $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
-      $this->add_if_new("doi", (string) $xml->entry->arxivdoi);
-
-      if ($xml->entry->arxivjournal_ref) {
-        $journal_data = trim((string) $xml->entry->arxivjournal_ref); // this is human readble text
-        parse_plain_text_reference($journal_data, $this, TRUE);
-      }
-      return TRUE;
-    }
-    return FALSE;
+    expand_arxiv_templates(array($this));
   }
 
   public function expand_by_adsabs() {
