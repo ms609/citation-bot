@@ -2111,10 +2111,6 @@ final class Template {
       $parameter_list = PARAMETER_LIST;
       
       foreach ($parameter_list as $parameter) {
-        if (preg_match('~\d+~', $dat, $match)) { // Deal with # values
-           $parameter = preg_replace('~#~', $match[0], $parameter);
-        }
-        if (strpos($parameter, '#') !== FALSE) break; // Do no use # items unless we have a number
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
@@ -2155,7 +2151,6 @@ final class Template {
           $comp = $parameter;
         }
       }
-
       if (  $shortest < 3
          && strlen($test_dat > 0)
          && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
@@ -2164,6 +2159,10 @@ final class Template {
              || strlen($closest) > strlen($comp)
             )
       ) {
+        if (strpos($closest, '#') !== FALSE) { // Deal with # values
+          preg_match('~\d+~', $dat, $match));
+          $parameter = preg_replace('~#~', $match[0], $closest);
+        }
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
           $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
