@@ -349,7 +349,7 @@ final class Template {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = trim(straighten_quotes($value));
 
-        if ($this->blank(FIRST_AUTHOR_ALIASES)) {
+        if ($this->blank(AUTHOR1_ALIASES)) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(format_Surname($au[0])));
@@ -361,7 +361,7 @@ final class Template {
       return FALSE;
       case "first": case "first1":
        $value = trim(straighten_quotes($value));
-       if ($this->blank(FIRST_AUTHOR_ALIASES)) {
+       if ($this->blank(FORENAME1_ALIASES)) {
           if (mb_substr($value, -1) === '.') { // Do not lose last period
              $value = sanitize_string($value) . '.';
           } else {
@@ -1790,7 +1790,8 @@ final class Template {
             $google_results = $google_results[0];
             $gid = substr($google_results, 26, -4);
             $url = 'https://books.google.com/books?id=' . $gid;
-            // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
+            // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.
+            // And blank url does not mean not linked in title, etc.
             $google_books_worked = TRUE;
           }
         }
@@ -1816,7 +1817,6 @@ final class Template {
             if ($result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
               $gid=$result->items[0]->id;
               $url = 'https://books.google.com/books?id=' . $gid;
-              // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.  And blank url does not mean not linked in title, etc.
             } else {
               report_info("No results for Google API search $url_token");
             }
@@ -1891,10 +1891,11 @@ final class Template {
       }
     }
     $this->add_if_new("isbn", $isbn);
+    
     $i = 0;
-    if ($this->blank([FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, 'publisher'])) { // Too many errors in gBook database to add to existing data.   Only add if blank.
+    if ($this->blank([EDITOR1_ALIASES, AUTHOR1_ALIASES, 'publisher'])) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        if( in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+        if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
           $author_parts  = explode(" ", $author);
           $author_ending = end($author_parts);
           if( in_array(strtolower($author),        AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
@@ -1906,9 +1907,10 @@ final class Template {
         }
       }
     }
-    $google_date=sanitize_string(trim( (string) $xml->dc___date )); // Google often sends us YYYY-MM
+    
+    $google_date = sanitize_string(trim( (string) $xml->dc___date )); // Google often sends us YYYY-MM
     if (substr_count($google_date, "-") === 1) {
-        $date=@date_create($google_date);
+        $date = @date_create($google_date);
         if ($date !== FALSE) {
           $date = @date_format($date, "F Y");
           if ($date !== FALSE) {

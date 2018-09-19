@@ -218,8 +218,9 @@ const CHAPTER_ALIASES = ['chapter', 'contribution'];
 const DISPLAY_AUTHORS = ['display-authors', 'displayauthors'];
 const DISPLAY_EDITORS = ['display-editors', 'displayeditors'];
 const DOI_BROKEN_ALIASES = ['doi_brokendate', 'doi-broken-date', 'doi_inactivedate', 'doi-inactive-date'];
-const FIRST_AUTHOR_ALIASES = ["last1", "last", "author", "author1"];
-const FIRST_EDITOR_ALIASES = ["editor1", "editor", "editor-last", "editor1-last"];
+const AUTHOR1_ALIASES = ["last1", "last", "author", "author1"];
+const FORENAME1_ALIASES = ["first1", "first", "author", "author1"];
+const EDITOR1_ALIASES = ["editor1", "editor", "editor-last", "editor1-last"];
 const ISSUE_ALIASES = ['issue', 'number'];
 const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
 
