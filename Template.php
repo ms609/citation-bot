@@ -63,7 +63,7 @@ final class Template {
   // Re-assemble parsed template into string
   public function parsed_text() {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
-      if ($this->has('doi') && !doi_active('doi') && $this->blank([DOI_BROKEN_ALIASES, 'title', 'chapter'])) {
+      if ($this->has('doi') && !doi_active($this->get('doi')) && $this->blank([DOI_BROKEN_ALIASES, 'title', 'chapter'])) {
         $this->mark_inactive_doi(); // Check it right now-this routine is called from within TEMPLATE()
       }
       if ($this->blank(['title', 'chapter'])) {
