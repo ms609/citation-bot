@@ -580,6 +580,7 @@ final class Template {
       case "page": case "pages":
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p");
+        $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
         if (  mb_stripos($all_page_values, 'see ')  !== FALSE   // Someone is pointing to a specific part
            || mb_stripos($all_page_values, 'table') !== FALSE // Someone is pointing to a specific table
            || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
@@ -589,8 +590,10 @@ final class Template {
            || $all_page_values == ""
            || (strcasecmp($all_page_values,'no') === 0 || strcasecmp($all_page_values,'none') === 0) // Is exactly "no" or "none"
            || (strpos(strtolower($all_page_values), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
-           || ((strpos($value, chr(2013)) || strpos($value, '-')) // Or our new value adds an en-dash to `pages`
-               && str_replace([chr(2013), chr(150), chr(226), '-', '&ndash;'], '', $pages_value) == $pages_value)
+           || (
+                (  str_replace([$en_dash], 'X', $value) != $value) // dash in new `pages`
+                && str_replace([$en_dash], 'X', $pages_value) == $pages_value // No dash already
+              )
         ) {
             if (mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
