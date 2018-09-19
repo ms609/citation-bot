@@ -2150,6 +2150,7 @@ final class Template {
           $shortish = $lev;
           $comp = $parameter;
         }
+      }
 
       if (  $shortest < 3
          && strlen($test_dat > 0)
