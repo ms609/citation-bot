@@ -2894,12 +2894,10 @@ final class Template {
         $url_test = "https://dx.doi.org/" . urlencode($doi);
         $headers_test = @get_headers($url_test, 1);
         if ($headers_test === FALSE) {
-          report_warning("DOI status unkown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+          report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
           return FALSE;
         }
-        $this->forget("doi_inactivedate");
-        $this->forget("doi-inactive-date");
-        $this->forget("doi_brokendate");
+        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         if(empty($headers_test['Location'])) {
            $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
            report_inline("Broken doi: " . echoable($doi));
@@ -2908,10 +2906,7 @@ final class Template {
           return TRUE;
         }
       } else {
-        $this->forget('doi_brokendate');
-        $this->forget('doi_inactivedate');
-        $this->forget('doi-broken-date');
-        $this->forget('doi-inactive-date');
+        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         $this->doi_valid = TRUE;
         report_inline('DOI ok.');
         return TRUE;
