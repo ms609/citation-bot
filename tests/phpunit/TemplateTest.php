@@ -1126,7 +1126,7 @@ ER -  }}';
     $this->requires_secrets(function() {
       $text = '{{cite web | url=http://www.worldcat.org/oclc/9334453}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('cite_book', $expanded->wikiname());
+      $this->assertEquals('cite book', $expanded->wikiname());
       $this->assertNull($expanded->get('url'));
       $this->assertEquals('9334453', $expanded->get('oclc'));
       $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport', $expanded->get('title'));
