@@ -2150,7 +2150,7 @@ final class Template {
           $shortish = $lev;
           $comp = $parameter;
         }
-      }
+
       if (  $shortest < 3
          && strlen($test_dat > 0)
          && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
