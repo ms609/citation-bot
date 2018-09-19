@@ -161,12 +161,6 @@ function arxiv_api($ids, $templates) {
 
 function adsabs_api($ids, $templates, $identifier) {
   if (count($ids) == 0) return FALSE;
-  if (count($ids) < 5) {
-    foreach ($templates as $template) {
-      $template->expand_by_adsabs();
-    }
-    return TRUE;
-  }
   
   foreach ($ids as $key => $bibcode) {
     if (strpos($bibcode, 'book') !== false) {
