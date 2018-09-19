@@ -470,7 +470,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testMisspeltParameters() {
     $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get('author')); ## Check: the parameter might be broken down into last1, first1 etc
+    $this->assertNotNull($expanded->get('last1'));
     $this->assertNotNull($expanded->get('title'));
     $this->assertNotNull($expanded->get('journal'));
     $this->assertNotNull($expanded->get('pages'));
