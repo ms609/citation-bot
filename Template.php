@@ -290,12 +290,20 @@ final class Template {
     ));
   }
 
-  public function blank($param) {
+  public function blank($param) {  // We accept single elements, arrays, and arrays with arrays (but no deeper!)
     if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
+    $param_exploded = [];
+    foreach ($param as $p) {
+      if(is_array($p)) {
+        $param_exploded = array_merge($param_exploded,$p);
+      } else {
+        $param_exploded[] = $p;
+      }
+    }
     foreach ($this->param as $p) {
-      if (in_array($p->param, $param) && trim($p->val) != '') return FALSE;
+      if (in_array($p->param, $param_exploded) && trim($p->val) != '') return FALSE;
     }
     return TRUE;
   }
