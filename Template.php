@@ -578,7 +578,6 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
-<<<<<<< HEAD
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p");
         if (mb_stripos($all_page_parameters, 'see ') !== FALSE) return FALSE;  // Someone is pointing to a specific part
