@@ -790,7 +790,7 @@ ER -  }}';
   }
    
   public function testEtAl() {
-    $text = '{{cite book |authos=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
+    $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('Albertstein, Alfred A.', $prepared->first_author());
     $this->assertEquals('Charlie C.', $prepared->get('first3'));
