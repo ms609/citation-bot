@@ -2162,9 +2162,9 @@ final class Template {
       ) {
         if (strpos($closest, '#') !== FALSE) { // Deal with # values
           if(preg_match('~\d+~', $dat, $match)) {
-            $parameter = preg_replace('~#~', $match[0], $closest);
+            $closest = preg_replace('~#~', $match[0], $closest);
           } else {
-            $parameter = preg_replace('~#~', "", $closest);
+            $closest = preg_replace('~#~', "", $closest);
           }
         }
         // remove leading spaces or hyphens (which may have been typoed for an equals)
