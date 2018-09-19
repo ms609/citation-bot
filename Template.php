@@ -580,13 +580,15 @@ final class Template {
       case "page": case "pages":
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p");
-        if (mb_stripos($all_page_parameters, 'see ') !== FALSE) return FALSE;  // Someone is pointing to a specific part
-        if (mb_stripos($all_page_parameters, 'table') !== FALSE) return FALSE; // Someone is pointing to a specific table
-        if (mb_stripos($all_page_parameters, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
+        if (  mb_stripos($all_page_values, 'see ')  !== FALSE   // Someone is pointing to a specific part
+           || mb_stripos($all_page_values, 'table') !== FALSE // Someone is pointing to a specific table
+           || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
+           return FALSE;  
+        }
         if ($this->blank(PAGE_ALIASES) // no page yet set
            || $all_page_values == ""
-           || (strcasecmp($all_page_parameters,'no')===0 || strcasecmp($all_page_parameters,'none')===0) // Is exactly "no" or "none"
-           || (strpos(strtolower($all_page_parameters), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
+           || (strcasecmp($all_page_values,'no') === 0 || strcasecmp($all_page_values,'none') === 0) // Is exactly "no" or "none"
+           || (strpos(strtolower($all_page_values), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
            || ((strpos($value, chr(2013)) || strpos($value, '-')) // Or our new value adds an en-dash to `pages`
                && str_replace([chr(2013), chr(150), chr(226), '-', '&ndash;'], '', $pages_value) == $pages_value)
         ) {
@@ -725,8 +727,9 @@ final class Template {
   }
 
   public function mark_inactive_doi($doi = NULL) {
+    // Only call if doi_broken.
+    // Before we mark the doi inactive, we'll additionally check that dx.doi.org fails to resolve.
     if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
-    // Only mark as broken if dx.doi.org also fails to resolve
     $url_test = "https://dx.doi.org/" . urlencode($doi);
     $headers_test = @get_headers($url_test, 1);
     if ($headers_test !== FALSE && empty($headers_test['Location'])) {
