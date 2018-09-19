@@ -655,7 +655,8 @@ final class Template {
         if ($this->blank('doi_brokendate') &&
             $this->blank('doi-broken-date') &&
             $this->blank('doi_inactivedate') &&
-            $this->blank('doi-inactive-date')) {
+            $this->blank('doi-inactive-date')  &&
+            $this->blank('doi-broken')) {
           return $this->add($param_name, $value);
         }
       return FALSE;
@@ -2910,6 +2911,7 @@ final class Template {
         $this->forget('doi_inactivedate');
         $this->forget('doi-broken-date');
         $this->forget('doi-inactive-date');
+        $this->forget('doi-broken');
         $this->doi_valid = TRUE;
         report_inline('DOI ok.');
         return TRUE;
