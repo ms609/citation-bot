@@ -2570,16 +2570,16 @@ final class Template {
           
         case 'journal':
           if ($this->lacks($param)) return;
-          if ($this->lacks('chapter') || $this->lacks('isbn')) {
+          if ($this->lacks('chapter') && $this->lacks('isbn')) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('Cite journal');
+            $this->forget('publisher');
+            $this->forget('location');
           } else {
-            report_warning('Citation should not have journal = ' . $this->get('journal')
+            report_warning('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . $this->get('isbn'));
           }
           if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
-          $this->forget('publisher');
-          $this->forget('location');
           // No break here: Continue on from journal into periodical
         case 'periodical':
           $periodical = $this->get($param);
