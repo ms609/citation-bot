@@ -3188,6 +3188,7 @@ final class Template {
       $this->forgetter('url-access', $echo_forgetting);
       $this->forgetter('via', $echo_forgetting);
       $this->forgetter('website', $echo_forgetting);
+      $this->forgetter('deadurl', $echo_forgetting);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
