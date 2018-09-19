@@ -212,10 +212,9 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   
   public function testDoiExpansion() {
     $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
-    $expanded = $this->process_citation($text); // floating url prepare is not enough
+    $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
-    $this->assertNull($expanded->get('url'));
 
     $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
     $expanded = $this->prepare_citation($text);
