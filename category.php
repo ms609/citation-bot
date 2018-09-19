@@ -27,13 +27,15 @@ if (php_sapi_name() !== "cli") {
 }
 require_once __DIR__ . '/expandFns.php';
 
+$category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
+
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   echo " Activated by $user.\n";
-  $edit_summary_end = " | [[User:$user|$user]]";
+  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
 } else {
   echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits";
-  $edit_summary_end = " | [[WP:UCB|User-activated]].";
+  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
 }
 
 if (HTML_OUTPUT) {
@@ -51,7 +53,6 @@ if (HTML_OUTPUT) {
 } else {
   echo "\n";
 }
-$category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 if ($category) {
   $attempts = 0;
   $api = new WikipediaBot();
@@ -69,9 +70,9 @@ if ($category) {
       // print "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
-        " | <a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $api->get_last_revision($page_title) . ">diff</a>" .
-        " | <a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
       } else {
          report_warning("Write failed.");
       }

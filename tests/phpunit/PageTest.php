@@ -34,8 +34,11 @@ class PageTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('Alter: template type. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
       $page = $this->process_page('{{cite book||quote=a quote}}'); // Just lose extra pipe
       $this->assertEquals('Misc citation tidying. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
+      $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
+      $this->assertFalse(strpos($page->parsed_text(), 'onlinelibrary.wiley.com')); // URL is gone
+      $this->assertEquals('Alter: template type. Add: year, pages, issue, volume, journal, title, doi, author pars. 1-2. Converted bare reference to cite template. Removed parameters. Formatted [[WP:ENDASH|dashes]]. You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].' ,$page->edit_summary());                
   }
-
+ 
   public function testBotRead() {
     if (getenv('TRAVIS_PULL_REQUEST')) {
       echo 'S'; // Test skipped in pull requests, to protect Bot secrets
@@ -84,13 +87,15 @@ class PageTest extends PHPUnit\Framework\TestCase {
 
   public function testUrlReferences() {
       $page = $this->process_page("URL reference test 1 <ref name='bob'>http://doi.org/10.1007/s12668-011-0022-5< / ref>\n Second reference: \n<ref >  [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/] </ref> URL reference test 1");
-      $this->assertEquals("URL reference test 1 <ref name='bob'>{{Cite journal |doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I|last3 = Buehler|first3 = Markus J|arxiv = 1111.5297}}< / ref>\n Second reference: \n<ref >{{Cite journal |pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|last2 = Pimple|first2 = P|last3 = Palsetia|first3 = D|last4 = Dave|first4 = N|last5 = De Sousa|first5 = A|pmid = 23858264|doi = 10.4103/0019-5545.105547}}</ref> URL reference test 1", $page->parsed_text());
+      $this->assertEquals("URL reference test 1 <ref name='bob'>{{Cite journal |doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I.|last3 = Buehler|first3 = Markus J.|arxiv = 1111.5297}}< / ref>\n Second reference: \n<ref >{{Cite journal |pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T.|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|last2 = Pimple|first2 = P.|last3 = Palsetia|first3 = D.|last4 = Dave|first4 = N.|last5 = De Sousa|first5 = A.|pmid = 23858264|doi = 10.4103/0019-5545.105547}}</ref> URL reference test 1", $page->parsed_text());
+      $page = $this->process_page(" text <ref name='dog' > 10.1063/1.2263373 </ref>");
+      $this->assertTrue((boolean) strpos($page->parsed_text(), 'title'));
   }
 
   public function testUrlReferencesThatFail() {
-      $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail';
+      $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail <ref>10.1234/ABCDEFGHIJ.faker</ref>';
       $page = $this->process_page($text);
       $this->assertEquals($text, $page->parsed_text());
   }
-
+  
 }
