@@ -1090,6 +1090,7 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('10.1093/acref/9780199204632.001.0001', $prepared->get('doi'));
   }
+    
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
