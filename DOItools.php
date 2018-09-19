@@ -114,11 +114,8 @@ function format_author($author){
   // Google sometimes has these
   $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, NULL, 'UTF-8'));
 
-  if (substr(trim($author), -1) === ".") {
-     $ends_with_period = TRUE;
-  } else {
-	 $ends_with_period = FALSE;
-  }
+  $ends_with_period = (substr(trim($author), -1) === ".");
+  
 	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
 	if ($author == "") {
@@ -241,7 +238,12 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 
 function straighten_quotes($str) {
   $str = preg_replace('~&#821[679];|&#x201[89];|[\x{2039}\x{203A}\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[ab]?quo;~u', "'", $str);
-  $str = preg_replace('~&#822[013];|[\x{00AB}\x{00BB}\x{201C}-\x{201F}]|&[rlb][ad]?quo;~u', '"', $str);
+  $str = preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
+  if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
+     (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE) ||
+     (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace angle quotes if some of both
+     $str = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);                 // Websites tiles: Jobs » Iowa » Cows » Ames
+  }
   return $str;
 }
 

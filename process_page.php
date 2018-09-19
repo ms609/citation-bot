@@ -17,7 +17,7 @@ if (HTML_OUTPUT) {?>
   <header>
     <p>Follow <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a>&rsquo;s progress below.</p>
     <p>
-      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">More&nbsp;details</a> | 
+      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> | 
       <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent contributions">Bot&rsquo;s&nbsp;recent&nbsp;edits</a> | 
       <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank">Report&nbsp;bugs</a> |
       <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository">Source&nbsp;code</a>
@@ -30,7 +30,7 @@ if (HTML_OUTPUT) {?>
 require_once("expandFns.php");
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
-  echo " Activated by $user.\n";
+  echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
 } else {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
@@ -59,9 +59,9 @@ foreach (explode('|', $pages) as $title) {
       }
       if ($attempts < 3 ) {
         html_echo(
-          " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
+          " <small><a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&diff=prev&oldid="
           . urlencode($api->get_last_revision($title)) . ">diff</a> | "
-          . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a></small></i>\n\n"
+          . "<a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&action=history>history</a></small></i>\n\n"
           , ".");
       } else {
         echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());

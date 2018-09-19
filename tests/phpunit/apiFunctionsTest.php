@@ -51,12 +51,13 @@ final class apiFunctionsTest extends PHPUnit\Framework\TestCase {
   public function testAdsabsApi() {
     $this->requires_secrets(function() {
       $bibcodes = [
-       '2017NatCo...814879F',
-       '1974JPal...48..524M',
-       '1996GSAB..108..195R',
-       '1966Natur.211..116M',
-       '1995Sci...267...77R',
-       '1995Geo....23..967E',
+       '2017NatCo...814879F', // 0
+       '1974JPal...48..524M', // 1
+       '1996GSAB..108..195R', // 2
+       '1966Natur.211..116M', // 3
+       '1995Sci...267...77R', // 4
+       '1995Geo....23..967E', // 5
+       '2003hoe..book.....K', // 6
        ];
       $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
       $page = new TestPage();
@@ -66,6 +67,19 @@ final class apiFunctionsTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('Nature', $templates[3]->get('journal'));
       $this->assertEquals('Geology', $templates[5]->get('journal'));
       $this->assertEquals('14879', $templates[0]->get('pages'));
+      $this->assertNull($templates[6]->get('journal'));
     });
+  }
+  
+  public function testArxivDateUpgradeSeesDate() {
+      $text = '{{Cite journal|date=September 2010|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('September 2010', $expanded->get('date'));
+      $this->assertNull($expanded->get('year'));
+      
+      $text = '{{Cite journal|date=September 2009|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
+      $expanded = $this->process_citation($text);
+      $this->assertNull($expanded->get('date'));
+      $this->assertEquals('2010', $expanded->get('year'));
   }
 }
