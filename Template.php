@@ -83,6 +83,7 @@ final class Template {
           },
           $text);
     }
+
     $params = explode('|', $text);
     // TODO: this naming is confusing, distinguish between $text above and
     //       $text in the loop (derived from $text above via $params)
