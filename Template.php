@@ -1994,7 +1994,7 @@ final class Template {
         }
         continue;
       }
-      $dat = trim($p->val);
+      $dat = $p->val;
       $param_recycled = FALSE;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
@@ -2108,7 +2108,6 @@ final class Template {
       $shortest = -1;
       $parameter_list = PARAMETER_LIST;
       
-      $dat = trim($dat);
       foreach ($parameter_list as $parameter) {
         if (preg_match('~\d+~', $dat, $match)) { // Deal with # values
            $parameter = preg_replace('~#~', $match[0], $parameter);
