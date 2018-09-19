@@ -380,7 +380,7 @@ final class Template {
         $value = trim(straighten_quotes($value));
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
 
-        if ($this->blank(["last2", COAUTHOR_ALIASES, "author"]))
+        if ($this->blank(array_merge(COAUTHOR_ALIASES, ["last2", "author"])))
           return $this->add($param_name, sanitize_string($value));
           // Note; we shouldn't be using this parameter ever....
       return FALSE;
@@ -409,7 +409,7 @@ final class Template {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = trim(straighten_quotes($value));
 
-        if ($this->blank(["last$auNo", "author$auNo", COAUTHOR_ALIASES])
+        if ($this->blank(array_merge(COAUTHOR_ALIASES, ["last$auNo", "author$auNo"]))
           && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
@@ -435,7 +435,7 @@ final class Template {
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
         $value = trim(straighten_quotes($value));
 
-        if ($this->blank([$param_name, "author" . $auNo, COAUTHOR_ALIASES])
+        if ($this->blank(array_merge(COAUTHOR_ALIASES, [$param_name, "author" . $auNo]))
                 && under_two_authors($this->get('author'))) {
           if (mb_substr($value, -1) === '.') { // Do not lose last period
              $value = sanitize_string($value) . '.';
@@ -619,13 +619,13 @@ final class Template {
       
       case 'url': 
         // look for identifiers in URL - might be better to add a PMC parameter, say
-        if (!$this->get_identifiers_from_url($value) && $this->blank([$param_name, TITLE_LINK_ALIASES])) {
+        if (!$this->get_identifiers_from_url($value) && $this->blank(array_merge([$param_name], TITLE_LINK_ALIASES))) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
         
       case 'title-link':
-        if ($this->blank([TITLE_LINK_ALIASES, 'url'])) {
+        if ($this->blank(array_merge(TITLE_LINK_ALIASES, ['url']))) {
           return $this->add($param_name, $value); // We do not sanitize this, since it is not new data
         }
         return FALSE;
@@ -1896,7 +1896,7 @@ final class Template {
     $this->add_if_new("isbn", $isbn);
     
     $i = 0;
-    if ($this->blank([EDITOR1_ALIASES, AUTHOR1_ALIASES, 'publisher'])) { // Too many errors in gBook database to add to existing data.   Only add if blank.
+    if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
           $author_parts  = explode(" ", $author);
