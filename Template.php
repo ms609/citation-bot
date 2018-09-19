@@ -591,8 +591,8 @@ final class Template {
            || (strcasecmp($all_page_values,'no') === 0 || strcasecmp($all_page_values,'none') === 0) // Is exactly "no" or "none"
            || (strpos(strtolower($all_page_values), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
            || (
-                (  str_replace([$en_dash], 'X', $value) != $value) // dash in new `pages`
-                && str_replace([$en_dash], 'X', $pages_value) == $pages_value // No dash already
+                (  str_replace($en_dash, 'X', $value) != $value) // dash in new `pages`
+                && str_replace($en_dash, 'X', $pages_value) == $pages_value // No dash already
               )
         ) {
             if (mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
