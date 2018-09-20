@@ -985,7 +985,7 @@ final class Template {
   }
 
   public function get_doi_from_crossref() {
-     expand_by_doi(array($this)), TRUE);
+     expand_by_doi(array($this), TRUE);
   }
 
   protected function query_pubmed() {
