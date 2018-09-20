@@ -1170,6 +1170,11 @@ ER -  }}';
     $this->assertEquals(FALSE, stripos($pages, 'arxiv'));
     $this->assertEquals(FALSE, stripos('1711', $volume));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+    $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it
+    $expanded = $this->process_citation($text);
+    $pages = $expanded->get('pages');
+    $this->assertEquals(FALSE, stripos($pages, 'astro'));
+    $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
   }
     
   public function testCitationTemplateWithoutJournal() {
