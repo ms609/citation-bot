@@ -22,13 +22,16 @@ class CitoidTest extends PHPUnit\Framework\TestCase {
   protected function tearDown() {
   }
   
-  protected function process_page($text) {
+  protected function process_citation($text) {
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
-    return $page;
+    $expanded_text = $page->parsed_text();
+    $template = new Template();
+    $template->parse_text($expanded_text);
+    return $template;
   }
-
+  
   // Keep tests to a minimum: we have a budget of 200 calls to the public API per day, and cannot access
   // our own implementation of the server
   public function testCitoidExpansion() {
