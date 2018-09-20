@@ -74,7 +74,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testUseUnusedData() {
     $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
     $prepared = $this->prepare_citation($text);
-    $this->assertNull($prepared->parsed_text()); // DEBUG
     $this->assertEquals('cite web',          $prepared->wikiname());
     $this->assertEquals('http://google.com', $prepared->get('url'));
     $this->assertEquals('I am a title',      $prepared->get('title')); 
