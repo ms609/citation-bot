@@ -946,6 +946,12 @@ ER -  }}';
     });
   }
 
+  public function testNoGyrosFromBibcode() {
+    $text='{{cite book |bibcode = 2001LNP...562..195H}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());  // The journal should not be Gyros - DEBUG
+  }
+
   public function testConvertJournalToBook() {
     $text = '{{Cite journal|doi=10.1007/978-3-540-74735-2_15}}';
     $expanded = $this->process_citation($text);
