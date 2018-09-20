@@ -2151,7 +2151,14 @@ final class Template {
           $comp = $parameter;
         }
       }
-
+      // Deal with # values
+      if(preg_match('~\d+~', $dat, $match)) {
+        $closest = str_replace('#', $match[0], $closest);
+        $comp    = str_replace('#', $match[0], $comp);
+      } else {
+        $closest = str_replace('#', "", $closest);
+        $comp    = str_replace('#', "", $comp);
+      }
       if (  $shortest < 3
          && strlen($test_dat > 0)
          && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
@@ -2160,13 +2167,6 @@ final class Template {
              || strlen($closest) > strlen($comp)
             )
       ) {
-        if (strpos($closest, '#') !== FALSE) { // Deal with # values
-          if(preg_match('~\d+~', $dat, $match)) {
-            $closest = str_replace('#', $match[0], $closest);
-          } else {
-            $closest = str_replace('#', "", $closest);
-          }
-        }
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
           $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
