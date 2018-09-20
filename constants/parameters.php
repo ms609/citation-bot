@@ -224,7 +224,7 @@ const EDITOR1_ALIASES = ["editor1", "editor", "editor-last", "editor1-last"];
 const ISSUE_ALIASES = ['issue', 'number'];
 const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
 
-// Just leave this code here for now   
+// Just leave this code here for now
 //     $parameter_list = [];
 //     foreach (PARAMETER_LIST as $param_list) {
 //       if (strpos($param_list, "#") !== FALSE) {
