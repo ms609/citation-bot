@@ -281,10 +281,12 @@ function adsabs_api($ids, $templates, $identifier) {
         $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
       }          
     }
-    if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
+    if (isset($record->page)) {
+      if ((stripos(implode('–', $record->page), 'arxiv') !== FALSE) || (stripos(implode('–', $record->page), '/') !== FALSE)) {  // Bad data
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
+      }
     }
     if (isset($record->volume)) {
       $this_template->add_if_new("volume", (string) $record->volume, 'adsabs');
