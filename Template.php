@@ -2370,10 +2370,14 @@ final class Template {
       // Check the parameter list to find a likely replacement
       $shortest = -1;
       $closest = 0;
+      
+      if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
+         $param_number = $match[0];
+      } else {
+         $param_number = '#';
+      }
       foreach ($unused_parameters as $parameter) {
-        if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
-           $parameter = str_replace('#', $match[0], $parameter);
-        }
+        $parameter = str_replace('#', $param_number, $parameter);
         if (strpos($parameter, '#') !== FALSE) break; // Do no use # items unless we have a number
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
