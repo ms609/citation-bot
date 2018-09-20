@@ -1310,8 +1310,9 @@ final class Template {
        }
       }
       if (isset($record->pub)) {
-        fwrite(STDERR, print_r($record->pub)); //DEBUG
+        fwrite(STDERR, "\n" . (string) $record->pub) . "\n"); //DEBUG
         $journal_string = explode(",", (string) $record->pub);
+        fwrite(STDERR, "\n" . print_r($journal_string, TRUE) . "\n"); //DEBUG
         $journal_start = mb_strtolower($journal_string[0]);
         if (preg_match("~\bthesis\b~ui", $journal_start)) {
           // Do nothing
@@ -1323,6 +1324,7 @@ final class Template {
             $this->append_to('id', ' ' . substr($journal_start, 13));
           }
         } else {
+          fwrite(STDERR, "\n adding " . $journal_string[0] . "\n"); //DEBUG
           $this->add_if_new('journal', $journal_string[0]);
         }          
       }
