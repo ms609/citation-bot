@@ -1310,7 +1310,7 @@ final class Template {
        }
       }
       if (isset($record->pub)) {
-        fwrite(STDERR, print_r($record->pub))); //DEBUG
+        fwrite(STDERR, print_r($record->pub)); //DEBUG
         $journal_string = explode(",", (string) $record->pub);
         $journal_start = mb_strtolower($journal_string[0]);
         if (preg_match("~\bthesis\b~ui", $journal_start)) {
