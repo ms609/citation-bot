@@ -470,7 +470,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testMisspeltParameters() {
     $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text()); // DEBUG
     $this->assertNotNull($expanded->get('author')); ## Check: the parameter might be broken down into last1, first1 etc
     $this->assertNotNull($expanded->get('title'));
     $this->assertNotNull($expanded->get('journal'));
@@ -793,7 +792,6 @@ ER -  }}';
   public function testEtAl() {
     $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
     $prepared = $this->prepare_citation($text);
-    $this->assertNull($prepared->parsed_text()); // DEBUG
     $this->assertEquals('Albertstein, Alfred A.', $prepared->first_author());
     $this->assertEquals('Charlie C.', $prepared->get('first3'));
     $this->assertEquals('etal', $prepared->get('displayauthors'));
