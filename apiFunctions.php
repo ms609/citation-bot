@@ -394,8 +394,11 @@ function expand_by_doi($template, $force = FALSE) {
 }
 
 function query_crossref($doi) {
-  $doi = str_replace("#",  urlencode("%23"), $doi); // Cross ref does not require most characters to be escaped, but it does #
-  $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
+  $doi = str_replace("#",  urlencode("#"), $doi);
+  $doi = str_replace("<",  urlencode("<"), $doi);
+  $doi = str_replace(">",  urlencode(">"), $doi);
+  fwrite(STDERR, "\n $doi \n");
+  $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME . "&id=doi:" . $doi;
   for ($i = 0; $i < 2; $i++) {
     $xml = @simplexml_load_file($url);
     if ($xml) {
