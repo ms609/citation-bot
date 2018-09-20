@@ -397,7 +397,6 @@ function query_crossref($doi) {
   $doi = str_replace("#",  urlencode("#"), $doi);
   $doi = str_replace("<",  urlencode("<"), $doi);
   $doi = str_replace(">",  urlencode(">"), $doi);
-  fwrite(STDERR, "\n $doi \n");
   $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME . "&id=doi:" . $doi;
   for ($i = 0; $i < 2; $i++) {
     $xml = @simplexml_load_file($url);
