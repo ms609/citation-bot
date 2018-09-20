@@ -172,8 +172,6 @@ final class Template {
   
   public function process() {
     if ($this->should_be_processed()) {
-      $this->use_unnamed_params();
-      $this->get_identifiers_from_url();
       $this->prepare();
       switch ($this->wikiname()) {
         case 'cite web':

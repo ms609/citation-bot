@@ -2,7 +2,7 @@
 function expand_by_citoid(&$template, $url = NULL) {
   if (is_null($url)) $url = $template->get('url');
 
-  if (getenv('TRAVIS') || TRUE) {
+  if (getenv('TRAVIS')) {
     // Public API limited to 200 requests/day: enough for testing, perhaps, but not for production
     $ch = curl_init('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));    
   } else {
