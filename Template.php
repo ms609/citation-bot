@@ -987,7 +987,7 @@ final class Template {
   public function get_doi_from_crossref() {
      expand_by_doi($this, TRUE);
   }
-  
+
   public function find_pmid() {
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... " . tag());
@@ -998,7 +998,7 @@ final class Template {
       report_inline("nothing found.");
     }
   }
-  
+
   protected function query_pubmed() {
 /* 
  *
