@@ -2372,7 +2372,7 @@ final class Template {
       $closest = 0;
       foreach ($unused_parameters as $parameter) {
         if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
-           $parameter = preg_replace('~#~', $match[0], $parameter);
+           $parameter = str_replace('#', $match[0], $parameter);
         }
         if (strpos($parameter, '#') !== FALSE) break; // Do no use # items unless we have a number
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
