@@ -76,7 +76,14 @@ final class Template {
   // Parts of each param: | [pre] [param] [eq] [value] [post]
   protected function split_params($text) {
     // Replace | characters that are inside template parameter/value pairs
-    $text = preg_replace('~(\[\[[^\[\]]+)\|([^\[\]]+\]\])~', "$1" . PIPE_PLACEHOLDER . "$2", $text);
+    $PIPE_REGEX = "~(\[\[[^\[\]]*)(?:\|)([^\[\]]*\]\])~u";
+    while (preg_match($PIPE_REGEX, $text)) {
+      $text = preg_replace_callback($PIPE_REGEX,
+          function($matches) {
+             return($matches[1] . PIPE_PLACEHOLDER . $matches[2]);     
+          },
+          $text);
+    }
     $params = explode('|', $text);
 
     // TODO: this naming is confusing, distinguish between $text above and
