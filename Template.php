@@ -2378,8 +2378,7 @@ final class Template {
       }
       foreach ($unused_parameters as $parameter) {
         $parameter = str_replace('#', $param_number, $parameter);
-        fwrite(STDERR,"\n" . $p->param . " XXX " . $parameter . "\n");
-        if (strpos($parameter, '#') !== FALSE) break; // Do no use # items unless we have a number
+        if (strpos($parameter, '#') !== FALSE) continue; // Do no use # items unless we have a number
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
