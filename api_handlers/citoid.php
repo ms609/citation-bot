@@ -21,6 +21,7 @@ function citoid_request($url, $public = FALSE) {
   
 function expand_by_citoid(&$template, $url = NULL) {
   if (is_null($url)) $url = $template->get('url');
+  var_dump(getenv('TRAVIS'));
   $citoid_response = citoid_request($url, getenv('TRAVIS'));
   $citoid_data = @json_decode($citoid_response, FALSE);
   if (!isset($citoid_data) || !isset($citoid_data[0]) || !isset($citoid_data[0]->{'title'})) {
