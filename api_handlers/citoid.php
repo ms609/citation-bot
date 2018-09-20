@@ -1,8 +1,6 @@
 <?php 
-function expand_by_citoid(&$template, $url = NULL) {
-  if (is_null($url)) $url = $template->get('url');
-
-  if (getenv('TRAVIS')) {
+function citoid_request($url, $public = FALSE) {
+  if ($public) {
     // Public API limited to 200 requests/day: enough for testing, perhaps, but not for production
     $ch = curl_init('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));    
   } else {
@@ -14,11 +12,16 @@ function expand_by_citoid(&$template, $url = NULL) {
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
   $citoid_response = curl_exec($ch);
-  var_dump($citoid_response);
   if ($citoid_response === FALSE) {
     throw new Exception(curl_error($ch), curl_errno($ch));
   }
   curl_close($ch);
+  return $citoid_response;
+}
+  
+function expand_by_citoid(&$template, $url = NULL) {
+  if (is_null($url)) $url = $template->get('url');
+  $citoid_response = citoid_request($url, getenv('TRAVIS'));
   $citoid_data = @json_decode($citoid_response, FALSE);
   if (!isset($citoid_data) || !isset($citoid_data[0]) || !isset($citoid_data[0]->{'title'})) {
     report_warning("Citoid API returned invalid json for URL ". $url);
