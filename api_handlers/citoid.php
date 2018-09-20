@@ -1,5 +1,6 @@
 <?php 
 function citoid_request($url, $public = FALSE) {
+  /*
   if ($public) {
     // Public API limited to 200 requests/day: enough for testing, perhaps, but not for production
     $ch = curl_init('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));    
@@ -7,7 +8,11 @@ function citoid_request($url, $public = FALSE) {
     $ch = curl_init('http://127.0.0.1:1969/web');
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
     curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
-  }
+  }*/
+  
+  $ch = curl_init($public ? 'https://tools.wmflabs.org/citations/tests/citoid.php' : 'http://127.0.0.1:1969/web');
+  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
   
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
