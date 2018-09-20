@@ -559,7 +559,15 @@ final class Template {
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name)) {
-          return $this->add($param_name, wikify_external_text($value));
+          if ($this->blank('script-title')) {
+            return $this->add($param_name, wikify_external_text($value));
+          } else {
+            $value = trim($value);
+            $script_value = $this->get('script-title');
+            if (mb_stripos($script_value, $value) === FALSE && mb_stripos($script, $script_value) === FALSE) {// Neither one is part of the other
+               return $this->add($param_name, wikify_external_text($value));
+            }
+          }
         }
         return FALSE;
       
