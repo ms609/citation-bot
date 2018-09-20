@@ -948,9 +948,9 @@ ER -  }}';
 
   public function testNoGyrosFromBibcode() {
     //$this->requires_secrets(function() {
-      $text='{{cite book |bibcode = 2001LNP...562..195H }}';
+      $text='{{cite book |bibcode = 2001LNP...562..195H}}';
       $expanded = $this->process_citation($text);
-      $this->assertTrue(!stripos($expanded->get('journal'), 'Gyros'));  // The journal should not be Gyros
+      $this->assertNull($expanded->parsed_text());  // The journal should not be Gyros - DEBUG
     // }
   }
 
