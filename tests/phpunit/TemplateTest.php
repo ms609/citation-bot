@@ -951,7 +951,7 @@ ER -  }}';
       $text='{{cite book |bibcode = 2001LNP...562..195H}}';
       $expanded = $this->process_citation($text);
       $this->assertNull($expanded->parsed_text());  // The journal should not be Gyros - DEBUG
-   }
+   });
   }
 
   public function testConvertJournalToBook() {
