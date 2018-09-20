@@ -28,7 +28,7 @@ matrix:
       script:
         - wget -O- https://tools.wmflabs.org/citations/gitpull.php
         - wget -O- https://tools.wmflabs.org/citations/maintain_files.php
-    - stage: deploy-to-development 
+    - stage: deploy-to-development
       name: "Update WMFlabs test servers"
       if: branch = development AND type != pull_request
       script:

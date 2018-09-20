@@ -141,7 +141,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
      $expanded = $this->process_citation($text);
      $this->assertEquals('M. M.', $expanded->get('first3'));
   }
- 
+    
+  public function testJustBrackets() {
+     $text = '{{cite book|title=[[W|12px|alt=W]]}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+     $text = '{{cite book|title=[[File:Example.png|thumb|upright|alt=Example alt text|Example caption]]}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+  }
+
   public function testPmidIsZero() {
       $text = '{{cite journal|pmc=2676591}}';
       $expanded = $this->process_citation($text);
