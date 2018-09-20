@@ -1298,6 +1298,7 @@ final class Template {
         return FALSE;
       }
     }
+    fwrite(STDERR, "\n" . print_r($result, TRUE) . "\n");
     if ($result->numFound == 1) {
       $record = $result->docs[0];
       echo tag();
