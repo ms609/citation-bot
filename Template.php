@@ -1310,7 +1310,7 @@ final class Template {
        }
       }
       if (isset($record->pub)) {
-        fwrite(STDERR, "\n" . (string) $record->pub) . "\n"); //DEBUG
+        fwrite(STDERR, "\n" . $record->pub . "\n"); //DEBUG
         $journal_string = explode(",", (string) $record->pub);
         fwrite(STDERR, "\n" . print_r($journal_string, TRUE) . "\n"); //DEBUG
         $journal_start = mb_strtolower($journal_string[0]);
