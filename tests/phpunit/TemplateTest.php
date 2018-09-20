@@ -1154,12 +1154,12 @@ ER -  }}';
   }
  
   public function testBadBibcodeARXIVPages() { // Some bibcodes have pages set to arXiv:1711.02260
-    $text = '{{cite journal|bibcode=2017arXiv171102260L}}';
+    $text = '{{cite journal|bibcode=2018arXiv180906849J}}';
     $expanded = $this->process_citation($text);
     $pages = $expanded->get('pages');
     $volume = $expanded->get('volume');
     $this->assertEquals(FALSE, stripos($pages, 'arxiv'));
-    $this->assertEquals(FALSE, stripos('1711', $volume));
+    $this->assertEquals(FALSE, stripos('1809', $volume));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
   }
     
