@@ -987,7 +987,18 @@ final class Template {
   public function get_doi_from_crossref() {
      expand_by_doi($this, TRUE);
   }
-
+  
+  public function find_pmid() {
+    if (!$this->blank('pmid')) return;
+    report_action("Searching PubMed... " . tag());
+    $results = ($this->query_pubmed());
+    if ($results[1] == 1) {
+      $this->add_if_new('pmid', $results[0]);
+    } else {
+      report_inline("nothing found.");
+    }
+  }
+  
   protected function query_pubmed() {
 /* 
  *
