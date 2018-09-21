@@ -2037,7 +2037,14 @@ final class Template {
           $comp = $parameter;
         }
       }
-
+      // Deal with # values
+      if(preg_match('~\d+~', $dat, $match)) {
+        $closest = str_replace('#', $match[0], $closest);
+        $comp    = str_replace('#', $match[0], $comp);
+      } else {
+        $closest = str_replace('#', "", $closest);
+        $comp    = str_replace('#', "", $comp);
+      }
       if (  $shortest < 3
          && strlen($test_dat > 0)
          && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
@@ -2249,7 +2256,15 @@ final class Template {
       // Check the parameter list to find a likely replacement
       $shortest = -1;
       $closest = 0;
+      
+      if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
+         $param_number = $match[0];
+      } else {
+         $param_number = '#';
+      }
       foreach ($unused_parameters as $parameter) {
+        $parameter = str_replace('#', $param_number, $parameter);
+        if (strpos($parameter, '#') !== FALSE) continue; // Do no use # items unless we have a number
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
