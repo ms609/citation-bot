@@ -1170,8 +1170,8 @@ ER -  }}';
     $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
   }
  
-  public function testBadBibcodeARXIVPages() {
-    $text = '{{cite journal|bibcode=2017arXiv171102260L}}'; // Some bibcodes have pages set to arXiv:1711.02260
+  public function testBadBibcodeARXIVPages() { // Some bibcodes have pages set to arXiv:1809.06849
+    $text = '{{cite journal|bibcode=2018arXiv180906849J}}';
     $expanded = $this->process_citation($text);
     $pages = $expanded->get('pages');
     $volume = $expanded->get('volume');
