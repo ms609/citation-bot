@@ -224,18 +224,6 @@ const EDITOR1_ALIASES = ["editor1", "editor", "editor-last", "editor1-last"];
 const ISSUE_ALIASES = ['issue', 'number'];
 const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
 
-// Just leave this code here for now
-//     $parameter_list = [];
-//     foreach (PARAMETER_LIST as $param_list) {
-//       if (strpos($param_list, "#") !== FALSE) {
-//          $param_list = explode("#", $param_list);
-//          for ($i = 1; $i < 100; $i++) {
-//            $parameter_list[] = implode("$i", $param_list);
-//         }
-//        } else {
-//         $parameter_list[] = $param_list;
-//       }
-//      }
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
 // that information can also be presented using the generic {{citation}} template, which we do modify.
 // This list even includes items that are no longer supported, since we need to leave fixing them to humans
