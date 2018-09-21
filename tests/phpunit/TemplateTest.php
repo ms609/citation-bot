@@ -1176,7 +1176,7 @@ ER -  }}';
     $pages = $expanded->get('pages');
     $volume = $expanded->get('volume');
     $this->assertEquals(FALSE, stripos($pages, 'arxiv'));
-    $this->assertEquals(FALSE, stripos('1711', $volume));
+    $this->assertEquals(FALSE, stripos('1809', $volume));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
     $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
     $expanded = $this->process_citation($text);
