@@ -564,7 +564,7 @@ final class Template {
           } else {
             $value = trim($value);
             $script_value = $this->get('script-title');
-            if (mb_stripos($script_value, $value) === FALSE && mb_stripos($script, $script_value) === FALSE) {// Neither one is part of the other
+            if (mb_stripos($script_value, $value) === FALSE && mb_stripos($value, $script_value) === FALSE) {// Neither one is part of the other
                return $this->add($param_name, wikify_external_text($value));
             }
           }
