@@ -793,15 +793,29 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
-      if (is_null($url_sent)) {
-        if (doi_active($doi)) {
+      if ($doi = $this->get('doi')) {
+        if (is_null($url_sent) && doi_active($doi)) {
           report_forget("Recognized DOI in URL; dropping URL");
           $this->forget('url');
-        } else {
-          $this->mark_inactive_doi($doi);
+          return TRUE; // Dropped URL that matched existing valid DOI
         }
+        return FALSE;  // URL matched existing DOI, but it is either inactive or url was sent in
       }
-      return $this->add_if_new('doi', $doi);    
+      if ($this->has('doi')) $this->mark_inactive_doi(); // Flag old one if bad
+      $this->add_if_new('doi', $doi);
+      if ($this->get('doi') == $doi) { 
+        if (doi_active($doi)) {
+          if (is_null($url_sent)) {
+            report_forget("Recognized DOI in URL; dropping URL");
+            $this->forget('url');
+          }
+        } else {
+          $this->mark_inactive_doi();
+        }
+        return TRUE; // Added new DOI
+      } else {
+        return FALSE; // Did not add it
+      }
     }
   
     // JSTOR
