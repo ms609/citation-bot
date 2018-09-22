@@ -1,45 +1,37 @@
 <?php 
-function citoid_request($url, $public = FALSE) {
-  /*
-  if ($public) {
-    // Public API limited to 200 requests/day: enough for testing, perhaps, but not for production
-    $ch = curl_init('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));    
-  } else {
-    $ch = curl_init('http://127.0.0.1:1969/web');
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
-  }*/
+function zotero_request($url) {
   
-  $ch = curl_init($public ? 'https://tools.wmflabs.org/citations/tests/citoid.php' : 'http://127.0.0.1:1969/web');
+  $ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
+  
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
-  
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
-  $citoid_response = curl_exec($ch);
-  if ($citoid_response === FALSE) {
+  
+  $zotero_response = curl_exec($ch);
+  if ($zotero_response === FALSE) {
     throw new Exception(curl_error($ch), curl_errno($ch));
   }
   curl_close($ch);
-  return $citoid_response;
+  return $zotero_response;
 }
   
-function expand_by_citoid(&$template, $url = NULL) {
+function expand_by_zotero(&$template, $url = NULL) {
   if (is_null($url)) $url = $template->get('url');
-  $citoid_response = citoid_request($url, getenv('TRAVIS'));
-  $citoid_data = @json_decode($citoid_response, FALSE);
-  if (!isset($citoid_data) || !isset($citoid_data[0]) || !isset($citoid_data[0]->{'title'})) {
-    report_warning("Citoid API returned invalid json for URL ". $url);
+  $zotero_response = zotero_request($url, getenv('TRAVIS'));
+  $zotero_data = @json_decode($zotero_response, FALSE);
+  if (!isset($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->{'title'})) {
+    report_warning("Zotero translation server returned invalid json for URL ". $url);
     return FALSE;
   } else {
-    $result = $citoid_data[0];
+    $result = $zotero_data[0];
   }
   if (substr(strtolower(trim($result->{'title'})), 0, 9) == 'not found') {
-    report_info("Citoid API could not resolve URL ". $url);
+    report_info("Zotero translation server could not resolve URL ". $url);
     return FALSE;
   }
   
-  // Verify that Citoid did not think that this was a website and not a journal
+  // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->{'title'}), -9)) === ' on jstor') {
     $template->add_if_new('title', substr(trim($result->{'title'}), 0, -9)); // Add the title without " on jstor"
     return FALSE; // Not really "expanded"
