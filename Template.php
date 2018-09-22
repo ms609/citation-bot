@@ -793,7 +793,7 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
-      if ($doi = $this->get('doi')) {
+      if ($doi == $this->get('doi')) {
         if (is_null($url_sent) && doi_active($doi)) {
           report_forget("Recognized DOI in URL; dropping URL");
           $this->forget('url');
