@@ -502,6 +502,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{Cite journal|pp. 1-5}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('1–5', $expanded->get('pages'));
+      
+    $text = "{{cite book|authorlinux=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{cite book|authorlink=X}}', $expanded->parsed_text());
+      
+    $text = "{{cite book|authorlinks33=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{cite book|authorlink33=X}}', $expanded->parsed_text());
   }
        
   public function testId2Param() {
@@ -1162,13 +1170,18 @@ ER -  }}';
     $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
   }
  
-  public function testBadBibcodeARXIVPages() { // Some bibcodes have pages set to arXiv:1711.02260
-    $text = '{{cite journal|bibcode=2017arXiv171102260L}}';
+  public function testBadBibcodeARXIVPages() {
+    $text = '{{cite journal|bibcode=2017arXiv171102260L}}'; // Some bibcodes have pages set to arXiv:1711.02260
     $expanded = $this->process_citation($text);
     $pages = $expanded->get('pages');
     $volume = $expanded->get('volume');
     $this->assertEquals(FALSE, stripos($pages, 'arxiv'));
     $this->assertEquals(FALSE, stripos('1711', $volume));
+    $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+    $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
+    $expanded = $this->process_citation($text);
+    $pages = $expanded->get('pages');
+    $this->assertEquals(FALSE, stripos($pages, 'astro'));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
   }
     

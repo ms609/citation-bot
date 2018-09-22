@@ -1086,7 +1086,7 @@ final class Template {
  *
  */
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
-      if (!strpos($doi, "[")) { // Doi's with square brackets cannot search PUBMED (yes, we asked).
+      if (!strpos($doi, "[") && !strpos($doi, "<")) { // Doi's with square brackets and less/greater than cannot search PUBMED (yes, we asked).
         $results = $this->do_pumbed_query(array("doi"), TRUE);
         if ($results[1] == 1) return $results;
       }
@@ -1167,63 +1167,7 @@ final class Template {
   }
 
   public function expand_by_arxiv() {
-    if ($this->wikiname() == 'cite arxiv') {
-      $arxiv_param = 'eprint';
-      $this->rename('arxiv', 'eprint');
-    } else {
-      $arxiv_param = 'arxiv';
-      $this->rename('eprint', 'arxiv');
-    }
-    $eprint = str_ireplace("arXiv:", "", $this->get('eprint') . $this->get('arxiv'));
-    $class = $this->get('class');
-    $this->set($arxiv_param, $eprint);
-    if ($class && stripos($eprint, '/') === FALSE) $eprint = $class . '/' . $eprint;
-
-    if ($eprint) {
-      report_action("Getting data from arXiv " . echoable($eprint));
-      $context = stream_context_create(array(
-        'http' => array('ignore_errors' => true),
-      ));
-      $arxiv_request = "https://export.arxiv.org/api/query?start=0&max_results=1&id_list=$eprint";
-      $arxiv_response = @file_get_contents($arxiv_request, FALSE, $context);
-      if ($arxiv_response) {
-        $xml = @simplexml_load_string(
-          preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $arxiv_response)
-        ); // TODO Explore why this is often failing
-      } else {
-        report_warning("No response from arXiv.");
-        return FALSE;
-      }
-    }
-    
-    if ($xml) {
-      if ((string)$xml->entry->title === "Error") {
-        report_warning("arXiv search failed; please report error: " . (string)$xml->entry->summary);
-        return FALSE;
-      }
-      $i = 0;
-      foreach ($xml->entry->author as $auth) {
-        $i++;
-        $name = $auth->name;
-        if (preg_match("~(.+\.)(.+?)$~", $name, $names) || preg_match('~^\s*(\S+) (\S+)\s*$~', $name, $names)) {
-          $this->add_if_new("last$i", $names[2]);
-          $this->add_if_new("first$i", $names[1]);
-        } else {
-          $this->add_if_new("author$i", $name);
-        }
-      }
-      $this->add_if_new("title", (string) $xml->entry->title); // Formatted by add_if_new
-      $this->add_if_new("class", (string) $xml->entry->category["term"]);
-      $this->add_if_new("year", date("Y", strtotime((string)$xml->entry->published)));
-      $this->add_if_new("doi", (string) $xml->entry->arxivdoi);
-
-      if ($xml->entry->arxivjournal_ref) {
-        $journal_data = trim((string) $xml->entry->arxivjournal_ref); // this is human readble text
-        parse_plain_text_reference($journal_data, $this, TRUE);
-      }
-      return TRUE;
-    }
-    return FALSE;
+    expand_arxiv_templates(array($this));
   }
 
   public function expand_by_adsabs() {
@@ -1326,11 +1270,13 @@ final class Template {
           $this->add_if_new('journal', $journal_string[0]);
         }          
       }
-      if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
-         unset($record->page);
-         unset($record->volume);
-         unset($record->issue);
-      }
+      if (isset($record->page)) {
+         if ((stripos(implode('–', $record->page), 'arxiv') !== FALSE) || (stripos(implode('–', $record->page), '/') !== FALSE)) {  // Bad data
+          unset($record->page);
+          unset($record->volume);
+          unset($record->issue);
+         }
+       }
       if (isset($record->volume)) {
         $this->add_if_new("volume", (string) $record->volume);
       }
@@ -1544,79 +1490,12 @@ final class Template {
   public function expand_by_pubmed($force = FALSE) {
     if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) {
-      $identifier = 'pmid';
+      report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
+      query_pmid_api(array($pm), array($this));
     } elseif ($pm = $this->get('pmc')) {
-      $identifier = 'pmc';
-    } else {
-      return FALSE;
+      report_action('Checking ' . pubmed_link('pmc', $pm) . ' for more details');
+      query_pmc_api(array($pm), array($this));
     }
-    report_action('Checking ' . pubmed_link($identifier, $pm) . ' for more details');
-    $xml = @simplexml_load_file("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=" . (($identifier == "pmid")?"pubmed":"pmc") . "&id=" . urlencode($pm));
-    if ($xml === FALSE) {
-      report_warning("Unable to do PubMed search");
-      return;
-    }
-    // Debugging URL : view-source:http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&tool=DOIbot&email=martins@gmail.com&id=
-    if (count($xml->DocSum->Item) > 0) foreach($xml->DocSum->Item as $item) {
-      if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
-        $this->add_if_new('doi', $match[0]);
-      }
-      switch ($item["Name"]) {
-                case "Title":   $this->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item)); // add_if_new will format the title
-        break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
-                                $this->add_if_new('year', (string) $match[1]);
-        break;  case "FullJournalName": $this->add_if_new('journal',  ucwords((string) $item)); // add_if_new will format the title
-        break;  case "Volume":  $this->add_if_new('volume', (string) $item);
-        break;  case "Issue":   $this->add_if_new('issue', (string) $item);
-        break;  case "Pages":   $this->add_if_new('pages', (string) $item);
-        break;  case "PmId":    $this->add_if_new('pmid', (string) $item);
-        break;  case "AuthorList":
-          $i = 0;
-          foreach ($item->Item as $subItem) {
-            $i++;
-            if (author_is_human((string) $subItem)) {
-              $jr_test = junior_test($subItem);
-              $subItem = $jr_test[0];
-              $junior = $jr_test[1];
-              if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-                $first = trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
-                if (strpos($first, '.') && substr($first, -1) != '.') {
-                  $first = $first . '.';
-                }
-                $this->add_if_new("author$i", $names[1] . $junior . ',' . $first);
-              }
-            } else {
-              // We probably have a committee or similar.  Just use 'author$i'.
-              $this->add_if_new("author$i", (string) $subItem);
-            }
-          }
-        break; case "LangList": case 'ISSN':
-        break; case "ArticleIds":
-          foreach ($item->Item as $subItem) {
-            switch ($subItem["Name"]) {
-              case "pubmed": case "pmid":
-                  preg_match("~\d+~", (string) $subItem, $match);
-                  if ($this->add_if_new("pmid", $match[0])) $this->expand_by_pubmed();
-                  break; ### TODO PLACEHOLDER YOU ARE HERE CONTINUATION POINT ###
-              case "pmc":
-                preg_match("~\d+~", (string) $subItem, $match);
-                $this->add_if_new('pmc', $match[0]);
-                break;
-              case "doi": case "pii":
-              default:
-                if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
-                  $this->add_if_new('doi', $match[0]);
-                }
-                if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
-                  $this->add_if_new('pmc', substr($match[0], 3));
-                }
-                break;
-            }
-          }
-        break;
-      }
-    }
-    if ($xml) $this->get_doi_from_crossref();
   }
 
   protected function use_sici() {
@@ -2107,7 +1986,14 @@ final class Template {
           $comp = $parameter;
         }
       }
-
+      // Deal with # values
+      if(preg_match('~\d+~', $dat, $match)) {
+        $closest = str_replace('#', $match[0], $closest);
+        $comp    = str_replace('#', $match[0], $comp);
+      } else {
+        $closest = str_replace('#', "", $closest);
+        $comp    = str_replace('#', "", $comp);
+      }
       if (  $shortest < 3
          && strlen($test_dat > 0)
          && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
@@ -2292,7 +2178,7 @@ final class Template {
   foreach ($this->param as $p) {
     ++$i;
 
-    if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list)) {
+    if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list) && stripos($p->param, 'CITATION_BOT')===FALSE) {
      
       report_modification("Unrecognised parameter " . echoable($p->param) . " ");
       $mistake_id = array_search($p->param, $mistake_keys);
@@ -2319,7 +2205,15 @@ final class Template {
       // Check the parameter list to find a likely replacement
       $shortest = -1;
       $closest = 0;
+      
+      if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
+         $param_number = $match[0];
+      } else {
+         $param_number = '#';
+      }
       foreach ($unused_parameters as $parameter) {
+        $parameter = str_replace('#', $param_number, $parameter);
+        if (strpos($parameter, '#') !== FALSE) continue; // Do no use # items unless we have a number
         $lev = levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
@@ -2654,7 +2548,7 @@ final class Template {
           if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
           return;
      
-        case 'url':
+        case 'url': case 'chapter-url':
           if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
@@ -3145,8 +3039,8 @@ final class Template {
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
-      if ($echo_forgetting && $this->has($par) && strpos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
-        // Do not mention forgetting empty parameters
+      if ($echo_forgetting && $this->has($par) && stripos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
+        // Do not mention forgetting empty parameters or internal temporary parameters
         report_forget("Dropping parameter \"" . echoable($par) . '"' . tag());
       }
       unset($this->param[$pos]);
