@@ -654,9 +654,15 @@ final class Template {
         return FALSE;
         
       case 'doi':
-        if ($this->blank($param_name) && preg_match(REGEXP_DOI, $value, $match)) {
-          $this->add('doi', $match[0]);          
-          return TRUE;
+        if (preg_match(REGEXP_DOI, $value, $match)) {
+          if ($this->blank($param_name)) {
+            $this->add('doi', $match[0]);          
+            return TRUE;
+          } elseif ($this->get('doi') != $match[0] && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
+            $this->set('doi', $match[0]);
+            report_action("Replacing non-functional DOI with functional one");
+            return TRUE;
+          }
         }
         return FALSE;
       
