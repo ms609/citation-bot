@@ -783,7 +783,7 @@ final class Template {
       if (is_null($url_sent)) {
         $this->set('url', $url); // Save it
       }
-    }   
+    }
     
     if ($doi = extract_doi($url)[1]) {
       if (is_null($url_sent)) {
@@ -1486,7 +1486,7 @@ final class Template {
       if ($ris_publisher) $this->add_if_new('publisher', $ris_publisher);
     }
   }
-
+ 
   public function expand_by_pubmed($force = FALSE) {
     if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) {
