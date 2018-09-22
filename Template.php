@@ -181,7 +181,7 @@ final class Template {
     if ($this->should_be_processed()) {
       $this->prepare();
       
-      if ($this->has('url')) expand_by_citoid($this); // May modify wikiname
+      if ($this->has('url')) expand_by_zotero($this); // May modify wikiname
       
       switch ($this->wikiname()) {
         case 'cite web':
