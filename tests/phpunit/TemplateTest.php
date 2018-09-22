@@ -327,6 +327,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text, $expanded->parsed_text());
   }
   
+  public function testScriptTitle() {
+    $text = "{{cite book |author={{noitalic|{{lang|zh-hans|国务院人口普查办公室、国家统计局人口和社会科技统计司编}}}} |date=2012 |script-title=zh:中国2010年人口普查分县资料 |location=Beijing |publisher={{noitalic|{{lang|zh-hans|中国统计出版社}}}} [China Statistics Press] |page= |isbn=978-7-5037-6659-6 }}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('title')); // Already have script-title that matches what google books gives us
+  }
+    
   public function testPageDuplication() {
      global $SLOW_MODE;
      $SLOW_MODE = FALSE; // Otherwise we'll find a bibcode
