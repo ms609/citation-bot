@@ -803,7 +803,7 @@ final class Template {
       }
       if ($this->has('doi')) $this->mark_inactive_doi(); // Flag old one if bad
       $this->add_if_new('doi', $doi);
-      if ($this->get('doi') == $doi) { 
+      if ($this->get('doi') == $doi) {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
             report_forget("Recognized DOI in URL; dropping URL");
