@@ -281,10 +281,12 @@ function adsabs_api($ids, $templates, $identifier) {
         $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
       }          
     }
-    if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
+    if (isset($record->page)) {
+      if ((stripos(implode('–', $record->page), 'arxiv') !== FALSE) || (stripos(implode('–', $record->page), '/') !== FALSE)) {  // Bad data
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
+      }
     }
     if (isset($record->volume)) {
       $this_template->add_if_new("volume", (string) $record->volume, 'adsabs');
@@ -394,6 +396,7 @@ function expand_by_doi($template, $force = FALSE) {
 }
 
 function query_crossref($doi) {
+  $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
     $xml = @simplexml_load_file($url);

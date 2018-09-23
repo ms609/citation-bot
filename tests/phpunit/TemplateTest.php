@@ -141,7 +141,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
      $expanded = $this->process_citation($text);
      $this->assertEquals('M. M.', $expanded->get('first3'));
   }
- 
+    
+  public function testJustBrackets() {
+     $text = '{{cite book|title=[[W|12px|alt=W]]}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+     $text = '{{cite book|title=[[File:Example.png|thumb|upright|alt=Example alt text|Example caption]]}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+  }
+
   public function testPmidIsZero() {
       $text = '{{cite journal|pmc=2676591}}';
       $expanded = $this->process_citation($text);
@@ -328,6 +337,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text, $expanded->parsed_text());
   }
   
+  public function testScriptTitle() {
+    $text = "{{cite book |author={{noitalic|{{lang|zh-hans|国务院人口普查办公室、国家统计局人口和社会科技统计司编}}}} |date=2012 |script-title=zh:中国2010年人口普查分县资料 |location=Beijing |publisher={{noitalic|{{lang|zh-hans|中国统计出版社}}}} [China Statistics Press] |page= |isbn=978-7-5037-6659-6 }}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('title')); // Already have script-title that matches what google books gives us
+  }
+    
   public function testPageDuplication() {
      global $SLOW_MODE;
      $SLOW_MODE = FALSE; // Otherwise we'll find a bibcode
@@ -378,10 +393,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
+  }
     
+  public function testCrossRefEvilDoi() {
     $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
+    $this->assertEquals('39', $expanded->get('volume'));
   }
 
   public function testOpenAccessLookup() {
@@ -503,6 +521,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{Cite journal|pp. 1-5}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('1–5', $expanded->get('pages'));
+      
+    $text = "{{cite book|authorlinux=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{cite book|authorlink=X}}', $expanded->parsed_text());
+      
+    $text = "{{cite book|authorlinks33=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{cite book|authorlink33=X}}', $expanded->parsed_text());
   }
        
   public function testId2Param() {
@@ -1163,13 +1189,18 @@ ER -  }}';
     $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
   }
  
-  public function testBadBibcodeARXIVPages() { // Some bibcodes have pages set to arXiv:1711.02260
-    $text = '{{cite journal|bibcode=2017arXiv171102260L}}';
+  public function testBadBibcodeARXIVPages() {
+    $text = '{{cite journal|bibcode=2017arXiv171102260L}}'; // Some bibcodes have pages set to arXiv:1711.02260
     $expanded = $this->process_citation($text);
     $pages = $expanded->get('pages');
     $volume = $expanded->get('volume');
     $this->assertEquals(FALSE, stripos($pages, 'arxiv'));
     $this->assertEquals(FALSE, stripos('1711', $volume));
+    $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+    $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
+    $expanded = $this->process_citation($text);
+    $pages = $expanded->get('pages');
+    $this->assertEquals(FALSE, stripos($pages, 'astro'));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
   }
     
