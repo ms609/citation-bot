@@ -2287,14 +2287,14 @@ final class Template {
       }
     }
     if ($new_name === 'cite book') {
-            // all open-access versions of conference papers point to the paper itself
-            // not to the whole proceedings
-            // so we use chapter-url so that the template is well rendered afterwards
-            if ($this->blank('chapter-url')) {
-              $this->rename('url', 'chapter-url');
-            } elseif (0 === strcasecmp($this->get('chapter'), $this->get('url'))) {
-              $this->forget('url');
-            }  // otherwise they are differnt urls
+      // all open-access versions of conference papers point to the paper itself
+      // not to the whole proceedings
+      // so we use chapter-url so that the template is well rendered afterwards
+      if ($this->blank('chapter-url')) {
+        $this->rename('url', 'chapter-url');
+      } elseif (0 === strcasecmp($this->get('chapter-url'), $this->get('url'))) {
+        $this->forget('url');
+      }  // otherwise they are differnt urls
     }
   }
   
@@ -2567,7 +2567,7 @@ final class Template {
      
         case 'chapter-url':
           if ($this->blank(['url', 'chapter'])) {
-            $this-rename('chapter-url', 'url');
+            $this->rename('chapter-url', 'url');
             $param = 'url'; // passes down to next area
           }
         case 'url':
