@@ -658,7 +658,7 @@ final class Template {
           if ($this->blank($param_name)) {
             $this->add('doi', $match[0]);          
             return TRUE;
-          } elseif ($this->get('doi') != $match[0] && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
+          } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
             report_action("Replacing non-functional DOI with functional one");
             $this->set('doi', $match[0]);
             $this->tidy_parameter('doi');
