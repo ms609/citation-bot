@@ -2968,7 +2968,7 @@ final class Template {
     if (!is_array($this->param)) return NULL; // Maybe the wrong thing to do?
     
     foreach ($this->param as $i => $p) {
-      if ($p->param == $needle) return $i;
+      if (trim($p->param) == trim($needle)) return $i;
     }
     
     return NULL;
@@ -2985,8 +2985,8 @@ final class Template {
   }
   
   public function set($par, $val) {
-    $par = trim($par);
-    $val = trim($val); // We do not do this to the orignal template explosion, because changing whitespace is deadly
+    $par = trim((string) $par);
+    $val = trim((string) $val);
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
       return $this->param[$pos]->val = (string) $val;
     }
