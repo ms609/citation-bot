@@ -264,6 +264,11 @@ final class Template {
           // Convert from journal to book, if there is a unique chapter name or has an ISBN
           if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
             $this->change_name_to('Cite book');
+            
+            // all open-access versions of conference papers point to the paper itself
+            // not to the whole proceedings
+            // so we use chapter-url so that the template is well rendered afterwards
+            $this->rename('url', 'chapter-url');
           }
           break;
       }
