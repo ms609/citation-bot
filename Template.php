@@ -800,7 +800,6 @@ final class Template {
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
       }
-      if ($this->has('doi')) $this->mark_inactive_doi(); // Flag old one if bad
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
