@@ -2384,7 +2384,10 @@ final class Template {
           if ($this->has('chapter')) {
             if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
             if (!strcasecmp($this->get('chapter'), $this->get('title'))) {
-              $this->forget('chapter'); 
+              $this->forget('chapter');
+              if ($this->blank('url') && $this->has('chapter-url')) {
+                $this->rename('chapter-url', 'url');
+              }   
               return; // Nonsense to have both.
             }
           }
@@ -2684,6 +2687,9 @@ final class Template {
             $this->forget('title');
         } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
           $this->forget('chapter');
+          if ($this->blank('url') && $this->has('chapter-url')) {
+            $this->rename('chapter-url', 'url');
+          }
         }
       }
       // Sometimes series and journal come from different databases
