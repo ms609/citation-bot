@@ -302,7 +302,14 @@ final class Template {
   }
   
   private function lacks_or_blank($par, $style) {
-    $lacks=$this->lacks_inside($par);
+    if (is_array($par)) {
+      $lacks = TRUE;
+      foreach($par as $item) {
+        if(!$this->lacks_inside($item)) $lacks = FALSE;
+      }
+    } else {
+      $lacks=$this->lacks_inside($par);
+    }
     $blank=$this->blank_inside($par);
     if ($lacks === $blank) return $blank;
     fwrite(STDERR, "\n LACKS=<" . $lacks . ">  BLANK=<" . $blank . ">    for " . $par . "\n");
