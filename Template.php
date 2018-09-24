@@ -800,15 +800,25 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
-      if (is_null($url_sent)) {
-        if (doi_active($doi)) {
-          report_forget("Recognized DOI in URL; dropping URL");
+      if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
+        if (doi_active($doi) && is_null($url_sent)) {
+          report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget('url');
-        } else {
-          $this->mark_inactive_doi($doi);
         }
+        return FALSE;  // URL matched existing DOI, so we did not use it
       }
-      return $this->add_if_new('doi', $doi);    
+      if ($this->add_if_new('doi', $doi)) {
+        if (doi_active($doi)) {
+          if (is_null($url_sent)) {
+            report_forget("Recognized DOI in URL; dropping URL");
+            $this->forget('url');
+          }
+        } else {
+          $this->mark_inactive_doi();
+        }
+        return TRUE; // Added new DOI
+      }
+      return FALSE; // Did not add it
     }
   
     // JSTOR
