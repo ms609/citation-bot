@@ -809,9 +809,13 @@ final class Template {
       }
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
-          if (is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
-            report_forget("Recognized DOI in URL; dropping URL");
-            $this->forget('url');
+          if (is_null($url_sent)) {
+            if (mb_strpos(strtolower($url), ".pdf") === FALSE) {
+              report_forget("Recognized DOI in URL; dropping URL");
+              $this->forget('url');
+            } else {
+              report_info("Recognized DOI in URL.  Leaving PDF link.");
+            }
           }
         } else {
           $this->mark_inactive_doi();
