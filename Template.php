@@ -2387,7 +2387,9 @@ final class Template {
               $this->forget('chapter');
               if ($this->blank('url') && $this->has('chapter-url')) {
                 $this->rename('chapter-url', 'url');
-              }   
+              } elseif ($this->blank('url') && $this->has('chapterurl')) {
+                $this->rename('chapterurl', 'url');
+              }  
               return; // Nonsense to have both.
             }
           }
@@ -2569,8 +2571,9 @@ final class Template {
           return;
      
         case 'chapter-url':
+        case 'chapterurl':
           if ($this->blank(['url', 'chapter'])) {
-            $this->rename('chapter-url', 'url');
+            $this->rename($param, 'url');
             $param = 'url'; // passes down to next area
           }
         case 'url':
@@ -2689,6 +2692,8 @@ final class Template {
           $this->forget('chapter');
           if ($this->blank('url') && $this->has('chapter-url')) {
             $this->rename('chapter-url', 'url');
+          } elseif ($this->blank('url') && $this->has('chapterurl')) {
+            $this->rename('chapterurl', 'url');
           }
         }
       }
