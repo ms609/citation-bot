@@ -231,7 +231,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-0470016176', $expanded->get('isbn'));
     $this->assertEquals('cite book', $expanded->wikiname());
-    $this->assertEquals('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $this->get('chapter-url'));
+    $this->assertEquals('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $expanded->get('chapter-url'));
     $this->assertNull($expanded->get('url'));
   }
 
