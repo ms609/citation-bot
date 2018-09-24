@@ -2684,7 +2684,7 @@ final class Template {
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
             $this->forget('title');
         } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
-          $this->forget('chapter');
+          $this->forget('chapter'); 
         }
       }
       // Sometimes series and journal come from different databases
