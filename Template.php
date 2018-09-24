@@ -184,7 +184,7 @@ final class Template {
       $this->prepare();
       switch ($this->wikiname()) {
         case 'cite web':
-          if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any countries google
+          if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
             report_action("Expanded from Google Books API");
             $this->change_name_to('Cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
           }
@@ -654,9 +654,16 @@ final class Template {
         return FALSE;
         
       case 'doi':
-        if ($this->blank($param_name) && preg_match(REGEXP_DOI, $value, $match)) {
-          $this->add('doi', $match[0]);          
-          return TRUE;
+        if (preg_match(REGEXP_DOI, $value, $match)) {
+          if ($this->blank($param_name)) {
+            $this->add('doi', $match[0]);          
+            return TRUE;
+          } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
+            report_action("Replacing non-functional DOI with functional one");
+            $this->set('doi', $match[0]);
+            $this->tidy_parameter('doi');
+            return TRUE;
+          }
         }
         return FALSE;
       
@@ -793,19 +800,25 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
-      if (is_null($url_sent)) {
+      if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
+        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
+          report_forget("Recognized existing DOI in URL; dropping URL");
+          $this->forget('url');
+        }
+        return FALSE;  // URL matched existing DOI, so we did not use it
+      }
+      if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
-          if (mb_strpos(strtolower($url), ".pdf") === FALSE) {
+          if (is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
             report_forget("Recognized DOI in URL; dropping URL");
             $this->forget('url');
-          } else { // Otherwise has ".pdf", probably is a free copy, so leave url.
-            quietly('report_add', "Recognized DOI in URL; adding DOI");
           }
         } else {
-          $this->mark_inactive_doi($doi);
+          $this->mark_inactive_doi();
         }
+        return TRUE; // Added new DOI
       }
-      return $this->add_if_new('doi', $doi);    
+      return FALSE; // Did not add it
     }
   
     // JSTOR
