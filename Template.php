@@ -2384,7 +2384,7 @@ final class Template {
           if ($this->has('chapter')) {
             if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
             if (!strcasecmp($this->get('chapter'), $this->get('title'))) {
-              $this->forget('chapter');
+              $this->forget('chapter'); 
               return; // Nonsense to have both.
             }
           }
@@ -2684,7 +2684,7 @@ final class Template {
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
             $this->forget('title');
         } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
-          $this->forget('chapter'); 
+          $this->forget('chapter');
         }
       }
       // Sometimes series and journal come from different databases
