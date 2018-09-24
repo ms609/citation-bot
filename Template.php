@@ -2385,11 +2385,6 @@ final class Template {
             if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
             if (!strcasecmp($this->get('chapter'), $this->get('title'))) {
               $this->forget('chapter');
-              if ($this->blank('url') && $this->has('chapter-url')) {
-                $this->rename('chapter-url', 'url');
-              } elseif ($this->blank('url') && $this->has('chapterurl')) {
-                $this->rename('chapterurl', 'url');
-              }  
               return; // Nonsense to have both.
             }
           }
@@ -2690,11 +2685,6 @@ final class Template {
             $this->forget('title');
         } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
           $this->forget('chapter');
-          if ($this->blank('url') && $this->has('chapter-url')) {
-            $this->rename('chapter-url', 'url');
-          } elseif ($this->blank('url') && $this->has('chapterurl')) {
-            $this->rename('chapterurl', 'url');
-          }
         }
       }
       // Sometimes series and journal come from different databases
@@ -3069,6 +3059,13 @@ final class Template {
       $this->forgetter('via', $echo_forgetting);
       $this->forgetter('website', $echo_forgetting);
       $this->forgetter('deadurl', $echo_forgetting);
+    }
+    if ($par == 'chapter' && $this->blank('url')) {
+      if($this->has('chapter-url')) {
+        $this->rename('chapter-url', 'url');
+      } elseif ($this->has('chapterurl')) {
+        $this->rename('chapterurl', 'url');
+      }
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
