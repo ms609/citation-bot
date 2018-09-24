@@ -2303,6 +2303,16 @@ final class Template {
           break;
       }
     }
+    if ($new_name === 'cite book') {
+      // all open-access versions of conference papers point to the paper itself
+      // not to the whole proceedings
+      // so we use chapter-url so that the template is well rendered afterwards
+      if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
+        $this->rename('url', 'chapter-url');
+      } elseif (0 === strcasecmp($this->get('chapter-url'), $this->get('url'))) {
+        $this->forget('url');
+      }  // otherwise they are differnt urls
+    }
   }
   
   public function wikiname() {
@@ -2572,7 +2582,13 @@ final class Template {
           if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
           return;
      
-        case 'url': case 'chapter-url':
+        case 'chapter-url':
+        case 'chapterurl':
+          if ($this->blank(['url', 'chapter'])) {
+            $this->rename($param, 'url');
+            $param = 'url'; // passes down to next area
+          }
+        case 'url':
           if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
@@ -3060,6 +3076,13 @@ final class Template {
       $this->forgetter('via', $echo_forgetting);
       $this->forgetter('website', $echo_forgetting);
       $this->forgetter('deadurl', $echo_forgetting);
+    }
+    if ($par == 'chapter' && $this->blank('url')) {
+      if($this->has('chapter-url')) {
+        $this->rename('chapter-url', 'url');
+      } elseif ($this->has('chapterurl')) {
+        $this->rename('chapterurl', 'url');
+      }
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {

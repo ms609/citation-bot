@@ -233,6 +233,15 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite book', $expanded->wikiname());
   }
   
+  public function testTemplateRenamingURLConvert() {
+    $text='{{cite journal |url=http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf |title=Terrestrialization (Precambrian–Devonian) |last=Selden |first=Paul A. |year=2005 |encyclopedia=[[Encyclopedia of Life Sciences]] |publisher=[[John Wiley & Sons, Ltd.]] |doi=10.1038/npg.els.0004145 |format=PDF}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-0470016176', $expanded->get('isbn'));
+    $this->assertEquals('cite book', $expanded->wikiname());
+    $this->assertEquals('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $expanded->get('chapter-url'));
+    $this->assertNull($expanded->get('url'));
+  }
+
   public function testDoiExpansion() {
     $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
     $prepared = $this->prepare_citation($text);
