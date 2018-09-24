@@ -814,7 +814,7 @@ final class Template {
               report_forget("Recognized DOI in URL; dropping URL");
               $this->forget('url');
             } else {
-              report_info("Recognized DOI in URL.  Leaving PDF link.");
+              report_info("Recognized DOI in URL.  Leaving *.pdf URL.");
             }
           }
         } else {
