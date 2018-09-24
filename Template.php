@@ -2290,7 +2290,7 @@ final class Template {
       // all open-access versions of conference papers point to the paper itself
       // not to the whole proceedings
       // so we use chapter-url so that the template is well rendered afterwards
-      if ($this->blank('chapter-url') && $this->has('chapter')) {
+      if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
         $this->rename('url', 'chapter-url');
       } elseif (0 === strcasecmp($this->get('chapter-url'), $this->get('url'))) {
         $this->forget('url');
