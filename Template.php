@@ -301,7 +301,7 @@ final class Template {
       return $this->lacks_or_blank($param, 'blank');
   }
   
-  private funciton lacks_or_blank($par, $style) {
+  private function lacks_or_blank($par, $style) {
     $lacks=$this->lacks_inside($par);
     $blank=$this->blank_inside($par);
     if ($lacks === $blank) return $blank;
@@ -321,7 +321,7 @@ final class Template {
     }
     return TRUE;
   }
-  
+
   /* function add_if_new
    * Adds a parameter to a template if the parameter and its equivalents are blank
    * $api (string) specifies the API route by which a parameter was found; this will log the 
