@@ -802,7 +802,7 @@ final class Template {
     
     if ($doi = extract_doi($url)[1]) {
       if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
-        if (doi_active($doi) && is_null($url_sent)) {
+        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget('url');
         }
@@ -811,8 +811,12 @@ final class Template {
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
-            report_forget("Recognized DOI in URL; dropping URL");
-            $this->forget('url');
+            if (mb_strpos(strtolower($url), ".pdf") === FALSE) {
+              report_forget("Recognized DOI in URL; dropping URL");
+              $this->forget('url');
+            } else {
+              report_info("Recognized DOI in URL.  Leaving *.pdf URL.");
+            }
           }
         } else {
           $this->mark_inactive_doi();
