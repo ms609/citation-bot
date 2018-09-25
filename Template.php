@@ -3238,8 +3238,10 @@ final class Template {
        if ($inline_doi = $this->all_templates[$match[0]]->inline_doi_information()) {
          if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
            $this->set('title', trim($inline_doi[1]));
+           quietly('report_modification', "Converting inline DOI to DOI parameter");
          } elseif ($this->get('doi') === trim($inline_doi[0])) { // Already added by someone else
            $this->set('title', trim($inline_doi[1]));
+           quietly('report_modification', "Remove duplicate inline DOI ");
          }
        }
      }
