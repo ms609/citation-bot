@@ -238,16 +238,20 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $prepared->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $prepared->get('doi'));
+    
     $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
     $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
     $this->assertNull($expanded->get('url'));
-    $text = "{{Cite web | url = http://freecopies.com/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
+    
+    // Replace this test with a real URL (if one exists)
+    $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
     $expanded= $this->prepare_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
-    $this->assertEquals('http://freecopies.com/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf', $expanded->get('url')); // PDF file, do not drop
+    // Do not drop PDF files, in case they are open access and the DOI points to a paywall
+    $this->assertEquals('http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf', $expanded->get('url'));
   }
 
   public function testDoiExpansionBook() {
@@ -260,7 +264,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testDoiEndings() {
     $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full}}';
     $expanded = $this->process_citation($text);   
-    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
+    
     $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
