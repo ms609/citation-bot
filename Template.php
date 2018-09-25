@@ -3227,15 +3227,15 @@ final class Template {
   public function inline_doi_information() {
     if ($this->name !== "doi-inline") return FALSE;
     if (count($this->param) !==2) return FALSE;
-    $vals = array();
-    $vals = $this->param[0]->parsed_text();
-    $vals = $this->param[1]->parsed_text();
+    $vals   = array();
+    $vals[] = $this->param[0]->parsed_text();
+    $vals[] = $this->param[1]->parsed_text();
     return $vals;
   }
   
   protected function get_inline_doi_from_title() {
-     if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d)(?: # # #)(?:\s)*~", $this->get('title'), $match)) {
-       if ($inline_doi = $this->all_templates[$match[0]]->inline_doi_information()) {
+     if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~", $this->get('title'), $match)) {
+       if ($inline_doi = $this->all_templates[$match[1]]->inline_doi_information()) {
          if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
            $this->set('title', trim($inline_doi[1]));
            quietly('report_modification', "Converting inline DOI to DOI parameter");
