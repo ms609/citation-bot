@@ -3230,11 +3230,11 @@ final class Template {
     return $this->param;
   }
   
-  protection function get_inline_doi_from_title() {
+  protected function get_inline_doi_from_title() {
      if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d)(?: # # #)(?:\s)*~", $this->title, $match) {
        if ($inline_doi = $this->all_templates[$match[0]]->inline_doi_information()) {
-         if ($this->add_if_new('doi', $inline_doi[0])) {
-           $this->set('title', $inline_doi[1]);
+         if ($this->add_if_new('doi', trim($inline_doi[0]))) {
+           $this->set('title', trim($inline_doi[1]));
          }
        }
      }
