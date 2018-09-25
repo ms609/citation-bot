@@ -88,6 +88,7 @@ final class Template {
 
   public function prepare() {
     if ($this->should_be_processed()) {
+      $this->get_inline_doi_from_title();
       $this->use_unnamed_params();
       $this->get_identifiers_from_url();
       $this->id_to_param();
@@ -3221,5 +3222,21 @@ final class Template {
     $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
     quietly('report_modification', "Converted ISBN10 to ISBN13");
     return $isbn13;
+  }
+  
+  public function inline_doi_information() {
+    if ($this->name !== "doi-inline") return FALSE;
+    if (count($this->param) !==2) return FALSE;
+    return $this->param;
+  }
+  
+  protection function get_inline_doi_from_title() {
+     if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d)(?: # # #)(?:\s)*~", $this->title, $match) {
+       if ($inline_doi = $this->all_templates[$match[0]]->inline_doi_information()) {
+         if ($this->add_if_new('doi', $inline_doi[0])) {
+           $this->set('title', $inline_doi[1]);
+         }
+       }
+     }
   }
 }
