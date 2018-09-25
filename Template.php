@@ -3227,7 +3227,10 @@ final class Template {
   public function inline_doi_information() {
     if ($this->name !== "doi-inline") return FALSE;
     if (count($this->param) !==2) return FALSE;
-    return $this->param;
+    $vals = array();
+    $vals = $this->param[0]->parsed_text();
+    $vals = $this->param[1]->parsed_text();
+    return $vals;
   }
   
   protected function get_inline_doi_from_title() {
