@@ -1039,6 +1039,7 @@ ER -  }}';
     $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('Nature', $expanded->get('journal'));
+    $this->assertEquals('Funky Paper', $expanded->get('title'));
   } 
   
   public function testPagesDash() {
