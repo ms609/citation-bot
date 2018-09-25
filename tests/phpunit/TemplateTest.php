@@ -1040,6 +1040,7 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('Nature', $expanded->get('journal'));
     $this->assertEquals('Funky Paper', $expanded->get('title'));
+    $this->assertEquals('10.1038/nature10000', $expanded->get('doi'));
   } 
   
   public function testPagesDash() {
