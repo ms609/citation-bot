@@ -1094,6 +1094,14 @@ ER -  }}';
     $this->assertEquals('032412332', $expanded->get('pages'));
   }
 
+   public function testDoiInline() {
+    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Nature', $expanded->get('journal'));
+    $this->assertEquals('Funky Paper', $expanded->get('title'));
+    $this->assertEquals('10.1038/nature10000', $expanded->get('doi'));
+  } 
+  
   public function testPagesDash() {
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
