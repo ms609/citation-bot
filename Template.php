@@ -318,6 +318,9 @@ final class Template {
     if (trim($value) == '') {
       return FALSE;
     }
+    if (mb_strpos(mb_strtoupper($this->get($param_name)), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;  // We let comments block the bot
+    }
     
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
       $param_name = COMMON_MISTAKES[$param_name];
@@ -2333,6 +2336,9 @@ final class Template {
     // case necessarily continues from the previous (without a return).
     
     if (!$param) return FALSE;
+    if (mb_strpos(mb_strtoupper($this->get($param)), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;  // We let comments block the bot
+    }
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
