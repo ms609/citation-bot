@@ -2341,10 +2341,8 @@ final class Template {
         // Parameters are listed alphabetically, though those with numerical content are grouped under "year"
 
         case 'accessdate':
-          if ($this->has('accessdate') && $this->lacks('url') && $this->lacks('chapter-url') 
-          &&  $this->lacks('chapterurl') 
-          &&  $this->lacks('contribution-url') && $this->lacks('contributionurl')
-          ) {
+          if ($this->has('accessdate') && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
+          {
             $this->forget('accessdate');
           }
           return;
@@ -2410,8 +2408,7 @@ final class Template {
               return; // Nonsense to have both.
             }
           }
-          if ($this->has('chapter') && $this->lacks('journal') 
-            && $this->lacks('bibcode') && $this->lacks('jstor') && $this->lacks('pmid')) {
+          if ($this->has('chapter') && $this->blank(['journal', 'bibcode', 'jstor', 'pmid'])) {
             $this->change_name_to('Cite book');
           }
           return;
@@ -2461,7 +2458,7 @@ final class Template {
           
         case 'journal':
           if ($this->lacks($param)) return;
-          if ($this->lacks('chapter') && $this->lacks('isbn')) {
+          if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('Cite journal');
             $this->forget('publisher');
