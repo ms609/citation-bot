@@ -4,6 +4,7 @@ function zotero_request($url) {
   $ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
   
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
