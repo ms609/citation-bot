@@ -4,6 +4,7 @@ function zotero_request($url) {
   $ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
   
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
@@ -21,7 +22,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   $zotero_response = zotero_request($url, getenv('TRAVIS'));
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->{'title'})) {
-    report_warning("Zotero translation server returned invalid json for URL ". $url);
+    report_warning("Zotero translation server returned invalid json for URL ". $url . ": $zotero_response");
     return FALSE;
   } else {
     $result = $zotero_data[0];
@@ -71,4 +72,4 @@ function expand_by_zotero(&$template, $url = NULL) {
   return TRUE;
 }
 
-?>
+

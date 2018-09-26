@@ -2291,7 +2291,7 @@ final class Template {
     return $ret;
   }
 
-  protected function change_name_to($new_name, $rename_cite_book = TRUE) {
+  public function change_name_to($new_name, $rename_cite_book = TRUE) {
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     &&  lcfirst($new_name) != $this->wikiname()
