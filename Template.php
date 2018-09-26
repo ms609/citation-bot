@@ -3023,7 +3023,7 @@ final class Template {
   }
   
   public function set($par, $val) {
-    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (mb_stripos($this->get((string) $par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
