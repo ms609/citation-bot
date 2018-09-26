@@ -359,7 +359,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testDropArchiveDotOrg() {
-    $text = '{{Cite journal | publisher=archive.org}';
+    $text = '{{Cite journal | publisher=archive.org}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('publisher'));
     $text = '{{Cite journal | website=archive.org|url=http://www.asdfdsafdsfads.com/NOT_REAL}}';
