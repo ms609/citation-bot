@@ -22,7 +22,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   $zotero_response = zotero_request($url, getenv('TRAVIS'));
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->{'title'})) {
-    report_warning("Zotero translation server returned invalid json for URL ". $url);
+    report_warning("Zotero translation server returned invalid json for URL ". $url . ": $zotero_response");
     return FALSE;
   } else {
     $result = $zotero_data[0];
