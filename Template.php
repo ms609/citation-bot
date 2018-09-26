@@ -2639,6 +2639,7 @@ final class Template {
              $this->forget('year');
              return;
           }
+          if (trim($this->get($param)) === 'n.d.') return; // Special no-date code
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
           // Remove leading zeroes
