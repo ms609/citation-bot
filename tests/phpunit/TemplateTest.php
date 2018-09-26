@@ -616,6 +616,38 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals($text, $prepared->parsed_text());
   }
     
+  public function testChangeParamaters() {
+      $text = '{{citation|publicationplace=Home}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|location=Home}}', $prepared->parsed_text());
+      $text = '{{citation|publicationplace=Home|location=Away}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+      $text = '{{citation|publicationdate=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|date=Home}}', $prepared->parsed_text());
+      $text = '{{citation|publicationdate=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+
+      $text = '{{citation|origyear=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|year=2000}}', $prepared->parsed_text());
+      $text = '{{citation|origyear=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text()); 
+      
+      return;
+ }
+    
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
       $prepared = $this->prepare_citation($text);
