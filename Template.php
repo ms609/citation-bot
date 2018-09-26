@@ -318,9 +318,6 @@ final class Template {
     if (trim($value) == '') {
       return FALSE;
     }
-    if (mb_strpos(mb_strtoupper($this->get($param_name)), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-      return FALSE;  // We let comments block the bot
-    }
     
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
       $param_name = COMMON_MISTAKES[$param_name];
@@ -2796,7 +2793,7 @@ final class Template {
           return FALSE;
         }
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
-        if(empty($headers_test['Location'])) {
+        if(empty($headers_test['Location']) ) {
            $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
            report_inline("Broken doi: " . echoable($doi));
            return FALSE;
@@ -3019,6 +3016,9 @@ final class Template {
   }
   
   public function set($par, $val) {
+    if (mb_strpos(mb_strtoupper($this->get($par)), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;  // We let comments block the bot
+    }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
       return $this->param[$pos]->val = (string) $val;
     }
