@@ -682,7 +682,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
     
   public function testDropAmazon() {
-    $text = '{{Cite journal | publisher=amazon.com}';
+    $text = '{{Cite journal | publisher=amazon.com}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('publisher'));
   }
