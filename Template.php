@@ -2793,7 +2793,7 @@ final class Template {
           return FALSE;
         }
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
-        if(empty($headers_test['Location']) ) {
+        if(empty($headers_test['Location'])) {
            $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
            report_inline("Broken doi: " . echoable($doi));
            return FALSE;
