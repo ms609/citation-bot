@@ -144,7 +144,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
      $text = '{{cite journal | doi=10.000/broken_real_bad_and_tests_know_it | doi-broken-date = <!-- not broken and the bot is wrong --> }}';
      $expanded = $this->process_page($text);
      $this->assertEquals($text, $expanded->parsed_text());
-     $text = '{{cite journal |title=The tumbling rotational state of 1I/‘Oumuamua<!-- do not change odd punctuation--> |journal=Nature title without caps <!-- Deny Citation Bot-->  |pages=383-386 <!-- do not change the dash--> }}
+     $text = '{{cite journal |title=The tumbling rotational state of 1I/‘Oumuamua<!-- do not change odd punctuation--> |journal=Nature title without caps <!-- Deny Citation Bot-->  |pages=383-386 <!-- do not change the dash--> }}';
      $expanded = $this->process_page($text);
      $this->assertEquals($text, $expanded->parsed_text());
   }
