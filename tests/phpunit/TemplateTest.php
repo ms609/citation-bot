@@ -629,7 +629,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{citation|publicationdate=2000}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertEquals('{{citation|date=Home}}', $prepared->parsed_text());
+      $this->assertEquals('{{citation|date=2000}}', $prepared->parsed_text());
       $text = '{{citation|publicationdate=2000|date=1999}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
