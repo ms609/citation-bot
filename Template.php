@@ -319,6 +319,10 @@ final class Template {
       return FALSE;
     }
     
+    if (stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;  // We let comments block the bot
+    }
+    
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
       $param_name = COMMON_MISTAKES[$param_name];
     }
@@ -3009,6 +3013,9 @@ final class Template {
   public function lacks($par) {return !$this->has($par);}
 
   public function add($par, $val) {
+    if (stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;  // We let comments block the bot
+    }
     report_add("Adding $par: $val" .tag());
     $could_set = $this->set($par, $val);
     $this->tidy_parameter($par);
