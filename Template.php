@@ -2796,13 +2796,18 @@ final class Template {
           report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
           return FALSE;
         }
-        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+        foreach (DOI_BROKEN_ALIASES as $alias) {
+          if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
+               $this->forget($alias);
+          }
+        }
         if(empty($headers_test['Location'])) {
-           $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
+           if ($this->blank(DOI_BROKEN_ALIASES)) $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
            report_inline("Broken doi: " . echoable($doi));
            return FALSE;
         } else {
-          return TRUE;
+           foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias); // Blow them away even if commented
+           return TRUE;
         }
       } else {
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
