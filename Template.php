@@ -299,6 +299,28 @@ final class Template {
   }
 
   public function blank($param) {
+      return $this->lacks_or_blank($param, 'blank');
+  }
+  
+  private function lacks_or_blank($par, $style) {
+    if (is_array($par)) {
+      $lacks = TRUE;
+      foreach($par as $item) {
+        if(!$this->lacks_inside($item)) $lacks = FALSE;
+      }
+    } else {
+      $lacks=$this->lacks_inside($par);
+    }
+    $blank=$this->blank_inside($par);
+    if ($lacks === $blank) return $blank;
+    fwrite(STDERR, "\n LACKS=<" . $lacks . ">  BLANK=<" . $blank . ">    for " . $par . "\n");
+    if ($style='lacks') return $lacks;
+    return $blank;
+  }
+    
+  private function lacks_inside($par) {return !$this->has($par);}
+
+  private function blank_inside($param) {
     if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
@@ -3003,7 +3025,7 @@ final class Template {
   }
 
   public function has($par) {return (bool) strlen($this->get($par));}
-  public function lacks($par) {return !$this->has($par);}
+  public function lacks($par) {return $this->lacks_or_blank($par, 'lacks');}
 
   public function add($par, $val) {
     report_add("Adding $par: $val" .tag());
