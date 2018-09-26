@@ -16,6 +16,8 @@ final class apiFunctionsTest extends PHPUnit\Framework\TestCase {
   
   
   protected function prepare_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 1));
+    $this->assertEquals('}}', mb_substr($text, -2));
     $template = new Template();
     $template->parse_text($text);
     $template->prepare();
@@ -23,6 +25,8 @@ final class apiFunctionsTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function process_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 1));
+    $this->assertEquals('}}', mb_substr($text, -2));
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
