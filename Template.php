@@ -2333,7 +2333,7 @@ final class Template {
     // case necessarily continues from the previous (without a return).
     
     if (!$param) return FALSE;
-    if (mb_strpos(mb_strtoupper($this->get($param)), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
@@ -3016,8 +3016,8 @@ final class Template {
   }
   
   public function set($par, $val) {
-    if (mb_strpos(mb_strtoupper($this->get($par)), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-      return FALSE;  // We let comments block the bot
+    if (stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
       return $this->param[$pos]->val = (string) $val;
