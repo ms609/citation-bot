@@ -3060,6 +3060,9 @@ final class Template {
   }
 
   protected function append_to($par, $val) {
+    if (stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;
+    }
     $pos = $this->get_param_key($par);
     if ($pos) {
       return $this->param[$pos]->val = $this->param[$pos]->val . $val;
