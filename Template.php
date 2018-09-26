@@ -96,6 +96,7 @@ final class Template {
 
   public function prepare() {
     if ($this->should_be_processed()) {
+      $this->get_inline_doi_from_title();
       $this->use_unnamed_params();
       $this->get_identifiers_from_url();
       $this->id_to_param();
@@ -655,9 +656,16 @@ final class Template {
         return FALSE;
         
       case 'doi':
-        if ($this->blank($param_name) && preg_match(REGEXP_DOI, $value, $match)) {
-          $this->add('doi', $match[0]);          
-          return TRUE;
+        if (preg_match(REGEXP_DOI, $value, $match)) {
+          if ($this->blank($param_name)) {
+            $this->add('doi', $match[0]);          
+            return TRUE;
+          } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
+            report_action("Replacing non-functional DOI with functional one");
+            $this->set('doi', $match[0]);
+            $this->tidy_parameter('doi');
+            return TRUE;
+          }
         }
         return FALSE;
       
@@ -794,15 +802,29 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
-      if (is_null($url_sent)) {
-        if (doi_active($doi)) {
-          report_forget("Recognized DOI in URL; dropping URL");
+      if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
+        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
+          report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget('url');
-        } else {
-          $this->mark_inactive_doi($doi);
         }
+        return FALSE;  // URL matched existing DOI, so we did not use it
       }
-      return $this->add_if_new('doi', $doi);    
+      if ($this->add_if_new('doi', $doi)) {
+        if (doi_active($doi)) {
+          if (is_null($url_sent)) {
+            if (mb_strpos(strtolower($url), ".pdf") === FALSE) {
+              report_forget("Recognized DOI in URL; dropping URL");
+              $this->forget('url');
+            } else {
+              report_info("Recognized DOI in URL.  Leaving *.pdf URL.");
+            }
+          }
+        } else {
+          $this->mark_inactive_doi();
+        }
+        return TRUE; // Added new DOI
+      }
+      return FALSE; // Did not add it
     }
   
     // JSTOR
@@ -2287,6 +2309,16 @@ final class Template {
           break;
       }
     }
+    if ($new_name === 'cite book') {
+      // all open-access versions of conference papers point to the paper itself
+      // not to the whole proceedings
+      // so we use chapter-url so that the template is well rendered afterwards
+      if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
+        $this->rename('url', 'chapter-url');
+      } elseif (0 === strcasecmp($this->get('chapter-url'), $this->get('url'))) {
+        $this->forget('url');
+      }  // otherwise they are differnt urls
+    }
   }
   
   public function wikiname() {
@@ -2310,10 +2342,8 @@ final class Template {
         // Parameters are listed alphabetically, though those with numerical content are grouped under "year"
 
         case 'accessdate':
-          if ($this->has('accessdate') && $this->lacks('url') && $this->lacks('chapter-url') 
-          &&  $this->lacks('chapterurl') 
-          &&  $this->lacks('contribution-url') && $this->lacks('contributionurl')
-          ) {
+          if ($this->has('accessdate') && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
+          {
             $this->forget('accessdate');
           }
           return;
@@ -2379,8 +2409,7 @@ final class Template {
               return; // Nonsense to have both.
             }
           }
-          if ($this->has('chapter') && $this->lacks('journal') 
-            && $this->lacks('bibcode') && $this->lacks('jstor') && $this->lacks('pmid')) {
+          if ($this->has('chapter') && $this->blank(['journal', 'bibcode', 'jstor', 'pmid'])) {
             $this->change_name_to('Cite book');
           }
           return;
@@ -2430,7 +2459,7 @@ final class Template {
           
         case 'journal':
           if ($this->lacks($param)) return;
-          if ($this->lacks('chapter') && $this->lacks('isbn')) {
+          if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('Cite journal');
             $this->forget('publisher');
@@ -2556,7 +2585,13 @@ final class Template {
           if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
           return;
      
-        case 'url': case 'chapter-url':
+        case 'chapter-url':
+        case 'chapterurl':
+          if ($this->blank(['url', 'chapter'])) {
+            $this->rename($param, 'url');
+            $param = 'url'; // passes down to next area
+          }
+        case 'url':
           if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
@@ -3045,6 +3080,13 @@ final class Template {
       $this->forgetter('website', $echo_forgetting);
       $this->forgetter('deadurl', $echo_forgetting);
     }
+    if ($par == 'chapter' && $this->blank('url')) {
+      if($this->has('chapter-url')) {
+        $this->rename('chapter-url', 'url');
+      } elseif ($this->has('chapterurl')) {
+        $this->rename('chapterurl', 'url');
+      }
+    }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
       if ($echo_forgetting && $this->has($par) && stripos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
@@ -3122,5 +3164,28 @@ final class Template {
     $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
     quietly('report_modification', "Converted ISBN10 to ISBN13");
     return $isbn13;
+  }
+  
+  public function inline_doi_information() {
+    if ($this->name !== "doi-inline") return FALSE;
+    if (count($this->param) !==2) return FALSE;
+    $vals   = array();
+    $vals[] = $this->param[0]->parsed_text();
+    $vals[] = $this->param[1]->parsed_text();
+    return $vals;
+  }
+  
+  protected function get_inline_doi_from_title() {
+     if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~", $this->get('title'), $match)) {
+       if ($inline_doi = $this->all_templates[$match[1]]->inline_doi_information()) {
+         if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
+           $this->set('title', trim($inline_doi[1]));
+           quietly('report_modification', "Converting inline DOI to DOI parameter");
+         } elseif ($this->get('doi') === trim($inline_doi[0])) { // Already added by someone else
+           $this->set('title', trim($inline_doi[1]));
+           quietly('report_modification', "Remove duplicate inline DOI ");
+         }
+       }
+     }
   }
 }

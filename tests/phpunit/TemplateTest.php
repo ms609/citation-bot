@@ -123,6 +123,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNotNull($expanded->get('url'));
   }
   
+  public function testBrokenDoiUrlChanges() {
+     $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.00/broken_and_invalid|doi-broken-date=12-31-1999}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get('doi'));
+     $this->assertNull($expanded->get('url'));
+  }
+  
   public function testPmidExpansion() {
     $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pubmed/1941451?dopt=AbstractPlus}}";
     $expanded = $this->prepare_citation($text);
@@ -226,11 +233,34 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite book', $expanded->wikiname());
   }
   
+  public function testTemplateRenamingURLConvert() {
+    $text='{{cite journal |url=http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf |title=Terrestrialization (Precambrian–Devonian) |last=Selden |first=Paul A. |year=2005 |encyclopedia=[[Encyclopedia of Life Sciences]] |publisher=[[John Wiley & Sons, Ltd.]] |doi=10.1038/npg.els.0004145 |format=PDF}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-0470016176', $expanded->get('isbn'));
+    $this->assertEquals('cite book', $expanded->wikiname());
+    $this->assertEquals('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $expanded->get('chapter-url'));
+    $this->assertNull($expanded->get('url'));
+  }
+
   public function testDoiExpansion() {
     $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $prepared->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $prepared->get('doi'));
+    
+    $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
+    $expanded = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
+    $this->assertNull($expanded->get('url'));
+    
+    // Replace this test with a real URL (if one exists)
+    $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
+    $expanded= $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
+    // Do not drop PDF files, in case they are open access and the DOI points to a paywall
+    $this->assertEquals('http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf', $expanded->get('url'));
   }
 
   public function testDoiExpansionBook() {
@@ -243,7 +273,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testDoiEndings() {
     $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full}}';
     $expanded = $this->process_citation($text);   
-    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
+    
     $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
@@ -1078,6 +1109,14 @@ ER -  }}';
     $this->assertEquals('032412332', $expanded->get('pages'));
   }
 
+   public function testDoiInline() {
+    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Nature', $expanded->get('journal'));
+    $this->assertEquals('Funky Paper', $expanded->get('title'));
+    $this->assertEquals('10.1038/nature10000', $expanded->get('doi'));
+  } 
+  
   public function testPagesDash() {
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
