@@ -223,6 +223,7 @@ const FORENAME1_ALIASES = ["first1", "first", "author", "author1"];
 const EDITOR1_ALIASES = ["editor1", "editor", "editor-last", "editor1-last"];
 const ISSUE_ALIASES = ['issue', 'number'];
 const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
+const TIME_ALIASES = ['date', 'year'];
 
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
