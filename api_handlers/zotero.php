@@ -72,4 +72,4 @@ function expand_by_zotero(&$template, $url = NULL) {
   return TRUE;
 }
 
-?>
+
