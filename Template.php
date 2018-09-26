@@ -319,7 +319,7 @@ final class Template {
       return FALSE;
     }
     
-    if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
     
@@ -2337,7 +2337,7 @@ final class Template {
     // case necessarily continues from the previous (without a return).
     
     if (!$param) return FALSE;
-    if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
@@ -3013,7 +3013,7 @@ final class Template {
   public function lacks($par) {return !$this->has($par);}
 
   public function add($par, $val) {
-    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
     report_add("Adding $par: $val" .tag());
@@ -3023,7 +3023,7 @@ final class Template {
   }
   
   public function set($par, $val) {
-    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
@@ -3060,7 +3060,7 @@ final class Template {
   }
 
   protected function append_to($par, $val) {
-    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
     $pos = $this->get_param_key($par);
