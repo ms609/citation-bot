@@ -140,7 +140,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testChangeNothing() {
      $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->}}';
      $expanded = $this->process_page($text);
-     $this->assertEquals($text, $expanded->parsed_text());   
+     $this->assertEquals($text, $expanded->parsed_text());
+     $text = '{{cite journal | doi=10.000/broken_real_bad_and_tests_know_it | doi-broken-date = <!-- not broken and the bot is wrong --> }}';
+     $expanded = $this->process_page($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+     $text = '{{cite journal |title=The tumbling rotational state of 1I/‘Oumuamua<!-- do not change odd punctuation--> |journal=Nature title without caps <!-- Deny Citation Bot-->  |pages=383-386 <!-- do not change the dash--> }}
+     $expanded = $this->process_page($text);
+     $this->assertEquals($text, $expanded->parsed_text());
   }
     
   public function testDots() {
