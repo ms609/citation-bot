@@ -122,7 +122,8 @@ function expand_by_zotero(&$template, $url = NULL) {
           default:
             report_warning("Unrecognised creator type: " . $creatorType);
         }
-        $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName);
+        $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
+                                    isset($result->rights) ? $result->rights : '');
       }
       $i++;
   }
