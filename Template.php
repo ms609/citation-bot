@@ -188,7 +188,7 @@ final class Template {
           && $this->incomplete()  // Too slow for data that is already good
           && !preg_match("~^https?://books\.google\.~", $this->get('url')) // We have custom Google Book code
          )  { 
-            expand_by_zotero($this); // May modify wikiname
+            expand_by_zotero($this); // May modify wikiname 
       }
 
       switch ($this->wikiname()) {
