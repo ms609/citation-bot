@@ -316,6 +316,11 @@ function sanitize_string($str) {
   return $str;
 }
 
+function tidy_date($string) {
+  if (preg_match('~^(.*\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) $string = $matches[1];
+  return $string;
+}
+
 function remove_brackets($string) {
   return str_replace(['(', ')', '{', '}', '[', ']'], '' , $string);
 }
