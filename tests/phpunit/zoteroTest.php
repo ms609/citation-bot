@@ -86,7 +86,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
     $this->assertEquals('2004', $expanded->get('year'));
     $this->assertEquals('National Research Council (Us) Committee To Update Science', $expanded->get('last1'));
-    $this->assertEquals('Medicine', $expanded->get('first')); // TODO : recognize this
+    $this->assertEquals('Medicine', $expanded->get('first1')); // TODO : recognize this
   }
 
   public function testZoteroExpansionNYT() {
@@ -101,7 +101,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   public function testZoteroExpansionRSRef() {
     $text = '<ref>http://rspb.royalsocietypublishing.org/content/285/1887/20181780</ref>';
     $expanded = $this->process_page($text);
-    $this->assertTrue(strpos($expanded->parsed_text(), 'Hyoliths with pedicles illuminate the origin of the brachiopod body plan') !== FALSE);
+    $this->assertTrue(stripos($expanded->parsed_text(), 'Hyoliths with pedicles illuminate the origin of the brachiopod body plan') !== FALSE);
     
     $text = '{{cite journal | url = http://www.nrm.se/download/18.4e32c81078a8d9249800021554/Bengtson2004ESF.pdf}}';
     $expanded = $this->process_page($text);
