@@ -1,7 +1,12 @@
 <?php 
 function query_url_api($ids, $templates) {
   report_action("Using Zotero translation server to retrieve details from URLs: ");
-  foreach ($templates as $template) if ($template->has('url')) expand_by_zotero($template);
+  foreach ($templates as $template){
+    print "\n>>";
+    if ($template->has('url')) expand_by_zotero($template);
+    print "<<\n";
+  }
+  report_action("All templates passed to Zotero."); // Debugging line; remove once complete
 }
 
 function zotero_request($url) {

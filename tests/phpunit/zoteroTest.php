@@ -22,7 +22,18 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   protected function tearDown() {
   }
   
+  protected function prepare_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
+    $template = new Template();
+    $template->parse_text($text);
+    $template->prepare();
+    return $template;
+  }
+  
   protected function process_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
@@ -41,7 +52,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   
   public function testZoteroExpansion() {
     $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->prepare_citation($text);
     expand_by_zotero($expanded);
     $expanded->tidy();
     $this->assertEquals("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));

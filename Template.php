@@ -759,7 +759,6 @@ final class Template {
   }
 
   public function validate_and_add($author_param, $author, $forename = '') {
-    var_dump($author);
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
