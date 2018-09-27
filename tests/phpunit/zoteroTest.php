@@ -52,6 +52,11 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $text = '<ref>http://rspb.royalsocietypublishing.org/content/285/1887/20181780</ref>';
     $expanded = $this->process_page($text);
     $this->assertTrue(strpos($expanded->parsed_text(), 'Hyoliths with pedicles illuminate the origin of the brachiopod body plan') !== FALSE);
+    
+    $text = '{{cite journal | url = http://www.nrm.se/download/18.4e32c81078a8d9249800021554/Bengtson2004ESF.pdf}}';
+    $expanded = $this->process_page($text);
+    $this->assertTrue(TRUE); // Gives one fuzzy match.  For now we just check that this doesn't crash PHP.
+    // In future we should use this match to expand citation.
   }
 
 }

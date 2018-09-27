@@ -1,7 +1,7 @@
 <?php 
 function query_url_api($ids, $templates) {
   report_action("Using Zotero translation server to retrieve details from URLs: ");
-  foreach ($templates as $template) expand_by_zotero($template);
+  foreach ($templates as $template) if ($template->has('url')) expand_by_zotero($template);
 }
 
 function zotero_request($url) {
@@ -41,7 +41,8 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   $zotero_data = @json_decode($zotero_response, FALSE);
-  if (!isset($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->{'title'})) {
+  var_dump($zotero_data);
+  if (!isset($zotero_data) || !is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
     report_warning("Received invalid json for URL ". $url . ": $zotero_response");
     return FALSE;
   } else {
