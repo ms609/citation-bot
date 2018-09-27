@@ -17,7 +17,19 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
 
   protected function tearDown() {
   }
-  
+
+  protected function process_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
+    $page = new TestPage();
+    $page->parse_text($text);
+    $page->expand_text();
+    $expanded_text = $page->parsed_text();
+    $template = new Template();
+    $template->parse_text($expanded_text);
+    return $template;
+  }
+
   public function testCapitalization() {
     $this->assertEquals('Molecular and Cellular Biology', 
                         title_capitalization(title_case('Molecular and cellular biology'), TRUE));
