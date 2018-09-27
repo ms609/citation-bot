@@ -28,7 +28,7 @@ function zotero_request($url) {
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
-  if (!$template->incomplete()) return FALSE; // Nothing to gain by wasting an API call
+  if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
@@ -94,33 +94,18 @@ function expand_by_zotero(&$template, $url = NULL) {
       if (isset($result->author[$i][1])) $template->add_if_new('last'  . ($i+1), $result->author[$i][1]);
       $i++;
   }
-  $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
-  while (isset($result->creators[$i])) {
-      $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
-      if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
-        switch ($creatorType) {
-          case 'author':
-            $authorParam = 'author' . ++$author_i;
-            break;
-          case 'editor':
-            $authorParam = 'editor' . ++$editor_i;
-            break;
-          case 'translator':
-            $authorParam = 'translator' . ++$translator_i;
-            break;
-          default:
-            report_warning("Unrecognised creator type: " . $creatorType);
-        }
-        $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
-                                    isset($result->rights) ? $result->rights : '');
-      }
-      $i++;
-  }
   
   if (isset($result->itemType)) {
     switch ($result->itemType) {
-      case 'book':             $template->change_name_to('cite book');      break;
-      case 'journalArticle':   $template->change_name_to('cite journal');   break;
+      case 'book':
+        // Too much bad data to risk switching journal to book or vice versa.
+        if ($template->wikiname() == 'cite web') 
+          $template->change_name_to('cite book');      
+        break;
+      case 'journalArticle': 
+        if($template->wikiname() == 'cite web')
+          $template->change_name_to('cite journal');
+        break;
       case 'newspaperArticle': 
         if (isset($result->libraryCatalog) && in_array($result->libraryCatalog, WEB_NEWSPAPERS)) break;
         $template->change_name_to('cite newspaper'); 
@@ -128,6 +113,34 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'webpage': 
         break; // Could be a journal article or a genuine web page.
       default: report_warning("Unhandled itemType: " . $result->itemType);
+    }
+    
+    $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
+    if (in_array($result->itemType, ['journalArticle', 'newspaperArticle'])) {
+      // Websites often have non-authors listed in metadata
+      // "Books" are often bogus
+       $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
+      while (isset($result->creators[$i])) {
+        $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
+        if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
+          switch ($creatorType) {
+            case 'author':
+              $authorParam = 'author' . ++$author_i;
+              break;
+            case 'editor':
+              $authorParam = 'editor' . ++$editor_i;
+              break;
+            case 'translator':
+              $authorParam = 'translator' . ++$translator_i;
+              break;
+            default:
+              report_warning("Unrecognised creator type: " . $creatorType);
+          }
+          $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
+                                      isset($result->rights) ? $result->rights : '');
+        }
+        $i++;
+      }
     }
   }
   return TRUE;
