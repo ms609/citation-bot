@@ -180,9 +180,10 @@ final class Template {
   
   public function process() {
     if ($this->should_be_processed()) {
-      $this->use_unnamed_params();
-      $this->get_identifiers_from_url();
       $this->prepare();
+      
+      if ($this->has('url')) expand_by_zotero($this); // May modify wikiname
+      
       switch ($this->wikiname()) {
         case 'cite web':
           if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
@@ -2291,7 +2292,7 @@ final class Template {
     return $ret;
   }
 
-  protected function change_name_to($new_name, $rename_cite_book = TRUE) {
+  public function change_name_to($new_name, $rename_cite_book = TRUE) {
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     &&  lcfirst($new_name) != $this->wikiname()
@@ -2341,10 +2342,8 @@ final class Template {
         // Parameters are listed alphabetically, though those with numerical content are grouped under "year"
 
         case 'accessdate':
-          if ($this->has('accessdate') && $this->lacks('url') && $this->lacks('chapter-url') 
-          &&  $this->lacks('chapterurl') 
-          &&  $this->lacks('contribution-url') && $this->lacks('contributionurl')
-          ) {
+          if ($this->has('accessdate') && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
+          {
             $this->forget('accessdate');
           }
           return;
@@ -2410,8 +2409,7 @@ final class Template {
               return; // Nonsense to have both.
             }
           }
-          if ($this->has('chapter') && $this->lacks('journal') 
-            && $this->lacks('bibcode') && $this->lacks('jstor') && $this->lacks('pmid')) {
+          if ($this->has('chapter') && $this->blank(['journal', 'bibcode', 'jstor', 'pmid'])) {
             $this->change_name_to('Cite book');
           }
           return;
@@ -2461,7 +2459,7 @@ final class Template {
           
         case 'journal':
           if ($this->lacks($param)) return;
-          if ($this->lacks('chapter') && $this->lacks('isbn')) {
+          if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('Cite journal');
             $this->forget('publisher');
@@ -2642,6 +2640,7 @@ final class Template {
              $this->forget('year');
              return;
           }
+          if ($this->get($param) === 'n.d.') return; // Special no-date code that citation template recognize.
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
           // Remove leading zeroes
@@ -2762,6 +2761,13 @@ final class Template {
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
+    }
+    foreach (ALL_ALIASES as $alias_list) {
+      if (!$this->blank($alias_list)) { // At least one is set
+        foreach ($alias_list as $alias) {
+          if ($this->blank($alias)) $this->forget($alias); // Delete all the other ones
+        }
+      }
     }
   }
   
