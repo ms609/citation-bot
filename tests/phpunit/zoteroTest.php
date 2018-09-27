@@ -51,5 +51,4 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $this->assertTrue(strpos($expanded->parsed_text(), 'Hyoliths with pedicles illuminate the origin of the brachiopod body plan') !== FALSE);
   }
   
-
 }
