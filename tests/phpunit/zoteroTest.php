@@ -22,7 +22,18 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   protected function tearDown() {
   }
   
+  protected function prepare_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
+    $template = new Template();
+    $template->parse_text($text);
+    $template->prepare();
+    return $template;
+  }
+  
   protected function process_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
@@ -74,7 +85,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
 
   public function testZoteroExpansionNYT() {
     $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->prepare_citation($text);
     expand_by_zotero($expanded);
     $expanded->tidy();
     $this->assertEquals("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));
@@ -86,6 +97,11 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $text = '<ref>http://rspb.royalsocietypublishing.org/content/285/1887/20181780</ref>';
     $expanded = $this->process_page($text);
     $this->assertTrue(strpos($expanded->parsed_text(), 'Hyoliths with pedicles illuminate the origin of the brachiopod body plan') !== FALSE);
+    
+    $text = '{{cite journal | url = http://www.nrm.se/download/18.4e32c81078a8d9249800021554/Bengtson2004ESF.pdf}}';
+    $expanded = $this->process_page($text);
+    $this->assertTrue(TRUE); // Gives one fuzzy match.  For now we just check that this doesn't crash PHP.
+    // In future we should use this match to expand citation.
   }
 
 }

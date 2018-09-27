@@ -141,10 +141,22 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('1941451', $expanded->get('pmid'));
   }
    
-  public function testChangeNothing() {
+  public function testChangeNothing1() {
      $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->}}';
      $expanded = $this->process_page($text);
-     $this->assertEquals($text, $expanded->parsed_text());   
+     $this->assertEquals($text, $expanded->parsed_text());
+  }
+    
+  public function testChangeNothing2() {
+     $text = '{{cite journal | doi=10.000/broken_real_bad_and_tests_know_it | doi-broken-date = <!-- not broken and the bot is wrong --> }}';
+     $expanded = $this->process_page($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+  }
+    
+  public function testChangeNothing3() {
+     $text = '{{cite journal |title=The tumbling rotational state of 1I/‘Oumuamua<!-- do not change odd punctuation--> |journal=Nature title without caps <!-- Deny Citation Bot-->  |pages=383-386 <!-- do not change the dash--> }}';
+     $expanded = $this->process_page($text);
+     $this->assertEquals($text, $expanded->parsed_text());
   }
     
   public function testDots() {
@@ -206,11 +218,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testAmazonExpansion() {
-    $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn=}}";
+    $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
     $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
+    $this->assertNull($expanded->get('publisher'));
       
     $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
@@ -746,7 +759,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('2000', $this->getDateAndYear($prepared));
       $this->assertNull($prepared->get('origyear'));
   }
-  
+    
+  public function testDropAmazon() {
+    $text = '{{Cite journal | publisher=amazon.com}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('publisher'));
+  }
+    
   public function testGoogleBooksExpansion() {
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
     $expanded = $this->process_citation($text);
@@ -1031,7 +1050,25 @@ ER -  }}';
     $this->assertEquals('1', $expanded->get('issue'));
     $this->assertEquals('43', $expanded->get('pages'));
   }
-    
+  
+  public function testJstorSICI() {
+    $url = "https://www.jstor.org/sici?sici=0003-0279(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
+    $text = "{{Cite journal|url=$url}}";
+    $expanded = $this->process_citation($text);
+      
+    $this->assertEquals('594900', $expanded->get('jstor'));
+    $this->assertEquals('1961', $expanded->get('year'));
+    $this->assertEquals('81', $expanded->get('volume'));
+    $this->assertEquals('1', $expanded->get('issue'));
+    $this->assertEquals('43–52', $expanded->get('pages'));  // The jstor expansion add the page ending
+  }
+  
+  public function testJstorSICIEncoded() {
+    $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('594900', $expanded->get('jstor'));
+  }
+  
   public function testOverwriteBlanks() {
     $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
     $expanded = $this->process_citation($text);
