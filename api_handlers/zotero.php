@@ -85,6 +85,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         report_info("Received invalid title data for URL ". $url . ": $test_data");
         return FALSE;
       }
+  }
   
   if ( isset($result->DOI)) {
     $template->add_if_new('doi', $result->DOI);
