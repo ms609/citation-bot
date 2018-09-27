@@ -740,7 +740,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{Cite journal|date =n.d.}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
-    $text = '{{Cite journal|year=n.d.}}';
+    
+    $text = '{{Cite journal|year=no date}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+    
+    $text = '{{Cite journal|year=(not dated)}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   }
