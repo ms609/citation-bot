@@ -183,7 +183,7 @@ final class Template {
     if ($this->should_be_processed()) {
       $this->prepare();
       
-      $had_a_url = $this->get('url');
+      $original_url = $this->get('url');
 
       switch ($this->wikiname()) {
         case 'cite web':
@@ -272,13 +272,13 @@ final class Template {
       }
     }
 
-    if ($had_a_url
+    if ($original_url
           && $this->blank(['doi', 'pmc', 'pmid', 'jstor', 'eprint', 'arxiv', 'bibcode']) // These custom APIs are more reliable and faster
           && $this->incomplete()  // Too slow for data that is already good
           && !preg_match("~^https?://books\.google\.~", $this->get('url')) // We have custom Google Book code
          )  {
         if ($this->blank('url')) { // we must have eaten it, like citeceerx
-            $this->set('url', $had_a_url);
+            $this->set('url', $original_url);
             expand_by_zotero($this); // May modify wikiname
             $this->quietly_forget('url');
         } else {
