@@ -1,5 +1,5 @@
 <?php 
-function query_jstor_api($ids, $templates) {
+function query_zotero_api($ids, $templates) {
   foreach ($templates as $template) expand_by_zotero($template);
 }
 
