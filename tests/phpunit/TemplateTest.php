@@ -208,7 +208,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
       
-    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20}}";
+    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());  // We do not touch this kind of URL
   }
@@ -711,12 +711,6 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('pages')); // Do not expand pages.  Google might give total pages to us
   }
   
-  public function testGoogleDates() {
-    $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('February 1935', $expanded->get('date'));
-  }
-  
   public function testErrantAuthor() {
     $text = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340}}';
     $expanded = $this->process_citation($text);
@@ -959,19 +953,6 @@ ER -  }}';
     $this->assertEquals(str_replace(' ', '', "''Cryptosporidiumhominis''n.sp.(Apicomplexa:Cryptosporidiidae)fromHomosapiens"),
                         str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
   }   
-  
-  
-  public function testJstorSICI() {
-    $url = "https://www.jstor.org/sici?sici=0003-0279(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
-    $text = "{{Cite journal|url=$url}}";
-    $expanded = $this->process_citation($text);
-      
-    $this->assertEquals('594900', $expanded->get('jstor'));
-    $this->assertEquals('1961', $expanded->get('year'));
-    $this->assertEquals('81', $expanded->get('volume'));
-    $this->assertEquals('1', $expanded->get('issue'));
-    $this->assertEquals('43–52', $expanded->get('pages'));  // The jstor expansion add the page ending
-  }
     
   public function testSICI() {
     $url = "https://www.fake-url.org/sici?sici=9999-9999(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
@@ -982,12 +963,6 @@ ER -  }}';
     $this->assertEquals('81', $expanded->get('volume'));
     $this->assertEquals('1', $expanded->get('issue'));
     $this->assertEquals('43', $expanded->get('pages'));
-  }
-      
-  public function testJstorSICIEncoded() {
-    $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('594900', $expanded->get('jstor'));
   }
     
   public function testOverwriteBlanks() {
