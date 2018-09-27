@@ -32,6 +32,13 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     return $template;
   }
   
+  protected function process_page($text) {  // Only used if more than just a citation template
+    $page = new TestPage();
+    $page->parse_text($text);
+    $page->expand_text();
+    return $page;
+  }
+  
   public function testZoteroExpansion() {
     $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
     $expanded = $this->process_citation($text);
@@ -41,6 +48,10 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('Keith', $expanded->get('first1')); // Would be tidied to 'first' in final_parameter_tudy
     $this->assertEquals('Collins', $expanded->get('last1'));
     $this->assertEquals('cite newspaper', $expanded->wikiname());
+        
+    $text = '<ref>http://rspb.royalsocietypublishing.org/content/285/1887/20181780</ref>';
+    $expanded = $this->process_page($text);
+    $this->assertTrue(strpos($expanded->parsed_text(), 'Hyoliths with pedicles illuminate the origin of the brachiopod body plan') !== FALSE);
   }
 
 }

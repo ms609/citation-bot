@@ -15,7 +15,6 @@ exec ("git pull", $output, $return_var);
 ?>
 <pre>
 <?php
-$output = "";
 exec ("git show --oneline -s", $output, $return_var);
 foreach ($output as $line) print "$line \n";
 ?>

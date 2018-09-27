@@ -750,6 +750,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('pages')); // Do not expand pages.  Google might give total pages to us
   }
   
+  public function testGoogleDates() {
+    $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
+    $expanded = $this->process_citation($text);
+    $this->assertTrue(in_array($expanded->get('date'), ['February 1935', '1935-02']));
+    // Google recovers Feb 1935; Zotero returns 1935-02.
+  }
+  
   public function testErrantAuthor() {
     $text = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340}}';
     $expanded = $this->process_citation($text);
@@ -786,16 +793,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($prepared->get('year'));
   }
   
-  public function testND() {  // n.d. is special case that template recognize.  Must protect
+  public function testND() {  // n.d. is special case that template recognize.  Must protect final period.
     $text = '{{Cite journal|date =n.d.}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
     
-    $text = '{{Cite journal|year=no date}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals($text, $expanded->parsed_text());
-    
-    $text = '{{Cite journal|year=(not dated)}}';
+    $text = '{{Cite journal|year=n.d.}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   }
