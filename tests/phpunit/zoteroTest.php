@@ -42,14 +42,14 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $template->parse_text($expanded_text);
     return $template;
   }
-
+  
   protected function process_page($text) {  // Only used if more than just a citation template
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
     return $page;
   }
-
+ 
   protected function expand_by_zotero($text) {
     $template = $this->prepare_citation($text);
     expand_by_zotero($template);
