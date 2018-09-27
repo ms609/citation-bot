@@ -8,8 +8,9 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
 const BAD_AUTHORS = array("unknown", "missing");
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
-const PUBLISHER_ENDINGS = array("inc.", "inc", "magazines", "press", "publishing", "publishers", 
-                                "books", "corporation");
+// Ordered alphabetically.
+const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', "inc.", "inc", "magazines",
+                           "press", "publishers", "publishing"];
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
