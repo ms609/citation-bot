@@ -101,6 +101,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   public function testZoteroExpansionRSRef() {
     $text = '<ref>http://rspb.royalsocietypublishing.org/content/285/1887/20181780</ref>';
     $expanded = $this->process_page($text);
+    $this->assertNull($expanded->parsed_text()); // What the heck is going on
     $this->assertTrue(mb_stripos($expanded->parsed_text(), 'Hyoliths with pedicles illuminate the origin of the brachiopod body plan') !== FALSE);
   }
     
