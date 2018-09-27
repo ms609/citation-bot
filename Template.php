@@ -675,6 +675,7 @@ final class Template {
             $this->set('doi', $match[0]);
             $this->tidy_parameter('doi');
             return TRUE;
+          }
         }
         return FALSE;
       
