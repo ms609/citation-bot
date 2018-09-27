@@ -33,26 +33,26 @@ function expand_by_zotero(&$template, $url = NULL) {
   $zotero_response = zotero_request($url);
   switch ($zotero_response) {
     case '':
-      report_info("Zotero translation server returned nothing for $url");
+      report_info("Nothing returned for URL $url");
       return FALSE;
     case 'Internal Server Error':
-      report_info("Zotero translation server encountered internal error with $url");
+      report_info("Internal server error with URL $url");
       return FALSE;
   }
   
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->{'title'})) {
-    report_warning("Zotero translation server returned invalid json for URL ". $url . ": $zotero_response");
+    report_warning("Received invalid json for URL ". $url . ": $zotero_response");
     return FALSE;
   } else {
     $result = $zotero_data[0];
   }
   if (substr(strtolower(trim($result->{'title'})), 0, 9) == 'not found') {
-    report_info("Zotero translation server could not resolve URL ". $url);
+    report_info("Could not resolve URL ". $url);
     return FALSE;
   }
   
-  report_info("Zotero translation server retrieved info from ". $url);
+  report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->{'title'}), -9)) === ' on jstor') {
     $template->add_if_new('title', substr(trim($result->{'title'}), 0, -9)); // Add the title without " on jstor"
