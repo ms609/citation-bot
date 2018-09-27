@@ -5,10 +5,8 @@ function html_echo($text, $alternate_text='') {
 }
 
 function user_notice($symbol, $class, $text) {
-  if (!getenv('TRAVIS')) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
-  }
   if (in_array($class, array('phase', 'subitem', 'warning'))) ob_flush();
 }
 
