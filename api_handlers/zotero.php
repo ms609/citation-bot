@@ -18,6 +18,7 @@ function zotero_request($url) {
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
+  if (!$template->incomplete()) return FALSE; // Nothing to gain by wasting an API call
   if (is_null($url)) $url = $template->get('url');
   $zotero_response = zotero_request($url, getenv('TRAVIS'));
   $zotero_data = @json_decode($zotero_response, FALSE);
