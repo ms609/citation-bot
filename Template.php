@@ -182,7 +182,7 @@ final class Template {
   public function process() {
     if ($this->should_be_processed()) {
       $this->prepare();
-
+      
       $original_url = $this->get('url');
 
       switch ($this->wikiname()) {
