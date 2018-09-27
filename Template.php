@@ -278,9 +278,7 @@ final class Template {
           && !preg_match("~^https?://books\.google\.~", $this->get('url')) // We have custom Google Book code
          )  {
         if ($this->blank('url')) { // we must have eaten it, like citeceerx
-            $this->set('url', $original_url);
-            expand_by_zotero($this); // May modify wikiname
-            $this->quietly_forget('url');
+            expand_by_zotero($this, $original_url); // May modify wikiname
         } else {
             expand_by_zotero($this); // May modify wikiname
         }
