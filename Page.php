@@ -282,7 +282,7 @@ class Page {
     }
   }
   
-  public function extract_object ($class) {
+  public function extract_object($class) {
     $i = 0;
     $text = $this->text;
     $regexp = $class::REGEXP;
@@ -290,17 +290,19 @@ class Page {
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
     
-    $preg_completed = TRUE;
-    while($preg_completed = preg_match($regexp, $text, $match)) {
+    $preg_ok = TRUE;
+    while ($preg_ok = preg_match($regexp, $text, $match)) {
+      var_dump($match);
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
       $text = implode(sprintf($placeholder_text, $i++), $exploded);
       $objects[] = $obj;
     }
-    if ($preg_completed === FALSE) {
+    if ($preg_ok === FALSE) {
        // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.
-       trigger_error("Internal PHP error in " . htmlspecialchars($this->title), E_USER_ERROR) ;
+       trigger_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's', E_USER_ERROR);
+       die;
     }
     $this->text = $text;
     return $objects;
