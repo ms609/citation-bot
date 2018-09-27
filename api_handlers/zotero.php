@@ -58,7 +58,17 @@ function expand_by_zotero(&$template, $url = NULL) {
     $template->add_if_new('title', substr(trim($result->{'title'}), 0, -9)); // Add the title without " on jstor"
     return FALSE; // Not really "expanded"
   }
-  
+
+  $test_data = "";
+  if (isset($result->{'bookTitle'}) $test_data .= $result->{'bookTitle'} . '  ';
+  if (isset($result->{'title'}) $test_data .= $result->{'title'};
+  foreach ( array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_ZOTERO_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
+      if (stripos($test_data, $bad_title) !== FALSE) {
+        report_info("Received invalid title data for URL ". $url . ": $test_data");
+        return FALSE;
+      }
+  }
+      
   if (isset($result->{'bookTitle'})) {
     $template->add_if_new('title', $result->{'bookTitle'});
     if (isset($result->{'title'}))      $template->add_if_new('chapter',   $result->{'title'});
