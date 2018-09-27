@@ -68,6 +68,11 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   var_dump($result);
   
+  if ( isset($result->DOI)) {
+    $template->add_if_new('doi', $result->DOI);
+    return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
+  }
+
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
@@ -82,7 +87,6 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
   if ( isset($result->volume))           $template->add_if_new('volume' , $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
-  if ( isset($result->DOI))              $template->add_if_new('doi'    , $result->DOI);
   if ( isset($result->series))           $template->add_if_new('series' , $result->series);
   $i = 0;
   while (isset($result->author[$i])) {
