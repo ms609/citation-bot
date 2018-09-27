@@ -317,7 +317,9 @@ function sanitize_string($str) {
 }
 
 function tidy_date($string) {
-  if (preg_match('~^(.*\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) $string = $matches[1];
+  $time = strtotime($string);
+  if ($time) return date('Y-m-d', $time);
+  if (preg_match('~^(.*\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
   return $string;
 }
 
