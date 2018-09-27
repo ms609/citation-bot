@@ -362,9 +362,10 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{Cite journal | publisher=archive.org}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('publisher'));
-    $text = '{{Cite journal | website=archive.org|url=http://www.asdfdsafdsfads.com/NOT_REAL}}';
+      
+    $text = '{{Cite journal | website=archive.org|url=http://www.fake-url.com/NOT_REAL}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('http://www.asdfdsafdsfads.com/NOT_REAL', $expanded->get('url'));
+    $this->assertEquals('http://www.fake-url.com/NOT_REAL', $expanded->get('url'));
     $this->assertNull($expanded->get('website'));
   }
     
