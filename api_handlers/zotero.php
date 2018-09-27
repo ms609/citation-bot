@@ -24,11 +24,17 @@ function zotero_request($url) {
 function expand_by_zotero(&$template, $url = NULL) {
   if (!$template->incomplete()) return FALSE; // Nothing to gain by wasting an API call
   if (is_null($url)) $url = $template->get('url');
-  $zotero_response = zotero_request($url, getenv('TRAVIS'));
+  if (!$url) {
+    report_info("Aborting Zotero expansion: No URL found");
+    return FALSE;
+  }
+  
+  $zotero_response = zotero_request($url);
   if (!$zotero_response) {
     report_info("Zotero translation server returned nothing for $url");
     return FALSE;
   }
+  
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->{'title'})) {
     report_warning("Zotero translation server returned invalid json for URL ". $url . ": $zotero_response");
