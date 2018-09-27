@@ -43,6 +43,12 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     return $template;
   }
   
+  protected function zotero_a_citation($text) {
+    $template = $this->prepare_citation($test);
+    expand_by_zotero($template);
+    return $template;
+  }
+
   protected function process_page($text) {  // Only used if more than just a citation template
     $page = new TestPage();
     $page->parse_text($text);
@@ -52,31 +58,31 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
  
   public function testZoteroExpansionRGJunk() {
     $text = '{{Cite journal|url =  https://www.researchgate.net/publication/2344536}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->zotero_a_citation($text);
     $this->assertEquals($expanded->parsed_text(), $text);
   }
 
   public function testZoteroExpansionRGGood() {
     $text = '{{Cite journal|url =  https://www.researchgate.net/publication/23445361}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->zotero_a_citation($text);
     $this->assertEquals($expanded->parsed_text(), $text);
   }
 
   public function testZoteroExpansionPII() {
     $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->zotero_a_citation($text);
     $this->assertEquals('10.1016/j.laa.2012.05.036', $expanded->get('doi'));
   }
 
   public function testZoteroExpansionJstorBook() {
     $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10?seq=9#metadata_info_tab_contents}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->zotero_a_citation($text);
     $this->assertEquals($expanded->parsed_text(), $text);
   }
 
   public function testZoteroExpansionNBK() {
     $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->zotero_a_citation($text);
     $this->assertEquals('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
     $this->assertEquals('2004', $expanded->get('year'));
     $this->assertEquals('National Research Council (Us) Committee To Update Science', $this->get('last1');
@@ -85,8 +91,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
 
   public function testZoteroExpansionNYT() {
     $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
-    $expanded = $this->prepare_citation($text);
-    expand_by_zotero($expanded);
+    $expanded = $this->zotero_a_citation($text);
     $expanded->tidy();
     $this->assertEquals("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));
     $this->assertEquals('Keith', $expanded->get('first1')); // Would be tidied to 'first' in final_parameter_tudy
