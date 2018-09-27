@@ -90,6 +90,7 @@ class Page {
       case 'pmc':     $api = 'entrez';   break;
       case 'bibcode': $api = 'adsabs';   break;
       case 'doi':     $api = 'crossref'; break;
+      case 'url':     $api = 'zotero';   break;
       default:        $api = $identifier;
     }
     for ($i = 0; $i < count($templates); $i++) {
@@ -170,6 +171,7 @@ class Page {
     
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
+    $this->expand_templates_from_identifier('url',     $our_templates);
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
