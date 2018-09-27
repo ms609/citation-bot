@@ -75,4 +75,10 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     // In future we should use this match to expand citation.
   }
 
+  public function testDateTidiness() {
+    $text = "{{cite web|title= Gelada| website= nationalgeographic.com |url= http://animals.nationalgeographic.com/animals/mammals/gelada/ |publisher=[[National Geographic Society]]|accessdate=7 March 2012}}";
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertEquals('2011-05-10', $expanded->get('date'));
+  }
+  
 }
