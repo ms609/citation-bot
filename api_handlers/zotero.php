@@ -31,9 +31,13 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   $zotero_response = zotero_request($url);
-  if (!$zotero_response) {
-    report_info("Zotero translation server returned nothing for $url");
-    return FALSE;
+  switch ($zotero_response) {
+    case '':
+      report_info("Zotero translation server returned nothing for $url");
+      return FALSE;
+    case 'Internal Server Error':
+      report_info("Zotero translation server encountered internal error with $url");
+      return FALSE;
   }
   
   $zotero_data = @json_decode($zotero_response, FALSE);
