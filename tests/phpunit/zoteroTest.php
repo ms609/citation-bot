@@ -39,8 +39,14 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
  
-  public function testZoteroExpansionRG() {
+  public function testZoteroExpansionRGJunk() {
     $text = '{{Cite journal|url =  https://www.researchgate.net/publication/2344536}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($expanded->parsed_text(), $text);
+  }
+
+  public function testZoteroExpansionRGGood() {
+    $text = '{{Cite journal|url =  https://www.researchgate.net/publication/23445361}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($expanded->parsed_text(), $text);
   }
@@ -48,7 +54,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   public function testZoteroExpansionPII() {
     $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals($expanded->parsed_text(), $text);
+    $this->assertEquals('10.1016/j.laa.2012.05.036', $expanded->get('doi'));
   }
 
   public function testZoteroExpansionJstorBook() {
