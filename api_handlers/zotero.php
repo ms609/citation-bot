@@ -70,10 +70,10 @@ function expand_by_zotero(&$template, $url = NULL) {
   
   if (isset($result->itemType)) {
     switch ($result->itemType) {
-      case 'book': $template->change_name_to('cite book'); break;
-      case 'journalArticle': $template->change_name_to('cite journal'); break;
+      case 'book':             $template->change_name_to('cite book');      break;
+      case 'journalArticle':   $template->change_name_to('cite journal');   break;
       case 'newspaperArticle': $template->change_name_to('cite newspaper'); break;
-      case 'webpage': $template->change_name_to('cite journal'); break;
+      case 'webpage':          $template->change_name_to('cite journal');   break;
       default: report_warning("Unhandled itemType: " . $result->itemType);
     }
   }
