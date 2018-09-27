@@ -783,11 +783,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testGoogleDates() {
     $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
     $expanded = $this->process_citation($text);
-    if (in_array($expanded->get('date'), ['February 1935', '1935-02'])) {
-        $this->assertTrue(TRUE);
-    } else {
-        $this->assertEquals('The right date', $expanded->get('date')); // Printout what we go for debugging
-    }
+    $this->assertTrue(in_array($expanded->get('date'), ['February 1935', '1935-02']));
     // Google recovers Feb 1935; Zotero returns 1935-02.
   }
   
