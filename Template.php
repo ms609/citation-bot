@@ -754,14 +754,15 @@ final class Template {
     }
   }
 
-  public function validate_and_add($author_param, $author) {
+  public function validate_and_add($author_param, $author, $forename = '') {
+    var_dump($author);
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
       if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE) {
-        $this->add_if_new("publisher" , $author);
+        $this->add_if_new("publisher" , $forename . ' ' . $author);
       } else {
-        $this->add_if_new($author_param, format_author($author));
+        $this->add_if_new($author_param, format_author($author . ($forename ? ", $forename" : '')));
       }
     }
   }
