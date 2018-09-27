@@ -671,8 +671,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals($text, $prepared->parsed_text());
   }
 
+    
   public function testWorkParamter() {
-
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
