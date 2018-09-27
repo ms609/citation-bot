@@ -180,9 +180,10 @@ final class Template {
   
   public function process() {
     if ($this->should_be_processed()) {
-      $this->use_unnamed_params();
-      $this->get_identifiers_from_url();
       $this->prepare();
+      
+      if ($this->has('url')) expand_by_zotero($this); // May modify wikiname
+      
       switch ($this->wikiname()) {
         case 'cite web':
           if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
@@ -2291,7 +2292,7 @@ final class Template {
     return $ret;
   }
 
-  protected function change_name_to($new_name, $rename_cite_book = TRUE) {
+  public function change_name_to($new_name, $rename_cite_book = TRUE) {
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     &&  lcfirst($new_name) != $this->wikiname()
