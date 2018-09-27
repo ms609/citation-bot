@@ -292,7 +292,6 @@ class Page {
     
     $preg_ok = TRUE;
     while ($preg_ok = preg_match($regexp, $text, $match)) {
-      var_dump($match);
       $obj = new $class();
       $obj->parse_text($match[0]);
       $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
