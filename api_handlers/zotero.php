@@ -6,7 +6,6 @@ function query_url_api($ids, $templates) {
       expand_by_zotero($template);
     }
   }
-  report_action("All templates passed to Zotero."); // Debugging line; remove once complete
 }
 
 function zotero_request($url) {
