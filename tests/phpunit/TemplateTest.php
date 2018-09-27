@@ -598,18 +598,22 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
+      
       $text = '{{citation|postscript=.}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=.}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=none}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
@@ -621,6 +625,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{citation|work=Work}}', $prepared->parsed_text());
+      
       $text = '{{citation|work=Work|journal=Journal|magazine=Magazine|website=Website}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
