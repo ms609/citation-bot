@@ -91,13 +91,6 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
 
   public function testZoteroExpansionNYT() {
     $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
-    $expanded = $this->zotero_a_citation($text);
-    $expanded->tidy();
-    return $expanded;
-  }
-  
-  public function testZoteroExpansion() {
-    $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
     $expanded = $this->expand_via_zotero($text);
     $this->assertEquals("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));
     $this->assertEquals('Keith', $expanded->get('first1')); // Would be tidied to 'first' in final_parameter_tudy
