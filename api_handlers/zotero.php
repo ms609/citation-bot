@@ -67,6 +67,10 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE; // Not really "expanded"
   }
 
+  if (getenv('TRAVIS')) {
+    var_dump($result); // debug code
+  }
+
   $test_data = '';
   if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
   if (isset($result->title))     $test_data .= $result->title;
