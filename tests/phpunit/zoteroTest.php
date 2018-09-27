@@ -75,6 +75,13 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     // In future we should use this match to expand citation.
   }
 
+  public function testNoneAdditionOfAuthor() {
+    // Rubbish author listed in page metadata; do not add. 
+    $text = "{{cite web |url=http://www.westminster-abbey.org/our-history/people/sir-isaac-newton}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('last1'));
+  }
+  
   public function testDateTidiness() {
     $text = "{{cite web|title= Gelada| website= nationalgeographic.com |url= http://animals.nationalgeographic.com/animals/mammals/gelada/ |publisher=[[National Geographic Society]]|accessdate=7 March 2012}}";
     $expanded = $this->expand_via_zotero($text);
