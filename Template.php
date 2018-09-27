@@ -2691,6 +2691,10 @@ final class Template {
           if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0)) {
             $this->forget($param);
           }
+          if (stripos($this->get($param), 'archive.org') !== FALSE &&
+              stripos($this->get('url') . $this->get('chapter-url') . $this->get('chapterurl'), 'archive.org') === FALSE) {
+            $this->forget($param);
+          }
           return;
          
         case 'publicationplace': case 'publication-place':
