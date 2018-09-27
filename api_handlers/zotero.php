@@ -66,7 +66,13 @@ function expand_by_zotero(&$template, $url = NULL) {
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
     return FALSE; // Not really "expanded"
   }
+  var_dump($result);
   
+  if ( isset($result->DOI)) {
+    $template->add_if_new('doi', $result->DOI);
+    return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
+  }
+
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
@@ -81,7 +87,6 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
   if ( isset($result->volume))           $template->add_if_new('volume' , $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
-  if ( isset($result->DOI))              $template->add_if_new('doi'    , $result->DOI);
   if ( isset($result->series))           $template->add_if_new('series' , $result->series);
   $i = 0;
   while (isset($result->author[$i])) {
@@ -91,7 +96,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
   while (isset($result->creators[$i])) {
-      $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
+    $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
       if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
         switch ($creatorType) {
           case 'author':
@@ -106,7 +111,8 @@ function expand_by_zotero(&$template, $url = NULL) {
           default:
             report_warning("Unrecognised creator type: " . $creatorType);
         }
-        $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName);
+        $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
+                                    isset($result->rights) ? $result->rights : '');
       }
       $i++;
   }
@@ -115,8 +121,12 @@ function expand_by_zotero(&$template, $url = NULL) {
     switch ($result->itemType) {
       case 'book':             $template->change_name_to('cite book');      break;
       case 'journalArticle':   $template->change_name_to('cite journal');   break;
-      case 'newspaperArticle': $template->change_name_to('cite newspaper'); break;
-      case 'webpage': break; // Could be a journal article or a genuine web page.
+      case 'newspaperArticle': 
+        if (isset($result->libraryCatalog) && in_array($result->libraryCatalog, WEB_NEWSPAPERS)) break;
+        $template->change_name_to('cite newspaper'); 
+        break;
+      case 'webpage': 
+        break; // Could be a journal article or a genuine web page.
       default: report_warning("Unhandled itemType: " . $result->itemType);
     }
   }

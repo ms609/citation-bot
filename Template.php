@@ -183,8 +183,8 @@ final class Template {
     if ($this->should_be_processed()) {
       $this->prepare();
       
-      if ($this->has('url')) expand_by_zotero($this); // May modify wikiname
-      
+      $original_url = $this->get('url');
+
       switch ($this->wikiname()) {
         case 'cite web':
           if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
@@ -270,6 +270,20 @@ final class Template {
           }
           break;
       }
+    }
+
+    if ($original_url
+          && $this->blank(['doi', 'pmc', 'pmid', 'jstor', 'eprint', 'arxiv', 'bibcode']) // These custom APIs are more reliable and faster
+          && $this->incomplete()  // Too slow for data that is already good
+          && !preg_match("~^https?://books\.google\.~", $this->get('url')) // We have custom Google Book code
+         )  {
+        if ($this->blank('url')) { // we must have eaten it, like citeceerx
+            $this->set('url', $original_url);
+            expand_by_zotero($this); // May modify wikiname
+            $this->quietly_forget('url');
+        } else {
+            expand_by_zotero($this); // May modify wikiname
+        }
     }
     report_action('Tying up loose ends...');
     $this->final_tidy();
@@ -666,7 +680,14 @@ final class Template {
             $this->add('doi', $match[0]);          
             return TRUE;
           } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
-            report_action("Replacing non-functional DOI with functional one");
+            report_action("Replacing non-functional DOI with a functional one");
+            $this->set('doi', $match[0]);
+            $this->tidy_parameter('doi');
+            return TRUE;
+          } elseif (strcasecmp($this->get('doi'), $match[0]) != 0 
+                    && strpos($this->get('doi'), '10.13140/') === 0 
+                    && doi_active($match[0])) {
+            report_action("Replacing ResearchGate DOI with publisher's");
             $this->set('doi', $match[0]);
             $this->tidy_parameter('doi');
             return TRUE;
@@ -758,12 +779,16 @@ final class Template {
     }
   }
 
-  public function validate_and_add($author_param, $author, $forename = '') {
+  public function validate_and_add($author_param, $author, $forename = '', $check_against = '') {
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
-      if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE) {
-        $this->add_if_new("publisher" , $forename . ' ' . $author);
+      $name_as_publisher = trim($forename . ' ' . $author);
+    var_dump($name_as_publisher);
+    var_dump($check_against);
+      if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE
+          || stripos($check_against, $name_as_publisher) !== FALSE) {
+        $this->add_if_new("publisher" , $name_as_publisher);
       } else {
         $this->add_if_new($author_param, format_author($author . ($forename ? ", $forename" : '')));
       }
