@@ -1,5 +1,5 @@
 <?php 
-function query_zotero_api($ids, $templates) {
+function query_url_api($ids, $templates) {
   foreach ($templates as $template) expand_by_zotero($template);
 }
 
