@@ -42,25 +42,25 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   public function testZoteroExpansionRG() {
     $text = '{{Cite journal|url =  https://www.researchgate.net/publication/2344536}}';
     $expanded = $this->process_citation($text);
-    $this->assertTrue(strpos($expanded->parsed_text(), $text);
+    $this->assertTrue(strpos($expanded->parsed_text(), $text));
   }
 
   public function testZoteroExpansionPII() {
     $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
     $expanded = $this->process_citation($text);
-    $this->assertTrue(strpos($expanded->parsed_text(), $text);
+    $this->assertTrue(strpos($expanded->parsed_text(), $text));
   }
 
   public function testZoteroExpansionJstorBook() {
     $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10?seq=9#metadata_info_tab_contents}}';
     $expanded = $this->process_citation($text);
-    $this->assertTrue(strpos($expanded->parsed_text(), $text);
+    $this->assertTrue(strpos($expanded->parsed_text(), $text));
   }
 
   public function testZoteroExpansionNBK() {
     $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/}}';
     $expanded = $this->process_citation($text);
-    $this->assertTrue(strpos($expanded->parsed_text(), $text);
+    $this->assertTrue(strpos($expanded->parsed_text(), $text));
   }
 
   public function testZoteroExpansionNYT() {
