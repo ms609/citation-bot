@@ -28,7 +28,7 @@ function zotero_request($url) {
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
-  if (!$template->incomplete()) return FALSE; // Nothing to gain by wasting an API call
+  if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
