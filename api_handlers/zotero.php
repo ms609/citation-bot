@@ -1,5 +1,6 @@
 <?php 
 function query_url_api($ids, $templates) {
+  report_action("Using Zotero translation server to retrieve details from URLs: ");
   foreach ($templates as $template) expand_by_zotero($template);
 }
 
@@ -37,6 +38,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE;
   }
   
+  report_info("Zotero translation server retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->{'title'}), -9)) === ' on jstor') {
     $template->add_if_new('title', substr(trim($result->{'title'}), 0, -9)); // Add the title without " on jstor"
