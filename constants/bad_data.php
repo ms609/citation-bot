@@ -10,7 +10,7 @@ const BAD_AUTHORS = array("unknown", "missing");
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', "inc.", "inc", "magazines",
-                           "press", "publishers", "publishing"];
+                           "press", "publishers", "publishing", 'science'];
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
@@ -18,6 +18,7 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
                                "na", "submitted", "tbd", "missing");
 const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 
                                    'math.ph', 'math', 'nucl.ex', 'nucl.th', 'physics');
-const NON_PUBLISHERS = array('books.google', 'google books', 'google news', 'google.co', 'amazon.com', 'archive.org'); // Google Inc is a valid publisher, however.
-const BAD_ZOTERO_TITLES = array ('on jstor', 'Browse publications', 'Central Authentication Service',
-                                 ' Log In', 'Log In ', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request');
+const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'amazon.com', 'archive.org']; // Google Inc is a valid publisher, however.
+const WEB_NEWSPAPERS = ['news.bbc.co.uk'];
+const BAD_ZOTERO_TITLES = ['on jstor', 'Browse publications', 'Central Authentication Service',
+                                 ' Log In', 'Log In ', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request'];
