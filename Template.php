@@ -34,7 +34,6 @@ final class Template {
       'crossref' => array(), 
       'entrez'   => array(),
       'jstor'    => array(),
-      'zotero'   => array(),
     );
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
@@ -2741,6 +2740,13 @@ final class Template {
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
+    }
+    foreach (ALL_ALIASES as $alias_list) {
+      if (!$this->blank($alias_list)) { // At least one is set
+        foreach ($alias_list as $alias) {
+          if ($this->blank($alias)) $this->forget($alias); // Delete all the other ones
+        }
+      }
     }
   }
   

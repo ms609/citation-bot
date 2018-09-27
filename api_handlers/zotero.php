@@ -1,8 +1,4 @@
 <?php 
-function query_url_api($ids, $templates) {
-  foreach ($templates as $template) expand_by_zotero($template);
-}
-
 function zotero_request($url) {
   
   $ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
