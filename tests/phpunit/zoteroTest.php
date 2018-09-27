@@ -50,11 +50,16 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     return $page;
   }
   
-  public function testZoteroExpansion() {
-    $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
+  protected function expand_via_zotero($text) {
     $expanded = $this->prepare_citation($text);
     expand_by_zotero($expanded);
     $expanded->tidy();
+    return $expanded;
+  }
+  
+  public function testZoteroExpansion() {
+    $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
+    $expanded = $this->expand_via_zotero($text);
     $this->assertEquals("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));
     $this->assertEquals('Keith', $expanded->get('first1')); // Would be tidied to 'first' in final_parameter_tudy
     $this->assertEquals('Collins', $expanded->get('last1'));
@@ -75,6 +80,12 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $text = "{{cite web |url=http://www.westminster-abbey.org/our-history/people/sir-isaac-newton}}</ref>";
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('last1'));
+  }
+  
+  public function testDateTidiness() {
+    $text = "{{cite web|title= Gelada| website= nationalgeographic.com |url= http://animals.nationalgeographic.com/animals/mammals/gelada/ |publisher=[[National Geographic Society]]|accessdate=7 March 2012}}";
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertEquals('2011-05-10', $expanded->get('date'));
   }
   
 }

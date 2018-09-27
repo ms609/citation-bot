@@ -80,7 +80,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->pages))            $template->add_if_new('pages'  , $result->pages);
   if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
   if ( isset($result->volume))           $template->add_if_new('volume' , $result->volume);
-  if ( isset($result->date))             $template->add_if_new('date'   , $result->date);
+  if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
   if ( isset($result->DOI))              $template->add_if_new('doi'    , $result->DOI);
   if ( isset($result->series))           $template->add_if_new('series' , $result->series);
   $i = 0;
@@ -106,27 +106,28 @@ function expand_by_zotero(&$template, $url = NULL) {
     $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
     if (in_array($result->itemType, ['book', 'journalArticle', 'newspaperArticle'])) {
       // Websites often have non-authors listed in metadata
+       $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
       while (isset($result->creators[$i])) {
-          $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
-          if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
-            switch ($creatorType) {
-              case 'author':
-                $authorParam = 'author' . ++$author_i;
-                break;
-              case 'editor':
-                $authorParam = 'editor' . ++$editor_i;
-                break;
-              case 'translator':
-                $authorParam = 'translator' . ++$translator_i;
-                break;
-              default:
-                report_warning("Unrecognised creator type: " . $creatorType);
-            }
-            $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName);
+        $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
+        if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
+          switch ($creatorType) {
+            case 'author':
+              $authorParam = 'author' . ++$author_i;
+              break;
+            case 'editor':
+              $authorParam = 'editor' . ++$editor_i;
+              break;
+            case 'translator':
+              $authorParam = 'translator' . ++$translator_i;
+              break;
+            default:
+              report_warning("Unrecognised creator type: " . $creatorType);
           }
-          $i++;
-      }
-    }    
+          $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
+                                      isset($result->rights) ? $result->rights : '');
+        }
+        $i++;
+    }
   }
   return TRUE;
 }

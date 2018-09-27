@@ -17,7 +17,19 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
 
   protected function tearDown() {
   }
-  
+
+  protected function process_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
+    $page = new TestPage();
+    $page->parse_text($text);
+    $page->expand_text();
+    $expanded_text = $page->parsed_text();
+    $template = new Template();
+    $template->parse_text($expanded_text);
+    return $template;
+  }
+
   public function testCapitalization() {
     $this->assertEquals('Molecular and Cellular Biology', 
                         title_capitalization(title_case('Molecular and cellular biology'), TRUE));
@@ -53,5 +65,11 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
                         extract_doi('http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022')[1]);
     $this->assertEquals('10.1038/nature11111', 
                         extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
+  }
+  
+  public function testPublisherRecognition() {
+    $text = "{{cite journal|url=http://www.sciencemag.org/cgi/content/summary/sci;308/5724/921g |title=Out of Africa Revisited |doi=10.1126/science.308.5724.921g |date=2005-05-13 |accessdate=2009-11-23 |volume=308 |issue=5724 |journal=Science |page=921g}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('American Association for the Advancement of Science', $expanded->get('publisher'));
   }
 }

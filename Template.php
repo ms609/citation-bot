@@ -183,8 +183,14 @@ final class Template {
     if ($this->should_be_processed()) {
       $this->prepare();
       
-      if ($this->has('url')) expand_by_zotero($this); // May modify wikiname
-      
+      if ($this->has('url') 
+          && $this->blank(['doi', 'pmc', 'pmid', 'jstor', 'eprint', 'arxiv', 'bibcode']) // These custom APIs are more reliable and faster
+          && $this->incomplete()  // Too slow for data that is already good
+          && !preg_match("~^https?://books\.google\.~", $this->get('url')) // We have custom Google Book code
+         )  { 
+            expand_by_zotero($this); // May modify wikiname
+      }
+
       switch ($this->wikiname()) {
         case 'cite web':
           if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
@@ -765,12 +771,16 @@ final class Template {
     }
   }
 
-  public function validate_and_add($author_param, $author, $forename = '') {
+  public function validate_and_add($author_param, $author, $forename = '', $check_against = '') {
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
-      if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE) {
-        $this->add_if_new("publisher" , $forename . ' ' . $author);
+      $name_as_publisher = trim($forename . ' ' . $author);
+    var_dump($name_as_publisher);
+    var_dump($check_against);
+      if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE
+          || stripos($check_against, $name_as_publisher) !== FALSE) {
+        $this->add_if_new("publisher" , $name_as_publisher);
       } else {
         $this->add_if_new($author_param, format_author($author . ($forename ? ", $forename" : '')));
       }
