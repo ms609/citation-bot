@@ -1,5 +1,6 @@
 <?php 
 function query_url_api($ids, $templates) {
+  report_action("Using Zotero translation server to retrieve details from URLs: ");
   foreach ($templates as $template) expand_by_zotero($template);
 }
 
@@ -24,19 +25,34 @@ function zotero_request($url) {
 function expand_by_zotero(&$template, $url = NULL) {
   if (!$template->incomplete()) return FALSE; // Nothing to gain by wasting an API call
   if (is_null($url)) $url = $template->get('url');
-  $zotero_response = zotero_request($url, getenv('TRAVIS'));
+  if (!$url) {
+    report_info("Aborting Zotero expansion: No URL found");
+    return FALSE;
+  }
+  
+  $zotero_response = zotero_request($url);
+  switch ($zotero_response) {
+    case '':
+      report_info("Nothing returned for URL $url");
+      return FALSE;
+    case 'Internal Server Error':
+      report_info("Internal server error with URL $url");
+      return FALSE;
+  }
+  
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->{'title'})) {
-    report_warning("Zotero translation server returned invalid json for URL ". $url . ": $zotero_response");
+    report_warning("Received invalid json for URL ". $url . ": $zotero_response");
     return FALSE;
   } else {
     $result = $zotero_data[0];
   }
   if (substr(strtolower(trim($result->{'title'})), 0, 9) == 'not found') {
-    report_info("Zotero translation server could not resolve URL ". $url);
+    report_info("Could not resolve URL ". $url);
     return FALSE;
   }
   
+  report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->{'title'}), -9)) === ' on jstor') {
     $template->add_if_new('title', substr(trim($result->{'title'}), 0, -9)); // Add the title without " on jstor"
@@ -71,30 +87,28 @@ function expand_by_zotero(&$template, $url = NULL) {
       if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
         switch ($creatorType) {
           case 'author':
-            $firstParam = 'first' . ++$author_i;
-            $lastParam = 'last' . $author_i;
-          break;
+            $authorParam = 'author' . ++$author_i;
+            break;
           case 'editor':
-            $firstParam = 'editor' . ++$editor_i . '-first';
-            $lastParam =  'editor' . $editor_i   . '-last';
+            $authorParam = 'editor' . ++$editor_i;
+            break;
           case 'translator':
-            $firstParam = 'translator' . ++$translator_i . '-first';
-            $lastParam =  'translator' . $translator_i   . '-last';
-          break;
+            $authorParam = 'translator' . ++$translator_i;
+            break;
           default:
-            report_warning("Unrecognized creator type: " . $creatorType);
+            report_warning("Unrecognised creator type: " . $creatorType);
         }
-        $template->add_if_new($firstParam, $result->creators[$i]->firstName);
-        $template->add_if_new($lastParam,  $result->creators[$i]->lastName);
+        $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName);
       }
       $i++;
   }
   
   if (isset($result->itemType)) {
     switch ($result->itemType) {
+      case 'book':             $template->change_name_to('cite book');      break;
+      case 'journalArticle':   $template->change_name_to('cite journal');   break;
       case 'newspaperArticle': $template->change_name_to('cite newspaper'); break;
-      case 'journalArticle': $template->change_name_to('cite journal'); break;
-      case 'webpage': $template->change_name_to('cite journal'); break;
+      case 'webpage': break; // Could be a journal article or a genuine web page.
       default: report_warning("Unhandled itemType: " . $result->itemType);
     }
   }

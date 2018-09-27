@@ -754,6 +754,19 @@ final class Template {
     }
   }
 
+  public function validate_and_add($author_param, $author, $forename = '') {
+    var_dump($author);
+    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+      $author_parts  = explode(" ", $author);
+      $author_ending = end($author_parts);
+      if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE) {
+        $this->add_if_new("publisher" , $forename . ' ' . $author);
+      } else {
+        $this->add_if_new($author_param, format_author($author . ($forename ? ", $forename" : '')));
+      }
+    }
+  }
+  
   public function mark_inactive_doi($doi = NULL) {
     // Only call if doi_broken.
     // Before we mark the doi inactive, we'll additionally check that dx.doi.org fails to resolve.
@@ -1764,16 +1777,7 @@ final class Template {
     $i = 0;
     if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
-          $author_parts  = explode(" ", $author);
-          $author_ending = end($author_parts);
-          if( in_array(strtolower($author),        AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
-              in_array(strtolower($author_ending), AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
-            $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
-          } else {
-            $this->add_if_new("author" . ++$i, format_author(str_replace("___", ":", $author)));
-          }
-        }
+        $this->validate_and_add('author' . ++$i, str_replace("___", ":", $author));
       }
     }
     
@@ -2641,6 +2645,7 @@ final class Template {
              $this->forget('year');
              return;
           }
+          if ($this->get($param) === 'n.d.') return; // Special no-date code that citation template recognize.
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
           // Remove leading zeroes
@@ -2741,6 +2746,13 @@ final class Template {
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
+    }
+    foreach (ALL_ALIASES as $alias_list) {
+      if (!$this->blank($alias_list)) { // At least one is set
+        foreach ($alias_list as $alias) {
+          if ($this->blank($alias)) $this->forget($alias); // Delete all the other ones
+        }
+      }
     }
   }
   
@@ -2866,7 +2878,7 @@ final class Template {
               $this->forget($param);
               $authors = split_authors($val_base);
               foreach ($authors as $i => $author_name) {
-                $this->add_if_new('author' . ($i + 1), format_author($author_name)); // 
+                $this->add_if_new('author' . ($i + 1), format_author($author_name));
               }
             }
           }

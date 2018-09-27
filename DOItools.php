@@ -52,7 +52,7 @@ function format_surname_2($surname) {
           function($matches) {
                   return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
 	  },
-          mb_ereg_replace(" - ", "-", $surname));
+    mb_ereg_replace(" - ", "-", $surname));
   $ret = str_ireplace(array('Von ', 'Und ', 'De La '), array('von ', 'und ', 'de la '), $ret);
   $ret = preg_replace_callback('~;\w~', function($matches) {return strtolower($matches[0]);}, $ret);
   return $ret;
@@ -111,7 +111,7 @@ function format_author($author){
   
 	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = NULL;
-  // Google sometimes has these
+  // Google and Zotero sometimes have these
   $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, NULL, 'UTF-8'));
 
   $ends_with_period = (substr(trim($author), -1) === ".");

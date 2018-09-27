@@ -43,6 +43,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
     $expanded = $this->process_citation($text);
     expand_by_zotero($expanded);
+    $expanded->tidy();
     $this->assertEquals("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));
     $this->assertEquals('Keith', $expanded->get('first'));
     $this->assertEquals('Collins', $expanded->get('last'));
@@ -52,6 +53,5 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_page($text);
     $this->assertTrue(strpos($expanded->parsed_text(), 'Hyoliths with pedicles illuminate the origin of the brachiopod body plan') !== FALSE);
   }
-  
 
 }
