@@ -65,7 +65,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   public function testZoteroExpansionRGGood() {
     $text = '{{Cite journal|url =  https://www.researchgate.net/publication/23445361}}';
     $expanded = $this->zotero_a_citation($text);
-    $this->assertEquals($expanded->parsed_text(), $text);
+    $this->assertEquals('10.1136/jnnp.2008.144360', $expanded->get('doi'));
   }
 
   public function testZoteroExpansionPII() {
@@ -85,8 +85,8 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->zotero_a_citation($text);
     $this->assertEquals('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
     $this->assertEquals('2004', $expanded->get('year'));
-    $this->assertEquals('National Research Council (Us) Committee To Update Science', $this->get('last1'));
-    $this->assertEquals('Medicine', $this->get('first')); // TODO : recognize this
+    $this->assertEquals('National Research Council (Us) Committee To Update Science', $expanded->get('last1'));
+    $this->assertEquals('Medicine', $expanded->get('first')); // TODO : recognize this
   }
 
   public function testZoteroExpansionNYT() {
