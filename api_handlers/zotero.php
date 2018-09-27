@@ -13,7 +13,8 @@ function query_url_api($ids, $templates) {
 
 function zotero_request($url) {
   
-  $ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
+  #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
+  $ch = curl_init('http://tools.wmflabs.org/translation-server/web');
   
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
@@ -36,7 +37,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
   }
-  
+  print '1';
   $zotero_response = zotero_request($url);
   switch (trim($zotero_response)) {
     case '':
@@ -46,8 +47,9 @@ function expand_by_zotero(&$template, $url = NULL) {
       report_info("Internal server error with URL $url");
       return FALSE;
   }
-  
+  print 2;
   $zotero_data = @json_decode($zotero_response, FALSE);
+  print 3;
   if (!isset($zotero_data) || !is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
     report_warning("Received invalid json for URL ". $url . ": $zotero_response");
     return FALSE;
@@ -58,6 +60,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Could not resolve URL ". $url);
     return FALSE;
   }
+  print 4;
   
   report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
@@ -65,7 +68,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
     return FALSE; // Not really "expanded"
   }
-  
+  print 5;
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
