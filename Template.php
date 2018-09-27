@@ -321,6 +321,10 @@ final class Template {
       return FALSE;
     }
     
+    if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;  // We let comments block the bot
+    }
+    
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
       $param_name = COMMON_MISTAKES[$param_name];
     }
@@ -2339,6 +2343,9 @@ final class Template {
     // case necessarily continues from the previous (without a return).
     
     if (!$param) return FALSE;
+    if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;  // We let comments block the bot
+    }
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
@@ -2827,13 +2834,18 @@ final class Template {
           report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
           return FALSE;
         }
-        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+        foreach (DOI_BROKEN_ALIASES as $alias) {
+          if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
+               $this->forget($alias);
+          }
+        }
         if(empty($headers_test['Location'])) {
-           $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
+           if ($this->blank(DOI_BROKEN_ALIASES)) $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
            report_inline("Broken doi: " . echoable($doi));
            return FALSE;
         } else {
-          return TRUE;
+           foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias); // Blow them away even if commented
+           return TRUE;
         }
       } else {
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
@@ -3051,6 +3063,9 @@ final class Template {
   }
   
   public function set($par, $val) {
+    if (mb_stripos($this->get((string) $par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;
+    }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
       return $this->param[$pos]->val = (string) $val;
     }
@@ -3085,6 +3100,9 @@ final class Template {
   }
 
   protected function append_to($par, $val) {
+    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;
+    }
     $pos = $this->get_param_key($par);
     if ($pos) {
       return $this->param[$pos]->val = $this->param[$pos]->val . $val;
