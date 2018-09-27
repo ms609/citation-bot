@@ -616,6 +616,18 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals($text, $prepared->parsed_text());
   }
     
+  public function testDropDuplicates() {
+      $text = '{{citation|work=Work|journal=|magazine=|website=}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|work=Work}}', $prepared->parsed_text());
+      $text = '{{citation|work=Work|journal=Journal|magazine=Magazine|website=Website}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+  }
+
+    
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
       $prepared = $this->prepare_citation($text);
