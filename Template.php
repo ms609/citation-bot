@@ -670,7 +670,11 @@ final class Template {
             $this->set('doi', $match[0]);
             $this->tidy_parameter('doi');
             return TRUE;
-          }
+          } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && strpos($this->get('doi'), '10.13140/') === 0 && doi_active($match[0])) {
+            report_action("Replacing ResearchGate DOI with publisher one");
+            $this->set('doi', $match[0]);
+            $this->tidy_parameter('doi');
+            return TRUE;
         }
         return FALSE;
       
