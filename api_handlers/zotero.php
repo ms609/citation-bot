@@ -89,27 +89,6 @@ function expand_by_zotero(&$template, $url = NULL) {
       if (isset($result->author[$i][1])) $template->add_if_new('last'  . ($i+1), $result->author[$i][1]);
       $i++;
   }
-  $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
-  while (isset($result->creators[$i])) {
-      $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
-      if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
-        switch ($creatorType) {
-          case 'author':
-            $authorParam = 'author' . ++$author_i;
-            break;
-          case 'editor':
-            $authorParam = 'editor' . ++$editor_i;
-            break;
-          case 'translator':
-            $authorParam = 'translator' . ++$translator_i;
-            break;
-          default:
-            report_warning("Unrecognised creator type: " . $creatorType);
-        }
-        $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName);
-      }
-      $i++;
-  }
   
   if (isset($result->itemType)) {
     switch ($result->itemType) {
@@ -123,6 +102,31 @@ function expand_by_zotero(&$template, $url = NULL) {
         break; // Could be a journal article or a genuine web page.
       default: report_warning("Unhandled itemType: " . $result->itemType);
     }
+    
+    $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
+    if (in_array($result->itemType, ['book', 'journalArticle', 'newspaperArticle'])) {
+      // Websites often have non-authors listed in metadata
+      while (isset($result->creators[$i])) {
+          $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
+          if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
+            switch ($creatorType) {
+              case 'author':
+                $authorParam = 'author' . ++$author_i;
+                break;
+              case 'editor':
+                $authorParam = 'editor' . ++$editor_i;
+                break;
+              case 'translator':
+                $authorParam = 'translator' . ++$translator_i;
+                break;
+              default:
+                report_warning("Unrecognised creator type: " . $creatorType);
+            }
+            $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName);
+          }
+          $i++;
+      }
+    }    
   }
   return TRUE;
 }

@@ -70,4 +70,11 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     // In future we should use this match to expand citation.
   }
 
+  public function testNoneAdditionOfAuthor() {
+    // Rubbish author listed in page metadata; do not add. 
+    $text = "{{cite web |url=http://www.westminster-abbey.org/our-history/people/sir-isaac-newton}}</ref>";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('last1'));
+  }
+  
 }
