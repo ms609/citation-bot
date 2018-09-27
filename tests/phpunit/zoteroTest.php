@@ -57,7 +57,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     return $expanded;
   }
 
-  public function testZoteroExpansionRGJunk() {
+  public function testZoteroExpansionRGJunk() { // The gives a rubbish title that we detect and reject
     $text = '{{Cite journal|url =  https://www.researchgate.net/publication/2344536}}';
     $expanded = $this->expand_via_zotero($text);
     $this->assertEquals($expanded->parsed_text(), $text);
@@ -73,12 +73,6 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
     $expanded = $this->expand_via_zotero($text);
     $this->assertEquals('10.1016/j.laa.2012.05.036', $expanded->get('doi'));
-  }
-
-  public function testZoteroExpansionJstorBook() {
-    $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10?seq=9#metadata_info_tab_contents}}';
-    $expanded = $this->expand_via_zotero($text);
-    $this->assertEquals($expanded->parsed_text(), $text);
   }
 
   public function testZoteroExpansionNBK() {
