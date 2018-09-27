@@ -67,10 +67,4 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
                         extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
   }
   
-  public function testPublisherRecognition() {
-    $text = "{{cite web|url=http://www.sciencemag.org/cgi/content/summary/sci;308/5724/921g}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('American Association for the Advancement of Science', $expanded->get('publisher'));
-    $this->assertEquals('921', $expanded->get('page'));
-  }
 }
