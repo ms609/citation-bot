@@ -3,9 +3,7 @@ function query_url_api($ids, $templates) {
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
     if ($template->has('url')) {
-      report_info("Using Zotero to expand " . $template->get('url'));
       expand_by_zotero($template);
-      print " [Done.]";
     }
   }
   report_action("All templates passed to Zotero."); // Debugging line; remove once complete
