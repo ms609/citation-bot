@@ -624,6 +624,41 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals($text, $prepared->parsed_text());
   }
     
+  public function testChangeParamaters() {
+      // publicationplace
+      $text = '{{citation|publicationplace=Home}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|location=Home}}', $prepared->parsed_text());
+      
+      $text = '{{citation|publication-place=Home|location=Away}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+      // publicationdate
+      $text = '{{citation|publicationdate=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|date=2000}}', $prepared->parsed_text());
+      
+      $text = '{{citation|publicationdate=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+      // origyear
+      $text = '{{citation|origyear=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|year=2000}}', $prepared->parsed_text());
+      
+      $text = '{{citation|origyear=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text()); 
+ }
+
   public function testDropDuplicates() {
       $text = '{{citation|work=Work|journal=|magazine=|website=}}';
       $prepared = $this->prepare_citation($text);
