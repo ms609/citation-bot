@@ -323,7 +323,7 @@ function tidy_date($string) {
   if ($time) {
     $day = date('d', $time);
     if ($day == '01') { // Probably just got month and year
-      return date('F Y');
+      return date('F Y', $time);
     } else {
       return date('Y-m-d', $time);
     }
