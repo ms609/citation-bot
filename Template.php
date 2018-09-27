@@ -2691,7 +2691,31 @@ final class Template {
           if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0)) {
             $this->forget($param);
           }
+          if (stripos($this->get($param), 'archive.org') !== FALSE &&
+              stripos($this->get('url') . $this->get('chapter-url') . $this->get('chapterurl'), 'archive.org') === FALSE) {
+            $this->forget($param);
+          }
           return;
+         
+        case 'publicationplace': case 'publication-place':
+          if ($this->blank(['location', 'place'])) {
+            $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
+          }
+          return;
+          
+        case 'publication-date': case 'publicationdate':
+          if ($this->blank(['year', 'date'])) {
+            $this->rename($param, 'date'); // When date & year are blank, this is displayed as date.  So convert
+          }
+          return;
+          
+        case 'orig-year': case 'origyear':
+          if ($this->blank(['year', 'date'])) { // Will not show unless one of these is set, so convert
+            if (preg_match('~^\d\d\d\d$~', $this->get($param))) { // Only if a year, might contain text like "originally was...."
+              $this->rename($param, 'year');
+            }
+          }
+          return; 
       }
     }
   }

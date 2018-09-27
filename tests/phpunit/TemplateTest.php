@@ -362,6 +362,17 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text, $expanded->parsed_text());
   }
   
+  public function testDropArchiveDotOrg() {
+    $text = '{{Cite journal | publisher=archive.org}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('publisher'));
+      
+    $text = '{{Cite journal | website=archive.org|url=http://www.fake-url.com/NOT_REAL}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('http://www.fake-url.com/NOT_REAL', $expanded->get('url'));
+    $this->assertNull($expanded->get('website'));
+  }
+
   public function testScriptTitle() {
     $text = "{{cite book |author={{noitalic|{{lang|zh-hans|国务院人口普查办公室、国家统计局人口和社会科技统计司编}}}} |date=2012 |script-title=zh:中国2010年人口普查分县资料 |location=Beijing |publisher={{noitalic|{{lang|zh-hans|中国统计出版社}}}} [China Statistics Press] |page= |isbn=978-7-5037-6659-6 }}";
     $expanded = $this->process_citation($text);
@@ -624,6 +635,41 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals($text, $prepared->parsed_text());
   }
     
+  public function testChangeParamaters() {
+      // publicationplace
+      $text = '{{citation|publicationplace=Home}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|location=Home}}', $prepared->parsed_text());
+      
+      $text = '{{citation|publication-place=Home|location=Away}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+      // publicationdate
+      $text = '{{citation|publicationdate=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|date=2000}}', $prepared->parsed_text());
+      
+      $text = '{{citation|publicationdate=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+      // origyear
+      $text = '{{citation|origyear=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|year=2000}}', $prepared->parsed_text());
+      
+      $text = '{{citation|origyear=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text()); 
+ }
+
   public function testDropDuplicates() {
       $text = '{{citation|work=Work|journal=|magazine=|website=}}';
       $prepared = $this->prepare_citation($text);

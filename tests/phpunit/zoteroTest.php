@@ -38,7 +38,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $page->expand_text();
     return $page;
   }
-
+  
   public function testZoteroExpansion() {
     $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
     $expanded = $this->process_citation($text);
