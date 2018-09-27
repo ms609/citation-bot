@@ -758,16 +758,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($prepared->get('year'));
   }
   
-  public function testND() {  // n.d. is special case that template recognize.  Must protect
+  public function testND() {  // n.d. is special case that template recognize.  Must protect final period.
     $text = '{{Cite journal|date =n.d.}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
     
-    $text = '{{Cite journal|year=no date}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals($text, $expanded->parsed_text());
-    
-    $text = '{{Cite journal|year=(not dated)}}';
+    $text = '{{Cite journal|year=n.d.}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());
   }
