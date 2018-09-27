@@ -68,8 +68,8 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
 
   $test_data = '';
-  if (isset($result->bookTitle) $test_data .= $result->bookTitle . '  ';
-  if (isset($result->title)     $test_data .= $result->title;
+  if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
+  if (isset($result->title))     $test_data .= $result->title;
   foreach ( array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_ZOTERO_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (stripos($test_data, $bad_title) !== FALSE) {
         report_info("Received invalid title data for URL ". $url . ": $test_data");
