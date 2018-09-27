@@ -44,6 +44,8 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     expand_by_zotero($expanded);
     $this->assertEquals("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));
+    $this->assertEquals('Keith', $expanded->get('first'));
+    $this->assertEquals('Collins', $expanded->get('last'));
     $this->assertEquals('cite newspaper', $expanded->wikiname());
         
     $text = '<ref>http://rspb.royalsocietypublishing.org/content/285/1887/20181780</ref>';

@@ -61,8 +61,32 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->{'series'}))           $template->add_if_new('series' , $result->{'series'});
   $i = 0;
   while (isset($result->{'author'}[$i])) {
-      if ( isset($result->{'author'}[$i][0])) $template->add_if_new('first' . ($i+1), $result->{'author'}[$i][0]);
-      if ( isset($result->{'author'}[$i][1])) $template->add_if_new('last'  . ($i+1), $result->{'author'}[$i][1]);
+      if (isset($result->{'author'}[$i][0])) $template->add_if_new('first' . ($i+1), $result->{'author'}[$i][0]);
+      if (isset($result->{'author'}[$i][1])) $template->add_if_new('last'  . ($i+1), $result->{'author'}[$i][1]);
+      $i++;
+  }
+  $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
+  while (isset($result->creators[$i])) {
+      $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
+      if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
+        switch ($creatorType) {
+          case 'author':
+            $firstParam = 'first' . ++$author_i;
+            $lastParam = 'last' . $author_i;
+          break;
+          case 'editor':
+            $firstParam = 'editor' . ++$editor_i . '-first';
+            $lastParam =  'editor' . $editor_i   . '-last';
+          case 'translator':
+            $firstParam = 'translator' . ++$translator_i . '-first';
+            $lastParam =  'translator' . $translator_i   . '-last';
+          break;
+          default:
+            report_warning("Unrecognized creator type: " . $creatorType);
+        }
+        $template->add_if_new($firstParam, $result->creators[$i]->firstName);
+        $template->add_if_new($lastParam,  $result->creators[$i]->lastName);
+      }
       $i++;
   }
   
