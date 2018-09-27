@@ -77,7 +77,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
 
   public function testNoneAdditionOfAuthor() {
     // Rubbish author listed in page metadata; do not add. 
-    $text = "{{cite web |url=http://www.westminster-abbey.org/our-history/people/sir-isaac-newton}}</ref>";
+    $text = "{{cite web |url=http://www.westminster-abbey.org/our-history/people/sir-isaac-newton}}";
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('last1'));
   }

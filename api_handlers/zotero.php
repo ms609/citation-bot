@@ -92,19 +92,23 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   if (isset($result->itemType)) {
-    if ($template->wikiname() == 'cite web') {
-      // Too much bad data to risk switching journal to book or vice versa.
-      switch ($result->itemType) {
-        case 'book':             $template->change_name_to('cite book');      break;
-        case 'journalArticle':   $template->change_name_to('cite journal');   break;
-        case 'newspaperArticle': 
-          if (isset($result->libraryCatalog) && in_array($result->libraryCatalog, WEB_NEWSPAPERS)) break;
-          $template->change_name_to('cite newspaper'); 
-          break;
-        case 'webpage': 
-          break; // Could be a journal article or a genuine web page.
-        default: report_warning("Unhandled itemType: " . $result->itemType);
-      }
+    switch ($result->itemType) {
+      case 'book':
+        // Too much bad data to risk switching journal to book or vice versa.
+        if ($template->wikiname() == 'cite web') 
+          $template->change_name_to('cite book');      
+        break;
+      case 'journalArticle': 
+        if($template->wikiname() == 'cite web')
+          $template->change_name_to('cite journal');
+        break;
+      case 'newspaperArticle': 
+        if (isset($result->libraryCatalog) && in_array($result->libraryCatalog, WEB_NEWSPAPERS)) break;
+        $template->change_name_to('cite newspaper'); 
+        break;
+      case 'webpage': 
+        break; // Could be a journal article or a genuine web page.
+      default: report_warning("Unhandled itemType: " . $result->itemType);
     }
     
     $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
