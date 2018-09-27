@@ -53,6 +53,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   protected function expand_via_zotero($text) {
     $expanded = $this->prepare_citation($text);
     expand_by_zotero($expanded);
+    $expanded->tidy();
     return $expanded;
   }
 
