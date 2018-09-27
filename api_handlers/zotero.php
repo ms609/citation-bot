@@ -73,6 +73,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   foreach ( array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_ZOTERO_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (stripos($test_data, $bad_title) !== FALSE) {
         report_info("Received invalid title data for URL ". $url . ": $test_data");
+        fwrite(STDERR,"Received invalid title data for URL ". $url . ": $test_data");
         return FALSE;
       }
   }
