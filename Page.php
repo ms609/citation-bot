@@ -300,7 +300,7 @@ class Page {
     }
     if ($preg_completed === FALSE) {
        // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.
-       trigger_error("Internal PHP error in " . htmlspecialchars($this->title), USER_ERROR) ;
+       trigger_error("Internal PHP error in " . htmlspecialchars($this->title), E_USER_ERROR) ;
     }
     $this->text = $text;
     return $objects;
