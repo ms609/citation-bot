@@ -66,7 +66,10 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   public function testZoteroExpansionNBK() {
     $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals($expanded->parsed_text(), $text);
+    $this->assertEquals('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
+    $this->assertEquals('2004', $expanded->get('year'));
+    $this->assertEquals('National Research Council (Us) Committee To Update Science', $this->get('last1');
+    $this->assertEquals('Medicine', $this->get('first'); // TODO : recognize this
   }
 
   public function testZoteroExpansionNYT() {
