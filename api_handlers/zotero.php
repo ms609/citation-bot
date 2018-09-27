@@ -41,7 +41,8 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   $zotero_data = @json_decode($zotero_response, FALSE);
-  if (!isset($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->{'title'})) {
+  var_dump($zotero_data);
+  if (!isset($zotero_data) || !is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
     report_warning("Received invalid json for URL ". $url . ": $zotero_response");
     return FALSE;
   } else {
