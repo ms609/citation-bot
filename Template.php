@@ -666,12 +666,14 @@ final class Template {
             $this->add('doi', $match[0]);          
             return TRUE;
           } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
-            report_action("Replacing non-functional DOI with functional one");
+            report_action("Replacing non-functional DOI with a functional one");
             $this->set('doi', $match[0]);
             $this->tidy_parameter('doi');
             return TRUE;
-          } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && strpos($this->get('doi'), '10.13140/') === 0 && doi_active($match[0])) {
-            report_action("Replacing ResearchGate DOI with publisher one");
+          } elseif (strcasecmp($this->get('doi'), $match[0]) != 0 
+                    && strpos($this->get('doi'), '10.13140/') === 0 
+                    && doi_active($match[0])) {
+            report_action("Replacing ResearchGate DOI with publisher's");
             $this->set('doi', $match[0]);
             $this->tidy_parameter('doi');
             return TRUE;
