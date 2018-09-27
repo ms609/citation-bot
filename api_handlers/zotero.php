@@ -87,21 +87,20 @@ function expand_by_zotero(&$template, $url = NULL) {
       if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
         switch ($creatorType) {
           case 'author':
-            $firstParam = 'first' . ++$author_i;
-            $lastParam = 'last' . $author_i;
-          break;
+            $authorParam = 'author' . ++$author_i;
+            break;
           case 'editor':
-            $firstParam = 'editor' . ++$editor_i . '-first';
-            $lastParam =  'editor' . $editor_i   . '-last';
+            $authorParam = 'editor' . ++$editor_i;
+            break;
           case 'translator':
-            $firstParam = 'translator' . ++$translator_i . '-first';
-            $lastParam =  'translator' . $translator_i   . '-last';
-          break;
+            $authorParam = 'translator' . ++$translator_i;
+            break;
           default:
-            report_warning("Unrecognized creator type: " . $creatorType);
+            report_warning("Unrecognised creator type: " . $creatorType);
         }
-        $template->add_if_new($firstParam, $result->creators[$i]->firstName);
-        $template->add_if_new($lastParam,  $result->creators[$i]->lastName);
+        $template->add_if_new($authorParam, 
+                              // format_author sanitizes data, removing honorifics.
+                              format_author($result->creators[$i]->lastName . ', ' . $result->creators[$i]->firstName));
       }
       $i++;
   }
