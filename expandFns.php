@@ -317,8 +317,17 @@ function sanitize_string($str) {
 }
 
 function tidy_date($string) {
+  $string=trim($string);
+  if (preg_match('~^(\d{4})$~', $string, $matches)) return $matches[1]; // Just a year
   $time = strtotime($string);
-  if ($time) return date('Y-m-d', $time);
+  if ($time) {
+    $day = date('d', $time);
+    if ($day == '01') { // Probably just got month and year
+      return date('F Y');
+    } else {
+      return date('Y-m-d', $time);
+    }
+  }
   if (preg_match('~^(.*\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
   return $string;
 }
