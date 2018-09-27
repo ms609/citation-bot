@@ -3018,9 +3018,6 @@ final class Template {
   public function lacks($par) {return !$this->has($par);}
 
   public function add($par, $val) {
-    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-      return FALSE;  // We let comments block the bot
-    }
     report_add("Adding $par: $val" .tag());
     $could_set = $this->set($par, $val);
     $this->tidy_parameter($par);
