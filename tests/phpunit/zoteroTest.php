@@ -44,7 +44,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function zotero_a_citation($text) {
-    $template = $this->prepare_citation($test);
+    $template = $this->prepare_citation($text);
     expand_by_zotero($template);
     return $template;
   }
