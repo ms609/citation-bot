@@ -697,7 +697,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testGoogleDates() {
     $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('February 1935', $expanded->get('date'));
+    $this->assertTrue(in_array($expanded->get('date'), ['February 1935', '1935-02']));
+    // Google recovers Feb 1935; Zotero returns 1935-02.
   }
   
   public function testErrantAuthor() {
