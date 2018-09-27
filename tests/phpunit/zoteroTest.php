@@ -110,4 +110,9 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('2011-05-10', $expanded->get('date'));
   }
   
+  public function testPublisherRecognition() {
+    $text = "{{cite journal|url=http://www.sciencemag.org/cgi/content/summary/sci;308/5724/921g |title=Out of Africa Revisited |doi=10.1126/science.308.5724.921g |date=2005-05-13 |accessdate=2009-11-23 |volume=308 |issue=5724 |journal=Science |page=921g}}";
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertEquals('American Association for the Advancement of Science', $expanded->get('publisher')); // DOI test might stop this
+  }
 }
