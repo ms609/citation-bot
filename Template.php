@@ -183,7 +183,12 @@ final class Template {
     if ($this->should_be_processed()) {
       $this->prepare();
       
-      if ($this->has('url') && $this->blank(['doi', 'pmc', 'pmid', 'jstor', 'eprint', 'arxiv', 'bibcode'] && $this->incomplete()) expand_by_zotero($this); // May modify wikiname
+      if ($this->has('url') 
+          && $this->blank(['doi', 'pmc', 'pmid', 'jstor', 'eprint', 'arxiv', 'bibcode']) // These custom APIs are more reliable and faster
+          && $this->incomplete()  // Too slow for data that is already good
+          && !preg_match("~^https?://books\.google\.~", $this->get('url')) { // We have custom Google Book code
+            expand_by_zotero($this); // May modify wikiname
+      }
 
       switch ($this->wikiname()) {
         case 'cite web':
