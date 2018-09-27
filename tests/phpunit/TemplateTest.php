@@ -32,6 +32,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function prepare_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
     $template = new Template();
     $template->parse_text($text);
     $template->prepare();
@@ -39,6 +41,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function process_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
@@ -209,7 +213,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($expanded->get('asin'));
     $this->assertNull($expanded->get('publisher'));
       
-    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20}}";
+    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());  // We do not touch this kind of URL
   }
@@ -359,6 +363,17 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text, $expanded->parsed_text());
   }
   
+  public function testDropArchiveDotOrg() {
+    $text = '{{Cite journal | publisher=archive.org}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('publisher'));
+      
+    $text = '{{Cite journal | website=archive.org|url=http://www.fake-url.com/NOT_REAL}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('http://www.fake-url.com/NOT_REAL', $expanded->get('url'));
+    $this->assertNull($expanded->get('website'));
+  }
+
   public function testScriptTitle() {
     $text = "{{cite book |author={{noitalic|{{lang|zh-hans|国务院人口普查办公室、国家统计局人口和社会科技统计司编}}}} |date=2012 |script-title=zh:中国2010年人口普查分县资料 |location=Beijing |publisher={{noitalic|{{lang|zh-hans|中国统计出版社}}}} [China Statistics Press] |page= |isbn=978-7-5037-6659-6 }}";
     $expanded = $this->process_citation($text);
@@ -599,23 +614,75 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
+      
       $text = '{{citation|postscript=.}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=.}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=none}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
   }
+    
+  public function testChangeParamaters() {
+      // publicationplace
+      $text = '{{citation|publicationplace=Home}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|location=Home}}', $prepared->parsed_text());
+      
+      $text = '{{citation|publication-place=Home|location=Away}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+      // publicationdate
+      $text = '{{citation|publicationdate=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|date=2000}}', $prepared->parsed_text());
+      
+      $text = '{{citation|publicationdate=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+      // origyear
+      $text = '{{citation|origyear=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|year=2000}}', $prepared->parsed_text());
+      
+      $text = '{{citation|origyear=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text()); 
+ }
+
+  public function testDropDuplicates() {
+      $text = '{{citation|work=Work|journal=|magazine=|website=}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|work=Work}}', $prepared->parsed_text());
+      
+      $text = '{{citation|work=Work|journal=Journal|magazine=Magazine|website=Website}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+  }
+
     
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
@@ -704,7 +771,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testGoogleDates() {
     $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('February 1935', $expanded->get('date'));
+    $this->assertTrue(in_array($expanded->get('date'), ['February 1935', '1935-02']));
+    // Google recovers Feb 1935; Zotero returns 1935-02.
   }
   
   public function testErrantAuthor() {
@@ -743,6 +811,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($prepared->get('year'));
   }
   
+  public function testND() {  // n.d. is special case that template recognize.  Must protect final period.
+    $text = '{{Cite journal|date =n.d.}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+    
+    $text = '{{Cite journal|year=n.d.}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+  }
+    
   public function testRIS() {
       $text = '{{Cite journal  | TY - JOUR
 AU - Shannon, Claude E.
@@ -949,19 +1027,6 @@ ER -  }}';
     $this->assertEquals(str_replace(' ', '', "''Cryptosporidiumhominis''n.sp.(Apicomplexa:Cryptosporidiidae)fromHomosapiens"),
                         str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
   }   
-  
-  
-  public function testJstorSICI() {
-    $url = "https://www.jstor.org/sici?sici=0003-0279(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
-    $text = "{{Cite journal|url=$url}}";
-    $expanded = $this->process_citation($text);
-      
-    $this->assertEquals('594900', $expanded->get('jstor'));
-    $this->assertEquals('1961', $expanded->get('year'));
-    $this->assertEquals('81', $expanded->get('volume'));
-    $this->assertEquals('1', $expanded->get('issue'));
-    $this->assertEquals('43–52', $expanded->get('pages'));  // The jstor expansion add the page ending
-  }
     
   public function testSICI() {
     $url = "https://www.fake-url.org/sici?sici=9999-9999(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
@@ -972,12 +1037,6 @@ ER -  }}';
     $this->assertEquals('81', $expanded->get('volume'));
     $this->assertEquals('1', $expanded->get('issue'));
     $this->assertEquals('43', $expanded->get('pages'));
-  }
-      
-  public function testJstorSICIEncoded() {
-    $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('594900', $expanded->get('jstor'));
   }
     
   public function testOverwriteBlanks() {

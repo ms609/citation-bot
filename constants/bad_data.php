@@ -6,10 +6,10 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
 const BAD_AUTHORS = array("unknown", "missing");
-const AUTHORS_ARE_PUBLISHERS = array(); // Things from google like "hearst magazines", "time inc", 
-                                        // "nielsen business media, inc" that the catch alls do not detect
-const AUTHORS_ARE_PUBLISHERS_ENDINGS = array("inc.", "inc", "magazines", "press", "publishing",
-                                             "publishers", "books", "corporation");
+
+// Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
+const PUBLISHER_ENDINGS = array("inc.", "inc", "magazines", "press", "publishing", "publishers", 
+                                "books", "corporation");
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
@@ -17,5 +17,5 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
                                "na", "submitted", "tbd", "missing");
 const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 
                                    'math.ph', 'math', 'nucl.ex', 'nucl.th', 'physics');
-const NON_PUBLISHERS = array('books.google', 'google books', 'google news', 'google.co', 'amazon.com'); // Google Inc is a valid publisher, however.
-                                   
+
+const NON_PUBLISHERS = array('books.google', 'google books', 'google news', 'google.co', 'amazon.com', 'archive.org'); // Google Inc is a valid publisher, however.

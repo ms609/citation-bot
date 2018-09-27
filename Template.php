@@ -34,6 +34,7 @@ final class Template {
       'crossref' => array(), 
       'entrez'   => array(),
       'jstor'    => array(),
+      'zotero'   => array(),
     );
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
@@ -180,9 +181,10 @@ final class Template {
   
   public function process() {
     if ($this->should_be_processed()) {
-      $this->use_unnamed_params();
-      $this->get_identifiers_from_url();
       $this->prepare();
+      
+      if ($this->has('url')) expand_by_zotero($this); // May modify wikiname
+      
       switch ($this->wikiname()) {
         case 'cite web':
           if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
@@ -752,6 +754,19 @@ final class Template {
     }
   }
 
+  public function validate_and_add($author_param, $author, $forename = '') {
+    var_dump($author);
+    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+      $author_parts  = explode(" ", $author);
+      $author_ending = end($author_parts);
+      if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE) {
+        $this->add_if_new("publisher" , $forename . ' ' . $author);
+      } else {
+        $this->add_if_new($author_param, format_author($author . ($forename ? ", $forename" : '')));
+      }
+    }
+  }
+  
   public function mark_inactive_doi($doi = NULL) {
     // Only call if doi_broken.
     // Before we mark the doi inactive, we'll additionally check that dx.doi.org fails to resolve.
@@ -1768,16 +1783,7 @@ final class Template {
     $i = 0;
     if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
-          $author_parts  = explode(" ", $author);
-          $author_ending = end($author_parts);
-          if( in_array(strtolower($author),        AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
-              in_array(strtolower($author_ending), AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
-            $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
-          } else {
-            $this->add_if_new("author" . ++$i, format_author(str_replace("___", ":", $author)));
-          }
-        }
+        $this->validate_and_add('author' . ++$i, str_replace("___", ":", $author));
       }
     }
     
@@ -2297,7 +2303,7 @@ final class Template {
     return $ret;
   }
 
-  protected function change_name_to($new_name, $rename_cite_book = TRUE) {
+  public function change_name_to($new_name, $rename_cite_book = TRUE) {
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     &&  lcfirst($new_name) != $this->wikiname()
@@ -2347,10 +2353,8 @@ final class Template {
         // Parameters are listed alphabetically, though those with numerical content are grouped under "year"
 
         case 'accessdate':
-          if ($this->has('accessdate') && $this->lacks('url') && $this->lacks('chapter-url') 
-          &&  $this->lacks('chapterurl') 
-          &&  $this->lacks('contribution-url') && $this->lacks('contributionurl')
-          ) {
+          if ($this->has('accessdate') && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
+          {
             $this->forget('accessdate');
           }
           return;
@@ -2416,8 +2420,7 @@ final class Template {
               return; // Nonsense to have both.
             }
           }
-          if ($this->has('chapter') && $this->lacks('journal') 
-            && $this->lacks('bibcode') && $this->lacks('jstor') && $this->lacks('pmid')) {
+          if ($this->has('chapter') && $this->blank(['journal', 'bibcode', 'jstor', 'pmid'])) {
             $this->change_name_to('Cite book');
           }
           return;
@@ -2467,7 +2470,7 @@ final class Template {
           
         case 'journal':
           if ($this->lacks($param)) return;
-          if ($this->lacks('chapter') && $this->lacks('isbn')) {
+          if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('Cite journal');
             $this->forget('publisher');
@@ -2648,6 +2651,7 @@ final class Template {
              $this->forget('year');
              return;
           }
+          if ($this->get($param) === 'n.d.') return; // Special no-date code that citation template recognize.
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
           // Remove leading zeroes
@@ -2693,7 +2697,31 @@ final class Template {
           if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0)) {
             $this->forget($param);
           }
+          if (stripos($this->get($param), 'archive.org') !== FALSE &&
+              stripos($this->get('url') . $this->get('chapter-url') . $this->get('chapterurl'), 'archive.org') === FALSE) {
+            $this->forget($param);
+          }
           return;
+         
+        case 'publicationplace': case 'publication-place':
+          if ($this->blank(['location', 'place'])) {
+            $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
+          }
+          return;
+          
+        case 'publication-date': case 'publicationdate':
+          if ($this->blank(['year', 'date'])) {
+            $this->rename($param, 'date'); // When date & year are blank, this is displayed as date.  So convert
+          }
+          return;
+          
+        case 'orig-year': case 'origyear':
+          if ($this->blank(['year', 'date'])) { // Will not show unless one of these is set, so convert
+            if (preg_match('~^\d\d\d\d$~', $this->get($param))) { // Only if a year, might contain text like "originally was...."
+              $this->rename($param, 'year');
+            }
+          }
+          return; 
       }
     }
   }
@@ -2748,6 +2776,13 @@ final class Template {
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
+    }
+    foreach (ALL_ALIASES as $alias_list) {
+      if (!$this->blank($alias_list)) { // At least one is set
+        foreach ($alias_list as $alias) {
+          if ($this->blank($alias)) $this->forget($alias); // Delete all the other ones
+        }
+      }
     }
   }
   
@@ -2873,7 +2908,7 @@ final class Template {
               $this->forget($param);
               $authors = split_authors($val_base);
               foreach ($authors as $i => $author_name) {
-                $this->add_if_new('author' . ($i + 1), format_author($author_name)); // 
+                $this->add_if_new('author' . ($i + 1), format_author($author_name));
               }
             }
           }
