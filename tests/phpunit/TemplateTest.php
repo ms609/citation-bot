@@ -32,6 +32,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function prepare_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
     $template = new Template();
     $template->parse_text($text);
     $template->prepare();
@@ -39,6 +41,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   protected function process_citation($text) {
+    $this->assertEquals('{{', mb_substr($text, 0, 2));
+    $this->assertEquals('}}', mb_substr($text, -2));
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
@@ -598,23 +602,40 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
+      
       $text = '{{citation|postscript=.}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=.}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=none}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
   }
+    
+  public function testDropDuplicates() {
+      $text = '{{citation|work=Work|journal=|magazine=|website=}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|work=Work}}', $prepared->parsed_text());
+      
+      $text = '{{citation|work=Work|journal=Journal|magazine=Magazine|website=Website}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+  }
+
     
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
@@ -730,6 +751,20 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($prepared->get('year'));
   }
   
+  public function testND() {  // n.d. is special case that template recognize.  Must protect
+    $text = '{{Cite journal|date =n.d.}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+    
+    $text = '{{Cite journal|year=no date}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+    
+    $text = '{{Cite journal|year=(not dated)}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+  }
+    
   public function testRIS() {
       $text = '{{Cite journal  | TY - JOUR
 AU - Shannon, Claude E.
