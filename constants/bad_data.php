@@ -17,5 +17,4 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
                                "na", "submitted", "tbd", "missing");
 const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 
                                    'math.ph', 'math', 'nucl.ex', 'nucl.th', 'physics');
-const NON_PUBLISHERS = array('books.google', 'google books', 'google news', 'google.co', 'archive.org'); // Google Inc is a valid publisher, however.
-                                   
+const NON_PUBLISHERS = array('books.google', 'google books', 'google news', 'google.co', 'amazon.com', 'archive.org'); // Google Inc is a valid publisher, however.

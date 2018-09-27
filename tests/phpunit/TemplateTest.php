@@ -218,11 +218,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testAmazonExpansion() {
-    $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn=}}";
+    $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
     $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
+    $this->assertNull($expanded->get('publisher'));
       
     $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
@@ -758,7 +759,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('2000', $this->getDateAndYear($prepared));
       $this->assertNull($prepared->get('origyear'));
   }
-  
+    
+  public function testDropAmazon() {
+    $text = '{{Cite journal | publisher=amazon.com}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('publisher'));
+  }
+    
   public function testGoogleBooksExpansion() {
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
     $expanded = $this->process_citation($text);

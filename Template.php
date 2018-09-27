@@ -959,6 +959,9 @@ final class Template {
         if ($match['domain'] == ".com") {
           if (is_null($url_sent)) {
             $this->forget('url');
+            if (stripos($this->get('publisher'), 'amazon') !== FALSE) {
+              $this->forget('publisher');
+            }
           }
           if ($this->blank('asin')) {
             quietly('report_modification', "Converting URL to ASIN parameter");
@@ -969,6 +972,9 @@ final class Template {
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
           if (is_null($url_sent)) {
             $this->forget('url'); // will forget accessdate too
+            if (stripos($this->get('publisher'), 'amazon') !== FALSE) {
+              $this->forget('publisher');
+            }
           }
         }
       } elseif (preg_match("~^https?://hdl\.handle\.net/([^\?]*)~", $url, $match)) {
