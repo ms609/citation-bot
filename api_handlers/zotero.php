@@ -98,9 +98,7 @@ function expand_by_zotero(&$template, $url = NULL) {
           default:
             report_warning("Unrecognised creator type: " . $creatorType);
         }
-        $template->add_if_new($authorParam, 
-                              // format_author sanitizes data, removing honorifics.
-                              format_author($result->creators[$i]->lastName . ', ' . $result->creators[$i]->firstName));
+        $template->validate_and_add($authorParam, $result->creators[$i]->lastName . ', ' . $result->creators[$i]->firstName);
       }
       $i++;
   }

@@ -754,6 +754,18 @@ final class Template {
     }
   }
 
+  public function validate_and_add($author_param, $author) {
+    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+      $author_parts  = explode(" ", $author);
+      $author_ending = end($author_parts);
+      if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE) {
+        $this->add_if_new("publisher" , $author);
+      } else {
+        $this->add_if_new($author_param, format_author($author));
+      }
+    }
+  }
+  
   public function mark_inactive_doi($doi = NULL) {
     // Only call if doi_broken.
     // Before we mark the doi inactive, we'll additionally check that dx.doi.org fails to resolve.
@@ -1764,16 +1776,7 @@ final class Template {
     $i = 0;
     if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
-          $author_parts  = explode(" ", $author);
-          $author_ending = end($author_parts);
-          if( in_array(strtolower($author),        AUTHORS_ARE_PUBLISHERS        ) === TRUE ||
-              in_array(strtolower($author_ending), AUTHORS_ARE_PUBLISHERS_ENDINGS) === TRUE) {
-            $this->add_if_new("publisher" , (str_replace("___", ":", $author)));
-          } else {
-            $this->add_if_new("author" . ++$i, format_author(str_replace("___", ":", $author)));
-          }
-        }
+        $this->validate_and_add('author' . ++$i, str_replace("___", ":", $author));
       }
     }
     

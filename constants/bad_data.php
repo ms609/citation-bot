@@ -6,10 +6,10 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
 const BAD_AUTHORS = array("unknown", "missing");
-const AUTHORS_ARE_PUBLISHERS = array(); // Things from google like "hearst magazines", "time inc", 
-                                        // "nielsen business media, inc" that the catch alls do not detect
-const AUTHORS_ARE_PUBLISHERS_ENDINGS = array("inc.", "inc", "magazines", "press", "publishing",
-                                             "publishers", "books", "corporation");
+
+// Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
+const PUBLISHER_ENDINGS = array("inc.", "inc", "magazines", "press", "publishing", "publishers", 
+                                "books", "corporation");
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
