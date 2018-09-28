@@ -18,6 +18,7 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
       define("PIPE_PLACEHOLDER", '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #');
     }
   }
+
   protected function tearDown() {
   }
  
