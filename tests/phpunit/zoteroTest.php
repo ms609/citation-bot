@@ -16,6 +16,11 @@ $SLOW_MODE = TRUE;
  
 class ZoteroTest extends PHPUnit\Framework\TestCase {
 
+  protected function setUp() {
+  }
+  protected function tearDown() {
+  }
+
   require_once("./TestHeader.php");
 
 // TODO    
