@@ -10,7 +10,7 @@ $SLOW_MODE = TRUE;
  
 final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
   
-include_once("./TestHeader.php");
+require_once("./TestHeader.php");
   
   public function testIsValidUser() {
     $result = is_valid_user('Smith609');
