@@ -7,7 +7,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' eine ', ' einen ', ' el ', ' else ', ' EMBO ', ' en ', ' et ', ' FASEB ', ' FEBS ', 
           ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' if ', ' in ', ' into ', ' is ', 
           ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' mot ', ' NASA ', ' NEJM ', ' non ',
-          ' nor ', ' NY ', ' NYC ', ' NYT ', ' och ', ' of ', ' off ', ' on ', ' og ', ' or ', 
+          ' nor ', ' NY ', ' NYC ', ' NYT ', ' N.Y. ', ' N.Y.C. ', ' och ', ' of ', ' off ', ' on ', ' og ', ' or ', 
           ' over ', ' PCR ', ' per ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' von ', ' voor ', ' when ', ' with ', ' woor ', 
           ' y ', ' zu ', ' zum ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
@@ -21,7 +21,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' En ', ' Et ', ' Faseb ', ' Febs ', 
           ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' If ', ' In ', ' Into ', ' Is ', 
           ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
-          ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Och ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
+          ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' N.y. ', ' N.y.c. ', ' Och ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
           ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
           ' Um ', ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' Voor ', ' When ', ' With ', ' Woor ', 
           ' Y ', ' Zu ', ' Zum ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
