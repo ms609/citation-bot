@@ -14,8 +14,8 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
     if (!defined("PIPE_PLACEHOLDER")) {
-// this is usually done elsewhere in the code     
-        define("PIPE_PLACEHOLDER", '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #');
+// this is usually done elsewhere in the code
+      define("PIPE_PLACEHOLDER", '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #');
     }
   }
   protected function tearDown() {
