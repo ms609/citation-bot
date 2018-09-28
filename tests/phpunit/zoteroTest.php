@@ -16,7 +16,7 @@ $SLOW_MODE = TRUE;
  
 class ZoteroTest extends PHPUnit\Framework\TestCase {
 
-require_once("./TestHeader.php");
+  require_once("./TestHeader.php");
 
 // TODO    
 //public function testZoteroExpansionRG() {
