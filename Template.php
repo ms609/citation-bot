@@ -598,11 +598,11 @@ final class Template {
             return $this->add($param_name, wikify_external_text($value));
           } else {
             $value = trim($value);
-            if (preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $value) {
-              $script_value = $this->get('script-title');
-              if (mb_stripos($script_value, $value) === FALSE &&
+            $script_value = $this->get('script-title');
+            if (preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $value) &&
+                  mb_stripos($script_value, $value) === FALSE &&
                   mb_stripos($value, $script_value) === FALSE &&
-                  !preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $script_value) {
+                  !preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $script_value)) {
               {// Neither one is part of the other and script is not all ascii and new title is all ascii
                  return $this->add($param_name, wikify_external_text($value));
               }
