@@ -18,6 +18,8 @@ final class constantsTest extends PHPUnit\Framework\TestCase {
 
   protected function tearDown() {
   }
+ 
+  require_once("./TestHeader.php");
 
   public function testConstantsDefined() {
     $this->assertEquals(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));

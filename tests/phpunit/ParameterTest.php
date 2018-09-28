@@ -21,12 +21,8 @@ final class ParameterTest extends PHPUnit\Framework\TestCase {
 
   protected function tearDown() {
   }
-
-  protected function parameter_parse_text_helper($text) {
-    $parameter = new Parameter();
-    $parameter->parse_text($text);
-    return $parameter;
-  }
+ 
+  require_once("./TestHeader.php");
 
 /*
  * FIXME: these tests have too many assertions. Probably will require some refactoring of Parameter::parse_text().

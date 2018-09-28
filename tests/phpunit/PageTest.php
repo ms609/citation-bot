@@ -21,13 +21,8 @@ class PageTest extends PHPUnit\Framework\TestCase {
 
   protected function tearDown() {
   }
-  
-  protected function process_page($text) {
-    $page = new TestPage();
-    $page->parse_text($text);
-    $page->expand_text();
-    return $page;
-  }
+ 
+  require_once("./TestHeader.php");
 
   public function testPageChangeSummary() {
       $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}'); // Change to book from journal

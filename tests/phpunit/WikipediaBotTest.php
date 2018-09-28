@@ -21,6 +21,8 @@ if (getenv('TRAVIS_PULL_REQUEST')) {
 
     protected function tearDown() {
     }
+
+    require_once("./TestHeader.php");
       
     public function testLoggedInUser() {
       $api = new WikipediaBot();

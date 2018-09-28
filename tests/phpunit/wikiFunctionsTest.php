@@ -15,6 +15,8 @@ final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
 
   protected function tearDown() {
   }
+
+  require_once("./TestHeader.php");
   
   public function testIsValidUser() {
     $result = is_valid_user('Smith609');

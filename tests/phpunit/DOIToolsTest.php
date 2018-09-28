@@ -19,6 +19,8 @@ final class doiToolsTest extends PHPUnit\Framework\TestCase {
   protected function tearDown() {
   }
 
+  require_once("./TestHeader.php");
+
   public function testFormatMultipleAuthors1() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
     $result=format_multiple_authors($authors,FALSE);
