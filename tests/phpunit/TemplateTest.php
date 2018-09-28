@@ -16,7 +16,7 @@ $SLOW_MODE = TRUE;
  
 final class TemplateTest extends PHPUnit\Framework\TestCase {
 
-require_once("./TestHeader.php");
+  require_once("./TestHeader.php");
 
   public function testParameterWithNoParameters() {
     $text = "{{Cite web | text without equals sign  }}";
