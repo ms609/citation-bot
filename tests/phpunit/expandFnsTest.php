@@ -12,6 +12,11 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 
 final class expandFnsTest extends PHPUnit\Framework\TestCase {
 
+  protected function setUp() {
+  }
+  protected function tearDown() {
+  }
+
   require_once("./TestHeader.php");
     
   public function testCapitalization() {
