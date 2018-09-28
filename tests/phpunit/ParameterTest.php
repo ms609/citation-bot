@@ -16,6 +16,11 @@ if (!defined("PIPE_PLACEHOLDER")) {
 
 final class ParameterTest extends PHPUnit\Framework\TestCase {
 
+  protected function setUp() {
+  }
+  protected function tearDown() {
+  }
+ 
   require_once("./TestHeader.php");
 
 /*
