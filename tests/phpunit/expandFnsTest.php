@@ -12,7 +12,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 
 final class expandFnsTest extends PHPUnit\Framework\TestCase {
 
-require_once("./TestHeader.php");
+  require_once("./TestHeader.php");
     
   public function testCapitalization() {
     $this->assertEquals('Molecular and Cellular Biology', 
