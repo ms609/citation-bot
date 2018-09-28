@@ -16,7 +16,7 @@ $SLOW_MODE = TRUE;
  
 class PageTest extends PHPUnit\Framework\TestCase {
 
-require_once("./TestHeader.php");
+  require_once("./TestHeader.php");
 
   public function testPageChangeSummary() {
       $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}'); // Change to book from journal
