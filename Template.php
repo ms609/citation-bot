@@ -277,13 +277,7 @@ final class Template {
           && $this->incomplete()  // Too slow for data that is already good
           && !preg_match("~^https?://books\.google\.~", $this->get('url')) // We have custom Google Book code
          )  {
-        if ($this->blank('url')) { // we must have eaten it, like citeceerx
-            $this->set('url', $original_url);
-            expand_by_zotero($this); // May modify wikiname
-            $this->quietly_forget('url');
-        } else {
-            expand_by_zotero($this); // May modify wikiname
-        }
+        expand_by_zotero($this, $this->blank('url') ? $original_url : $this->get('url')); // May modify wikiname
     }
     report_action('Tying up loose ends...');
     $this->final_tidy();
