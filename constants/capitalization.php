@@ -1,6 +1,6 @@
 <?php
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' AC ', ' AI ', ' AJHG ', ' al ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ', ' aus ', ' av ', ' A.C.', ' BBA ', 
+          ' AC ', ' AI ', ' AJHG ', ' al ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ', ' aus ', ' av ', ' A.C. ', ' BBA ', 
           ' be ', ' BMC ', ' BMJ ', ' but ', ' by ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
           ' das ', ' DC ', ' de ', ' de ', ' dei ', ' del ', ' della ', ' dem ', ' den ', ' der ', 
           ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' du ', ' D.C. ', ' e ', ' ed ', ' ein ', 
