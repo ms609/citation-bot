@@ -16,6 +16,12 @@ if (getenv('TRAVIS_PULL_REQUEST')) {
 } else {
   class WikipediaBotTest extends PHPUnit\Framework\TestCase {
 
+    protected function setUp() {
+    }
+
+    protected function tearDown() {
+    }
+
     require_once("./TestHeader.php");
       
     public function testLoggedInUser() {
