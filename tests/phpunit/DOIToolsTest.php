@@ -13,7 +13,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 
 final class doiToolsTest extends PHPUnit\Framework\TestCase {
 
-include_once("./TestHeader.php");
+require_once("./TestHeader.php");
 
   public function testFormatMultipleAuthors1() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
