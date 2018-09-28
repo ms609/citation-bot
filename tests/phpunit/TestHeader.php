@@ -1,8 +1,4 @@
   <?php
-  protected function setUp() {
-  }
-  protected function tearDown() {
-  }
   
   protected function prepare_citation($text) {
     $this->assertEquals('{{', mb_substr($text, 0, 2));
