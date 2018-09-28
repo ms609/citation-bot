@@ -50,3 +50,9 @@
     if (is_null($input->get('date'))) return $input->get('year') ;
     return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year');
   }
+
+  protected function parameter_parse_text_helper($text) {
+    $parameter = new Parameter();
+    $parameter->parse_text($text);
+    return $parameter;
+  }
