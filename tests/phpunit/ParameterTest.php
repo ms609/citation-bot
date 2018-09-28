@@ -9,14 +9,12 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_exists('\PHPUnit_Framework_TestCase')) {
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
-if (!defined("PIPE_PLACEHOLDER")) {
-// this is usually done elsewhere in the code
-    define("PIPE_PLACEHOLDER", '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #');
-}
 
 final class ParameterTest extends PHPUnit\Framework\TestCase {
 
-  protected function setUp() {
+  if (!defined("PIPE_PLACEHOLDER")) {
+// this is usually done elsewhere in the code     
+      define("PIPE_PLACEHOLDER", '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #');
   }
   protected function tearDown() {
   }
