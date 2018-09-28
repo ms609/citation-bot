@@ -16,7 +16,7 @@ if (!defined("PIPE_PLACEHOLDER")) {
 
 final class ParameterTest extends PHPUnit\Framework\TestCase {
 
-require_once("./TestHeader.php");
+  require_once("./TestHeader.php");
 
 /*
  * FIXME: these tests have too many assertions. Probably will require some refactoring of Parameter::parse_text().
