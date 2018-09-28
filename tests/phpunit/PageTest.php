@@ -15,9 +15,10 @@ if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
  
 class PageTest extends PHPUnit\Framework\TestCase {
- 
+
   protected function setUp() {
   }
+
   protected function tearDown() {
   }
  
