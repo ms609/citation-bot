@@ -16,7 +16,7 @@ $SLOW_MODE = TRUE;
  
 final class TemplateTest extends PHPUnit\Framework\TestCase {
 
-  protected function setUp() {;
+  protected function setUp() {
   }
 
   protected function tearDown() {
