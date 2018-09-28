@@ -13,6 +13,11 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 
 final class doiToolsTest extends PHPUnit\Framework\TestCase {
 
+  protected function setUp() {
+  }
+  protected function tearDown() {
+  }
+
   require_once("./TestHeader.php");
 
   public function testFormatMultipleAuthors1() {
