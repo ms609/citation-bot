@@ -9,7 +9,7 @@ if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
  
 final class wikiFunctionsTest extends PHPUnit\Framework\TestCase {
-
+  
   protected function setUp() {
   }
 
