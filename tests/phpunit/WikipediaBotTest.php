@@ -16,7 +16,7 @@ if (getenv('TRAVIS_PULL_REQUEST')) {
 } else {
   class WikipediaBotTest extends PHPUnit\Framework\TestCase {
 
-include_once("./TestHeader.php");
+require_once("./TestHeader.php");
       
     public function testLoggedInUser() {
       $api = new WikipediaBot();
