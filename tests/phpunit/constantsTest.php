@@ -13,11 +13,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 
 final class constantsTest extends PHPUnit\Framework\TestCase {
 
-  protected function setUp() {
-  }
-
-  protected function tearDown() {
-  }
+include_once("./TestHeader.php");
 
   public function testConstantsDefined() {
     $this->assertEquals(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
