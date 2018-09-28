@@ -68,6 +68,22 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   // var_dump($result); for debug
   
+  $test_data = '';
+  if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
+  if (isset($result->title))     $test_data .= $result->title;
+  foreach (BAD_ZOTERO_TITLES as $bad_title ) {
+      if (stripos($test_data, $bad_title) !== FALSE) {
+        report_info("Received invalid title data for URL ". $url . ": $test_data");
+        return FALSE;
+      }
+  }
+  foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
+      if (strcasecmp($test_data, $bad_title) === 0) {
+        report_info("Received invalid title data for URL ". $url . ": $test_data");
+        return FALSE;
+      }
+  }
+  
   if ( isset($result->DOI)) {
     $template->add_if_new('doi', $result->DOI);
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
