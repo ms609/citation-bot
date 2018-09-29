@@ -289,7 +289,7 @@ final class Template {
        if ($this->has('osti')) expand_by_zotero($this, 'https://www.osti.gov/biblio/' . $this->get('osti'), TRUE);
        if ($this->has('rfc')) expand_by_zotero($this, 'https://tools.ietf.org/html/rfc' . $this->get('rfc'), TRUE);
        if ($this->has('ssrn')) expand_by_zotero($this, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $this->get('ssrn'), TRUE);
-       if ($this->has('doi') && doi_inactive()) expand_by_zotero($this, 'https://dx.doi.org/' . $this->get('doi'), TRUE); // Non-crossref DOIs
+       if ($this->has('doi') && doi_inactive()) expand_by_zotero($this, 'https://dx.doi.org/' . $this->get('doi'), TRUE); // Non-crossref DOIs, such as 10.13140/RG.2.1.1002.9609
     }
     report_action('Tying up loose ends...');
     $this->final_tidy();
