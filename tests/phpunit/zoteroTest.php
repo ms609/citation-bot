@@ -115,4 +115,63 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->expand_via_zotero($text);
     $this->assertEquals('2018-06-05', $expanded->get('date'));
   }
+
+  public function testZoteroExpansion_biorxiv() {
+    $text = '{{Cite journal| biorxiv= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }
+
+  public function testZoteroExpansion_citeseerx() {
+    $text = '{{Cite journal| citeseerx= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }
+
+  public function testZoteroExpansion_hdl() {
+    $text = '{{Cite journal| hdl= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }
+    
+  public function testZoteroExpansion_jfm() {
+    $text = '{{Cite journal| jfm= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }
+   
+  public function testZoteroExpansion_zbl() {
+    $text = '{{Cite journal| zbl= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }
+    
+  public function testZoteroExpansion_mr() {
+    $text = '{{Cite journal| mr= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }
+    
+  public function testZoteroExpansion_osti() {
+    $text = '{{Cite journal| osti= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }
+    
+  public function testZoteroExpansion_rfc() {
+    $text = '{{Cite journal| rfc= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }
+     
+  public function testZoteroExpansion_ssrn() {
+    $text = '{{Cite journal| ssrn= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }    
+  public function testZoteroExpansion_doi_not_from_crossref() {
+    $text = '{{Cite journal| doi= }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
+  }
 }
