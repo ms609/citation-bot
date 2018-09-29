@@ -27,8 +27,12 @@ function zotero_request($url) {
   return $zotero_response;
 }
   
-function expand_by_zotero(&$template, $url = NULL) {
-  if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
+function expand_by_zotero(&$template, $url = NULL, $assume_always_good = FALSE) {
+  if ($assume_always_good && !$this->incomplete()) {
+    return FALSE;
+  } elseif (!$assume_always_good && !$template->profoundly_incomplete()) {
+    return FALSE; // Only risk unvetted data if there's little good data to sully
+  }
   if (is_null($url)) $url = $template->get('url');
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
@@ -84,7 +88,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       }
   }
   
-  if ( isset($result->DOI)) {
+  if ( isset($result->DOI) && $this->blank('doi')) {
     $template->add_if_new('doi', $result->DOI);
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
   }
