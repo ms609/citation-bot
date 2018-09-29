@@ -88,7 +88,7 @@ function expand_by_zotero(&$template, $url = NULL, $assume_always_good = FALSE) 
       }
   }
   
-  if ( isset($result->DOI) && $this->blank('doi')) {
+  if ( isset($result->DOI) && $template->blank('doi')) {
     $template->add_if_new('doi', $result->DOI);
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
   }
