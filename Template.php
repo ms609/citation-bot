@@ -279,6 +279,23 @@ final class Template {
          )  {
         expand_by_zotero($this, $this->blank('url') ? $original_url : $this->get('url')); // May modify wikiname
     }
+    if ($this->incomplete()) {
+
+      
+      
+          biorxiv  https://dx.doi.org/10.1101/
+    citeseerx  http://citeseerx.ist.psu.edu/viewdoc/summary?doi=
+    hdl https://hdl.handle.net/
+        jfm:     https://zbmath.org/?format=complete&q=an:
+    zbl:  https://zbmath.org/?format=complete&q=an:
+        mr: https://mathscinet.ams.org/mathscinet-getitem?mr=
+       osti: https://www.osti.gov/biblio/
+       rfc: https://tools.ietf.org/html/rfc
+    ssrn: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=
+
+ 
+      
+    }
     report_action('Tying up loose ends...');
     $this->final_tidy();
   }
