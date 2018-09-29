@@ -2,7 +2,7 @@
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' AC ', ' AI ', ' AJHG ', ' al ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ', ' aus ', ' av ', ' BBA ', 
           ' be ', ' BMC ', ' BMJ ', ' but ', ' by ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
-          ' das ', ' DC ', ' de ', ' de ', ' dei ', ' del ', ' della ', ' dem ', ' den ', ' der ', 
+          ' das ', ' DC ', ' de ', ' de ', ' dei ', ' del ', ' della ', ' delle  ', ' dem ', ' den ', ' der ', 
           ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' du ', ' e ', ' ed ', ' ein ', 
           ' eine ', ' einen ', ' el ', ' else ', ' EMBO ', ' en ', ' et ', ' FASEB ', ' FEBS ', 
           ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' if ', ' in ', ' into ', ' is ', 
@@ -16,7 +16,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' Ac ', ' Ai ', ' Ajhg ', ' Al ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ', ' Aus ', ' Av ', ' Bba ', 
           ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
-          ' Das ', ' Dc ', ' De ', ' De ', ' Dei ', ' Del ', ' Della ', ' Dem ', ' Den ', ' Der ', 
+          ' Das ', ' Dc ', ' De ', ' De ', ' Dei ', ' Del ', ' Della ', ' Delle  ', ' Dem ', ' Den ', ' Der ', 
           ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' Du ', ' E ', ' Ed ', ' Ein ', 
           ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' En ', ' Et ', ' Faseb ', ' Febs ', 
           ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' If ', ' In ', ' Into ', ' Is ', 
