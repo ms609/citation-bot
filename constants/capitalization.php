@@ -16,7 +16,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' Abc ', ' Ac ', ' Ai ', ' Ajhg ', ' Al ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ',
-          ' Aus ', ' Av ', ' Bba ', ' bbc ', ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
+          ' Aus ', ' Av ', ' Bba ', ' Bbc ', ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
           ' Cbc ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
           ' Das ', ' Dc ', ' De ', ' De ', ' Dei ', ' Del ', ' Della ', ' Delle ', ' Dem ', ' Den ', ' Der ', 
           ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' Du ', ' E ', ' Ed ', ' Ein ', 
