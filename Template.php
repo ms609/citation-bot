@@ -280,21 +280,16 @@ final class Template {
         expand_by_zotero($this, $this->blank('url') ? $original_url : $this->get('url')); // May modify wikiname
     }
     if ($this->incomplete()) {
-
-      
-      
-          biorxiv  https://dx.doi.org/10.1101/
-    citeseerx  http://citeseerx.ist.psu.edu/viewdoc/summary?doi=
-    hdl https://hdl.handle.net/
-        jfm:     https://zbmath.org/?format=complete&q=an:
-    zbl:  https://zbmath.org/?format=complete&q=an:
-        mr: https://mathscinet.ams.org/mathscinet-getitem?mr=
-       osti: https://www.osti.gov/biblio/
-       rfc: https://tools.ietf.org/html/rfc
-    ssrn: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=
-
- 
-      
+       if ($this->has('biorxiv')) expand_by_zotero($this, 'https://dx.doi.org/10.1101/' . $this->get('biorxiv')) ,TRUE);
+       if ($this->has('citeseerx')) expand_by_zotero($this, 'http://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $this->get('citeseerx')) ,TRUE);
+       if ($this->has('hdl')) expand_by_zotero($this, 'https://hdl.handle.net/' . $this->get('hdl')) ,TRUE);
+       if ($this->has('jfm')) expand_by_zotero($this, 'https://zbmath.org/?format=complete&q=an:' . $this->get('jfm')) ,TRUE);
+       if ($this->has('zbl')) expand_by_zotero($this, 'https://zbmath.org/?format=complete&q=an:' . $this->get('zbl')) ,TRUE);
+       if ($this->has('mr')) expand_by_zotero($this, 'https://mathscinet.ams.org/mathscinet-getitem?mr=' . $this->get('mr')) ,TRUE);
+       if ($this->has('osti')) expand_by_zotero($this, 'https://www.osti.gov/biblio/' . $this->get('osti')) ,TRUE);
+       if ($this->has('rfc')) expand_by_zotero($this, 'https://tools.ietf.org/html/rfc' . $this->get('rfc')) ,TRUE);
+       if ($this->has('ssrn')) expand_by_zotero($this, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $this->get('ssrn')) ,TRUE);
+       if ($this->has('doi') && doi_inactive()) expand_by_zotero($this, 'https://dx.doi.org/' . $this->get('doi')) ,TRUE); // Non-crossref DOIs
     }
     report_action('Tying up loose ends...');
     $this->final_tidy();
