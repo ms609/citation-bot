@@ -141,36 +141,36 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   }
    
   public function testZoteroExpansion_zbl() {
-    $text = '{{Cite journal| zbl= }}';
+    $text = '{{Cite journal| zbl=06939522 }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
     
   public function testZoteroExpansion_mr() {
-    $text = '{{Cite journal| mr= }}';
+    $text = '{{Cite journal| mr=1543601 }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
     
   public function testZoteroExpansion_osti() {
-    $text = '{{Cite journal| osti= }}';
+    $text = '{{Cite journal| osti=1406676 }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
     
   public function testZoteroExpansion_rfc() {
-    $text = '{{Cite journal| rfc= }}';
+    $text = '{{Cite journal| rfc=6679 }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
      
   public function testZoteroExpansion_ssrn() {
-    $text = '{{Cite journal| ssrn= }}';
+    $text = '{{Cite journal| ssrn=195630 }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }    
   public function testZoteroExpansion_doi_not_from_crossref() {
-    $text = '{{Cite journal| doi= }}';
+    $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
