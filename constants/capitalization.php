@@ -1,7 +1,8 @@
 <?php
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' AC ', ' AI ', ' AJHG ', ' al ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ', ' aus ', ' av ', ' BBA ', 
-          ' be ', ' BMC ', ' BMJ ', ' but ', ' by ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
+          ' ABC ', ' AC ', ' AI ', ' AJHG ', ' al ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ',
+          ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' BMC ', ' BMJ ', ' but ', ' by ',
+          ' CBC ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
           ' das ', ' DC ', ' de ', ' de ', ' dei ', ' del ', ' della ', ' delle ', ' dem ', ' den ', ' der ', 
           ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' du ', ' e ', ' ed ', ' ein ', 
           ' eine ', ' einen ', ' el ', ' else ', ' EMBO ', ' en ', ' et ', ' FASEB ', ' FEBS ', 
@@ -14,8 +15,9 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' Ac ', ' Ai ', ' Ajhg ', ' Al ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ', ' Aus ', ' Av ', ' Bba ', 
-          ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
+          ' Abc ', ' Ac ', ' Ai ', ' Ajhg ', ' Al ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ',
+          ' Aus ', ' Av ', ' Bba ', ' bbc ', ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
+          ' Cbc ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
           ' Das ', ' Dc ', ' De ', ' De ', ' Dei ', ' Del ', ' Della ', ' Delle ', ' Dem ', ' Den ', ' Der ', 
           ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' Du ', ' E ', ' Ed ', ' Ein ', 
           ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' En ', ' Et ', ' Faseb ', ' Febs ', 
