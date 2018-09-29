@@ -17,7 +17,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Ac ', ' Ai ', ' Ajhg ', ' Al ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ', ' Aus ', ' Av ', ' Bba ', 
           ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
           ' Das ', ' Dc ', ' De ', ' De ', ' Dei ', ' Del ', ' Della ', ' Dem ', ' Den ', ' Der ', 
-          ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' Du ', ' D.c. ', ' E ', ' Ed ', ' Ein ', 
+          ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' Du ', ' E ', ' Ed ', ' Ein ', 
           ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' En ', ' Et ', ' Faseb ', ' Febs ', 
           ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' If ', ' In ', ' Into ', ' Is ', 
           ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
