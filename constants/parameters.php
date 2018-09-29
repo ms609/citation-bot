@@ -236,10 +236,12 @@ const ALL_ALIASES = [TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTE
 // This list even includes items that are no longer supported, since we need to leave fixing them to humans
 // See https://en.wikipedia.org/wiki/Module:Citation/CS1/Whitelist
 const PARAMETER_LIST = array(
+'article-format', 'article-url', 'article-url-access',
 'ARXIV', 'ASIN', 'ASIN-TLD', 'Author', 'Author#', 'BIBCODE',
 'CITATION_BOT_PLACEHOLDER_BARE_URL',
 'DOI', 'DoiBroken', 'EISSN', 'Editor', 'Editor#', 'EditorGiven',
-'EditorGiven#', 'EditorSurname', 'EditorSurname#', 'Embargo', 'HDL',
+'EditorGiven#', 'EditorSurname', 'EditorSurname#', 'Embargo',
+'entry-format', 'entry-url', 'entry-url-access', 'HDL',
 'ID', 'ISBN', 'ISBN13', 'ISMN', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR',
 'OCLC', 'OL', 'OSTI', 'PMC', 'PMID', 'PPPrefix', 'PPrefix', 'RFC',
 'Ref', 'SSRN', 'URL', 'ZBL', 'access-date', 'accessdate', 'agency',
@@ -316,7 +318,7 @@ const PARAMETER_LIST = array(
 'publication-place', 'publicationdate', 'publicationplace',
 'publisher', 'publisherid', 'quotation', 'quote', 'ref',
 'registration', 'rfc', 'scale', 'script-chapter', 'script-title',
-'season', 'section', 'section-format', 'section-url', 'sections',
+'season', 'section', 'section-format', 'section-url', 'section-url-access', 'sections',
 'sectionurl', 'separator', 'series', 'series-link', 'series-no',
 'series-number', 'series-separator', 'serieslink', 'seriesno',
 'seriesnumber', 'sheet', 'sheets', 'ssrn', 'station', 'status',
