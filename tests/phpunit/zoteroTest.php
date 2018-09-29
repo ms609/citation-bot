@@ -117,25 +117,25 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   }
 
   public function testZoteroExpansion_biorxiv() {
-    $text = '{{Cite journal| biorxiv= }}';
+    $text = '{{Cite journal| biorxiv=326363 }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
 
   public function testZoteroExpansion_citeseerx() {
-    $text = '{{Cite journal| citeseerx= }}';
+    $text = '{{Cite journal| citeseerx=10.1.1.483.8892 }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
 
   public function testZoteroExpansion_hdl() {
-    $text = '{{Cite journal| hdl= }}';
+    $text = '{{Cite journal| hdl=10411/OF7UCA }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
     
   public function testZoteroExpansion_jfm() {
-    $text = '{{Cite journal| jfm= }}';
+    $text = '{{Cite journal| jfm=53.0144.01}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
