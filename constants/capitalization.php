@@ -1,12 +1,13 @@
 <?php
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' AI ', ' AJHG ', ' al ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ', ' aus ', ' av ', ' BBA ', 
-          ' be ', ' BMC ', ' BMJ ', ' but ', ' by ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
-          ' das ', ' de ', ' de ', ' dei ', ' del ', ' della ', ' dem ', ' den ', ' der ', 
+          ' ABC ', ' AC ', ' AI ', ' AJHG ', ' al ', ' an ', ' and ', ' and then ', ' as ', ' at ', ' at ',
+          ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' BMC ', ' BMJ ', ' but ', ' by ',
+          ' CBC ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
+          ' das ', ' DC ', ' de ', ' de ', ' dei ', ' del ', ' della ', ' delle ', ' dem ', ' den ', ' der ', 
           ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' du ', ' e ', ' ed ', ' ein ', 
           ' eine ', ' einen ', ' el ', ' else ', ' EMBO ', ' en ', ' et ', ' FASEB ', ' FEBS ', 
           ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' if ', ' in ', ' into ', ' is ', 
-          ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' mot ', ' NEJM ', ' non ',
+          ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' mot ', ' NASA ', ' NEJM ', ' non ',
           ' nor ', ' NY ', ' NYC ', ' NYT ', ' och ', ' of ', ' off ', ' on ', ' og ', ' or ', 
           ' over ', ' PCR ', ' per ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' von ', ' voor ', ' when ', ' with ', ' woor ', 
@@ -14,13 +15,14 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' Ai ', ' Ajhg ', ' Al ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ', ' Aus ', ' Av ', ' Bba ', 
-          ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
-          ' Das ', ' De ', ' De ', ' Dei ', ' Del ', ' Della ', ' Dem ', ' Den ', ' Der ', 
+          ' Abc ', ' Ac ', ' Ai ', ' Ajhg ', ' Al ', ' An ', ' And ', ' and Then ', ' As ', ' At ', ' At ',
+          ' Aus ', ' Av ', ' Bba ', ' Bbc ', ' Be ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
+          ' Cbc ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
+          ' Das ', ' Dc ', ' De ', ' De ', ' Dei ', ' Del ', ' Della ', ' Delle ', ' Dem ', ' Den ', ' Der ', 
           ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' Du ', ' E ', ' Ed ', ' Ein ', 
           ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' En ', ' Et ', ' Faseb ', ' Febs ', 
           ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' If ', ' In ', ' Into ', ' Is ', 
-          ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Mot ', ' Nejm ', ' Non ',
+          ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
           ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Och ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
           ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
           ' Um ', ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' Voor ', ' When ', ' With ', ' Woor ', 
