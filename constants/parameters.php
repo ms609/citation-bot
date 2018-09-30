@@ -236,7 +236,7 @@ const ALL_ALIASES = [TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTE
 // This list even includes items that are no longer supported, since we need to leave fixing them to humans
 // See https://en.wikipedia.org/wiki/Module:Citation/CS1/Whitelist
 const PARAMETER_LIST = array(
-'ARXIV', 'ASIN', 'ASIN-TLD', 'Author', 'Author#', 'BIBCODE',
+ 'ARXIV', 'ASIN', 'ASIN-TLD', 'Author', 'Author#', 'BIBCODE',
 'CITATION_BOT_PLACEHOLDER_BARE_URL',
 'DOI', 'DoiBroken', 'EISSN', 'Editor', 'Editor#', 'EditorGiven',
 'EditorGiven#', 'EditorSurname', 'EditorSurname#', 'Embargo', 'HDL',
