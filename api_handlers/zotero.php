@@ -71,7 +71,7 @@ function expand_by_zotero(&$template, $url = NULL, $assume_always_good = FALSE) 
     return FALSE; // Not really "expanded"
   }
   fwrite(STDERR,"\n $url\n");
-  fwrite(STDERR, var_dump($result, TRUE));
+  fwrite(STDERR, print_r($result, TRUE));
   
   $test_data = '';
   if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
