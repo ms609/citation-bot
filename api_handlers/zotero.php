@@ -70,7 +70,7 @@ function expand_by_zotero(&$template, $url = NULL, $assume_always_good = FALSE) 
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
     return FALSE; // Not really "expanded"
   }
-  // var_dump($result); for debug
+  var_dump($result);
   
   $test_data = '';
   if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
