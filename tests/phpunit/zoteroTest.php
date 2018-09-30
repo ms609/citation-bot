@@ -177,5 +177,6 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
  public function testZoteroExpansionJstorBook() {
     $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10?seq=9}}';
     $expanded = $this->expand_via_zotero($text);
-    $this->assertNull($expanded->parsed_text());
+    $this->assertNull($expanded->parsed_text());  
+ }
 }
