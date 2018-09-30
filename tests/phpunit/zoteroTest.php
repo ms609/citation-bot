@@ -57,12 +57,11 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     return $expanded;
   }
 
-// TODO    
-//public function testZoteroExpansionRG() {
-//    $text = '{{Cite journal|url =https://www.researchgate.net/publication/23445361}}';
-//    $expanded = $this->expand_via_zotero($text);
-//    $this->assertEquals('10.1136/jnnp.2008.144360', $expanded->get('doi'));
-//  }
+  public function testZoteroExpansionRG() {
+    $text = '{{Cite journal|url =https://www.researchgate.net/publication/23445361}}';
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertEquals('10.1136/jnnp.2008.144360', $expanded->get('doi'));
+  }
       
   public function testZoteroExpansionPII() {
     $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
@@ -75,7 +74,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->expand_via_zotero($text);
     $this->assertEquals('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
     $this->assertEquals('2004', $expanded->get('year'));
-   // TODO $this->assertEquals('Medicine National Research Council (US) Committee to Update Science', $expanded->get('publisher'));
+    $this->assertEquals('Medicine National Research Council (US) Committee to Update Science', $expanded->get('publisher'));
   }
 
   public function testZoteroExpansionNYT() {
@@ -174,4 +173,9 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
+    
+ public function testZoteroExpansionJstorBook() {
+    $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10?seq=9}}';
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertNull($expanded->parsed_text());
 }
