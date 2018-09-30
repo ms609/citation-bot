@@ -6,6 +6,19 @@ function query_url_api($ids, $templates) {
       expand_by_zotero($template);
     }
   }
+  report_action("Using Zotero translation server to retrieve details from identifiers.");
+  foreach ($templates as $template) {
+       if ($template->has('biorxiv')) expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv'));
+       if ($template->has('citeseerx')) expand_by_zotero($template, 'http://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
+       if ($template->has('hdl')) expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
+       if ($template->has('jfm')) expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
+       if ($template->has('zbl')) expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
+       if ($template->has('mr')) expand_by_zotero($template, 'https://mathscinet.ams.org/mathscinet-getitem?mr=' . $template->get('mr'));
+       if ($template->has('osti')) expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
+       if ($template->has('rfc')) expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
+       if ($template->has('ssrn')) expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+       if ($template->has('doi') && doi_inactive()) expand_by_zotero($template, 'https://dx.doi.org/' . $template->get('doi')); // Non-crossref DOIs, such as 10.13140/RG.2.1.1002.9609
+  }
 }
 
 function zotero_request($url) {
@@ -27,8 +40,8 @@ function zotero_request($url) {
   return $zotero_response;
 }
   
-function expand_by_zotero(&$template, $url = NULL, $assume_always_good = FALSE) {
-  if ($assume_always_good && !$template->incomplete()) {
+function expand_by_zotero(&$template, $url = NULL) {
+  if (!is_null($url) && !$template->incomplete()) {
     return FALSE;
   } elseif (!$assume_always_good && !$template->profoundly_incomplete()) {
     return FALSE; // Only risk unvetted data if there's little good data to sully
