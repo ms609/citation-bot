@@ -42,8 +42,8 @@ function zotero_request($url) {
   
 function expand_by_zotero(&$template, $url = NULL) {
   if (!is_null($url) && !$template->incomplete()) {
-    return FALSE;
-  } elseif (!$assume_always_good && !$template->profoundly_incomplete()) {
+    return FALSE;  // assume explicity sent urls are more rleiable
+  } elseif (is_null($url) && !$template->profoundly_incomplete()) {
     return FALSE; // Only risk unvetted data if there's little good data to sully
   }
   if (is_null($url)) $url = $template->get('url');
