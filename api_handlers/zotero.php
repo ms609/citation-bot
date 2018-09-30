@@ -28,7 +28,7 @@ function zotero_request($url) {
 }
   
 function expand_by_zotero(&$template, $url = NULL, $assume_always_good = FALSE) {
-  if ($assume_always_good && !$this->incomplete()) {
+  if ($assume_always_good && !$template->incomplete()) {
     return FALSE;
   } elseif (!$assume_always_good && !$template->profoundly_incomplete()) {
     return FALSE; // Only risk unvetted data if there's little good data to sully
