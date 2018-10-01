@@ -179,7 +179,7 @@ final class Template {
     return !$this->api_has_used($api, $param);
   }
   
-  public function process() {
+  protected function process() {
     if ($this->should_be_processed()) {
       $this->prepare();
       
