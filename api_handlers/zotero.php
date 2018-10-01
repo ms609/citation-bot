@@ -57,28 +57,34 @@ fwrite(STDERR,"\n URL IS   $url\n");
   switch (trim($zotero_response)) {
     case '':
       report_info("Nothing returned for URL $url");
+fwrite(STDERR,"\n Nothing returned for URL   $url\n");
       return FALSE;
     case 'Internal Server Error':
       report_info("Internal server error with URL $url");
+fwrite(STDERR,"\n Internal server error with URL   $url\n");
       return FALSE;
   }
   
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
+fwrite(STDERR,"\n Could not parse JSON for URL ". $url . ": $zotero_responsel\n");
     return FALSE;
   } else if (!is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
     report_warning("Unsupported response for URL ". $url . ": $zotero_response");
+fwrite(STDERR,"\n Unsupported response for URL ". $url . ": $zotero_response\n");
     return FALSE;
   } else {
     $result = $zotero_data[0];
   }
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
     report_info("Could not resolve URL ". $url);
+fwrite(STDERR,"\n Could not resolve URL $url\n");
     return FALSE;
   }
   
   report_info("Retrieved info from ". $url);
+  fwrite(STDERR,"\n Retrieved info from  $url\n");
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
