@@ -84,7 +84,6 @@ fwrite(STDERR,"\n Could not resolve URL $url\n");
   }
   
   report_info("Retrieved info from ". $url);
-  fwrite(STDERR,"\n Retrieved info from  $url\n");
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
