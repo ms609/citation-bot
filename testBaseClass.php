@@ -11,10 +11,10 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
-  protected function setUp() {
+  public function setUp() {
   }
 
-  protected function tearDown() {
+  public function tearDown() {
   }
 
   protected function process_page($text) { // Only used if more than just a citation template
