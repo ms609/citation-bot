@@ -3,22 +3,10 @@
 /*
  * Tests for DOITools.php.
  */
-error_reporting(E_ALL);
- // backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&
-    class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
-}
 
+require_once __DIR__ . '/testBaseClass.php';
 
-final class doiToolsTest extends PHPUnit\Framework\TestCase {
-
-  protected function setUp() {
-  }
-
-  protected function tearDown() {
-  }
-
+final class doiToolsTest extends testBaseClass {
   public function testFormatMultipleAuthors1() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
     $result=format_multiple_authors($authors,FALSE);
