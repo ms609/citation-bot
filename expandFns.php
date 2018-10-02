@@ -329,7 +329,7 @@ function tidy_date($string) {
     }
   }
   if (preg_match('~^(.*\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
-  if (preg_match('~^\d+$~', $string)) return "" ; // just a string of number????
+  if (is_numeric($string) && ($string < -2000 || $string > date("Y") + 10)) return ''; // A number that is not a year; probably garbage
   return $string;
 }
 
