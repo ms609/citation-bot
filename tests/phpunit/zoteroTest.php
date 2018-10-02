@@ -115,13 +115,6 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('2018-06-05', $expanded->get('date'));
   }
 
-  public function testZoteroExpansion_biorxiv() {
-    $text = '{{Cite journal| biorxiv=326363 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('10.1101/326363', $expanded->get('doi'));
-    $this->assertEquals('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get('title'));
-  }
-
   public function testZoteroExpansion_citeseerx() {
     $text = '{{Cite journal| citeseerx=10.1.1.483.8892 }}';
     $expanded = $this->process_citation($text);
