@@ -78,7 +78,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     return $expanded;
   }
  
-  private function testBaseClass() {
+  public function testBaseClass() {
    $this->assertTrue(TRUE);
   }
 }
