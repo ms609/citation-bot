@@ -3,7 +3,7 @@
 /*
  * Tests for WikipediaBot.php
  */
-require_once __DIR__ . '/testBaseClass.php';
+require_once __DIR__ . '../../testBaseClass.php';
  
 if (getenv('TRAVIS_PULL_REQUEST')) {
   echo (" - Skipping WikipediaBotTest.php: Testing bot in Travis pull requests would endanger secure tokens.\n");
