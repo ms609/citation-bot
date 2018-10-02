@@ -21,4 +21,5 @@ const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.p
 const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'amazon.com', 'archive.org']; // Google Inc is a valid publisher, however.
 const WEB_NEWSPAPERS = ['news.bbc.co.uk'];
 const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Service',
-                                 ' Log In', 'Log In ', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request'];
+                           ' Log In', 'Log In ', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request',
+                           'ZbMATH - the first resource for mathematics', 'MR: Matches for:'];
