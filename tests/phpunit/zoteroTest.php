@@ -118,55 +118,39 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   public function testZoteroExpansion_biorxiv() {
     $text = '{{Cite journal| biorxiv=326363 }}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
+    $this->assertEquals('10.1101/326363', $expanded->get('doi'));
+    $this->assertEquals('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get('title'));
   }
 
   public function testZoteroExpansion_citeseerx() {
     $text = '{{Cite journal| citeseerx=10.1.1.483.8892 }}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
+    $this->assertEquals('Chemical Kinetics Models for the Fatigue Behavior of Fused Silica Optical Fiber', $expanded->get('title'));
   }
 
   public function testZoteroExpansion_hdl() {
     $text = '{{Cite journal| hdl=10411/OF7UCA }}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
+    $this->assertEquals('Replication Data for: Perceiving emotion in non-social targets: The effect of trait empathy on emotional through art', $expanded->get('title'));
   }
-    
-  public function testZoteroExpansion_jfm() {
-    $text = '{{Cite journal| jfm=53.0144.01}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
-  }
-   
-  public function testZoteroExpansion_zbl() {
-    $text = '{{Cite journal| zbl=06939522 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
-  }
-    
-  public function testZoteroExpansion_mr() {
-    $text = '{{Cite journal| mr=1543601 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
-  }
-    
+
   public function testZoteroExpansion_osti() {
     $text = '{{Cite journal| osti=1406676 }}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
+    $this->assertEquals('10.1016/j.ifacol.2017.08.010', $expanded->get('doi'));
   }
     
   public function testZoteroExpansion_rfc() {
     $text = '{{Cite journal| rfc=6679 }}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
+    $this->assertEquals('Explicit Congestion Notification (ECN) for RTP over UDP', $expanded->get('title'));
   }
      
   public function testZoteroExpansion_ssrn() {
     $text = '{{Cite journal| ssrn=195630 }}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
+    $this->assertEquals('The Pricing of Internet Stocks', $expanded->get('title'));
+    $this->assertEquals('September 1999', $expanded->get('date'));
   }    
   public function testZoteroExpansion_doi_not_from_crossref() {
     $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
@@ -183,6 +167,8 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
  public function testZoteroExpansionOregon() {
     $text = '{{Cite journal|url=http://extension.oregonstate.edu/gardening/node/995}}';
     $expanded = $this->expand_via_zotero($text);
-    $this->assertNull($expanded->parsed_text());  
+    $this->assertEquals('Less toxic iron phosphate slug bait proves effective', $expanded->get('title'));
+    $this->assertNull($expanded->get('date')); // Not "1"
+    $this->assertNull($expanded->get('year')); // Not "1"
  }
 }
