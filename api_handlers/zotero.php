@@ -68,7 +68,7 @@ fwrite(STDERR,"\n Internal server error with URL   $url\n");
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
-fwrite(STDERR,"\n Could not parse JSON for URL ". $url . ": $zotero_responsel\n");
+fwrite(STDERR,"\n Could not parse JSON for URL ". $url . ": $zotero_response\n");
     return FALSE;
   } else if (!is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
     report_warning("Unsupported response for URL ". $url . ": $zotero_response");
