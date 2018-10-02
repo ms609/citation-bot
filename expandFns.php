@@ -318,7 +318,7 @@ function sanitize_string($str) {
 
 function tidy_date($string) {
   $string=trim($string);
-  if (preg_match('~^\d{4}$~', $string)) return $string; // Just a year
+  if (preg_match('~^\d{4}$~', $string)) return $string; // Just a year CONLICT
   $time = strtotime($string);
   if ($time) {
     $day = date('d', $time);
