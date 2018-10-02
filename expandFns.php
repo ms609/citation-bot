@@ -319,12 +319,12 @@ function sanitize_string($str) {
 function tidy_date($string) {
   $string=trim($string);
   if (preg_match('~^(?:1[6789]|20)\d{2}$~', $string)) return $string; // Just a year
-  if (is_numeric($string) && ($string < -2000 || $string > date("Y") + 10)) return ''; // A number that is not a year; probably garbage 
+  if (is_numeric($string) && ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
   $time = strtotime($string);
   if ($time) {
     $day = date('d', $time);
     $year = int(date('Y', $time));
-    if ($year < -2000 || $year > date("Y") + 10)) return ''; // Did we get a reasonable year
+    if ($year < -2000 || $year > date("Y") + 10)) return ''; // We got an invalid year
     if ($day == '01') { // Probably just got month and year
       return date('F Y', $time);
     } else {
