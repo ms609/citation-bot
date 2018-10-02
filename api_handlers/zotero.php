@@ -34,7 +34,9 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
   }
-  
+
+  if(preg_match("~^https?://books\.google\.~", $url)) return FALSE;  // We have special google gooks code
+
   $zotero_response = zotero_request($url);
   switch (trim($zotero_response)) {
     case '':
