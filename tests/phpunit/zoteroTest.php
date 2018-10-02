@@ -175,7 +175,13 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
   }
     
  public function testZoteroExpansionJstorBook() {
-    $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10?seq=9}}';
+    $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10}}';
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertNull($expanded->parsed_text());  
+ }
+    
+ public function testZoteroExpansionOregon() {
+    $text = '{{Cite journal|url=http://extension.oregonstate.edu/gardening/node/995}}';
     $expanded = $this->expand_via_zotero($text);
     $this->assertNull($expanded->parsed_text());  
  }
