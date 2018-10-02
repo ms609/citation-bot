@@ -9,7 +9,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
 
-class testBaseClass extends PHPUnit\Framework\TestCase {
+abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
   }
