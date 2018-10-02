@@ -3,30 +3,9 @@
 /*
  * Tests for Parameter.php.
  */
-error_reporting(E_ALL);
-// backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&
-    class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
-}
+require_once __DIR__ . '/testBaseClass.php';
 
-final class ParameterTest extends PHPUnit\Framework\TestCase {
-
-  protected function setUp() {
-    if (!defined("PIPE_PLACEHOLDER")) {
-// this is usually done elsewhere in the code
-      define("PIPE_PLACEHOLDER", '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #');
-    }
-  }
-
-  protected function tearDown() {
-  }
-
-  protected function parameter_parse_text_helper($text) {
-    $parameter = new Parameter();
-    $parameter->parse_text($text);
-    return $parameter;
-  }
+final class ParameterTest extends testBaseClass {
 
 /*
  * FIXME: these tests have too many assertions. Probably will require some refactoring of Parameter::parse_text().
