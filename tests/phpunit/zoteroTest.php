@@ -4,7 +4,7 @@
  * Tests for api_handlers/zotero.php, called from expandFns.php.
  */
 
-require_once __DIR__ . '/testBaseClass.php';
+require_once __DIR__ . '../../testBaseClass.php';
  
 class ZoteroTest extends testBaseClass {
 
