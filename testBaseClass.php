@@ -73,4 +73,8 @@ class testBaseClass extends PHPUnit\Framework\TestCase {
     $expanded->tidy();
     return $expanded;
   }
+ 
+  private function testBaseClass() {
+   $this->assertTrue(TRUE);
+  }
 }
