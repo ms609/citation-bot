@@ -61,7 +61,7 @@ fwrite(STDERR,"\n URL IS   $url\n");
 
   if(preg_match("~^https?://books\.google\.~", $url)) return FALSE;  // We have special google gooks code
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
-
+  
   $zotero_response = zotero_request($url);
   switch (trim($zotero_response)) {
     case '':
