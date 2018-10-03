@@ -4,7 +4,7 @@
  * Tests for Template.php, called from expandFns.php.
  */
 
-require_once __DIR__ . '/testBaseClass.php';
+require_once __DIR__ . '/../testBaseClass.php';
  
 final class TemplateTest extends testBaseClass {
 
