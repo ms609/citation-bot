@@ -74,7 +74,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->expand_via_zotero($text);
     $this->assertEquals('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
     $this->assertEquals('2004', $expanded->get('year'));
-    $this->assertEquals('Medicine National Research Council (US) Committee to Update Science', $expanded->get('publisher'));
+    $this->assertEquals('National Academies Press (US)', $expanded->get('publisher'));
   }
 
   public function testZoteroExpansionNYT() {
