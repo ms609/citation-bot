@@ -150,7 +150,6 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertEquals('Lesson Study as a form of in-School Professional Development', $expanded->get('title'));
     $this->assertEquals('2015', $expanded->get('year'));
-    $this->assertNull($expanded->parsed_text());
   }
     
  public function testZoteroExpansionJstorBook() {
