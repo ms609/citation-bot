@@ -2855,7 +2855,6 @@ final class Template {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
       if (doi_active($try)) {
-        expand_by_doi($this, $try);
         $this->set('doi', $try);
         $this->doi_valid = TRUE;
         $doi = $try;
