@@ -84,7 +84,7 @@ class ZoteroTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));
     $this->assertEquals('Keith', $expanded->get('first1')); // Would be tidied to 'first' in final_parameter_tudy
     $this->assertEquals('Collins', $expanded->get('last1'));
-    $this->assertEquals('cite newspaper', $expanded->wikiname());
+    $this->assertEquals('cite news', $expanded->wikiname());
   }
   public function testZoteroExpansionRSRef() {
     $text = '<ref>http://rspb.royalsocietypublishing.org/content/285/1887/20181780</ref>';
