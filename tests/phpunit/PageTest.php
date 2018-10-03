@@ -4,7 +4,7 @@
  * Tests for Page.php, called from expandFns.php.
  */
 
-require_once __DIR__ . '/testBaseClass.php';
+require_once __DIR__ . '/../testBaseClass.php';
 
 // Initialize bot configuration
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
