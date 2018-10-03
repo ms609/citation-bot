@@ -318,9 +318,11 @@ function sanitize_string($str) {
 
 function tidy_date($string) {
   $string=trim($string);
-  if (preg_match('~^(?:1[6789]|20)\d{2}$~', $string)) return $string; // Just a year
-  if (is_numeric($string) && ($string < -2000 || $string > date("Y") + 10)) return ''; // A number that is not a year; probably garbage 
-  if (is_numeric($string) && $string > -2 && $string < 2) return ""; // reject -1,0,1
+  if (is_numeric($string)) {
+    if ($string < -2000 || $string > date("Y") + 10)) return ''; // A number that is not a year; probably garbage 
+    if ($string > -2 && $string < 2) return ''; // reject -1,0,1
+    return $string; // year
+  }
   $time = strtotime($string);
   if ($time) {
     $day = date('d', $time);
