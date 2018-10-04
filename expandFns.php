@@ -339,7 +339,6 @@ function tidy_date($string) {
   return $string;
 }
 
-
 function remove_brackets($string) {
   return str_replace(['(', ')', '{', '}', '[', ']'], '' , $string);
 }
