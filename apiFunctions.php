@@ -466,35 +466,6 @@ function expand_by_jstor($template) {
   return TRUE;
 }
 
-
-function query_researchgate_api($ids, $templates) {
-  foreach ($templates as $template) expand_by_researchgate($template);
-}
-
-function expand_by_researchgate($template) {
-  if ($template->incomplete() === FALSE) return FALSE;
-  if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)~i", $template->get('url'), $match)) {
-    $url = 'https://www.researchgate.net/publicliterature.PublicationHeaderDownloadCitation.downloadCitation.html?publicationUid=' . $match[1] . '&fileType=RIS&citationAndAbstract=false'; // Convert researchgate URL to give RIS information
-  } else {
-    return FALSE;
-  }
-  fwrite(STDERR, "\n $url \n");
-  $dat = @file_get_contents($url);
-  if ($dat === FALSE) {
-    report_info("ResearchGate API returned nothing for ". $url);
-fwrite(STDERR, "\n NOTHING \n");
-    return FALSE;
-  }
-  if (stripos($dat, 'page not found') !== FALSE) {
-    report_info("ResearchGate API found nothing for ". $url);
-fwrite(STDERR, "\n FOUND NOTHING \n");
-    return FALSE;
-  }
-fwrite(STDERR, "\n $dat \n");
-  $template->expand_by_RIS($dat);
-  return TRUE;
-}
-
 function parse_plain_text_reference($journal_data, &$this_template, $upgrade_years = FALSE ) { // WARNING: Reference passing
       $journal_data = trim($journal_data);
       if ($journal_data === "") return;
