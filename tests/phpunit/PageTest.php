@@ -5,10 +5,6 @@
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
-
-// Initialize bot configuration
-if (!defined('VERBOSE')) define('VERBOSE', TRUE);
-$SLOW_MODE = TRUE;
  
 final class PageTest extends testBaseClass {
 
