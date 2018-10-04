@@ -188,6 +188,7 @@ class Page {
       $this_template->get_open_access_url();
       $this_template->find_pmid();  // #TODO Could probably batch this
     }
+    
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
