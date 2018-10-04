@@ -3,31 +3,14 @@
 /*
  * Tests for Page.php, called from expandFns.php.
  */
-error_reporting(E_ALL);
-// backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&
-    class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
-}
+
+require_once __DIR__ . '/../testBaseClass.php';
 
 // Initialize bot configuration
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
  
-class PageTest extends PHPUnit\Framework\TestCase {
-
-  protected function setUp() {
-  }
-
-  protected function tearDown() {
-  }
-  
-  protected function process_page($text) {
-    $page = new TestPage();
-    $page->parse_text($text);
-    $page->expand_text();
-    return $page;
-  }
+final class PageTest extends testBaseClass {
 
   public function testPageChangeSummary() {
       $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}'); // Change to book from journal
