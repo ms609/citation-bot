@@ -1406,6 +1406,13 @@ ER -  }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals($text, $expanded->parsed_text());
   }
+    
+  public function testEvilPage() {
+    $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=Signet_ring_cell_carcinoma&action=raw');
+    $page = new TestPage();
+    $page->parse_text($text);
+    $page->expand_text();
+  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
