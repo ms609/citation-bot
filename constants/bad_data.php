@@ -23,4 +23,4 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'ZbMATH - the first resource for mathematics', 'MR: Matches for:',
                                  ' Log In', 'Log In ', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request',
                                  'domain for sale', 'website for sale', 'domain is for sale', 'website is for sale',
-                                 'lease this domain', 'domain available', 'metaTags', '}}', '{{'];
+                                 'lease this domain', 'domain available', 'metaTags', '}}', '{{']; 
