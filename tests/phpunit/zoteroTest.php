@@ -106,7 +106,7 @@ class ZoteroTest extends testBaseClass {
  public function testZoteroExpansionJstorBook() {
     $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10}}';
     $expanded = $this->expand_via_zotero($text);
-    $this->assertNull($expanded->parsed_text());  
+    $this->assertEquals('Verstraete', $expanded->get('last1'));
  }
     
  public function testZoteroExpansionOregon() {
