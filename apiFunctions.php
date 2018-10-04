@@ -440,7 +440,7 @@ function expand_by_jstor($template) {
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
      $jstor = trim($template->get('jstor'));
-  } elseif(preg_match('~^https?://(?:www.|)jstor.org/stable/(.*)$~', $template->get('url', $match)) {
+  } elseif(preg_match('~^https?://(?:www.|)jstor.org/stable/(.*)$~', $template->get('url'), $match)) {
      $jstor = $match[1];
   } else {
      return FALSE;
