@@ -478,16 +478,19 @@ function expand_by_researchgate($template) {
   } else {
     return FALSE;
   }
-  
+  fwrite(STDERR, "\n $url \n");
   $dat = @file_get_contents($url);
   if ($dat === FALSE) {
     report_info("ResearchGate API returned nothing for ". $url);
+fwrite(STDERR, "\n NOTHING \n");
     return FALSE;
   }
   if (stripos($dat, 'page not found') !== FALSE) {
     report_info("ResearchGate API found nothing for ". $url);
+fwrite(STDERR, "\n FOUND NOTHING \n");
     return FALSE;
   }
+fwrite(STDERR, "\n $dat \n");
   $template->expand_by_RIS($dat);
   return TRUE;
 }
