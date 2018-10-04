@@ -251,6 +251,18 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('{{Cite journal|pages=2}}', $prepared->parsed_text());
   }
 
+public function testExpansionJstorBook() {
+    $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Verstraete', $expanded->get('last1'));
+ }
+
+  public function testExpansionRG() {
+    $text = '{{Cite journal|url =https://www.researchgate.net/publication/23445361}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1136/jnnp.2008.144360', $expanded->get('doi'));
+  }
+ 
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
     $text = "{{Cite web | title=Ellipsis... | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01}}";
