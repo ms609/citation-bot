@@ -251,16 +251,10 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('{{Cite journal|pages=2}}', $prepared->parsed_text());
   }
 
-public function testExpansionJstorBook() {
+  public function testExpansionJstorBook() {
     $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('Verstraete', $expanded->get('last1'));
- }
-
-  public function testExpansionRG() {
-    $text = '{{Cite journal|url =https://www.researchgate.net/publication/23445361}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('10.1136/jnnp.2008.144360', $expanded->get('doi'));
   }
  
   public function testGarbageRemovalAndSpacing() {
