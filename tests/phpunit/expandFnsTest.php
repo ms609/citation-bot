@@ -3,32 +3,10 @@
 /*
  * Current tests that are failing.
  */
-error_reporting(E_ALL);
-// backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&
-    class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
-}
 
-final class expandFnsTest extends PHPUnit\Framework\TestCase {
+require_once __DIR__ . '/../testBaseClass.php';
 
-  protected function setUp() {
-  }
-
-  protected function tearDown() {
-  }
-
-  protected function process_citation($text) {
-    $this->assertEquals('{{', mb_substr($text, 0, 2));
-    $this->assertEquals('}}', mb_substr($text, -2));
-    $page = new TestPage();
-    $page->parse_text($text);
-    $page->expand_text();
-    $expanded_text = $page->parsed_text();
-    $template = new Template();
-    $template->parse_text($expanded_text);
-    return $template;
-  }
+final class expandFnsTest extends testBaseClass {
 
   public function testCapitalization() {
     $this->assertEquals('Molecular and Cellular Biology', 
