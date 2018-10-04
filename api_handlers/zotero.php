@@ -68,7 +68,6 @@ function expand_by_zotero(&$template, $url = NULL) {
       return FALSE;
     case 'Internal Server Error':
       report_info("Internal server error with URL $url");
-fwrite(STDERR,"\n Internal server error with URL   $url\n");
       return FALSE;
   }
   
