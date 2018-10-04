@@ -35,7 +35,6 @@ final class Template {
       'entrez'   => array(),
       'jstor'    => array(),
       'zotero'   => array(),
-      'researchgate' => array(),
     );
     if ($this->rawtext) {
         warning("Template already initialized; call new Template() before calling Template::parse_text()");
