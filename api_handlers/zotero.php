@@ -53,7 +53,6 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE; // Only risk unvetted data if there's little good data to sully
   }
   if (is_null($url)) $url = $template->get('url');
-fwrite(STDERR,"\n URL IS   $url\n");
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
@@ -72,7 +71,6 @@ fwrite(STDERR,"\n URL IS   $url\n");
   switch (trim($zotero_response)) {
     case '':
       report_info("Nothing returned for URL $url");
-fwrite(STDERR,"\n Nothing returned for URL   $url\n");
       return FALSE;
     case 'Internal Server Error':
       report_info("Internal server error with URL $url");
@@ -83,18 +81,15 @@ fwrite(STDERR,"\n Internal server error with URL   $url\n");
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
-fwrite(STDERR,"\n Could not parse JSON for URL ". $url . ": $zotero_response\n");
     return FALSE;
   } else if (!is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
     report_warning("Unsupported response for URL ". $url . ": $zotero_response");
-fwrite(STDERR,"\n Unsupported response for URL ". $url . ": $zotero_response\n");
     return FALSE;
   } else {
     $result = $zotero_data[0];
   }
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
     report_info("Could not resolve URL ". $url);
-fwrite(STDERR,"\n Could not resolve URL $url\n");
     return FALSE;
   }
   
