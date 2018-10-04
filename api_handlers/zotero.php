@@ -98,7 +98,7 @@ fwrite(STDERR,"\n Could not resolve URL $url\n");
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
     return FALSE; // Not really "expanded"
   }
-  fwrite(STDERR, print_r($result, TRUE));
+// var_dump($result); for debug
   
   $test_data = '';
   if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
