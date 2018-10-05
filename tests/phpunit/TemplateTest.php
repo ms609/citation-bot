@@ -166,7 +166,16 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
     $this->assertNull($expanded->get('publisher'));
-      
+    $this->assertNull($expanded->get('url'));
+
+    $text = "{{Cite web | chatper-url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
+    $expanded = $this->prepare_citation($text);
+    $this->assertEquals('cite book', $expanded->wikiname());
+    $this->assertEquals('978-0226845494', $expanded->get('isbn'));
+    $this->assertNull($expanded->get('asin'));
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertNull($expanded->get('chatper-url'));
+
     $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());  // We do not touch this kind of URL
