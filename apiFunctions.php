@@ -327,6 +327,9 @@ function expand_by_doi($template, $force = FALSE) {
   
   $doi = $template->get_without_comments_and_placeholders('doi');
   if (!$template->verify_doi()) { // Try non-crossref DOI resolver
+     // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve this way
+     // https://api.crossref.org/works/$doi can be used to find out the agency
+     // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      $ch = curl_init();
      curl_setup ($ch, 'https://doi.org/' . $doi);
      curl_setopt($ch, CURLOPT_NOBODY, 1);
