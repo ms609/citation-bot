@@ -98,10 +98,9 @@ class ZoteroTest extends testBaseClass {
     $this->assertEquals('September 1999', $expanded->get('date'));
   }    
   public function testZoteroExpansion_doi_not_from_crossref() {
-    $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
+    $text = '{{Cite journal| doi=	10.3233/PRM-14029}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org
     $expanded = $this->process_citation($text);
-    $this->assertEquals('Lesson Study as a form of in-School Professional Development', $expanded->get('title'));
-    $this->assertEquals('2015', $expanded->get('year'));
+    $this->assertEquals('Journal of Pediatric Rehabilitation Medicine", $expanded->get('journal'));
   }
   
  public function testZoteroExpansionOregon() {
