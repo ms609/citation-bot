@@ -433,13 +433,13 @@ function expand_doi_with_dx($template, $doi) {
      try {
        $ris = @curl_exec($ch);
      } catch (Exception $e) {
+       $template->mark_inactive_doi($doi);
        return FALSE;
      }
      if ($ris == FALSE || stripos($ris, 'DOI Not Found') !== FALSE || stripos($ris, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
-     fwrite (STDERR, "\n $doi \n $ris \n");
      $template->expand_by_RIS($ris);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      return TRUE;
