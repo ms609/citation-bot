@@ -847,7 +847,6 @@ final class Template {
           // If no URL or website, nothing to worth with.
           return FALSE;
         }
-      }
     } else {
       $url = $url_sent;
       $url_type = NULL;
