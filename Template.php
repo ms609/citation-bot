@@ -819,8 +819,13 @@ final class Template {
   // it looks for a parameter before adding the url.
   protected function get_identifiers_from_url($url_sent = NULL) {
     if (is_null($url_sent)) {
-      if ($this->blank('url')) {
-        if ($this->has('website')) { // No URL, but a website
+        if ($this->has('url') {        
+           $url = $this->get('url');
+        } elseif ($this->has('chapter-url') {
+           $url = $this->get('chapter-url');
+        } elseif ($this->has('chapterurl') {
+           $url = $this->get('chapterurl');
+        } elseif ($this->has('website')) { // No URL, but a website
           $url = trim($this->get('website'));
           if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
             $url = "h" . $url;
@@ -839,8 +844,6 @@ final class Template {
           return FALSE;
         }
       }
-      
-      $url = $this->get('url'); // If URL was blank, we would have returned already.
     } else {
       $url = $url_sent;
     }
