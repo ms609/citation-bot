@@ -23,7 +23,7 @@ function query_url_api($ids, $templates) {
        if ($template->has('osti'))      expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
        if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
        if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
-       if ($template->has('doi') && !doi_active($template->get('doi')))  expand_by_zotero($template, 'https://dx.doi.org/' . $template->get('doi')); // Non-crossref DOIs, such as 10.13140/RG.2.1.1002.9609
+       if ($template->has('doi') && !doi_active($template->get('doi')))  expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($template->get('doi'))); // Non-crossref DOIs, such as 10.13140/RG.2.1.1002.9609
   }
 }
 
