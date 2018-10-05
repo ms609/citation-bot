@@ -325,23 +325,12 @@ function expand_by_doi($template, $force = FALSE) {
   // there will be few instances where it could not in principle be profitable to 
   // run this function, so we don't check this first.
   
-  $doi = $template->get_without_comments_and_placeholders('doi');
   if (!$template->verify_doi()) { // Try non-crossref DOI resolver
-     // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve this way
-     // https://api.crossref.org/works/$doi can be used to find out the agency
-     // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
-     $ch = curl_init();
-     curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
-     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
-     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-     $ris = @curl_exec($ch);
-     fwrite (STDERR, "\n $doi \n $ris \n");
-     if ($ris == FALSE) return FALSE;
-     if (stripos($ris, 'DOI Not Found') !== FALSE) return FALSE;
-     $template->expand_by_RIS($ris);
-     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
-     return TRUE;
+     $doi = $template->get_without_comments_and_placeholders('doi'); 
+     expand_doi_with_dx($template, $doi);
+     return;
   }
+  $doi = $template->get_without_comments_and_placeholders('doi'); 
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       $template->add_if_new('jstor', substr($doi, 8));
   }
@@ -405,7 +394,7 @@ function expand_by_doi($template, $force = FALSE) {
       }
     } else {
       report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
-      $template->mark_inactive_doi($doi);
+      expand_doi_with_dx($template, $doi);
     }
   }
 }
@@ -429,6 +418,26 @@ function query_crossref($doi) {
   }
   report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");
   return FALSE;
+}
+
+public function expand_doi_with_dx($template, $doi) {
+     // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve this way
+     // https://api.crossref.org/works/$doi can be used to find out the agency
+     // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
+     if (!$doi) return FALSE;
+     $ch = curl_init();
+     curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
+     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+     $ris = @curl_exec($ch);
+     fwrite (STDERR, "\n $doi \n $ris \n");
+     if ($ris == FALSE || stripos($ris, 'DOI Not Found') !== FALSE) {
+       $template->mark_inactive_doi($doi)
+       return FALSE;
+     }
+     $template->expand_by_RIS($ris);
+     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
+     return TRUE;
 }
 
 function doi_active($doi) {
