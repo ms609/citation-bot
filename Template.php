@@ -819,13 +819,13 @@ final class Template {
   // it looks for a parameter before adding the url.
   protected function get_identifiers_from_url($url_sent = NULL) {
     if (is_null($url_sent)) {
-        if ($this->has('url') {        
+        if ($this->has('url')) {        
            $url = $this->get('url');
            $url_type = 'url';
-        } elseif ($this->has('chapter-url') {
+        } elseif ($this->has('chapter-url')) {
            $url = $this->get('chapter-url');
            $url_type = 'chapter-url';
-        } elseif ($this->has('chapterurl') {
+        } elseif ($this->has('chapterurl')) {
            $url = $this->get('chapterurl');
            $url_type = 'chapterurl';
         } elseif ($this->has('website')) { // No URL, but a website
