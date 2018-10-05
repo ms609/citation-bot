@@ -781,6 +781,13 @@ final class Template {
         }
         return FALSE;
       
+      case 'publisher':
+        if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often 
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, $value);
+        }
+      return FALSE;
+
       default:
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
@@ -859,6 +866,9 @@ final class Template {
           $this->forget('url');
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
+      }
+      if (preg_match('~(.*)(?:#[^#]+)$~', $doi, $match_pound)) {
+        if(!doi_active($doi) && doi_active($match_pound[1])) $doi = $match_pound[1]; // lose #pages and such
       }
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
