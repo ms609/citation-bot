@@ -429,6 +429,7 @@ function expand_doi_with_dx($template, $doi) {
      curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
      curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      try {
        $ris = @curl_exec($ch);
      } catch (Exception $e) {
