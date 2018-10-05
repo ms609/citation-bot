@@ -336,7 +336,6 @@ function tidy_date($string) {
       $string = date('Y-m-d', $time);
     }
     if (stripos($string, 'Invalid') !== FALSE) return '';
-    if ($string === FALSE) return '';
     return $string;
   }
   if (preg_match('~^(.*\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
