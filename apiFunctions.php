@@ -420,7 +420,7 @@ function query_crossref($doi) {
   return FALSE;
 }
 
-public function expand_doi_with_dx($template, $doi) {
+function expand_doi_with_dx($template, $doi) {
      // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve this way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
