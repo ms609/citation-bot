@@ -1498,7 +1498,7 @@ final class Template {
     $ris_authors = 0;
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
-      if (in_array(strtolower($ris_part[1], BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+      if (in_array(strtolower($ris_part[1]), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
       switch (trim($ris_part[0])) {
         case "T1":
         case "TI":
