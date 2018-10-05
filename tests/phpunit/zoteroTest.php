@@ -102,12 +102,5 @@ class ZoteroTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertEquals('Journal of Pediatric Rehabilitation Medicine', $expanded->get('journal'));
   }
-  
- public function testZoteroExpansionOregon() {
-    $text = '{{Cite journal|url=http://extension.oregonstate.edu/gardening/node/995}}';
-    $expanded = $this->expand_via_zotero($text);
-    $this->assertEquals('Less toxic iron phosphate slug bait proves effective', $expanded->get('title'));
-    $this->assertNull($expanded->get('date')); // Not "1"
-    $this->assertNull($expanded->get('year')); // Not "1"
- }
+
 }
