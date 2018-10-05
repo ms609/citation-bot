@@ -86,7 +86,7 @@ final class TemplateTest extends testBaseClass {
   public function testSpringer() {
    $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('10.1007/978-3-642-75924-6_15', $expanded->get('doi');
+    $this->assertEquals('10.1007/978-3-642-75924-6_15', $expanded->get('doi'));
     $this->assertEquals('Springer', $expanded->get('publisher'));
   }
  
