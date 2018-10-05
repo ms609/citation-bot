@@ -446,7 +446,7 @@ function expand_by_jstor($template) {
      return FALSE;
   }
   if (preg_match('~^(.*)(?:\?.*)$~', $jstor, $match)) {
-     $jstor = $match[1]; // remove ?seq= kind of studd
+     $jstor = $match[1]; // remove ?seq= stuff
   }
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
