@@ -429,12 +429,16 @@ function expand_doi_with_dx($template, $doi) {
      curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
      curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-     $ris = @curl_exec($ch);
-     fwrite (STDERR, "\n $doi \n $ris \n");
-     if ($ris == FALSE || stripos($ris, 'DOI Not Found') !== FALSE) {
+     try {
+       $ris = @curl_exec($ch);
+     } catch (Exception $e) {
+       return FALSE;
+     }
+     if ($ris == FALSE || stripos($ris, 'DOI Not Found') !== FALSE || stripos($ris, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
+     fwrite (STDERR, "\n $doi \n $ris \n");
      $template->expand_by_RIS($ris);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      return TRUE;
