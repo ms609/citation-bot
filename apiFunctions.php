@@ -332,7 +332,6 @@ function expand_by_doi($template, $force = FALSE) {
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      $ch = curl_init();
      curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
-     curl_setopt($ch, CURLOPT_NOBODY, 1);
      curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      $ris = @curl_exec($ch);
