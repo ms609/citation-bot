@@ -331,7 +331,7 @@ function expand_by_doi($template, $force = FALSE) {
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      $ch = curl_init();
-     curl_setup ($ch, 'https://doi.org/' . $doi);
+     curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
      curl_setopt($ch, CURLOPT_NOBODY, 1);
      curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -339,7 +339,7 @@ function expand_by_doi($template, $force = FALSE) {
      if ($ris == FALSE) return FALSE;
      if (stripos($ris, 'DOI Not Found') !== FALSE) return FALSE;
      $template->expand_by_RIS($ris);
-      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
+     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      return TRUE;
   }
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
