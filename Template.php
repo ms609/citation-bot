@@ -781,6 +781,13 @@ final class Template {
         }
         return FALSE;
       
+      case 'publisher':
+        if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often 
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, $value);
+        }
+      return FALSE;
+
       default:
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
