@@ -336,6 +336,7 @@ function expand_by_doi($template, $force = FALSE) {
      curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      $ris = @curl_exec($ch);
+     fwrite (STDERR, "\n $doi \n $ris \n);
      if ($ris == FALSE) return FALSE;
      if (stripos($ris, 'DOI Not Found') !== FALSE) return FALSE;
      $template->expand_by_RIS($ris);
