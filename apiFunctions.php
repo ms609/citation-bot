@@ -173,8 +173,8 @@ function adsabs_api($ids, $templates, $identifier) {
         report_info("Ignoring Book bibcode " . $bibcode);
         unset($ids[$key]);
     } elseif (strpos($bibcode, '&') !== false) { // Cannot do bibcodes with & symbol with this API
-      $template[$key]->expand_by_adsabs();
-      unset($ids[$key]);
+ //     $template[$key]->expand_by_adsabs();
+ //     unset($ids[$key]);
     }
   }
 
@@ -198,6 +198,7 @@ function adsabs_api($ids, $templates, $identifier) {
     curl_setopt($ch, CURLOPT_HEADER, TRUE);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
     curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n",          (implode("\n", $ids))));
     if (getenv('TRAVIS')) {
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
     }
