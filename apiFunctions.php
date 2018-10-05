@@ -326,7 +326,19 @@ function expand_by_doi($template, $force = FALSE) {
   // run this function, so we don't check this first.
   
   $doi = $template->get_without_comments_and_placeholders('doi');
-  if (!$template->verify_doi()) return FALSE;
+  if (!$template->verify_doi()) { // Try non-crossref DOI resolver
+     $ch = curl_init();
+     curl_setup ($ch, 'https://doi.org/' . $doi);
+     curl_setopt($ch, CURLOPT_NOBODY, 1);
+     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+     $ris = @curl_exec($ch);
+     if ($ris == FALSE) return FALSE;
+     if (stripos($ris, 'DOI Not Found') !== FALSE) return FALSE;
+     $template->expand_by_RIS($ris);
+      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
+     return TRUE;
+  }
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       $template->add_if_new('jstor', substr($doi, 8));
   }
