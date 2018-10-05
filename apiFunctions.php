@@ -432,7 +432,7 @@ public function expand_doi_with_dx($template, $doi) {
      $ris = @curl_exec($ch);
      fwrite (STDERR, "\n $doi \n $ris \n");
      if ($ris == FALSE || stripos($ris, 'DOI Not Found') !== FALSE) {
-       $template->mark_inactive_doi($doi)
+       $template->mark_inactive_doi($doi);
        return FALSE;
      }
      $template->expand_by_RIS($ris);
