@@ -19,7 +19,6 @@ const HTML_ENCODE = array("&#x5B;", "&#x5D;", "&#60;", "&#62;", "+");
 
 const DOT_ENCODE = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
 const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
-
 const DOI_URL_ENCODE = array("%23", "%3C", "%3E");
 const DOI_URL_DECODE = array("#", "<", ">");
 
