@@ -37,7 +37,7 @@ A quick tour of the main files:
 * `wikiFunctions.php`: functions related to Wikipedia ineractions, including some marked
    as "untested".
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
-* `DOItools.php`: defines Crossref-related functions
+* `DOItools.php`: defines text/name functions
 * `expandFns.php`: sets up needed functions, requires most of the other files listed here
 * `apiFunctions.php`: sets up needed functions
 
@@ -45,11 +45,11 @@ Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
   `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
 * `Template.php`: most of the actual expansion happens here.
-  `Template::process()` handles most of template expansion and checking;
+  `Template::process()` handles some of template expansion and checking;
   `Template::add_if_new()` is generally (but not always) used to add
    parameters to the updated template; `Template::tidy()` cleans up the
    template, but may add parameters as well and have side effects.
-* `Comment.php`: Handles comments and nokwiki tags
+* `Comment.php`: Handles comments, nokwiki, etc. tags
 * `Parameter.php`: contains information about template parameter names, values,
    and metadata, and methods to parse template parameters.
 
