@@ -1496,13 +1496,23 @@ final class Template {
     // Convert &#x__; to characters
     $ris = explode("\n", html_entity_decode($dat, NULL, 'UTF-8'));
     $ris_authors = 0;
+    
+    foreach ($ris as $ris_line) { // Check for bad data before using it
+      $ris_part = explode(" - ", $ris_line . " ");
+      switch (trim($ris_part[0])) {
+        case "T1":
+        case "TI":
+          if (isset($ris_part[1]) && in_array(strtolower($ris_part[1]), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+        default:
+      }
+    }
+    
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
       switch (trim($ris_part[0])) {
         case "T1":
         case "TI":
           $ris_parameter = "title";
-          if (isset($ris_part[1]) && in_array(strtolower($ris_part[1]), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
           break;
         case "AU":
           $ris_authors++;
