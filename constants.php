@@ -23,15 +23,3 @@ const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 const DOI_URL_ENCODE = array("%23", "%3C", "%3E");
 const DOI_URL_DECODE = array("#", "<", ">");
 
-const NON_STANDARD_WHITESPACE = array();
-U+2000 	  	e2 80 80 	EN QUAD
-U+2001 	  	e2 80 81 	EM QUAD
-U+2002 	  	e2 80 82 	EN SPACE
-U+2003 	  	e2 80 83 	EM SPACE
-U+2004 	  	e2 80 84 	THREE-PER-EM SPACE
-U+2005 	  	e2 80 85 	FOUR-PER-EM SPACE
-U+2006 	  	e2 80 86 	SIX-PER-EM SPACE
-U+2007 	  	e2 80 87 	FIGURE SPACE
-U+2008 	  	e2 80 88 	PUNCTUATION SPACE
-U+2009 	  	e2 80 89 	THIN SPACE
-U+200A 	  	e2 80 8a 	HAIR SPACE 
