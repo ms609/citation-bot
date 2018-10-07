@@ -344,6 +344,7 @@ class TestPage extends Page {
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
     $this->title = empty($name) ? 'global' : $name;
+    parent::__construct();
   }
   
   public function overwrite_text($text) {
