@@ -1,7 +1,5 @@
 <?php
-
 require_once __DIR__ . '/../testBaseClass.php';
-
 final class apiFunctionsTest extends testBaseClass {
   
   public function testAdsabsApi() {
@@ -14,6 +12,7 @@ final class apiFunctionsTest extends testBaseClass {
        '1995Sci...267...77R', // 4
        '1995Geo....23..967E', // 5
        '2003hoe..book.....K', // 6
+       '2000A&A...361..952H', // 7
        ];
       $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
       $page = new TestPage();
@@ -24,6 +23,7 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertEquals('Geology', $templates[5]->get('journal'));
       $this->assertEquals('14879', $templates[0]->get('pages'));
       $this->assertNull($templates[6]->get('journal'));
+      $this->assertEquals('Astronomy and Astrophysics', $templates[7]->get('journal'));
     });
   }
   
