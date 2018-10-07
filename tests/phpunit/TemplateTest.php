@@ -36,7 +36,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('1701972'     , $prepared->get('jstor'));
     $this->assertNull($prepared->get('website'));
 
-    $text = "{{Cite journal | http://www.jstor.org/stable/10.2307/1701972}}";
+    $text = "{{Cite journal | url=http://www.jstor.org/stable/10.2307/1701972}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('1701972', $prepared->get('jstor'));
 
@@ -47,6 +47,7 @@ final class TemplateTest extends testBaseClass {
     $text = '{{cite web | via = UTF8 characters from JSTOR | url = https://www.jstor.org/stable/27695659}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('Mórdha', $expanded->get('last1'));
+    
   }
     
    public function testRISJstorExpansion() {
