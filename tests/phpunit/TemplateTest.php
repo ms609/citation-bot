@@ -1414,7 +1414,7 @@ ER -  }}';
   }
  
   public function testSpaces() {
-      $text = "{{cite book|title=X\u{2000}X\u{2001}X\u{2002}X\u{2003}X\u{2004}X\u{2005}X\u{2006}X\u{2007}X\u{2009}X\u{2009}X\u{200A}X}}";
+      $text     = "{{cite book|title=X X X X X X X X X X X X}}";
       $text_out = '{{cite book|title=X X X X X X X X X X X X}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals($text_out, $expanded->parsed_text());
