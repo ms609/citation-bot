@@ -26,4 +26,4 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'domain for sale', 'website for sale', 'domain is for sale', 'website is for sale',
                                  'lease this domain', 'domain available', 'metaTags', 'An Error Occurred', 'User Cookie',
                                  'Cookies Disabled', 'page not found', '411 error', 'url not found',
-                                 'limit exceeded', '}}', '{{'];
+                                 'limit exceeded', 'Error Page', '}}', '{{'];
