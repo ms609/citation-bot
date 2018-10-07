@@ -1497,14 +1497,8 @@ final class Template {
     $ris = explode("\n", html_entity_decode($dat, NULL, 'UTF-8'));
     $ris_authors = 0;
     
-    foreach ($ris as $ris_line) { // Check for bad data before using it
-      $ris_part = explode(" - ", $ris_line . " ");
-      switch (trim($ris_part[0])) {
-        case "T1":
-        case "TI":
-          if (isset($ris_part[1]) && in_array(strtolower($ris_part[1]), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
-        default:
-      }
+    if(preg_match('~^.*(?:T[I1]).*-.*([^\s]+) *$~m', $ris,  $match) {
+        if(in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
     }
     
     foreach ($ris as $ris_line) {
