@@ -42,7 +42,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the IEST ', ' mAbs ', ' mAbs ', ' mBio  ', ' mBio  ',
           ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
           ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
-          ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', , ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
+          ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', 
           ' z/Journal ', ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
