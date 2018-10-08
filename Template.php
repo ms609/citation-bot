@@ -1020,7 +1020,7 @@ final class Template {
             }
           }
         }
-      } elseif (preg_match("~^(?:https?://)(?:hdl\.handle\.net/|orbi\.ulg\.ac\.be/handle/)([^\?]*)~", $url, $match)) {
+      } elseif (preg_match(REGEXP_HANDLES, $url, $match)) {
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              $this->forget('url');
@@ -1638,7 +1638,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (strpos($oa_url, 'hdl.handle.net') !== false || strpos($oa_url, 'orbi.ulg.ac.be/handle') !== false) {
+        if (preg_match(REGEXP_HANDLES, $url)) {
           if ($this->has('hdl') ) {
              return TRUE;
           }
