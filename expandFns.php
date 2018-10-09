@@ -338,8 +338,7 @@ function tidy_date($string) {
     if (stripos($string, 'Invalid') !== FALSE) return '';
     return $string;
   }
-  if (preg_match('~(:?\s)(\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1]; // Found a date with whitespace before
-  if (preg_match('~^(.*\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
+  if (preg_match('~^(.*?\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
   return $string;
 }
 
