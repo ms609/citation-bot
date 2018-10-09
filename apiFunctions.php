@@ -161,7 +161,13 @@ function arxiv_api($ids, $templates) {
 
 function adsabs_api($ids, $templates, $identifier) {
   if (count($ids) == 0) return FALSE;
-  
+  if (count($ids) < 5) {
+    foreach ($templates as $template) {
+      $template->expand_by_adsabs();
+    }
+    return TRUE;
+  }
+ 
   foreach ($ids as $key => $bibcode) {
     if (strpos($bibcode, 'book') !== false) {
         report_info("Ignoring Book bibcode " . $bibcode);
@@ -171,13 +177,6 @@ function adsabs_api($ids, $templates, $identifier) {
         $template->expand_by_adsabs();
         unset($ids[$key]);
     }
-  }
-
-  if (count($ids) < 5) {
-    foreach ($templates as $template) {
-      $template->expand_by_adsabs();
-    }
-    return TRUE;
   }
 
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
