@@ -1499,7 +1499,7 @@ final class Template {
     // Convert &#x__; to characters
     $ris = explode("\n", html_entity_decode($dat, NULL, 'UTF-8'));
     $ris_authors = 0;
-     
+    
     if(preg_match('~(?:T[I1]).*-(.*)$~m', $dat,  $match)) {
         if(in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
     }
