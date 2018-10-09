@@ -857,6 +857,10 @@ final class Template {
         $this->set('url', $url); // Save it
       }
     }
+   
+    if (preg_match('~^(https?://(?:www.|)jstor\.org/)(?:stable|discover)/10.2307/(.+)$~', $url, $matches)) {
+       $url = $matches[1] . 'stable/' . $matches[2] ; // that is default.  This also means we get jstor not doi
+    }
     
     if ($doi = extract_doi($url)[1]) {
       if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
