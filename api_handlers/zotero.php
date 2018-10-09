@@ -5,7 +5,7 @@ function query_url_api($ids, $templates) {
     if ($template->has('url')) {
       expand_by_zotero($template);
     }
-  }
+  } 
 }
 
 function zotero_request($url) {
