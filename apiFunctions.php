@@ -326,7 +326,7 @@ function expand_by_doi($template, $force = FALSE) {
   // run this function, so we don't check this first.
   
   if (!$template->verify_doi()) return FALSE;
-  $doi = $template->get_without_comments_and_placeholders('doi'); 
+  $doi = $template->get_without_comments_and_placeholders('doi');
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       $template->add_if_new('jstor', substr($doi, 8));
   }
@@ -463,9 +463,17 @@ function query_jstor_api($ids, $templates) {
 
 function expand_by_jstor($template) {
   if ($template->incomplete() === FALSE) return FALSE;
-  if ($template->blank('jstor')) return FALSE;
-  $jstor = trim($template->get('jstor'));
-  if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors.  We do not want i12342 kind
+  if ($template->has('jstor')) {
+     $jstor = trim($template->get('jstor'));
+  } elseif(preg_match('~^https?://(?:www.|)jstor.org/stable/(.*)$~', $template->get('url'), $match)) {
+     $jstor = $match[1];
+  } else {
+     return FALSE;
+  }
+  if (preg_match('~^(.*)(?:\?.*)$~', $jstor, $match)) {
+     $jstor = $match[1]; // remove ?seq= stuff
+  }
+  if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
   if ($dat === FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
