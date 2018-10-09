@@ -87,7 +87,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       }
   }
   
-  if ( isset($result->DOI)) {
+  if ( isset($result->DOI)) { conflict
     $template->add_if_new('doi', $result->DOI);
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
   }
