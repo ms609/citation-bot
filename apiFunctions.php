@@ -436,8 +436,8 @@ function expand_doi_with_dx($template, $doi) {
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
-     $template->expand_by_RIS($ris);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
+     $template->expand_by_RIS($ris);
      return TRUE;
 }
 
