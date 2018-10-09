@@ -864,7 +864,7 @@ final class Template {
         $this->set($url_type, $url); // Save it
       }
     }
-    
+conflict    
     if ($doi = extract_doi($url)[1]) {
       if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
