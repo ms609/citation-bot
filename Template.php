@@ -1642,7 +1642,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match(REGEXP_HANDLES, $url)) {
+        if (preg_match(REGEXP_HANDLES, $oa_url)) {
           if ($this->has('hdl') ) {
              return TRUE;
           }
