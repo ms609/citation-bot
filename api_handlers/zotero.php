@@ -5,7 +5,26 @@ function query_url_api($ids, $templates) {
     if ($template->has('url')) {
       expand_by_zotero($template);
     }
-  } 
+  }
+  report_action("Using Zotero translation server to retrieve details from identifiers.");
+  foreach ($templates as $template) {
+       if ($template->has('biorxiv')) {
+         if ($template->blank('doi')) {
+           $template->add_if_new('doi', '10.1101/' . $template->get('biorxiv'));
+         } elseif (strstr($template->get('doi') , '10.1101') === FALSE) {
+           expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv'));  // Rare case there is a different DOI
+         }
+       }
+       if ($template->has('citeseerx')) expand_by_zotero($template, 'http://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
+       if ($template->has('hdl'))       expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
+       //  Has a CAPCHA --  if ($template->has('jfm'))       expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
+       //  Has a CAPCHA --  if ($template->has('zbl'))       expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
+       //  Has "MR: Matches for: MR=154360" title -- if ($template->has('mr'))        expand_by_zotero($template, 'https://mathscinet.ams.org/mathscinet-getitem?mr=' . $template->get('mr'));
+       if ($template->has('osti'))      expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
+       if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
+       if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+       if ($template->has('doi') && !doi_active($template->get('doi')))  expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($template->get('doi'))); // Non-crossref DOIs, such as 10.13140/RG.2.1.1002.9609
+  }
 }
 
 function zotero_request($url) {
@@ -37,7 +56,10 @@ function expand_by_zotero(&$template, $url = NULL) {
 
   if(preg_match("~^https?://books\.google\.~", $url)) return FALSE;  // We have special google gooks code
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
-  
+  if(preg_match('~^https?://(?:www.|)jstor.org/stable/(.*)$~', $url, $match)) return FALSE; // We do this ourself
+  if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)~i", $template->get('url'), $match)) {
+    $url = 'https://www.researchgate.net/publicliterature.PublicationHeaderDownloadCitation.downloadCitation.html?publicationUid=' . $match[1] . '&fileType=RIS&citationAndAbstract=false'; // Convert researchgate URL to give RIS information
+  }
   $zotero_response = zotero_request($url);
   switch (trim($zotero_response)) {
     case '':
@@ -87,7 +109,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       }
   }
   
-  if ( isset($result->DOI)) {
+  if ( isset($result->DOI) && $template->blank('doi')) {
     $template->add_if_new('doi', $result->DOI);
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
   }

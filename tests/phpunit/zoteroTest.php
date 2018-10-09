@@ -66,4 +66,41 @@ class ZoteroTest extends testBaseClass {
     $expanded = $this->expand_via_zotero($text);
     $this->assertEquals('2018-06-05', $expanded->get('date'));
   }
+
+  public function testZoteroExpansion_citeseerx() {
+    $text = '{{Cite journal| citeseerx=10.1.1.483.8892 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Chemical Kinetics Models for the Fatigue Behavior of Fused Silica Optical Fiber', $expanded->get('title'));
+  }
+
+  public function testZoteroExpansion_hdl() {
+    $text = '{{Cite journal| hdl=10411/OF7UCA }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Replication Data for: Perceiving emotion in non-social targets: The effect of trait empathy on emotional through art', $expanded->get('title'));
+  }
+
+  public function testZoteroExpansion_osti() {
+    $text = '{{Cite journal| osti=1406676 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1016/j.ifacol.2017.08.010', $expanded->get('doi'));
+  }
+    
+  public function testZoteroExpansion_rfc() {
+    $text = '{{Cite journal| rfc=6679 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Explicit Congestion Notification (ECN) for RTP over UDP', $expanded->get('title'));
+  }
+     
+  public function testZoteroExpansion_ssrn() {
+    $text = '{{Cite journal| ssrn=195630 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('The Pricing of Internet Stocks', $expanded->get('title'));
+    $this->assertEquals('September 1999', $expanded->get('date'));
+  }    
+  public function testZoteroExpansion_doi_not_from_crossref() {
+    $text = '{{Cite journal|doi=10.3233/PRM-140291}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org
+    $expanded = $this->process_citation($text);
+    $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') === 0);// Sometimes includes a journal of....
+  }
+
 }
