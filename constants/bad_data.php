@@ -12,6 +12,7 @@ const BAD_AUTHORS = array("unknown", "missing");
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
                            'museum', "press", "publishers", "publishing", 'science'];
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints"); 
+const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "Arxiv Mathematics E-Prints");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -24,4 +25,6 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'ZbMATH - the first resource for mathematics', 'MR: Matches for:',
                                  ' Log In', 'Log In ', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request',
                                  'domain for sale', 'website for sale', 'domain is for sale', 'website is for sale',
-                                 'lease this domain', 'domain available', 'metaTags', '}}', '{{'];
+                                 'lease this domain', 'domain available', 'metaTags', 'An Error Occurred', 'User Cookie',
+                                 'Cookies Disabled', 'page not found', '411 error', 'url not found',
+                                 'limit exceeded', 'Error Page', '}}', '{{'];
