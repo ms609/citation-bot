@@ -864,7 +864,14 @@ final class Template {
         $this->set($url_type, $url); // Save it
       }
     }
-conflict    
+   
+    if (preg_match('~^(https?://(?:www.|)jstor\.org/)(?:stable|discover)/10.2307/(.+)$~', $url, $matches)) {
+       $url = $matches[1] . 'stable/' . $matches[2] ; // that is default.  This also means we get jstor not doi
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Save it
+       }
+    }
+    
     if ($doi = extract_doi($url)[1]) {
       if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
@@ -1027,7 +1034,7 @@ conflict
             }
           }
         }
-      } elseif (preg_match("~^https?://hdl\.handle\.net/([^\?]*)~", $url, $match)) {
+      } elseif (preg_match(REGEXP_HANDLES, $url, $match)) {
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
@@ -1645,7 +1652,7 @@ conflict
              return TRUE;
           }
         }
-        if (strpos($oa_url, 'hdl.handle.net') !== false) {
+        if (preg_match(REGEXP_HANDLES, $url)) {
           if ($this->has('hdl') ) {
              return TRUE;
           }
