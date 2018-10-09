@@ -43,6 +43,16 @@ final class Parameter {
     } else {
       $this->val  = $text;
     }
+    // Comments before parameter names
+    if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~', $this->param, $match)) {
+      $this->pre = $this->pre . $match[1];
+      str_replace($match[1], '', $this->param);
+    }
+    // Comments after parameter names
+    if (preg_match('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~', $this->param, $match)) {
+      $this->post = $match[1] . $this->post;
+      str_replace($match[1], '', $this->param);
+    }
   }
 
   protected function set_value($value) {
