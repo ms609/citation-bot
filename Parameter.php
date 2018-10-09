@@ -50,7 +50,7 @@ final class Parameter {
     }
     // Comments after parameter names
     if (preg_match('~(?:\s*)# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', $this->param, $match)) {
-      $this->post = $match[0] . $this->post;
+      $this->eq = $match[0] . $this->eq;
       $this->param = str_replace($match[0], '', $this->param);
     }
   }
