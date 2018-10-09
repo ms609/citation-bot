@@ -98,6 +98,9 @@ function expand_by_zotero(&$template, $url = NULL) {
     if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher);
   } else {
     if (isset($result->title))      $template->add_if_new('title'  , $result->title);
+    if (isset($result->itemType) && ($result->itemType === 'book')) {
+       if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher); 
+    }
   }
     
   if ( isset($result->ISBN))             $template->add_if_new('isbn'   , $result->ISBN);
