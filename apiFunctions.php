@@ -325,8 +325,8 @@ function expand_by_doi($template, $force = FALSE) {
   // there will be few instances where it could not in principle be profitable to 
   // run this function, so we don't check this first.
   
-  $doi = $template->get_without_comments_and_placeholders('doi');
   if (!$template->verify_doi()) return FALSE;
+  $doi = $template->get_without_comments_and_placeholders('doi');
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       $template->add_if_new('jstor', substr($doi, 8));
   }
