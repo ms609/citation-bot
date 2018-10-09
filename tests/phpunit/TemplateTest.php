@@ -256,6 +256,7 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('{{Cite journal|pages=2}}', $prepared->parsed_text());
   }
+
   public function testExpansionJstorBook() {
     $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10}}';
     $expanded = $this->process_citation($text);
