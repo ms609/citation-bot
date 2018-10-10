@@ -271,7 +271,6 @@ final class TemplateTest extends testBaseClass {
   public function testAP() {
     $text = '{{cite web|author=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->parsed_text());
     $this->assertNull($expanded->get('author'));
     $this->assertNull($expanded->get('publisher'));
     $this->assertEquals('Associated Press', $expanded->get('agency'));
