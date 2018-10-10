@@ -152,7 +152,9 @@ function expand_by_zotero(&$template, $url = NULL) {
         break;
       case 'newspaperArticle': 
         if (isset($result->libraryCatalog) && in_array($result->libraryCatalog, WEB_NEWSPAPERS)) break;
+        fwrite(STDERR,"\n".$template->parsed_text()."\n");
         $template->change_name_to('cite newspaper'); 
+        fwrite(STDERR,"\n".$template->parsed_text()."\n");
         if (stripos(trim($template->get('publisher')), 'Associated Press') === 0 &&
             stripos($url, 'ap.org') === FALSE  ) {
           $template->rename('publisher', 'agency'); // special template parameter just for them
