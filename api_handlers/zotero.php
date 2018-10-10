@@ -156,7 +156,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         if (stripos(trim($template->get('publisher')), 'Associated Press') === 0 &&
             stripos($url, 'ap.org') === FALSE  ) {
           $template->rename('publisher', 'agency'); // special template parameter just for them
-          if (stripos(trim($template->get('author')), 'Associated Press' === 0) $template->forget('author'); // all too common
+          if (stripos(trim($template->get('author')), 'Associated Press') === 0) $template->forget('author'); // all too common
         }
         break;
       case 'webpage': 
