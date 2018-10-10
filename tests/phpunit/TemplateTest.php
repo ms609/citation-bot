@@ -112,7 +112,7 @@ final class TemplateTest extends testBaseClass {
      $this->assertEquals($text, $expanded->parsed_text());
   }
   
-  public functionNoLoseUrl() {
+  public function testNoLoseUrl() {
      $text = '{{cite book |last=Söderström |first=Ulrika |date=2015 |title=Sandby Borg: Unveiling the Sandby Borg Massacre |url= |location= |publisher=Kalmar lāns museum |isbn=9789198236620 |language=Swedish }}';
      $expanded = $this->process_page($text);
      $this->assertEquals($text, $expanded->parsed_text());
