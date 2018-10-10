@@ -153,7 +153,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'newspaperArticle': 
         if (isset($result->libraryCatalog) && in_array($result->libraryCatalog, WEB_NEWSPAPERS)) break;
         $template->change_name_to('cite newspaper'); 
-        if ($template->get('publisher') === 'Associated Press' &&
+        if (stripos($template->get('publisher'), 'Associated Press') === 0 &&
             stripos($url, 'ap.org') === FALSE  ) {
           $template->rename('publisher', 'agency'); // special template parameter just for them
           if ($template->get('author') === 'Associated Press') $template->forget('author'); // all too common
