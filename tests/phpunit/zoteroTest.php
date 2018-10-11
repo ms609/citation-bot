@@ -102,5 +102,9 @@ class ZoteroTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') === 0);// Sometimes includes a journal of....
   }
-
+  public function testZoteroExpansion_biorxiv() {
+    $text = '{{Cite journal| biorxiv=326363 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Sunbeam: an Extensible Pipeline for Analyzing Metagenomic Sequencing Experiments', $expanded->get('title'));
+  }   
 }
