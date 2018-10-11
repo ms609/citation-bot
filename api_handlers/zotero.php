@@ -128,7 +128,12 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->ISBN))             $template->add_if_new('isbn'   , $result->ISBN);
   if ( isset($result->issue))            $template->add_if_new('issue'  , $result->issue);
   if ( isset($result->pages))            $template->add_if_new('pages'  , $result->pages);
-  if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
+
+  if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
+    if ( isset($result->publicationTitle)) $template->add_if_new('newspaper', $result->publicationTitle);
+  } else {
+    if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
+  }
   if ( isset($result->volume))           $template->add_if_new('volume' , $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
   if ( isset($result->series))           $template->add_if_new('series' , $result->series);
