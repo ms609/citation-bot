@@ -268,6 +268,14 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('Verstraete', $expanded->get('last1'));
   }
  
+  public function testAP() {
+    $text = '{{cite web|author=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('author'));
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertEquals('Associated Press', $expanded->get('agency'));
+  }
+ 
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
     $text = "{{Cite web | title=Ellipsis... | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01}}";
@@ -811,6 +819,26 @@ ER -  }}';
      $this->assertEquals('Claude E.', $prepared->get('first1'));
      $this->assertEquals('379–423', $prepared->get('pages'));
      $this->assertEquals('27', $prepared->get('volume'));   
+     // This is the exact same reference, but with an invalid title, that flags this data to be rejected
+     // We check everything is null, to verify that bad title stops everything from being added, not just title
+      $text = '{{Cite journal  | TY - JOUR
+AU - Shannon, Claude E.
+PY - 1948/07//
+TI - oup accepted manuscript
+T2 - Bell System Technical Journal
+SP - 379
+EP - 423
+VL - 27
+ER -  }}';
+     $prepared = $this->prepare_citation($text);
+     $this->assertNull($prepared->get('title'));
+     $this->assertNull($prepared->get('date'));
+     $this->assertNull($prepared->get('journal'));
+     $this->assertNull($prepared->first_author());
+     $this->assertNull($prepared->get('last1'));
+     $this->assertNull($prepared->get('first1'));
+     $this->assertNull($prepared->get('pages'));
+     $this->assertNull($prepared->get('volume'));   
   }
     
   public function testEndNote() {
@@ -1423,6 +1451,17 @@ ER -  }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals($text, $expanded->parsed_text());
   }
+ 
+  public function testSpaces() {
+      // None of the "spaces" in $text are normal spaces.  They are U+2000 to U+200A
+      $text     = "{{cite book|title=X X X X X X X X X X X X}}";
+      $text_out = '{{cite book|title=X X X X X X X X X X X X}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals($text_out, $expanded->parsed_text());
+      $this->assertTrue($text != $text_out); // Verify test is valid -- We want to make sure that the spaces in $text are not normal spaces
+  }
+ 
+
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]

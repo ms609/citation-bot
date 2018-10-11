@@ -534,10 +534,10 @@ final class Template {
         }
         return FALSE;
         
-      case 'periodical': case 'journal':
+      case 'periodical': case 'journal': case 'newspaper':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
-        if ($this->blank(["journal", "periodical"])) {
+        if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
@@ -1499,6 +1499,11 @@ final class Template {
     // Convert &#x__; to characters
     $ris = explode("\n", html_entity_decode($dat, NULL, 'UTF-8'));
     $ris_authors = 0;
+    
+    if(preg_match('~(?:T[I1]).*-(.*)$~m', $dat,  $match)) {
+        if(in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+    }
+    
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
       switch (trim($ris_part[0])) {
@@ -1642,7 +1647,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match(REGEXP_HANDLES, $url)) {
+        if (preg_match(REGEXP_HANDLES, $oa_url)) {
           if ($this->has('hdl') ) {
              return TRUE;
           }
@@ -2398,6 +2403,8 @@ final class Template {
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
+    
+    if($this->has($param)) $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
