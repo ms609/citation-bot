@@ -21,7 +21,9 @@ class Page {
   function __construct() {
     $this->api = new WikipediaBot();
   }
-    
+  /* Requires key that Travis does not have
+   * @codeCoverageIgnore
+   */
   public function get_text_from($title, $api) {    
     $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
@@ -268,7 +270,9 @@ class Page {
     }
     return $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
-
+  /* Requires key that Travis does not have
+   * @codeCoverageIgnore
+   */
   public function write($api, $edit_summary_end = NULL) {
     if ($this->allow_bots()) {
       throttle(10);
