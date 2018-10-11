@@ -1431,6 +1431,17 @@ ER -  }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals($text, $expanded->parsed_text());
   }
+ 
+  public function testSpaces() {
+      // None of the "spaces" in $text are normal spaces.  They are U+2000 to U+200A
+      $text     = "{{cite book|title=X X X X X X X X X X X X}}";
+      $text_out = '{{cite book|title=X X X X X X X X X X X X}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals($text_out, $expanded->parsed_text());
+      $this->assertTrue($text != $text_out); // Verify test is valid -- We want to make sure that the spaces in $text are not normal spaces
+  }
+ 
+
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
