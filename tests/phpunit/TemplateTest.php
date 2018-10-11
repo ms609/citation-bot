@@ -819,6 +819,26 @@ ER -  }}';
      $this->assertEquals('Claude E.', $prepared->get('first1'));
      $this->assertEquals('379–423', $prepared->get('pages'));
      $this->assertEquals('27', $prepared->get('volume'));   
+     // This is the exact same reference, but with an invalid title, that flags this data to be rejected
+     // We check everything is null, to verify that bad title stops everything from being added, not just title
+      $text = '{{Cite journal  | TY - JOUR
+AU - Shannon, Claude E.
+PY - 1948/07//
+TI - oup accepted manuscript
+T2 - Bell System Technical Journal
+SP - 379
+EP - 423
+VL - 27
+ER -  }}';
+     $prepared = $this->prepare_citation($text);
+     $this->assertNull($prepared->get('title'));
+     $this->assertNull($prepared->get('date'));
+     $this->assertNull($prepared->get('journal'));
+     $this->assertNull($prepared->first_author());
+     $this->assertNull($prepared->get('last1'));
+     $this->assertNull($prepared->get('first1'));
+     $this->assertNull($prepared->get('pages'));
+     $this->assertNull($prepared->get('volume'));   
   }
     
   public function testEndNote() {
