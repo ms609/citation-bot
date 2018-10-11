@@ -172,6 +172,10 @@ function adsabs_api($ids, $templates, $identifier) {
     if (strpos($bibcode, 'book') !== false) {
         report_info("Ignoring Book bibcode " . $bibcode);
         unset($ids[$key]);
+    } elseif (
+        strpos($bibcode, '&') !== false) {
+        $template->expand_by_adsabs();
+        unset($ids[$key]);
     }
   }
 
