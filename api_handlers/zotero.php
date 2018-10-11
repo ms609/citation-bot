@@ -158,7 +158,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         $template->change_name_to('cite news'); 
         if ($template->get('publisher') === 'Associated Press' && 
             stripos($url, 'ap.org') === FALSE  ) {
-          $template->rename('publisher', 'agency'); // special template parameter just for them
+          $template->rename('publisher', 'agency'); // special template parameter just for them  
           if ($template->get('author') === 'Associated Press') $template->forget('author'); // all too common
         }
         break;
