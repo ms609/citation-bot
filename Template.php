@@ -826,8 +826,16 @@ final class Template {
   // it looks for a parameter before adding the url.
   protected function get_identifiers_from_url($url_sent = NULL) {
     if (is_null($url_sent)) {
-      if ($this->blank('url')) {
-        if ($this->has('website')) { // No URL, but a website
+        if ($this->has('url')) {        
+           $url = $this->get('url');
+           $url_type = 'url';
+        } elseif ($this->has('chapter-url')) {
+           $url = $this->get('chapter-url');
+           $url_type = 'chapter-url';
+        } elseif ($this->has('chapterurl')) {
+           $url = $this->get('chapterurl');
+           $url_type = 'chapterurl';
+        } elseif ($this->has('website')) { // No URL, but a website
           $url = trim($this->get('website'));
           if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
             $url = "h" . $url;
@@ -839,34 +847,36 @@ final class Template {
           if (preg_match (REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
           $this->rename('website', 'url'); // Rename it first, so that parameters stay in same order
           $this->set('url', $url);
+          $url_type = 'url'; 
           quietly('report_modification', "website is actually HTTP URL; converting to use url parameter.");
         } else {
           // If no URL or website, nothing to worth with.
           return FALSE;
         }
-      }
-      
-      $url = $this->get('url'); // If URL was blank, we would have returned already.
     } else {
       $url = $url_sent;
+      $url_type = NULL;
     }
     
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
       $url = "h" . $url;
       if (is_null($url_sent)) {
-        $this->set('url', $url); // Save it
+        $this->set($url_type, $url); // Save it
       }
     }
    
     if (preg_match('~^(https?://(?:www.|)jstor\.org/)(?:stable|discover)/10.2307/(.+)$~', $url, $matches)) {
        $url = $matches[1] . 'stable/' . $matches[2] ; // that is default.  This also means we get jstor not doi
+       if (!is_null($url_sent)) {
+         $this->set($url_type, $url); // Update URL with cleaner one.  Will probably call forget on it below
+       }
     }
     
     if ($doi = extract_doi($url)[1]) {
       if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
           report_forget("Recognized existing DOI in URL; dropping URL");
-          $this->forget('url');
+          $this->forget($url_type);
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
       }
@@ -878,7 +888,7 @@ final class Template {
           if (is_null($url_sent)) {
             if (mb_strpos(strtolower($url), ".pdf") === FALSE) {
               report_forget("Recognized DOI in URL; dropping URL");
-              $this->forget('url');
+              $this->forget($url_type);
             } else {
               report_info("Recognized DOI in URL.  Leaving *.pdf URL.");
             }
@@ -907,7 +917,7 @@ final class Template {
           if (strpos($redirect_url, "jstor.org/stable/")) {
             $url = $redirect_url; 
             if (is_null($url_sent)) {
-              $this->set('url', $url); // Save it
+              $this->set($url_type, $url); // Save it
             }
           } else {
             return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
@@ -918,7 +928,7 @@ final class Template {
         return FALSE; # Plants database, not journal
       } elseif (preg_match("~^(?:\w+/)*(\d{6,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match)) {
         if (is_null($url_sent)) {
-          $this->forget('url');
+          $this->forget($url_type);
         }
         if ($this->get('jstor')) {
           quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
@@ -936,7 +946,7 @@ final class Template {
         if ($this->blank('bibcode')) {
           quietly('report_modification', "Converting url to bibcode parameter");
           if (is_null($url_sent)) {
-            $this->forget('url');
+            $this->forget($url_type);
           }
           return $this->add_if_new("bibcode", urldecode($bibcode[1]));
         }
@@ -948,7 +958,7 @@ final class Template {
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting URL to PMC parameter");
           if (is_null($url_sent)) {
-            $this->forget('url');
+            $this->forget($url_type);
           }
           return $this->add_if_new("pmc", $match[1] . $match[2]);
         }
@@ -957,7 +967,7 @@ final class Template {
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting Europe URL to PMC parameter");
           if (is_null($url_sent)) {
-            $this->forget('url');
+            $this->forget($url_type);
           }
           return $this->add_if_new("pmc", $match[1]);
         }
@@ -965,14 +975,14 @@ final class Template {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
         if (is_null($url_sent)) {
-          $this->forget('url');
+          $this->forget($url_type);
         }
         return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
       } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)\?doi=([0-9.]*)(&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
         if (is_null($url_sent)) {
-          $this->forget('url');
+          $this->forget($url_type);
         }
         return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
         
@@ -986,7 +996,7 @@ final class Template {
             ) {
           quietly('report_modification', "Converting URL to arXiv parameter");
           if (is_null($url_sent)) {
-            $this->forget('url');
+            $this->forget($url_type);
           }
           return $this->add_if_new("arxiv", $arxiv_id[0]);
         }
@@ -995,7 +1005,7 @@ final class Template {
       } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
-          $this->forget('url');
+          $this->forget($url_type);
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
         return $this->add_if_new('pmid', $match[1]);
@@ -1005,7 +1015,7 @@ final class Template {
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite book');
         if ($match['domain'] == ".com") {
           if (is_null($url_sent)) {
-            $this->forget('url');
+            $this->forget($url_type);
             if (stripos($this->get('publisher'), 'amazon') !== FALSE) {
               $this->forget('publisher');
             }
@@ -1018,7 +1028,7 @@ final class Template {
           quietly('report_modification', "Converting URL to ASIN template");
           $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
           if (is_null($url_sent)) {
-            $this->forget('url'); // will forget accessdate too
+            $this->forget($url_type); // will forget accessdate too
             if (stripos($this->get('publisher'), 'amazon') !== FALSE) {
               $this->forget('publisher');
             }
@@ -1027,56 +1037,56 @@ final class Template {
       } elseif (preg_match(REGEXP_HANDLES, $url, $match)) {
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
-             $this->forget('url');
+             $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('hdl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
-             $this->forget('url');
+             $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('zbl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
           if (is_null($url_sent)) {
-             $this->forget('url');
+             $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('jfm', $match[1]);
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~", $url, $match)) {
           quietly('report_modification', "Converting URL to MR parameter");
           if (is_null($url_sent)) {
-             $this->forget('url');
+             $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('mr', $match[1]);
       } elseif (preg_match("~^https?://papers\.ssrn\.com/sol3/papers\.cfm\?abstract_id=([0-9]+)~", $url, $match)) {
           quietly('report_modification', "Converting URL to SSRN parameter");
           if (is_null($url_sent)) {
-             $this->forget('url');
+             $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal'); // Better template choice.  Often journal/paper
           return $this->add_if_new('ssrn', $match[1]);
       } elseif (preg_match("~^https?://www\.osti\.gov/biblio/([0-9]+)~", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
-             $this->forget('url');
+             $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://www\.osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
-             $this->forget('url');
+             $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://www\.worldcat\.org/oclc/([0-9]+)~", $url, $match)) {
           quietly('report_modification', "Converting URL to OCLC parameter");
           if (is_null($url_sent)) {
-             $this->forget('url');
+             $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite book');  // Better template choice
           return $this->add_if_new('oclc', $match[1]); 
