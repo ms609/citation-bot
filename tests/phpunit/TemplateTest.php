@@ -268,6 +268,14 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('Verstraete', $expanded->get('last1'));
   }
  
+  public function testAP() {
+    $text = '{{cite web|author=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('author'));
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertEquals('Associated Press', $expanded->get('agency'));
+  }
+ 
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
     $text = "{{Cite web | title=Ellipsis... | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01}}";
