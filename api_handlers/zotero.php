@@ -155,8 +155,7 @@ function expand_by_zotero(&$template, $url = NULL) {
           $template->change_name_to('cite journal');
         break;
       case 'newspaperArticle': 
-        if (isset($result->libraryCatalog) && in_array($result->libraryCatalog, WEB_NEWSPAPERS)) break;
-        $template->change_name_to('cite newspaper'); 
+        $template->change_name_to('cite news'); 
         break;
       case 'webpage': 
         break; // Could be a journal article or a genuine web page.
