@@ -158,7 +158,9 @@ function arxiv_api($ids, $templates) {
     $this_template = next($templates);
   }
 }
-
+  /* Requires key that Travis does not have
+   * @codeCoverageIgnore
+   */
 function adsabs_api($ids, $templates, $identifier) {
   if (count($ids) == 0) return FALSE;
   if (count($ids) < 5) {
