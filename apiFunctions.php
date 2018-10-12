@@ -174,8 +174,12 @@ function adsabs_api($ids, $templates, $identifier) {
         unset($ids[$key]);
     } elseif (
         strpos($bibcode, '&') !== false) {
-        $template->expand_by_adsabs();
         unset($ids[$key]);
+    }
+  }
+  foreach ($templates as $template) {
+    if (strpos($template->get('bibcode'), '&') !== false) {
+      $template->expand_by_adsabs();
     }
   }
 
