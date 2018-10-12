@@ -174,11 +174,15 @@ function adsabs_api($ids, $templates, $identifier) {
         unset($ids[$key]);
     } elseif (
         strpos($bibcode, '&') !== false) {
-        $template->expand_by_adsabs();
         unset($ids[$key]);
     }
   }
-
+  foreach ($templates as $template) {
+    if (strpos($template->get('bibcode'), '&') !== false) {
+      $template->expand_by_adsabs();
+    }
+  }
+  
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/bigquery?q=*:*"
               . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
