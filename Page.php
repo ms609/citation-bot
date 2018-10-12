@@ -6,6 +6,7 @@
  * handle collected page modifications, and save the edited page text
  * to the wiki.
  */
+
 require_once('Comment.php');
 require_once('Template.php');
 require_once('apiFunctions.php');
@@ -58,6 +59,7 @@ class Page {
       echo "Page is a redirect.";
       return FALSE;
     }
+
     if ($this->text) {
       return TRUE;
     } else{
@@ -71,6 +73,7 @@ class Page {
     $this->start_text = $this->text;
     $this->make_modifications();
   }  
+
   public function parsed_text() {
     return $this->text;
   }
@@ -217,6 +220,7 @@ class Page {
 
     return strcmp($this->text, $this->start_text) != 0; // we often just fix Journal caps
   }
+
   public function edit_summary() {
     $auto_summary = "";
     if (count($this->modifications["changeonly"]) !== 0) {
@@ -299,11 +303,13 @@ class Page {
     $this->text = $text;
     return $objects;
   }
+
   protected function replace_object ($objects) {
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
+
   protected function announce_page() {
     $url_encoded_title =  urlencode($this->title);
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>" 
