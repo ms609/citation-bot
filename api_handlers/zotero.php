@@ -84,7 +84,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Could not resolve URL ". $url);
     return FALSE;
   }
-  if (mb_strpos($result->title, '�') !== FALSE)) {
+  if (mb_strpos($result->title, '�') !== FALSE) {
     report_info("Could parse unicode characters in ". $url);
     return FALSE;
   }
