@@ -227,6 +227,7 @@ class Page {
     foreach(['changeonly', 'additions', 'deletions'] as $mods) {
       if (!isset($this->modifications[$mods])) $this->modifications[$mods] = array();
     }
+    if (!isset($this->modifications['dashes'])) $this->modifications['dashes'] = FALSE;
     if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
