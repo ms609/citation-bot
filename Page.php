@@ -6,18 +6,14 @@
  * handle collected page modifications, and save the edited page text
  * to the wiki.
  */
-
 require_once('Comment.php');
 require_once('Template.php');
 require_once('apiFunctions.php');
 require_once('WikipediaBot.php');
-
 class Page {
-
   protected $text, $title, $modifications;
   protected $read_at, $api, $namespace, $touched, $start_text, $last_write_time;
   public $lastrevid;
-
   function __construct() {
     $this->api = new WikipediaBot();
   }
@@ -50,16 +46,13 @@ class Page {
     $this->namespace = $details->ns;
     $this->touched = isset($details->touched) ? $details->touched : NULL;
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
-
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     $this->start_text = $this->text;
-    $this->modifications = array();
-
+    $this->make_modifications;
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
       return FALSE;
     }
-
     if ($this->text) {
       return TRUE;
     } else{
@@ -71,9 +64,8 @@ class Page {
   public function parse_text($text) {
     $this->text = $text;
     $this->start_text = $this->text;
-    $this->modifications = array();
+    $this->make_modifications();
   }  
-
   public function parsed_text() {
     return $this->text;
   }
@@ -113,12 +105,11 @@ class Page {
   public function expand_text() {
     date_default_timezone_set('UTC');
     $this->announce_page();
-    $this->modifications = array();
+    $this->make_modifications();
     if (!$this->text) {
       report_warning("No text retrieved.\n");
       return FALSE;
     }
-
     // COMMENTS AND NOWIKI ETC. //
     $comments    = $this->extract_object('Comment');
     $nowiki      = $this->extract_object('Nowiki');
@@ -130,7 +121,6 @@ class Page {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       return FALSE;
     }
-
     // PLAIN URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
@@ -144,7 +134,6 @@ class Page {
                       function($matches) {return $matches[1] . '{{cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
-
     // TEMPLATES
     $all_templates = $this->extract_object('Template');
     for ($i = 0; $i < count($all_templates); $i++) {
@@ -211,23 +200,16 @@ class Page {
       }
     }
     $this->replace_object($all_templates);
-
     $this->replace_object($preformated);
     $this->replace_object($musicality);
     $this->replace_object($mathematics);
     $this->replace_object($chemistry);
     $this->replace_object($comments);
     $this->replace_object($nowiki);
-
     return strcmp($this->text, $this->start_text) != 0; // we often just fix Journal caps
   }
-
   public function edit_summary() {
     $auto_summary = "";
-    if (!isset($this->modifications['changeonly'])) $this->modifications['changeonly'] = array(); // For pages with no templates
-    if (!isset($this->modifications['additions'])) $this->modifications['additions'] = array();
-    if (!isset($this->modifications['deletions')) $this->modifications['deletions'] = array();
-    if (!isset($this->modifications['dashes'])) $this->modifications['dashes'] = FALSE;
     if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
@@ -272,7 +254,6 @@ class Page {
     }
     return $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
-
   public function write($api, $edit_summary_end = NULL) {
     if ($this->allow_bots()) {
       throttle(10);
@@ -309,13 +290,11 @@ class Page {
     $this->text = $text;
     return $objects;
   }
-
   protected function replace_object ($objects) {
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
-
   protected function announce_page() {
     $url_encoded_title =  urlencode($this->title);
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>" 
@@ -339,8 +318,16 @@ class Page {
       return FALSE;
     return TRUE;
   }
+  
+  protected function make_modifications() {
+    $this->modifications = array();
+    $this->modifications['changeonly'] = array();
+    $this->modifications['additions'] = array();
+    $this->modifications['deletions'] = array();
+    $this->modifications['modifications'] = array();
+    $this->modifications['dashes'] = FALSE;
+  }
 }
-
 class TestPage extends Page {
   // Functions for use in testing context only
   
