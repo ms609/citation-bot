@@ -130,6 +130,7 @@ class Page {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       return FALSE;
     }
+
     // PLAIN URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
@@ -267,6 +268,7 @@ class Page {
     }
     return $auto_summary . "You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].";
   }
+
   public function write($api, $edit_summary_end = NULL) {
     if ($this->allow_bots()) {
       throttle(10);
@@ -343,6 +345,7 @@ class Page {
     $this->modifications['dashes'] = FALSE;
   }
 }
+
 class TestPage extends Page {
   // Functions for use in testing context only
   
