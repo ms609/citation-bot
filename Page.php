@@ -224,9 +224,9 @@ class Page {
 
   public function edit_summary() {
     $auto_summary = "";
-    foreach(['changeonly', 'additions', 'deletions'] as $mods) {
-      if (!isset($this->modifications[$mods])) $this->modifications[$mods] = array();
-    }
+    if (!isset($this->modifications['changeonly'])) $this->modifications['changeonly'] = array(); // For pages with no templates
+    if (!isset($this->modifications['additions'])) $this->modifications['additions'] = array();
+    if (!isset($this->modifications['deletions')) $this->modifications['deletions'] = array();
     if (!isset($this->modifications['dashes'])) $this->modifications['dashes'] = FALSE;
     if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
