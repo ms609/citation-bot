@@ -84,7 +84,10 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Could not resolve URL ". $url);
     return FALSE;
   }
-  
+  if (strpos($result->title, '�') !== FALSE)) {
+    report_info("Could parse unicode characters in ". $url);
+    return FALSE;
+  }
   report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {
