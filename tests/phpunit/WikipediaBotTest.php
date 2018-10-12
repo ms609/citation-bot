@@ -6,9 +6,7 @@
 
 require_once __DIR__ . '/../testBaseClass.php';
  
-if (getenv('TRAVIS_PULL_REQUEST')) {
-  echo (" - Skipping WikipediaBotTest.php: Testing bot in Travis pull requests would endanger secure tokens.\n");
-} else {
+
   class WikipediaBotTest extends testBaseClass {
       
     public function testLoggedInUser() {
@@ -85,5 +83,4 @@ if (getenv('TRAVIS_PULL_REQUEST')) {
       $this->assertEquals(805321380, 1 * $api->get_last_revision('User:Blocked testing account/readtest'));
     }
      
-  }
 }
