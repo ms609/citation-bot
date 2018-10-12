@@ -25,22 +25,13 @@ final class PageTest extends testBaseClass {
   }
  
   public function testBotRead() {
-    if (getenv('TRAVIS_PULL_REQUEST')) {
-      echo 'S'; // Test skipped in pull requests, to protect Bot secrets
-      $this->assertNull(NULL); // Make Travis happy
-    } else {
       $page = new TestPage();
       $api = new WikipediaBot();
       $page->get_text_from('User:Blocked Testing Account/readtest', $api);
       $this->assertEquals('This page tests bots', $page->parsed_text());
-    }
   }
   
   public function testBotExpandWrite() {
-    if (getenv('TRAVIS_PULL_REQUEST')) {
-      echo 'S'; // Test skipped in pull requests, to protect Bot secrets
-      $this->assertNull(NULL); // Make Travis happy
-    } else {
       $api = new WikipediaBot();
       $page = new TestPage();
       $writeTestPage = 'User:Blocked Testing Account/writetest';
@@ -59,7 +50,6 @@ final class PageTest extends testBaseClass {
       
       $page->get_text_from($writeTestPage, $api);
       $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
-    }
   }
  
   public function testEmptyPage() {
