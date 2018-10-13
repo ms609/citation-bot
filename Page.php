@@ -53,7 +53,7 @@ class Page {
 
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     $this->start_text = $this->text;
-    $this->modifications = array();
+    $this->construct_modifications_array();
 
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
@@ -71,7 +71,7 @@ class Page {
   public function parse_text($text) {
     $this->text = $text;
     $this->start_text = $this->text;
-    $this->modifications = array(); 
+    $this->construct_modifications_array();
   }  
 
   public function parsed_text() {
@@ -113,7 +113,7 @@ class Page {
   public function expand_text() {
     date_default_timezone_set('UTC');
     $this->announce_page();
-    $this->modifications = array();
+    $this->construct_modifications_array();
     if (!$this->text) {
       report_warning("No text retrieved.\n");
       return FALSE;
@@ -334,6 +334,15 @@ class Page {
     if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $this->text))
       return FALSE;
     return TRUE;
+  }
+  
+  protected function construct_modifications_array() {
+    $this->modifications = array();
+    $this->modifications['changeonly'] = array();
+    $this->modifications['additions'] = array();
+    $this->modifications['deletions'] = array();
+    $this->modifications['modifications'] = array();
+    $this->modifications['dashes'] = FALSE;
   }
 }
 
