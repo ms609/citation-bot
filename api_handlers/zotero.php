@@ -35,7 +35,7 @@ function zotero_request($url) {
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
-  curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain; charset=utf-8']);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
   
   $zotero_response = curl_exec($ch);
@@ -119,6 +119,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
     if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher);
   } else {
+fwrite(STDERR,"\n" .  $result->title  .  "\n");
     if (isset($result->title))      $template->add_if_new('title'  , $result->title);
     if (isset($result->itemType) && ($result->itemType === 'book')) {
        if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher); 
