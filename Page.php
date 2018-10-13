@@ -71,7 +71,7 @@ class Page {
   public function parse_text($text) {
     $this->text = $text;
     $this->start_text = $this->text;
-    $this->modifications = array();
+    $this->modifications = array(); 
   }  
 
   public function parsed_text() {
