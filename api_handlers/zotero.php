@@ -84,7 +84,9 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Could not resolve URL ". $url);
     return FALSE;
   }
-  if (mb_strpos($result->title, '�') !== FALSE) {
+  $bad_count = mb_substr_count($result->title, '�');  // Reject more than 5 or more than 10%
+  $total_count = mb_strlen($result->title);
+  if (($bad_count > 5) || ($total_count > 1 && (($bad_count/$total_count) > 0.1))) {
     report_info("Could parse unicode characters in ". $url);
     return FALSE;
   }
