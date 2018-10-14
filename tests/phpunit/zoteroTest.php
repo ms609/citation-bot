@@ -107,4 +107,10 @@ class ZoteroTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertEquals('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get('title'));
   }   
+ 
+  public function testZoteroKorean() {
+    $text = '{{Cite journal|url=http://thestar.chosun.com/site/data/html_dir/2010/11/23/2010112301191.html}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('KOREAN', $expanded->get('title'));
+  }   
 }
