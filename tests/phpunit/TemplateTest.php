@@ -1476,7 +1476,7 @@ ER -  }}';
       $this->assertTrue($text != $text_out); // Verify test is valid -- We want to make sure that the spaces in $text are not normal spaces
   }
  
-  public functin testMultipleYears() {
+  public function testMultipleYears() {
     $text = '{{cite journal|doi=10.1080/1323238x.2006.11910818}}'; // Crossref has <year media_type="online">2017</year><year media_type="print">2006</year>
     $expanded = $this->process_citation($text);
     $this->assertEquals('2006', $expanded->get('year'));
