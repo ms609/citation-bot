@@ -111,6 +111,11 @@ function expand_by_zotero(&$template, $url = NULL) {
   
   if ( isset($result->DOI) && $template->blank('doi')) {
     $template->add_if_new('doi', $result->DOI);
+    if ($template->complete() && doi_active($template->get('doi')) && 
+        (str_replace(CANONICAL_PUBLISHER_URLS, '', $url) != $url)) { // This is the use a replace to see if a substring is present trick
+      report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL";
+      $template->forget('url');
+    }
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
   }
 
