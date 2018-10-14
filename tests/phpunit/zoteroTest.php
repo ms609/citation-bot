@@ -113,3 +113,4 @@ class ZoteroTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertEquals('KOREAN', $expanded->get('title'));
   }   
+}
