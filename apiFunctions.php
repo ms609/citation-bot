@@ -355,6 +355,7 @@ function expand_by_doi($template, $force = FALSE) {
         $template->add_if_new('title', restore_italics($crossRef->article_title)); // add_if_new will wikify title and sanitize the string
       }
       $template->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
+      $crossRef->year = min($crossRef->year); // assume pubished is before online and hope
       $template->add_if_new("year", $crossRef->year);
       if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
           && $crossRef->contributors->contributor
