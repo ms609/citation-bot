@@ -4,13 +4,14 @@ require_once __DIR__ . '/../testBaseClass.php';
  
 final class wikiFunctionsTest extends testBaseClass {
   
-  public function testIsValidUser() {
-    $result = is_valid_user('Smith609');
-    $this->assertEquals(TRUE, $result);
-    $result = is_valid_user('Stanlha'); // Random user who exists but does not have page as of Nov 2017
-    $this->assertEquals(TRUE, $result);
-    $result = is_valid_user('Not_a_valid_user_at_Dec_2017'); 
-    $this->assertEquals(FALSE, $result);
-  }
+
+ h
+public function testHugePage() {
+     $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=Bram_van_Leer&action=raw');
+     $page = new TestPage();
+     $page->parse_text($text);
+     $page->expand_text();
+   }
+ 
   
 }
