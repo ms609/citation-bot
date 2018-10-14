@@ -340,6 +340,7 @@ function tidy_date($string) {
   }
   if (preg_match('~^(.*?\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
   if (preg_match(    '~(\d{4}\-\d?\d(?:\-?\d\d?))$~', $string, $matches)) return $matches[1];
+  if (preg_match('~ ([19|20]\d{2})$~', $string, $matches)) return $matches[1];
   return $string;
 }
 
