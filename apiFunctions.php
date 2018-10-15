@@ -408,10 +408,11 @@ function query_crossref($doi) {
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
+    $raw_xml = @file_get_contents($url);
     
-    need to probably load file then parse it then xml parse it
+    do something
     
-    $xml = @simplexml_load_file($url);
+    $xml = @simplexml_load_string($raw_xml);
     if ($xml) {
       $result = $xml->query_result->body->query;
       if ($result["status"] == "resolved") {
