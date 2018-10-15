@@ -9,6 +9,14 @@ public function testHugePage() {
      $page = new TestPage();
      $page->parse_text($text);
      $page->expand_text();
+ 
+     $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=SU_Andromedae&action=raw');
+     $page = new TestPage();
+     $page->parse_text($text);
+     $page->expand_text();
+ 
+
+ 
    }
  
   
