@@ -409,9 +409,11 @@ function query_crossref($doi) {
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = @file_get_contents($url);
-    if (strpos($raw_xml, '11910818') !== FALSE) {
-      fwrite(STDERR, "\n".$raw_xml. "\n");
-    }
+    $raw_xml = preg_replace_callback('~(\<year media_type=\"online\"\>\d{4}\<\/year\>\<year media_type=\"print\"\>)~',
+          function($matches) {
+             return('<year media_type="print">');     
+          },
+          $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
     if ($xml) {
       $result = $xml->query_result->body->query;
