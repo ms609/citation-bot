@@ -355,7 +355,6 @@ function expand_by_doi($template, $force = FALSE) {
         $template->add_if_new('title', restore_italics($crossRef->article_title)); // add_if_new will wikify title and sanitize the string
       }
       $template->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
-      $crossRef->year = min($crossRef->year); // assume pubished is before online and hope
       $template->add_if_new("year", $crossRef->year);
       if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
           && $crossRef->contributors->contributor
@@ -409,6 +408,9 @@ function query_crossref($doi) {
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
+    
+    need to probably load file then parse it then xml parse it
+    
     $xml = @simplexml_load_file($url);
     if ($xml) {
       $result = $xml->query_result->body->query;
