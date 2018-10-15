@@ -118,14 +118,20 @@ class Page {
       report_warning("No text retrieved.\n");
       return FALSE;
     }
-
+echo  __LINE__ . '       ';
     // COMMENTS AND NOWIKI ETC. //
     $comments    = $this->extract_object('Comment');
+echo  __LINE__ . '       ';
     $nowiki      = $this->extract_object('Nowiki');
+echo  __LINE__ . '       ';    
     $chemistry   = $this->extract_object('Chemistry');
+echo  __LINE__ . '       ';
     $mathematics = $this->extract_object('Mathematics');
+echo  __LINE__ . '       ';
     $musicality  = $this->extract_object('Musicscores');
+echo  __LINE__ . '       '; 
     $preformated = $this->extract_object('Preformated');
+echo  __LINE__ . '       ';
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       return FALSE;
@@ -133,12 +139,14 @@ class Page {
 
     // PLAIN URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
+ echo  __LINE__ . '       ';
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
                       "~(<ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+)\]?\s*)(<\s*?\/\s*?ref>)~i",
                       function($matches) {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
                       $this->text
                       );
-     // PLAIN DOIS Converted to templates 
+  echo  __LINE__ . '       ';
+    // PLAIN DOIS Converted to templates 
      $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
                       "~(<ref[^>]*?>)(\s*10\.[0-9]+\/\S+\s*)(<\s*?\/\s*?ref>)~i",
                       function($matches) {return $matches[1] . '{{cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
@@ -146,12 +154,18 @@ class Page {
                       );
 
     // TEMPLATES
+echo  __LINE__ . '       ';
     $all_templates = $this->extract_object('Template');
+ 
+ echo  __LINE__ . '       ';   
+    
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
     }
+echo  __LINE__ . '       ';
     $our_templates = array();
     report_phase('Remedial work to prepare citations');
+echo  __LINE__ . '       ';
     for ($i = 0; $i < count($all_templates); $i++) {
       if (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
         // The objective in breaking this down into stages is to be able to send a single request to each API,
@@ -168,7 +182,7 @@ class Page {
         $all_templates[$i]->rename('work', 'magazine');
       }
     }
-    
+ echo  __LINE__ . '       ';   
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('url',     $our_templates);
@@ -178,7 +192,7 @@ class Page {
     $this->expand_templates_from_identifier('jstor',   $our_templates);
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
-    
+   echo  __LINE__ . '       '; 
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
@@ -188,7 +202,7 @@ class Page {
       $this_template->get_open_access_url();
       $this_template->find_pmid();  // #TODO Could probably batch this
     }
-    
+    echo  __LINE__ . '       ';
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
@@ -210,15 +224,16 @@ class Page {
         }
       }
     }
+    echo  __LINE__ . '       ';
     $this->replace_object($all_templates);
-
+echo  __LINE__ . '       ';
     $this->replace_object($preformated);
     $this->replace_object($musicality);
     $this->replace_object($mathematics);
     $this->replace_object($chemistry);
     $this->replace_object($comments);
     $this->replace_object($nowiki);
-
+echo  __LINE__ . '       ';
     return strcmp($this->text, $this->start_text) != 0; // we often just fix Journal caps
   }
 
