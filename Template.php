@@ -1360,6 +1360,11 @@ final class Template {
     }
     if ($result->numFound == 1) {
       $record = $result->docs[0];
+      if (isset($record->year) && $this->has('year')) {
+        if (abs((int)$record->year - (int)$this->has('year')) > 2) {
+          return FALSE;  // Probably a book review or something with same title, etc.
+        }
+      }
       echo tag();
       if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
       $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
