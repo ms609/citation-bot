@@ -233,8 +233,11 @@ function adsabs_api($ids, $templates, $identifier) {
              ":\n       ");
              // "; reset at " . date('r', $rate_limit[2][2]);
       } else {
-        report_warning("AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n");
-        return (object) array('numFound' => 0);
+        report_warning("AdsAbs daily search limit exceeded. Big queries stopped until " . date('r', $rate_limit[2][2]) . "\n");
+        foreach ($templates as $template) {
+           $template->expand_by_adsabs();
+        }
+        return TRUE;
       }
     } else {
       throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);
