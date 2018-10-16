@@ -12,7 +12,7 @@ exec ("git pull", $output, $return_var);
     echo "\n<br /> Check that there are no uncommitted changes on the server.";
   }
 } else {
-  echo "Git Fetch operation successful.";
+  echo "Successfully updated from Git repository.";
 }
 ?>
 <pre>
