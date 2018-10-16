@@ -18,7 +18,8 @@ if (getenv('GITHUB_PAT')) {
   git_echo('git config --global user.email "martins@gmail.com"');
   git_echo('git config --global user.name "Martin Smith"');
   git_echo('git fetch --all');
-  git_echo('git reset --hard origin/master');
+  git_echo('git pull');
+  git_echo('git reset --hard');
 
   $contents = file_get_contents($filename);
   $sections = explode($start_alpha, $contents);
@@ -52,7 +53,9 @@ if (getenv('GITHUB_PAT')) {
   git_echo('git add --all *');
   git_echo('git commit -m"Automated file maintenance" || true');
   git_echo('git push https://ms609-bot:' . getenv('GITHUB_PAT') . '@github.com/ms609/citation-bot.git');
-  git_echo('git reset --hard origin/master');
+  git_echo('git fetch --all');
+  git_echo('git checkout constants/capitalization.php');
+  git_echo('git pull');
 } else {
   echo "Github PAT not set.\n";
 }
