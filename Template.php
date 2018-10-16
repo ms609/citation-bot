@@ -554,6 +554,10 @@ final class Template {
           $this->forget('issn');
           $this->forget('class');
           
+          if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) {
+             $this->rename('publisher', $param_name);
+             return TRUE;
+          }
           if ($this->has('website')) { // alias for journal
              $this->rename('website', $param_name, $value);
              return TRUE;
