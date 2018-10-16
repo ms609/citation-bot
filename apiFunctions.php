@@ -408,7 +408,12 @@ function query_crossref($doi) {
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
-    $xml = @simplexml_load_file($url);
+    $raw_xml = @file_get_contents($url);
+    $raw_xml = preg_replace(
+      '~(\<year media_type=\"online\"\>\d{4}\<\/year\>\<year media_type=\"print\"\>)~',
+          '<year media_type="print">',
+          $raw_xml);
+    $xml = @simplexml_load_string($raw_xml);
     if ($xml) {
       $result = $xml->query_result->body->query;
       if ($result["status"] == "resolved") {
