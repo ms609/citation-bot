@@ -2838,7 +2838,7 @@ final class Template {
              $this->has('periodical') ||
              $this->has('website')) {
               $this->forget('work'); // Delete if we have alias
-         } elseif ($this->wikiname() === 'cite web') {
+         } elseif ($this->wikiname() === 'cite web' && !$this->blank(['url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl'])) {
             $this->rename('work', 'website');
          } elseif ($this->wikiname() === 'cite journal') {
             $this->rename('work', 'journal');
