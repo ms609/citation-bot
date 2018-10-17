@@ -3210,6 +3210,9 @@ final class Template {
       $this->forgetter('via', $echo_forgetting);
       $this->forgetter('website', $echo_forgetting);
       $this->forgetter('deadurl', $echo_forgetting);
+      if ($this->has('work') && stripos($this->get('work'), 'www.') === 0) {
+         $this->forgetter('work', $echo_forgetting);
+      }
     }
     if ($par == 'chapter' && $this->blank('url')) {
       if($this->has('chapter-url')) {
