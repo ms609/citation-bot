@@ -554,6 +554,10 @@ final class Template {
           $this->forget('issn');
           $this->forget('class');
           
+          if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) {
+             $this->rename('publisher', $param_name);
+             return TRUE;
+          }
           if ($this->has('website')) { // alias for journal
              $this->rename('website', $param_name, $value);
              return TRUE;
@@ -2834,7 +2838,7 @@ final class Template {
              $this->has('periodical') ||
              $this->has('website')) {
               $this->forget('work'); // Delete if we have alias
-         } elseif ($this->wikiname() === 'cite web') {
+         } elseif ($this->wikiname() === 'cite web' && !$this->blank(['url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl'])) {
             $this->rename('work', 'website');
          } elseif ($this->wikiname() === 'cite journal') {
             $this->rename('work', 'journal');
@@ -3206,6 +3210,9 @@ final class Template {
       $this->forgetter('via', $echo_forgetting);
       $this->forgetter('website', $echo_forgetting);
       $this->forgetter('deadurl', $echo_forgetting);
+      if ($this->has('work') && stripos($this->get('work'), 'www.') === 0) {
+         $this->forgetter('work', $echo_forgetting);
+      }
     }
     if ($par == 'chapter' && $this->blank('url')) {
       if($this->has('chapter-url')) {
