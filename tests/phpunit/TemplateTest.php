@@ -515,6 +515,13 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('bibcode'));  // If this eventually gets a journal, we will have to change the test
   }
 
+  public function testNoBibcodesForBookReview() {
+    $text = '{{cite book|last1=Klein|first1=Edward |title=Elements of histology|url=https://books.google.com/books?id=08m1UWAKyEAC&pg=PA124|accessdate=January 29, 2017|year=1785|publisher=Lea|page=124}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('bibcode'));
+    $this->assertNull($expanded->get('doi'));
+  }
+  
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
     |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
