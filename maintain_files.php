@@ -17,7 +17,6 @@ if (getenv('GITHUB_PAT')) {
   
   git_echo('git config --global user.email "martins@gmail.com"');
   git_echo('git config --global user.name "Martin Smith"');
-  git_echo('git fetch --all');
   git_echo('git pull');
   git_echo('git reset --hard');
 
