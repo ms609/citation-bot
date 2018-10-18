@@ -20,6 +20,7 @@ final class Template {
   const REGEXP = '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su';  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
+  public $date_style = FALSE;  // From the page
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
@@ -511,6 +512,7 @@ final class Template {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
           // TODO does this still match the current usage practice?
           $param_name = "year";
+        } elseif ($date_style) {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
