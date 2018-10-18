@@ -26,4 +26,3 @@ const DOI_URL_DECODE = array("#", "<", ">");
 const DATES_WHATEVER = FALSE; // PHP has no native enum
 const DATES_MDY      = 1;
 const DATES_DMY      = 2;
-const DATES_NOTSET   = 9;
