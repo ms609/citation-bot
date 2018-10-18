@@ -512,14 +512,14 @@ final class Template {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
           // TODO does this still match the current usage practice?
           $param_name = "year";
-        } elseif ($date_style) {
+        } elseif ($this->date_style) {
           $time = strtotime($value);
           if ($time) {
             $day = date('d', $time);
             if ($day !== '01') { // Probably just got month and year if day=1
-              if ($date_style === DATES_MDY) {
+              if ($this->date_style === DATES_MDY) {
                  $value = date('m-d-Y', $time);
-              } elseif ($date_style === DATES_DMY) {
+              } elseif ($this->date_style === DATES_DMY) {
                  $value = date('d-m-Y', $time);
               }
             }
