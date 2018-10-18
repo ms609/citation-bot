@@ -555,7 +555,7 @@ final class Template {
           $this->forget('class');
           
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
-             $this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) return FALSE;
+             if ($this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) return FALSE;
              if($this->blank('work')) {
                $this->add('work', $value);
                return TRUE;
