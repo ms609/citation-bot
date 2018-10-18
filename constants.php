@@ -22,3 +22,8 @@ const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 
 const DOI_URL_ENCODE = array("%23", "%3C", "%3E");
 const DOI_URL_DECODE = array("#", "<", ">");
+
+const DATES_WHATEVER = 1; // PHP has no native enum
+const DATES_MDY      = 2;
+const DATES_DMY      = 3;
+const DATES_NOTSET   = 9;
