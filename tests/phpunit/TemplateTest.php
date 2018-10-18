@@ -136,7 +136,7 @@ final class TemplateTest extends testBaseClass {
   public function testBadAuthor2() {
       $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST}}';
       $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->parsed_text());
+      $this->assertEquals('Infectious Diseases Society of America', $expanded->get('author1'));
   }
  
   public function testPmidIsZero() {
