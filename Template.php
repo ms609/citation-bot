@@ -513,6 +513,17 @@ final class Template {
           // TODO does this still match the current usage practice?
           $param_name = "year";
         } elseif ($date_style) {
+          $time = strtotime($value);
+          if ($time) {
+            $day = date('d', $time);
+            if ($day !== '01') { // Probably just got month and year if day=1
+              if ($date_style === DATES_MDY) {
+                 $value = date('m-d-Y', $time)
+              } elseif ($date_style === DATES_DMY) {
+                 $value = date('d-m-Y', $time)
+              }
+            }
+          }
         }
       // Don't break here; we want to go straight in to year;
       case "year":
