@@ -133,8 +133,8 @@ final class TemplateTest extends testBaseClass {
      $this->assertEquals($text, $expanded->parsed_text());
   }
 
-  public function testVauthors() {
-      $text = '{{cite journal |vauthors= |title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST |url=}}';
+  public function tesBadAuthor2() {
+      $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST}}';
       $expanded = $this->process_citation($text);
       $this->assertNull($expanded->get('author2'));
   }
