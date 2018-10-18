@@ -55,7 +55,7 @@ final class Template {
       $this->initial_param[$p->param] = $p->val;
 
       // Save author params for special handling
-      if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS) && $p->val) {
+      if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS) && trim($p->val)) {
         $this->initial_author_params[$p->param] = $p->val;
       }
     }
