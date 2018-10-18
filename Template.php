@@ -55,7 +55,7 @@ final class Template {
       $this->initial_param[$p->param] = $p->val;
 
       // Save author params for special handling
-      if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS) && trim($p->val)) {
+      if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS) && $p->val) {
         $this->initial_author_params[$p->param] = $p->val;
       }
     }
@@ -3037,7 +3037,7 @@ final class Template {
   // Retrieve properties of template
   public function first_author() {
     foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
-      $author = trim($this->get($auth_param));
+      $author = $this->get($auth_param);
       if ($author) return $author;
     }
     $forenames = $this->get('first') . $this->get('forename') . $this->get('initials') .
