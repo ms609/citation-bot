@@ -151,7 +151,7 @@ class Page {
     $all_templates = $this->extract_object('Template');
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
-       $all_templates[$i]->date_style = $this->$date_style;
+       $all_templates[$i]->date_style = $this->date_style;
     }
     $our_templates = array();
     report_phase('Remedial work to prepare citations');
@@ -353,7 +353,7 @@ class Page {
         $date_style = DATES_DMY;
       }
     }
-    $this->$date_style = $date_style;
+    $this->date_style = $date_style;
   }
   
   protected function construct_modifications_array() {
