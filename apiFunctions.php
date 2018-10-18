@@ -41,7 +41,7 @@ function entrez_api($ids, $templates, $db) {
         break;  case "PmId":    $this_template->add_if_new('pmid', (string) $item, 'entrez');
         break;  case "AuthorList":
           $i = 0;
-          foreach ($item->Item as $subItem) 
+          foreach ($item->Item as $subItem) {
             if (author_is_human((string) $subItem)) {
               $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
