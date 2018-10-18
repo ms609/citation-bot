@@ -20,7 +20,7 @@ final class Template {
   const REGEXP = '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su';  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
-  public $date_style = FALSE;  // From the page
+  public $date_style = DATES_WHATEVER;  // Will get from the page
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
