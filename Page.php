@@ -14,7 +14,7 @@ require_once('WikipediaBot.php');
 
 class Page {
 
-  protected $text, $title, $modifications, $date_style = DATES_NOTSET;
+  protected $text, $title, $modifications, $date_style;
   protected $read_at, $api, $namespace, $touched, $start_text, $last_write_time;
   public $lastrevid;
 
@@ -54,6 +54,7 @@ class Page {
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     $this->start_text = $this->text;
     $this->construct_modifications_array();
+    $date_style = $this->get_date_pattern();
 
     if (stripos($this->text, '#redirect') !== FALSE) {
       echo "Page is a redirect.";
@@ -72,6 +73,7 @@ class Page {
     $this->text = $text;
     $this->start_text = $this->text;
     $this->construct_modifications_array();
+    $date_style = $this->get_date_pattern();
   }  
 
   public function parsed_text() {
@@ -149,6 +151,7 @@ class Page {
     $all_templates = $this->extract_object('Template');
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
+       $all_templates[$i]->date_style = $date_style;
     }
     $our_templates = array();
     report_phase('Remedial work to prepare citations');
@@ -336,10 +339,10 @@ class Page {
     return TRUE;
   }
   
-  public function get_date_pattern() {
+  protected function get_date_pattern() {
     // https://en.wikipedia.org/wiki/Template:Use_mdy_dates
     // https://en.wikipedia.org/wiki/Template:Use_dmy_dates
-    if ($date_style != DATES_NOTSET) return $date_style; // Cache this to avoid do this over and over again
+    $date_style = DATES_NOTSET;
     if (preg_match('/\{\{(Use mdy dates*?)\}\}/iS',$this->text)) {
       $date_style = DATES_MDY;
     }
@@ -350,7 +353,7 @@ class Page {
         $date_style = DATES_DMY;
       }
     }
-    if ($date_style == DATES_NOTSET) $date_style = DATES_WHATEVER;
+    if ($date_style === DATES_NOTSET) $date_style = DATES_WHATEVER;
     return $date_style;
   }
   
