@@ -14,7 +14,7 @@ require_once('WikipediaBot.php');
 
 class Page {
 
-  protected $text, $title, $modifications;
+  protected $text, $title, $modifications, $date_style = DATES_NOTSET;
   protected $read_at, $api, $namespace, $touched, $start_text, $last_write_time;
   public $lastrevid;
 
@@ -334,6 +334,24 @@ class Page {
     if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $this->text))
       return FALSE;
     return TRUE;
+  }
+  
+  public function get_date_pattern() {
+    // https://en.wikipedia.org/wiki/Template:Use_mdy_dates
+    // https://en.wikipedia.org/wiki/Template:Use_dmy_dates
+    if ($date_style != DATES_NOTSET) return $date_style; // Cache this to avoid do this over and over again
+    if (preg_match('/\{\{(Use mdy dates*?)\}\}/iS',$this->text)) {
+      $date_style = DATES_MDY;
+    }
+    if (preg_match('/\{\{(Use dmy dates*?)\}\}/iS',$this->text)) {
+      if ($date_style == DATES_MDY) {
+        $date_style = DATES_WHATEVER;  // Found both :-(
+      } else {
+        $date_style = DATES_DMY;
+      }
+    }
+    if ($date_style == DATES_NOTSET) $date_style = DATES_WHATEVER;
+    return $date_style;
   }
   
   protected function construct_modifications_array() {
