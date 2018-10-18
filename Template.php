@@ -518,9 +518,9 @@ final class Template {
             $day = date('d', $time);
             if ($day !== '01') { // Probably just got month and year if day=1
               if ($date_style === DATES_MDY) {
-                 $value = date('m-d-Y', $time)
+                 $value = date('m-d-Y', $time);
               } elseif ($date_style === DATES_DMY) {
-                 $value = date('d-m-Y', $time)
+                 $value = date('d-m-Y', $time);
               }
             }
           }
