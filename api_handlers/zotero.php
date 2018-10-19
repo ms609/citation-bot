@@ -94,15 +94,6 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Could parse unicode characters in ". $url);
     return FALSE;
   }
-  if ($access_date && isset($result->date)) {
-    $new_date = strtotime(tidy_date($result->date));
-    if($new_date) { // can compare
-      if($new_date > $access_date) {
-        report_info("URL appears to have changed since access-date ". $url);
-        return FALSE;
-      }
-    }
-  }
   
   report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
@@ -139,6 +130,17 @@ function expand_by_zotero(&$template, $url = NULL) {
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
   }
 
+  if ( isset($result->ISBN))             $template->add_if_new('isbn'   , $result->ISBN);
+  if ($access_date && isset($result->date)) {
+    $new_date = strtotime(tidy_date($result->date));
+    if($new_date) { // can compare
+      if($new_date > $access_date) {
+        report_info("URL appears to have changed since access-date ". $url);
+        return FALSE;
+      }
+    }
+  }
+  
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
@@ -149,8 +151,7 @@ function expand_by_zotero(&$template, $url = NULL) {
        if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher); 
     }
   }
-    
-  if ( isset($result->ISBN))             $template->add_if_new('isbn'   , $result->ISBN);
+
   if ( isset($result->issue))            $template->add_if_new('issue'  , $result->issue);
   if ( isset($result->pages))            $template->add_if_new('pages'  , $result->pages);
   if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
