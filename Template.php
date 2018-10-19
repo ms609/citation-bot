@@ -2401,6 +2401,7 @@ final class Template {
       // so we use chapter-url so that the template is well rendered afterwards
       if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
         $this->rename('url', 'chapter-url');
+        $this->rename('format', 'chapter-format');
       } elseif (!$this->blank(['chapter-url','chapterurl']) && (0 === strcasecmp($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
       }  // otherwise they are differnt urls
