@@ -324,11 +324,12 @@ function tidy_date($string) {
   if (strlen($string) != mb_strlen($string) {  // Conver multi-byte to dashes
     $cleaned = '';
     for ($i = 0; $i < mb_strlen($string); $i++) {
-    $char = mb_substr($string,$i,1);
-    if (mb_strlen($char) == strlen($char)) {
-        $cleaned .= $char;
-    } else {
-        $cleaned .= '-';
+       $char = mb_substr($string,$i,1);
+       if (mb_strlen($char) == strlen($char)) {
+          $cleaned .= $char;
+       } else {
+          $cleaned .= '-';
+       }
     }
     $string = $cleaned;
   }
