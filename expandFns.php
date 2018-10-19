@@ -321,7 +321,7 @@ function tidy_date($string) {
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
   
-  if (strlen($string) != mb_strlen($string) {  // Conver multi-byte to dashes
+  if (strlen($string) != mb_strlen($string) {  // Convert all multi-byte characters to dashes
     $cleaned = '';
     for ($i = 0; $i < mb_strlen($string); $i++) {
        $char = mb_substr($string,$i,1);
@@ -333,7 +333,7 @@ function tidy_date($string) {
     }
     $string = $cleaned;
   }
-  $string = preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters
+  $string = preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters to dashes
   $string = preg_replace('~\-+~u', '-',$string); // Combine multiple dashes
   $string = preg_replace('~\- ~u', ' ',$string); // Remove dash followed by space
   $string = preg_replace('~ \-~u', ' ',$string); // Remove dash proceeded by space
