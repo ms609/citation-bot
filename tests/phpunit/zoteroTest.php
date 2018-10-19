@@ -23,7 +23,7 @@ class ZoteroTest extends testBaseClass {
   }
 
   public function testZoteroExpansionNBK() {
-    $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/}}';
+    $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';  // Date is before access-date so will expand
     $expanded = $this->expand_via_zotero($text);
     $this->assertEquals('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
     $this->assertEquals('2004', $expanded->get('year'));
@@ -31,7 +31,7 @@ class ZoteroTest extends testBaseClass {
   }
  
   public function testZoteroExpansionAccessDates() {
-    $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24663/|access-date=2099-12-12}}';
+    $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24663/|access-date=1978-12-12}}';  // Access date is too far in past, will not expand
     $expanded = $this->expand_via_zotero($text);
     $this->assertEquals($text, $expanded->parsed_text());
   }
