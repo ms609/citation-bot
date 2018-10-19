@@ -334,9 +334,7 @@ function tidy_date($string) {
     $string = $cleaned;
   }
   $string = preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters to dashes
-  $string = preg_replace('~\-[\s\-]+~', '-',$string); // Combine dash followed by white or dashes
-  $string = preg_replace('~[\s\-]+\-~', '-',$string); // Combine dash preceeded by white or dashes
-  $string = preg_replace('~\-+~', '-',$string); // Combine multiple dashes
+  $string = preg_replace('~[\s\-]*\-[\s\-]*~', '-',$string); // Combine dash with any following or preceeding white space and other dash
   $string = preg_replace('~\-$~', '',$string);  // Remove trailing dash
   $string = preg_replace('~^\-~', '',$string);  // Remove leading dash
   $string = trim($string);
