@@ -95,7 +95,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE;
   }
   if ($access_date && isset($result->date)) {
-    $new_date = strtodate(tidy_date($result->date));
+    $new_date = strtotime(tidy_date($result->date));
     if($new_date) { // can compare
       if($new_date > $access_date) {
         report_info("URL appears to have changed since access-date ". $url);
