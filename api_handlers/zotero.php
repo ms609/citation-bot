@@ -47,7 +47,7 @@ function zotero_request($url) {
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
-  $access_date = strtotime("1 January 2222");
+  $access_date = FALSE;
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
   }
@@ -94,7 +94,15 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Could parse unicode characters in ". $url);
     return FALSE;
   }
-  if (is
+  if ($access_date && isset($result->date)) {
+    $new_date = strtodate(tidy_date($result->date)));
+    if($new_date) { // can compare
+      if($new_date > $access_date) {
+        report_info("URL appears to have changed since access-date ". $url);
+        return FALSE;
+      }
+    }
+  }
   
   report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
