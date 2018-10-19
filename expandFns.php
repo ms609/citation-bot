@@ -320,13 +320,24 @@ function tidy_date($string) {
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
-  if (strlen($string) != mb_strlen($string) {
-    remove them
-    $string = preg_replace('~\-+~u', '-',$string); // Combine multiple dashes
-    $string = preg_replace('~\- ~u', ' ',$string); // Remove dash followed by space
-    $string = preg_replace('~ \-~u', ' ',$string); // Remove dash proceeded by space
-    $string = trim($string);
+  
+  if (strlen($string) != mb_strlen($string) {  // Conver multi-byte to dashes
+    $cleaned = '';
+    for ($i = 0; $i < mb_strlen($string); $i++) {
+    $char = mb_substr($string,$i,1);
+    if (mb_strlen($char) == strlen($char)) {
+        $cleaned .= $char;
+    } else {
+        $cleaned .= '-';
+    }
+    $string = $cleaned;
   }
+  $string = preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters
+  $string = preg_replace('~\-+~u', '-',$string); // Combine multiple dashes
+  $string = preg_replace('~\- ~u', ' ',$string); // Remove dash followed by space
+  $string = preg_replace('~ \-~u', ' ',$string); // Remove dash proceeded by space
+  $string = trim($string);
+
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
     if ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
