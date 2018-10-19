@@ -321,7 +321,7 @@ function tidy_date($string) {
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
   // Huge amout of character cleaning
-  if (strlen($string) != mb_strlen($string) {  // Convert all multi-byte characters to dashes
+  if (strlen($string) != mb_strlen($string)) {  // Convert all multi-byte characters to dashes
     $cleaned = '';
     for ($i = 0; $i < mb_strlen($string); $i++) {
        $char = mb_substr($string,$i,1);
