@@ -47,6 +47,10 @@ function zotero_request($url) {
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
+  $access_date = strtotime("1 January 2222");
+  if (is_null($url)) {
+     $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
+  }
   if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
   if (!$url) {
@@ -90,6 +94,8 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Could parse unicode characters in ". $url);
     return FALSE;
   }
+  if (is
+  
   report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {
