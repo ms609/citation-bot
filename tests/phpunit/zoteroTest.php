@@ -29,6 +29,12 @@ class ZoteroTest extends testBaseClass {
     $this->assertEquals('2004', $expanded->get('year'));
     $this->assertEquals('National Academies Press (US)', $expanded->get('publisher'));
   }
+ 
+  public function testZoteroExpansionAccessDates() {
+    $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24663/|access-date=2099-12-12}}';
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+  }
 
   public function testZoteroExpansionNYT() {
     $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
