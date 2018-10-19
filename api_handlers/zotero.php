@@ -54,6 +54,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE;
   }
 
+  if(preg_match("~^https?://twitter\.~", $url)) return FALSE;  // This should be {{cite tweet}}.  Stay away!!!
   if(preg_match("~^https?://books\.google\.~", $url)) return FALSE;  // We have special google gooks code
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   if(preg_match('~^https?://(?:www.|)jstor.org/stable/(.*)$~', $url, $match)) return FALSE; // We do this ourself
