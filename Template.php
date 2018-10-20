@@ -179,7 +179,7 @@ final class Template {
     return !$this->api_has_used($api, $param);
   }
   
-  protected function process() {
+  public function process() {
     if ($this->should_be_processed()) {
       $this->prepare();
 
@@ -2384,7 +2384,7 @@ final class Template {
     &&  lcfirst($new_name) != $this->wikiname()
     ) {
       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
-      $this->name = $spacing[1] . ucfirst(strtolower(trim($new_name))) . $spacing[2];
+      $this->name = @$spacing[1] . ucfirst(strtolower(trim($new_name))) . @$spacing[2];
       switch (strtolower($new_name)) {
         case 'cite journal': 
           $this->rename('eprint', 'arxiv'); 
