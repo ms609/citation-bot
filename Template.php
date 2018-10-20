@@ -2689,7 +2689,8 @@ final class Template {
           } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
           }
-          if (preg_match("~^https?://(?:www.|)google.com/~", $url)) {
+          if (preg_match("~^https?://(?:www.|)google.com/~", $this->get($param))) {
+            $url = $this->get($param);
             $url = $url . "&";
             $url = preg_replace('~&rls=[^&]*&~', '&', $url);
             $url = preg_replace('~&aq=[^&]*&~', '&', $url);
@@ -2703,6 +2704,7 @@ final class Template {
             $url = preg_replace('~&aqs=[^&]*&~', '&', $url);
             $url = preg_replace('~&sourceid=[^&]*&~', '&', $url);
             $url = preg_replace('~&$~', '', $url); // Remove trailing added &
+            $this->set($param, $url);
           }
           return;
         
