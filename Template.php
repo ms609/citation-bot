@@ -2296,6 +2296,12 @@ final class Template {
 
     if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list) && stripos($p->param, 'CITATION_BOT')===FALSE) {
      
+      if (trim($p->val) === '') {
+        report_forget("Dropping empty unrecognised parameter " . echoable($p->param) . " ");
+        $this->quietly_forget($p->param);
+        continue;
+      }
+      
       report_modification("Unrecognised parameter " . echoable($p->param) . " ");
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
@@ -2305,15 +2311,6 @@ final class Template {
         continue;
       }
       
-      /* Not clear why this exception exists.
-       * If it is valid, it should apply only when $p->param relates to authors,
-       * not when it applies to e.g. pages, title.
-      if ($this->initial_author_params) {
-        echo "\n   . initial authors exist, not correcting " . echoable($p->param);
-        continue;
-      }
-      */
-
       $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
       $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
       $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
