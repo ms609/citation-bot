@@ -2684,10 +2684,25 @@ final class Template {
             $param = 'url'; // passes down to next area
           }
         case 'url':
-          if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
+          if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
-          } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
+          } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
+          }
+          if (preg_match("~^https?://(?:www.|)google.com/~", $url)) {
+            $url = $url . "&";
+            $url = preg_replace('~&rls=[^&]*&~', '&', $url);
+            $url = preg_replace('~&aq=[^&]*&~', '&', $url);
+            $url = preg_replace('~&oq=[^&]*&~', '&', $url);
+            $url = preg_replace('~&aqi=[^&]*&~', '&', $url);
+            $url = preg_replace('~&tbm=[^&]*&~', '&', $url);
+            $url = preg_replace('~&sa=[^&]*&~', '&', $url);
+            $url = preg_replace('~&ved=[^&]*&~', '&', $url);
+            $url = preg_replace('~&biw=[^&]*&~', '&', $url);
+            $url = preg_replace('~&bih=[^&]*&~', '&', $url);
+            $url = preg_replace('~&aqs=[^&]*&~', '&', $url);
+            $url = preg_replace('~&sourceid=[^&]*&~', '&', $url);
+            $url = preg_replace('~&$~', '', $url); // Remove trailing added &
           }
           return;
         
