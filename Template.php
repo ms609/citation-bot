@@ -2702,6 +2702,7 @@ final class Template {
             $url = preg_replace('~&biw=[^&]*&~', '&', $url);
             $url = preg_replace('~&bih=[^&]*&~', '&', $url);
             $url = preg_replace('~&aqs=[^&]*&~', '&', $url);
+            $url = preg_replace('~&client=[^&]*&~', '&', $url);
             $url = preg_replace('~&sourceid=[^&]*&~', '&', $url);
             $url = preg_replace('~&$~', '', $url); // Remove trailing added &
             $this->set($param, $url);
