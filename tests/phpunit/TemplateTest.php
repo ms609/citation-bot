@@ -225,6 +225,8 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $expanded->get('chapter-url'));
     $this->assertNull($expanded->get('url'));
+    $this->assertNull($expanded->get('format'));
+    $this->assertEquals('PDF', $expanded->get('chapter-format'));
   }
 
   public function testDoiExpansion() {
