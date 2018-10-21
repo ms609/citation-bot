@@ -339,7 +339,8 @@ function tidy_date($string) {
   $string = trim($string);
   // End of character clean-up
   $string = preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
-  $string = preg_replace('~^Date published \(~', '', $string);
+  $string = preg_replace('~^Date published \(~', '', $string); // seen this
+  if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
     if ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
