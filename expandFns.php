@@ -338,7 +338,9 @@ function tidy_date($string) {
   $string = preg_replace('~^\-*(.+?)\-*$~', '\1', $string);  // Remove trailing/leading dashes
   $string = trim($string);
   // End of character clean-up
-  if (is_numeric($string) && is_int(1*$string)) {
+  $string = preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
+  $string = preg_replace('~^Date published \(~', '', $string);
+  if (is_numeric($string) && is_int(1)) {
     $string = intval($string);
     if ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
     if ($string > -2 && $string < 2) return ''; // reject -1,0,1
