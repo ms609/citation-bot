@@ -229,7 +229,7 @@ const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 
 const ALL_ALIASES = [TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
               DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, AUTHOR1_ALIASES,
               FORENAME1_ALIASES, EDITOR1_ALIASES, ISSUE_ALIASES, PAGE_ALIASES,
-              TIME_ALIASES, WORK_ALIASES];
+              TIME_ALIASES, WORK_ALIASES, FLATTENED_AUTHOR_PARAMETERS];
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
 // that information can also be presented using the generic {{citation}} template, which we do modify.
