@@ -133,6 +133,12 @@ final class TemplateTest extends testBaseClass {
      $this->assertEquals($text, $expanded->parsed_text());
   }
 
+  public function testBadAuthor2() {
+      $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Infectious Diseases Society of America', $expanded->get('author1'));
+  }
+ 
   public function testPmidIsZero() {
       $text = '{{cite journal|pmc=2676591}}';
       $expanded = $this->process_citation($text);
