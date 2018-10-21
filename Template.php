@@ -600,7 +600,7 @@ final class Template {
       
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
-        if ($this->blank($param_name)) {
+        if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')) {
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
