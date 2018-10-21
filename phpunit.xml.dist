@@ -20,6 +20,7 @@
         <file>./maintain_files.php</file>
         <file>./category.php</file>
         <file>./WikipediaBot.php</file>
+        <file>./doi2ref.php</file>
       </exclude>
     </whitelist>
   </filter>
