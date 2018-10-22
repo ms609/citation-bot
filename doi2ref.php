@@ -8,7 +8,7 @@ header("Content-Type: text/plain");
 
 include('expandFns.php');
 $t = new Template();
-$t->add('doi', $_GET['doi']);
+foreach ($_GET as $param=>$value) $t->set($param, value);
 $t->process(); // better than calling expand_by_doi because it also sets the wikiname
 echo "\n";
 echo "\n";
