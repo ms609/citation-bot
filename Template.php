@@ -703,6 +703,11 @@ final class Template {
       case 'doi':
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
+            $url_test = "https://dx.doi.org/" . urlencode($value);
+            $headers_test = @get_headers($url_test, 1);
+            if ($headers_test !== FALSE && empty($headers_test['Location'])) {
+              return FALSE; // does not resolve.  On FALSE we are optimistic
+            }
             $this->add('doi', $match[0]);          
             return TRUE;
           } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
