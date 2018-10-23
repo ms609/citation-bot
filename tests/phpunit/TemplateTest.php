@@ -896,7 +896,6 @@ ER -  }}';
 %T Permian strata in South-East Asia
 %D 1990
 %I University of California, Berkeley
-%R 10.1038/ntheses.01928
 %9 Dissertation}}';
        $prepared = $this->prepare_citation($book);
        $this->assertEquals('Chaucer, Geoffrey', $prepared->first_author());
@@ -917,8 +916,7 @@ ER -  }}';
        $this->assertEquals('Cantucci, Elena', $prepared->first_author());
        $this->assertEquals('Permian strata in South-East Asia', $prepared->get('title'));
        $this->assertEquals('1990', $this->getDateAndYear($prepared));
-       $this->assertEquals('University of California, Berkeley', $prepared->get('publisher'));
-       $this->assertEquals('10.1038/ntheses.01928', $prepared->get('doi'));  
+       $this->assertEquals('University of California, Berkeley', $prepared->get('publisher')); 
   }
    
   public function testConvertingISBN10intoISBN13() { // URLS present just to speed up tests
