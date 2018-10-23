@@ -23,7 +23,9 @@ final class Template {
   public $date_style = DATES_WHATEVER;  // Will get from the page
   protected $rawtext;
 
-  protected $name, $param, $initial_param, $initial_author_params, $initial_name,
+  public $name; // the name of the template, prefixed by "cite" eg "cite web" or "cite journal"
+
+  protected $param, $initial_param, $initial_author_params, $initial_name,
             $used_by_api, $doi_valid = FALSE,
             $mod_dashes;
 
@@ -2397,7 +2399,7 @@ final class Template {
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     &&  lcfirst($new_name) != $this->wikiname()
     ) {
-      if (preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing) {
+      if (preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing)) {
         $this->name = $spacing[1] . ucfirst(strtolower(trim($new_name))) . $spacing[2];
       } else {
         $this->name = ucfirst(strtolower(trim($new_name))); // No existing name set
