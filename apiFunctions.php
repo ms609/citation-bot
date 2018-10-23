@@ -42,7 +42,6 @@ function entrez_api($ids, $templates, $db) {
         break;  case "AuthorList":
           $i = 0;
           foreach ($item->Item as $subItem) {
-            $i++;
             if (author_is_human((string) $subItem)) {
               $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
@@ -52,10 +51,12 @@ function entrez_api($ids, $templates, $db) {
                 if (strpos($first, '.') && substr($first, -1) != '.') {
                   $first = $first . '.';
                 }
+                $i++;
                 $this_template->add_if_new("author$i", $names[1] . $junior . ',' . $first, 'entrez');
               }
             } else {
               // We probably have a committee or similar.  Just use 'author$i'.
+              $i++;
               $this_template->add_if_new("author$i", (string) $subItem, 'entrez');
             }
           }
