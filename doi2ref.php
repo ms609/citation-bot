@@ -8,7 +8,7 @@ header("Content-Type: text/plain");
 
 include('expandFns.php');
 $t = new Template();
-$t->name = 'cite web';
+$t->parse_text('{{cite web}}');
 foreach ($_GET as $param=>$value) $t->set($param, $value);
 $t->process(); // better than calling expand_by_doi because it also sets the wikiname
 echo "\n";
