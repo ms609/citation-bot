@@ -584,7 +584,6 @@ final class TemplateTest extends testBaseClass {
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
       $this->assertEquals('1234', $expanded->get('oclc'));
       $this->assertEquals('12345', $expanded->get('ol'));
-      $this->assertNotNull($expanded->get('doi-broken-date'));
       $this->assertEquals(0, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
       
       $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
