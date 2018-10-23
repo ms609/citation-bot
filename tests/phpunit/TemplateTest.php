@@ -578,11 +578,10 @@ final class TemplateTest extends testBaseClass {
   }
        
   public function testId2Param() {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('978-1234-9583-068', $expanded->get('isbn'));
       $this->assertEquals('1234.5678', $expanded->get('arxiv'));
-      $this->assertEquals('10.1234/bashifbjaksn.ch2', $expanded->get('doi'));
       $this->assertEquals('1234', $expanded->get('oclc'));
       $this->assertEquals('12345', $expanded->get('ol'));
       $this->assertNotNull($expanded->get('doi-broken-date'));
