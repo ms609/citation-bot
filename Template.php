@@ -23,9 +23,7 @@ final class Template {
   public $date_style = DATES_WHATEVER;  // Will get from the page
   protected $rawtext;
 
-  public $name; // the name of the template, prefixed by "cite" eg "cite web" or "cite journal"
-
-  protected $param, $initial_param, $initial_author_params, $initial_name,
+  protected $name, $param, $initial_param, $initial_author_params, $initial_name,
             $used_by_api, $doi_valid = FALSE,
             $mod_dashes;
 
