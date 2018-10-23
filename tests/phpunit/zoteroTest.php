@@ -70,11 +70,9 @@ class ZoteroTest extends testBaseClass {
     $this->assertEquals('2018-06-05', $expanded->get('date'));
     $text = "{{cite web|title= Gelada| website= nationalgeographic.com |url= http://animals.nationalgeographic.com/animals/mammals/gelada/ |publisher=[[National Geographic Society]]|accessdate=7 March 2012}}";
     $expanded = $this->expand_via_zotero($text);
-    if ($expanded->get('date') == '') {
-       $this->assertNull(NULL); // very sketchy website reliability
-       return;
-    }
-    $this->assertEquals('2011-05-10', $expanded->get('date'));
+    $date = $expanded->get('date');
+    $date = str_replace('2011-05-10', '', $date); // Sometimes we get no date
+    $this->assertEquals('', $date);
   }
 
   public function testZoteroExpansion_citeseerx() {
