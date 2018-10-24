@@ -153,11 +153,6 @@ class Page {
                       $this->text
                       );
     }                 
-    $this->text = preg_replace_callback(   
-                      "~(<ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+)\]?\s*)(<\s*?\/\s*?ref>)~i",
-                      function($matches) {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
-                      $this->text
-                      );
      // PLAIN DOIS Converted to templates 
      $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
                       "~(<ref[^>]*?>)(\s*10\.[0-9]+\/\S+\s*)(<\s*?\/\s*?ref>)~i",
