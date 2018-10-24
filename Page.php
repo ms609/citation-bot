@@ -140,11 +140,18 @@ class Page {
                       function($matches) {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
                       $this->text
                       );
-    if (preg_match("~(<ref[^>]*?>)((\s*\[)(https?:\/\/[^ >}{\]\[]+)(\s+)(https?:\/\/[^ >}{\]\[]+)(\s*\]\s*))(<\s*?\/\s*?ref>))~i",
-                     $this->text, $matches) {
-                     if ($matches[4] === $matches[6]) {   // Ones like <ref>[http://www... http://www...]</ref>
-                        $this->text = $matches[1] . '{{cite web | url=' . $matches[4] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] .) . '}}' . $matches[8] ;},
-                     }
+   // Ones like <ref>[http://www... http://www...]</ref>
+    $this->text = preg_replace_callback(   
+                      "~(<ref[^>]*?>)((\s*\[)(https?:\/\/[^ >}{\]\[]+)(\s+)(https?:\/\/[^ >}{\]\[]+)(\s*\]\s*))(<\s*?\/\s*?ref>))~i",
+                      function($matches) {
+                        if ($matches[4] === $matches[6]) {
+                            return $matches[1] . '{{cite web | url=' . $matches[4] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[8] ;
+                        } else {
+                            return $matches[0];
+                        }
+                      },
+                      $this->text
+                      );
     }                 
     $this->text = preg_replace_callback(   
                       "~(<ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+)\]?\s*)(<\s*?\/\s*?ref>)~i",
