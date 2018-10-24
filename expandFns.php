@@ -341,7 +341,7 @@ function tidy_date($string) {
   $string = preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
   $string = preg_replace('~^Date published \(~', '', $string); // seen this
   // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
-  if (str_pos($string, '0001-11-30') !== FALSE) return '';
+  if (strpos($string, '0001-11-30') !== FALSE) return '';
   if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
