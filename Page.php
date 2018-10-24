@@ -151,8 +151,7 @@ class Page {
                         }
                       },
                       $this->text
-                      );
-    }                 
+                      );           
      // PLAIN DOIS Converted to templates 
      $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
                       "~(<ref[^>]*?>)(\s*10\.[0-9]+\/\S+\s*)(<\s*?\/\s*?ref>)~i",
