@@ -146,9 +146,8 @@ class Page {
                       function($matches) {
                         if ($matches[4] === $matches[6]) {
                             return $matches[1] . '{{cite web | url=' . $matches[4] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[8] ;
-                        } else {
-                            return $matches[0];
                         }
+                        return $matches[0];
                       },
                       $this->text
                       );           
