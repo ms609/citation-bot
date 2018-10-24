@@ -159,7 +159,8 @@ function expand_by_zotero(&$template, $url = NULL) {
   } else {
     if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
   }
-  if ( isset($result->volume))           $template->add_if_new('volume' , $result->volume);
+  if ( isset($result->volume) 
+  &&   strpos($result->volume, '\(') === FALSE ) $template->add_if_new('volume', $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
   if ( isset($result->series))           $template->add_if_new('series' , $result->series);
   $i = 0;

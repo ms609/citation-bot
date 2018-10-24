@@ -320,6 +320,29 @@ function tidy_date($string) {
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
+  // Huge amout of character cleaning
+  if (strlen($string) != mb_strlen($string)) {  // Convert all multi-byte characters to dashes
+    $cleaned = '';
+    for ($i = 0; $i < mb_strlen($string); $i++) {
+       $char = mb_substr($string,$i,1);
+       if (mb_strlen($char) == strlen($char)) {
+          $cleaned .= $char;
+       } else {
+          $cleaned .= '-';
+       }
+    }
+    $string = $cleaned;
+  }
+  $string = preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters to dashes
+  $string = preg_replace('~[\s\-]*\-[\s\-]*~', '-',$string); // Combine dash with any following or preceeding white space and other dash
+  $string = preg_replace('~^\-*(.+?)\-*$~', '\1', $string);  // Remove trailing/leading dashes
+  $string = trim($string);
+  // End of character clean-up
+  $string = preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
+  $string = preg_replace('~^Date published \(~', '', $string); // seen this
+  // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
+  if (strpos($string, '0001-11-30') !== FALSE) return '';
+  if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
     if ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
