@@ -317,6 +317,7 @@ function sanitize_string($str) {
 }
 
 function tidy_date($string) {
+  fwrite(STDERR,"\n   ".  $string ."  \n");
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
