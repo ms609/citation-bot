@@ -70,7 +70,7 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page(" text <ref name='dog' > 10.1063/1.2263373 </ref>");
       $this->assertTrue((boolean) strpos($page->parsed_text(), 'title'));
       $page = $this->process_page(" text <ref name='dog' >[http://10.1007/s12668-011-0022-5 http://10.1007/s12668-011-0022-5]</ref>");
-      $this->assertTrue((boolean) strpos($page->parsed_text(), 'title');
+      $this->assertTrue((boolean) strpos($page->parsed_text(), 'title'));
   }
 
   public function testUrlReferencesThatFail() {
