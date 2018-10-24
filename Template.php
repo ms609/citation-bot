@@ -20,6 +20,7 @@ final class Template {
   const REGEXP = '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su';  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
+  public $date_style = DATES_WHATEVER;  // Will get from the page
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
@@ -511,6 +512,18 @@ final class Template {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
           // TODO does this still match the current usage practice?
           $param_name = "year";
+        } elseif ($this->date_style) {
+          $time = strtotime($value);
+          if ($time) {
+            $day = date('d', $time);
+            if ($day !== '01') { // Probably just got month and year if day=1
+              if ($this->date_style === DATES_MDY) {
+                 $value = date('m-d-Y', $time);
+              } elseif ($this->date_style === DATES_DMY) {
+                 $value = date('d-m-Y', $time);
+              }
+            }
+          }
         }
       // Don't break here; we want to go straight in to year;
       case "year":
@@ -595,7 +608,7 @@ final class Template {
       
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
-        if ($this->blank($param_name)) {
+        if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')) {
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
@@ -1663,6 +1676,7 @@ final class Template {
             $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
         }
+        if (strpos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         // Check if best location is already linked -- avoid double linki
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $oa_url, $match)) {
@@ -2409,6 +2423,7 @@ final class Template {
       // so we use chapter-url so that the template is well rendered afterwards
       if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
         $this->rename('url', 'chapter-url');
+        $this->rename('format', 'chapter-format');
       } elseif (!$this->blank(['chapter-url','chapterurl']) && (0 === strcasecmp($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
       }  // otherwise they are differnt urls
