@@ -47,6 +47,10 @@ function zotero_request($url) {
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
+  $access_date = FALSE;
+  if (is_null($url)) {
+     $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
+  }
   if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
   if (!$url) {
@@ -126,6 +130,17 @@ function expand_by_zotero(&$template, $url = NULL) {
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
   }
 
+  if ( isset($result->ISBN))             $template->add_if_new('isbn'   , $result->ISBN);
+  if ($access_date && isset($result->date)) {
+    $new_date = strtotime(tidy_date($result->date));
+    if($new_date) { // can compare
+      if($new_date > $access_date) {
+        report_info("URL appears to have changed since access-date ". $url);
+        return FALSE;
+      }
+    }
+  }
+  
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
@@ -136,8 +151,7 @@ function expand_by_zotero(&$template, $url = NULL) {
        if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher); 
     }
   }
-    
-  if ( isset($result->ISBN))             $template->add_if_new('isbn'   , $result->ISBN);
+
   if ( isset($result->issue))            $template->add_if_new('issue'  , $result->issue);
   if ( isset($result->pages))            $template->add_if_new('pages'  , $result->pages);
   if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
@@ -145,7 +159,8 @@ function expand_by_zotero(&$template, $url = NULL) {
   } else {
     if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
   }
-  if ( isset($result->volume))           $template->add_if_new('volume' , $result->volume);
+  if ( isset($result->volume) 
+  &&   strpos($result->volume, '\(') === FALSE ) $template->add_if_new('volume', $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
   if ( isset($result->series))           $template->add_if_new('series' , $result->series);
   $i = 0;
