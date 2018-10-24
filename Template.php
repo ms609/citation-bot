@@ -706,7 +706,7 @@ final class Template {
             $url_test = "https://dx.doi.org/" . urlencode($value);
             $headers_test = @get_headers($url_test, 1);
             if ($headers_test !== FALSE && empty($headers_test['Location'])) {
-              return FALSE; // does not resolve.  On FALSE we are optimistic
+              return FALSE; // does not resolve
             }
             $this->add('doi', $match[0]);          
             return TRUE;
