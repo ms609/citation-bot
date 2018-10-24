@@ -133,6 +133,12 @@ final class TemplateTest extends testBaseClass {
      $this->assertEquals($text, $expanded->parsed_text());
   }
 
+  public function testBadAuthor2() {
+      $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Infectious Diseases Society of America', $expanded->get('author1'));
+  }
+ 
   public function testPmidIsZero() {
       $text = '{{cite journal|pmc=2676591}}';
       $expanded = $this->process_citation($text);
@@ -225,6 +231,8 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $expanded->get('chapter-url'));
     $this->assertNull($expanded->get('url'));
+    $this->assertNull($expanded->get('format'));
+    $this->assertEquals('PDF', $expanded->get('chapter-format'));
   }
 
   public function testDoiExpansion() {
@@ -515,6 +523,13 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('bibcode'));  // If this eventually gets a journal, we will have to change the test
   }
 
+  public function testNoBibcodesForBookReview() {
+    $text = '{{cite book|last1=Klein|first1=Edward |title=Elements of histology|url=https://books.google.com/books?id=08m1UWAKyEAC&pg=PA124|accessdate=January 29, 2017|year=1785|publisher=Lea|page=124}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('bibcode'));
+    $this->assertNull($expanded->get('doi'));
+  }
+  
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
     |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
@@ -1476,7 +1491,11 @@ ER -  }}';
       $this->assertTrue($text != $text_out); // Verify test is valid -- We want to make sure that the spaces in $text are not normal spaces
   }
  
-
+  public function testMultipleYears() {
+    $text = '{{cite journal|doi=10.1080/1323238x.2006.11910818}}'; // Crossref has <year media_type="online">2017</year><year media_type="print">2006</year>
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('2006', $expanded->get('year'));
+  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]

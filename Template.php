@@ -20,6 +20,7 @@ final class Template {
   const REGEXP = '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su';  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
+  public $date_style = DATES_WHATEVER;  // Will get from the page
   protected $rawtext;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
@@ -511,6 +512,18 @@ final class Template {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
           // TODO does this still match the current usage practice?
           $param_name = "year";
+        } elseif ($this->date_style) {
+          $time = strtotime($value);
+          if ($time) {
+            $day = date('d', $time);
+            if ($day !== '01') { // Probably just got month and year if day=1
+              if ($this->date_style === DATES_MDY) {
+                 $value = date('m-d-Y', $time);
+              } elseif ($this->date_style === DATES_DMY) {
+                 $value = date('d-m-Y', $time);
+              }
+            }
+          }
         }
       // Don't break here; we want to go straight in to year;
       case "year":
@@ -554,6 +567,10 @@ final class Template {
           $this->forget('issn');
           $this->forget('class');
           
+          if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) {
+             $this->rename('publisher', $param_name);
+             return TRUE;
+          }
           if ($this->has('website')) { // alias for journal
              $this->rename('website', $param_name, $value);
              return TRUE;
@@ -583,7 +600,7 @@ final class Template {
       
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
-        if ($this->blank($param_name)) {
+        if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')) {
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
@@ -1356,6 +1373,11 @@ final class Template {
     }
     if ($result->numFound == 1) {
       $record = $result->docs[0];
+      if (isset($record->year) && $this->has('year')) {
+        if (abs((int)$record->year - (int)$this->get('year')) > 2) {
+          return FALSE;  // Probably a book review or something with same title, etc.
+        }
+      }
       echo tag();
       if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
       $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
@@ -1646,6 +1668,7 @@ final class Template {
             $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
         }
+        if (strpos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         // Check if best location is already linked -- avoid double linki
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $oa_url, $match)) {
@@ -2392,6 +2415,7 @@ final class Template {
       // so we use chapter-url so that the template is well rendered afterwards
       if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
         $this->rename('url', 'chapter-url');
+        $this->rename('format', 'chapter-format');
       } elseif (!$this->blank(['chapter-url','chapterurl']) && (0 === strcasecmp($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
       }  // otherwise they are differnt urls
@@ -2834,7 +2858,7 @@ final class Template {
              $this->has('periodical') ||
              $this->has('website')) {
               $this->forget('work'); // Delete if we have alias
-         } elseif ($this->wikiname() === 'cite web') {
+         } elseif ($this->wikiname() === 'cite web' && !$this->blank(['url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl'])) {
             $this->rename('work', 'website');
          } elseif ($this->wikiname() === 'cite journal') {
             $this->rename('work', 'journal');
@@ -3206,6 +3230,9 @@ final class Template {
       $this->forgetter('via', $echo_forgetting);
       $this->forgetter('website', $echo_forgetting);
       $this->forgetter('deadurl', $echo_forgetting);
+      if ($this->has('work') && stripos($this->get('work'), 'www.') === 0) {
+         $this->forgetter('work', $echo_forgetting);
+      }
     }
     if ($par == 'chapter' && $this->blank('url')) {
       if($this->has('chapter-url')) {
