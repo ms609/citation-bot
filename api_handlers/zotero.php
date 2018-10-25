@@ -2,13 +2,13 @@
 function query_url_api($ids, $templates) {
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
-    echo "doing a template\n";
+    fwrite(STDERR, "doing a template\n");
     if ($template->has('url')) {
       expand_by_zotero($template);
     }
-    echo "done a template\n";
+    fwrite(STDERR, "done a template\n");
   }
-    echo "done with all templates\n";
+    fwrite(STDERR, "done with all templates\n");
   report_action("Using Zotero translation server to retrieve details from identifiers.");
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
@@ -54,10 +54,10 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
   }
-  echo "got date\n";
+  fwrite(STDERR, "got date\n");
   if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
-  echo "url is $url \n";
+  fwrite(STDERR, "url is $url \n");
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
@@ -70,9 +70,9 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)~i", $template->get('url'), $match)) {
     $url = 'https://www.researchgate.net/publicliterature.PublicationHeaderDownloadCitation.downloadCitation.html?publicationUid=' . $match[1] . '&fileType=RIS&citationAndAbstract=false'; // Convert researchgate URL to give RIS information
   }
-    echo "call zotero_request\n";
+    fwrite(STDERR, "call zotero_request\n");
   $zotero_response = zotero_request($url);
-    echo "called zotero_request\n";
+    fwrite(STDERR, "called zotero_request\n");
   switch (trim($zotero_response)) {
     case '':
       report_info("Nothing returned for URL $url");
@@ -81,12 +81,12 @@ function expand_by_zotero(&$template, $url = NULL) {
       report_info("Internal server error with URL $url");
       return FALSE;
   }
-  echo "getting data\n";
+  fwrite(STDERR, "getting data\n");
   $zotero_data = @json_decode($zotero_response, FALSE);
-  echo " got data\n";
+  fwrite(STDERR, " got data\n");
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
-    echo " giving up\n";
+    fwrite(STDERR, " giving up\n");
     return FALSE;
   } else if (!is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
     report_warning("Unsupported response for URL ". $url . ": $zotero_response");
