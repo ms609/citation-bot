@@ -85,4 +85,12 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $this->assertTrue((boolean) strpos($page->parsed_text(), '05-12-2016'));
   }
+ 
+   public function testBadPage() {  // Use this when debugging pages that crash the bot
+    $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=Inductive_programming&action=raw');
+    $page = new TestPage();
+    $page->parse_text($text);
+    $page->expand_text();
+    $this->assertTrue(TRUE);
+  }
 }
