@@ -58,7 +58,6 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
   fwrite(STDERR, "url is $url \n");
-  if('https://pdfs.semanticscholar.org/48f2/2821220555f8e327c2aa9614fb28c98f9542.pdf' === $url) return FALSE;
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
