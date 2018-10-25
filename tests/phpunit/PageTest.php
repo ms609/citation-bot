@@ -87,12 +87,13 @@ final class PageTest extends testBaseClass {
   }
  
   public function testBadPage() {  // Use this when debugging pages that crash the bot
-    $this->assertTrue(TRUE);
-    return;
-    $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=Vietnam_War&action=raw');
-    $page = new TestPage();
-    $page->parse_text($text);
-    $page->expand_text();
-    $this->assertTrue(TRUE);
+    $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
+    if ($bad_page !== "") {
+      $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=' . $bad_page . '&action=raw');
+      $page = new TestPage();
+      $page->parse_text($text);
+      $page->expand_text();
+    }
+    $this->assertTrue(TRUE); // The page worked
   }
 }
