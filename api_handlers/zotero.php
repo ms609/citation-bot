@@ -6,7 +6,9 @@ function query_url_api($ids, $templates) {
     if ($template->has('url')) {
       expand_by_zotero($template);
     }
+    echo "done a template\n";
   }
+    echo "done with all templates\n";
   report_action("Using Zotero translation server to retrieve details from identifiers.");
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
@@ -68,7 +70,9 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)~i", $template->get('url'), $match)) {
     $url = 'https://www.researchgate.net/publicliterature.PublicationHeaderDownloadCitation.downloadCitation.html?publicationUid=' . $match[1] . '&fileType=RIS&citationAndAbstract=false'; // Convert researchgate URL to give RIS information
   }
+    echo "call zotero_request\n";
   $zotero_response = zotero_request($url);
+    echo "called zotero_request\n";
   switch (trim($zotero_response)) {
     case '':
       report_info("Nothing returned for URL $url");
@@ -82,6 +86,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   echo " got data\n";
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
+    echo " giving up\n";
     return FALSE;
   } else if (!is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
     report_warning("Unsupported response for URL ". $url . ": $zotero_response");
