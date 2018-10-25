@@ -85,6 +85,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   } else {
     $result = $zotero_data[0];
   }
+  fwrite(STDERR, print_r($result,TRUE);
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
     report_info("Could not resolve URL ". $url);
     return FALSE;
