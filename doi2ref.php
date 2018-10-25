@@ -1,7 +1,6 @@
 <?php
 // outputs a Wikipedia reference from a DOI 
 // usage: https://tools.wmflabs.org/citations/doi2ref.php?doi=<DOI>
-// example: https://tools.wmflabs.org/citations/doi2ref.php?doi=
 
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/plain");
