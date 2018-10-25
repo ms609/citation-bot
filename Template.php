@@ -2726,6 +2726,11 @@ final class Template {
           if ($this->get($param) !== NULL && $this->blank($work_becomes)) {
             $this->rename('work', $work_becomes);
           }
+          if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0 ||
+                                                      strcasecmp((string)$this->get($param), 'Google Books') === 0 ||
+                                                      strcasecmp((string)$this->get($param), 'Books.google.') === 0)) {
+            $this->forget($param);
+          }
           return;
           
         case 'volume':
