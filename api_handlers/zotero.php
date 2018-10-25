@@ -85,7 +85,6 @@ function expand_by_zotero(&$template, $url = NULL) {
   } else {
     $result = $zotero_data[0];
   }
-  fwrite(STDERR, print_r($result,TRUE));
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
     report_info("Could not resolve URL ". $url);
     return FALSE;
@@ -102,7 +101,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
     return FALSE; // Not really "expanded"
   }
-  // var_dump($result); for debug
+  // fwrite(STDERR, print_r($result, TRUE)); // for debug
   
   $test_data = '';
   if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
@@ -161,7 +160,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
   }
   if ( isset($result->volume) 
-  &&   strpos($result->volume, '\(') === FALSE ) $template->add_if_new('volume', $result->volume);
+  &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
   if ( isset($result->series))           $template->add_if_new('series' , $result->series);
   $i = 0;
