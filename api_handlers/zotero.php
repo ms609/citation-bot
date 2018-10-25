@@ -2,6 +2,7 @@
 function query_url_api($ids, $templates) {
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
+    echo "doing a template\n";
     if ($template->has('url')) {
       expand_by_zotero($template);
     }
@@ -51,9 +52,10 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
   }
+  echo "got date\n";
   if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
-  print_r($url);
+  echo "url is $url \n";
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
@@ -75,8 +77,9 @@ function expand_by_zotero(&$template, $url = NULL) {
       report_info("Internal server error with URL $url");
       return FALSE;
   }
-  
+  echo "getting data\n";
   $zotero_data = @json_decode($zotero_response, FALSE);
+  echo " got data\n";
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
     return FALSE;
