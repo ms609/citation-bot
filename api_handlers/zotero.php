@@ -53,6 +53,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
+  print_r($url);
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
@@ -101,7 +102,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
     return FALSE; // Not really "expanded"
   }
-  // var_dump($result); for debug
+  var_dump($result);// for debug
   
   $test_data = '';
   if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
