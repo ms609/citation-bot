@@ -1054,6 +1054,11 @@ final class Template {
           }
         }
       } elseif (preg_match(REGEXP_HANDLES, $url, $match)) {
+          $url_test = "https://hdl.handle.net/" . urlencode($match[1]);
+          $headers_test = @get_headers($url_test, 1);  // verify that data is registered
+          if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
+               return FALSE; // does not resolve.
+          }
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
