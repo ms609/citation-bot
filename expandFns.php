@@ -10,7 +10,10 @@ include_once("./vendor/autoload.php");
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
   define("HTML_OUTPUT", FALSE);
-}  
+}
+if (!defined("DO_NOT_FLUSH")) {  // Default when non gadgeet API
+  define("DO_NOT_FLUSH", FALSE);
+}
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
