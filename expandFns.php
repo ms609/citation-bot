@@ -78,8 +78,7 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
 }
 
 function sanitize_doi($doi) {
-  $doi = str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
-  $doi = str_replace(' ', '+', $doi); // plus sign in middle of a DOI!
+  $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   $extension = substr($doi, strrpos($doi, '.'));
   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
