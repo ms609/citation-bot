@@ -978,7 +978,7 @@ final class Template {
           quietly('report_modification', "Converting URL to PMC parameter");
           if (is_null($url_sent)) {
             if (stripos($url, ".pdf") !== FALSE) {
-              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2]);
+              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2];
               $ch = curl_init($test_url);
               curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
               @curl_exec($ch);
