@@ -129,6 +129,7 @@ final class Template {
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
     }
+    echo ' after prepare' . $this->parsed_text() ."\n";
   }
   
   public function api_calls() {
@@ -155,13 +156,20 @@ final class Template {
       break;
       case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
         $this->expand_by_pubmed(); //partly to try to find DOI
-        $this->expand_by_google_books();
+          echo ' after pinmed' . $this->parsed_text() ."\n";
+       $this->expand_by_google_books();
         expand_by_jstor($this);
-        expand_by_doi($this);
+           echo ' after jsotr' . $this->parsed_text() ."\n";
+       
+       expand_by_doi($this);
+           echo ' after doie' . $this->parsed_text() ."\n";
         $this->expand_by_adsabs(); //Primarily to try to find DOI
-        $this->get_doi_from_crossref();
-        $this->get_open_access_url();
+       echo ' after adsabse' . $this->parsed_text() ."\n";
+       $this->get_doi_from_crossref();
+           echo ' after cross' . $this->parsed_text() ."\n";
+       $this->get_open_access_url();
         $this->find_pmid();
+           echo ' after find pmid' . $this->parsed_text() ."\n";
       break;
     }
   }
@@ -235,11 +243,11 @@ final class Template {
           if ($this->use_sici()) {
             report_action("Found and used SICI");
           }
-
+    echo ' after siicc' . $this->parsed_text() ."\n";
           $this->id_to_param();
           $this->get_doi_from_text();
           $this->correct_param_spelling();
-
+    echo ' after correct' . $this->parsed_text() ."\n";
           // If the et al. is from added parameters, go ahead and handle
           if (!$this->initial_author_params) {
             $this->handle_et_al();
@@ -253,9 +261,12 @@ final class Template {
           if (expand_by_jstor($this)) {
             report_action("Expanded from JSTOR API");
           }
+              echo ' after jstoreddd' . $this->parsed_text() ."\n";
           expand_by_doi($this);
+              echo ' after doiers' . $this->parsed_text() ."\n";
           $this->expand_by_adsabs(); //Primarily to try to find DOI
           $this->get_doi_from_crossref();
+              echo ' after refcross' . $this->parsed_text() ."\n";
           $this->get_open_access_url();
           $this->find_pmid();
           
@@ -272,6 +283,7 @@ final class Template {
     }
     report_action('Tying up loose ends...');
     $this->final_tidy();
+        echo ' after tody' . $this->parsed_text() ."\n";
   }
 
   public function incomplete() {
