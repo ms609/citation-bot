@@ -2457,8 +2457,9 @@ final class Template {
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
-    
+     echo ' after into tidy' . $this->parsed_text() ."\n";
     if($this->has($param)) $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
+      echo ' after remove bad spaces' . $this->parsed_text() ."\n";
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
@@ -2551,7 +2552,9 @@ final class Template {
             $this->forget('doi'); 
             return;
           }
+          echo ' beofr santiizee' . $this->parsed_text() ."\n";
           $this->set($param, sanitize_doi($doi));
+   echo ' after saitize dthe doi' . $this->parsed_text() ."\n";j
           $this->change_name_to('Cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
