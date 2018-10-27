@@ -98,13 +98,18 @@ final class Template {
 
   public function prepare() {
     if ($this->should_be_processed()) {
+          echo ' before prepare' . $this->parsed_text() ."\n";
       $this->get_inline_doi_from_title();
       $this->use_unnamed_params();
       $this->get_identifiers_from_url();
+          echo ' after get indentif' . $this->parsed_text() ."\n";
       $this->id_to_param();
       $this->correct_param_spelling();
+          echo ' after corect gr spelling' . $this->parsed_text() ."\n";
       $this->get_doi_from_text();
+          echo ' after getting foi from tecter' . $this->parsed_text() ."\n";
       $this->tidy();
+          echo ' after tidy' . $this->parsed_text() ."\n";
       
       switch ($this->wikiname()) {
         case "cite arxiv":
