@@ -2554,7 +2554,7 @@ final class Template {
           }
           echo ' beofr santiizee' . $this->parsed_text() ."\n";
           $this->set($param, sanitize_doi($doi));
-   echo ' after saitize dthe doi' . $this->parsed_text() ."\n";j
+   echo ' after saitize dthe doi' . $this->parsed_text() ."\n";
           $this->change_name_to('Cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
