@@ -53,7 +53,7 @@ final class Parameter {
       $this->eq = $match[0] . $this->eq;
       $this->param = str_replace($match[0], '', $this->param);
     }
-    fwrite(STDERR,$this->parsed_text);
+    fwrite(STDERR,$this->parsed_text());
   }
 
   protected function set_value($value) {
