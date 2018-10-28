@@ -2732,7 +2732,7 @@ final class Template {
           
         case 'via':
           if ($this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
-          if (stripos($this->get('via'), 'PubMed') !== FALSE && ($this->has('pmc') || $this->has('pmid'))) { // Should just remove all 'via' with no url, but do not want to anger people
+          if (stripos($this->get('via'), 'PubMed') !== FALSE && ($this->has('pmc') || $this->has('pmid'))) { // Should just remove all 'via' with no url, but do not want to make people angry
             $this->forget('via');
           }
           return;
