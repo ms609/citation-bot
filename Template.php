@@ -2730,6 +2730,12 @@ final class Template {
           }
           return;
           
+        case 'via':
+          if ($this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
+          if (stripos($this->get('via'), 'PubMed') !== FALSE && ($this->has('pmc') || $this->has('pmid'))) { // Should just remove all 'via' with no url, but do not want to anger people
+            $this->forget('via');
+          }
+          return;
         case 'volume':
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
             $possible_volume=$matches[1];
