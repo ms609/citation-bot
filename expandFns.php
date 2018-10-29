@@ -10,7 +10,10 @@ include_once("./vendor/autoload.php");
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
   define("HTML_OUTPUT", FALSE);
-}  
+}
+if (!defined("FLUSHING_OKAY")) {  // Default when not gadget API
+  define("FLUSHING_OKAY", TRUE);
+}
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
