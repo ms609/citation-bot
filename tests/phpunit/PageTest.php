@@ -93,7 +93,8 @@ final class PageTest extends testBaseClass {
       $page = new TestPage();
       $page->parse_text($text);
       $page->expand_text();
+      $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
-    $this->assertTrue(TRUE); // The page worked
+    $this->assertTrue(TRUE);
   }
 }
