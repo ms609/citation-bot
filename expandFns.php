@@ -34,8 +34,7 @@ const CROSSREFUSERNAME = 'martins@gmail.com';
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Optimisation
-ob_implicit_flush();
-ob_start();
+ob_implicit_flush(1);
 ini_set("memory_limit", "256M");
 
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
