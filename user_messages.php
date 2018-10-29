@@ -1,15 +1,16 @@
 <?php
   
 function html_echo($text, $alternate_text='') {
-  if (!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
+  if (!getenv('TRAVIS') || TRUE) echo HTML_OUTPUT ? $text : $alternate_text;
+  ob_flush();
 }
 
 function user_notice($symbol, $class, $text) {
-  if (!getenv('TRAVIS')) {
+  if (!getenv('TRAVIS') || TRUE) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
   }
-  if (in_array($class, array('phase', 'subitem', 'warning')) && FLUSHING_OKAY) ob_flush();
+   ob_flush();
 }
 
 function report_phase($text)  { user_notice("\n>", "phase", $text); }
@@ -30,6 +31,7 @@ function quietly($function = report_info, $text) {
 
 function safely_echo ($string) {
   echo echoable($string);
+  ob_flush();
 }
 
 function echoable($string) {
