@@ -2728,6 +2728,15 @@ final class Template {
           if ($this->get($param) !== NULL && $this->blank($work_becomes)) {
             $this->rename('work', $work_becomes);
           }
+          if ($this->wikiname() === 'cite book') {
+            $publisher = strtolower($this->get($param));
+            foreach (NON_PUBLISHERS as $not_publisher) {
+              if (strpos($publisher, $not_publisher) !== FALSE) {
+                $this->forget($param);
+                return;
+              }
+            }
+          }
           return;
           
         case 'volume':
