@@ -977,6 +977,17 @@ final class Template {
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting URL to PMC parameter");
           if (is_null($url_sent)) {
+            if (stripos($url, ".pdf") !== FALSE) {
+              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
+              $ch = curl_init($test_url);
+              curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
+              @curl_exec($ch);
+              $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+              curl_close($ch);
+              if($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
+                return $this->add_if_new("pmc", $match[1] . $match[2]);
+              }
+            }
             $this->forget($url_type);
           }
           return $this->add_if_new("pmc", $match[1] . $match[2]);
