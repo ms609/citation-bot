@@ -600,7 +600,8 @@ final class Template {
       
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
-        if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')) {
+        if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')
+                                      || ($this->get($param_name) === "{title}")) {
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
@@ -976,6 +977,17 @@ final class Template {
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting URL to PMC parameter");
           if (is_null($url_sent)) {
+            if (stripos($url, ".pdf") !== FALSE) {
+              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
+              $ch = curl_init($test_url);
+              curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
+              @curl_exec($ch);
+              $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+              curl_close($ch);
+              if($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
+                return $this->add_if_new("pmc", $match[1] . $match[2]);
+              }
+            }
             $this->forget($url_type);
           }
           return $this->add_if_new("pmc", $match[1] . $match[2]);
@@ -1053,6 +1065,11 @@ final class Template {
           }
         }
       } elseif (preg_match(REGEXP_HANDLES, $url, $match)) {
+          $url_test = "https://hdl.handle.net/" . urlencode($match[1]);
+          $headers_test = @get_headers($url_test, 1);  // verify that data is registered
+          if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
+               return FALSE; // does not resolve.
+          }
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
@@ -1687,10 +1704,9 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match(REGEXP_HANDLES, $oa_url)) {
-          if ($this->has('hdl') ) {
-             return TRUE;
-          }
+        if ($this->has('hdl') ) {
+          if (stripos($oa_url, $this-get('hdl')) !== FALSE) return TRUE;
+          if (preg_match(REGEXP_HANDLES, $oa_url)) return TRUE;
         }
         if (strpos($oa_url, 'citeseerx.ist.psu.edu') !== false) {
           if ($this->has('citeseerx') ) {
@@ -2316,6 +2332,12 @@ final class Template {
 
     if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list) && stripos($p->param, 'CITATION_BOT')===FALSE) {
      
+      if (trim($p->val) === '') {
+        report_forget("Dropping empty unrecognised parameter " . echoable($p->param) . " ");
+        $this->quietly_forget($p->param);
+        continue;
+      }
+      
       report_modification("Unrecognised parameter " . echoable($p->param) . " ");
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
@@ -2325,15 +2347,6 @@ final class Template {
         continue;
       }
       
-      /* Not clear why this exception exists.
-       * If it is valid, it should apply only when $p->param relates to authors,
-       * not when it applies to e.g. pages, title.
-      if ($this->initial_author_params) {
-        echo "\n   . initial authors exist, not correcting " . echoable($p->param);
-        continue;
-      }
-      */
-
       $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
       $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
       $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
@@ -2731,6 +2744,15 @@ final class Template {
           }
           if ($this->get($param) !== NULL && $this->blank($work_becomes)) {
             $this->rename('work', $work_becomes);
+          }
+          if ($this->wikiname() === 'cite book') {
+            $publisher = strtolower($this->get($param));
+            foreach (NON_PUBLISHERS as $not_publisher) {
+              if (strpos($publisher, $not_publisher) !== FALSE) {
+                $this->forget($param);
+                return;
+              }
+            }
           }
           return;
           
