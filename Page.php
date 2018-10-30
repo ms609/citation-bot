@@ -140,6 +140,17 @@ class Page {
                       function($matches) {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
                       $this->text
                       );
+   // Ones like <ref>[http://www... http://www...]</ref>
+    $this->text = preg_replace_callback(   
+                      "~(<ref[^>]*?>)((\s*\[)(https?:\/\/[^ >}{\]\[]+)(\s+)(https?:\/\/[^ >}{\]\[]+)(\s*\]\s*))(<\s*?\/\s*?ref>)~i",
+                      function($matches) {
+                        if ($matches[4] === $matches[6]) {
+                            return $matches[1] . '{{cite web | url=' . $matches[4] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[8] ;
+                        }
+                        return $matches[0];
+                      },
+                      $this->text
+                      );           
      // PLAIN DOIS Converted to templates 
      $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
                       "~(<ref[^>]*?>)(\s*10\.[0-9]+\/\S+\s*)(<\s*?\/\s*?ref>)~i",
