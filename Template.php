@@ -567,6 +567,14 @@ final class Template {
           $this->forget('issn');
           $this->forget('class');
           
+          if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
+             if ($this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) return FALSE;
+             if($this->blank('work')) {
+               $this->add('work', $value);
+               return TRUE;
+             }
+            return FALSE;
+          }
           if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) {
              $this->rename('publisher', $param_name);
              return TRUE;
@@ -1074,7 +1082,13 @@ final class Template {
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
+          if ($this->wikiname() === 'cite web') {
+            if ($this->has('journal')) {
+              $this->change_name_to('Cite journal');
+            } else {
+              $this->change_name_to('Cite document');
+            }
+          }
           return $this->add_if_new('hdl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
@@ -1699,7 +1713,7 @@ final class Template {
           }
         }
         if ($this->has('hdl') ) {
-          if (stripos($oa_url, $this-get('hdl')) !== FALSE) return TRUE;
+          if (stripos($oa_url, $this->get('hdl')) !== FALSE) return TRUE;
           if (preg_match(REGEXP_HANDLES, $oa_url)) return TRUE;
         }
         if (strpos($oa_url, 'citeseerx.ist.psu.edu') !== false) {
@@ -2712,10 +2726,16 @@ final class Template {
             $param = 'url'; // passes down to next area
           }
         case 'url':
-          if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
+          if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
-          } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
+          } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
+          } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
+              $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
+          }
+          if ($param !== 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
+            $this->rename($param, 'chapter-url');
+            $param = 'chapter-url';
           }
           return;
         
@@ -2750,6 +2770,15 @@ final class Template {
           }
           return;
           
+        case 'via':   // Should just remove all 'via' with no url, but do not want to make people angry
+          if ($this->has('via') && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) {
+            if (stripos($this->get('via'), 'PubMed') !== FALSE && ($this->has('pmc') || $this->has('pmid'))) {
+              $this->forget('via');
+            } elseif (stripos($this->get('via'), 'JSTOR') !== FALSE && $this->has('jstor')) {
+              $this->forget('via');
+            }
+          }
+          return;
         case 'volume':
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
             $possible_volume=$matches[1];
