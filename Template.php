@@ -1699,7 +1699,7 @@ final class Template {
           }
         }
         if ($this->has('hdl') ) {
-          if (stripos($oa_url, $this-get('hdl')) !== FALSE) return TRUE;
+          if (stripos($oa_url, $this->get('hdl')) !== FALSE) return TRUE;
           if (preg_match(REGEXP_HANDLES, $oa_url)) return TRUE;
         }
         if (strpos($oa_url, 'citeseerx.ist.psu.edu') !== false) {
