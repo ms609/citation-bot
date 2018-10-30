@@ -2717,6 +2717,10 @@ final class Template {
           } elseif (preg_match("~^https?://(?:www.|)academia.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
           }
+          if ($param !== 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
+            $this->rename($param, 'chapter-url');
+            $param = 'chapter-url';
+          }
           return;
         
         case 'work':
