@@ -42,7 +42,7 @@ function zotero_request($url) {
   
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
-    throw new Exception(curl_error($ch), curl_errno($ch));
+    report_info(curl_error($ch) . "   For URL: " . $url);
   }
   curl_close($ch);
   return $zotero_response;
@@ -68,6 +68,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     $url = 'https://www.researchgate.net/publicliterature.PublicationHeaderDownloadCitation.downloadCitation.html?publicationUid=' . $match[1] . '&fileType=RIS&citationAndAbstract=false'; // Convert researchgate URL to give RIS information
   }
   $zotero_response = zotero_request($url);
+  if ($zotero_response === FALSE) return FALSE;  // Error message already printed
   switch (trim($zotero_response)) {
     case '':
       report_info("Nothing returned for URL $url");
