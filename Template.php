@@ -2750,6 +2750,15 @@ final class Template {
           }
           return;
           
+        case 'via':   // Should just remove all 'via' with no url, but do not want to make people angry
+          if ($this->has('via') && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) {
+            if (stripos($this->get('via'), 'PubMed') !== FALSE && ($this->has('pmc') || $this->has('pmid'))) {
+              $this->forget('via');
+            } elseif (stripos($this->get('via'), 'JSTOR') !== FALSE && $this->has('jstor')) {
+              $this->forget('via');
+            }
+          }
+          return;
         case 'volume':
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
             $possible_volume=$matches[1];

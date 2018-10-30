@@ -118,10 +118,11 @@ final class TemplateTest extends testBaseClass {
      $this->assertEquals($text, $expanded->parsed_text());
   }
  
-  public function testDots() {
-     $text = '{{cite journal|pmid=4957203}}';
+  public function testDotsAndVia() {
+     $text = '{{cite journal|pmid=4957203|via=Pubmed}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('M. M.', $expanded->get('first3'));
+     $this->assertNull($expanded->get('via'));
   }
     
   public function testJustBrackets() {
