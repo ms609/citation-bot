@@ -567,6 +567,14 @@ final class Template {
           $this->forget('issn');
           $this->forget('class');
           
+          if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
+             if ($this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) return FALSE;
+             if($this->blank('work')) {
+               $this->add('work', $value);
+               return TRUE;
+             }
+            return FALSE;
+          }
           if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) {
              $this->rename('publisher', $param_name);
              return TRUE;
