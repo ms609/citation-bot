@@ -37,10 +37,12 @@ function zotero_request($url) {
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
+  curl_setopt($ch, CURLOPT_TIMEOUT, 120);
   
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
-    throw new Exception(curl_error($ch), curl_errno($ch));
+    report_info(curl_error($ch) . "   For URL: " . $url);
   }
   curl_close($ch);
   return $zotero_response;
@@ -66,6 +68,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     $url = 'https://www.researchgate.net/publicliterature.PublicationHeaderDownloadCitation.downloadCitation.html?publicationUid=' . $match[1] . '&fileType=RIS&citationAndAbstract=false'; // Convert researchgate URL to give RIS information
   }
   $zotero_response = zotero_request($url);
+  if ($zotero_response === FALSE) return FALSE;  // Error message already printed
   switch (trim($zotero_response)) {
     case '':
       report_info("Nothing returned for URL $url");
@@ -101,7 +104,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
     return FALSE; // Not really "expanded"
   }
-  // var_dump($result); for debug
+  // fwrite(STDERR, print_r($result, TRUE)); // for debug
   
   $test_data = '';
   if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
@@ -160,7 +163,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
   }
   if ( isset($result->volume) 
-  &&   strpos($result->volume, '\(') === FALSE ) $template->add_if_new('volume', $result->volume);
+  &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
   if ( isset($result->series))           $template->add_if_new('series' , $result->series);
   $i = 0;

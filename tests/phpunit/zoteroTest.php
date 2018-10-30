@@ -114,5 +114,12 @@ class ZoteroTest extends testBaseClass {
     $text = '{{Cite journal| biorxiv=326363 }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get('title'));
-  }   
+  }
+ 
+  public function testZoteroBadVolumes() { // has ( and such in it
+    $text = '{{cite journal|url=https://biodiversitylibrary.org/page/32550604}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('volume'));
+  }
+
 }

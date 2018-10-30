@@ -150,6 +150,12 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('154623', $expanded->get('pmc'));
+    $this->assertNull($expanded->get('url'));
+    $text = "{{Cite web | url = https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf', $expanded->get('url'));
+    $this->assertEquals('2491514', $expanded->get('pmc'));
   }
   
   public function testPMC2PMID() {
