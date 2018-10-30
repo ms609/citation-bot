@@ -10,7 +10,10 @@ include_once("./vendor/autoload.php");
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
   define("HTML_OUTPUT", FALSE);
-}  
+}
+if (!defined("FLUSHING_OKAY")) {  // Default when not gadget API
+  define("FLUSHING_OKAY", TRUE);
+}
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
@@ -32,7 +35,9 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Optimisation
 ob_implicit_flush();
-ob_start();
+if (!getenv('TRAVIS')) {
+    ob_start();
+}
 ini_set("memory_limit", "256M");
 
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
@@ -78,7 +83,7 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
 }
 
 function sanitize_doi($doi) {
-  $doi = str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
+  $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   $extension = substr($doi, strrpos($doi, '.'));
   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));

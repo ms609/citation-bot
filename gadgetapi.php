@@ -4,6 +4,7 @@ header("Content-Type: text/json");
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
 ob_start();
+define("FLUSHING_OKAY", FALSE);
   
 //Set up tool requirements
 require_once __DIR__ . '/expandFns.php';
