@@ -17,6 +17,9 @@ const BRACESPACE = "!BOTCODE-spaceBeforeTheBrace";
 const HTML_DECODE = array("[", "]", "<", ">", " ");
 const HTML_ENCODE = array("&#x5B;", "&#x5D;", "&#60;", "&#62;", "+");
 
+const HTML_DECODE_DOI = array("[", "]", "<", ">");
+const HTML_ENCODE_DOI = array("&#x5B;", "&#x5D;", "&#60;", "&#62;");
+
 const DOT_ENCODE = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
 const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 
