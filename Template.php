@@ -2714,7 +2714,7 @@ final class Template {
         case 'url':
           if (preg_match("~^https?://(?:www.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
-          } elseif (preg_match("~^https?://(?:www.|)academia\.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
+          } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
               $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
