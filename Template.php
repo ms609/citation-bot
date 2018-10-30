@@ -1082,7 +1082,13 @@ final class Template {
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
+          if ($this->wikiname() === 'cite web') {
+            if ($this->has('journal')) {
+              $this->change_name_to('Cite journal');
+            } else {
+              $this->change_name_to('Cite document');
+            }
+          }
           return $this->add_if_new('hdl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
