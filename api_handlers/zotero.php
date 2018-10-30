@@ -42,7 +42,7 @@ function zotero_request($url) {
   
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
-    report_info(curl_error($ch) . "   For URL: " . $url);
+    report_warning(curl_error($ch) . "   For URL: " . $url);
   }
   curl_close($ch);
   return $zotero_response;
