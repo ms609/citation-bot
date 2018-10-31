@@ -1063,8 +1063,12 @@ final class Template {
             return $this->add_if_new('asin', $match['id']);
           }
         } else {
-          quietly('report_modification', "Converting URL to ASIN template");
-          $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
+          if ($this->has('isbn')) { // Already have ISBN
+            quietly('report_inaction', "Not converting ASIN URL: redundant to existing ISBN.");
+          } else {
+            quietly('report_modification', "Converting URL to ASIN template");
+            $this->set('id', $this->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace(array(".co.", ".com.", "."), "", $match['domain']) . "}}");
+          }
           if (is_null($url_sent)) {
             $this->forget($url_type); // will forget accessdate too
             if (stripos($this->get('publisher'), 'amazon') !== FALSE) {
