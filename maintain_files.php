@@ -49,9 +49,10 @@ if (getenv('GITHUB_PAT')) {
   }
   file_put_contents($filename, implode($start_alpha, $sections));
 
-  git_echo('git add --all *');
+  git_echo('git add --all constants/capitalization.php');
   git_echo('git commit -m"Automated file maintenance" || true');
   git_echo('git push https://ms609-bot:' . getenv('GITHUB_PAT') . '@github.com/ms609/citation-bot.git');
+  git_echo('git checkout constants/capitalization.php');
 } else {
   echo "Github PAT not set.\n";
 }
