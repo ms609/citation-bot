@@ -1700,7 +1700,7 @@ final class Template {
         }
         $oa_url = $best_location->url_for_landing_page;
         if ($this->get('url')) {
-            $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
+            if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
         }
         if (strpos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
