@@ -36,3 +36,5 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org');
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk');
+
+const NO_DATE_WEBSITES = array('.wikipedia.org');
