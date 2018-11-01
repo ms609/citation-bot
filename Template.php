@@ -1698,7 +1698,7 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        $oa_url = $best_location->url_for_landing_page;
+        $oa_url = $best _location->url_for_landing_page;
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
