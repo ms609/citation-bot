@@ -101,7 +101,7 @@ function author_is_human($author) {
     || substr(strtolower($author),-4) === " inc"
     || substr(strtolower($author),-5) === " inc."
     || substr_count($author, ' ') > 3 // Even if human, hard to format
-     ) {
+  ) {
     return FALSE;
   }
   return TRUE;
