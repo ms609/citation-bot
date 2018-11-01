@@ -1698,7 +1698,16 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        $oa_url = $best_location-> url_for_landing_page;
+        // sometimes url_for_landing_page = null, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
+        if ($best_location->url_for_landing_page != null) {
+          $oa_url = $best_location->url_for_landing_page;
+        } elseif ($best_location->url_for_pdf != null) {
+          $oa_url = $best_location->url_for_pdf;
+        } elseif ($best_location->url != null) {
+          $oa_url = $best_location->url;
+        } else {
+          return FALSE;
+        }
         if ($this->get('url')) {
             $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
