@@ -100,7 +100,8 @@ function author_is_human($author) {
     || preg_match("~[A-Z]{3}~", $author)
     || substr(strtolower($author),-4) === " inc"
     || substr(strtolower($author),-5) === " inc."
-  ) {
+    || jjjj
+     ) {
     return FALSE;
   }
   return TRUE;
