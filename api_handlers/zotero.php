@@ -162,7 +162,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   } else {
     if ( isset($result->publicationTitle)) {
       if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
-          (stripos($result->publicationTitle, ' edition') === FALSE) {  // Do not add if "journal" includes "edition"
+          (stripos($result->publicationTitle, ' edition') === FALSE)) {  // Do not add if "journal" includes "edition"
         $template->add_if_new('journal', $result->publicationTitle);
       }
     }
