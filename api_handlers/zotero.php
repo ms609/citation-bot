@@ -160,7 +160,12 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
     if ( isset($result->publicationTitle)) $template->add_if_new('newspaper', $result->publicationTitle);
   } else {
-    if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
+    if ( isset($result->publicationTitle)) {
+      if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
+          (stripos($result->publicationTitle, ' edition') === FALSE) {  // Do not add if "journal" includes "edition"
+        $template->add_if_new('journal', $result->publicationTitle);
+      }
+    }
   }
   if ( isset($result->volume) 
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', $result->volume);
