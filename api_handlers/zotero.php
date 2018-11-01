@@ -133,7 +133,15 @@ function expand_by_zotero(&$template, $url = NULL) {
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
   }
 
-  if ((stripos($url, '.wikipedia.org') !== FALSE) && isset($result->date)) unset($result->date);  // Do not grab last edited dates from wikipedia
+  if (isset($result->date)) {
+    foreach (NO_DATE_WEBSITES as $bad_website ) {
+      if (stripos($url, $bad_website) !== FALSE) {
+        unset($result->date);
+        break;
+      }
+    }
+  }
+  
   if ( isset($result->ISBN))             $template->add_if_new('isbn'   , $result->ISBN);
   if ($access_date && isset($result->date)) {
     $new_date = strtotime(tidy_date($result->date));
