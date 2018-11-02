@@ -302,12 +302,20 @@ final class Template {
   public function profoundly_incomplete() {
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
+    $has_date = $this->has("date") || $this->has("year") ;
+    foreach (NO_DATE_WEBSITES as $bad_website ) {
+      if (stripos($this->get('url'), $bad_website) !== FALSE) {
+        $has_date = TRUE;
+        break;
+      }
+    }
+  
     if (strtolower($this->wikiname()) =='cite book' || (strtolower($this->wikiname()) =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
               $this->has("isbn")
           &&  $this->has("title")
-          && ($this->has("date") || $this->has("year"))
+          &&  $has_date)
       ));
     }
 
@@ -315,7 +323,7 @@ final class Template {
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
           &&  $this->has("title")
-          && ($this->has("date") || $this->has("year"))
+          && $has_date)
     ));
   }
 
