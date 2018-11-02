@@ -303,7 +303,7 @@ final class Template {
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
     $has_date = $this->has("date") || $this->has("year") ;
-    foreach (NO_DATE_WEBSITES as $bad_website ) {
+    foreach (NO_DATE_WEBSITES as $bad_website) {
       if (stripos($url, $bad_website) !== FALSE) {
         $has_date = TRUE;
         break;
