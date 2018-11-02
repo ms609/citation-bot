@@ -299,7 +299,7 @@ final class Template {
     ));
   }
 
-  public function profoundly_incomplete($url = '') 
+  public function profoundly_incomplete($url = '') {
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
     $has_date = $this->has("date") || $this->has("year") ;
