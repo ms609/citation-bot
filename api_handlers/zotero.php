@@ -53,12 +53,12 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
   }
-  if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
   }
+  if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
 
   if(preg_match("~^https?://twitter\.~", $url)) return FALSE;  // This should be {{cite tweet}}.  Stay away!!!
   if(preg_match("~^https?://books\.google\.~", $url)) return FALSE;  // We have special google gooks code
