@@ -27,7 +27,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'lease this domain', 'domain available', 'metaTags', 'An Error Occurred', 'User Cookie',
                                  'Cookies Disabled', 'page not found', '411 error', 'url not found',
                                  'limit exceeded', 'Error Page', '}}', '{{', 'EU Login', 'bad gateway', 'Captcha',
-                                 '.com', '.gov', '.org'];
+                                 '.com', '.gov', '.org', 'View PDF'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -36,3 +36,8 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org');
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk');
+
+const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
+                              'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
+                              'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'www.webcitation.org',
+                              'waybackmachine.org');
