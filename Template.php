@@ -299,15 +299,23 @@ final class Template {
     ));
   }
 
-  public function profoundly_incomplete( ) {
+  public function profoundly_incomplete($url = '') 
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
+    $has_date = $this->has("date") || $this->has("year") ;
+    foreach (NO_DATE_WEBSITES as $bad_website) {
+      if (stripos($url, $bad_website) !== FALSE) {
+        $has_date = TRUE;
+        break;
+      }
+    }
+  
     if (strtolower($this->wikiname()) =='cite book' || (strtolower($this->wikiname()) =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
               $this->has("isbn")
           &&  $this->has("title")
-          && ($this->has("date") || $this->has("year"))
+          &&  $has_date
       ));
     }
 
@@ -315,7 +323,7 @@ final class Template {
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
           &&  $this->has("title")
-          && ($this->has("date") || $this->has("year"))
+          && $has_date
     ));
   }
 
@@ -1698,12 +1706,22 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        $oa_url = $best_location->url_for_landing_page;
+        // sometimes url_for_landing_page = null, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
+        if ($best_location->url_for_landing_page != null) {
+          $oa_url = $best_location->url_for_landing_page;
+        } elseif ($best_location->url_for_pdf != null) {
+          $oa_url = $best_location->url_for_pdf;
+        } elseif ($best_location->url != null) {
+          $oa_url = $best_location->url;
+        } else {
+          return FALSE;
+        }
         if ($this->get('url')) {
-            $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
+            if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
         }
         if (strpos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
+        if (strpos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
         // Check if best location is already linked -- avoid double linki
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $oa_url, $match)) {
@@ -2721,6 +2739,7 @@ final class Template {
           }
           $this->set($param, $title);
           if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
+          if ($title && !strcasecmp($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
           return;
      
         case 'chapter-url':
@@ -2737,7 +2756,7 @@ final class Template {
           } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
               $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
           }
-          if ($param !== 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
+          if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
             $this->rename($param, 'chapter-url');
             $param = 'chapter-url';
           }

@@ -53,12 +53,12 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
   }
-  if (!$template->profoundly_incomplete()) return FALSE; // Only risk unvetted data if there's little good data to sully
   if (is_null($url)) $url = $template->get('url');
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
   }
+  if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
 
   if(preg_match("~^https?://twitter\.~", $url)) return FALSE;  // This should be {{cite tweet}}.  Stay away!!!
   if(preg_match("~^https?://books\.google\.~", $url)) return FALSE;  // We have special google gooks code
@@ -133,6 +133,15 @@ function expand_by_zotero(&$template, $url = NULL) {
     return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
   }
 
+  if (isset($result->date)) {
+    foreach (NO_DATE_WEBSITES as $bad_website ) {
+      if (stripos($url, $bad_website) !== FALSE) {
+        unset($result->date);
+        break;
+      }
+    }
+  }
+  
   if ( isset($result->ISBN))             $template->add_if_new('isbn'   , $result->ISBN);
   if ($access_date && isset($result->date)) {
     $new_date = strtotime(tidy_date($result->date));
@@ -160,7 +169,12 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
     if ( isset($result->publicationTitle)) $template->add_if_new('newspaper', $result->publicationTitle);
   } else {
-    if ( isset($result->publicationTitle)) $template->add_if_new('journal', $result->publicationTitle);
+    if ( isset($result->publicationTitle)) {
+      if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
+          (stripos($result->publicationTitle, ' edition') === FALSE)) {  // Do not add if "journal" includes "edition"
+        $template->add_if_new('journal', $result->publicationTitle);
+      }
+    }
   }
   if ( isset($result->volume) 
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', $result->volume);
