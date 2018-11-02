@@ -2488,7 +2488,12 @@ final class Template {
       return FALSE;  // We let comments block the bot
     }
     
-    if($this->has($param)) $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
+    if($this->has($param)) {
+      $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
+      if (stripos($param, 'separator') === FALSE) {
+         $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
+      }
+    }
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
