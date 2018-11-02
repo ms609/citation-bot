@@ -2730,6 +2730,7 @@ final class Template {
           }
           $this->set($param, $title);
           if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
+          if ($title && !strcasecmp($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
           return;
      
         case 'chapter-url':
