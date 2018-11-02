@@ -2758,6 +2758,7 @@ final class Template {
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
             $this->rename($param, 'chapter-url');
+            $this->rename('format', 'chapter-format');
             $param = 'chapter-url';
           }
           return;
@@ -3311,9 +3312,14 @@ final class Template {
     if ($par == 'chapter' && $this->blank('url')) {
       if($this->has('chapter-url')) {
         $this->rename('chapter-url', 'url');
+        $this->rename('chapter-format', 'format');
       } elseif ($this->has('chapterurl')) {
         $this->rename('chapterurl', 'url');
+        $this->rename('chapter-format', 'format');
       }
+    }
+    if ($par == 'chapter-url' || $par == 'chapterurl') {
+       $this->forgetter('chapter-format', $echo_forgetting);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
