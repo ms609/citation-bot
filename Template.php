@@ -269,6 +269,8 @@ final class Template {
           }
           break;
       }
+    } elseif (in_array($this->wikiname(), ['cite news', 'cite newspaper'])) { // Should only be slightly processed
+      $this->get_identifiers_from_url();
     }
     report_action('Tying up loose ends...');
     $this->final_tidy();
