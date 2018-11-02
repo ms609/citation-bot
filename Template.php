@@ -2490,7 +2490,7 @@ final class Template {
     
     if($this->has($param)) {
       $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
-      if (stripos($param, 'separator') === FALSE) {
+      if (stripos($param, 'separator') === FALSE && stripos($param, 'postscript') === FALSE) {
          $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
       }
     }
