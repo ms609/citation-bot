@@ -315,7 +315,7 @@ final class Template {
       return (!(
               $this->has("isbn")
           &&  $this->has("title")
-          &&  $has_date)
+          &&  $has_date
       ));
     }
 
@@ -323,7 +323,7 @@ final class Template {
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
           &&  $this->has("title")
-          && $has_date)
+          && $has_date
     ));
   }
 
