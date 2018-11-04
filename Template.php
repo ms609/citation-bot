@@ -6,7 +6,7 @@
  * Of particular note:
  *     process() is what handles the different cite/Cite templates differently.
  *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
- *       switch statement handles various parameters differently.slightly
+ *       switch statement handles various parameters differently.
  *     
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
  * to find information that can be added to existing citations.
