@@ -6,7 +6,7 @@
  * Of particular note:
  *     process() is what handles the different cite/Cite templates differently.
  *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
- *       switch statement handles various parameters differently.
+ *       switch statement handles various parameters differently.slightly
  *     
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
  * to find information that can be added to existing citations.
@@ -269,7 +269,7 @@ final class Template {
           }
           break;
       }
-    } elseif (in_array($this->wikiname(), ['cite news', 'cite newspaper'])) { // Should only be slightly processed
+    } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->get_identifiers_from_url();
     }
     report_action('Tying up loose ends...');
