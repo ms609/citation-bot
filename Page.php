@@ -175,7 +175,9 @@ class Page {
         array_push($our_templates, $this_template);
         
         $this_template->prepare();
-      } else if ($all_templates[$i]->wikiname() == 'cite magazine' 
+      } elseif (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
+        $all_temlates[$i]->get_identifiers_from_url();
+      } elseif  ($all_templates[$i]->wikiname() == 'cite magazine' 
                  && $all_templates[$i]->blank('magazine') 
                  && $all_templates[$i]->has('work')) {
         // This is all we do with cite magazine
