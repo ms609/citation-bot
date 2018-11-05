@@ -95,7 +95,7 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testNewsdDOI() {
-   $text = "{{cite news|url=http://pubs.acs.org/doi/abs/10.1021/cen-v076n048.p024}}";
+   $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('Huh', $expanded->parsed_text());
   }
