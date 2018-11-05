@@ -1008,7 +1008,8 @@ final class Template {
           }
           return $this->add_if_new("pmc", $match[1] . $match[2]);
         }
-      } elseif (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $url, $match)) {
+      } elseif (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~i", $url, $match)  ||
+                preg_match("~^https?://europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d+)~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting Europe URL to PMC parameter");
