@@ -125,7 +125,10 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
-    } else if ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
+    } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
+      $this->get_identifiers_from_url();
+    }
+    if ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
     }
@@ -269,8 +272,6 @@ final class Template {
           }
           break;
       }
-    } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
-      $this->get_identifiers_from_url();
     }
     report_action('Tying up loose ends...');
     $this->final_tidy();
