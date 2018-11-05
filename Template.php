@@ -818,6 +818,7 @@ final class Template {
       case 'publisher':
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE; 
+        if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
         }
