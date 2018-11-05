@@ -859,7 +859,7 @@ final class Template {
   
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
-  protected function get_identifiers_from_url($url_sent = NULL) {
+  public function get_identifiers_from_url($url_sent = NULL) {
     if (is_null($url_sent)) {
         if ($this->has('url')) {        
            $url = $this->get('url');
