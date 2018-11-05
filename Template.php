@@ -929,6 +929,11 @@ final class Template {
             }
           }
         } else {
+          // Even if the DOI is broken, still drop URL if URL was dx.doi.org URL
+          if (is_null($url_sent) && strpos(strtolower($url), "doi.org/") !== FALSE) {
+            report_forget("Recognized doi.org URL; dropping URL");
+            $this->forget($url_type);
+          }
           $this->mark_inactive_doi();
         }
         return TRUE; // Added new DOI
