@@ -1722,6 +1722,7 @@ final class Template {
         }
         if (strpos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (strpos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
+        if (strpos($oa_url, 'zenodo.org') !== FALSE) return TRUE;   //is currently blacklisted due to copyright concerns
         // Check if best location is already linked -- avoid double linki
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $oa_url, $match)) {
