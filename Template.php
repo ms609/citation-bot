@@ -657,6 +657,7 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
+        if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
         $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
@@ -1048,7 +1049,7 @@ final class Template {
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite arxiv');
         
-      } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
+      } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d+)~", $url, $match)) {
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget($url_type);
@@ -2490,7 +2491,7 @@ final class Template {
     
     if($this->has($param)) {
       $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
-      if (stripos($param, 'separator') === FALSE) {
+      if (stripos($param, 'separator') === FALSE && stripos($param, 'postscript') === FALSE) {
          $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
       }
     }
