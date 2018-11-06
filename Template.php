@@ -1759,6 +1759,8 @@ final class Template {
           }
         }
 
+        if ($this->has('pmc')) return TRUE; // do not add url if have OA PMC
+        
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
