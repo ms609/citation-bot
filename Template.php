@@ -900,7 +900,7 @@ final class Template {
       }
     }
    
-    if (preg_match('~^(https?://(?:www.|)jstor\.org/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
+    if (preg_match('~^(https?://(?:www\.|)jstor\.org/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
        $url = $matches[1] . 'stable/' . $matches[2] ; // that is default.  This also means we get jstor not doi
        if (!is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one.  Will probably call forget on it below
@@ -986,8 +986,8 @@ final class Template {
           return $this->add_if_new("bibcode", urldecode($bibcode[1]));
         }
         
-      } elseif (preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
+                      . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~i", $url, $match)) {
                         
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
         if ($this->blank('pmc')) {
@@ -1008,7 +1008,7 @@ final class Template {
           }
           return $this->add_if_new("pmc", $match[1] . $match[2]);
         }
-      } elseif (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles/pmc(\d+)~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting Europe URL to PMC parameter");
@@ -1048,7 +1048,7 @@ final class Template {
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite arxiv');
         
-      } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~https?://(?:www\.|)ncbi.nlm.nih.gov/pubmed/.*?=?(\d+)~i", $url, $match)) {
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget($url_type);
@@ -1056,7 +1056,7 @@ final class Template {
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
         return $this->add_if_new('pmid', $match[1]);
         
-      } elseif (preg_match("~^https?://www\.amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
         
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite book');
         if ($match['domain'] == ".com") {
@@ -1130,21 +1130,21 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal'); // Better template choice.  Often journal/paper
           return $this->add_if_new('ssrn', $match[1]);
-      } elseif (preg_match("~^https?://www\.osti\.gov/biblio/([0-9]+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/biblio/([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
-      } elseif (preg_match("~^https?://www\.osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
-      } elseif (preg_match("~^https?://www\.worldcat\.org/oclc/([0-9]+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/oclc/([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OCLC parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
