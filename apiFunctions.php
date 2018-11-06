@@ -499,7 +499,7 @@ function expand_by_jstor($template) {
   curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
   $dat = @curl_exec($ch);
   if ($dat === FALSE) {
-    €€
+    curl_exec($ch);
   }
   curl_close($ch);
 
