@@ -492,7 +492,14 @@ function expand_by_jstor($template) {
      $jstor = $match[1]; // remove ?seq= stuff
   }
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
-  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_COOKIEFILE, './JSTOR_Cookies.txt');
+  curl_setopt($ch, CURLOPT_COOKIEJAR, './JSTOR_Cookies.txt');
+  curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
+  $dat = @curl_exec($ch);
+  curl_close($ch);
+
   if ($dat === FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
     return FALSE;
