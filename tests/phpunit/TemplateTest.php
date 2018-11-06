@@ -806,12 +806,6 @@ final class TemplateTest extends testBaseClass {
     // Google recovers Feb 1935; Zotero returns 1935-02.
   }
   
-  public function testErrantAuthor() {
-    $text = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Hearst Magazines', $expanded->get('publisher'));
-  }
-  
   public function testLongAuthorLists() {
     $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf}}';
     $expanded = $this->process_citation($text);
