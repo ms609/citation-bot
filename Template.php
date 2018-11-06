@@ -657,6 +657,7 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
+        if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
         $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
@@ -1048,7 +1049,7 @@ final class Template {
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite arxiv');
         
-      } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $url, $match)) {
+      } elseif (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d+)~", $url, $match)) {
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget($url_type);
@@ -2488,7 +2489,12 @@ final class Template {
       return FALSE;  // We let comments block the bot
     }
     
-    if($this->has($param)) $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
+    if($this->has($param)) {
+      $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
+      if (stripos($param, 'separator') === FALSE && stripos($param, 'postscript') === FALSE) {
+         $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
+      }
+    }
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
@@ -2758,6 +2764,7 @@ final class Template {
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
             $this->rename($param, 'chapter-url');
+            $this->rename('format', 'chapter-format');
             $param = 'chapter-url';
           }
           return;
@@ -3311,9 +3318,14 @@ final class Template {
     if ($par == 'chapter' && $this->blank('url')) {
       if($this->has('chapter-url')) {
         $this->rename('chapter-url', 'url');
+        $this->rename('chapter-format', 'format');
       } elseif ($this->has('chapterurl')) {
         $this->rename('chapterurl', 'url');
+        $this->rename('chapter-format', 'format');
       }
+    }
+    if ($par == 'chapter-url' || $par == 'chapterurl') {
+       $this->forgetter('chapter-format', $echo_forgetting);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
