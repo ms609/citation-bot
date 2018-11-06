@@ -95,9 +95,15 @@ final class TemplateTest extends testBaseClass {
   }
    
   public function testPoundDOI() {
-   $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
+    $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('10.1007/978-3-642-75924-6_15', $expanded->get('doi'));
+  }
+ 
+  public function testNewsdDOI() {
+    $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1021/cen-v076n048.p024', $expanded->get('doi'));
   }
  
   public function testChangeNothing1() {
