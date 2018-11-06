@@ -95,9 +95,15 @@ final class TemplateTest extends testBaseClass {
   }
    
   public function testPoundDOI() {
-   $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
+    $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('10.1007/978-3-642-75924-6_15', $expanded->get('doi'));
+  }
+ 
+  public function testNewsdDOI() {
+    $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1021/cen-v076n048.p024', $expanded->get('doi'));
   }
  
   public function testChangeNothing1() {
@@ -798,13 +804,6 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertTrue(in_array($expanded->get('date'), ['February 1935', '1935-02']));
     // Google recovers Feb 1935; Zotero returns 1935-02.
-  }
-  
-  public function testErrantAuthor() {
-    $tex
-     t = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Hearst Magazines', $expanded->get('publisher'));
   }
   
   public function testLongAuthorLists() {

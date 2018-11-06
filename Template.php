@@ -125,7 +125,7 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
-    } else if ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
+    } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
     }
@@ -819,6 +819,7 @@ final class Template {
       case 'publisher':
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE; 
+        if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
         }
@@ -860,7 +861,7 @@ final class Template {
   
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
-  protected function get_identifiers_from_url($url_sent = NULL) {
+  public function get_identifiers_from_url($url_sent = NULL) {
     if (is_null($url_sent)) {
         if ($this->has('url')) {        
            $url = $this->get('url');
@@ -930,6 +931,11 @@ final class Template {
             }
           }
         } else {
+          // Even if the DOI is broken, still drop URL if URL was dx.doi.org URL
+          if (is_null($url_sent) && strpos(strtolower($url), "doi.org/") !== FALSE) {
+            report_forget("Recognized doi.org URL; dropping URL");
+            $this->forget($url_type);
+          }
           $this->mark_inactive_doi();
         }
         return TRUE; // Added new DOI
@@ -1723,6 +1729,7 @@ final class Template {
         }
         if (strpos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (strpos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
+        if (strpos($oa_url, 'zenodo.org') !== FALSE) return TRUE;   //is currently blacklisted due to copyright concerns https://en.wikipedia.org/w/index.php?oldid=867438103#zenodo.org
         // Check if best location is already linked -- avoid double linki
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $oa_url, $match)) {
