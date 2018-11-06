@@ -1,6 +1,7 @@
 <?php 
 const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite document', 
                              'cite encyclopaedia', 'cite encyclopedia', 'cite journal', 'cite web');
+const TEMPLATES_WE_SLIGHTLY_PROCESS = array('cite news', 'cite newspaper');
 const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web');
 
 const AUTHOR_PARAMETERS = array(
