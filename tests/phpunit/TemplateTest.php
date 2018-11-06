@@ -30,6 +30,7 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testJstorExpansion() {
+   
     $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true|website=i found this online}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $prepared->wikiname());
