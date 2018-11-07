@@ -491,6 +491,7 @@ function expand_by_jstor($template) {
   if (preg_match('~^(.*)(?:\?.*)$~', $jstor, $match)) {
      $jstor = $match[1]; // remove ?seq= stuff
   }
+  if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
   if ($dat === FALSE) {
