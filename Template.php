@@ -1516,7 +1516,10 @@ final class Template {
       }
       $return = curl_exec($ch);
       if ($return === FALSE) {
-        throw new Exception(curl_error($ch), curl_errno($ch));
+        $exception = curl_error($ch);
+        $number = curl_errno($ch);
+        curl_close($ch);
+        throw new Exception($exception, $number);
       }
       $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -1570,7 +1573,6 @@ final class Template {
       } else {
         trigger_error(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_WARNING);
-        curl_close($ch);
       }
       return (object) array('numFound' => 0);
     }
