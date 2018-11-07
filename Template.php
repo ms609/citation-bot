@@ -582,6 +582,11 @@ final class Template {
                return TRUE;
              }
             return FALSE;
+          } 
+          if ($param_name === 'newspaper' && $this->has('via')) {
+             if (stripos($value, 'times') !== FALSE && stripos($this->get('via'), 'times') !== FALSE) {
+               $this->forget('via'); // eliminate via= that matches newspaper mostly
+             }
           }
           if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) {
              $this->rename('publisher', $param_name);
