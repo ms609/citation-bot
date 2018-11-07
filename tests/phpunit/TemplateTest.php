@@ -252,6 +252,10 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('url'));
     $this->assertNull($expanded->get('format'));
     $this->assertEquals('PDF', $expanded->get('chapter-format'));
+    $text='{{Cite book|url=http://www.sciencedirect.com/science/article/pii/B9780123864543000129|title=Encyclopedia of Toxicology (Third Edition)|last=Roberts|first=L.|date=2014|publisher=Academic Press|isbn=978-0-12-386455-0|editor-last=Wexler|editor-first=Philip|location=Oxford|pages=993–995|doi=10.1016/b978-0-12-386454-3.00012-9}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('http://www.sciencedirect.com/science/article/pii/B9780123864543000129', $expanded->get('chapter-url'));
+    $this->assertNull($expanded->get('url'));
   }
 
   public function testDoiExpansion() {
