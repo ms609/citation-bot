@@ -492,7 +492,17 @@ function expand_by_jstor($template) {
      $jstor = $match[1]; // remove ?seq= stuff
   }
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
-  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
+  
+  $jstor_opts = array(
+    'http'=>array(
+      'method'=>"GET",
+      'header'=>"Accept-language: en\r\n" .
+                "Cookie: UUID=3d1209ba-d7d6-40dc-8f1a-9190c982e0f2\r\n"
+    )
+  );
+
+  $context = stream_context_create($jstor_opts);
+  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor, FALSE, $context);
   if ($dat === FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
     return FALSE;
