@@ -1768,7 +1768,17 @@ final class Template {
           }
         }
 
-        if ($this->has('pmc') || $this->has('ssrn')) return TRUE; // do not add url if have OA already
+        if ($this->has('arxiv') ||
+            $this->has('biorxiv') ||
+            $this->has('citeseerx') ||
+            $this->has('pmc') ||
+            $this->has('rfc') ||
+            $this->has('ssrn') ||
+            ($this->has('doi') && $this->get('doi-access') === 'free') ||
+            ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
+            ($this->has('osti') && $this->get('osti-access') === 'free') ||
+            ($this->has('ol') && $this->get('ol-access') === 'free')
+           ) return TRUE; // do not add url if have OA already
         
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
@@ -1785,8 +1795,8 @@ final class Template {
             return FALSE;
           }
           switch ($best_location->version) {
-            case 'acceptedVersion': $format = 'Accepted manuscript'; break;
-            case 'submittedVersion': $format = 'Submitted manuscript'; break;
+            // case 'acceptedVersion': $format = 'Accepted manuscript'; break;
+            // case 'submittedVersion': $format = 'Submitted manuscript'; break;
             // case 'publishedVersion': $format = 'Full text'; break; // This is the assumed default
             default: $format = NULL;
           }
