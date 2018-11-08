@@ -532,7 +532,7 @@ function expand_by_researchgate($template, $url_sent = NULL) {
     )
     );
   $context = stream_context_create($cookie_opts);
-  $dat = @file_get_contents($url, FALSE, $context);
+  $dat = file_get_contents($url, FALSE, $context);
   if ($dat === FALSE) {
     report_info("researchgate API returned nothing for ". $match[1]);
     return FALSE;
