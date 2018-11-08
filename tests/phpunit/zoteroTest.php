@@ -9,11 +9,12 @@ require_once __DIR__ . '/../testBaseClass.php';
 class ZoteroTest extends testBaseClass {
 
 // Not actually Zotero anymore
-public function testZoteroExpansionRG() {
-    $text = '{{Cite journal|url =https://www.researchgate.net/publication/23445361}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('10.1136/jnnp.2008.144360', $expanded->get('doi'));
-  }
+// We get throttled on Travis because of overusage of everyone in the world
+// public function testZoteroExpansionRG() {
+//     $text = '{{Cite journal|url =https://www.researchgate.net/publication/23445361}}';
+//     $expanded = $this->process_citation($text);
+//     $this->assertEquals('10.1136/jnnp.2008.144360', $expanded->get('doi'));
+//   }
       
   public function testZoteroExpansionPII() {
     $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
