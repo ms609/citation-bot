@@ -10,7 +10,7 @@ function entrez_api($ids, $templates, $db) {
   
   $xml = @simplexml_load_file($url);
   if ($xml === FALSE) {
-    report_warning("Error in PubMed search: No response from Entrez server");fons
+    report_warning("Error in PubMed search: No response from Entrez server");
     return;
   }
   
