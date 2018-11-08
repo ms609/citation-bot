@@ -66,9 +66,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if(preg_match("~^https?://books\.google\.~", $url)) return FALSE;  // We have special google gooks code
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   if(preg_match('~^https?://(?:www.|)jstor.org/stable/(.*)$~', $url, $match)) return FALSE; // We do this ourself
-  if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)~i", $template->get('url'), $match)) {
-    $url = 'https://www.researchgate.net/publicliterature.PublicationHeaderDownloadCitation.downloadCitation.html?publicationUid=' . $match[1] . '&fileType=RIS&citationAndAbstract=false'; // Convert researchgate URL to give RIS information
-  }
+  if(preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)~i", $url)) return FALSE; // Do this ourself
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
   switch (trim($zotero_response)) {
