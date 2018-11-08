@@ -525,7 +525,7 @@ function expand_by_researchgate($template, $url_sent = NULL) {
     'http'=>array(
       'method'=>"GET",
       'header'=>"Accept-language: en\r\n" .
-                "Cookie: cookieconsentdismissed=true\r\n"
+                "Cookie: cookieconsent_dismissed=true\r\n"
     )
     ); 
   $context = stream_context_create($cookie_opts);
