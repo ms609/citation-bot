@@ -193,7 +193,7 @@ class Page {
     $this->expand_templates_from_identifier('bibcode', $our_templates);
     $this->expand_templates_from_identifier('jstor',   $our_templates);
     $this->expand_templates_from_identifier('doi',     $our_templates);
-    query_researchgate_api(NULL, $our_templates);
+    expand_researchgate($our_templates);
     expand_arxiv_templates($our_templates);
     
     report_phase('Expand individual templates by API calls');
