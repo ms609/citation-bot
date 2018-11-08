@@ -526,7 +526,7 @@ function expand_by_researchgate($template, $url_sent = NULL) {
       'method'=>"GET",
       'follow_location' => true,
       'header'=>"Accept-language: en\r\n" .
-                "Cookie: cookieconsent_dismissed=true ; did=lZHSLLknADrSfOz62q1y2130UKFfAXopz3M4lKcdvn0F0wOlcBSHqn0PgzXuMqAD\r\n" . 
+                "Cookie: cookieconsent_dismissed=true ; did=lZHSLLknADrSfOz62q1y2130UKFfAXopz3M4lKcdvn0F0wOlcBSHqn0PgzXuMqAD ; ptc=RG1.1174434962908659888.1541697965 ; _ga=GA1.2.415323688.1541697992\r\n" . 
                 "User-Agent: Mozilla/5.0 (Citation Bot)\r\n" .
                 "Referer: " . $url_sent . "\r\n", 
     )
