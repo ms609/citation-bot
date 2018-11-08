@@ -10,7 +10,7 @@ function entrez_api($ids, $templates, $db) {
   
   $xml = @simplexml_load_file($url);
   if ($xml === FALSE) {
-    report_warning("Error in PubMed search: No response from Entrez server");
+    report_warning("Error in PubMed search: No response from Entrez server");fons
     return;
   }
   
@@ -524,12 +524,14 @@ function expand_by_researchgate($template, $url_sent = NULL) {
   $cookie_opts = array(
     'http'=>array(
       'method'=>"GET",
+      'follow_location' => true,
       'header'=>"Accept-language: en\r\n" .
-                "Cookie: cookieconsent_dismissed=true\r\n"
+                "Cookie: cookieconsent_dismissed=true\r\n". 
+                "User-Agent: Mozilla/5.0 (Citation Bot)\r\n"
     )
-    ); 
+    );
   $context = stream_context_create($cookie_opts);
-  $dat = @file_get_contents($url, FALSE, $context);
+  $dat = file_get_contents($url, FALSE, $context);
   if ($dat === FALSE) {
     report_info("researchgate API returned nothing for ". $match[1]);
     return FALSE;
