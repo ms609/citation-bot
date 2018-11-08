@@ -528,7 +528,7 @@ function expand_by_researchgate($template, $url_sent = NULL) {
       'header'=>"Accept-language: en\r\n" .
                 "Cookie: cookieconsent_dismissed=true\r\n" . 
                 "User-Agent: Mozilla/5.0 (Citation Bot)\r\n" .
-                "Referer: " . $url_sent . "\r\n", 
+                "Referer: " . "https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/" . urlencode($url_sent) . "\r\n", 
     )
     );
   $context = stream_context_create($cookie_opts);
