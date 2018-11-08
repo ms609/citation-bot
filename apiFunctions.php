@@ -532,11 +532,14 @@ function expand_by_researchgate($template, $url_sent = NULL) {
     )
     );
   $context = stream_context_create($cookie_opts);
+  fwrite(STDERR, "\n got RG URL\n");
   $dat = @file_get_contents($url, FALSE, $context);
   if ($dat === FALSE) {
     report_info("researchgate API returned nothing for ". $match[1]);
+  fwrite(STDERR, "\n got nothing from RG URL\n");
     return FALSE;
   }
+    fwrite(STDERR, "\n got soemthing from RG URL\n");
   $template->expand_by_RIS($dat);
   return TRUE;
 }
