@@ -3310,8 +3310,10 @@ final class Template {
     if ($par == 'url') {
       $this->forgetter('accessdate', $echo_forgetting);
       $this->forgetter('access-date', $echo_forgetting);
-      $this->forgetter('archive-url', $echo_forgetting);
-      $this->forgetter('archiveurl', $echo_forgetting);
+      if ($this->blank(['chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) {
+        $this->forgetter('archive-url', $echo_forgetting);
+        $this->forgetter('archiveurl', $echo_forgetting);
+      }
       $this->forgetter('archive-date', $echo_forgetting);
       $this->forgetter('archivedate', $echo_forgetting);
       $this->forgetter('dead-url', $echo_forgetting);
