@@ -509,6 +509,35 @@ function expand_by_jstor($template) {
   return TRUE;
 }
 
+function query_researchgate_api($ids, $templates) {
+  foreach ($templates as $template) expand_by_researchgate($template);
+}
+
+function expand_by_researchgate($template, $url_sent = NULL) {
+  if ($template->incomplete() === FALSE) return FALSE;
+  if (is_null($url_sent)) $url_sent = $template->get('url');
+  if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)~i", $url_sent, $match)) {
+    $url = 'https://www.researchgate.net/publicliterature.PublicationHeaderDownloadCitation.downloadCitation.html?publicationUid=' . $match[1] . '&fileType=RIS&citationAndAbstract=false'; // Convert researchgate URL to give RIS information
+  } else {
+    return FALSE;
+  }
+  $cookie_opts = array(
+    'http'=>array(
+      'method'=>"GET",
+      'header'=>"Accept-language: en\r\n" .
+                "Cookie: cookieconsentdismissed=true\r\n"
+    )
+    ); 
+  }
+  $dat = @file_get_contents($url, FALSE, $context);
+  if ($dat === FALSE) {
+    report_info("researchgate API returned nothing for ". $match[1]);
+    return FALSE;
+  }
+  $template->expand_by_RIS($dat);
+  return TRUE;
+}
+
 function parse_plain_text_reference($journal_data, &$this_template, $upgrade_years = FALSE ) { // WARNING: Reference passing
       $journal_data = trim($journal_data);
       if ($journal_data === "") return;
