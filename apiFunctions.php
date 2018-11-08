@@ -493,14 +493,23 @@ function expand_by_jstor($template) {
   }
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   
-  $jstor_opts = array(
+  if (getenv('TRAVIS')) {
+    $jstor_opts = array(
     'http'=>array(
       'method'=>"GET",
       'header'=>"Accept-language: en\r\n" .
                 "Cookie: UUID=3d1209ba-d7d6-40dc-8f1a-9190c982e0f2\r\n"
     )
-  );
-
+    );
+  } else {
+   $jstor_opts = array(
+    'http'=>array(
+      'method'=>"GET",
+      'header'=>"Accept-language: en\r\n" .
+                "Cookie: UUID=2c114fa7-67a8-4291-a967-e4c5c5a563ac\r\n"
+    )
+    ); 
+  }
   $context = stream_context_create($jstor_opts);
   $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor, FALSE, $context);
   if ($dat === FALSE) {
