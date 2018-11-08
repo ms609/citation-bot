@@ -509,7 +509,7 @@ function expand_by_jstor($template) {
   return TRUE;
 }
 
-function query_researchgate_api($ids, $templates) {
+function expand_researchgate($templates) {
   foreach ($templates as $template) expand_by_researchgate($template);
 }
 
