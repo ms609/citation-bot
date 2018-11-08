@@ -526,13 +526,13 @@ function expand_by_researchgate($template, $url_sent = NULL) {
       'method'=>"GET",
       'follow_location' => true,
       'header'=>"Accept-language: en\r\n" .
-                "Cookie: cookieconsent_dismissed=true ; did=lZHSLLknADrSfOz62q1y2130UKFfAXopz3M4lKcdvn0F0wOlcBSHqn0PgzXuMqAD ; ptc=RG1.1174434962908659888.1541697965 ; _ga=GA1.2.415323688.1541697992\r\n" . 
+                "Cookie: cookieconsent_dismissed=true\r\n" . 
                 "User-Agent: Mozilla/5.0 (Citation Bot)\r\n" .
                 "Referer: " . $url_sent . "\r\n", 
     )
     );
   $context = stream_context_create($cookie_opts);
-  $dat = file_get_contents($url, FALSE, $context);
+  $dat = @file_get_contents($url, FALSE, $context);
   if ($dat === FALSE) {
     report_info("researchgate API returned nothing for ". $match[1]);
     return FALSE;
