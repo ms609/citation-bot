@@ -11,7 +11,7 @@ class ZoteroTest extends testBaseClass {
 // Not actually Zotero anymore
 public function testZoteroExpansionRG() {
     $text = '{{Cite journal|url =https://www.researchgate.net/publication/23445361}}';
-    $expanded = $this->expand_via_zotero($text);
+    $expanded = $this->process_citation($text);
     $this->assertEquals('RG', $expanded->parsed_text());
     $this->assertEquals('10.1136/jnnp.2008.144360', $expanded->get('doi'));
   }
