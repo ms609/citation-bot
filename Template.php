@@ -576,14 +576,19 @@ final class Template {
           $this->forget('class');
           
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
-             if ($this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) return FALSE;
+             if ($this->has('publisher') && strcasecmp(str_replace(["[", "]"], ["", ""], $this->get('publisher')), $value) === 0) return FALSE;
              if($this->blank('work')) {
                $this->add('work', $value);
                return TRUE;
              }
             return FALSE;
+          } 
+          if ($param_name === 'newspaper' && $this->has('via')) {
+             if (stripos($value, 'times') !== FALSE && stripos($this->get('via'), 'times') !== FALSE) {
+               $this->forget('via'); // eliminate via= that matches newspaper mostly
+             }
           }
-          if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) {
+          if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp(str_replace(["[", "]"], ["", ""], $this->get('publisher')), $value) === 0) {
              $this->rename('publisher', $param_name);
              return TRUE;
           }
@@ -910,6 +915,7 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
+      $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
           report_forget("Recognized existing DOI in URL; dropping URL");
@@ -1516,7 +1522,10 @@ final class Template {
       }
       $return = curl_exec($ch);
       if ($return === FALSE) {
-        throw new Exception(curl_error($ch), curl_errno($ch));
+        $exception = curl_error($ch);
+        $number = curl_errno($ch);
+        curl_close($ch);
+        throw new Exception($exception, $number);
       }
       $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -1570,7 +1579,6 @@ final class Template {
       } else {
         trigger_error(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_WARNING);
-        curl_close($ch);
       }
       return (object) array('numFound' => 0);
     }
