@@ -503,10 +503,9 @@ function expand_by_jstor($template) {
   curl_setopt($ch, CURLOPT_USERAGENT, BOT_USER_AGENT);
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET'); 
   if (getenv('TRAVIS')) {
-      curl_setopt($ch, CURLOPT_COOKIE, 'UUID=3d1209ba-d7d6-40dc-8f1a-9190c982e0f2');
+      curl_setopt($ch, CURLOPT_COOKIE, 'UUID=2c114fa7-67a8-4291-a967-e4c5c5a563ac');
   } else {
       curl_close($ch); return FALSE;//  Waiting on JSTOR to email me back
-      curl_setopt($ch, CURLOPT_COOKIE, 'UUID=2c114fa7-67a8-4291-a967-e4c5c5a563ac');
   }
   $dat = @curl_exec($ch);
   curl_close($ch);
