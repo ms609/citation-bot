@@ -540,8 +540,10 @@ function expand_by_researchgate($template, $url_sent = NULL) {
     report_info("researchgate API returned nothing for ". $match[1]);
     return FALSE;
   }
-  fwrite(STDERR, "\n $dat \n");
-  die;
+  if (stripos($dat, 'TemporarilyBlocked') !== FALSE) {
+    report_info("researchgate API blocked bot for ". $match[1]);
+    return FALSE;
+  }
   $template->expand_by_RIS($dat);
   return TRUE;
 }
