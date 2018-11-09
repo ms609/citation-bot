@@ -401,6 +401,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('http://www.fake-url.com/NOT_REAL', $expanded->get('url'));
     $this->assertNull($expanded->get('website'));
   }
+ 
+  public function testLeaveArchiveURL() {
+    $text = '{{cite book |chapterurl=http://faculty.haas.berkeley.edu/shapiro/thicket.pdf|isbn=978-0-262-60041-5|archiveurl=https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get('archiveurl'));
+  }
 
   public function testScriptTitle() {
     $text = "{{cite book |author={{noitalic|{{lang|zh-hans|国务院人口普查办公室、国家统计局人口和社会科技统计司编}}}} |date=2012 |script-title=zh:中国2010年人口普查分县资料 |location=Beijing |publisher={{noitalic|{{lang|zh-hans|中国统计出版社}}}} [China Statistics Press] |page= |isbn=978-7-5037-6659-6 }}";
