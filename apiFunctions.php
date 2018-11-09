@@ -530,7 +530,7 @@ function expand_by_researchgate($template, $url_sent = NULL) {
   curl_setopt($ch, CURLOPT_USERAGENT, BOT_USER_AGENT);
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
   curl_setopt($ch, CURLOPT_COOKIE, 'cookieconsent_dismissed=true');
-  $date = @curl_exec($ch);
+  $dat = @curl_exec($ch);
   curl_close($ch);
   if ($dat === FALSE) {
     report_info("researchgate API returned nothing for ". $match[1]);
