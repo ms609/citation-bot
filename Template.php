@@ -1570,7 +1570,7 @@ final class Template {
       } else {
         trigger_error(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_WARNING);
-        curl_close($ch);
+        curl_c lose($ch);
       }
       return (object) array('numFound' => 0);
     }
