@@ -509,7 +509,6 @@ function expand_by_jstor($template) {
       curl_close($ch); return FALSE;//  Waiting on JSTOR to email me back
   }
   $dat = @curl_exec($ch);
-  fwrite(STDERR,"\n START \n $jstor \n $dat \n END\n");
   curl_close($ch);
   if ($dat === FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
