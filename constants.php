@@ -12,6 +12,7 @@ const WIKI_ROOT = "https://en.wikipedia.org/w/index.php";
 const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
 const TOOLFORGE_IP = '208.80.155.131';
 const BRACESPACE = "!BOTCODE-spaceBeforeTheBrace";
+const BOT_USER_AGENT = "Mozilla/5.0 (Citation Bot)";
 
 //Common replacements
 const HTML_DECODE = array("[", "]", "<", ">", " ");
