@@ -501,9 +501,8 @@ function expand_by_jstor($template) {
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
   curl_setopt($ch, CURLOPT_REFERER, 'https://www.jstor.org/stable/' . $jstor);
   curl_setopt($ch, CURLOPT_USERAGENT, BOT_USER_AGENT);
-  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET'); 
   if (getenv('TRAVIS')) {
-      curl_setopt($ch, CURLOPT_COOKIE, 'UUID=2c114fa7-67a8-4291-a967-e4c5c5a563ac');
+      curl_setopt($ch, CURLOPT_COOKIE, 'UUID=ebd3d410-9006-4193-a44d-8980c23dde92');
   } else {
       curl_close($ch); return FALSE;//  Waiting on JSTOR to email me back
   }
