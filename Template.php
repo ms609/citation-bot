@@ -1768,7 +1768,7 @@ final class Template {
           }
         }
 
-        if ($this->has('pmc') || $this->has('ssrn')) return TRUE; // do not add url if have OA already
+        if ($this->has('pmc') || $this->has('ss rn')) return TRUE; // do not add url if have OA already
         
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
