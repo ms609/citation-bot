@@ -915,6 +915,7 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
+      $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
           report_forget("Recognized existing DOI in URL; dropping URL");
