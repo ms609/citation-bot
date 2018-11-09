@@ -507,7 +507,7 @@ function expand_by_jstor($template) {
   } else {
       curl_close($ch); return FALSE;//  Waiting on JSTOR to email me back
   }
-  $dat = @curl_exec($ch);
+  $dat = curl_exec($ch);
   curl_close($ch);
   if ($dat === FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
