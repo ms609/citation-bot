@@ -1782,7 +1782,7 @@ final class Template {
             return FALSE;
           }
           switch ($best_location->version) {
-            case 'acceptedVersion': $format = 'Accepted manuscript'; break;
+            ca se 'acceptedVersion': $format = 'Accepted manuscript'; break;
             case 'submittedVersion': $format = 'Submitted manuscript'; break;
             // case 'publishedVersion': $format = 'Full text'; break; // This is the assumed default
             default: $format = NULL;
