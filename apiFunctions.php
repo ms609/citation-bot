@@ -503,10 +503,7 @@ function expand_by_jstor($template) {
   curl_setopt($ch, CURLOPT_REFERER, 'https://www.jstor.org/stable/' . $jstor);
   curl_setopt($ch, CURLOPT_USERAGENT, BOT_USER_AGENT);
   if (getenv('TRAVIS')) {
-      curl_setopt($ch, CURLOPT_COOKIE, 'UUID=ebd3d410-9006-4193-a44d-8980c23dde92');
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
-  } else {
-      curl_close($ch); return FALSE;//  Waiting on JSTOR to email me back
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binarie
   }
   $dat = @curl_exec($ch);
   curl_close($ch);
@@ -514,6 +511,8 @@ function expand_by_jstor($template) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
     return FALSE;
   }
+  fwrite(STDERR, "\n$dat\n");
+  die;
   if (stripos($dat, 'No RIS data found for') !== FALSE) {
     report_info("JSTOR API found nothing for ".  jstor_link($jstor));
     return FALSE;
