@@ -502,6 +502,7 @@ function expand_by_jstor($template) {
     )
     );
   } else {
+   return FALSE;//  Waiting on JSTOR to email me back
    $jstor_opts = array(
     'http'=>array(
       'method'=>"GET",
