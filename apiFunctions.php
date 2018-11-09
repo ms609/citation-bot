@@ -531,6 +531,9 @@ function expand_by_researchgate($template, $url_sent = NULL) {
   curl_setopt($ch, CURLOPT_USERAGENT, BOT_USER_AGENT);
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
   curl_setopt($ch, CURLOPT_COOKIE, 'cookieconsent_dismissed=true');
+  if (getenv('TRAVIS')) {
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
+  }
   $dat = @curl_exec($ch);
   curl_close($ch);
   if ($dat === FALSE) {
