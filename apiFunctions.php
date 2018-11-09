@@ -503,6 +503,7 @@ function expand_by_jstor($template) {
   curl_setopt($ch, CURLOPT_USERAGENT, BOT_USER_AGENT);
   if (getenv('TRAVIS')) {
       curl_setopt($ch, CURLOPT_COOKIE, 'UUID=ebd3d410-9006-4193-a44d-8980c23dde92');
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
   } else {
       curl_close($ch); return FALSE;//  Waiting on JSTOR to email me back
   }
