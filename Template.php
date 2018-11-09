@@ -576,7 +576,7 @@ final class Template {
           $this->forget('class');
           
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
-             if ($this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) return FALSE;
+             if ($this->has('publisher') && strcasecmp(str_replace(["[", "]"], ["", ""], $this->get('publisher')), $value) === 0) return FALSE;
              if($this->blank('work')) {
                $this->add('work', $value);
                return TRUE;
@@ -588,7 +588,7 @@ final class Template {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
           }
-          if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp($this->get('publisher'), $value) === 0) {
+          if ($param_name === 'newspaper' && $this->has('publisher') && strcasecmp(str_replace(["[", "]"], ["", ""], $this->get('publisher')), $value) === 0) {
              $this->rename('publisher', $param_name);
              return TRUE;
           }
