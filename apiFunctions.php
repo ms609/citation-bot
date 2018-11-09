@@ -521,18 +521,17 @@ function expand_by_researchgate($template, $url_sent = NULL) {
   } else {
     return FALSE;
   }
-  $cookie_opts = array(
-    'http'=>array(
-      'method'=>"GET",
-      'follow_location' => true,
-      'header'=>"Accept-language: en\r\n" .
-                "Cookie: cookieconsent_dismissed=true\r\n" . 
-                "User-Agent: Mozilla/5.0 (Citation Bot)\r\n" .
-                "Referer: " . $url_sent . "\r\n", 
-    )
-    );
-  $context = stream_context_create($cookie_opts);
-  $dat = @file_get_contents($url, FALSE, $context);
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_HEADER, FALSE);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+  curl_setopt($ch, CURLOPT_REFERER, $url_sent);
+  curl_setopt($ch, CURLOPT_USERAGENT, BOT_USER_AGENT);
+  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+  curl_setopt($ch, CURLOPT_COOKIE, 'cookieconsent_dismissed=true');
+  $date = @curl_exec($ch);
+  curl_close($ch);
   if ($dat === FALSE) {
     report_info("researchgate API returned nothing for ". $match[1]);
     return FALSE;
