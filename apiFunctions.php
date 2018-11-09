@@ -493,26 +493,22 @@ function expand_by_jstor($template) {
   }
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_HEADER, FALSE);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+  curl_setopt($ch, CURLOPT_REFERER, 'https://www.jstor.org/stable/' . $jstor);
+  curl_setopt($ch, CURLOPT_USERAGENT, BOT_USER_AGENT);
+  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET'); 
   if (getenv('TRAVIS')) {
-    $jstor_opts = array(
-    'http'=>array(
-      'method'=>"GET",
-      'header'=>"Accept-language: en\r\n" .
-                "Cookie: UUID=3d1209ba-d7d6-40dc-8f1a-9190c982e0f2\r\n"
-    )
-    );
+      curl_setopt($ch, CURLOPT_COOKIE, 'UUID=3d1209ba-d7d6-40dc-8f1a-9190c982e0f2');
   } else {
-   return FALSE;//  Waiting on JSTOR to email me back
-   $jstor_opts = array(
-    'http'=>array(
-      'method'=>"GET",
-      'header'=>"Accept-language: en\r\n" .
-                "Cookie: UUID=2c114fa7-67a8-4291-a967-e4c5c5a563ac\r\n"
-    )
-    ); 
+      curl_close($ch); return FALSE;//  Waiting on JSTOR to email me back
+      curl_setopt($ch, CURLOPT_COOKIE, 'UUID=2c114fa7-67a8-4291-a967-e4c5c5a563ac');. 
   }
-  $context = stream_context_create($jstor_opts);
-  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor, FALSE, $context);
+  $dat = @curl_exec($ch);
+  curl_close($ch);
   if ($dat === FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
     return FALSE;
