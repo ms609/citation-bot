@@ -491,7 +491,7 @@ function expand_by_jstor($template) {
   if (preg_match('~^(.*)(?:\?.*)$~', $jstor, $match)) {
      $jstor = $match[1]; // remove ?seq= stuff
   }
-  fwrite(STDERR, "\n JSTOR  $jstor  JSTOR \n");
+  $jstor = trim($jstor);
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   
@@ -509,6 +509,7 @@ function expand_by_jstor($template) {
       curl_close($ch); return FALSE;//  Waiting on JSTOR to email me back
   }
   $dat = @curl_exec($ch);
+  fwrite(STDERR,"\n START \n $jstor \n $dat \n END\n");
   curl_close($ch);
   if ($dat === FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
