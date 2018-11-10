@@ -515,6 +515,7 @@ function expand_researchgate($templates) {
 }
 
 function expand_by_researchgate($template, $url_sent = NULL) {
+  return FALSE; // need api key and need to send it
   if ($template->incomplete() === FALSE) return FALSE;
   if (is_null($url_sent)) $url_sent = $template->get('url');
   if (preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)~i", $url_sent, $match)) {
