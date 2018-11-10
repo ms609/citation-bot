@@ -480,6 +480,7 @@ function query_jstor_api($ids, $templates) {
 }
 
 function expand_by_jstor($template) {
+  return FALSE; // blocked right now
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
      $jstor = trim($template->get('jstor'));
