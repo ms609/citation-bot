@@ -594,8 +594,9 @@ final class Template {
           }
           if ($this->has('website')) { // alias for journal
             if (strcasecmp(str_replace(["[", "]"], ["", ""], $this->get('website')), $value) === 0) {
-               $this->rename('website', $param_name, $value);
+               $this->rename('website', $param_name);
             } else {
+               $this->rename('website', $param_name, $value);
             }
             return TRUE;
           } else {   
