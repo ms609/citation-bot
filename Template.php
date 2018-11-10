@@ -593,9 +593,11 @@ final class Template {
              return TRUE;
           }
           if ($this->has('website')) { // alias for journal
-            NEED TO NOT BLOW AWAYBEXITING  WIKILINKS IF SAME
-             $this->rename('website', $param_name, $value);
-             return TRUE;
+            if (strcasecmp(str_replace(["[", "]"], ["", ""], $this->get('website')), $value) === 0) {
+               $this->rename('website', $param_name, $value);
+            } else {
+            }
+            return TRUE;
           } else {   
              return $this->add($param_name, $value);
           }
