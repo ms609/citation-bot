@@ -30,9 +30,6 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testJstorExpansion() {
-    // JSTOR IS DOWN
-    $this->assertNull(NULL);
-    return;
     $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true|website=i found this online}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $prepared->wikiname());
@@ -48,6 +45,10 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text);
     $this->assertNull($prepared->get('jstor'));
     
+    // JSTOR IS DOWN
+    $this->assertNull(NULL);
+    return;
+   
     $text = '{{cite web | via = UTF8 characters from JSTOR | url = https://www.jstor.org/stable/27695659}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('Mórdha', $expanded->get('last1'));
