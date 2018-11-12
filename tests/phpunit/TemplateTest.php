@@ -100,9 +100,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('10.1007/978-3-642-75924-6_15', $expanded->get('doi'));
   }
  
-  public 
-   
-   hh
+  public function testPlusDOI() {
+    $doi = "10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U";
+    $text = "{{cite journal|doi = $doi }}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($doi, $expanded->get('doi'));
+  }
  
   public function testNewsdDOI() {
     $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024}}";
