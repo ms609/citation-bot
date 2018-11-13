@@ -12,6 +12,7 @@ $count = 0;
 foreach ($_GET as $param=>$value) {
   $count++;
   if ($count > 10) die;
+  if (strlen($param . $value) > 256) die;
   $t->set($param, $value);
 }
 if ($count === 0) die;
