@@ -14,7 +14,7 @@ foreach ($_GET as $param=>$value) {
   if ($count > 10) die;
   $t->set($param, $value);
 }
-if ($count === 0} die;
+if ($count === 0) die;
 $t->process(); // better than calling expand_by_doi because it also sets the wikiname
 echo "\n";
 echo "\n";
