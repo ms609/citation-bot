@@ -593,7 +593,11 @@ final class Template {
              return TRUE;
           }
           if ($this->has('website')) { // alias for journal
-             $this->rename('website', $param_name, $value);
+             if (strcasecmp(str_replace(["[", "]"], ["", ""], $this->get('website')), $value) === 0) {
+               $this->rename('website', $param_name);
+             } else {
+               $this->rename('website', $param_name, $value);
+             }
              return TRUE;
           } else {   
              return $this->add($param_name, $value);
@@ -623,6 +627,9 @@ final class Template {
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')
                                       || ($this->get($param_name) === "{title}")) {
+          if (strcasecmp($this->get('encyclopedia'), sanitize_string($value)) === 0) {
+            return FALSE;
+          }
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
