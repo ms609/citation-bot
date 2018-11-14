@@ -429,9 +429,5 @@ function str_almost_the_same($str1, $str2) {  // Move forgiving than ===
   $str2 = trim($str2);
   $str1 = preg_replace("~^the\s+~", "", $str1);  // Ignore leading "the" so "New York Times" == "The New York Times"
   $str2 = preg_replace("~^the\s+~", "", $str2);
-  if ($str1 === $str2) {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+  return (strcmp($str1,$str2) === 0);
 }
