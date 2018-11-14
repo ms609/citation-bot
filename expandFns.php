@@ -420,7 +420,7 @@ function equivalent_parameters($par) {
   }
 }
 
-function str_almost_the_same($str1, $str2) {  // Move forgiving than ===
+function str_almost_the_same($str1, $str2) {  // For comparing strings with forgiveness
   $str1 = mb_strtolower($str1); // Case-insensitive
   $str2 = mb_strtolower($str2);
   $str1 = str_replace(["[", "]"], ["", ""], $str1); // Ignore wiki-links
