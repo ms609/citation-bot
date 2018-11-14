@@ -110,7 +110,7 @@ function author_is_human($author) {
 // Returns the author's name formatted as Surname, F.I.
 function format_author($author){
   
-	// Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
+  // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = NULL;
   // Google and Zotero sometimes have these
   $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, NULL, 'UTF-8'));
@@ -120,8 +120,8 @@ function format_author($author){
 	$author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
 	if ($author == "") {
-      return FALSE;
-  }
+          return FALSE;
+        }
 
 	$auth = explode(",", $author);
 	if (isset($auth[1])) {
@@ -195,8 +195,8 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
 
 	$authors = trim($authors);
 	if ($authors == "") {
-    return FALSE;
-  }
+           return FALSE;
+        }
 
 	$authors = explode(";", $authors);
 	#dbg(array("IN"=>$authors));
