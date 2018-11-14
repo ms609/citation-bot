@@ -83,6 +83,7 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
 }
 
 function sanitize_doi($doi) {
+  $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   $extension = substr($doi, strrpos($doi, '.'));
   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
