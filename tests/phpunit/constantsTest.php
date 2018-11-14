@@ -36,6 +36,10 @@ final class constantsTest extends testBaseClass {
       $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i], -2, 1));
       $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i],  1, 1)); 
     }
+    // Trailing dots and lots of dots....
+    $text = "{{Cite journal|journal=Journal of the A.I.E.E.}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
   }
   
   public function testConstantsOrder() {
