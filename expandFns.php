@@ -249,6 +249,7 @@ function title_capitalization($in, $caps_after_punctuation) {
     $new_case);
   
   // Capitalization exceptions, e.g. Elife -> eLife
+  $new_case = preg_replace("~�~iu", "�", $new_case); // Normalize �
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
   $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
   
