@@ -8,11 +8,9 @@ header("Content-Type: text/plain");
 include('expandFns.php');
 $t = new Template();
 $t->parse_text('{{cite web}}');
-$count = 0;
+if (count($_GET) > 10) die('Excessive parameters passed');
 foreach ($_GET as $param=>$value) {
-  $count++;
-  if ($count > 10) die;
-  if (strlen($param . $value) > 256) die;
+  if (strlen($param . $value) > 256) die('Excessively long parameters passed');
   $t->set($param, $value);
 }
 if ($count === 0) die;
@@ -20,4 +18,6 @@ $t->process(); // better than calling expand_by_doi because it also sets the wik
 echo "\n";
 echo "\n";
 print("<ref>".$t->parsed_text()."</ref>");
+exit 0;
+
 ?>
