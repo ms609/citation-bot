@@ -133,6 +133,10 @@ final class doiToolsTest extends testBaseClass {
     $this->assertEquals($text,straighten_quotes($text));
     $text = "X«Y»Z";
     $this->assertEquals('X"Y"Z',straighten_quotes($text));
+    $text = "This › That";
+    $this->assertEquals($text,straighten_quotes($text));
+    $text = "X‹Y›Z";
+    $this->assertEquals("X'Y'Z",straighten_quotes($text));
   }
   
   public function testMathInTitle() {
