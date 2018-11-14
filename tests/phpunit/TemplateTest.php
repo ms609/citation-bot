@@ -30,9 +30,6 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testJstorExpansion() {
-    // JSTOR IS DOWN
-    $this->assertNull(NULL);
-    return;
     $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true|website=i found this online}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $prepared->wikiname());
@@ -47,6 +44,10 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite web | url = http://www.jstor.org/stable/10.1017/s0022381613000030}}";
     $prepared = $this->prepare_citation($text);
     $this->assertNull($prepared->get('jstor'));
+  
+    // JSTOR IS DOWN
+    $this->assertNull(NULL);
+    return;
     
     $text = '{{cite web | via = UTF8 characters from JSTOR | url = https://www.jstor.org/stable/27695659}}';
     $expanded = $this->process_citation($text);
@@ -1119,9 +1120,9 @@ ER -  }}';
   }
   
   public function testOverwriteBlanks() {
-    $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
+    $text = '{{cite journal|url=http://www.jstor.org/stable/1234560|jstor=}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('{{cite journal|jstor=1234567890}}', $expanded->parsed_text());
+    $this->assertEquals('{{cite journal|jstor=1234560}}', $expanded->parsed_text());
   }
 
   public function testIgnoreJstorPlants() {
