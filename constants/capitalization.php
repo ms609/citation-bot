@@ -45,8 +45,8 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', 
-          ' z/Journal ', ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
-          ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys '
+          ' z/Journal ', ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ',
+          ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys '
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -62,7 +62,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Paj: A Journal of Performance and Art ', ' Palaios ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus a ', ' The Embo Journal ', ' Time Out London ', 
-          ' Z/journal ', ' Z/Journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift F�r Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ',' Zeitschrift F�r Physik a Hadrons and Nuclei ',  
-          ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zeitschrift F�r Physik a: Hadrons And Nuclei ', ' Zookeys '
+          ' Z/journal ', ' Z/Journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ',
+          ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys '
           /* The above will be automatically updated to alphabetical order */ 
 ); 
