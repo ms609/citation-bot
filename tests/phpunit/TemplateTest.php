@@ -1121,7 +1121,7 @@ ER -  }}';
   public function testOverwriteBlanks() {
     $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('{{cite journal|jstor=1234567890}}', $expanded->parsed_text());
+    $this->assertEquals('{{cite journal|jstor=12345 67890}}', $expanded->parsed_text());
   }
 
   public function testIgnoreJstorPlants() {
