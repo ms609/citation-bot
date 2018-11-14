@@ -593,7 +593,7 @@ final class Template {
              return TRUE;
           }
           if ($this->has('website')) { // alias for journal
-             if (str_almost_the_same($this->get('website'), $value)) === 0) {
+             if (str_almost_the_same($this->get('website'), $value)) {
                $this->rename('website', $param_name);
              } else {
                $this->rename('website', $param_name, $value);
