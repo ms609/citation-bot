@@ -491,6 +491,7 @@ function expand_by_jstor($template) {
   if (preg_match('~^(.*)(?:\?.*)$~', $jstor, $match)) {
      $jstor = $match[1]; // remove ?seq= stuff
   }
+  $jstor = trim($jstor);
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
@@ -500,6 +501,10 @@ function expand_by_jstor($template) {
   }
   if (stripos($dat, 'No RIS data found for') !== FALSE) {
     report_info("JSTOR API found nothing for ".  jstor_link($jstor));
+    return FALSE;
+  }
+  if (stripos($dat, 'Block Reference') !== FALSE) {
+    report_info("JSTOR API blocked bot for ".  jstor_link($jstor));
     return FALSE;
   }
   $has_a_url = $template->has('url');
