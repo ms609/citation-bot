@@ -609,6 +609,7 @@ final class Template {
         if ($this->blank($param_name)) {
           $value = wikify_external_text($value);
           if ($this->has('journal') && (strcasecmp($this->get('journal'), $value) === 0)) return FALSE;
+          if ($this->has('title') && (strcasecmp($this->get('title'), $value) === 0)) return FALSE;
           return $this->add($param_name, $value);
         }
         return FALSE;
