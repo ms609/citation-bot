@@ -562,9 +562,9 @@ final class Template {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
-          if ($this->has('series') && (strcasecmp($this->get('series'), $value) === 0)) return FALSE ;
+          if ($this->has('series') && str_equivalent($this->get('series'), $value)) return FALSE ;
           if ($this->has('work')) {
-            if (strcasecmp($this->get('work'), $value) === 0) {
+            if (str_equivalent($this->get('work'), $value)) {
               $this->rename('work', $param_name);
               $this->forget('issn');
               return TRUE;
@@ -576,7 +576,7 @@ final class Template {
           $this->forget('class');
           
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
-             if ($this->has('publisher') && str_remove_irrelevant_bits($this->get('publisher')) === str_remove_irrelevant_bits($value)) return FALSE;
+             if ($this->has('publisher') && str_equivalent($this->get('publisher'), $value)) return FALSE;
              if($this->blank('work')) {
                $this->add('work', $value);
                return TRUE;
@@ -588,13 +588,12 @@ final class Template {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
           }
-          if ($param_name === 'newspaper' && $this->has('publisher') && 
-              str_remove_irrelevant_bits($this->get('publisher')) === str_remove_irrelevant_bits($value)) {
+          if ($param_name === 'newspaper' && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)) {
              $this->rename('publisher', $param_name);
              return TRUE;
           }
           if ($this->has('website')) { // alias for journal
-             if (str_remove_irrelevant_bits($this->get('website')) === str_remove_irrelevant_bits($value)) {
+             if (str_equivalent($this->get('website'), $value)) {
                $this->rename('website', $param_name);
              } else {
                $this->rename('website', $param_name, $value);
@@ -609,7 +608,7 @@ final class Template {
       case 'series':
         if ($this->blank($param_name)) {
           $value = wikify_external_text($value);
-          if ($this->has('journal') && (strcasecmp($this->get('journal'), $value) === 0)) return FALSE;
+          if ($this->has('journal') && str_equivalent($this->get('journal'), $value)) return FALSE;
           return $this->add($param_name, $value);
         }
         return FALSE;
@@ -628,7 +627,7 @@ final class Template {
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')
                                       || ($this->get($param_name) === "{title}")) {
-          if (strcasecmp($this->get('encyclopedia'), sanitize_string($value)) === 0) {
+          if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
             return FALSE;
           }
           if ($this->blank('script-title')) {
@@ -2600,8 +2599,8 @@ final class Template {
           
         case 'chapter': 
           if ($this->has('chapter')) {
-            if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
-            if (!strcasecmp($this->get('chapter'), $this->get('title'))) {
+            if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
+            if (str_equivalent($this->get('chapter'), $this->get('title'))) {
               $this->forget('chapter'); 
               return; // Nonsense to have both.
             }
@@ -2665,7 +2664,7 @@ final class Template {
             report_warning('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . $this->get('isbn'));
           }
-          if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
+          if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           // No break here: Continue on from journal into periodical
         case 'periodical':
           $periodical = $this->get($param);
@@ -2740,7 +2739,7 @@ final class Template {
           return;
 
         case 'series':
-          if (!strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
+          if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           return;
           
         case 'title':
@@ -2780,8 +2779,8 @@ final class Template {
               $title = mb_substr($title, 0, -1);
           }
           $this->set($param, $title);
-          if ($title && !strcasecmp($this->get($param), $this->get('work'))) $this->forget('work');
-          if ($title && !strcasecmp($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
+          if ($title && str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
+          if ($title && str_equivalent($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
           return;
      
         case 'chapter-url':
@@ -2807,10 +2806,10 @@ final class Template {
         
         case 'work':
           if ($this->has('work')
-          && (  !strcasecmp($this->get('work'), $this->get('series'))
-             || !strcasecmp($this->get('work'), $this->get('title'))
-             || !strcasecmp($this->get('work'), $this->get('journal'))
-             || !strcasecmp($this->get('work'), $this->get('website'))
+          && (  str_equivalent($this->get('work'), $this->get('series'))
+             || str_equivalent($this->get('work'), $this->get('title'))
+             || str_equivalent($this->get('work'), $this->get('journal'))
+             || str_equivalent($this->get('work'), $this->get('website'))
              )
           ) {
             $this->forget('work');
@@ -2909,7 +2908,7 @@ final class Template {
         case 'website':
           if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0 ||
                                                       strcasecmp((string)$this->get($param), 'Google Books') === 0 ||
-                                                      strcasecmp((string)$this->get($param), 'Books.google.') === 0)) {
+                                                         stripos((string)$this->get($param), 'Books.google.') === 0)) {
             $this->forget($param);
           }
           if (stripos($this->get($param), 'archive.org') !== FALSE &&
@@ -2960,7 +2959,7 @@ final class Template {
       }
       // Sometimes series and journal come from different databases
       if ($this->has('series') && $this->has('journal') &&
-          (strcasecmp($this->get('series'), $this->get('journal')) === 0)) {  // Leave only one
+          (str_equivalent($this->get('series'), $this->get('journal')))) {  // Leave only one
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
             $this->forget('journal');
         } elseif ($this->wikiname() === 'cite journal'|| $this->wikiname() === 'citation') {
