@@ -927,7 +927,7 @@ final class Template {
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
-        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
+        return $this->add_if_new("doi", sanitize_doi($match[1])); // Will expand from DOI when added
     }
     
     if ($doi = extract_doi($url)[1]) {
