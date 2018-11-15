@@ -36,10 +36,11 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('1701972'     , $prepared->get('jstor'));
     $this->assertNull($prepared->get('website'));
 
-    $text = "{{Cite journal | url=http://www.jstor.org/stable/10.2307/40237667}}";
+    $text = "{{Cite journal | url=http://www.jstor.org/stable/10.2307/40237667|jstor=}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('40237667', $prepared->get('jstor'));
     $this->assertNull($prepared->get('doi'));
+    $this->assertEquals(1, substr_count($prepared->parsed_text(), 'jstor'));  // Verify that we do not have both jstor= and jstor=40237667.  Formerly testOverwriteBlanks()
 
     $text = "{{Cite web | url = http://www.jstor.org/stable/10.1017/s0022381613000030}}";
     $prepared = $this->prepare_citation($text);
@@ -1117,12 +1118,6 @@ ER -  }}';
     $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('594900', $expanded->get('jstor'));
-  }
-  
-  public function testOverwriteBlanks() {
-    $text = '{{cite journal|url=http://www.jstor.org/stable/1234560|jstor=}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals(1, substr_count($expanded->parsed_text(), 'jstor'));
   }
 
   public function testIgnoreJstorPlants() {
