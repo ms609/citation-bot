@@ -6,7 +6,7 @@ function ValidateForm() {
     submitButton = event.explicitOriginalTarget;
   } else if(typeof document.activeElement.value != 'undefined'){  // IE
     submitButton = document.activeElement;
-  };
+  }
   console.log(submitButton.id);
   if (submitButton.id == 'PageSubmit') {
     if (botPage.value.trim() == "") {
@@ -64,7 +64,7 @@ function InitializeForm() {
 
 function SaveUsername() {
   if (document.getElementById("saveUsername").checked) {
-    localStorage.setItem("username", document.getElementById("user").value)
+    localStorage.setItem("username", document.getElementById("user").value);
   } else {
     localStorage.removeItem("username");
   }
