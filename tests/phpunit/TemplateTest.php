@@ -40,7 +40,7 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('40237667', $prepared->get('jstor'));
     $this->assertNull($prepared->get('doi'));
-    $this->assertEquals(1, substr_count($expanded->parsed_text(), 'jstor'));  // Verify that we do not have both jstor= and jstor=40237667.  Formerly testOverwriteBlanks()
+    $this->assertEquals(1, substr_count($prepared->parsed_text(), 'jstor'));  // Verify that we do not have both jstor= and jstor=40237667.  Formerly testOverwriteBlanks()
 
     $text = "{{Cite web | url = http://www.jstor.org/stable/10.1017/s0022381613000030}}";
     $prepared = $this->prepare_citation($text);
