@@ -33,7 +33,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
                                 'scielo.org', 'scielo.br', 'degruyter.com', 'hindawi.com', 'inderscience.com',
                                 'cambridge.org', '.oup.com', 'nature.com', 'macmillan.com', 'ieeexplore.ieee.org',
-                                'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org');
+                                'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org', 'journals.ametsoc.org');
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk');
 
