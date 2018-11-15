@@ -1362,6 +1362,9 @@ ER -  }}';
     $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
     $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
+    $t = new Template();
+    $t->parse_text('{{cite web}}');
+    $t->process();
   }
  
   public function testBadBibcodeARXIVPages() {
