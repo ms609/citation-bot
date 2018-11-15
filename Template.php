@@ -576,7 +576,7 @@ final class Template {
           $this->forget('class');
           
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
-             if ($this->has('publisher') && str_almost_the_same($this->get('publisher'), $value)) return FALSE;
+             if ($this->has('publisher') && str_equivalent($this->get('publisher'), $value)) return FALSE;
              if($this->blank('work')) {
                $this->add('work', $value);
                return TRUE;
@@ -588,12 +588,12 @@ final class Template {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
           }
-          if ($param_name === 'newspaper' && $this->has('publisher') && str_almost_the_same($this->get('publisher'), $value)) {
+          if ($param_name === 'newspaper' && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)) {
              $this->rename('publisher', $param_name);
              return TRUE;
           }
           if ($this->has('website')) { // alias for journal
-             if (str_almost_the_same($this->get('website'), $value)) {
+             if (str_equivalent($this->get('website'), $value)) {
                $this->rename('website', $param_name);
              } else {
                $this->rename('website', $param_name, $value);
