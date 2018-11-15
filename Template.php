@@ -136,7 +136,7 @@ final class Template {
       case 'cite web':
         if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
           report_action("Expanded from Google Books API");
-          $this->change_name_to('Cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
+          $this->change_name_to('cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
         }
       break;
       case 'cite arxiv':
@@ -188,7 +188,7 @@ final class Template {
         case 'cite web':
           if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
             report_action("Expanded from Google Books API");
-            $this->change_name_to('Cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
+            $this->change_name_to('cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
           }
           $this->process();
         break;
@@ -260,12 +260,12 @@ final class Template {
           $this->find_pmid();
           
           if($this->wikiname() == 'cite document' || $this->wikiname() == 'cite article') {
-            if ($this->has('journal')) $this->change_name_to('Cite journal');
+            if ($this->has('journal')) $this->change_name_to('cite journal');
           }
                 
           // Convert from journal to book, if there is a unique chapter name or has an ISBN
           if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
-            $this->change_name_to('Cite book');
+            $this->change_name_to('cite book');
           }
           break;
       }
@@ -991,7 +991,7 @@ final class Template {
           quietly('report_modification', "Converting URL to JSTOR parameter");
           $this->set("jstor", urldecode($match[1]));
         }
-        if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         return TRUE;
       } else {
         return FALSE; // Jstor URL yielded nothing
@@ -1009,7 +1009,7 @@ final class Template {
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~i", $url, $match)) {
                         
-        if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting URL to PMC parameter");
           if (is_null($url_sent)) {
@@ -1030,7 +1030,7 @@ final class Template {
         }
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles/pmc(\d+)~i", $url, $match)  ||
                 preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d+)~i", $url, $match)) {
-        if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting Europe URL to PMC parameter");
           if (is_null($url_sent)) {
@@ -1040,14 +1040,14 @@ final class Template {
         }
       } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
-        if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
         return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
       } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)\?doi=([0-9.]*)(&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
-        if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
@@ -1067,19 +1067,19 @@ final class Template {
           }
           return $this->add_if_new("arxiv", $arxiv_id[0]);
         }
-        if ($this->wikiname() === 'cite web') $this->change_name_to('Cite arxiv');
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
         
       } elseif (preg_match("~https?://(?:www\.|)ncbi.nlm.nih.gov/pubmed/.*?=?(\d+)~i", $url, $match)) {
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
-        if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         return $this->add_if_new('pmid', $match[1]);
         
       } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
         
-        if ($this->wikiname() === 'cite web') $this->change_name_to('Cite book');
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite book');
         if ($match['domain'] == ".com") {
           if (is_null($url_sent)) {
             $this->forget($url_type);
@@ -1117,9 +1117,9 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') {
             if ($this->has('journal')) {
-              $this->change_name_to('Cite journal');
+              $this->change_name_to('cite journal');
             } else {
-              $this->change_name_to('Cite document');
+              $this->change_name_to('cite document');
             }
           }
           return $this->add_if_new('hdl', $match[1]);
@@ -1128,49 +1128,49 @@ final class Template {
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('zbl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('jfm', $match[1]);
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to MR parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('mr', $match[1]);
       } elseif (preg_match("~^https?://papers\.ssrn\.com/sol3/papers\.cfm\?abstract_id=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to SSRN parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal'); // Better template choice.  Often journal/paper
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal'); // Better template choice.  Often journal/paper
           return $this->add_if_new('ssrn', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/biblio/([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');  // Better template choice.  Often journal/paper
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/oclc/([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OCLC parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if ($this->wikiname() === 'cite web') $this->change_name_to('Cite book');  // Better template choice
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite book');  // Better template choice
           return $this->add_if_new('oclc', $match[1]); 
       }
     }
@@ -2039,7 +2039,7 @@ final class Template {
           $this->param[$param_key]->val = $p->param . '=' . $p->val;
           $this->param[$param_key]->param = 'url';
           if (stripos($p->val, 'books.google.') !== FALSE) {
-            $this->change_name_to('Cite book');
+            $this->change_name_to('cite book');
             $this->process();
           }
         } elseif ($p->param == 'doix') {
@@ -2109,7 +2109,7 @@ final class Template {
       $doi = extract_doi($dat);
       if (!is_null($doi)) {
         $this->add_if_new('doi', $doi[1]); 
-        $this->change_name_to("Cite journal");
+        $this->change_name_to("cite journal");
         $dat = str_replace($doi[0], '', $dat);
       }
       
@@ -2478,12 +2478,17 @@ final class Template {
   }
 
   public function change_name_to($new_name, $rename_cite_book = TRUE) {
+    $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
-    &&  lcfirst($new_name) != $this->wikiname()
+    && $new_name != $this->wikiname()
     ) {
       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
-      $this->name = $spacing[1] . ucfirst(strtolower(trim($new_name))) . $spacing[2];
+      if (substr($this->name,0,1) === 'c') {
+        $this->name = $spacing[1] . $new_name . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . ucfirst($new_name) . $spacing[2];
+      }
       switch (strtolower($new_name)) {
         case 'cite journal': 
           $this->rename('eprint', 'arxiv'); 
@@ -2591,9 +2596,9 @@ final class Template {
             if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
           }
           if (strpos($this->get($param), 'book') !== FALSE) {
-            $this->change_name_to('Cite book', FALSE);
+            $this->change_name_to('cite book', FALSE);
           } else {
-            $this->change_name_to('Cite journal', FALSE);
+            $this->change_name_to('cite journal', FALSE);
           }
           return;
           
@@ -2606,7 +2611,7 @@ final class Template {
             }
           }
           if ($this->has('chapter') && $this->blank(['journal', 'bibcode', 'jstor', 'pmid'])) {
-            $this->change_name_to('Cite book');
+            $this->change_name_to('cite book');
           }
           return;
     
@@ -2623,7 +2628,7 @@ final class Template {
             return;
           }
           $this->set($param, sanitize_doi($doi));
-          $this->change_name_to('Cite journal', FALSE);
+          $this->change_name_to('cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
@@ -2657,7 +2662,7 @@ final class Template {
           if ($this->lacks($param)) return;
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
-            $this->change_name_to('Cite journal');
+            $this->change_name_to('cite journal');
             $this->forget('publisher');
             $this->forget('location');
           } else {
@@ -2694,7 +2699,7 @@ final class Template {
           return;
         
         case 'jstor':
-          $this->change_name_to('Cite journal', FALSE);
+          $this->change_name_to('cite journal', FALSE);
           return;
         
         case 'magazine':
@@ -2716,7 +2721,7 @@ final class Template {
           }
           // No break; continue from pmc to pmid:
         case 'pmid':
-          $this->change_name_to('Cite journal', FALSE);
+          $this->change_name_to('cite journal', FALSE);
           return;
           
         case 'publisher':
