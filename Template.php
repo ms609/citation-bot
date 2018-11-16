@@ -211,7 +211,7 @@ final class Template {
 
           $this->get_identifiers_from_url();
           $this->id_to_param();
-          echo "\n* " . echoable($this->get('title'));
+          report_info(echoable($this->get('title')));
           $this->correct_param_spelling();
           if ($this->expand_by_google_books()) {
             report_action("Expanded from Google Books API");
@@ -230,8 +230,7 @@ final class Template {
           }
         break;
         case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
-          echo "\n\n* Expand citation: " . echoable($this->get('title'));
-
+          report_info(echoable($this->get('title')));
           if ($this->use_sici()) {
             report_action("Found and used SICI");
           }
