@@ -1365,6 +1365,15 @@ ER -  }}';
     $t = new Template();
     $t->parse_text('{{cite web}}');
     $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite book}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite arxiv}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite journal}}');
+    $t->process();
   }
  
   public function testBadBibcodeARXIVPages() {
