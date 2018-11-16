@@ -11,7 +11,8 @@ const BAD_AUTHORS = array("unknown", "missing");
 // Ordered alphabetically.
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
                            'museum', "press", "publishers", "publishing", 'science'];
-const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "Arxiv Mathematics E-Prints");
+const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "Arxiv Mathematics E-Prints", 
+                         "SSRN Electronic Journal");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -33,7 +34,9 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
                                 'scielo.org', 'scielo.br', 'degruyter.com', 'hindawi.com', 'inderscience.com',
                                 'cambridge.org', '.oup.com', 'nature.com', 'macmillan.com', 'ieeexplore.ieee.org',
-                                'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org');
+                                'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org', 'journals.ametsoc.org',
+                                //  Below are sites that are simply DOI resolvers, like dx.doi.org
+                                'doi.library.ubc.ca');
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk');
 
