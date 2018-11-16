@@ -36,10 +36,11 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('1701972'     , $prepared->get('jstor'));
     $this->assertNull($prepared->get('website'));
 
-    $text = "{{Cite journal | url=http://www.jstor.org/stable/10.2307/40237667}}";
+    $text = "{{Cite journal | url=http://www.jstor.org/stable/10.2307/40237667|jstor=}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('40237667', $prepared->get('jstor'));
     $this->assertNull($prepared->get('doi'));
+    $this->assertEquals(1, substr_count($prepared->parsed_text(), 'jstor'));  // Verify that we do not have both jstor= and jstor=40237667.  Formerly testOverwriteBlanks()
 
     $text = "{{Cite web | url = http://www.jstor.org/stable/10.1017/s0022381613000030}}";
     $prepared = $this->prepare_citation($text);
@@ -740,7 +741,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{cite journal|chapter=A book chapter|work=A book chapter}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertEquals('{{Cite book|chapter=A book chapter}}', $prepared->parsed_text());
+      $this->assertEquals('{{cite book|chapter=A book chapter}}', $prepared->parsed_text());
       
       $text = '{{citation|work=I Live}}';
       $prepared = $this->prepare_citation($text);
@@ -1118,12 +1119,6 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('594900', $expanded->get('jstor'));
   }
-  
-  public function testOverwriteBlanks() {
-    $text = '{{cite journal|url=http://www.jstor.org/stable/1234560|jstor=}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('{{cite journal|jstor=1234560}}', $expanded->parsed_text());
-  }
 
   public function testIgnoreJstorPlants() {
     $text='{{Cite journal| url=http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972 |title=Holotype of Persoonia terminalis L.A.S.Johnson & P.H.Weston [family PROTEACEAE]}}';
@@ -1362,6 +1357,18 @@ ER -  }}';
     $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
     $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
+    $t = new Template();
+    $t->parse_text('{{cite web}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite book}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite arxiv}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite journal}}');
+    $t->process();
   }
  
   public function testBadBibcodeARXIVPages() {
