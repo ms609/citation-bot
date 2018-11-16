@@ -3476,8 +3476,11 @@ final class Template {
         $url = $url_parts[0];
         $hash = "#" . $url_parts[1];
       }
+
       $url_parts = explode("&", str_replace("?", "&", $url));
+      array_shift($url_parts);
       $url = "https://www.google.com/search?";
+
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
@@ -3499,6 +3502,7 @@ final class Template {
              break;
         }
       }
+
       if (substr($url, -1) === "&") $url = substr($url, 0, -1);  //remove trailing &
       $url= $url . $hash;
       return $url;
