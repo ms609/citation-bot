@@ -189,8 +189,8 @@ final class Template {
           if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
             report_action("Expanded from Google Books API");
             $this->change_name_to('Cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
+            $this->process();
           }
-          $this->process();
         break;
         case 'cite arxiv':
           $this->expand_by_arxiv();
