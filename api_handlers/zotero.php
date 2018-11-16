@@ -65,12 +65,6 @@ function expand_by_zotero(&$template, $url = NULL) {
   foreach (ZOTERO_AVOID_REGEX as $bad_url) {
     if(preg_match("~^https?://(?:www\.|)" . $bad_url . "~", $url)) return FALSE; 
   }
-  if(preg_match("~^https?://(?:www\.|)twitter\.~", $url)) return FALSE;  // This should be {{cite tweet}}.  Stay away!!!
-  if(preg_match("~^https?://(?:www\.|)youtube\.~", $url)) return FALSE;  // This should be {{cite AV media}}.
-  if(preg_match("~^https?://(?:www\.|)youtu\.be~", $url)) return FALSE; 
-  if(preg_match("~^https?://(?:www\.|)books\.google\.~", $url)) return FALSE;  // We have special google gooks code
-  if(preg_match('~^https?://(?:www\.|)jstor\.org/stable/~', $url)) return FALSE; // We do this ourself
-  if(preg_match("~^https?://(?:www\.|)google\.com/search~", $url)) return FALSE;  // do not expand google searches
 
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
