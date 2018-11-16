@@ -91,6 +91,9 @@ final class TemplateTest extends testBaseClass {
      $text = '{{cite journal|doi=10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|url=https://dx.doi.org/10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2}}';
      $expanded = $this->process_citation($text);
      $this->assertNull($expanded->get('url'));
+     $text = '{{cite journal|url=http://doi.org/10.14928/amstec.23.1_1|doi=10.14928/amstec.23.1_1}}';  // This also troublesome DOI
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('url'));
   }
   
   public function testPmidExpansion() {
