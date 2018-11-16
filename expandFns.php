@@ -277,28 +277,6 @@ function throttle ($min_interval) {
   $last_write_time = time();
 }
 
-function tag($long = FALSE) {
-  return FALSE; // I suggest that this function is no longer useful in the Travis era
-  // If it's not been missed by 2018-10-01, I suggest that we delete it and all calls thereto.
-  
-  $dbg = array_reverse(debug_backtrace());
-  array_pop($dbg);
-  array_shift($dbg);
-  $output = '';
-  foreach ($dbg as $d) {
-    if ($long) {
-      $output = $output . '> ' . $d['function'];
-    } else {
-      $output = '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);
-    }
-  }
-  if (getenv('TRAVIS')) {
-     echo ' [..' . $output . ']';
-  } else {
-     echo ' [..' . htmlspecialchars($output) . ']';
-  } 
-}
-
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
   if (trim($str) == 'Science (New York, N.Y.)') return 'Science';
