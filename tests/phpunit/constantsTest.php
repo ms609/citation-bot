@@ -39,7 +39,8 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testAllLowerCase() {
-    $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS, PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS
+    $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
+                             PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS);
     foreach ($big_array as $actual) {
       $this->assertEquals(strtolower($actual), $actual);
     }
