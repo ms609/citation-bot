@@ -921,13 +921,13 @@ final class Template {
        }
     }
     
-    if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~i", $url, $match)) {
+    if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
-        return $this->add_if_new("doi", sanitize_doi($match[1])); // Will expand from DOI when added
+        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
     }
     
     if ($doi = extract_doi($url)[1]) {
