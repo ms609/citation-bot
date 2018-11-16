@@ -277,28 +277,6 @@ function throttle ($min_interval) {
   $last_write_time = time();
 }
 
-function tag($long = FALSE) {
-  return FALSE; // I suggest that this function is no longer useful in the Travis era
-  // If it's not been missed by 2018-10-01, I suggest that we delete it and all calls thereto.
-  
-  $dbg = array_reverse(debug_backtrace());
-  array_pop($dbg);
-  array_shift($dbg);
-  $output = '';
-  foreach ($dbg as $d) {
-    if ($long) {
-      $output = $output . '> ' . $d['function'];
-    } else {
-      $output = '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);
-    }
-  }
-  if (getenv('TRAVIS')) {
-     echo ' [..' . $output . ']';
-  } else {
-     echo ' [..' . htmlspecialchars($output) . ']';
-  } 
-}
-
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
   if (trim($str) == 'Science (New York, N.Y.)') return 'Science';
@@ -419,3 +397,16 @@ function equivalent_parameters($par) {
     default: return array($par);
   }
 }
+
+function str_remove_irrelevant_bits($str) {
+  $str = str_replace(["[", "]"], ["", ""], $str); // Ignore wiki-links and links
+  $str = trim($str);  // Remove spaces on ends
+  $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
+  return $str;
+}
+
+function str_equivalent($str1, $str2) {
+  return 0 === strcasecmp(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
+}
+  
+  
