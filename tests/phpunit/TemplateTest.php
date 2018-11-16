@@ -36,7 +36,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('1701972'     , $prepared->get('jstor'));
     $this->assertNull($prepared->get('website'));
 
-    $text = "{{Cite journal  | url=http://www.jstor.org/stable/10.2307/40237667|jstor=}}";
+    $text = "{{Cite journal | url=http://www.jstor.org/stable/10.2307/40237667|jstor=}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('40237667', $prepared->get('jstor'));
     $this->assertNull($prepared->get('doi'));
@@ -741,7 +741,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{cite journal|chapter=A book chapter|work=A book chapter}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertEquals('{{Cite book|chapter=A book chapter}}', $prepared->parsed_text());
+      $this->assertEquals('{{cite book|chapter=A book chapter}}', $prepared->parsed_text());
       
       $text = '{{citation|work=I Live}}';
       $prepared = $this->prepare_citation($text);
@@ -1357,6 +1357,18 @@ ER -  }}';
     $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
     $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
+    $t = new Template();
+    $t->parse_text('{{cite web}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite book}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite arxiv}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite journal}}');
+    $t->process();
   }
  
   public function testBadBibcodeARXIVPages() {
