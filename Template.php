@@ -2719,6 +2719,10 @@ final class Template {
           
         case 'publisher':
           $publisher = strtolower($this->get($param));
+          if (stripos($this->get('url'), 'maps.google') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
+            $this->set($param, 'Google Maps');  // Case when Google actually IS a publisher
+            return;
+          }
           foreach (NON_PUBLISHERS as $not_publisher) {
             if (strpos($publisher, $not_publisher) !== FALSE) {
               $this->forget($param);
