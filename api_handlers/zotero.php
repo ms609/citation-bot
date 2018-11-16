@@ -63,7 +63,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   
   foreach (ZOTERO_AVOID_REGEX as $bad_url) {
-    if(preg_match("~^https?://(?:www\.|)" . $bad_url . "~", $url)) return FALSE; 
+    if(preg_match("~^https?://(?:www\.|)" . $bad_url . "~i", $url)) return FALSE; 
   }
 
   $zotero_response = zotero_request($url);
