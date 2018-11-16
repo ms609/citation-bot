@@ -1188,7 +1188,7 @@ final class Template {
     if ($this->has('doi')) {
       return $this->get_without_comments_and_placeholders('doi');
     }
-    report_action("Checking CrossRef database for doi. " . tag());
+    report_action("Checking CrossRef database for doi. ");
     $data = [
       'title'      => $this->get('title'),
       'journal'    => $this->get('journal'),
@@ -1247,7 +1247,7 @@ final class Template {
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
     
     if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
-      report_warning("Error loading simpleXML file from CrossRef." . tag());
+      report_warning("Error loading simpleXML file from CrossRef.");
     }
     elseif ($result['status'] == 'malformed') {
       report_warning("Cannot search CrossRef: " . echoable($result->msg));
@@ -1259,7 +1259,7 @@ final class Template {
 
   public function find_pmid() {
     if (!$this->blank('pmid')) return;
-    report_action("Searching PubMed... " . tag());
+    report_action("Searching PubMed... ");
     $results = ($this->query_pubmed());
     if ($results[1] == 1) {
       $this->add_if_new('pmid', $results[0]);
@@ -1431,7 +1431,7 @@ final class Template {
       ) {
         report_info("Match for pagination but database journal \"" .
           echoable($journal_string[0]) . "\" didn't match \"" .
-          echoable($journal) . "\"." . tag());
+          echoable($journal) . "\".");
         return FALSE;
       }
     }
@@ -1442,7 +1442,6 @@ final class Template {
           return FALSE;  // Probably a book review or something with same title, etc.
         }
       }
-      echo tag();
       if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
       $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
       $i = 0;
@@ -2569,7 +2568,7 @@ final class Template {
                 if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $this->get($param), $match)) {
                   $this->add_if_new('authorlink' . $pmatch[2], ucfirst($match[2] ? $match[2] : $match[3]));
                   $this->set($param, $match[3]);
-                  report_modification("Dissecting authorlink" . tag());
+                  report_modification("Dissecting authorlink");
                 }
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
                 if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
@@ -2882,7 +2881,7 @@ final class Template {
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value) && (stripos($value, "http") === FALSE)) {
             $this->mod_dashes = TRUE;
             report_modification("Upgrading to en-dash in " . echoable($param) .
-                  " parameter" . tag());
+                  " parameter");
             $value =  mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
             $this->set($param, $value);
           }
@@ -3036,7 +3035,7 @@ final class Template {
         break;
       }
     } else {
-      report_info("Checking that DOI " . echoable($doi) . " is operational..." . tag());
+      report_info("Checking that DOI " . echoable($doi) . " is operational...");
       if (doi_active($this->get_without_comments_and_placeholders('doi')) === FALSE) {
         report_inline("It's not; checking for user input error...");
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
@@ -3147,7 +3146,7 @@ final class Template {
   protected function display_authors($newval = FALSE) {
     if ($newval && is_int($newval)) {
       $this->forget('displayauthors');
-      report_modification("Setting display-authors to $newval" . tag());
+      report_modification("Setting display-authors to $newval");
       $this->set('display-authors', $newval);
     }
 
@@ -3269,7 +3268,7 @@ final class Template {
   public function lacks($par) {return !$this->has($par);}
 
   public function add($par, $val) {
-    report_add("Adding $par: $val" .tag());
+    report_add("Adding $par: $val");
     $could_set = $this->set($par, $val);
     $this->tidy_parameter($par);
     return $could_set;
@@ -3369,7 +3368,7 @@ final class Template {
     if ($pos !== NULL) {
       if ($echo_forgetting && $this->has($par) && stripos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
         // Do not mention forgetting empty parameters or internal temporary parameters
-        report_forget("Dropping parameter \"" . echoable($par) . '"' . tag());
+        report_forget("Dropping parameter \"" . echoable($par) . '"');
       }
       unset($this->param[$pos]);
     }
