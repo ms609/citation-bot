@@ -5,9 +5,9 @@
 # Citation bot
 
 ## GitHub repository details
-There are two main branches of the bot: 
+There are one to two main branches of the bot: 
 - The **master** code is implemented at https://tools.wmflabs.org/citations/, and is intended for public use.
-- The **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/ .  
+- When needed, the **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/ .  
 
 ## Overview
 
