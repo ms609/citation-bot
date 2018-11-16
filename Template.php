@@ -3491,8 +3491,12 @@ final class Template {
           case "ie":
              if (strcasecmp($part_start[1], 'utf-8') === 0) break;  // UTF-8 is the default
           case "hl": case "safe": case "q":
-          default:
              $url .=  $part . "&" ;
+             break;
+          default:
+             if (getenv('TRAVIS')) trigger_error("Unexpected Google URL component:  " . $part);
+             $url .=  $part . "&" ;
+             break;
         }
       }
       if (substr($url, -1) === "&") $url = substr($url, 0, -1);  //remove trailing &
