@@ -2797,7 +2797,7 @@ final class Template {
           } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
               $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~", $this->get($param))) {
-              $this->set($param, $this->simplify_google($this->get($param)));
+              $this->set($param, $this->simplify_google_search($this->get($param)));
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
             $this->rename($param, 'chapter-url');
@@ -3469,7 +3469,7 @@ final class Template {
      }
   }
                          
-  protected function simplify_google($url) {
+  protected function simplify_google_search($url) {
       $hash = '';
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
