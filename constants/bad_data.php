@@ -11,8 +11,8 @@ const BAD_AUTHORS = array("unknown", "missing");
 // Ordered alphabetically.
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
                            'museum', "press", "publishers", "publishing", 'science'];
-const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "Arxiv Mathematics E-Prints", 
-                         "SSRN Electronic Journal");
+const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints", 
+                         "ssrn electronic journal");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
