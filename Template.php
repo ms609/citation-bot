@@ -1037,7 +1037,7 @@ final class Template {
           }
           return $this->add_if_new("pmc", $match[1]);
         }
-      } elseif (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
         if (is_null($url_sent)) {
@@ -1776,6 +1776,11 @@ final class Template {
           }
         }
         if (preg_match("~^https?://d?x?\.?doi\.org/*~", $oa_url, $match)) {
+          if ($this->has('doi')) {
+             return TRUE;
+          }
+        }
+        if (preg_match("~^https?://doi\.library\.ubc\.ca/*~", $oa_url, $match)) {
           if ($this->has('doi')) {
              return TRUE;
           }
