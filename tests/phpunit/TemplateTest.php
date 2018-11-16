@@ -745,7 +745,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{cite journal|chapter=A book chapter|work=A book chapter}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertEquals('{{Cite book|chapter=A book chapter}}', $prepared->parsed_text());
+      $this->assertEquals('{{cite book|chapter=A book chapter}}', $prepared->parsed_text());
       
       $text = '{{citation|work=I Live}}';
       $prepared = $this->prepare_citation($text);

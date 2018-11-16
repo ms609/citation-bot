@@ -7,7 +7,7 @@ header("Content-Type: text/plain");
 
 include('expandFns.php');
 $t = new Template();
-$t->parse_text('{{cite web}}');
+$t->parse_text('{{Cite web}}');
 if (count($_GET) > 10) exit('Excessive number of parameters passed');
 if (count($_GET) === 0) exit('No parameters passed');
 foreach ($_GET as $param=>$value) {
