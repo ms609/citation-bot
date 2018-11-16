@@ -131,41 +131,6 @@ final class Template {
     }
   }
   
-  public function api_calls() {
-   switch ($this->wikiname()) {
-      case 'cite web':
-        if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
-          report_action("Expanded from Google Books API");
-          $this->change_name_to('cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
-        }
-      break;
-      case 'cite arxiv':
-        $this->expand_by_arxiv();
-
-      break;
-      case 'cite book':
-        if ($this->expand_by_google_books()) {
-          report_action("Expanded from Google Books API");
-        }
-        $no_isbn_before_doi = $this->blank("isbn");
-        expand_by_doi($this);
-        if ($no_isbn_before_doi && $this->has("isbn")) {
-          $this->expand_by_google_books();
-        }
-      break;
-      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
-        $this->expand_by_pubmed(); //partly to try to find DOI
-        $this->expand_by_google_books();
-        expand_by_jstor($this);
-        expand_by_doi($this);
-        $this->expand_by_adsabs(); //Primarily to try to find DOI
-        $this->get_doi_from_crossref();
-        $this->get_open_access_url();
-        $this->find_pmid();
-      break;
-    }
-  }
-  
   public function record_api_usage($api, $param) {
     if (!is_array($param)) $param = array($param);
     foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
