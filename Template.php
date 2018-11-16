@@ -3486,6 +3486,7 @@ final class Template {
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "as_brr": case "sa": case "oi": case "ct": case "id":
           case "oq": case "rls": case "sourceid": case "tbm": case "ved":
+          case "aqs":
              break;
           case "ie":
              if (strcasecmp($part_start[1], 'utf-8') === 0) break;  // UTF-8 is the default
