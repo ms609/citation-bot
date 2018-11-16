@@ -57,7 +57,7 @@ class Page {
     $this->set_date_pattern();
 
     if (stripos($this->text, '#redirect') !== FALSE) {
-      echo "Page is a redirect.";
+      report_warning("Page is a redirect.");
       return FALSE;
     }
 

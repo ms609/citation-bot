@@ -66,7 +66,9 @@ function expand_by_zotero(&$template, $url = NULL) {
   if(preg_match("~^https?://books\.google\.~", $url)) return FALSE;  // We have special google gooks code
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   if(preg_match('~^https?://(?:www.|)jstor.org/stable/(.*)$~', $url, $match)) return FALSE; // We do this ourself
+  if(preg_match("~^https?://(?:www.|)google\.com/search~", $url)) return FALSE;  // do not expand google searches
   if(preg_match("~^https?://(?:www.|)researchgate\.net/~", $url)) return FALSE; // Do this ourself
+
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
   switch (trim($zotero_response)) {
