@@ -3485,7 +3485,7 @@ final class Template {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
           case "aq": case "aqi": case "bih": case "biw": case "client": 
-          case "as": case "useragent": case "as_brr": case "source":  case "hl":
+          case "as": case "useragent": case "as_brr": case "source":
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "as_brr": case "sa": case "oi": case "ct": case "id":
           case "oq": case "rls": case "sourceid": case "tbm": case "ved":
