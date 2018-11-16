@@ -922,7 +922,7 @@ final class Template {
     
     if (preg_match("~^https?://d?x?\.?doi\.org/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
-        if ($this->wikiname() === 'cite web') $this->change_name_to('Cite journal');
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
