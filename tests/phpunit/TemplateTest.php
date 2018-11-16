@@ -36,7 +36,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('1701972'     , $prepared->get('jstor'));
     $this->assertNull($prepared->get('website'));
 
-    $text = "{{Cite journal | url=http://www.jstor.org/stable/10.2307/40237667|jstor=}}";
+    $text = "{{Cite journal  | url=http://www.jstor.org/stable/10.2307/40237667|jstor=}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('40237667', $prepared->get('jstor'));
     $this->assertNull($prepared->get('doi'));
