@@ -59,17 +59,19 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE;
   }
   if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
-
+  
+  if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
+  
+  foreach (ZOTERO_AVOID_REGEX as $bad_url) {
+    if(preg_match("~^https?://(?:www\.|)" . $bad_url . "~", $url)) return FALSE; 
+  }
   if(preg_match("~^https?://(?:www\.|)twitter\.~", $url)) return FALSE;  // This should be {{cite tweet}}.  Stay away!!!
   if(preg_match("~^https?://(?:www\.|)youtube\.~", $url)) return FALSE;  // This should be {{cite AV media}}.
   if(preg_match("~^https?://(?:www\.|)youtu\.be~", $url)) return FALSE; 
-  if(preg_match("~^https?://books\.google\.~", $url)) return FALSE;  // We have special google gooks code
-  if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
-  if(preg_match('~^https?://(?:www.|)jstor.org/stable/(?:.*)$~', $url)) return FALSE; // We do this ourself
-  if(preg_match("~^https?://(?:www.|)google\.com/search~", $url)) return FALSE;  // do not expand google searches
-  if(preg_match("~^https?://(?:www.|)researchgate.net/[^\s]*publication/([0-9]+)~i", $url, $match)) {
-    $url = 'https://www.researchgate.net/publicliterature.PublicationHeaderDownloadCitation.downloadCitation.html?publicationUid=' . $match[1] . '&fileType=RIS&citationAndAbstract=false'; // Convert researchgate URL to give RIS information
-  }
+  if(preg_match("~^https?://(?:www\.|)books\.google\.~", $url)) return FALSE;  // We have special google gooks code
+  if(preg_match('~^https?://(?:www\.|)jstor\.org/stable/~', $url)) return FALSE; // We do this ourself
+  if(preg_match("~^https?://(?:www\.|)google\.com/search~", $url)) return FALSE;  // do not expand google searches
+
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
   switch (trim($zotero_response)) {
