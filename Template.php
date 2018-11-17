@@ -930,6 +930,7 @@ final class Template {
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
       }
+      if (strpos($doi, '10.1093/law:epil') === 0) return FALSE; // Those do not work
       if (preg_match('~(.*)(?:#[^#]+)$~', $doi, $match_pound)) {
         if(!doi_active($doi) && doi_active($match_pound[1])) $doi = $match_pound[1]; // lose #pages and such
       }
