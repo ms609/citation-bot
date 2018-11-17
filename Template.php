@@ -731,6 +731,8 @@ final class Template {
         return FALSE;
         
       case 'doi':
+        if (strpos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
+        if (strpos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             $this->add('doi', $match[0]);          
@@ -930,8 +932,6 @@ final class Template {
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
       }
-      if (strpos($doi, '10.1093/law:epil') === 0) return FALSE; // Those do not work
-      if (strpos($doi, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
       if (preg_match('~(.*)(?:#[^#]+)$~', $doi, $match_pound)) {
         if(!doi_active($doi) && doi_active($match_pound[1])) $doi = $match_pound[1]; // lose #pages and such
       }
