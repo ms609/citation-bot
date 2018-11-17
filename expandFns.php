@@ -92,6 +92,10 @@ function sanitize_doi($doi) {
   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
+  if (preg_match('~^(10\.1093/oxfordhb/.+)(?:/oxfordhb.+)$~', $doi, $match)) {
+     $doi = $match[1];   // Truncate URL based 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003
+  }
+    
   return $doi;
 }
 
