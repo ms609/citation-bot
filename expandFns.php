@@ -92,10 +92,13 @@ function sanitize_doi($doi) {
   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
+  // And now for 10.1093 URLs 
   if (preg_match('~^(10\.1093/oxfordhb/.+)(?:/oxfordhb.+)$~', $doi, $match)) {
-     $doi = $match[1];   // Truncate URL based 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003
+     $doi = $match[1];   // 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003
   }
-    
+  if (preg_match('~^(10\.1093/acprof:oso/.+)(?:/acprof.+)$~', $doi, $match)) {
+     $doi = $match[1];   // 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
+  } 
   return $doi;
 }
 
