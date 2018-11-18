@@ -191,7 +191,7 @@ final class Template {
       $no_doi  = $this->blank("doi");
       $this->expand_by_arxiv();
     
-      if ($this->has('doi') {
+      if ($this->has('doi')) {
          // Forget dates so that DOI can update with publication date, not ARXIV date
          $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
          $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
@@ -214,7 +214,7 @@ final class Template {
       $this->get_doi_from_crossref();
       $this->get_open_access_url();
       $this->find_pmid();
-      if ($no_doi && $this->has('doi') {
+      if ($no_doi && $this->has('doi')) {
         // Forget dates so that DOI can update with publication date, not ARXIV date
          $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
          $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
