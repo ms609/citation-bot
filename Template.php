@@ -285,8 +285,8 @@ final class Template {
     }
     // And now everything else
     if ($this->blank('pages', 'page') ||
-        (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page'))) ||
-        (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page')) . '-')  && ($this->blank('year') || 2 > (date("Y") - $this->get('year')))) // It claims to be on page one
+        preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')) ||
+        (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (date("Y") - $this->get('year')))) // It claims to be on page one
        ) {
       return TRUE;
     }
