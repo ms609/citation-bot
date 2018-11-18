@@ -4,7 +4,6 @@
  * parsing, handling, and expansion.
  *
  * Of particular note:
- *     process() is what handles the different cite/Cite templates differently.
  *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
  *       switch statement handles various parameters differently.
  *     
@@ -2044,7 +2043,6 @@ final class Template {
           $this->param[$param_key]->param = 'url';
           if (stripos($p->val, 'books.google.') !== FALSE) {
             $this->change_name_to('cite book');
-            $this->process();
           }
         } elseif ($p->param == 'doix') {
           report_add("Found unincorporated DOI parameter");
