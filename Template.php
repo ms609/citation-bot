@@ -4,7 +4,6 @@
  * parsing, handling, and expansion.
  *
  * Of particular note:
- *     process() is what handles the different cite/Cite templates differently.
  *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
  *       switch statement handles various parameters differently.
  *     
@@ -181,96 +180,70 @@ final class Template {
   }
   
   public function process() {
-    if ($this->should_be_processed()) {
       $this->prepare();
-
-      switch ($this->wikiname()) {
-        case 'cite web':
-          if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
-            report_action("Expanded from Google Books API");
-            $this->change_name_to('cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
-            $this->process();
-          }
-        break;
-        case 'cite arxiv':
-          $this->expand_by_arxiv();
-
-          // Forget dates so that DOI can update with publication date, not ARXIV date
-          $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
-          $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
-          expand_by_doi($this);
-          if ($this->blank('year') && $this->blank('date')) {
+      if ($this->use_sici()) {
+         report_action("Found and used SICI");
+      }
+      if ($this->expand_by_google_books()) {
+         report_action("Expanded from Google Books API");
+      }
+      $no_isbn = $this->blank("isbn");
+      $no_doi  = $this->blank("doi");
+      $this->expand_by_arxiv();
+    
+      if ($this->has('doi') {
+         // Forget dates so that DOI can update with publication date, not ARXIV date
+         $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
+         $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
+         expand_by_doi($this);
+         if ($this->blank('year') && $this->blank('date')) {
               $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
               $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
-          } else {
+         } else {
               $this->forget('CITATION_BOT_PLACEHOLDER_year');
               $this->forget('CITATION_BOT_PLACEHOLDER_date');        
-          }
-        break;
-        case 'cite book':
-
-          $this->get_identifiers_from_url();
-          $this->id_to_param();
-          report_info(echoable($this->get('title')));
-          $this->correct_param_spelling();
-          if ($this->expand_by_google_books()) {
-            report_action("Expanded from Google Books API");
-          }
-          $no_isbn_before_doi = $this->blank("isbn");
-          expand_by_doi($this);
-          if ($no_isbn_before_doi && $this->has("isbn")) {
-            if ($this->expand_by_google_books()) {
-               report_action("Expanded from Google Books API");
-            }
-          }
-
-          // If the et al. is from added parameters, go ahead and handle
-          if (!$this->initial_author_params) {
-            $this->handle_et_al();
-          }
-        break;
-        case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
-          report_info(echoable($this->get('title')));
-          if ($this->use_sici()) {
-            report_action("Found and used SICI");
-          }
-
-          $this->id_to_param();
-          $this->get_doi_from_text();
-          $this->correct_param_spelling();
-
-          // If the et al. is from added parameters, go ahead and handle
-          if (!$this->initial_author_params) {
-            $this->handle_et_al();
-          }
-
-          $this->expand_by_pubmed(); //partly to try to find DOI
-
-          if ($this->expand_by_google_books()) {
-            report_action("Expanded from Google Books API");
-          }
-          if (expand_by_jstor($this)) {
-            report_action("Expanded from JSTOR API");
-          }
-          expand_by_doi($this);
-          $this->expand_by_adsabs(); //Primarily to try to find DOI
-          $this->get_doi_from_crossref();
-          $this->get_open_access_url();
-          $this->find_pmid();
-          
-          if($this->wikiname() == 'cite document' || $this->wikiname() == 'cite article') {
-            if ($this->has('journal')) $this->change_name_to('cite journal');
-          }
-                
-          // Convert from journal to book, if there is a unique chapter name or has an ISBN
-          if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
-            $this->change_name_to('cite book');
-          }
-          break;
+         }
       }
-    }
-    report_action('Tying up loose ends...');
-    $this->final_tidy();
+
+      $this->expand_by_pubmed(); //partly to try to find DOI
+
+      if (expand_by_jstor($this)) {
+          report_action("Expanded from JSTOR API");
+      }
+      $this->expand_by_adsabs(); //Primarily to try to find DOI
+      $this->get_doi_from_crossref();
+      $this->get_open_access_url();
+      $this->find_pmid();
+      if ($no_doi && $this->has('doi') {
+        // Forget dates so that DOI can update with publication date, not ARXIV date
+         $this->rename('date', 'CITATION_BOT_PLACEHOLDER_date');
+         $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
+         expand_by_doi($this);
+         if ($this->blank('year') && $this->blank('date')) {
+                $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
+                $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
+         } else {
+                $this->forget('CITATION_BOT_PLACEHOLDER_year');
+                $this->forget('CITATION_BOT_PLACEHOLDER_date');        
+         }
+      }
+    
+      if ($no_isbn && $this->has("isbn")) {
+         if ($this->expand_by_google_books()) {
+            report_action("Expanded from Google Books API");
+         }
+      }
+    
+      // Convert from journal to book, if there is a unique chapter name or has an ISBN
+      if ($this->has('chapter') && ($this->wikiname() == 'cite journal') && ($this->get('chapter') != $this->get('title') || $this->has('isbn'))) { 
+         $this->change_name_to('cite book');
+      }
+      report_action('Tying up loose ends...');
+      // If the et al. is from added parameters, go ahead and handle
+      if (!$this->initial_author_params) {
+        $this->handle_et_al();
+      }
+      $this->final_tidy();
   }
 
   public function incomplete() {
@@ -2044,7 +2017,6 @@ final class Template {
           $this->param[$param_key]->param = 'url';
           if (stripos($p->val, 'books.google.') !== FALSE) {
             $this->change_name_to('cite book');
-            $this->process();
           }
         } elseif ($p->param == 'doix') {
           report_add("Found unincorporated DOI parameter");
