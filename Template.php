@@ -686,6 +686,11 @@ final class Template {
                 (  str_replace($en_dash, 'X', $value) != $value) // dash in new `pages`
                 && str_replace($en_dash, 'X', $pages_value) == $pages_value // No dash already
               )
+           || (   // Document with bogus pre-print page ranges
+                   ($value           !== '1' && substr(str_replace($en_dash, 'X', $value), 0, 2)           !== '1X') // New is not 1-
+                && ($all_page_values === '1' || substr(str_replace($en_dash, 'X', $all_page_values), 0, 2) === '1X') // Old is 1-
+                && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
+              )
         ) {
             if (mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
