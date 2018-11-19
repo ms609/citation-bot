@@ -3268,12 +3268,12 @@ final class Template {
       return $this->param[$pos]->val = (string) $val;
     }
     if (isset($this->param[0])) {
-      $p = new Parameter;
+      $p = new Parameter();
       // Use second param as a template if present, in case first pair 
       // is last1 = Smith | first1 = J.\n
       $p->parse_text($this->param[isset($this->param[1]) ? 1 : 0]->parsed_text()); 
     } else {
-      $p = new Parameter;
+      $p = new Parameter();
       $p->parse_text('| param = val');
     }
     $p->param = (string) $par;
