@@ -80,6 +80,11 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('doi-broken-date'));
     $this->assertNotNull($expanded->get('url'));
+   // Newer code does not even add it
+    $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi'));
+    $this->assertNotNull($expanded->get('url'));
   }
   
   public function testBrokenDoiUrlChanges() {

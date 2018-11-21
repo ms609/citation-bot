@@ -738,6 +738,8 @@ final class Template {
         return FALSE;
         
       case 'doi':
+        if (strpos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
+        if (strpos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             $this->add('doi', $match[0]);          
