@@ -2807,6 +2807,8 @@ final class Template {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
               $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
+          } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
+              $this->set($param, $this->simplify_google_search($this->get($param)));
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
             $this->rename($param, 'chapter-url');
@@ -3476,5 +3478,44 @@ final class Template {
          }
        }
      }
+  }
+                         
+  protected function simplify_google_search($url) {
+      $hash = '';
+      if (strpos($url, "#")) {
+        $url_parts = explode("#", $url);
+        $url = $url_parts[0];
+        $hash = "#" . $url_parts[1];
+      }
+
+      $url_parts = explode("&", str_replace("?", "&", $url));
+      array_shift($url_parts);
+      $url = "https://www.google.com/search?";
+
+      foreach ($url_parts as $part) {
+        $part_start = explode("=", $part);
+        switch ($part_start[0]) {
+          case "aq": case "aqi": case "bih": case "biw": case "client": 
+          case "as": case "useragent": case "as_brr": case "source":
+          case "ei": case "ots": case "sig": case "source": case "lr":
+          case "as_brr": case "sa": case "oi": case "ct": case "id":
+          case "oq": case "rls": case "sourceid": case "tbm": case "ved":
+          case "aqs":
+             break;
+          case "ie":
+             if (strcasecmp($part_start[1], 'utf-8') === 0) break;  // UTF-8 is the default
+          case "hl": case "safe": case "q":
+             $url .=  $part . "&" ;
+             break;
+          default:
+             if (getenv('TRAVIS')) trigger_error("Unexpected Google URL component:  " . $part);
+             $url .=  $part . "&" ;
+             break;
+        }
+      }
+
+      if (substr($url, -1) === "&") $url = substr($url, 0, -1);  //remove trailing &
+      $url= $url . $hash;
+      return $url;
   }
 }
