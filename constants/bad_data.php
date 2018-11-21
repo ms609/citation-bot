@@ -46,7 +46,7 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'waybackmachine.org');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
-                                 "(?:youtube\.|youtu\.be)", // This should be {{cite AV media}}
+                                 "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
                                  "books\.google\.",         // We have special google books code
                                  "google\.com/search",      // Google search results
                                  "jstor\.org/stable/");     // We have special jstor code
