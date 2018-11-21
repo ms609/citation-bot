@@ -81,6 +81,11 @@ function expand_by_zotero(&$template, $url = NULL) {
       return FALSE;
   }
   
+  if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
+    report_warning("Bad Gateway error for URL ". $url);
+    return FALSE;
+  }
+  
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
