@@ -283,7 +283,10 @@ final class Template {
       ));
     }
     // And now everything else
-    if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
+    if ($this->blank('pages', 'page') ||
+        preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')) ||
+        (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (date("Y") - $this->get('year')))) // It claims to be on page one
+       ) {
       return TRUE;
     }
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
@@ -684,6 +687,11 @@ final class Template {
            || (
                 (  str_replace($en_dash, 'X', $value) != $value) // dash in new `pages`
                 && str_replace($en_dash, 'X', $pages_value) == $pages_value // No dash already
+              )
+           || (   // Document with bogus pre-print page ranges
+                   ($value           !== '1' && substr(str_replace($en_dash, 'X', $value), 0, 2)           !== '1X') // New is not 1-
+                && ($all_page_values === '1' || substr(str_replace($en_dash, 'X', $all_page_values), 0, 2) === '1X') // Old is 1-
+                && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
               )
         ) {
             if (mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot

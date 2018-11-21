@@ -1280,6 +1280,12 @@ ER -  }}';
     $this->assertEquals('pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures', $expanded->get('at')); // Leave complex at=
 
   }
+ 
+  public function testBogusPageRanges() {  // At some point this test will age out (perhaps add special TRAVIS code to template.php
+    $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|year = 2018|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('955–971', $expanded->get('pages')); // Converted should use long dashes
+  }
     
   public function testCollapseRanges() {
     $text = '{{cite journal|pages=1233-1233|year=1999-1999}}';
