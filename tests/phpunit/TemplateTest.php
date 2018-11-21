@@ -87,7 +87,15 @@ final class TemplateTest extends testBaseClass {
     $this->assertNotNull($expanded->get('url'));
   }
   
-  public function testBrokenDoiUrlChanges() {
+ public function testTruncateDOI() {
+    $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi-broken-date'));
+    $this->assertEquals('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
+    $this->assertEquals('10.1093/oxfordhb/9780199552238.001.0001', $expanded->get('doi'));
+ }
+
+ public function testBrokenDoiUrlChanges() {
      $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.00/broken_and_invalid|doi-broken-date=12-31-1999}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get('doi'));
