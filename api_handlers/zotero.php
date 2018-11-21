@@ -157,11 +157,21 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   if (isset($result->bookTitle)) {
+    $result->bookTitle = preg_replace('~\s*\(pdf\)$~iu', '', $result->bookTitle);
+    $result->bookTitle = preg_replace('~^\(pdf\)\s*~iu', '', $result->bookTitle);
     $template->add_if_new('title', $result->bookTitle);
-    if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
+    if (isset($result->title)) {
+      $result->title = preg_replace('~\s*\(pdf\)$~iu', '', $result->title);
+      $result->title = preg_replace('~^\(pdf\)\s*~iu', '', $result->title);
+      $template->add_if_new('chapter',   $result->title);
+    }
     if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher);
   } else {
-    if (isset($result->title))      $template->add_if_new('title'  , $result->title);
+    if (isset($result->title)) {
+      $result->title = preg_replace('~\s*\(pdf\)$~iu', '', $result->title);
+      $result->title = preg_replace('~^\(pdf\)\s*~iu', '', $result->title);
+      $template->add_if_new('title'  , $result->title);
+    }
     if (isset($result->itemType) && ($result->itemType === 'book')) {
        if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher); 
     }
