@@ -80,9 +80,22 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('doi-broken-date'));
     $this->assertNotNull($expanded->get('url'));
+   // Newer code does not even add it
+    $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi'));
+    $this->assertNotNull($expanded->get('url'));
   }
   
-  public function testBrokenDoiUrlChanges() {
+ public function testTruncateDOI() {
+    $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi-broken-date'));
+    $this->assertEquals('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
+    $this->assertEquals('10.1093/oxfordhb/9780199552238.001.0001', $expanded->get('doi'));
+ }
+
+ public function testBrokenDoiUrlChanges() {
      $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.00/broken_and_invalid|doi-broken-date=12-31-1999}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get('doi'));
@@ -1280,6 +1293,12 @@ ER -  }}';
     $this->assertEquals('pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures', $expanded->get('at')); // Leave complex at=
 
   }
+ 
+  public function testBogusPageRanges() {  // At some point this test will age out (perhaps add special TRAVIS code to template.php
+    $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|year = 2018|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('955–971', $expanded->get('pages')); // Converted should use long dashes
+  }
     
   public function testCollapseRanges() {
     $text = '{{cite journal|pages=1233-1233|year=1999-1999}}';
@@ -1492,7 +1511,14 @@ ER -  }}';
 
     $text = '{{cite web|url=http://acADemia.EDU/123456/extra_stuff}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('https://www.academia.edu/123456', $prepared->get('url')); 
+    $this->assertEquals('https://www.academia.edu/123456', $prepared->get('url'));
+   
+    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $prepared->get('url'));
+    $text = '{{cite web|url=http://www.google.com/search?hl=en&safe=off&client=firefox-a&rls=com.ubuntu%3Aen-US%3Aunofficial&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)&aq=o&oq=&aqi=}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('https://www.google.com/search?hl=en&safe=off&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)', $prepared->get('url'));
   }
  
   public function testDoiValidation() {

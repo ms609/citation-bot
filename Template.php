@@ -152,7 +152,7 @@ final class Template {
           $this->expand_by_google_books();
         }
       break;
-      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
+      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article': case 'cite paper':
         $this->expand_by_pubmed(); //partly to try to find DOI
         $this->expand_by_google_books();
         expand_by_jstor($this);
@@ -257,7 +257,10 @@ final class Template {
       ));
     }
     // And now everything else
-    if ($this->blank('pages', 'page') || (preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')))) {
+    if ($this->blank('pages', 'page') ||
+        preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')) ||
+        (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (date("Y") - $this->get('year')))) // It claims to be on page one
+       ) {
       return TRUE;
     }
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
@@ -659,6 +662,11 @@ final class Template {
                 (  str_replace($en_dash, 'X', $value) != $value) // dash in new `pages`
                 && str_replace($en_dash, 'X', $pages_value) == $pages_value // No dash already
               )
+           || (   // Document with bogus pre-print page ranges
+                   ($value           !== '1' && substr(str_replace($en_dash, 'X', $value), 0, 2)           !== '1X') // New is not 1-
+                && ($all_page_values === '1' || substr(str_replace($en_dash, 'X', $all_page_values), 0, 2) === '1X') // Old is 1-
+                && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
+              )
         ) {
             if (mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
@@ -704,6 +712,8 @@ final class Template {
         return FALSE;
         
       case 'doi':
+        if (strpos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
+        if (strpos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             $this->add('doi', $match[0]);          
@@ -897,7 +907,7 @@ final class Template {
     if ($doi = extract_doi($url)[1]) {
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
-        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE) {
+        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
         }
@@ -909,7 +919,7 @@ final class Template {
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
-            if (mb_strpos(strtolower($url), ".pdf") === FALSE) {
+            if (mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE) {
               report_forget("Recognized DOI in URL; dropping URL");
               $this->forget($url_type);
             } else {
@@ -2781,6 +2791,8 @@ final class Template {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
               $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
+          } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
+              $this->set($param, $this->simplify_google_search($this->get($param)));
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
             $this->rename($param, 'chapter-url');
@@ -3450,5 +3462,44 @@ final class Template {
          }
        }
      }
+  }
+                         
+  protected function simplify_google_search($url) {
+      $hash = '';
+      if (strpos($url, "#")) {
+        $url_parts = explode("#", $url);
+        $url = $url_parts[0];
+        $hash = "#" . $url_parts[1];
+      }
+
+      $url_parts = explode("&", str_replace("?", "&", $url));
+      array_shift($url_parts);
+      $url = "https://www.google.com/search?";
+
+      foreach ($url_parts as $part) {
+        $part_start = explode("=", $part);
+        switch ($part_start[0]) {
+          case "aq": case "aqi": case "bih": case "biw": case "client": 
+          case "as": case "useragent": case "as_brr": case "source":
+          case "ei": case "ots": case "sig": case "source": case "lr":
+          case "as_brr": case "sa": case "oi": case "ct": case "id":
+          case "oq": case "rls": case "sourceid": case "tbm": case "ved":
+          case "aqs":
+             break;
+          case "ie":
+             if (strcasecmp($part_start[1], 'utf-8') === 0) break;  // UTF-8 is the default
+          case "hl": case "safe": case "q":
+             $url .=  $part . "&" ;
+             break;
+          default:
+             if (getenv('TRAVIS')) trigger_error("Unexpected Google URL component:  " . $part);
+             $url .=  $part . "&" ;
+             break;
+        }
+      }
+
+      if (substr($url, -1) === "&") $url = substr($url, 0, -1);  //remove trailing &
+      $url= $url . $hash;
+      return $url;
   }
 }
