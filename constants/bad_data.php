@@ -11,8 +11,8 @@ const BAD_AUTHORS = array("unknown", "missing");
 // Ordered alphabetically.
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
                            'museum', "press", "publishers", "publishing", 'science'];
-const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "Arxiv Mathematics E-Prints", 
-                         "SSRN Electronic Journal");
+const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints", 
+                         "ssrn electronic journal", "dissertations available from proquest");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -20,7 +20,7 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
 const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 
                                    'math.ph', 'math', 'nucl.ex', 'nucl.th', 'physics');
 const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'amazon.com',
-                        'Zenodo', 'archive.org']; // Google Inc is a valid publisher, however.
+                        'zenodo', 'archive.org']; // Google Inc is a valid publisher, however.
 const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Service', 'http://', 'https://',
                                  'ZbMATH - the first resource for mathematics', 'MR: Matches for:',
                                  ' Log In', 'Log In ', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request',
@@ -44,3 +44,9 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'www.webcitation.org',
                               'waybackmachine.org');
+
+const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
+                                 "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
+                                 "books\.google\.",         // We have special google books code
+                                 "google\.com/search",      // Google search results
+                                 "jstor\.org/stable/");     // We have special jstor code
