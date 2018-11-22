@@ -152,7 +152,7 @@ final class Template {
           $this->expand_by_google_books();
         }
       break;
-      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
+      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article': case 'cite paper':
         $this->expand_by_pubmed(); //partly to try to find DOI
         $this->expand_by_google_books();
         expand_by_jstor($this);
@@ -228,7 +228,7 @@ final class Template {
             $this->handle_et_al();
           }
         break;
-        case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
+        case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article': case 'cite paper':
           report_info(echoable($this->get('title')));
           if ($this->use_sici()) {
             report_action("Found and used SICI");
