@@ -371,7 +371,7 @@ function tidy_date($string) {
   if (preg_match('~^(.*?\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
   if (preg_match(  '~\s(\d{4}\-\d?\d(?:\-?\d\d?))$~', $string, $matches)) return $matches[1];
   if (preg_match( '~^(\d\d?/\d\d?/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); //Recusion to clean up 3/27/2000
-  if (preg_match('~\s(\d\d?/\d\d?/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
+  if (preg_match('~[^0-9](\d\d?/\d\d?/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
   if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1];
   return $string;
 }
