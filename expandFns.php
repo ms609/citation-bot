@@ -350,7 +350,7 @@ function tidy_date($string) {
   if (strpos($string, '0001-11-30') !== FALSE) return '';
   if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
   if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) {  // American MM/DD/YYYY
-    return $matches[3] . '-' . $matches[1] . '-' . $matches[2]';
+    return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
   }
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
