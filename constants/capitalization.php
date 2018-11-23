@@ -40,11 +40,11 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', ' HOAJ biology ', ' hprints ', 
           ' iConference ', ' IFAC-PapersOnLine ', ' iPhone ', ' ISRN Genetics ', ' J Gerontol A Biol Sci Med Sci ', ' JABS : Journal of Applied Biological Sciences ', 
           ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.I.E.E. ', ' Journal of the IEST ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
-          ' Meddelelser om Grønland ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
+          ' Meddelelser om Grønland ', ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
           ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
           ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
-          ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', 
+          ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', ' uHealth ', ' uHealth ',
           ' z/Journal ', ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
           ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys '
           /* The above will be automatically updated to alphabetical order */ 
@@ -57,11 +57,11 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Hoaj Biology ', ' Hprints ', 
           ' Iconference ', ' Ifac-Papersonline ', ' Iphone ', ' Isrn Genetics ', ' J Gerontol a Biol Sci Med Sci ', ' Jabs : Journal of Applied Biological Sciences ', 
           ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.i.i.e ', ' Journal of the Iest ', ' Mabs ', ' MAbs ', ' Mbio ', ' MBio ',
-          ' Meddelelser Om Grønland ', ' Molecular and Cellular Biology ', ' Msphere ', ' MSphere ', ' Msystems ', ' MSystems ', 
+          ' Meddelelser Om Grønland ', ' Mhealth ', 'MHealth ', ' Molecular and Cellular Biology ', ' Msphere ', ' MSphere ', ' Msystems ', ' MSystems ', 
           ' Nasa Tech Briefs ', ' NY Forskning I Grammatik ', ' Ocean Science Journal : Osj ', 
           ' Paj: A Journal of Performance and Art ', ' Palaios ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
-          ' Tellus a ', ' The Embo Journal ', ' Time Out London ', 
+          ' Tellus a ', ' The Embo Journal ', ' Time Out London ', ' Uhealth ', 'UHealth ',
           ' Z/journal ', ' Z/Journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
           ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys '
           /* The above will be automatically updated to alphabetical order */ 
