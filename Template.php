@@ -2495,6 +2495,9 @@ final class Template {
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     && $new_name != $this->wikiname()
     ) {
+      if ($new_name === 'cite arxiv') {
+        $new_name = 'cite arXiv';  // Without the capital X is the alias
+      }
       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
       if (substr($this->name,0,1) === 'c') {
         $this->name = $spacing[1] . $new_name . $spacing[2];
