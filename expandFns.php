@@ -349,6 +349,9 @@ function tidy_date($string) {
   // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
   if (strpos($string, '0001-11-30') !== FALSE) return '';
   if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
+  if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4}))$~', $string, $matches)) {  // American MM/DD/YYYY
+    return $matches[3] . '-' . $matches[1] . '-' . $matches[2]';
+  }
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
     if ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
@@ -372,8 +375,8 @@ function tidy_date($string) {
   if (preg_match(  '~\s(\d{4}\-\d?\d(?:\-?\d\d?))$~', $string, $matches)) return $matches[1];
   if (preg_match( '~^(\d\d?/\d\d?/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); //Recusion to clean up 3/27/2000
   if (preg_match('~[^0-9](\d\d?/\d\d?/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
-  if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1];
-  return $string;
+  if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1]; // Last ditch effort - ends in a year
+  return $string; // And we give up
 }
 
 function remove_brackets($string) {
