@@ -53,7 +53,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertEquals('', tidy_date('۱۳۸۶/۱۰/۰۴ - ۱۱:۳۰'));
     $this->assertEquals('2014-01-24', tidy_date('24/01/2014 16:01:06'));
     $this->assertEquals('2011-11-30', tidy_date('30/11/2011 12:52:08'));
-    $this->assertEquals('2011-11-05', tidy_date('05/11/2011 12:52:08'));
+    $this->assertEquals('2011-05-11', tidy_date('05/11/2011 12:52:08'));
     $this->assertEquals('2018-10-21', tidy_date('Date published (2018-10-21'));
     $this->assertEquals('', tidy_date('-0001-11-30T00:00:00+00:00'));
   }
