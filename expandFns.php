@@ -356,6 +356,8 @@ function tidy_date($string) {
       return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
     } elseif (intval($matches[2]) > 12 && intval($matches[1]) > 12) {
       return '';
+    } elseif ($matches[1] === $matches[2]) {
+      return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
     } else {
       return $matches[3];// do not know. just give year
     }
