@@ -349,8 +349,14 @@ function tidy_date($string) {
   // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
   if (strpos($string, '0001-11-30') !== FALSE) return '';
   if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
-  if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) {  // American MM/DD/YYYY
-    return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
+  if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) {
+    if (intval($matches[1]) < 13) { // American MM/DD/YYYY ASSUMED because it is slashes
+      return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
+    } elseif (intval($matches[2]) < 13) {
+      return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+    } else {
+      return ''; // Both possible months are greater than 12
+    }
   }
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
