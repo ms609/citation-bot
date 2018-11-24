@@ -133,7 +133,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
       $template->forget('url');
     }
-    if (!$this->profoundly_incomplete()) return TRUE;
+    if (!$template->profoundly_incomplete()) return TRUE;
   }
 
   if (isset($result->date)) {
