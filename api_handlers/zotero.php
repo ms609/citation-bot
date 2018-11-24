@@ -236,14 +236,14 @@ function expand_by_zotero(&$template, $url = NULL) {
         $i++;
       }
     }
-    if (stripos(trim($template->get('publisher')), 'Associated Press') === 0 &&
+    if (stripos(trim($template->get('publisher')), 'Associated Press') !== FALSE &&
         stripos($url, 'ap.org') === FALSE  ) {
        if (stripos($template->wikiname(), 'cite news') === 0) {
           $template->rename('publisher', 'agency'); // special template parameter just for them
        }
        if (stripos(trim($template->get('author')), 'Associated Press') === 0) $template->forget('author'); // all too common
     }
-    if (stripos(trim($template->get('publisher')), 'Reuters') === 0 &&
+    if (stripos(trim($template->get('publisher')), 'Reuters') !== FALSE &&
         stripos($url, 'reuters.org') === FALSE  ) {
        if (stripos($template->wikiname(), 'cite news') === 0) {
           $template->rename('publisher', 'agency'); // special template parameter just for them
