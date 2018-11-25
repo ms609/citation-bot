@@ -387,8 +387,8 @@ function tidy_date($string) {
   if (preg_match('~[^0-9](\d\d?/\d\d?/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
   
   // Dates with dots -- convert to slashes and try again.
-  if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}\d{2}?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}\d{2}?)~', $string, $matches)) {
-    if (intval($matches[3]) < 30)  $matches[3] = $matches[3] + 2000;
+  if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
+    if (intval($matches[3]) < (date("y")+2))  $matches[3] = $matches[3] + 2000;
     if (intval($matches[3]) < 100)  $matches[3] = $matches[3] + 1900;
     return tidy_date($matches[1] . '/' .  $matches[2] . '/' . $matches[3]);
   }
