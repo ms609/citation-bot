@@ -385,6 +385,14 @@ function tidy_date($string) {
   if (preg_match(  '~\s(\d{4}\-\d?\d(?:\-?\d\d?))$~', $string, $matches)) return $matches[1];
   if (preg_match( '~^(\d\d?/\d\d?/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); //Recusion to clean up 3/27/2000
   if (preg_match('~[^0-9](\d\d?/\d\d?/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
+  
+  // Dates with dots -- convert to slashes and try again.
+  if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}\d{2}?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}\d{2}?)~', $string, $matches)) {
+    if (intval($matches[3]) < 30)  $matches[3] = $matches[3] + 2000;
+    if (intval($matches[3]) < 100)  $matches[3] = $matches[3] + 1900;
+    return tidy_date($matches[1] . '/' .  $matches[2] . '/' . $matches[3]);
+  }
+  
   if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1]; // Last ditch effort - ends in a year
   return $string; // And we give up
 }
