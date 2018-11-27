@@ -4,7 +4,7 @@ branches:
   except: release
 
 language: php
-    
+BOGUS    
 matrix:
   include:
     - stage: test
