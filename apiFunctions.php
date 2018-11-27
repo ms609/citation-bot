@@ -381,6 +381,7 @@ function expand_by_doi($template, $force = FALSE) {
             }
           } elseif ($author['contributor_role'] == 'author' && $add_authors) {
             ++$au_i;
+            fwrite(STDERR, "\n SURNAME X" .  $author->surname . "X\n" . "\n GIVEN_NAME X" .  $author->given_name . "X\n");
             $template->add_if_new("last$au_i", format_surname($author->surname));
             $template->add_if_new("first$au_i", format_forename($author->given_name));
           }
