@@ -5,7 +5,7 @@ const HAS_NO_VOLUME = array("zookeys");  // Some journals have issues only, no v
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
-const BAD_AUTHORS = array("unknown", "missing");
+const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -");
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
