@@ -1562,6 +1562,13 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('2006', $expanded->get('year'));
   }
+ 
+  public function testBadAuthor() {
+    $text = '{{Cite journal|doi=10.17816/uroved513-6}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('last1'));
+    $this->assertNull($expanded->get('first1'));
+  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
