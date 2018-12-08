@@ -89,8 +89,31 @@ function sanitize_doi($doi) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   $extension = substr($doi, strrpos($doi, '/'));
-  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf'))) {
+  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  }
+  // And now for 10.1093 URLs
+  // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
+  // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
+  if (strpos($doi, '10.1093') === 0) {
+    if (preg_match('~^(10\.1093/oxfordhb.+)(?:/oxfordhb.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/acprof.+)(?:/acprof.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/acref.+)(?:/acref.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/ref:odnb.+)(?:/odnb.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match)) { // Who's who of all things
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    } 
   }
   return $doi;
 }
@@ -399,8 +422,10 @@ function equivalent_parameters($par) {
 }
 
 function str_remove_irrelevant_bits($str) {
-  $str = str_replace(["[", "]"], ["", ""], $str); // Ignore wiki-links and links
-  $str = trim($str);  // Remove spaces on ends
+  $str = trim($str);
+  $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
+  $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
+  $str = trim($str);
   $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   return $str;
 }
