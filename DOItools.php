@@ -96,7 +96,7 @@ function author_is_human($author) {
   $chars = count_chars($author);
   if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
     || substr(strtolower($author), 0, 4) === "the " 
-    || stripos($author, 'collaborat') !== FALSE
+    || stripos($author, 'collabora t') !== FALSE
     || preg_match("~[A-Z]{3}~", $author)
     || substr(strtolower($author),-4) === " inc"
     || substr(strtolower($author),-5) === " inc."
