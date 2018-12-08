@@ -34,6 +34,7 @@ function truncate_publisher($p){
 }
 
 function format_surname($surname) {
+  if ($surname === '-') return '';
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
   if (mb_substr($surname, 0, 2) == "o'") {
         return "O'" . format_surname_2(mb_substr($surname, 2));
@@ -59,6 +60,7 @@ function format_surname_2($surname) {
 }
 
 function format_forename($forename){
+  if ($forename === '-') return '';
   return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
             $matches) {
             return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);}
@@ -96,7 +98,7 @@ function author_is_human($author) {
   $chars = count_chars($author);
   if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
     || substr(strtolower($author), 0, 4) === "the " 
-    || stripos($author, 'coll aborat') !== FALSE
+    || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) != $author)  // This is the use a replace to see if a substring is present trick
     || preg_match("~[A-Z]{3}~", $author)
     || substr(strtolower($author),-4) === " inc"
     || substr(strtolower($author),-5) === " inc."
