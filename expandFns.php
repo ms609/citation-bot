@@ -445,8 +445,10 @@ function equivalent_parameters($par) {
 }
 
 function str_remove_irrelevant_bits($str) {
-  $str = str_replace(["[", "]"], ["", ""], $str); // Ignore wiki-links and links
-  $str = trim($str);  // Remove spaces on ends
+  $str = trim($str);
+  $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
+  $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
+  $str = trim($str);
   $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   return $str;
 }
