@@ -1,5 +1,4 @@
 <?php 
-
 function query_url_api($ids, $templates) {
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
