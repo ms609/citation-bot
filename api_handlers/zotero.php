@@ -1,4 +1,5 @@
 <?php 
+
 function query_url_api($ids, $templates) {
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
@@ -28,6 +29,8 @@ function query_url_api($ids, $templates) {
 }
 
 function zotero_request($url) {
+  static $ZOTERO_GIVE_UP = FALSE;
+  if ($ZOTERO_GIVE_UP) return FALSE;
   
   #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
   $ch = curl_init('http://tools.wmflabs.org/translation-server/web');
@@ -43,6 +46,7 @@ function zotero_request($url) {
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
     report_warning(curl_error($ch) . "   For URL: " . $url);
+    if (curl_errno($ch) === 28) $ZOTERO_GIVE_UP = TRUE; // It timed out.  Doubt it will work again, and do not overload server
   }
   curl_close($ch);
   return $zotero_response;
