@@ -152,7 +152,7 @@ final class Template {
           $this->expand_by_google_books();
         }
       break;
-      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
+      case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article': case 'cite paper':
         $this->expand_by_pubmed(); //partly to try to find DOI
         $this->expand_by_google_books();
         expand_by_jstor($this);
@@ -228,7 +228,7 @@ final class Template {
             $this->handle_et_al();
           }
         break;
-        case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article':
+        case 'cite journal': case 'cite document': case 'cite encyclopaedia': case 'cite encyclopedia': case 'citation': case 'cite article': case 'cite paper':
           report_info(echoable($this->get('title')));
           if ($this->use_sici()) {
             report_action("Found and used SICI");
@@ -559,7 +559,7 @@ final class Template {
       case 'periodical': case 'journal': case 'newspaper':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
-        if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper"])) {
+        if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
@@ -1021,22 +1021,22 @@ final class Template {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting URL to PMC parameter");
-          if (is_null($url_sent)) {
-            if (stripos($url, ".pdf") !== FALSE) {
-              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
-              $ch = curl_init($test_url);
-              curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
-              @curl_exec($ch);
-              $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-              curl_close($ch);
-              if($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
-                return $this->add_if_new("pmc", $match[1] . $match[2]);
-              }
-            }
-            $this->forget($url_type);
-          }
-          return $this->add_if_new("pmc", $match[1] . $match[2]);
         }
+        if (is_null($url_sent)) {
+          if (stripos($url, ".pdf") !== FALSE) {
+            $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
+            $ch = curl_init($test_url);
+            curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
+            @curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            if ($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
+              return $this->add_if_new("pmc", $match[1] . $match[2]);
+            }
+          }
+          $this->forget($url_type);
+        } 
+        return $this->add_if_new("pmc", $match[1] . $match[2]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles/pmc(\d+)~i", $url, $match)  ||
                 preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d+)~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
