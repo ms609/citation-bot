@@ -50,4 +50,5 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
                                  "books\.google\.",         // We have special google books code
                                  "google\.com/search",      // Google search results
-                                 "jstor\.org/stable/");     // We have special jstor code
+                                 "jstor\.org/stable/",      // We have special jstor code
+                                 "ned\.ipac\.caltech\.edu");// Gives no real title
