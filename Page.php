@@ -201,8 +201,9 @@ class Page {
       $this_template->expand_by_google_books();
       expand_by_doi($this_template);
       $this_template->get_doi_from_crossref();
-      $this_template->get_open_access_url();
       $this_template->find_pmid();  // #TODO Could probably batch this
+      if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
+      $this_template->get_open_access_url();
     }
     
     report_phase('Remedial work to clean up templates');
