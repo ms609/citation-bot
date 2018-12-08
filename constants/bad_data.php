@@ -6,6 +6,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -");
+const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor');
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
@@ -49,4 +50,5 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
                                  "books\.google\.",         // We have special google books code
                                  "google\.com/search",      // Google search results
-                                 "jstor\.org/stable/");     // We have special jstor code
+                                 "jstor\.org/stable/",      // We have special jstor code
+                                 "ned\.ipac\.caltech\.edu");// Gives no real title
