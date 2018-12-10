@@ -1053,7 +1053,7 @@ final class Template {
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
-        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
+        return $this->add_if_new("doi", doisanitize($match[1])); // Will expand from DOI when added
       } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)\?doi=([0-9.]*)(&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
