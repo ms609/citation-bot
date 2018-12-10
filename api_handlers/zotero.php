@@ -160,6 +160,15 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   if (isset($result->bookTitle)) {
+    $result->bookTitle = preg_replace('~\s*\(pdf\)$~i', '', $result->bookTitle);
+    $result->bookTitle = preg_replace('~^\(pdf\)\s*~i', '', $result->bookTitle);
+  }
+  if (isset($result->title)) {
+    $result->title = preg_replace('~\s*\(pdf\)$~i', '', $result->title);
+    $result->title = preg_replace('~^\(pdf\)\s*~i', '', $result->title);
+  }
+  
+  if (isset($result->bookTitle)) {
     $template->add_if_new('title', $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
     if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher);
@@ -239,12 +248,19 @@ function expand_by_zotero(&$template, $url = NULL) {
         $i++;
       }
     }
-    if (stripos(trim($template->get('publisher')), 'Associated Press') === 0 &&
+    if (stripos(trim($template->get('publisher')), 'Associated Press') !== FALSE &&
         stripos($url, 'ap.org') === FALSE  ) {
        if (stripos($template->wikiname(), 'cite news') === 0) {
           $template->rename('publisher', 'agency'); // special template parameter just for them
        }
        if (stripos(trim($template->get('author')), 'Associated Press') === 0) $template->forget('author'); // all too common
+    }
+    if (stripos(trim($template->get('publisher')), 'Reuters') !== FALSE &&
+        stripos($url, 'reuters.org') === FALSE  ) {
+       if (stripos($template->wikiname(), 'cite news') === 0) {
+          $template->rename('publisher', 'agency'); // special template parameter just for them
+       }
+       if (stripos(trim($template->get('author')), 'Reuters') === 0) $template->forget('author'); // all too common
     }
   }
   return TRUE;
