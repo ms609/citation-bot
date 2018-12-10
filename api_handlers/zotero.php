@@ -157,6 +157,15 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   if (isset($result->bookTitle)) {
+    $result->bookTitle = preg_replace('~\s*\(pdf\)$~i', '', $result->bookTitle);
+    $result->bookTitle = preg_replace('~^\(pdf\)\s*~i', '', $result->bookTitle);
+  }
+  if (isset($result->title)) {
+    $result->title = preg_replace('~\s*\(pdf\)$~i', '', $result->title);
+    $result->title = preg_replace('~^\(pdf\)\s*~i', '', $result->title);
+  }
+  
+  if (isset($result->bookTitle)) {
     $template->add_if_new('title', $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
     if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher);
