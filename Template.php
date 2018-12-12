@@ -2654,13 +2654,11 @@ final class Template {
           if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
           return;
           
-        case 'format': // clean up bot's old (pre-2018-09-18) edits
-          if ($this->get($param) === 'Accepted manuscript' ||
-              $this->get($param) === 'Submitted manuscript') {
-            $this->rename('format', 'type');
-          } elseif ($this->get($param) === 'Full text') {
-            $this->forget('format');
-          }
+        case 'format':
+          // the information is not reliable for many sources
+          // and it is not crucial
+          // so we remove it
+          $this->forget('format');
           return;
           
         case 'isbn':
