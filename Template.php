@@ -589,7 +589,7 @@ final class Template {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
           }
-          if ($param_name === 'newspaper' && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)) {
+          if ($param_name === 'newspaper' && $this->has('publis her') && str_equivalent($this->get('publisher'), $value)) {
              $this->rename('publisher', $param_name);
              return TRUE;
           }
