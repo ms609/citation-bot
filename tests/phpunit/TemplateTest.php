@@ -93,6 +93,13 @@ final class TemplateTest extends testBaseClass {
      $expanded = $this->process_citation($text);
      $this->assertEquals('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get('doi'));
      $this->assertNull($expanded->get('url'));
+    // The following URL is "broken" since it is not escaped properly.  The cite template displays and links it wrong too.
+     $text = '{{cite journal|doi=10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|url=https://dx.doi.org/10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2}}';
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('url'));
+     $text = '{{cite journal|url=http://doi.org/10.14928/amstec.23.1_1|doi=10.14928/amstec.23.1_1}}';  // This also troublesome DOI
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('url'));
   }
   
   public function testPmidExpansion() {
