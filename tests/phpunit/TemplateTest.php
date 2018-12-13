@@ -452,7 +452,7 @@ final class TemplateTest extends testBaseClass {
   public function testCiteArxivRecognition() {
     $text = '{{Cite web | eprint=1203.0149}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('Cite arxiv', $expanded->name());
+    $this->assertEquals('Cite arXiv', $expanded->name());
   }
   
   public function testBrokenDoiDetection() {
