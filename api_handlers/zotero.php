@@ -45,7 +45,7 @@ function zotero_request($url) {
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
     report_warning(curl_error($ch) . "   For URL: " . $url);
-    if (curl_errno($ch) === 28) $ZOTERO_GIVE_UP = TRUE; // It timed out.  Doubt it will work again, and do not overload server
+    if (curl_errno($ch) === CURLE_OPERATION_TIMEOUTED) $ZOTERO_GIVE_UP = TRUE; // It timed out.  Doubt it will work again, and do not overload server
   }
   curl_close($ch);
   return $zotero_response;
