@@ -35,6 +35,7 @@ function truncate_publisher($p){
 
 function format_surname($surname) {
   fwrite(STDERR,"\nSUR" . $surname ."SUR\n");
+  fwrite(STDERR,"\n" . base64_encode($surname) . "\n");
   if ($surname === '-') return '';
   fwrite(STDERR,"\nXSUR" . $surname ."XSUR\n");
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
