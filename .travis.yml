@@ -3,7 +3,7 @@ dist: trusty
 branches:
   except: release
 
-language: php
+language: php-nope
     
 matrix:
   include:
