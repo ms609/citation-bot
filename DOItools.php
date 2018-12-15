@@ -34,6 +34,7 @@ function truncate_publisher($p){
 }
 
 function format_surname($surname) {
+  fwrite(STDERR,"\nSUR" . $surname ."SUR\n");
   if ($surname === '-') return '';
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
   if (mb_substr($surname, 0, 2) == "o'") {
@@ -60,6 +61,7 @@ function format_surname_2($surname) {
 }
 
 function format_forename($forename){
+  fwrite(STDERR,"\nFOR" . $forname ."FOR\n");
   if ($forename === '-') return '';
   return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
             $matches) {
