@@ -61,7 +61,7 @@ function format_surname_2($surname) {
 }
 
 function format_forename($forename){
-  fwrite(STDERR,"\nFOR" . $forname ."FOR\n");
+  fwrite(STDERR,"\nFOR" . $forename ."FOR\n");
   if ($forename === '-') return '';
   return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
             $matches) {
