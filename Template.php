@@ -2660,6 +2660,7 @@ final class Template {
               $this->get($param) === 'Full text') {
             $this->forget('format');
           }
+          return;
           
         case 'isbn':
           if ($this->lacks('isbn')) return;
