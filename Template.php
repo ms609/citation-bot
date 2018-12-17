@@ -940,9 +940,9 @@ final class Template {
         return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
     }
     
-    if ( ! mb_strpos(extract_doi($url)[1], $doi) === FALSE) {
+    if ($doi = extract_doi($url)[1]) {
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
-      if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
+      if (mb_stripos($doi, $this->get('doi')) === 1) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
