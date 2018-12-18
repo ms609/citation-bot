@@ -292,11 +292,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
     $this->assertNull($expanded->get('url'));
    
-    // Recognize official DOI targets in URL with extra fragments
-    $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('url'));
-  
     // Replace this test with a real URL (if one exists)
     $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
     $expanded= $this->prepare_citation($text);
