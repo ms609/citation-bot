@@ -973,6 +973,15 @@ final class Template {
         return TRUE; // Added new DOI
       }
       return FALSE; // Did not add it
+    } elseif ($this->has('doi')) { // Did not find a doi, perhaps we were wrong
+      $this->tidy_parameter('doi'); // Sanitize DOI before comparing
+      if (mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
+        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE) {
+          report_forget("Recognized existing DOI in URL; dropping URL");
+          $this->forget($url_type);
+        }
+        return FALSE;  // URL matched existing DOI, so we did not use it
+      }
     }
   
     // JSTOR
