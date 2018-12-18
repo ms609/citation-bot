@@ -139,7 +139,7 @@ function extract_doi($text) {
     while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_active($doi_candidate)) {
       $last_delimiter = 0;
       foreach (array('/', '.', '#') as $delimiter) {
-        $delimiter_position = strrpos($doi_candidate, '/');
+        $delimiter_position = strrpos($doi_candidate, $delimiter);
         $last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
       }
       $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
