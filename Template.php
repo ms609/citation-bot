@@ -589,7 +589,8 @@ final class Template {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
           }
-          if ($param_name === 'newspaper' && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)) {
+          if ($param_name === 'newspaper' && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)
+                  && $this->blank('website')) { // Website is an alias for newspaper/work/journal, and did not check above
              $this->rename('publisher', $param_name);
              return TRUE;
           }
@@ -930,6 +931,15 @@ final class Template {
        }
     }
     
+    if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
+        quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+        if (is_null($url_sent)) {
+          $this->forget($url_type);
+        }
+        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
+    }
+    
     if ($doi = extract_doi($url)[1]) {
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
@@ -1047,13 +1057,6 @@ final class Template {
           }
           return $this->add_if_new("pmc", $match[1]);
         }
-      } elseif (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
-        quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
-        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
-        if (is_null($url_sent)) {
-          $this->forget($url_type);
-        }
-        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
       } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)\?doi=([0-9.]*)(&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
@@ -2495,6 +2498,9 @@ final class Template {
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     && $new_name != $this->wikiname()
     ) {
+      if ($new_name === 'cite arxiv') {
+        $new_name = 'cite arXiv';  // Without the capital X is the alias
+      }
       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
       if (substr($this->name,0,1) === 'c') {
         $this->name = $spacing[1] . $new_name . $spacing[2];

@@ -133,7 +133,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
       $template->forget('url');
     }
-    return TRUE; // We can just use this.  If this is wrong, then we should not trust anything else anyway
+    if (!$template->profoundly_incomplete()) return TRUE;
   }
 
   if (isset($result->date)) {
