@@ -109,8 +109,7 @@ class ZoteroTest extends testBaseClass {
     $text = '{{Cite journal|doi=10.3233/PRM-140291}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org
     $expanded = $this->process_citation($text);
     $this->assertNull(NULL);
-    return; // not working
-    $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') === 0);// Sometimes includes a journal of....
+    // $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') === 0);// Sometimes includes a journal of....
   }
   public function testZoteroExpansion_biorxiv() {
     $text = '{{Cite journal| biorxiv=326363 }}';
