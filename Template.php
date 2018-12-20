@@ -3030,6 +3030,10 @@ final class Template {
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
     }
+    if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') && strpos($this->get('doi'), '10.2307') === 0) {
+      $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
+      foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+    }
     foreach (ALL_ALIASES as $alias_list) {
       if (!$this->blank($alias_list)) { // At least one is set
         foreach ($alias_list as $alias) {
