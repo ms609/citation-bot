@@ -597,7 +597,7 @@ final class Template {
           if ($this->has('website')) { // alias for journal
              if (str_equivalent($this->get('website'), $value)) {
                $this->rename('website', $param_name);
-             } elseif (preg_match('~^[.+]$~', $this->get('website'))) {
+             } elseif (preg_match('~^\[.+\]$~', $this->get('website'))) {
                $this->rename('website', $param_name); // existing data is linked
              } else {
                $this->rename('website', $param_name, $value);
