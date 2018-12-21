@@ -1092,7 +1092,7 @@ final class Template {
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
         
-      } elseif (preg_match("~https?://(?:www\.|)ncbi.nlm.nih.gov/pubmed/.*?=?(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~https?://(?:www\.|)ncbi.nlm.nih.gov/(?:pubmed|entrez/eutils/elink.fcgi\S+dbfrom=pubmed\S+)/.*?=?(\d+)~i", $url, $match)) {
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget($url_type);
