@@ -597,7 +597,7 @@ final class Template {
           if ($this->has('website')) { // alias for journal
              if (str_equivalent($this->get('website'), $value)) {
                $this->rename('website', $param_name);
-             } else {
+             } el se {
                $this->rename('website', $param_name, $value);
              }
              return TRUE;
