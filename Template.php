@@ -2673,9 +2673,8 @@ final class Template {
           
         case 'format': // clean up bot's old (pre-2018-09-18) edits
           if ($this->get($param) === 'Accepted manuscript' ||
-              $this->get($param) === 'Submitted manuscript') {
-            $this->rename('format', 'type');
-          } elseif ($this->get($param) === 'Full text') {
+              $this->get($param) === 'Submitted manuscript' ||
+              $this->get($param) === 'Full text') {
             $this->forget('format');
           }
           return;
