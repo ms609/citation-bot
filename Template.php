@@ -1011,7 +1011,7 @@ final class Template {
       }
       if (stripos($url, "plants.jstor.org")) {
         return FALSE; # Plants database, not journal
-      } elseif (preg_match("~^(?:\w+/)*(\d{6,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match)) {
+      } elseif (preg_ match("~^(?:\w+/)*(\d{6,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match)) {
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
