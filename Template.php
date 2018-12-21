@@ -597,6 +597,8 @@ final class Template {
           if ($this->has('website')) { // alias for journal
              if (str_equivalent($this->get('website'), $value)) {
                $this->rename('website', $param_name);
+             } elseif (preg_match('~^\[.+\]$~', $this->get('website'))) {
+               $this->rename('website', $param_name); // existing data is linked
              } else {
                $this->rename('website', $param_name, $value);
              }
@@ -924,8 +926,8 @@ final class Template {
       }
     }
    
-    if (preg_match('~^(https?://(?:www\.|)jstor\.org/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
-       $url = $matches[1] . 'stable/' . $matches[2] ; // that is default.  This also means we get jstor not doi
+    if (preg_match('~^(https?://(?:www\.|)jstor\.org)(?:\S*proxy\S*/|/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
+       $url = $matches[1] . '/stable/' . $matches[2] ; // that is default.  This also means we get jstor not doi
        if (!is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one.  Will probably call forget on it below
        }
@@ -942,7 +944,7 @@ final class Template {
     
     if ($doi = extract_doi($url)[1]) {
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
-      if (strcasecmp($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
+      if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
@@ -973,6 +975,15 @@ final class Template {
         return TRUE; // Added new DOI
       }
       return FALSE; // Did not add it
+    } elseif ($this->has('doi')) { // Did not find a doi, perhaps we were wrong
+      $this->tidy_parameter('doi'); // Sanitize DOI before comparing
+      if (mb_stripos($url, $this->get('doi')) !== FALSE) { // DOIs are case-insensitive
+        if (doi_active($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE) {
+          report_forget("Recognized existing DOI in URL; dropping URL");
+          $this->forget($url_type);
+        }
+        return FALSE;  // URL matched existing DOI, so we did not use it
+      }
     }
   
     // JSTOR
@@ -1081,7 +1092,7 @@ final class Template {
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
         
-      } elseif (preg_match("~https?://(?:www\.|)ncbi.nlm.nih.gov/pubmed/.*?=?(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~https?://(?:www\.|)ncbi.nlm.nih.gov/(?:pubmed|entrez/eutils/elink.fcgi\S+dbfrom=pubmed\S+)/.*?=?(\d+)~i", $url, $match)) {
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget($url_type);
@@ -1177,7 +1188,7 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('osti', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/oclc/([0-9]+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OCLC parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
@@ -2662,9 +2673,8 @@ final class Template {
           
         case 'format': // clean up bot's old (pre-2018-09-18) edits
           if ($this->get($param) === 'Accepted manuscript' ||
-              $this->get($param) === 'Submitted manuscript') {
-            $this->rename('format', 'type');
-          } elseif ($this->get($param) === 'Full text') {
+              $this->get($param) === 'Submitted manuscript' ||
+              $this->get($param) === 'Full text') {
             $this->forget('format');
           }
           return;
@@ -2825,6 +2835,8 @@ final class Template {
               $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
               $this->set($param, $this->simplify_google_search($this->get($param)));
+          } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
+              $this->set($param, $matches[1]);
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
             $this->rename($param, 'chapter-url');
@@ -3020,6 +3032,10 @@ final class Template {
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
+    }
+    if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') && strpos($this->get('doi'), '10.2307') === 0) {
+      $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
+      foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
     }
     foreach (ALL_ALIASES as $alias_list) {
       if (!$this->blank($alias_list)) { // At least one is set

@@ -138,8 +138,8 @@ function extract_doi($text) {
     $doi_candidate = sanitize_doi($doi);
     while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_active($doi_candidate)) {
       $last_delimiter = 0;
-      foreach (array('/', '.', '#') as $delimiter) {
-        $delimiter_position = strrpos($doi_candidate, '/');
+      foreach (array('/', '.', '#', '?') as $delimiter) {
+        $delimiter_position = strrpos($doi_candidate, $delimiter);
         $last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
       }
       $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
@@ -451,6 +451,8 @@ function str_remove_irrelevant_bits($str) {
   $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
   $str = trim($str);
   $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
+  $str = str_replace(array('.', ',', ';', ':', '   ', '  '), ' ', $str); // punctuation and multiple spaces
+  $str = trim($str);
   return $str;
 }
 
