@@ -588,7 +588,7 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
-          trigger_error("Unexpected data found in parse_plain_text_reference. " . $journal_data );
+          report_info("Unexpected data found in parse_plain_text_reference. " . $journal_data );
         } else {
           report_info("Unexpected data found in parse_plain_text_reference.  Citation bot cannot parse. Please report. " . $journal_data );
         }
