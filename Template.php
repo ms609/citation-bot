@@ -350,7 +350,7 @@ final class Template {
       return FALSE;
     }
     
-    if (strcasecmp($value, 'null') === O) {
+    if (strcasecmp((string) $value, 'null') === 0) {
       return FALSE; // We hope that name is not actually NULL
     }
     
