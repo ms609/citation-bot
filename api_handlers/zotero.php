@@ -6,7 +6,6 @@ function query_url_api($ids, $templates) {
       expand_by_zotero($template);
     }
   }
-  report_action("Using Zotero translation server to retrieve details from identifiers.");
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
@@ -38,7 +37,7 @@ function zotero_request($url) {
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
-  curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 20);
   
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
