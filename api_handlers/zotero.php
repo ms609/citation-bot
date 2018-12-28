@@ -6,6 +6,7 @@ function query_url_api($ids, $templates) {
       expand_by_zotero($template);
     }
   }
+  report_action("Using Zotero translation server to retrieve details from identifiers.");
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
