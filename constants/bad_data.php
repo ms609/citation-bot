@@ -52,3 +52,5 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "google\.com/search",      // Google search results
                                  "jstor\.org/stable/",      // We have special jstor code
                                  "ned\.ipac\.caltech\.edu");// Gives no real title
+const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nbcnews.com/', 'abcnews.com/', 'cbs.com/', 
+                                   'cbsnews.com/', 'abc.com/', 'bbc.com/', 'bbc.co.uk/');  // Just a list of ones that are obvious.  Add ones that time-out as we find them
