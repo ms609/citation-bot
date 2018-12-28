@@ -843,7 +843,7 @@ final class TemplateTest extends testBaseClass {
   public function testLongAuthorLists() {
     $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('The ATLAS Collaboration', $expanded->first_author());
+    $this->assertEquals('Aad, G.', $expanded->first_author());
     $this->assertNull($expanded->get('class'));
     
     // Same paper, but CrossRef records full list of authors instead of collaboration name
