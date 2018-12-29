@@ -4,21 +4,21 @@ define("HTML_OUTPUT", !isset($argv));
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta content="Smith609" name="author">
-		<meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
-		<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
-		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
-		<title>Citation bot: Preparing to run</title>
-    <link rel="stylesheet" type="text/css" href="css/results.css" />
-	</head>
+        <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                <meta content="Smith609" name="author">
+                <meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
+                <link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
+                <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
+                <title>Citation bot: Preparing to run</title>
+                <link rel="stylesheet" type="text/css" href="css/results.css" />
+        </head>
 <body>
   <header>
     <p>Follow <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a>&rsquo;s progress below.</p>
     <p>
-      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">More&nbsp;details</a> | 
-      <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent contributions">Bot&rsquo;s&nbsp;recent&nbsp;edits</a> | 
+      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |
+      <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent contributions">Bot&rsquo;s&nbsp;recent&nbsp;edits</a> |
       <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank">Report&nbsp;bugs</a> |
       <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository">Source&nbsp;code</a>
     </p>
@@ -30,7 +30,7 @@ if (HTML_OUTPUT) {?>
 require_once("expandFns.php");
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
-  echo " Activated by $user.\n";
+  echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
 } else {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
@@ -42,7 +42,7 @@ if (!isset($ON)) $ON = isset($argv[2]);
 
 foreach (explode('|', $pages) as $title) {
 
-         
+
   if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
      continue;
@@ -79,18 +79,18 @@ foreach (explode('|', $pages) as $title) {
     <input type="submit" value="Submit edits" />
   </form>
   <?php
-    } else {  
+    } else {
       report_phase($my_page->parsed_text() ? 'No changes required.' : 'Blank page');
     }
   } else {
     echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
   }
 }
-ob_end_flush(); 
+ob_end_flush();
 ?>
     </pre>
     <footer>
-      <a href="./" title="Use Citation Bot again">Another&nbsp;page</a>? 
+      <a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?
     </footer>
   </body>
 </html>

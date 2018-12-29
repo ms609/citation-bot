@@ -42,7 +42,6 @@ function entrez_api($ids, $templates, $db) {
         break;  case "AuthorList":
           $i = 0;
           foreach ($item->Item as $subItem) {
-            $i++;
             if (author_is_human((string) $subItem)) {
               $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
@@ -52,10 +51,12 @@ function entrez_api($ids, $templates, $db) {
                 if (strpos($first, '.') && substr($first, -1) != '.') {
                   $first = $first . '.';
                 }
+                $i++;
                 $this_template->add_if_new("author$i", $names[1] . $junior . ',' . $first, 'entrez');
               }
             } else {
               // We probably have a committee or similar.  Just use 'author$i'.
+              $i++;
               $this_template->add_if_new("author$i", (string) $subItem, 'entrez');
             }
           }
@@ -168,6 +169,22 @@ function adsabs_api($ids, $templates, $identifier) {
     return TRUE;
   }
   
+  foreach ($ids as $key => $bibcode) {
+    if (strpos($bibcode, 'book') !== false) {
+        report_info("Ignoring Book bibcode " . $bibcode);
+        unset($ids[$key]);
+    } elseif (
+        strpos($bibcode, '&') !== false) {
+        unset($ids[$key]);
+    }
+  }
+  foreach ($templates as $template) {
+    if (strpos($template->get('bibcode'), '&') !== false) {
+      $template->expand_by_adsabs();
+    }
+  }
+  if (count($ids) == 0) return TRUE; // None left after removing books and & symbol
+
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/bigquery?q=*:*"
               . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
@@ -217,8 +234,11 @@ function adsabs_api($ids, $templates, $identifier) {
              ":\n       ");
              // "; reset at " . date('r', $rate_limit[2][2]);
       } else {
-        report_warning("AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n");
-        return (object) array('numFound' => 0);
+        report_warning("AdsAbs daily search limit exceeded. Big queries stopped until " . date('r', $rate_limit[2][2]) . "\n");
+        foreach ($templates as $template) {
+           $template->expand_by_adsabs();
+        }
+        return TRUE;
       }
     } else {
       throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);
@@ -274,10 +294,12 @@ function adsabs_api($ids, $templates, $identifier) {
         $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
       }          
     }
-    if (isset($record->page) && (stripos(implode('–', $record->page), 'arxiv') !== FALSE)) {  // Bad data
+    if (isset($record->page)) {
+      if ((stripos(implode('–', $record->page), 'arxiv') !== FALSE) || (stripos(implode('–', $record->page), '/') !== FALSE)) {  // Bad data
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
+      }
     }
     if (isset($record->volume)) {
       $this_template->add_if_new("volume", (string) $record->volume, 'adsabs');
@@ -316,8 +338,8 @@ function expand_by_doi($template, $force = FALSE) {
   // there will be few instances where it could not in principle be profitable to 
   // run this function, so we don't check this first.
   
-  $doi = $template->get_without_comments_and_placeholders('doi');
   if (!$template->verify_doi()) return FALSE;
+  $doi = $template->get_without_comments_and_placeholders('doi');
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       $template->add_if_new('jstor', substr($doi, 8));
   }
@@ -381,15 +403,21 @@ function expand_by_doi($template, $force = FALSE) {
       }
     } else {
       report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
-      $template->mark_inactive_doi($doi);
+      expand_doi_with_dx($template, $doi);
     }
   }
 }
 
 function query_crossref($doi) {
+  $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
-    $xml = @simplexml_load_file($url);
+    $raw_xml = @file_get_contents($url);
+    $raw_xml = preg_replace(
+      '~(\<year media_type=\"online\"\>\d{4}\<\/year\>\<year media_type=\"print\"\>)~',
+          '<year media_type="print">',
+          $raw_xml);
+    $xml = @simplexml_load_string($raw_xml);
     if ($xml) {
       $result = $xml->query_result->body->query;
       if ($result["status"] == "resolved") {
@@ -404,6 +432,31 @@ function query_crossref($doi) {
   }
   report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");
   return FALSE;
+}
+
+function expand_doi_with_dx($template, $doi) {
+     // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve this way
+     // https://api.crossref.org/works/$doi can be used to find out the agency
+     // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
+     if (!$doi) return FALSE;
+     $ch = curl_init();
+     curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
+     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+     try {
+       $ris = @curl_exec($ch);
+     } catch (Exception $e) {
+       $template->mark_inactive_doi($doi);
+       return FALSE;
+     }
+     if ($ris == FALSE || stripos($ris, 'DOI Not Found') !== FALSE || stripos($ris, 'DOI prefix') !== FALSE) {
+       $template->mark_inactive_doi($doi);
+       return FALSE;
+     }
+     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
+     $template->expand_by_RIS($ris);
+     return TRUE;
 }
 
 function doi_active($doi) {
@@ -428,9 +481,19 @@ function query_jstor_api($ids, $templates) {
 
 function expand_by_jstor($template) {
   if ($template->incomplete() === FALSE) return FALSE;
-  if ($template->blank('jstor')) return FALSE;
-  $jstor = trim($template->get('jstor'));
-  if (preg_match("~[^0-9]~", $jstor) === 1) return FALSE ; // Only numbers in stable jstors.  We do not want i12342 kind
+  if ($template->has('jstor')) {
+     $jstor = trim($template->get('jstor'));
+  } elseif(preg_match('~^https?://(?:www\.|)jstor\.org/stable/(.*)$~', $template->get('url'), $match)) {
+     $jstor = $match[1];
+  } else {
+     return FALSE;
+  }
+  if (preg_match('~^(.*)(?:\?.*)$~', $jstor, $match)) {
+     $jstor = $match[1]; // remove ?seq= stuff
+  }
+  $jstor = trim($jstor);
+  if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
+  if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
   if ($dat === FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
@@ -438,6 +501,10 @@ function expand_by_jstor($template) {
   }
   if (stripos($dat, 'No RIS data found for') !== FALSE) {
     report_info("JSTOR API found nothing for ".  jstor_link($jstor));
+    return FALSE;
+  }
+  if (stripos($dat, 'Block Reference') !== FALSE) {
+    report_info("JSTOR API blocked bot for ".  jstor_link($jstor));
     return FALSE;
   }
   $has_a_url = $template->has('url');
@@ -512,6 +579,12 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
         $arxiv_issue=$matches[3];
         $arxiv_pages=$matches[4];
         $arxiv_year=$matches[5];
+      // A&A 619, A49 (2018)
+      } elseif (preg_match("~^A&A ([0-9]+), ([A-Z0-9]+) \(\d{4}\)$~u", $journal_data, $matches)) {
+        $arxiv_journal='Astronomy & Astrophysics'; // We expand this out
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[3];
+        $arxiv_year=$matches[4];
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {

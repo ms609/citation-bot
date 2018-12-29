@@ -4,6 +4,7 @@ header("Content-Type: text/json");
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
 ob_start();
+define("FLUSHING_OKAY", FALSE);
   
 //Set up tool requirements
 require_once __DIR__ . '/expandFns.php';
@@ -17,12 +18,16 @@ $page->parse_text($originalText);
 $page->expand_text();
 
 //Modify edit summary to identify bot-assisted edits
-$UCB_Assisted = "[[WP:UCB|Assisted by Citation bot]]";
-if (mb_substr(trim($editSummary),-mb_strlen($UCB_Assisted)) !== $UCB_Assisted ){
-  if ($editSummary) {
-    $editSummary .= " | ";
+if ($page->parsed_text() !== $originalText) {
+  $UCB_Assisted = "[[WP:UCB|Assisted by Citation bot]]";
+  if (mb_substr(trim($editSummary),-mb_strlen($UCB_Assisted)) !== $UCB_Assisted ){
+    if ($editSummary) {
+      $editSummary .= " | ";
+    }
+    $editSummary .= $UCB_Assisted;
   }
-  $editSummary .= $UCB_Assisted;
+} elseif (!$editSummary) {
+  $editSummary = "";
 }
 
 if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {

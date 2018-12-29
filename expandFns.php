@@ -10,7 +10,10 @@ include_once("./vendor/autoload.php");
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
   define("HTML_OUTPUT", FALSE);
-}  
+}
+if (!defined("FLUSHING_OKAY")) {  // Default when not gadget API
+  define("FLUSHING_OKAY", TRUE);
+}
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
@@ -20,6 +23,11 @@ require_once("Comment.php");
 require_once("wikiFunctions.php");
 require_once("user_messages.php");
 
+$api_files = glob('api_handlers/*.php');
+foreach ($api_files as $file) {
+    require_once($file);
+}
+
 const CROSSREFUSERNAME = 'martins@gmail.com';
 // Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY and PHP_BOTUSERNAME environment variables
 
@@ -27,7 +35,9 @@ mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Optimisation
 ob_implicit_flush();
-ob_start();
+if (!getenv('TRAVIS')) {
+    ob_start();
+}
 ini_set("memory_limit", "256M");
 
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
@@ -73,14 +83,38 @@ function udbconnect($dbName = MYSQL_DBNAME, $server = MYSQL_SERVER) {
 }
 
 function sanitize_doi($doi) {
-  $doi = str_replace(HTML_ENCODE, HTML_DECODE, trim(urldecode($doi)));
+  $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
+  $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   $extension = substr($doi, strrpos($doi, '.'));
   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   $extension = substr($doi, strrpos($doi, '/'));
-  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf'))) {
+  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  }
+  // And now for 10.1093 URLs
+  // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
+  // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
+  if (strpos($doi, '10.1093') === 0) {
+    if (preg_match('~^(10\.1093/oxfordhb.+)(?:/oxfordhb.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/acprof.+)(?:/acprof.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/acref.+)(?:/acref.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/ref:odnb.+)(?:/odnb.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match)) { // Who's who of all things
+       $doi = $match[1];
+    }
+    if (preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
+       $doi = $match[1];
+    } 
   }
   return $doi;
 }
@@ -104,8 +138,8 @@ function extract_doi($text) {
     $doi_candidate = sanitize_doi($doi);
     while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_active($doi_candidate)) {
       $last_delimiter = 0;
-      foreach (array('/', '.', '#') as $delimiter) {
-        $delimiter_position = strrpos($doi_candidate, '/');
+      foreach (array('/', '.', '#', '?') as $delimiter) {
+        $delimiter_position = strrpos($doi_candidate, $delimiter);
         $last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
       }
       $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
@@ -202,7 +236,7 @@ function title_capitalization($in, $caps_after_punctuation) {
     // ALL CAPS to Title Case
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
-  $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, $new_case . " "), 0, -1);
+  $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
   
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
@@ -267,28 +301,6 @@ function throttle ($min_interval) {
   $last_write_time = time();
 }
 
-function tag($long = FALSE) {
-  return FALSE; // I suggest that this function is no longer useful in the Travis era
-  // If it's not been missed by 2018-10-01, I suggest that we delete it and all calls thereto.
-  
-  $dbg = array_reverse(debug_backtrace());
-  array_pop($dbg);
-  array_shift($dbg);
-  $output = '';
-  foreach ($dbg as $d) {
-    if ($long) {
-      $output = $output . '> ' . $d['function'];
-    } else {
-      $output = '> ' . substr(preg_replace('~_(\w)~', strtoupper("$1"), $d['function']), -7);
-    }
-  }
-  if (getenv('TRAVIS')) {
-     echo ' [..' . $output . ']';
-  } else {
-     echo ' [..' . htmlspecialchars($output) . ']';
-  } 
-}
-
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
   if (trim($str) == 'Science (New York, N.Y.)') return 'Science';
@@ -309,6 +321,81 @@ function sanitize_string($str) {
     $str = str_replace($placeholder, $replacement, $str);
   }
   return $str;
+}
+
+function tidy_date($string) {
+  $string=trim($string);
+  if (stripos($string, 'Invalid') !== FALSE) return '';
+  if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
+  // Huge amout of character cleaning
+  if (strlen($string) != mb_strlen($string)) {  // Convert all multi-byte characters to dashes
+    $cleaned = '';
+    for ($i = 0; $i < mb_strlen($string); $i++) {
+       $char = mb_substr($string,$i,1);
+       if (mb_strlen($char) == strlen($char)) {
+          $cleaned .= $char;
+       } else {
+          $cleaned .= '-';
+       }
+    }
+    $string = $cleaned;
+  }
+  $string = preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters to dashes
+  $string = preg_replace('~[\s\-]*\-[\s\-]*~', '-',$string); // Combine dash with any following or preceeding white space and other dash
+  $string = preg_replace('~^\-*(.+?)\-*$~', '\1', $string);  // Remove trailing/leading dashes
+  $string = trim($string);
+  // End of character clean-up
+  $string = preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
+  $string = preg_replace('~^Date published \(~', '', $string); // seen this
+  // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
+  if (strpos($string, '0001-11-30') !== FALSE) return '';
+  if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
+  if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
+    if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
+      return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
+    } elseif (intval($matches[2]) < 13 && intval($matches[1]) > 12) {
+      return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+    } elseif (intval($matches[2]) > 12 && intval($matches[1]) > 12) {
+      return '';
+    } elseif ($matches[1] === $matches[2]) {
+      return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+    } else {
+      return $matches[3];// do not know. just give year
+    }
+  }
+  if (is_numeric($string) && is_int(1*$string)) {
+    $string = intval($string);
+    if ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
+    if ($string > -2 && $string < 2) return ''; // reject -1,0,1
+    return $string; // year
+  }
+  $time = strtotime($string);
+  if ($time) {
+    $day = date('d', $time);
+    $year = intval(date('Y', $time));
+    if ($year < -2000 || $year > date("Y") + 10) return ''; // We got an invalid year
+    if ($day == '01') { // Probably just got month and year
+      $string = date('F Y', $time);
+    } else {
+      $string = date('Y-m-d', $time);
+    }
+    if (stripos($string, 'Invalid') !== FALSE) return '';
+    return $string;
+  }
+  if (preg_match('~^(.*?\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
+  if (preg_match(  '~\s(\d{4}\-\d?\d(?:\-?\d\d?))$~', $string, $matches)) return $matches[1];
+  if (preg_match( '~^(\d\d?/\d\d?/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); //Recusion to clean up 3/27/2000
+  if (preg_match('~[^0-9](\d\d?/\d\d?/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
+  
+  // Dates with dots -- convert to slashes and try again.
+  if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
+    if (intval($matches[3]) < (date("y")+2))  $matches[3] = $matches[3] + 2000;
+    if (intval($matches[3]) < 100)  $matches[3] = $matches[3] + 1900;
+    return tidy_date($matches[1] . '/' .  $matches[2] . '/' . $matches[3]);
+  }
+  
+  if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1]; // Last ditch effort - ends in a year
+  return $string; // And we give up
 }
 
 function remove_brackets($string) {
@@ -357,3 +444,20 @@ function equivalent_parameters($par) {
     default: return array($par);
   }
 }
+
+function str_remove_irrelevant_bits($str) {
+  $str = trim($str);
+  $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
+  $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
+  $str = trim($str);
+  $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
+  $str = str_replace(array('.', ',', ';', ':', '   ', '  '), ' ', $str); // punctuation and multiple spaces
+  $str = trim($str);
+  return $str;
+}
+
+function str_equivalent($str1, $str2) {
+  return 0 === strcasecmp(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
+}
+  
+  

@@ -5,9 +5,9 @@
 # Citation bot
 
 ## GitHub repository details
-There are two main branches of the bot: 
+There are one to two main branches of the bot: 
 - The **master** code is implemented at https://tools.wmflabs.org/citations/, and is intended for public use.
-- The **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/ .  
+- When needed, the **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/ .  
 
 ## Overview
 
@@ -21,6 +21,7 @@ This is more properly a bot-gadget-tool combination. The parts are:
   All activity takes place on Tool Labs.
 * Citation expander (:en:Mediawiki:Gadget-citations.js) + gadgetapi.php. This
   is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
+* [Generic template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://tools.wmflabs.org/citations/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
 Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot .
 
@@ -37,7 +38,7 @@ A quick tour of the main files:
 * `wikiFunctions.php`: functions related to Wikipedia ineractions, including some marked
    as "untested".
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
-* `DOItools.php`: defines Crossref-related functions
+* `DOItools.php`: defines text/name functions
 * `expandFns.php`: sets up needed functions, requires most of the other files listed here
 * `apiFunctions.php`: sets up needed functions
 
@@ -45,11 +46,10 @@ Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
   `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
 * `Template.php`: most of the actual expansion happens here.
-  `Template::process()` handles most of template expansion and checking;
   `Template::add_if_new()` is generally (but not always) used to add
    parameters to the updated template; `Template::tidy()` cleans up the
    template, but may add parameters as well and have side effects.
-* `Comment.php`: Handles comments and nokwiki tags
+* `Comment.php`: Handles comments, nokwiki, etc. tags
 * `Parameter.php`: contains information about template parameter names, values,
    and metadata, and methods to parse template parameters.
 

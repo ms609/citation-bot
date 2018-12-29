@@ -43,15 +43,26 @@ final class Parameter {
     } else {
       $this->val  = $text;
     }
+    // Comments before parameter names
+    if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~i', $this->param, $match)) {
+      $this->pre = $this->pre . $match[0];
+      $this->param = str_replace($match[0], '', $this->param);
+    }
+    // Comments after parameter names
+    if (preg_match('~(?:\s*)# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', $this->param, $match)) {
+      $this->eq = $match[0] . $this->eq;
+      $this->param = str_replace($match[0], '', $this->param);
+    }
   }
 
   protected function set_value($value) {
     switch ($this->param) {
       case 'pages':
-        if (stripos($value, "http") === FALSE) $value = mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
+        if (stripos($value, 'http') === FALSE && mb_stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) {
+          $value = mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
+        }
+      default:
         $this->val = $value;
-      break;
-      default: $this->val = $value;
     }
   }
 

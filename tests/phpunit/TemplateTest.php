@@ -3,65 +3,11 @@
 /*
  * Tests for Template.php, called from expandFns.php.
  */
-error_reporting(E_ALL);
-// backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&
-    class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
-}
 
-// Initialize bot configuration
-if (!defined('VERBOSE')) define('VERBOSE', TRUE);
-$SLOW_MODE = TRUE;
+require_once __DIR__ . '/../testBaseClass.php';
  
-final class TemplateTest extends PHPUnit\Framework\TestCase {
+final class TemplateTest extends testBaseClass {
 
-  protected function setUp() {
-  }
-
-  protected function tearDown() {
-  }
-  
-  protected function requires_secrets($function) {
-    if (getenv('TRAVIS_PULL_REQUEST')) {
-      echo 'S'; // Skipping test: Risks exposing secret keys
-      $this->assertNull(NULL); // Make Travis think we tested something
-    } else {
-      $function();
-    }
-  }
-  
-  protected function prepare_citation($text) {
-    $template = new Template();
-    $template->parse_text($text);
-    $template->prepare();
-    return $template;
-  }
-  
-  protected function process_citation($text) {
-    $page = new TestPage();
-    $page->parse_text($text);
-    $page->expand_text();
-    $expanded_text = $page->parsed_text();
-    $template = new Template();
-    $template->parse_text($expanded_text);
-    return $template;
-  }
-  
-  protected function process_page($text) {  // Only used if more than just a citation template
-    $page = new TestPage();
-    $page->parse_text($text);
-    $page->expand_text();
-    return $page;
-  }
-
-  protected function getDateAndYear($input){
-    // Generates string that makes debugging easy and will throw error
-    if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
-    if (is_null($input->get('date'))) return $input->get('year') ;
-    return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year');
-  }
-  
   public function testParameterWithNoParameters() {
     $text = "{{Cite web | text without equals sign  }}";
     $expanded = $this->process_citation($text);
@@ -89,6 +35,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite journal', $prepared->wikiname());
     $this->assertEquals('1701972'     , $prepared->get('jstor'));
     $this->assertNull($prepared->get('website'));
+
+    $text = "{{Cite journal | url=http://www.jstor.org/stable/10.2307/40237667|jstor=}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('40237667', $prepared->get('jstor'));
+    $this->assertNull($prepared->get('doi'));
+    $this->assertEquals(1, substr_count($prepared->parsed_text(), 'jstor'));  // Verify that we do not have both jstor= and jstor=40237667.  Formerly testOverwriteBlanks()
 
     $text = "{{Cite web | url = http://www.jstor.org/stable/10.1017/s0022381613000030}}";
     $prepared = $this->prepare_citation($text);
@@ -121,6 +73,33 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('doi-broken-date'));
     $this->assertNotNull($expanded->get('url'));
+   // Newer code does not even add it
+    $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi'));
+    $this->assertNotNull($expanded->get('url'));
+  }
+  
+ public function testTruncateDOI() {
+    $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi-broken-date'));
+    $this->assertEquals('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
+    $this->assertEquals('10.1093/oxfordhb/9780199552238.001.0001', $expanded->get('doi'));
+ }
+
+ public function testBrokenDoiUrlChanges() {
+     $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.00/broken_and_invalid|doi-broken-date=12-31-1999}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get('doi'));
+     $this->assertNull($expanded->get('url'));
+    // The following URL is "broken" since it is not escaped properly.  The cite template displays and links it wrong too.
+     $text = '{{cite journal|doi=10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|url=https://dx.doi.org/10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2}}';
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('url'));
+     $text = '{{cite journal|url=http://doi.org/10.14928/amstec.23.1_1|doi=10.14928/amstec.23.1_1}}';  // This also troublesome DOI
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('url'));
   }
   
   public function testPmidExpansion() {
@@ -130,16 +109,69 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('1941451', $expanded->get('pmid'));
   }
    
-  public function testChangeNothing() {
+  public function testPoundDOI() {
+    $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1007/978-3-642-75924-6_15', $expanded->get('doi'));
+  }
+ 
+  public function testPlusDOI() {
+    $doi = "10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U";
+    $text = "{{cite journal|doi = $doi }}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($doi, $expanded->get('doi'));
+  }
+ 
+  public function testNewsdDOI() {
+    $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1021/cen-v076n048.p024', $expanded->get('doi'));
+  }
+ 
+  public function testChangeNothing1() {
      $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->}}';
      $expanded = $this->process_page($text);
-     $this->assertEquals($text, $expanded->parsed_text());   
+     $this->assertEquals($text, $expanded->parsed_text());
   }
     
-  public function testDots() {
-     $text = '{{cite journal|pmid=4957203}}';
+  public function testChangeNothing2() {
+     $text = '{{cite journal | doi=10.000/broken_real_bad_and_tests_know_it | doi-broken-date = <!-- not broken and the bot is wrong --> }}';
+     $expanded = $this->process_page($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+  }
+    
+  public function testChangeNothing3() {
+     $text = '{{cite journal |title=The tumbling rotational state of 1I/‘Oumuamua<!-- do not change odd punctuation--> |journal=Nature title without caps <!-- Deny Citation Bot-->  |pages=383-386 <!-- do not change the dash--> }}';
+     $expanded = $this->process_page($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+  }
+  
+  public function testNoLoseUrl() {
+     $text = '{{cite book |last=Söderström |first=Ulrika |date=2015 |title=Sandby Borg: Unveiling the Sandby Borg Massacre |url= |location= |publisher=Kalmar lāns museum |isbn=9789198236620 |language=Swedish }}';
+     $expanded = $this->process_page($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+  }
+ 
+  public function testDotsAndVia() {
+     $text = '{{cite journal|pmid=4957203|via=Pubmed}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('M. M.', $expanded->get('first3'));
+     $this->assertNull($expanded->get('via'));
+  }
+    
+  public function testJustBrackets() {
+     $text = '{{cite book|title=[[W|12px|alt=W]]}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+     $text = '{{cite book|title=[[File:Example.png|thumb|upright|alt=Example alt text|Example caption]]}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals($text, $expanded->parsed_text());
+  }
+
+  public function testBadAuthor2() {
+      $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Infectious Diseases Society of America', $expanded->get('author1'));
   }
  
   public function testPmidIsZero() {
@@ -153,6 +185,12 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $expanded->wikiname());
     $this->assertEquals('154623', $expanded->get('pmc'));
+    $this->assertNull($expanded->get('url'));
+    $text = "{{Cite web | url = https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf', $expanded->get('url'));
+    $this->assertEquals('2491514', $expanded->get('pmc'));
   }
   
   public function testPMC2PMID() {
@@ -186,13 +224,23 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   }
   
   public function testAmazonExpansion() {
-    $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn=}}";
+    $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
     $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('978-0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
-      
-    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20}}";
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertNull($expanded->get('url'));
+
+    $text = "{{Cite web | chapter-url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
+    $expanded = $this->prepare_citation($text);
+    $this->assertEquals('cite book', $expanded->wikiname());
+    $this->assertEquals('978-0226845494', $expanded->get('isbn'));
+    $this->assertNull($expanded->get('asin'));
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertNull($expanded->get('chapter-url'));
+
+    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals($text, $expanded->parsed_text());  // We do not touch this kind of URL
   }
@@ -217,11 +265,45 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('cite book', $expanded->wikiname());
   }
   
+  public function testTemplateRenamingURLConvert() {
+    $text='{{cite journal |url=http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf |title=Terrestrialization (Precambrian–Devonian) |last=Selden |first=Paul A. |year=2005 |encyclopedia=[[Encyclopedia of Life Sciences]] |publisher=[[John Wiley & Sons, Ltd.]] |doi=10.1038/npg.els.0004145 |format=PDF}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('978-0470016176', $expanded->get('isbn'));
+    $this->assertEquals('cite book', $expanded->wikiname());
+    $this->assertEquals('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $expanded->get('chapter-url'));
+    $this->assertNull($expanded->get('url'));
+    $this->assertNull($expanded->get('format'));
+    $this->assertEquals('PDF', $expanded->get('chapter-format'));
+    $text='{{Cite book|url=http://www.sciencedirect.com/science/article/pii/B9780123864543000129|title=Encyclopedia of Toxicology (Third Edition)|last=Roberts|first=L.|date=2014|publisher=Academic Press|isbn=978-0-12-386455-0|editor-last=Wexler|editor-first=Philip|location=Oxford|pages=993–995|doi=10.1016/b978-0-12-386454-3.00012-9}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('http://www.sciencedirect.com/science/article/pii/B9780123864543000129', $expanded->get('chapter-url'));
+    $this->assertNull($expanded->get('url'));
+  }
+
   public function testDoiExpansion() {
     $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('cite journal', $prepared->wikiname());
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $prepared->get('doi'));
+    
+    $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
+    $expanded = $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
+    $this->assertNull($expanded->get('url'));
+    
+    // Recognize official DOI targets in URL with extra fragments
+    $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('url'));
+    
+    // Replace this test with a real URL (if one exists)
+    $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
+    $expanded= $this->prepare_citation($text);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
+    // Do not drop PDF files, in case they are open access and the DOI points to a paywall
+    $this->assertEquals('http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf', $expanded->get('url'));
   }
 
   public function testDoiExpansionBook() {
@@ -234,7 +316,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testDoiEndings() {
     $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full}}';
     $expanded = $this->process_citation($text);   
-    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
+    $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
+    
     $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));  
@@ -252,12 +335,26 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('{{Cite journal|pages=2}}', $prepared->parsed_text());
   }
 
+  public function testExpansionJstorBook() {
+    $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Verstraete', $expanded->get('last1'));
+  }
+ 
+  public function testAP() {
+    $text = '{{cite web|author=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('author'));
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertEquals('Associated Press', $expanded->get('agency'));
+  }
+ 
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
     $text = "{{Cite web | title=Ellipsis... | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01}}";
     $prepared = $this->prepare_citation($text);
     // ISSN should be retained when journal is originally present
-    $this->assertEquals('{{Cite journal | title=Ellipsis… | pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $prepared->parsed_text());
+    $this->assertEquals('{{Cite journal | title=Ellipsis... | pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $prepared->parsed_text());
     
     $text = "{{Cite web | Journal=My Journal| issn=1357-4321 | publisher=Unwarranted }}";
     $prepared = $this->prepare_citation($text);
@@ -318,6 +415,29 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text, $expanded->parsed_text());
   }
   
+  public function testDropArchiveDotOrg() {
+    $text = '{{Cite journal | publisher=archive.org}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('publisher'));
+      
+    $text = '{{Cite journal | website=archive.org|url=http://www.fake-url.com/NOT_REAL}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('http://www.fake-url.com/NOT_REAL', $expanded->get('url'));
+    $this->assertNull($expanded->get('website'));
+  }
+ 
+  public function testLeaveArchiveURL() {
+    $text = '{{cite book |chapterurl=http://faculty.haas.berkeley.edu/shapiro/thicket.pdf|isbn=978-0-262-60041-5|archiveurl=https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get('archiveurl'));
+  }
+
+  public function testScriptTitle() {
+    $text = "{{cite book |author={{noitalic|{{lang|zh-hans|国务院人口普查办公室、国家统计局人口和社会科技统计司编}}}} |date=2012 |script-title=zh:中国2010年人口普查分县资料 |location=Beijing |publisher={{noitalic|{{lang|zh-hans|中国统计出版社}}}} [China Statistics Press] |page= |isbn=978-7-5037-6659-6 }}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('title')); // Already have script-title that matches what google books gives us
+  }
+    
   public function testPageDuplication() {
      global $SLOW_MODE;
      $SLOW_MODE = FALSE; // Otherwise we'll find a bibcode
@@ -344,7 +464,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testCiteArxivRecognition() {
     $text = '{{Cite web | eprint=1203.0149}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('Cite arxiv', $expanded->name());
+    $this->assertEquals('Cite arXiv', $expanded->name());
   }
   
   public function testBrokenDoiDetection() {
@@ -368,10 +488,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
+  }
     
+  public function testCrossRefEvilDoi() {
     $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
+    $this->assertEquals('39', $expanded->get('volume'));
   }
 
   public function testOpenAccessLookup() {
@@ -449,7 +572,20 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
   }
-    
+  
+  public function testNoBibcodesForArxiv() {
+    $text = "{{Cite arxiv|last=Sussillo|first=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('bibcode'));  // If this eventually gets a journal, we will have to change the test
+  }
+
+  public function testNoBibcodesForBookReview() {
+    $text = '{{cite book|last1=Klein|first1=Edward |title=Elements of histology|url=https://books.google.com/books?id=08m1UWAKyEAC&pg=PA124|accessdate=January 29, 2017|year=1785|publisher=Lea|page=124}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('bibcode'));
+    $this->assertNull($expanded->get('doi'));
+  }
+  
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
     |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
@@ -487,6 +623,14 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $text = "{{Cite journal|pp. 1-5}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('1–5', $expanded->get('pages'));
+      
+    $text = "{{cite book|authorlinux=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{cite book|authorlink=X}}', $expanded->parsed_text());
+      
+    $text = "{{cite book|authorlinks33=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{cite book|authorlink33=X}}', $expanded->parsed_text());
   }
        
   public function testId2Param() {
@@ -535,23 +679,75 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
+      
       $text = '{{citation|postscript=.}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=.}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals('{{cite journal}}', $prepared->parsed_text());
+      
       $text = '{{cite journal|postscript=none}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertEquals($text, $prepared->parsed_text());
   }
+    
+  public function testChangeParamaters() {
+      // publicationplace
+      $text = '{{citation|publicationplace=Home}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|location=Home}}', $prepared->parsed_text());
+      
+      $text = '{{citation|publication-place=Home|location=Away}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+      // publicationdate
+      $text = '{{citation|publicationdate=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|date=2000}}', $prepared->parsed_text());
+      
+      $text = '{{citation|publicationdate=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+
+      // origyear
+      $text = '{{citation|origyear=2000}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|year=2000}}', $prepared->parsed_text());
+      
+      $text = '{{citation|origyear=2000|date=1999}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text()); 
+ }
+
+  public function testDropDuplicates() {
+      $text = '{{citation|work=Work|journal=|magazine=|website=}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals('{{citation|work=Work}}', $prepared->parsed_text());
+      
+      $text = '{{citation|work=Work|journal=Journal|magazine=Magazine|website=Website}}';
+      $prepared = $this->prepare_citation($text);
+      $prepared->final_tidy();
+      $this->assertEquals($text, $prepared->parsed_text());
+  }
+
     
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
@@ -567,7 +763,7 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $text = '{{cite journal|chapter=A book chapter|work=A book chapter}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertEquals('{{Cite book|chapter=A book chapter}}', $prepared->parsed_text());
+      $this->assertEquals('{{cite book|chapter=A book chapter}}', $prepared->parsed_text());
       
       $text = '{{citation|work=I Live}}';
       $prepared = $this->prepare_citation($text);
@@ -616,7 +812,13 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
       $this->assertEquals('2000', $this->getDateAndYear($prepared));
       $this->assertNull($prepared->get('origyear'));
   }
-  
+    
+  public function testDropAmazon() {
+    $text = '{{Cite journal | publisher=amazon.com}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('publisher'));
+  }
+    
   public function testGoogleBooksExpansion() {
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
     $expanded = $this->process_citation($text);
@@ -634,13 +836,8 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
   public function testGoogleDates() {
     $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('February 1935', $expanded->get('date'));
-  }
-  
-  public function testErrantAuthor() {
-    $text = '{{cite journal|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true |title=The Passing of the Carrier Pigeon|journal=Popular Mechanics |date=February 1930|pages= 340}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('Hearst Magazines', $expanded->get('publisher'));
+    $this->assertTrue(in_array($expanded->get('date'), ['February 1935', '1935-02']));
+    // Google recovers Feb 1935; Zotero returns 1935-02.
   }
   
   public function testLongAuthorLists() {
@@ -673,6 +870,16 @@ final class TemplateTest extends PHPUnit\Framework\TestCase {
     $this->assertNull($prepared->get('year'));
   }
   
+  public function testND() {  // n.d. is special case that template recognize.  Must protect final period.
+    $text = '{{Cite journal|date =n.d.}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+    
+    $text = '{{Cite journal|year=n.d.}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals($text, $expanded->parsed_text());
+  }
+    
   public function testRIS() {
       $text = '{{Cite journal  | TY - JOUR
 AU - Shannon, Claude E.
@@ -692,6 +899,26 @@ ER -  }}';
      $this->assertEquals('Claude E.', $prepared->get('first1'));
      $this->assertEquals('379–423', $prepared->get('pages'));
      $this->assertEquals('27', $prepared->get('volume'));   
+     // This is the exact same reference, but with an invalid title, that flags this data to be rejected
+     // We check everything is null, to verify that bad title stops everything from being added, not just title
+      $text = '{{Cite journal  | TY - JOUR
+AU - Shannon, Claude E.
+PY - 1948/07//
+TI - oup accepted manuscript
+T2 - Bell System Technical Journal
+SP - 379
+EP - 423
+VL - 27
+ER -  }}';
+     $prepared = $this->prepare_citation($text);
+     $this->assertNull($prepared->get('title'));
+     $this->assertNull($prepared->get('date'));
+     $this->assertNull($prepared->get('journal'));
+     $this->assertNull($prepared->first_author());
+     $this->assertNull($prepared->get('last1'));
+     $this->assertNull($prepared->get('first1'));
+     $this->assertNull($prepared->get('pages'));
+     $this->assertNull($prepared->get('volume'));   
   }
     
   public function testEndNote() {
@@ -879,30 +1106,34 @@ ER -  }}';
     $this->assertEquals(str_replace(' ', '', "''Cryptosporidiumhominis''n.sp.(Apicomplexa:Cryptosporidiidae)fromHomosapiens"),
                         str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
   }   
-  
+    
+  public function testSICI() {
+    $url = "https://www.fake-url.org/sici?sici=9999-9999(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
+    $text = "{{Cite journal|url=$url}}";  // We use a rubbish ISSN and website so that this does not expand any more -- only test SICI code
+    $expanded = $this->process_citation($text);
+      
+    $this->assertEquals('1961', $expanded->get('year'));
+    $this->assertEquals('81', $expanded->get('volume'));
+    $this->assertEquals('1', $expanded->get('issue'));
+    $this->assertEquals('43', $expanded->get('pages'));
+  }
   
   public function testJstorSICI() {
-   $url = "https://www.jstor.org/sici?sici=0003-0279(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
-   $text = "{{Cite journal|url=$url}}";
-   $expanded = $this->process_citation($text);
-     
-   $this->assertEquals('594900', $expanded->get('jstor'));
-   $this->assertEquals('1961', $expanded->get('year'));
-   $this->assertEquals('81', $expanded->get('volume'));
-   $this->assertEquals('1', $expanded->get('issue'));
-   $this->assertEquals('43', $expanded->get('pages'));
-  }
+    $url = "https://www.jstor.org/sici?sici=0003-0279(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
+    $text = "{{Cite journal|url=$url}}";
+    $expanded = $this->process_citation($text);
       
+    $this->assertEquals('594900', $expanded->get('jstor'));
+    $this->assertEquals('1961', $expanded->get('year'));
+    $this->assertEquals('81', $expanded->get('volume'));
+    $this->assertEquals('1', $expanded->get('issue'));
+    $this->assertEquals('43–52', $expanded->get('pages'));  // The jstor expansion add the page ending
+  }
+  
   public function testJstorSICIEncoded() {
     $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('594900', $expanded->get('jstor'));
-  }
-    
-  public function testOverwriteBlanks() {
-    $text = '{{cite journal|url=http://www.jstor.org/stable/1234567890|jstor=}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('{{cite journal|jstor=1234567890}}', $expanded->parsed_text());
   }
 
   public function testIgnoreJstorPlants() {
@@ -1035,6 +1266,14 @@ ER -  }}';
     $this->assertEquals('032412332', $expanded->get('pages'));
   }
 
+   public function testDoiInline() {
+    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('Nature', $expanded->get('journal'));
+    $this->assertEquals('Funky Paper', $expanded->get('title'));
+    $this->assertEquals('10.1038/nature10000', $expanded->get('doi'));
+  } 
+  
   public function testPagesDash() {
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
@@ -1056,6 +1295,12 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures', $expanded->get('at')); // Leave complex at=
 
+  }
+ 
+  public function testBogusPageRanges() {  // At some point this test will age out (perhaps add special TRAVIS code to template.php
+    $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|year = 2018|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('955–971', $expanded->get('pages')); // Converted should use long dashes
   }
     
   public function testCollapseRanges() {
@@ -1107,8 +1352,11 @@ ER -  }}';
     
   public function testJustAnOCLC() {
     $this->requires_secrets(function() {
-      $text = '{{cite book | oclc=9334453}}';
+      $text = '{{cite web | url=http://www.worldcat.org/oclc/9334453}}';
       $expanded = $this->process_citation($text);
+      $this->assertEquals('cite book', $expanded->wikiname());
+      $this->assertNull($expanded->get('url'));
+      $this->assertEquals('9334453', $expanded->get('oclc'));
       $this->assertEquals('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport', $expanded->get('title'));
     });
   }
@@ -1131,15 +1379,32 @@ ER -  }}';
     $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
     $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
+    $t = new Template();
+    $t->parse_text('{{cite web}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite book}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite arxiv}}');
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{cite journal}}');
+    $t->process();
   }
  
-  public function testBadBibcodeARXIVPages() { // Some bibcodes have pages set to arXiv:1711.02260
-    $text = '{{cite journal|bibcode=2017arXiv171102260L}}';
+  public function testBadBibcodeARXIVPages() {
+    $text = '{{cite journal|bibcode=2017arXiv171102260L}}'; // Some bibcodes have pages set to arXiv:1711.02260
     $expanded = $this->process_citation($text);
     $pages = $expanded->get('pages');
     $volume = $expanded->get('volume');
     $this->assertEquals(FALSE, stripos($pages, 'arxiv'));
     $this->assertEquals(FALSE, stripos('1711', $volume));
+    $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+    $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
+    $expanded = $this->process_citation($text);
+    $pages = $expanded->get('pages');
+    $this->assertEquals(FALSE, stripos($pages, 'astro'));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
   }
     
@@ -1155,6 +1420,11 @@ ER -  }}';
     $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc', $expanded->get('title'));
   }
 
+  public function testDropGoogleWebsite() {
+    $text = "{{Cite book|website=Google.Com|url=http://Invalid.url.not-real.com/}}"; // Include a fake URL so that we are not testing: if (no url) then drop website
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('website'));
+  }
 
   public function testHornorificInTitle() { // compaints about this
     $text = "{{cite book|title=Letter from Sir Frederick Trench to the Viscount Duncannon on his proposal for a quay on the north bank of the Thames|url=https://books.google.com/books?id=oNBbAAAAQAAJ|year=1841}}";
@@ -1244,7 +1514,14 @@ ER -  }}';
 
     $text = '{{cite web|url=http://acADemia.EDU/123456/extra_stuff}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('https://www.academia.edu/123456', $prepared->get('url')); 
+    $this->assertEquals('https://www.academia.edu/123456', $prepared->get('url'));
+   
+    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $prepared->get('url'));
+    $text = '{{cite web|url=http://www.google.com/search?hl=en&safe=off&client=firefox-a&rls=com.ubuntu%3Aen-US%3Aunofficial&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)&aq=o&oq=&aqi=}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('https://www.google.com/search?hl=en&safe=off&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)', $prepared->get('url'));
   }
  
   public function testDoiValidation() {
@@ -1266,6 +1543,27 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('222', $prepared->get('number'));
     $this->assertEquals('12(44-33)', $prepared->get('volume'));
+  }
+    
+  public function testBibcodeBook() {
+      $text = '{{cite book|bibcode=2003hoe..book.....K}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals($text, $expanded->parsed_text());
+  }
+ 
+  public function testSpaces() {
+      // None of the "spaces" in $text are normal spaces.  They are U+2000 to U+200A
+      $text     = "{{cite book|title=X X X X X X X X X X X X}}";
+      $text_out = '{{cite book|title=X X X X X X X X X X X X}}';
+      $expanded = $this->process_citation($text);
+      $this->assertEquals($text_out, $expanded->parsed_text());
+      $this->assertTrue($text != $text_out); // Verify test is valid -- We want to make sure that the spaces in $text are not normal spaces
+  }
+ 
+  public function testMultipleYears() {
+    $text = '{{cite journal|doi=10.1080/1323238x.2006.11910818}}'; // Crossref has <year media_type="online">2017</year><year media_type="print">2006</year>
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('2006', $expanded->get('year'));
   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors

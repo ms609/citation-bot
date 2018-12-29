@@ -16,9 +16,11 @@
         <file>./constants.php</file>
         <file>./process_page.php</file>
         <file>./gadgetapi.php</file>
-        <file>./login.php</file>
-        <file>./Snoopy.class.php</file>
+        <file>./gitpull.php</file>
+        <file>./maintain_files.php</file>
         <file>./category.php</file>
+        <file>./WikipediaBot.php</file>
+        <file>./generate_template.php</file>
       </exclude>
     </whitelist>
   </filter>

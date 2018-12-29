@@ -3,21 +3,11 @@
 /*
  * Current tests that are failing.
  */
-error_reporting(E_ALL);
-// backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&
-    class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
-}
 
-final class expandFnsTest extends PHPUnit\Framework\TestCase {
+require_once __DIR__ . '/../testBaseClass.php';
 
-  protected function setUp() {
-  }
+final class expandFnsTest extends testBaseClass {
 
-  protected function tearDown() {
-  }
-  
   public function testCapitalization() {
     $this->assertEquals('Molecular and Cellular Biology', 
                         title_capitalization(title_case('Molecular and cellular biology'), TRUE));
@@ -53,5 +43,20 @@ final class expandFnsTest extends PHPUnit\Framework\TestCase {
                         extract_doi('http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022')[1]);
     $this->assertEquals('10.1038/nature11111', 
                         extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
+  }
+  
+  public function testTidyDate() {
+    $this->assertEquals('2014', tidy_date('maanantai 14. heinäkuuta 2014'));
+    $this->assertEquals('2012-04-20', tidy_date('2012年4月20日 星期五'));
+    $this->assertEquals('2011-05-10', tidy_date('2011-05-10T06:34:00-0400'));
+    $this->assertEquals('2014-07-01', tidy_date('2014-07-01T23:50:00Z, 2014-07-01'));
+    $this->assertEquals('', tidy_date('۱۳۸۶/۱۰/۰۴ - ۱۱:۳۰'));
+    $this->assertEquals('2014-01-24', tidy_date('01/24/2014 16:01:06'));
+    $this->assertEquals('2011-11-30', tidy_date('30/11/2011 12:52:08'));
+    $this->assertEquals('2011'      , tidy_date('05/11/2011 12:52:08'));
+    $this->assertEquals('2011-11-11', tidy_date('11/11/2011 12:52:08'));
+    $this->assertEquals('2018-10-21', tidy_date('Date published (2018-10-21'));
+    $this->assertEquals('2008-04-29', tidy_date('07:30 , 04.29.08'));
+    $this->assertEquals('', tidy_date('-0001-11-30T00:00:00+00:00'));
   }
 }

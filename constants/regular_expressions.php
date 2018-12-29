@@ -12,4 +12,9 @@ const REGEXP_SICI = "~(\d{4}-\d{3}[\dxX])" . // ISSN
                     "(\d+):?([\+\d]*)" . // Enumeration: Volume / issue
                     "[<\[]" . "(\d+)::?\w+" . "[>\]]" . "2\.0\.CO;2\-?[A-z0-9]?~";
 
-
+// See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
+const REGEXP_IS_URL = '~^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.\\d{1,3}){3})(?!127(?:\\.\\d{1,3}){3})(?!169\\.254(?:\\.\\d{1,3}){2})(?!192\\.168(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)*[a-z\\x{00a1}-\\x{ffff}0-9]+)*(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}]{2,})))(?::\\d{2,5})?(?:/[^\\s]*)?$~iuS';
+// This list is going to grow and grow based upon user requests
+// ALWAYS verify that they registered the examples you are given
+// http://oasis.postech.ac.kr/handle/2014.oak/9965 is not registered for example
+const REGEXP_HANDLES = "~^(?:https?://)(?:hdl\.handle\.net/|kb\.osu\.edu/dspace/handle/|oasis\.postech\.ac\.kr/handle/|idus\.us\.es/xmlui/handle/|dspace\.library\.uu\.nl/handle/)([^\?]*)~i";
