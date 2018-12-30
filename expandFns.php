@@ -266,6 +266,9 @@ function title_capitalization($in, $caps_after_punctuation) {
   // but not in "U S A"
   $new_case = trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
+  // This should be capitalized
+  $new_case = str_replace('(new Series)', '(New Series)', $new_case);
+  
   // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
