@@ -2937,10 +2937,12 @@ final class Template {
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
               && (mb_stripos($value, "http") === FALSE)) { 
             $the_dash = mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
-            $part1 = mb_substr($value, 0, $the_dash);
-            $part2 = mb_substr($value, $the_dash + 1);
+            $part1 = trim(mb_substr($value, 0, $the_dash));
+            $part2 = trim(mb_substr($value, $the_dash + 1));
             if ($part1 === $part2) {
               $this->set($param, $part1);
+            } elseif (is_numeric($part1) && is_numeric($part2)) {
+              $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
             }
           }
           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
