@@ -551,7 +551,7 @@ final class Template {
       
       case 'issn':
         if ($this->blank(["journal", "periodical", "work", $param_name]) &&
-            preg_match('~^\d{4}-\d{4}$~', $value)) {
+            preg_match('~^\d{4}-\d{3}[\dxX]$~', $value)) {
           // Only add ISSN if journal is unspecified
           return $this->add($param_name, $value);
         }
