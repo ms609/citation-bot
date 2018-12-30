@@ -137,6 +137,9 @@ function arxiv_api($ids, $templates) {
   foreach ($xml->entry as $entry) {
     $i = 0;
     report_info("Found match for arXiv " . $ids[$i]);
+    if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
+      expand_by_doi($this_template);
+    }
     foreach ($xml->entry->author as $auth) {
       $i++;
       $name = $auth->name;
@@ -150,7 +153,6 @@ function arxiv_api($ids, $templates) {
     $this_template->add_if_new("title", (string) $entry->title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
     $this_template->add_if_new("year", date("Y", strtotime((string)$entry->published)));
-    $this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv');
 
     if ($entry->arxivjournal_ref) {
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text

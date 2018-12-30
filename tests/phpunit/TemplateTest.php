@@ -843,7 +843,7 @@ final class TemplateTest extends testBaseClass {
   public function testLongAuthorLists() {
     $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('The ATLAS Collaboration', $expanded->first_author());
+    $this->assertEquals('Aad, G.', $expanded->first_author());
     $this->assertNull($expanded->get('class'));
     
     // Same paper, but CrossRef records full list of authors instead of collaboration name
@@ -1417,7 +1417,7 @@ ER -  }}';
   public function testLatexMathInTitle() { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc', $expanded->get('title'));
+    $this->assertEquals('RELICS: A Candidate z ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc', $expanded->get('title'));
   }
 
   public function testDropGoogleWebsite() {
