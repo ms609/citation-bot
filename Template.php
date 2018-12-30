@@ -345,8 +345,13 @@ final class Template {
    *
    */
   public function add_if_new($param_name, $value, $api = NULL) {
-    if (trim($value) == '') {
+    $value = trim($value);
+    if ($value == '') {
       return FALSE;
+    }
+    
+    if (strcasecmp((string) $value, 'null') === 0) {
+      return FALSE; // We hope that name is not actually NULL
     }
     
     if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
