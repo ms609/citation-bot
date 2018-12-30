@@ -1039,7 +1039,7 @@ final class Template {
         
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~i", $url, $match)) {
-                        
+        if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/pmc/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting URL to PMC parameter");
@@ -1093,7 +1093,8 @@ final class Template {
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
         
-      } elseif (preg_match("~https?://(?:www\.|)ncbi.nlm.nih.gov/(?:pubmed|entrez/eutils/elink.fcgi\S+dbfrom=pubmed\S+)/.*?=?(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:pubmed|entrez/eutils/elink\.fcgi\S+dbfrom=pubmed\S+)/.*?=?(\d+)~i", $url, $match)) {
+        if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/pubmed/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget($url_type);
