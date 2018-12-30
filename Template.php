@@ -320,11 +320,20 @@ final class Template {
       ));
     }
 
+    if (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) !== $url) { // A website that will never give a volume
+          return (!(
+             ($this->has('journal') || $this->has('periodical') || $this->has('work') ||
+              $this->has('website') || $this->has('publisher') || $this->has('newspaper') ||
+              $this->has('magazine'))
+          &&  $this->has("title")
+          &&  $has_date
+    ));
+    }
     return (!(
              ($this->has('journal') || $this->has('periodical'))
           &&  $this->has("volume")
           &&  $this->has("title")
-          && $has_date
+          &&  $has_date
     ));
   }
 
