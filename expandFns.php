@@ -267,7 +267,7 @@ function title_capitalization($in, $caps_after_punctuation) {
   $new_case = trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
   // This should be capitalized
-  $new_case = str_replace('(new Series)', '(New Series)', $new_case);
+  $new_case = str_replace(['(new Series)', '(new series)'] , ['(New Series)', '(New Series)'], $new_case);
   
   // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
