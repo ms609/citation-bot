@@ -2527,6 +2527,7 @@ final class Template {
     && $new_name != $this->wikiname()
     ) {
       if ($new_name === 'cite arxiv') {
+        if (!$this->blank(['website','displayauthors','display-authors','access-date','accessdate'])) return; // Unsupported parameters
         $new_name = 'cite arXiv';  // Without the capital X is the alias
       }
       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
