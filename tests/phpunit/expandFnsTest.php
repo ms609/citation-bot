@@ -12,5 +12,6 @@ final class expandFnsTest extends testBaseClass {
     $text='{{cite web|url=https://www.nature.com/articles/546031a#bk4}}';
     $this->process_citation($text);
     $this->assertNull($this->parsed_text());
+  }
     
 }
