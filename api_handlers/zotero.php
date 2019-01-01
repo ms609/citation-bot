@@ -126,6 +126,12 @@ function expand_by_zotero(&$template, $url = NULL) {
       }
   }
   
+  if ( isset($result->extra)) { // [extra] => DOI: 10.1038/546031a
+    if (!isset($result->DOI) && stripos('doi:', $result->extra) === 0) {
+      $result->DOI = trim(substr($result->extra, 4, -1));
+    }
+  }
+
   if ( isset($result->DOI) && $template->blank('doi')) {
     $template->add_if_new('doi', $result->DOI);
     expand_by_doi($template);
@@ -134,7 +140,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
       $template->forget('url');
     }
-    // if (!$template->profoundly_incomplete()) return TRUE;
+    if (!$template->profoundly_incomplete()) return TRUE;
   }
 
   if (isset($result->date)) {
