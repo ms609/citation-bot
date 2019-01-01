@@ -82,6 +82,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   $zotero_data = @json_decode($zotero_response, FALSE);
+  fwrite(STDERR, $zotero_data);
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
     return FALSE;
@@ -133,7 +134,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
       $template->forget('url');
     }
-    if (!$template->profoundly_incomplete()) return TRUE;
+    // if (!$template->profoundly_incomplete()) return TRUE;
   }
 
   if (isset($result->date)) {
