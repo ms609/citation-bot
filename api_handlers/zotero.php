@@ -82,7 +82,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   $zotero_data = @json_decode($zotero_response, FALSE);
-  fwrite(STDERR, $zotero_data);
+  fwrite(STDERR, print_r($zotero_data,TRUE));
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
     return FALSE;
