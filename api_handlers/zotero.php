@@ -125,6 +125,12 @@ function expand_by_zotero(&$template, $url = NULL) {
       }
   }
   
+  if ( isset($result->extra)) { // [extra] => DOI: 10.1038/546031a
+    if (!isset($result->DOI) && stripos($result->extra, 'doi:') === 0) {
+      $result->DOI = trim(substr($result->extra, 4));
+    }
+  } 
+  
   if ( isset($result->DOI) && $template->blank('doi')) {
     $template->add_if_new('doi', $result->DOI);
     expand_by_doi($template);
