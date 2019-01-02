@@ -89,27 +89,14 @@ final class PageTest extends testBaseClass {
   }
  
   public function testBadPage() {  // Use this when debugging pages that crash the bot
-    $bad_page = "Vietnam_War"; //  Replace with something like "Vietnam_War" when debugging
+    $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
     if ($bad_page !== "") {
       $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=' . $bad_page . '&action=raw');
       $page = new TestPage();
       $page->parse_text($text);
       $page->expand_text();
+      $this->assertTrue(FALSE);
     }
-    $bad_page = "List_of_centenarians_(musicians,_composers_and_music_patrons)"; //  Replace with something like "Vietnam_War" when debugging
-    if ($bad_page !== "") {
-      $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=' . $bad_page . '&action=raw');
-      $page = new TestPage();
-      $page->parse_text($text);
-      $page->expand_text();
-    }
-    $bad_page = "Genetic_studies_on_Turkish_people"; //  Replace with something like "Vietnam_War" when debugging
-    if ($bad_page !== "") {
-      $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=' . $bad_page . '&action=raw');
-      $page = new TestPage();
-      $page->parse_text($text);
-      $page->expand_text();
-    }
-    $this->assertTrue(FALSE);
+    $this->assertTrue(TRUE);
   }
 }
