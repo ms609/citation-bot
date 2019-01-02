@@ -142,7 +142,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         if (getenv('TRAVIS')) {
           fwrite(STDERR, "Unexpected data found in zotero extra. " . $result->extra);
         } else {
-          report_info("Unexpected data found in zotero extra for url " $url . "  Citation bot cannot parse. Please report. " . $result->extra);
+          report_info("Unexpected data found in zotero extra for url " . $url . "  Citation bot cannot parse. Please report. " . $result->extra);
         }
     }
   } 
