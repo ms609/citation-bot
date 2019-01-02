@@ -125,10 +125,16 @@ function expand_by_zotero(&$template, $url = NULL) {
       }
   }
   
-  if (isset($result->extra)) { // Only [extra] => DOI: 10.1038/546031a has been seen in the wild
+  if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
     if (preg_match('~\sdoi:\s?([^\s]+)\s~', ' ' . $result->extra . ' ', $matches)) {
-      if (!isset($result->DOI)) $result->DOI = trim($matches[1]);
+      if (!isset($result->DOI) && !isset($matches[2])) $result->DOI = trim($matches[1]); // Only set if only one DOI
       $result->extra = str_ireplace('doi:', '', $result->extra);
+      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+      $result->extra = trim($result->extra);
+      if (isset($matches[2])) $result->extra = ''; // Obviously not gonna parse this in any way
+    }
+    if (preg_match('~\stype:\s?([^\s]+)\s~', ' ' . $result->extra . ' ', $matches)) { // [extra] => type: dataset has been seen in the wild
+      $result->extra = str_ireplace('type:', '', $result->extra);
       $result->extra = str_replace(trim($matches[1]), '', $result->extra);
       $result->extra = trim($result->extra);
     }
@@ -136,7 +142,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         if (getenv('TRAVIS')) {
           trigger_error("Unexpected data found in zotero extra. " . $result->extra);
         } else {
-          report_info("Unexpected data found in zotero extra.  Citation bot cannot parse. Please report. " . $result->extra);
+          report_info("Unexpected data found in zotero extra for url ", $url, . "  Citation bot cannot parse. Please report. " . $result->extra);
         }
     }
   } 
