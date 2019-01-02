@@ -125,9 +125,19 @@ function expand_by_zotero(&$template, $url = NULL) {
       }
   }
   
-  if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
-    if (!isset($result->DOI) && preg_match('~\sdoi:\s?([^\s]+)\s~', ' ' . $result->extra . ' ', $matches)) {
-      $result->DOI = trim($matches[1]);
+  if (isset($result->extra)) { // Only [extra] => DOI: 10.1038/546031a has been seen in the wild
+    if (preg_match('~\sdoi:\s?([^\s]+)\s~', ' ' . $result->extra . ' ', $matches)) {
+      if (!isset($result->DOI)) $result->DOI = trim($matches[1]);
+      $result->extra = str_ireplace('doi:', '', $result->extra);
+      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+      $result->extra = trim($result->extra);
+    }
+    if ($result->extra !== '') {
+        if (getenv('TRAVIS')) {
+          trigger_error("Unexpected data found in zotero extra. " . $result->extra);
+        } else {
+          report_info("Unexpected data found in zotero extra.  Citation bot cannot parse. Please report. " . $result->extra);
+        }
     }
   } 
   
