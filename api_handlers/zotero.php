@@ -125,9 +125,9 @@ function expand_by_zotero(&$template, $url = NULL) {
       }
   }
   
-  if ( isset($result->extra)) { // [extra] => DOI: 10.1038/546031a
-    if (!isset($result->DOI) && stripos($result->extra, 'doi:') === 0) {
-      $result->DOI = trim(substr($result->extra, 4));
+  if ( isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
+    if (!isset($result->DOI) && preg_match('~\sdoi:\s?([^\s]+)\s~', ' ' . $result->extra . ' ', $matches) === 0) {
+      $result->DOI = trim($matches[1]);
     }
   } 
   
