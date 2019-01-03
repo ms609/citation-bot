@@ -4,7 +4,7 @@ branches:
   except: release
 
 language: php
-    dfasdfsadfdsafasd
+
 matrix:
   include:
     - stage: test
