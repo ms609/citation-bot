@@ -2442,12 +2442,20 @@ final class Template {
     if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list) && stripos($p->param, 'CITATION_BOT')===FALSE) {
      
       if (trim($p->val) === '') {
-        report_forget("Dropping empty unrecognised parameter " . echoable($p->param) . " ");
+        if (strpos($p->param, 'DUPLICATE_') === 0) {
+          report_forget("Dropping empty left-over duplicate parameter " . echoable($p->param) . " ");
+        } else {
+          report_forget("Dropping empty unrecognised parameter " . echoable($p->param) . " ");
+        }
         $this->quietly_forget($p->param);
         continue;
       }
       
-      report_modification("Unrecognised parameter " . echoable($p->param) . " ");
+      if (strpos($p->param, 'DUPLICATE_') === 0) {
+        report_modification("Left-over duplicate parameter " . echoable($p->param) . " ");
+      } else {
+        report_modification("Unrecognised parameter " . echoable($p->param) . " ");
+      }
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
         // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
