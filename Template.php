@@ -2056,13 +2056,13 @@ final class Template {
     
     foreach ($this->param as $pointer => $par) {
       if ($par->param && isset($param_occurrences[$par->param])) {
-        if ($this->val === '') {
-          unset($par);  // If second one is blank, then just forget it
+        $duplicate_pos = $param_occurrences[$par->param];
+        if ($par->val === '') {
+          unset($par);  // If new one is blank, then just forget it
         } elseif ($this->param[$duplicate_pos]->val === '') {
           $this->param[$duplicate_pos]->val = $par->val; // If first one is blank, then copy value to it
           unset($par); // And then forget second one
         } else {
-          $duplicate_pos = $param_occurrences[$par->param];
           array_unshift($duplicated_parameters, $duplicate_pos);
           array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
         }
