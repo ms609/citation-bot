@@ -2067,7 +2067,7 @@ final class Template {
           array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
         }
       }
-      $param_occurrences[$par->param] = $pointer;
+      if (isset($par)) $param_occurrences[$par->param] = $pointer;
     }
     
     $n_dup_params = count($duplicated_parameters);
