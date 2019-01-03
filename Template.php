@@ -2058,6 +2058,11 @@ final class Template {
       if ($par->param && isset($param_occurrences[$par->param])) {
         $duplicate_pos = $param_occurrences[$par->param];
         array_unshift($duplicated_parameters, $duplicate_pos);
+        if ($par->val === '') {  // If one of them is blank, then get rid of it instead of flagging as DUPLICATE_ - we do this by tricking the later code into thinking they are the same
+          $par->val = $this->param[$duplicate_pos]->val;
+        } elseif ($this->param[$duplicate_pos]->val === '') {
+          $this->param[$duplicate_pos]->val = $par->val;
+        }
         array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
       }
       $param_occurrences[$par->param] = $pointer;
