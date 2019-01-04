@@ -234,10 +234,16 @@ function expand_by_zotero(&$template, $url = NULL) {
         if($template->wikiname() == 'cite web')
           $template->change_name_to('cite journal');
         break;
-      case 'newspaperArticle': 
+      case 'magazineArticle':
+        if($template->wikiname() == 'cite web')
+          $template->change_name_to('cite magazine');
+        break;      
+      case 'newspaperArticle':
         $template->change_name_to('cite news'); 
         break;
-      case 'webpage': 
+      case 'webpage':
+      case 'blogPost':
+        
         break; // Could be a journal article or a genuine web page.
       default:
         if (getenv('TRAVIS')) {
