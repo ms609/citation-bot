@@ -140,9 +140,9 @@ function expand_by_zotero(&$template, $url = NULL) {
     }
     if ($result->extra !== '') {
         if (getenv('TRAVIS')) {
-          fwrite(STDERR, "Unexpected data found in zotero extra. " . $result->extra);
+          report_error("Unhandled extra data: " . $result->extra);
         } else {
-          report_info("Unexpected data found in zotero extra for url " . $url . "  Citation bot cannot parse. Please report. " . $result->extra);
+          report_warning("Unhandled extra data: " . $result->extra);
         }
     }
   } 
@@ -193,7 +193,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher);
   } else {
     if (isset($result->title))      $template->add_if_new('title'  , $result->title);
-    if (isset($result->itemType) && ($result->itemType === 'book')) {
+    if (isset($result->itemType) && ($result->itemType === 'book' || $result->itemType === 'bookSection')) {
        if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher); 
     }
   }
@@ -224,6 +224,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (isset($result->itemType)) {
     switch ($result->itemType) {
       case 'book':
+      case 'bookSection':
         // Too much bad data to risk switching journal to book or vice versa.
         if ($template->wikiname() == 'cite web') 
           $template->change_name_to('cite book');      
@@ -237,7 +238,12 @@ function expand_by_zotero(&$template, $url = NULL) {
         break;
       case 'webpage': 
         break; // Could be a journal article or a genuine web page.
-      default: report_warning("Unhandled itemType: " . $result->itemType);
+      default:
+        if (getenv('TRAVIS')) {
+          report_error("Unhandled itemType: " . $result->itemType);
+        } else {
+          report_warning("Unhandled itemType: " . $result->itemType);
+        }
     }
     
     $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
