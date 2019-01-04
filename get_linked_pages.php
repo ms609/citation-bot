@@ -13,13 +13,14 @@ $url = 'https://en.wikipedia.org/w/api.php?action=parse&prop=links&page=' . $pag
 $json = file_get_contents($url);
 $array = json_decode($json, true);
 $links = $array['parse']['links'];
+
+echo "<pre>\n";
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {
         echo str_replace(' ', '_', $link['*']) . "\n";
     }
 }
-echo  "\n";
-echo  "\n";
+echo  "</pre>\n";
 
 exit(0);
 ?>
