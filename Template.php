@@ -2057,6 +2057,11 @@ final class Template {
     foreach ($this->param as $pointer => $par) {
       if ($par->param && isset($param_occurrences[$par->param])) {
         $duplicate_pos = $param_occurrences[$par->param];
+        if ($par->val === '') {
+          $par->val = $this->param[$duplicate_pos]->val;
+        } elseif ($this->param[$duplicate_pos]->val === '') {
+          $this->param[$duplicate_pos]->val = $par->val;
+        }
         array_unshift($duplicated_parameters, $duplicate_pos);
         array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
       }
@@ -2073,7 +2078,7 @@ final class Template {
       } else {
         $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
         report_modification("Marking duplicate parameter: " .
-          echoable($duplicated_parameters[$i]->param));
+          echoable($this->param[$duplicated_parameters[$i]]->param));
       }
     }
     

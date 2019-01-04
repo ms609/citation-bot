@@ -1565,6 +1565,28 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('2006', $expanded->get('year'));
   }
+ 
+  public function testDuplicateParametersFlagging() {
+    $text = '{{cite web|year=2010|year=2011}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('2011', $expanded->get('year'));
+    $this->assertEquals('2010', $expanded->get('DUPLICATE_year'));
+    $text = '{{cite web|year=|year=2011}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('2011', $expanded->get('year'));
+    $this->assertNull($expanded->get('DUPLICATE_year'));
+    $text = '{{cite web|year=2011|year=}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('2011', $expanded->get('year'));
+    $this->assertNull($expanded->get('DUPLICATE_year'));
+    $text = '{{cite web|year=|year=|year=2011|year=|year=}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('2011', $expanded->get('year'));
+    $this->assertNull($expanded->get('DUPLICATE_year'));
+    $text = '{{cite web|year=|year=|year=|year=|year=}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('{{cite web|year=}}', $expanded->parsed_text());
+  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
