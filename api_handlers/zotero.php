@@ -140,7 +140,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     }
     if ($result->extra !== '') {
         if (getenv('TRAVIS')) {
-          report_error("Unhandled extra data: " . $result->extra);
+          trigger_error("Unhandled extra data: " . $result->extra);
         } else {
           report_warning("Unhandled extra data: " . $result->extra);
         }
@@ -240,7 +240,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         break; // Could be a journal article or a genuine web page.
       default:
         if (getenv('TRAVIS')) {
-          report_error("Unhandled itemType: " . $result->itemType);
+          trigger_error("Unhandled itemType: " . $result->itemType);
         } else {
           report_warning("Unhandled itemType: " . $result->itemType);
         }
