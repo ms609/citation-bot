@@ -167,7 +167,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     }
   }
   
-  if ( isset($result->ISBN))             $template->add_if_new('isbn'   , $result->ISBN);
+  if ( isset($result->ISBN)) $template->add_if_new('isbn'   , $result->ISBN);
   if ($access_date && isset($result->date)) {
     $new_date = strtotime(tidy_date($result->date));
     if($new_date) { // can compare
@@ -254,7 +254,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     }
     
     $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
-    if (in_array($result->itemType, ['journalArticle', 'newspaperArticle'])) {
+    if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report'])) {
       // Websites often have non-authors listed in metadata
       // "Books" are often bogus
        $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
