@@ -1447,6 +1447,7 @@ final class Template {
           report_info("Similar title not found in database");
           return FALSE;
         }
+        $result->numFound = 0; // Try again below with more information.  Do not accept just upon a title match
       }
     } else {
       $result = (object) array("numFound" => 0);
