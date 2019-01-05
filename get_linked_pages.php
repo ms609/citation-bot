@@ -25,7 +25,7 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
 
 echo "<pre>\n";
 foreach($links as $link) {
-    if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118))) {  // normal and draft aritcles only
+    if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {  // normal and draft aritcles only
         $linked_page = str_replace(' ', '_', $link['*']);
         if(!in_array($linked_page, AVOIDED_LINKS)) {
             echo $linked_page . "\n";
