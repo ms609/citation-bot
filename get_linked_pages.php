@@ -1,12 +1,12 @@
 <?php
 // outputs a list of wikipedia pages linked to
-// usage: https://tools.wmflabs.org/citations/get_linked_pages.php?<PAGE>
+// usage: https://tools.wmflabs.org/citations/get_linked_pages.php?page=<PAGE>
 
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/plain");
 
-$page = str_replace(' ', '_', trim($_GET));
-if ($page == '') exit('No parameters passed');
+$page = str_replace(' ', '_', trim($_REQUEST['page']));
+if ($page == '') exit('Nothing requested');
 if (strlen($page) > 128) exit('Excessively long page name passed');
 
 $url = 'https://en.wikipedia.org/w/api.php?action=parse&prop=links&page=' . $page . '&format=json';
