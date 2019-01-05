@@ -21,7 +21,7 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
                             'CiteSeerX', 'Zentralblatt_MATH', 'Jahrbuch_über_die_Fortschritte_der_Mathematik',
                             'Mathematical_Reviews', 'Office_of_Scientific_and_Technical_Information',
                             'Request_for_Comments', 'Social_Science_Research_Network', 'Zentralblatt_MATH',
-                            'Open_Library', 'ArXiv', 'OCLC')
+                            'Open_Library', 'ArXiv', 'OCLC');
 
 echo "<pre>\n";
 foreach($links as $link) {
