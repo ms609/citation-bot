@@ -2653,7 +2653,8 @@ final class Template {
         case 'bibcode':
           $bibcode_journal = substr($this->get($param), 4);
           foreach (NON_JOURNAL_BIBCODES as $exception) {
-            if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
+            if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return; // quant.ph.....
+            if (substr($bibcode_journal, 4, strlen($exception)) == $exception) return; // 2004quant.ph.....
           }
           if (strpos($this->get($param), 'book') !== FALSE) {
             $this->change_name_to('cite book', FALSE);
