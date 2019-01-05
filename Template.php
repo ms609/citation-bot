@@ -1459,7 +1459,6 @@ final class Template {
         . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
         . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
         . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
-        . ($this->has('title') ? ("&title:" . urlencode('"' . $this->get('title') . '"')) : '')
       );
       if ($result->numFound == 0) return FALSE;
       if (!isset($result->docs[0]->pub)) return FALSE;
