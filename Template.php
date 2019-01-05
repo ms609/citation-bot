@@ -1447,7 +1447,6 @@ final class Template {
           report_info("Similar title not found in database");
           return FALSE;
         }
-        $result->numFound = 0; // Try again below with more information.  Do not accept just upon a title match
       }
     } else {
       $result = (object) array("numFound" => 0);
@@ -1456,7 +1455,7 @@ final class Template {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
-        . ($this->has('year') ? ("&year:" . urlencode($this->get('year'))) : '')
+        . ($this->year() ? ("&year:" . urlencode($this->year())) : '')
         . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
         . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
         . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
@@ -1479,8 +1478,8 @@ final class Template {
     }
     if ($result->numFound == 1) {
       $record = $result->docs[0];
-      if (isset($record->year) && $this->has('year')) {
-        if (abs((int)$record->year - (int)$this->get('year')) > 2) {
+      if (isset($record->year) && $this->year()) {
+        if (abs((int)$record->year - (int)$this->year() > 2) {
           return FALSE;  // Probably a book review or something with same title, etc.
         }
       }
@@ -3277,6 +3276,23 @@ final class Template {
   protected function page() {
     $page = $this->get('pages');
     return ($page ? $page : $this->get('page'));
+  }
+  
+  protected function year() {
+    if ($this->has('year')) {
+      return $this->get('year');
+    }
+    if ($this->has('date') {
+       $date = $this->get('date');
+       if (preg_match("~^(\d{4})$~", $date)) {
+         return $date; // Just a year
+       } elseif ((preg_match("~^(\d{4})[^0-9]~", $date, $matches)) {
+         return $matches[1]; // Start with year
+       } elseif ((preg_match("~[^0-9](\d{4})$~", $date, $matches)) {
+         return $matches[1]; // Ends with year
+       }
+    }
+    return '';
   }
 
   public function name() {return trim($this->name);}
