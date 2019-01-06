@@ -3281,7 +3281,7 @@ final class Template {
     if ($this->has('year')) {
       return $this->get('year');
     }
-    if ($this->has('date') {
+    if ($this->has('date')) {
        $date = $this->get('date');
        if (preg_match("~^(\d{4})$~", $date)) {
          return $date; // Just a year
