@@ -735,6 +735,7 @@ final class Template {
       ### arXiv, DOI, PMID etc. ###
       
       case 'url': 
+        if (stripos($value, 'zenodo.org') !== FALSE) return FALSE;
         // look for identifiers in URL - might be better to add a PMC parameter, say
         if (!$this->get_identifiers_from_url($value) && $this->blank(array_merge([$param_name], TITLE_LINK_ALIASES))) {
           return $this->add($param_name, sanitize_string($value));
