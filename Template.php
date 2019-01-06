@@ -1482,6 +1482,21 @@ final class Template {
           return FALSE;  // Probably a book review or something with same title, etc.
         }
       }
+      
+      if ($this->has('title')) { // Verify the title matches.  We get so strange mis-matches
+        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
+        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
+        if (
+           (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
+              ? (strlen($inTitle) != strlen($dbTitle)
+                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
+              : levenshtein($inTitle, $dbTitle) > 3
+          ) {
+          report_info("Similar title not found in database");
+          return FALSE;
+        }
+      }
+      
       if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
       $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
       $i = 0;
