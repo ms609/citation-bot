@@ -960,7 +960,7 @@ final class Template {
     if ($doi = extract_doi($url)[1]) {
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
-        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE) {
+        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE && !preg_match('~^10.[^/]+/\(ISSN\)\d{3}-\d{3}[xX0-9]$', $url)) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
         }
@@ -972,7 +972,7 @@ final class Template {
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
-            if (mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE) {
+            if (mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE && !preg_match('~^10.[^/]+/\(ISSN\)\d{3}-\d{3}[xX0-9]$', $url)) {
               report_forget("Recognized DOI in URL; dropping URL");
               $this->forget($url_type);
             } else {
@@ -993,7 +993,7 @@ final class Template {
     } elseif ($this->has('doi')) { // Did not find a doi, perhaps we were wrong
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (mb_stripos($url, $this->get('doi')) !== FALSE) { // DOIs are case-insensitive
-        if (doi_active($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE) {
+        if (doi_active($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE && !preg_match('~^10.[^/]+/\(ISSN\)\d{3}-\d{3}[xX0-9]$', $url)) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
         }
