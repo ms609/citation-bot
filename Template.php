@@ -2917,6 +2917,13 @@ final class Template {
           }
           return;
         case 'volume':
+          if (in_array($this->get('journal'), HAS_NO_VOLUME) === TRUE ) { // This journal has no volume.  This is really the issue number
+            if ($this->blank(ISSUE_ALIASES)) {
+              $this->rename('volume', 'issue');
+            } else {
+              forget('volume')
+            }
+          }
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
             $possible_volume=$matches[1];
             $possible_issue=$matches[2];
