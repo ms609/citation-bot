@@ -2921,7 +2921,7 @@ final class Template {
             if ($this->blank(ISSUE_ALIASES)) {
               $this->rename('volume', 'issue');
             } else {
-              $this->forget('volume')
+              $this->forget('volume');
             }
           }
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
