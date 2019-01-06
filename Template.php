@@ -1630,7 +1630,7 @@ final class Template {
     }
   }
   
-  public function expand_by_RIS(&$dat) { // Pass by pointer to wipe this data when called from use_unnamed_params()
+  public function expand_by_RIS(&$dat, $add_url) { // Pass by pointer to wipe this data when called from use_unnamed_params()
     $ris_review    = FALSE;
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
@@ -1711,7 +1711,7 @@ final class Template {
       }
       unset($ris_part[0]);
       if ($ris_parameter
-              && $this->add_if_new($ris_parameter, trim(implode($ris_part)))
+              && (($ris_parameter=='url' && !$add_url) || $this->add_if_new($ris_parameter, trim(implode($ris_part))))
           ) {
         $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
       }
@@ -2151,7 +2151,7 @@ final class Template {
       }
 
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
-        $this->expand_by_RIS($dat);
+        $this->expand_by_RIS($dat, TRUE);
       }
       
       $doi = extract_doi($dat);
