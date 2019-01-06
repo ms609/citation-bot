@@ -595,6 +595,7 @@ final class Template {
              if ($this->has('publisher') && str_equivalent($this->get('publisher'), $value)) return FALSE;
              if($this->blank('work')) {
                $this->add('work', $value);
+               $this->quietly_forget('website');
                return TRUE;
              }
             return FALSE;
