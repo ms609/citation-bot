@@ -277,7 +277,7 @@ function adsabs_api($ids, $templates, $identifier) {
       return;
     }
   }
-  }
+
   $matched_ids = [];
   foreach ($response->docs as $record) {
     report_info("Found match for bibcode " . bibcode_link($record->bibcode));
