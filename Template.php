@@ -2917,7 +2917,11 @@ final class Template {
           }
           return;
         case 'volume':
-          if (in_array($this->get('journal'), HAS_NO_VOLUME) === TRUE ) { // This journal has no volume.  This is really the issue number
+          $temp_string = strtolower($this->get('journal')) ;
+          if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
+               $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+          }
+          if (in_array($temp_string, HAS_NO_VOLUME) === TRUE ) {
             if ($this->blank(ISSUE_ALIASES)) {
               $this->rename('volume', 'issue');
             } else {
