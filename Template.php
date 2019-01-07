@@ -1545,7 +1545,7 @@ final class Template {
   protected function expand_book_adsabs() {
     $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
     fwrite(STDERR, print_r($result, TRUE)); // DEBUG
-    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches) {
+    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches)) {
       $this->add_if_new("year", $matches[1]);
     }
   }
