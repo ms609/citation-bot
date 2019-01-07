@@ -1480,7 +1480,10 @@ final class Template {
       $record = $result->docs[0];
       if (isset($record->year) && $this->year()) {
         if (abs((int)$record->year - (int)$this->year()) > 2) {
-          return FALSE;  // Probably a book review or something with same title, etc.
+          return FALSE;  // Probably a book review or something with same title, etc.  have to be fuzzy if arXiv year does not match published year
+        }
+        if ($this->has('doi') && ((int)$record->year !== (int)$this->year())) {
+          return FALSE;  // require exact match if we have doi
         }
       }
       if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
