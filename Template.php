@@ -1410,8 +1410,7 @@ final class Template {
      return FALSE;
     }
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
-      report_info(" Ignoring Book bibcode " . $this->get('bibcode') . " \n");
-      return FALSE;
+      return $this->expand_book_adsabs();
     }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . $this->get('bibcode'));
@@ -1540,6 +1539,14 @@ final class Template {
     } else {
       report_inline('no record retrieved.');
       return FALSE;
+    }
+  }
+  
+  protected function expand_book_adsabs() {
+    $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+    fwrite(STDERR, print_r($result, TRUE)); // DEBUG
+    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches) {
+      $this->add_if_new("bibcode", $matches[1]);
     }
   }
   
