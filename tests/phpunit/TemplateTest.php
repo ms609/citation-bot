@@ -586,6 +586,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('doi'));
   }
   
+  public function testBibcodesBooks() {
+    $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('1982', $expanded->get('year'));
+  }
+ 
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
     |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
