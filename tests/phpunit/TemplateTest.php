@@ -78,6 +78,11 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi'));
     $this->assertNotNull($expanded->get('url'));
+    // This is an ISSN only doi: it is valid, but leave url too
+    $text = '{{cite journal|url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1601-183X/issues }}';
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get('doi'));
+    $this->assertNotNull($expanded->get('url'));
   }
   
  public function testTruncateDOI() {
