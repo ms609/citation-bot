@@ -2917,6 +2917,17 @@ final class Template {
           }
           return;
         case 'volume':
+          $temp_string = strtolower($this->get('journal')) ;
+          if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
+               $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+          }
+          if (in_array($temp_string, HAS_NO_VOLUME) === TRUE ) {
+            if ($this->blank(ISSUE_ALIASES)) {
+              $this->rename('volume', 'issue');
+            } else {
+              $this->forget('volume');
+            }
+          }
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
             $possible_volume=$matches[1];
             $possible_issue=$matches[2];
