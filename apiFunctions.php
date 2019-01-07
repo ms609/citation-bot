@@ -173,7 +173,6 @@ function adsabs_api($ids, $templates, $identifier) {
   
   foreach ($ids as $key => $bibcode) {
     if (strpos($bibcode, 'book') !== false) {
-        report_info("Ignoring Book bibcode " . $bibcode);
         unset($ids[$key]);
     } elseif (
         strpos($bibcode, '&') !== false) {
@@ -183,6 +182,8 @@ function adsabs_api($ids, $templates, $identifier) {
   foreach ($templates as $template) {
     if (strpos($template->get('bibcode'), '&') !== false) {
       $template->expand_by_adsabs();
+    } elseif (strpos($template->get('bibcode'), 'book') !== false) {
+      $template->expand_book_adsabs();
     }
   }
   if (count($ids) == 0) return TRUE; // None left after removing books and & symbol
