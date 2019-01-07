@@ -3285,9 +3285,9 @@ final class Template {
        $date = $this->get('date');
        if (preg_match("~^(\d{4})$~", $date)) {
          return $date; // Just a year
-       } elseif ((preg_match("~^(\d{4})[^0-9]~", $date, $matches)) {
+       } elseif (preg_match("~^(\d{4})[^0-9]~", $date, $matches)) {
          return $matches[1]; // Start with year
-       } elseif ((preg_match("~[^0-9](\d{4})$~", $date, $matches)) {
+       } elseif (preg_match("~[^0-9](\d{4})$~", $date, $matches)) {
          return $matches[1]; // Ends with year
        }
     }
