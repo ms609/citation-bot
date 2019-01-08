@@ -2744,13 +2744,36 @@ final class Template {
           if ($this->get($param) === 'Accepted manuscript' ||
               $this->get($param) === 'Submitted manuscript' ||
               $this->get($param) === 'Full text') {
-            $this->forget('format');
+            $this->forget($param);
           }
           // Citation templates do this automatically -- also remove if there is no url, which is template error
           if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]'])) {
             if ($this->blank('url') || substr($this->get('url'), -4) === '.pdf' || substr($this->get('url'), -4) === '.PDF') {
-               $this->forget('format');
+               $this->forget($param);
             }
+          }
+          return;
+          
+        case 'chapter-format':
+        // clean up bot's old (pre-2018-09-18) edits
+          if ($this->get($param) === 'Accepted manuscript' ||
+              $this->get($param) === 'Submitted manuscript' ||
+              $this->get($param) === 'Full text') {
+            $this->forget($param);
+          }
+          // Citation templates do this automatically -- also remove if there is no url, which is template error
+          if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]'])) {
+             if ($this->has('chapter-url')) {
+               if (substr($this->get('chapter-url'), -4) === '.pdf' || substr($this->get('chapter-url'), -4) === '.PDF') {
+                 $this->forget($param);
+               }
+             } elseif ($this->has('chapterurl')) {
+               if (substr($this->get('chapterurl'), -4) === '.pdf' || substr($this->get('chapterurl'), -4) === '.PDF') {
+                 $this->forget($param);
+               }
+             } else {
+               $this->forget($param); // Has no chapter URL at all
+             }
           }
           return;
           
