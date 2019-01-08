@@ -250,7 +250,7 @@ function expand_by_zotero(&$template, $url = NULL) {
           trigger_error("Unhandled itemType: " . $result->itemType);
         } else {
           report_warning("Unhandled itemType: " . $result->itemType);
-        }
+        } // see https://www.mediawiki.org/wiki/Citoid/itemTypes
     }
     
     $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
