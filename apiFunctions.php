@@ -270,6 +270,15 @@ function adsabs_api($ids, $templates, $identifier) {
     }
   }
   
+  foreach ($response->docs as $record) {
+    if (!in_array($record->bibcode, $ids)) {  // Remapped bibcodes cause corrupt big queries
+      foreach ($templates as $template) {
+        $template->expand_by_adsabs();
+      }
+      return;
+    }
+  }
+
   $matched_ids = [];
   foreach ($response->docs as $record) {
     report_info("Found match for bibcode " . bibcode_link($record->bibcode));
