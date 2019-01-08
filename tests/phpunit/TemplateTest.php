@@ -590,6 +590,9 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals('1982', $expanded->get('year'));
+    $this->assertEquals('Houk', $expanded->get('last1'));
+    $this->assertEquals('N.', $expanded->get('first1'));
+    $this->assertNotNull($expanded->get('title'));
   }
  
   public function testParameterAlias() {
