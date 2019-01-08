@@ -21,18 +21,18 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
                             'CiteSeerX', 'Zentralblatt_MATH', 'Jahrbuch_über_die_Fortschritte_der_Mathematik',
                             'Mathematical_Reviews', 'Office_of_Scientific_and_Technical_Information',
                             'Request_for_Comments', 'Social_Science_Research_Network', 'Zentralblatt_MATH',
-                            'Open_Library', 'ArXiv', 'OCLC');
+                            'Open_Library', 'ArXiv', 'OCLC', 'Cf.');
 
-echo "<pre>\n";
+echo "\n";
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {  // normal and draft aritcles only
         $linked_page = str_replace(' ', '_', $link['*']);
         if(!in_array($linked_page, AVOIDED_LINKS)) {
-            echo $linked_page . "\n";
+            echo $linked_page . "|";
         }
     }
 }
-echo  "</pre>\n";
+echo  "\n";
 
 exit(0);
 ?>
