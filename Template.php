@@ -2746,6 +2746,12 @@ final class Template {
               $this->get($param) === 'Full text') {
             $this->forget('format');
           }
+          // Citation templates do this automatically -- also remove if there is no url, which is template error
+          if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]']) {
+            if ($this->blank('url') || substr($this->get('url'), -4) === '.pdf' || substr($this->get('url'), -4) === '.PDF') {
+               $this->forget('format');
+            }
+          }
           return;
           
         case 'isbn':
