@@ -1557,7 +1557,7 @@ ER -  }}';
   public function testBibcodeBook() {
       $text = '{{cite book|bibcode=2003hoe..book.....K}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals($text, $expanded->parsed_text());
+      $this->assertEquals('{{cite book|bibcode=2003hoe..book.....K|year=2003|title=Hands-On Electronics|last1=Kaplan|first1=Daniel M.|last2=White|first2=Christopher G.}}', $expanded->parsed_text());
   }
  
   public function testSpaces() {
