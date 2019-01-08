@@ -1411,8 +1411,7 @@ final class Template {
      return FALSE;
     }
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
-      report_info(" Ignoring Book bibcode " . $this->get('bibcode') . " \n");
-      return FALSE;
+      return $this->expand_book_adsabs();
     }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . $this->get('bibcode'));
@@ -1545,6 +1544,26 @@ final class Template {
       report_inline('no record retrieved.');
       return FALSE;
     }
+  }
+  
+  protected function expand_book_adsabs() {
+    $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+    if ($result->numFound == 1) {
+      $record = $result->docs[0];
+      if (isset($record->year)) $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
+      if (isset($record->title)) $this->add_if_new("title", (string) $record->title[0]);
+      if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
+       $i = 0;
+       if (isset($record->author)) {
+        foreach ($record->author as $author) {
+         $this->add_if_new("author" . ++$i, $author);
+        }
+       }
+      }
+    }
+    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches)) {
+      $this->add_if_new("year", $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
+    }  
   }
   
   // $options should be a series of field names, colons (optionally urlencoded), and
