@@ -1544,24 +1544,22 @@ final class Template {
   
   protected function expand_book_adsabs() {
     $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
-    fwrite(STDERR, print_r($result, TRUE)); // DEBUG
-    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches)) {
-      $this->add_if_new("year", $matches[1]);
-    }
     if ($result->numFound == 1) {
       $record = $result->docs[0];
-      if (isset($record->year)) $this->add_if_new('year', $record->year);
-      
-
-[author] => Array
-(
-[0] => Houk, N.
-)
-[title] => Array
-(
-[0] => Michigan Catalogue of Two-dimensional Spectral Types for the HD stars. Volume_3. Declinations -40_ƒ0 to -26_ƒ0.
-)
-    
+      if (isset($record->year)) $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
+      if (isset($record->title)) $this->add_if_new("title", (string) $record->title[0]);
+      if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher'])) { // Avoid re-adding editors as authors, etc.
+       $i = 0;
+       if (isset($record->author)) {
+        foreach ($record->author as $author) {
+         $this->add_if_new("author" . ++$i, $author);
+        }
+       }
+      }
+    }
+    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches)) {
+      $this->add_if_new("year", $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
+    }  
   }
   
   // $options should be a series of field names, colons (optionally urlencoded), and
