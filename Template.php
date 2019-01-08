@@ -2998,7 +2998,7 @@ final class Template {
             }
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
-        case 'pages': case 'page': # And case 'year': case 'issue':, following from previous
+        case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value) && (stripos($value, "http") === FALSE)) {
             $this->mod_dashes = TRUE;
