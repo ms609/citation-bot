@@ -1548,7 +1548,7 @@ final class Template {
       $record = $result->docs[0];
       if (isset($record->year)) $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
       if (isset($record->title)) $this->add_if_new("title", (string) $record->title[0]);
-      if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher'])) { // Avoid re-adding editors as authors, etc.
+      if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
        $i = 0;
        if (isset($record->author)) {
         foreach ($record->author as $author) {
