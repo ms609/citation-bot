@@ -1481,6 +1481,18 @@ final class Template {
           $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
           return $this->expand_book_adsabs();
       }
+      if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
+        $book_count = 0;
+        if($this->has('publisher')) $book_count = $book_count + 1;
+        if($this->has('isbn'))      $book_count = $book_count + 2;
+        if($this->has('location'))  $book_count = $book_count + 1;
+        if($this->has('chapter'))   $book_count = $book_count + 2;
+        if($this->has('oclc'))      $book_count = $book_count + 1;
+        if($this->has('lccn'))      $book_count = $book_count + 2;
+        if($this->has('journal'))   $book_count = $book_count - 2;
+        if($this->wikiname() === 'cite book') $book_count = $book_count + 3;
+        if($book_count > 3) return FALSE;
+      }
       fwrite(STDERR, print_r($record,TRUE));
       if (isset($record->year) && $this->year()) {
         if (abs((int)$record->year - (int)$this->year()) > 2) {
