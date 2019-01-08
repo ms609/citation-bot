@@ -1483,7 +1483,7 @@ final class Template {
         }
       }
       
-      if ($this->has('title')) { // Verify the title matches.  We get so strange mis-matches
+      if ($this->has('title')) { // Verify the title matches.  We get some strange mis-matches
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
         $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
         if (
