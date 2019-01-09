@@ -1504,6 +1504,22 @@ final class Template {
         }
       }
       
+      if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
+        $book_count = 0;
+        if($this->has('publisher')) $book_count += 1;
+        if($this->has('isbn'))      $book_count += 2;
+        if($this->has('location'))  $book_count += 1;
+        if($this->has('chapter'))   $book_count += 2;
+        if($this->has('oclc'))      $book_count += 1;
+        if($this->has('lccn'))      $book_count += 2;
+        if($this->has('journal'))   $book_count -= 2;
+        if($this->wikiname() === 'cite book') $book_count += 3;
+        if($book_count > 3) {
+          report_info("Suspect that BibCode " . (string) $record->bibcode . " is book review.  Rejecting.");
+          return FALSE;
+        }
+      }
+      
       if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
       $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
       $i = 0;
