@@ -1509,7 +1509,7 @@ final class Template {
         if($this->has('oclc'))      $book_count = $book_count + 1;
         if($this->has('lccn'))      $book_count = $book_count + 2;
         if($this->has('journal'))   $book_count = $book_count - 2;
-        if($this->wikiname() === 'cite book') $book_count = $book_count + 3;
+        if($this->wikiname() === 'cite book') $book_count += 3;
         if($book_count > 3) {
           report_info("Suspect that BibCode " . (string) $record->bibcode . " is book review.  Rejecting.");
           return FALSE;
