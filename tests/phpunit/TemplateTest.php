@@ -271,14 +271,14 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testTemplateRenamingURLConvert() {
-    $text='{{cite journal |url=http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf |title=Terrestrialization (Precambrian–Devonian) |last=Selden |first=Paul A. |year=2005 |encyclopedia=[[Encyclopedia of Life Sciences]] |publisher=[[John Wiley & Sons, Ltd.]] |doi=10.1038/npg.els.0004145 |format=PDF}}';
+    $text='{{cite journal |url=http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf |title=Terrestrialization (Precambrian–Devonian) |last=Selden |first=Paul A. |year=2005 |encyclopedia=[[Encyclopedia of Life Sciences]] |publisher=[[John Wiley & Sons, Ltd.]] |doi=10.1038/npg.els.0004145 |format=DUDE}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('978-0470016176', $expanded->get('isbn'));
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $expanded->get('chapter-url'));
     $this->assertNull($expanded->get('url'));
     $this->assertNull($expanded->get('format'));
-    $this->assertEquals('PDF', $expanded->get('chapter-format'));
+    $this->assertEquals('DUDE', $expanded->get('chapter-format'));
     $text='{{Cite book|url=http://www.sciencedirect.com/science/article/pii/B9780123864543000129|title=Encyclopedia of Toxicology (Third Edition)|last=Roberts|first=L.|date=2014|publisher=Academic Press|isbn=978-0-12-386455-0|editor-last=Wexler|editor-first=Philip|location=Oxford|pages=993–995|doi=10.1016/b978-0-12-386454-3.00012-9}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('http://www.sciencedirect.com/science/article/pii/B9780123864543000129', $expanded->get('chapter-url'));
