@@ -1502,13 +1502,13 @@ final class Template {
       
       if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
         $book_count = 0;
-        if($this->has('publisher')) $book_count = $book_count + 1;
-        if($this->has('isbn'))      $book_count = $book_count + 2;
-        if($this->has('location'))  $book_count = $book_count + 1;
-        if($this->has('chapter'))   $book_count = $book_count + 2;
-        if($this->has('oclc'))      $book_count = $book_count + 1;
-        if($this->has('lccn'))      $book_count = $book_count + 2;
-        if($this->has('journal'))   $book_count = $book_count - 2;
+        if($this->has('publisher')) $book_count += 1;
+        if($this->has('isbn'))      $book_count += 2;
+        if($this->has('location'))  $book_count += 1;
+        if($this->has('chapter'))   $book_count += 2;
+        if($this->has('oclc'))      $book_count += 1;
+        if($this->has('lccn'))      $book_count += 2;
+        if($this->has('journal'))   $book_count -= 2;
         if($this->wikiname() === 'cite book') $book_count += 3;
         if($book_count > 3) {
           report_info("Suspect that BibCode " . (string) $record->bibcode . " is book review.  Rejecting.");
