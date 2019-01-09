@@ -272,7 +272,11 @@ function expand_by_zotero(&$template, $url = NULL) {
               $authorParam = 'translator' . ++$translator_i;
               break;
             default:
-              report_warning("Unrecognised creator type: " . $creatorType);
+              if (getenv('TRAVIS')) {
+                trigger_error("Unrecognized creator type: " . $creatorType);
+              } else {
+                report_warning("Unrecognised creator type: " . $creatorType);
+              }
           }
           $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
                                       isset($result->rights) ? $result->rights : '');
