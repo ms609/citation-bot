@@ -3051,6 +3051,7 @@ final class Template {
           $value = $this->get($param);
           if (strpos($value, "[//")  === 0) { // We can fix them, if they are the very first item
             $value = "[https://" . substr($value, 3);
+            $this->set($param, $value);
           }
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value) && (stripos($value, "http") === FALSE) && (strpos($value, "[//") === FALSE)) {
             $this->mod_dashes = TRUE;
