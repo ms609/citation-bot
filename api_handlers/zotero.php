@@ -110,7 +110,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       return FALSE;
     }
     $curl_header = curl_getinfo( $curl );
-    if ( preg_match( "/charset\=([\w\-]+)/i", $curl_header['content_type'], $matches ) ) {
+    if (isset($curl_header['content_type']) && preg_match( "/charset\=([\w\-]+)/i", $curl_header['content_type'], $matches ) ) {
       $encoding = $matches[1];
     } else if ( preg_match( "/\<meta[^\>]+charset\=[\\\"\']?([\w\-]+)/i", $curl_body, $matches ) ) {
       $encoding = $matches[1];
