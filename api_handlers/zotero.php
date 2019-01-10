@@ -77,7 +77,6 @@ function expand_by_zotero(&$template, $url = NULL) {
     case 'Remote page not found':
       report_info("Remote page not found for URL ". $url);
       return FALSE;
-    }
   }
   
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
