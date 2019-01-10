@@ -83,7 +83,11 @@ function expand_by_zotero(&$template, $url = NULL) {
   
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
-    report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
+    if ($zotero_response === 'Remote page not found') {
+      report_warning("Remote page not found for URL ". $url);
+    }else {
+      report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
+    }
     return FALSE;
   } else if (!is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
     report_warning("Unsupported response for URL ". $url . ": $zotero_response");
