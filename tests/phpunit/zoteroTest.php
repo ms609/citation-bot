@@ -121,5 +121,11 @@ class ZoteroTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('volume'));
   }
+ 
+   public function testZoteroKoreanLanguage() {
+    $text = '{{cite journal|url=http://www.newsen.com/news_view.php?uid=201606131737570410}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('title')); // Hopefully will work some day and not give ����
+  }
 
 }
