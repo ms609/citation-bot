@@ -98,8 +98,50 @@ function expand_by_zotero(&$template, $url = NULL) {
   $bad_count = mb_substr_count($result->title, '�');  // Reject more than 5 or more than 10%
   $total_count = mb_strlen($result->title);
   if (($bad_count > 5) || ($total_count > 1 && (($bad_count/$total_count) > 0.1))) {
-    report_info("Could parse unicode characters in ". $url);
-    return FALSE;
+		$curl = curl_init( $url );
+		curl_setopt( $curl, CURLOPT_HEADER, true );
+    curl_setopt( $curl, CURLOPT_NOBODY, false );
+		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $curl, CURLOPT_FOLLOWLOCATION, true );
+		curl_setopt( $curl, CURLOPT_MAXREDIRS, 10 );
+		curl_setopt( $curl, CURLOPT_TIMEOUT, 10 );
+	  $curl_body = curl_exec( $curl );
+    if ($curl_body === FALSE) {
+      report_info("Could parse unicode characters in ". $url);  // Weird we could not get it
+      return FALSE;
+    }
+    $curl_header = curl_getinfo( $curl );
+    if ( preg_match( "/charset\=([\w\-]+)/i", $curl_header, $matches ) ) { // Content-Type in HTTP header
+			$encoding = $matches[1];
+    } else if ( preg_match( "/\<meta[^\>]+charset\=[\\\"\']?([\w\-]+)/i", $curl_body, $matches ) ) { // Charset declaration in HTML
+			// The regex matches both the old-school `http-equiv` attribute and the HTML5 `charset` attribute
+			$encoding = $matches[1];
+		} else {
+      report_info("Could parse unicode characters in ". $url);
+      return FALSE;
+    }
+    $result->title = mb_convert_encoding( $result->title, "UTF-8", $encoding );
+    if (mb_substr_count($result->title, '�') > 0) {
+      report_info("Could parse unicode characters in ". $url);
+      return FALSE;
+    }
+    // Convert a bunch of stuff
+    if(isset($result->bookTitle)) $result->bookTitle = mb_convert_encoding( $result->bookTitle, "UTF-8", $encoding );
+    if(isset($result->publicationTitle)) $result->publicationTitle = mb_convert_encoding( $result->publicationTitle, "UTF-8", $encoding );
+    if(isset($result->publisher)) $result->publisher = mb_convert_encoding( $result->publisher, "UTF-8", $encoding );
+    if(isset($result->bookTitle)) $result->bookTitle = mb_convert_encoding( $result->bookTitle, "UTF-8", $encoding );
+    // Assume that this is unparsable
+    $i = 0;
+    while (isset($result->author[$i])) {
+      unset($result->author[$i]);
+      $i++;
+    }
+    $i = 0;
+    while (isset($result->creators[$i])) {
+      unset($result->creators[$i]);
+      $i++;
+    }
+    if (isset($result->extra)) unset($result->extra);
   }
   report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
