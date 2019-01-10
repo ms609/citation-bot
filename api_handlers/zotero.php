@@ -95,8 +95,12 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Could not resolve URL ". $url);
     return FALSE;
   }
-  $bad_count = mb_substr_count($result->title . $result->bookTitle, '�');  // Reject more than 5 or more than 10%
-  $total_count = mb_strlen($result->title . $result->bookTitle);
+  $bad_count = mb_substr_count($result->title, '�');  // Reject more than 5 or more than 10%
+  $total_count = mb_strlen($result->title);
+  if (isset($result->bookTitle)) {
+    $bad_count += mb_substr_count($result->bookTitle, '�');  // Reject more than 5 or more than 10%
+    $total_count += mb_strlen($result->bookTitle);
+  }
   if (($bad_count > 5) || ($total_count > 1 && (($bad_count/$total_count) > 0.1))) {
     $curl = curl_init( $url );
     curl_setopt( $curl, CURLOPT_HEADER, false );
