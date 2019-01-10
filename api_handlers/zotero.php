@@ -125,7 +125,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     // convert a bunch of stuff
     if(isset($result->title)) $result->title = mb_convert_encoding($result->title, "UTF-8", $encoding );
     if(isset($result->bookTitle)) $result->bookTitle = mb_convert_encoding( $result->bookTitle, "UTF-8", $encoding );
-    $bad_count = mb_substr_count($result->title '�');
+    $bad_count = mb_substr_count($result->title, '�');
     if (isset($result->bookTitle)) {
       $bad_count += mb_substr_count($result->bookTitle, '�');
     }
