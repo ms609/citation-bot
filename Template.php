@@ -1433,7 +1433,7 @@ final class Template {
         $result = (object) array("numFound" => 0);
       }
       if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
-        $result = $this->query_adsabs("title:" . urlencode('"' .  $this->get("title") . '"'));
+        $result = $this->query_adsabs("title:" . urlencode('"' .  str_replace('"', ' ', $this->get("title")) . '"'));
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
