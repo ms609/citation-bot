@@ -179,13 +179,13 @@ final class Template {
     return !$this->api_has_used($api, $param);
   }
   
-  public function process() {
+  public function process() { // This code used to be the core of the Citation Bot, now it is only used by generate_template.php
     if ($this->should_be_processed()) {
-      $this->prepare();
+      $this->prepare(); // This routine does much of the work, since incoming templates are always {{cite web}}
 
       switch ($this->wikiname()) {
         case 'cite web':
-          if (preg_match("~^https?://books\.google\.~", $this->get('url')) && $this->expand_by_google_books()) { // Could be any country's google
+          if (preg_match($this->expand_by_google_books()) { // Could be any country's google
             report_action("Expanded from Google Books API");
             $this->change_name_to('cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
             $this->process();
@@ -204,6 +204,9 @@ final class Template {
           } else {
               $this->forget('CITATION_BOT_PLACEHOLDER_year');
               $this->forget('CITATION_BOT_PLACEHOLDER_date');        
+          }
+          if ($this->wikiname() === 'cite journal') { // We upgraded type
+            $this->process();
           }
         break;
         case 'cite book':
