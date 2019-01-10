@@ -1313,6 +1313,9 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures', $expanded->get('at')); // Leave complex at=
 
+    $text = '{{cite book|pages=[//books.google.com/books?id=-_rxBwAAQBAJ&pg=PA107 107]}}';
+    $expanded = $this->process_citation($text); // Do not change this hidden URL
+    $this->assertEquals('[//books.google.com/books?id=–_rxBwAAQBAJ&pg=PA107 107]', $expanded->get('pages'));
   }
  
   public function testBogusPageRanges() {  // At some point this test will age out (perhaps add special TRAVIS code to template.php
