@@ -247,9 +247,9 @@ function expand_by_zotero(&$template, $url = NULL) {
         break; // Could be a journal article or a genuine web page.
       default:
         if (getenv('TRAVIS')) {
-          trigger_error("Unhandled itemType: " . $result->itemType);
+          trigger_error("Unhandled itemType: " . $result->itemType . " for $url");
         } else {
-          report_warning("Unhandled itemType: " . $result->itemType);
+          report_warning("Unhandled itemType: " . $result->itemType . " for $url");
         } // see https://www.mediawiki.org/wiki/Citoid/itemTypes
     }
     
@@ -272,7 +272,11 @@ function expand_by_zotero(&$template, $url = NULL) {
               $authorParam = 'translator' . ++$translator_i;
               break;
             default:
-              report_warning("Unrecognised creator type: " . $creatorType);
+              if (getenv('TRAVIS')) {
+                trigger_error("Unrecognized creator type: " . $creatorType);
+              } else {
+                report_warning("Unrecognised creator type: " . $creatorType);
+              }
           }
           $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
                                       isset($result->rights) ? $result->rights : '');
