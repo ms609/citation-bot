@@ -3049,6 +3049,9 @@ final class Template {
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
+          if (strpos($value, "[//")  === 0) { // We can fix them, if they are the very first item
+            $value = "[https://" . substr($value, 3);
+          }
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value) && (stripos($value, "http") === FALSE) && (strpos($value, "[//") === FALSE)) {
             $this->mod_dashes = TRUE;
             report_modification("Upgrading to en-dash in " . echoable($param) .
