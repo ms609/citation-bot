@@ -185,7 +185,7 @@ final class Template {
 
       switch ($this->wikiname()) {
         case 'cite web':
-          if (preg_match($this->expand_by_google_books()) { // Could be any country's google
+          if (preg_match("~^https?://books\.google\.~", $this->get('url')) && preg_match($this->expand_by_google_books()) { // Could be any country's google
             report_action("Expanded from Google Books API");
             $this->change_name_to('cite book'); // Better than cite web, but magazine or journal might be better which is why we do not "elseif" after here
             $this->process();
