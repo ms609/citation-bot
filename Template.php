@@ -130,6 +130,10 @@ final class Template {
     }
   }
   
+    /*
+  * unused
+  * @codeCoverageIgnore
+  */
   public function api_calls() {
    switch ($this->wikiname()) {
       case 'cite web':
