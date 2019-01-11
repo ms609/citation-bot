@@ -528,7 +528,7 @@ function expand_by_jstor($template) {
 }
 
 // This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
-// Do not add a new regex without adding a test too
+// Do not add a new regex without adding a test too in TemplateTest.php
 function parse_plain_text_reference($journal_data, &$this_template, $upgrade_years = FALSE ) { // WARNING: Reference passing
       $journal_data = trim($journal_data);
       if ($journal_data === "") return;
