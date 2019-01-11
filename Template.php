@@ -1451,7 +1451,7 @@ final class Template {
     } else {
       $result = (object) array("numFound" => 0);
     }
-    print_r("HOSER 1\n" . $result);
+    print_r("HOSER 1\n") ; print_r($result);
     if ($result->numFound != 1 && $this->has('journal')) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
@@ -1476,7 +1476,7 @@ final class Template {
         return FALSE;
       }
     }
-    print_r("HOSER 2\n" . $result);
+    print_r("HOSER 2\n");print_r( $result);
     if ($result->numFound == 1) {
       $record = $result->docs[0];
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
@@ -1505,7 +1505,7 @@ final class Template {
           return FALSE;
         }
       }
-      print_r("HOSER 3\n" . $result);
+      print_r("HOSER 3\n");print_r( $result);
       if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
         $book_count = 0;
         if($this->has('publisher')) $book_count += 1;
@@ -1530,7 +1530,7 @@ final class Template {
         $this->add_if_new("author" . ++$i, $author);
        }
       }
-            print_r("HOSER 4\n" . $result);
+            print_r("HOSER 4\n" );print_r( $result);
       if (isset($record->pub)) {
         $journal_string = explode(",", (string) $record->pub);
         $journal_start = mb_strtolower($journal_string[0]);
@@ -1579,7 +1579,7 @@ final class Template {
       }
       return TRUE;
     } else {
-            print_r("HOSER 5\n" . $result);
+            print_r("HOSER 5\n" );print_r( $result);
       report_inline('no record retrieved.');
       return FALSE;
     }
