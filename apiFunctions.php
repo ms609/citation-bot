@@ -597,6 +597,9 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
         $arxiv_volume=$matches[2];
         $arxiv_pages=$matches[3];
         $arxiv_year=$matches[4];
+      // ApJ, 767:L7, 2013 April 10
+      } elseif (preg_match("~^ApJ, ~", $journal_data)) {
+        $arxiv_journal='The Astrophysical Journal'; // We expand this out
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
