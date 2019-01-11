@@ -910,7 +910,19 @@ final class Template {
   // it looks for a parameter before adding the url.
   public function get_identifiers_from_url($url_sent = NULL) {
     if (is_null($url_sent)) {
-        if ($this->has('url')) {        
+       // Chapter URLs are generally better than URLs for the whole book.
+       // We don't forget them, since the regular URLs will get converted for "readability"
+        if ($this->has('url') && $this->has('chapterurl')) {
+           $return_code = FALSE;
+           $return_code += $this->get_identifiers_from_url($this->get('chapterurl'));
+           $return_code += $this->get_identifiers_from_url($this->get('url'));
+           return (boolean) $return_code;
+        } elseif ($this->has('url') && $this->has('chapter-url')) {
+           $return_code = FALSE;
+           $return_code += $this->get_identifiers_from_url($this->get('chapter-url'));
+           $return_code += $this->get_identifiers_from_url($this->get('url'));
+           return (boolean) $return_code;
+        } elseif ($this->has('url')) {        
            $url = $this->get('url');
            $url_type = 'url';
         } elseif ($this->has('chapter-url')) {
@@ -919,6 +931,21 @@ final class Template {
         } elseif ($this->has('chapterurl')) {
            $url = $this->get('chapterurl');
            $url_type = 'chapterurl';
+        } elseif ($this->has('conference-url')) {
+           $url = $this->get('conference-url');
+           $url_type = 'conference-url';
+        } elseif ($this->has('conferenceurl')) {
+           $url = $this->get('conferenceurl');
+           $url_type = 'conferenceurl';
+        } elseif ($this->has('contribution-url')) {
+           $url = $this->get('contribution-url');
+           $url_type = 'contribution-url';
+        } elseif ($this->has('contributionurl')) {
+           $url = $this->get('contributionurl');
+           $url_type = 'contributionurl';
+        } elseif ($this->has('article-url')) {
+           $url = $this->get('article-url');
+           $url_type = 'article-url';
         } elseif ($this->has('website')) { // No URL, but a website
           $url = trim($this->get('website'));
           if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
