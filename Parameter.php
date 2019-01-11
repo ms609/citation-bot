@@ -58,7 +58,8 @@ final class Parameter {
   protected function set_value($value) {
     switch ($this->param) {
       case 'pages':
-        if (stripos($value, 'http') === FALSE && mb_stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) {
+        if (stripos($value, 'http') === FALSE && mb_stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE &&
+            mb_strpos($value, '[//') === FALSE) {
           $value = mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
         }
       default:
