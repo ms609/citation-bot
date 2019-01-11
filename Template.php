@@ -179,9 +179,9 @@ final class Template {
     return !$this->api_has_used($api, $param);
   }
   
-  public function process() {
-    if ($this->should_be_processed()) {
-      $this->prepare();
+  public function process() { // This code used to be the core of the Citation Bot, now it is only used by generate_template.php
+    if ($this->should_be_processed()) {  // This code is "tested" in testEmptyCitations()
+      $this->prepare(); // This routine does much of the work, since incoming templates are always {{cite web}}
 
       switch ($this->wikiname()) {
         case 'cite web':
@@ -204,6 +204,9 @@ final class Template {
           } else {
               $this->forget('CITATION_BOT_PLACEHOLDER_year');
               $this->forget('CITATION_BOT_PLACEHOLDER_date');        
+          }
+          if ($this->wikiname() === 'cite journal') { // We upgraded type
+            $this->process();
           }
         break;
         case 'cite book':
