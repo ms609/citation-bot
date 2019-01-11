@@ -183,7 +183,7 @@ function adsabs_api($ids, $templates, $identifier) {
     if (strpos($template->get('bibcode'), '&') !== false) {
       $template->expand_by_adsabs();
     } elseif (strpos($template->get('bibcode'), 'book') !== false) {
-      $template->expand_book_adsabs();
+      $template->expand_by_adsabs();
     }
   }
   if (count($ids) == 0) return TRUE; // None left after removing books and & symbol
