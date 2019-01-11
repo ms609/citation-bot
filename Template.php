@@ -130,6 +130,10 @@ final class Template {
     }
   }
   
+    /*
+  * unused
+  * @codeCoverageIgnore
+  */
   public function api_calls() {
    switch ($this->wikiname()) {
       case 'cite web':
@@ -179,9 +183,9 @@ final class Template {
     return !$this->api_has_used($api, $param);
   }
   
-  public function process() {
-    if ($this->should_be_processed()) {
-      $this->prepare();
+  public function process() { // This code used to be the core of the Citation Bot, now it is only used by generate_template.php
+    if ($this->should_be_processed()) {  // This code is "tested" in testEmptyCitations()
+      $this->prepare(); // This routine does much of the work, since incoming templates are always {{cite web}}
 
       switch ($this->wikiname()) {
         case 'cite web':
@@ -204,6 +208,9 @@ final class Template {
           } else {
               $this->forget('CITATION_BOT_PLACEHOLDER_year');
               $this->forget('CITATION_BOT_PLACEHOLDER_date');        
+          }
+          if ($this->wikiname() === 'cite journal') { // We upgraded type
+            $this->process();
           }
         break;
         case 'cite book':
@@ -903,7 +910,19 @@ final class Template {
   // it looks for a parameter before adding the url.
   public function get_identifiers_from_url($url_sent = NULL) {
     if (is_null($url_sent)) {
-        if ($this->has('url')) {        
+       // Chapter URLs are generally better than URLs for the whole book.
+       // We don't forget them, since the regular URLs will get converted for "readability"
+        if ($this->has('url') && $this->has('chapterurl')) {
+           $return_code = FALSE;
+           $return_code += $this->get_identifiers_from_url($this->get('chapterurl'));
+           $return_code += $this->get_identifiers_from_url($this->get('url'));
+           return (boolean) $return_code;
+        } elseif ($this->has('url') && $this->has('chapter-url')) {
+           $return_code = FALSE;
+           $return_code += $this->get_identifiers_from_url($this->get('chapter-url'));
+           $return_code += $this->get_identifiers_from_url($this->get('url'));
+           return (boolean) $return_code;
+        } elseif ($this->has('url')) {        
            $url = $this->get('url');
            $url_type = 'url';
         } elseif ($this->has('chapter-url')) {
@@ -912,6 +931,21 @@ final class Template {
         } elseif ($this->has('chapterurl')) {
            $url = $this->get('chapterurl');
            $url_type = 'chapterurl';
+        } elseif ($this->has('conference-url')) {
+           $url = $this->get('conference-url');
+           $url_type = 'conference-url';
+        } elseif ($this->has('conferenceurl')) {
+           $url = $this->get('conferenceurl');
+           $url_type = 'conferenceurl';
+        } elseif ($this->has('contribution-url')) {
+           $url = $this->get('contribution-url');
+           $url_type = 'contribution-url';
+        } elseif ($this->has('contributionurl')) {
+           $url = $this->get('contributionurl');
+           $url_type = 'contributionurl';
+        } elseif ($this->has('article-url')) {
+           $url = $this->get('article-url');
+           $url_type = 'article-url';
         } elseif ($this->has('website')) { // No URL, but a website
           $url = trim($this->get('website'));
           if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
@@ -1477,10 +1511,6 @@ final class Template {
     }
     if ($result->numFound == 1) {
       $record = $result->docs[0];
-      if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
-         $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
-         return $this->expand_book_adsabs();
-      }
       if (isset($record->year) && $this->year()) {
         if (abs((int)$record->year - (int)$this->year()) > 2) {
           return FALSE;  // Probably a book review or something with same title, etc.  have to be fuzzy if arXiv year does not match published year
@@ -1502,6 +1532,11 @@ final class Template {
           report_info("Similar title not found in database");
           return FALSE;
         }
+      }
+      
+      if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
+         $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+         return $this->expand_book_adsabs();
       }
       
       if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
@@ -3049,7 +3084,11 @@ final class Template {
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
-          if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value) && (stripos($value, "http") === FALSE)) {
+          if (strpos($value, "[//")  === 0) { // We can fix them, if they are the very first item
+            $value = "[https://" . substr($value, 3);
+            $this->set($param, $value);
+          }
+          if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value) && (stripos($value, "http") === FALSE) && (strpos($value, "[//") === FALSE)) {
             $this->mod_dashes = TRUE;
             report_modification("Upgrading to en-dash in " . echoable($param) .
                   " parameter");
@@ -3057,7 +3096,7 @@ final class Template {
             $this->set($param, $value);
           }
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
-              && (mb_stripos($value, "http") === FALSE)) { 
+              && (mb_stripos($value, "http") === FALSE) && (strpos($value, "[//") === FALSE)) { 
             $the_dash = mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
             $part1 = trim(mb_substr($value, 0, $the_dash));
             $part2 = trim(mb_substr($value, $the_dash + 1));

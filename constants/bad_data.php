@@ -18,8 +18,9 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
                                "na", "submitted", "tbd", "missing");
-const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph',  'hep.th', 
-                                   'math.ph', 'math', 'nucl.ex', 'nucl.th', 'physics', 'quant.ph', 'alg.geom');
+const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 'astro.ph',
+                                   'math', 'nucl.ex', 'nucl.th', 'physics', 'quant.ph', 'alg.geom',
+                                   'cond.mat', 'cs.', 'econ.', 'eess.', 'nlin.');
 const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'amazon.com',
                         'zenodo', 'archive.org']; // Google Inc is a valid publisher, however.
 const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Service', 'http://', 'https://',
@@ -29,7 +30,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'lease this domain', 'domain available', 'metaTags', 'An Error Occurred', 'User Cookie',
                                  'Cookies Disabled', 'page not found', '411 error', 'url not found',
                                  'limit exceeded', 'Error Page', '}}', '{{', 'EU Login', 'bad gateway', 'Captcha',
-                                 '.com', '.gov', '.org', 'View PDF', 'Wayback Machine'];
+                                 '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -56,4 +57,6 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    'cbsnews.com/', 'abc.com/', 'bbc.com/', 'bbc.co.uk/', 'apnews.com/',
                                    '.ap.org/', 'nytimes.com/', 'theguardian.com/', 'washingtonpost.com/',
                                    'newyorker.com/', 'independent.co.uk/', 'cnbc.com/', 'vanityfair.com/',
-                                   'theatlantic.com/', '-news.co.uk/', 'news.google.com/');  // Just a list of ones that are obvious.  Add ones that time-out as we find them
+                                   'theatlantic.com/', '-news.co.uk/', 'news.google.com/', 'jpl.nasa.gov/',
+                                   'gsfc.nasa.gov/', 'solarsystem.nasa.gov/'); 
+                                   // Just a list of ones that are obvious.  Add ones that time-out as we find them
