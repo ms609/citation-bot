@@ -180,6 +180,7 @@ final class Template {
   }
   
   public function process() {
+    trigger_error("PROCESS");
     if ($this->should_be_processed()) {
       $this->prepare();
 
