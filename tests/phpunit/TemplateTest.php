@@ -1301,6 +1301,14 @@ ER -  }}';
     parse_plain_text_reference("ApJ, 767:L7, 2013 April 10", $expanded, TRUE);
     $this->assertEquals('The Astrophysical Journal', $expanded->get('journal')); // The only part we parse
   }
+ 
+   public function testArxivMore14() {
+    $text = "{{cite arxiv}}"; // eprint=made up
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("Astrophys.J.639:L43-L46,2006F", $expanded, TRUE);
+    $this->assertEquals('The Astrophysical Journal', $expanded->get('journal')); // The only part we parse
+  }
+ 
    public function testDoiInline() {
     $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
     $expanded = $this->process_citation($text);
