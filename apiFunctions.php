@@ -527,6 +527,8 @@ function expand_by_jstor($template) {
   return TRUE;
 }
 
+// This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
+// Do not add a new regex without adding a test too
 function parse_plain_text_reference($journal_data, &$this_template, $upgrade_years = FALSE ) { // WARNING: Reference passing
       $journal_data = trim($journal_data);
       if ($journal_data === "") return;
@@ -600,11 +602,11 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       // ApJ, 767:L7, 2013 April 10
       } elseif (preg_match("~^ApJ, \d+:L\d+, (\d{4}) .+$~", $journal_data, $matches)) {
         $arxiv_journal='The Astrophysical Journal'; // We expand this out
-        $arxiv_year=matches[1];
+        $arxiv_year=$matches[1];
       // Astrophys.J.639:L43-L46,2006F
       } elseif (preg_match("~^Astrophys\.J\..+:L.+,(\d{4})F$~", $journal_data, $matches)) {
         $arxiv_journal='The Astrophysical Journal'; // We expand this out
-        $arxiv_year=matches[1];
+        $arxiv_year=$matches[1];
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
