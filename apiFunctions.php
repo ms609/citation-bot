@@ -596,9 +596,9 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       // A&A 619, A49 (2018)
       } elseif (preg_match("~^A&A ([0-9]+), ([A-Z0-9]+) \(\d{4}\)$~u", $journal_data, $matches)) {
         $arxiv_journal='Astronomy & Astrophysics'; // We expand this out
-        $arxiv_volume=$matches[2];
-        $arxiv_pages=$matches[3];
-        $arxiv_year=$matches[4];
+        $arxiv_volume=$matches[1];
+        $arxiv_pages=$matches[2];
+        $arxiv_year=$matches[3];
       // ApJ, 767:L7, 2013 April 10
       } elseif (preg_match("~^ApJ, \d+:L\d+, (\d{4}) .+$~", $journal_data, $matches)) {
         $arxiv_journal='The Astrophysical Journal'; // We expand this out
