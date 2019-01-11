@@ -57,4 +57,5 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    '.ap.org/', 'nytimes.com/', 'theguardian.com/', 'washingtonpost.com/',
                                    'newyorker.com/', 'independent.co.uk/', 'cnbc.com/', 'vanityfair.com/',
                                    'theatlantic.com/', '-news.co.uk/', 'news.google.com/', 'jpl.nasa.gov/',
-                                   'gsfc.nasa.gov');  // Just a list of ones that are obvious.  Add ones that time-out as we find them
+                                   'gsfc.nasa.gov/', 'solarsystem.nasa.gov/'); 
+                                   // Just a list of ones that are obvious.  Add ones that time-out as we find them
