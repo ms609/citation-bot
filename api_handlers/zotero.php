@@ -95,16 +95,20 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Could not resolve URL ". $url);
     return FALSE;
   }
-  $bad_count = mb_substr_count($result->title, '�');  // Reject more than 5 or more than 10%
+  
+  // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
+  // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
+  $bad_count = mb_substr_count($result->title, '�');
   $total_count = mb_strlen($result->title);
   if (isset($result->bookTitle)) {
-    $bad_count += mb_substr_count($result->bookTitle, '�');  // Reject more than 5 or more than 10%
+    $bad_count += mb_substr_count($result->bookTitle, '�');
     $total_count += mb_strlen($result->bookTitle);
   }
   if (($bad_count > 5) || ($total_count > 1 && (($bad_count/$total_count) > 0.1))) {
     report_info("Could parse unicode characters in ". $url);
     return FALSE;
   }
+  
   report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {
