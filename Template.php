@@ -3088,7 +3088,7 @@ final class Template {
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
           }
-          // When adding new reason to not change dashses, do not forget code in Paramater.php
+          // When adding new reason to not change dashses, do not forget similar code in Paramater.php
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && (stripos($value, "http") === FALSE) && (strpos($value, "[//") === FALSE)
               && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)) {
