@@ -594,7 +594,7 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
         $arxiv_pages=$matches[4];
         $arxiv_year=$matches[5];
       // A&A 619, A49 (2018)
-      } elseif (preg_match("~^A&A ([0-9]+), ([A-Z0-9]+) \(\d{4}\)$~u", $journal_data, $matches)) {
+      } elseif (preg_match("~^A&A ([0-9]+), ([A-Z0-9]+) \((\d{4}\))$~u", $journal_data, $matches)) {
         $arxiv_journal='Astronomy & Astrophysics'; // We expand this out
         $arxiv_volume=$matches[1];
         $arxiv_pages=$matches[2];
