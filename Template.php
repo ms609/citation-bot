@@ -1478,10 +1478,6 @@ final class Template {
     print_r( $result);
     if ($result->numFound == 1) {
       $record = $result->docs[0];
-      if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
-         $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
-         return $this->expand_book_adsabs();
-      }
       if (isset($record->year) && $this->year()) {
         if (abs((int)$record->year - (int)$this->year()) > 2) {
           return FALSE;  // Probably a book review or something with same title, etc.  have to be fuzzy if arXiv year does not match published year
@@ -1490,7 +1486,6 @@ final class Template {
           return FALSE;  // require exact match if we have doi
         }
       }
-      
       if ($this->has('title')) { // Verify the title matches.  We get some strange mis-matches
         $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
         $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
@@ -1503,6 +1498,10 @@ final class Template {
           report_info("Similar title not found in database");
           return FALSE;
         }
+      }
+      if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
+         $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+         return $this->expand_book_adsabs();
       }
       if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
         $book_count = 0;
