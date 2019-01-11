@@ -1283,7 +1283,24 @@ ER -  }}';
     $this->assertEquals('1999', $expanded->get('year'));
     $this->assertEquals('032412332', $expanded->get('pages'));
   }
-
+ 
+  public function testArxivMore12() {
+    $text = "{{cite arxiv}}"; // eprint=made up
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("A&A 619, A49 (2018)", $expanded, TRUE);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2018', $expanded->get('year'));
+    $this->assertEquals('Astronomy & Astrophysics', $expanded->get('journal'));
+    $this->assertEquals('A49', $expanded->get('volume'));
+    $this->assertEquals('619', $expanded->get('pages'))
+  }
+ 
+  public function testArxivMore13() {
+    $text = "{{cite arxiv}}"; // eprint=made up
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("ApJ, 767:L7, 2013 April 10", $expanded, TRUE);
+    $this->assertEquals('The Astrophysical Journal', $expanded->get('journal')); // The only part we parse
+  }
    public function testDoiInline() {
     $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
     $expanded = $this->process_citation($text);
