@@ -1292,21 +1292,23 @@ ER -  }}';
     $this->assertEquals('2018', $expanded->get('year'));
     $this->assertEquals('Astronomy & Astrophysics', $expanded->get('journal'));
     $this->assertEquals('A49', $expanded->get('volume'));
-    $this->assertEquals('619', $expanded->get('pages'))
+    $this->assertEquals('619', $expanded->get('pages'));
   }
  
   public function testArxivMore13() {
     $text = "{{cite arxiv}}"; // eprint=made up
     $expanded = $this->process_citation($text);
     parse_plain_text_reference("ApJ, 767:L7, 2013 April 10", $expanded, TRUE);
-    $this->assertEquals('The Astrophysical Journal', $expanded->get('journal')); // The only part we parse
+    $this->assertEquals('The Astrophysical Journal', $expanded->get('journal'));
+    $this->assertEquals('2013', $expanded->get('year'));
   }
  
    public function testArxivMore14() {
     $text = "{{cite arxiv}}"; // eprint=made up
     $expanded = $this->process_citation($text);
     parse_plain_text_reference("Astrophys.J.639:L43-L46,2006F", $expanded, TRUE);
-    $this->assertEquals('The Astrophysical Journal', $expanded->get('journal')); // The only part we parse
+    $this->assertEquals('The Astrophysical Journal', $expanded->get('journal'));
+    $this->assertEquals('2006', $expanded->get('year'));
   }
  
    public function testDoiInline() {
