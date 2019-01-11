@@ -906,11 +906,15 @@ final class Template {
        // Chapter URLs are generally better than URLs for the whole book.
        // We don't forget them, since the regular URLs will get converted for "readability"
         if ($this->has('url') && $this->has('chapterurl')) {
-           $url = $this->get('chapterurl');
-           $url_type = NULL;
+           $return_code = FALSE;
+           $return_code += $this->get_identifiers_from_url($this->get('chapterurl'));
+           $return_code += $this->get_identifiers_from_url($this->get('url'));
+           return (boolean) $return_code;
         } elseif ($this->has('url') && $this->has('chapter-url')) {
-           $url = $this->get('chapter-url');
-           $url_type = NULL;
+           $return_code = FALSE;
+           $return_code += $this->get_identifiers_from_url($this->get('chapter-url'));
+           $return_code += $this->get_identifiers_from_url($this->get('url'));
+           return (boolean) $return_code;
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
            $url_type = 'url';
