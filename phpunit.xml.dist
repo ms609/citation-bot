@@ -21,6 +21,7 @@
         <file>./category.php</file>
         <file>./WikipediaBot.php</file>
         <file>./generate_template.php</file>
+        <file>./get_linked_pages.php</file>
       </exclude>
     </whitelist>
   </filter>
