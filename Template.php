@@ -700,7 +700,7 @@ final class Template {
         if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
-        $en_dash = ['&mdash;', '--', '&ndash;', '—' '–'];
+        $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
         if (  mb_stripos($all_page_values, 'see ')  !== FALSE   // Someone is pointing to a specific part
            || mb_stripos($all_page_values, 'table') !== FALSE // Someone is pointing to a specific table
            || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
