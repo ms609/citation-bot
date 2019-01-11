@@ -700,7 +700,7 @@ final class Template {
         if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
-        $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
+        $en_dash = ['&mdash;', '--', '&ndash;', '—' '–'];
         if (  mb_stripos($all_page_values, 'see ')  !== FALSE   // Someone is pointing to a specific part
            || mb_stripos($all_page_values, 'table') !== FALSE // Someone is pointing to a specific table
            || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
@@ -1492,7 +1492,7 @@ final class Template {
         . ($this->year() ? ("&year:" . urlencode($this->year())) : '')
         . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
         . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-        . ($this->page() ? ("&page:" . urlencode('"' . str_replace([chr(2013), chr(150), chr(226), '-', '&ndash;'], ['-','-','-','-','-'], $this->page()) . '"')) : '')
+        . ($this->page() ? ("&page:" . urlencode('"' . str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], $this->page()) . '"')) : '')
       );
       if ($result->numFound == 0) return FALSE;
       if (!isset($result->docs[0]->pub)) return FALSE;
