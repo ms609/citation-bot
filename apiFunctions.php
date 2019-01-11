@@ -181,9 +181,9 @@ function adsabs_api($ids, $templates, $identifier) {
   }
   foreach ($templates as $template) {
     if (strpos($template->get('bibcode'), '&') !== false) {
-      $template->expand_by_adsabs();
+      $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them
     } elseif (strpos($template->get('bibcode'), 'book') !== false) {
-      $template->expand_book_adsabs();
+      $template->expand_by_adsabs(); // Has calls to special book code
     }
   }
   if (count($ids) == 0) return TRUE; // None left after removing books and & symbol
