@@ -21,7 +21,7 @@ final class expandFnsTest extends testBaseClass {
                         title_capitalization('A Journal of Chemistry E', TRUE));                      
     $this->assertEquals('This a Journal', 
                         title_capitalization('THIS A JOURNAL', TRUE));
-    $this->assertEquals('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE));
+    $this->assertEquals('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE)); // Do not touch links
   }
   
   public function testFrenchCapitalization() {
@@ -60,10 +60,10 @@ final class expandFnsTest extends testBaseClass {
     $this->assertEquals('2008-04-29', tidy_date('07:30 , 04.29.08'));
     $this->assertEquals('', tidy_date('-0001-11-30T00:00:00+00:00'));
     $this->assertEquals('', tidy_date('22/22/2010'));  // That is not valid date code
-    $this->assertEquals('The date is 88 but not three', tidy_date('The date is 88 but not three'));
+    $this->assertEquals('The date is 88 but not three', tidy_date('The date is 88 but not three')); // Not a date, but has some numbers
   }
   
-  public function testWithoutComments() {
+  public function testRemoveComments() {
     $this->assertEquals('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
   } 
 }    
