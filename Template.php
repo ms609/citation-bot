@@ -3434,6 +3434,7 @@ final class Template {
   public function name() {return trim($this->name);}
 
   protected function page_range() {
+    if ($this->page() === "0-0") return NULL;
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
     return $pagenos;
   }
