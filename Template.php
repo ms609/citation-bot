@@ -3241,6 +3241,9 @@ final class Template {
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
+    if (isset($trial) && !in_array($doi, $trial)) {
+      array_unshift($trial, $doi); // doi:10.1126/science.10.1126/SCIENCE.291.5501.24 is valid, not the subparts
+    }
     if (isset($trial)) foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
