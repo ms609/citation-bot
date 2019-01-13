@@ -293,6 +293,10 @@ function mb_ucfirst($string)
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
 
+/**
+ * Cannot really test in TRAVIS
+ * @codeCoverageIgnore
+ */
 function throttle ($min_interval) {
   static $last_write_time = 0;
   $time_since_last_write = time() - $last_write_time;
