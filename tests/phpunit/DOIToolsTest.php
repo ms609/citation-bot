@@ -147,5 +147,15 @@ final class doiToolsTest extends testBaseClass {
     $this->assertEquals($text_math,sanitize_string($text_math));      // Should not change
     $this->assertEquals($text_math,wikify_external_text($text_math)); // Should not change
     $this->assertEquals($text_math,wikify_external_text($text_mml));  // The most important test: mml converstion to <math>
-  }  
+  }
+  
+  public function testFormat() { // Random extra code coverage tests
+    $this->assertEquals('Johnson', format_surname('& Johnson'));
+    $this->assertEquals('Johnson', format_surname('Johnson;Smith'));
+    $this->assertEquals(FALSE, format_author(''));
+    $this->assertEquals(FALSE, format_multiple_authors(''));
+    $this->assertEquals('John;Bob;Kim;Billy', format_multiple_authors('John,Bob,Kim,Billy'));
+    $this->assertEquals('A. B. C. D. E. F. G. Johnson', format_author('A. B. C. D. E. F. G. Johnson'));
+    $this->assertEquals(['John','Bob','Kim','Billy'], format_multiple_authors('John;Bob;Kim;Billy'));
+  }
 }
