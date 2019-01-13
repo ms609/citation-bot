@@ -697,7 +697,7 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
-        if(in_array((string) $value, ['0', '0-0', '0–0'], TRUE) return FALSE;  // Reject bogus zero page number
+        if(in_array((string) $value, ['0', '0-0', '0–0'], TRUE)) return FALSE;  // Reject bogus zero page number
         if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
