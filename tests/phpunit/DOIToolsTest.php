@@ -154,7 +154,7 @@ final class doiToolsTest extends testBaseClass {
     $this->assertEquals('Johnson; Smith', format_surname('Johnson; Smith'));
     $this->assertEquals(FALSE, format_author(''));
     $this->assertEquals(FALSE, format_multiple_authors(''));
-    $this->assertEquals('John;Bob;Kim;Billy', format_multiple_authors('John,Bob,Kim,Billy'));
+    $this->assertEquals('John, Bob; Kim, Billy', format_multiple_authors('John,Bob,Kim,Billy'));
     $this->assertEquals('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
     $this->assertEquals(['John, .','Bob, .','Kim, .','Billy,'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
   } 
