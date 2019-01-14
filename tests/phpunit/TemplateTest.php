@@ -592,12 +592,14 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testBibcodesBooks() {
-    $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('1982', $expanded->get('year'));
-    $this->assertEquals('Houk', $expanded->get('last1'));
-    $this->assertEquals('N.', $expanded->get('first1'));
-    $this->assertNotNull($expanded->get('title'));
+    $this->requires_secrets(function() {
+      $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('1982', $expanded->get('year'));
+      $this->assertEquals('Houk', $expanded->get('last1'));
+      $this->assertEquals('N.', $expanded->get('first1'));
+      $this->assertNotNull($expanded->get('title'));
+    });
   }
  
   public function testParameterAlias() {
@@ -1571,9 +1573,11 @@ ER -  }}';
   }
     
   public function testBibcodeBook() {
+    $this->requires_secrets(function() {
       $text = '{{cite book|bibcode=2003hoe..book.....K}}';
       $expanded = $this->process_citation($text);
       $this->assertEquals('{{cite book|bibcode=2003hoe..book.....K|year=2003|title=Hands-On Electronics|last1=Kaplan|first1=Daniel M.|last2=White|first2=Christopher G.}}', $expanded->parsed_text());
+    });
   }
  
   public function testSpaces() {
