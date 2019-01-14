@@ -180,7 +180,7 @@ function adsabs_api($ids, $templates, $identifier) {
     }
   }
   foreach ($templates as $template) {
-    if ((strpos($template->get('bibcode'), '&') !== false)) || (strpos($template->get('bibcode'), 'book') !== false)) {
+    if ((strpos($template->get('bibcode'), '&') !== false) || (strpos($template->get('bibcode'), 'book') !== false)) {
       $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them, and special book code
     }
   }
