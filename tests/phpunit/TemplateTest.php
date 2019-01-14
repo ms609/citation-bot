@@ -1285,7 +1285,34 @@ ER -  }}';
     $this->assertEquals('1999', $expanded->get('year'));
     $this->assertEquals('032412332', $expanded->get('pages'));
   }
-
+ 
+  public function testArxivMore12() {
+    $text = "{{cite arxiv}}"; // eprint=made up
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("A&A 619, A49 (2018)", $expanded, TRUE);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2018', $expanded->get('year'));
+    $this->assertEquals('Astronomy & Astrophysics', $expanded->get('journal'));
+    $this->assertEquals('A49', $expanded->get('volume'));
+    $this->assertEquals('619', $expanded->get('pages'));
+  }
+ 
+  public function testArxivMore13() {
+    $text = "{{cite arxiv}}"; // eprint=made up
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("ApJ, 767:L7, 2013 April 10", $expanded, TRUE);
+    $this->assertEquals('The Astrophysical Journal', $expanded->get('journal'));
+    $this->assertEquals('2013', $expanded->get('year'));
+  }
+ 
+   public function testArxivMore14() {
+    $text = "{{cite arxiv}}"; // eprint=made up
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("Astrophys.J.639:L43-L46,2006F", $expanded, TRUE);
+    $this->assertEquals('The Astrophysical Journal', $expanded->get('journal'));
+    $this->assertEquals('2006', $expanded->get('year'));
+  }
+ 
    public function testDoiInline() {
     $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
     $expanded = $this->process_citation($text);
@@ -1403,9 +1430,12 @@ ER -  }}';
   }
   
   public function testEmptyCitations() {
-    $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
+    $text = 'bad things like {{cite journal}}{{cite book|||}}{{cite arxiv}}{{cite web}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
-    $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
+    $this->assertEquals('bad things like {{cite journal}}{{cite book}}{{cite arxiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
+  }
+ 
+  public function testProcess() { // Just looking for a crash
     $t = new Template();
     $t->parse_text('{{cite web}}');
     $t->process();
@@ -1418,6 +1448,13 @@ ER -  }}';
     $t = new Template();
     $t->parse_text('{{cite journal}}');
     $t->process();
+    $t = new Template();
+    $t->parse_text('{{}}'); // Empty
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{Dog}}'); // One we do not process
+    $t->process();
+    $this->assertNull(NULL);
   }
  
   public function testBadBibcodeARXIVPages() {
