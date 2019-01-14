@@ -1428,9 +1428,12 @@ ER -  }}';
   }
   
   public function testEmptyCitations() {
-    $text = 'bad things like {{cite journal}}{{cite book|||}} should not crash bot'; // bot removed pipes
+    $text = 'bad things like {{cite journal}}{{cite book|||}}{{cite arxiv}}{{cite web}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
-    $this->assertEquals('bad things like {{cite journal}}{{cite book}} should not crash bot', $expanded->parsed_text());
+    $this->assertEquals('bad things like {{cite journal}}{{cite book}}{{cite arxiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
+  }
+ 
+  public function testProcess() { // Just looking for a crash
     $t = new Template();
     $t->parse_text('{{cite web}}');
     $t->process();
@@ -1443,6 +1446,13 @@ ER -  }}';
     $t = new Template();
     $t->parse_text('{{cite journal}}');
     $t->process();
+    $t = new Template();
+    $t->parse_text('{{}}'); // Empty
+    $t->process();
+    $t = new Template();
+    $t->parse_text('{{Dog}}'); // One we do not process
+    $t->process();
+    $this->assertNull(NULL);
   }
  
   public function testBadBibcodeARXIVPages() {
