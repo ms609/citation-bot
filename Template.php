@@ -3090,8 +3090,7 @@ final class Template {
           }
           // When adding new reason to not change dashses, do not forget similar code in Paramater.php
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
-              && (stripos($value, "http") === FALSE) && (strpos($value, "[//") === FALSE)
-              && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)) {
+              && can_safely_change($value)) {
             $this->mod_dashes = TRUE;
             report_modification("Upgrading to en-dash in " . echoable($param) .
                   " parameter");
@@ -3099,8 +3098,7 @@ final class Template {
             $this->set($param, $value);
           }
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
-              && (stripos($value, "http") === FALSE) && (strpos($value, "[//") === FALSE)
-              && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)) { 
+              && can_safely_change($value)) { 
             $the_dash = mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
             $part1 = trim(mb_substr($value, 0, $the_dash));
             $part2 = trim(mb_substr($value, $the_dash + 1));
