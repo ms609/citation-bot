@@ -184,7 +184,7 @@ final class Template {
   }
   
   public function process() { // This code used to be the core of the Citation Bot, now it is only used by generate_template.php
-    if ($this->should_be_processed()) {  // This code is "tested" in testEm ptyCitations()
+    if ($this->should_be_processed()) {  // This code is "tested" in testProcess()
       $this->prepare(); // This routine does much of the work, since incoming templates are always {{cite web}}
 
       switch ($this->wikiname()) {
@@ -1492,7 +1492,7 @@ final class Template {
         . ($this->year() ? ("&year:" . urlencode($this->year())) : '')
         . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
         . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-        . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
+        . ($this->page() ? ("&page:" . urlencode('"' . str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], $this->page()) . '"')) : '')
       );
       if ($result->numFound == 0) return FALSE;
       if (!isset($result->docs[0]->pub)) return FALSE;
