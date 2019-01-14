@@ -254,3 +254,9 @@ function straighten_quotes($str) {
   }
   return $str;
 }
+
+function can_safely_change($str) {
+   return (stripos($value, "http") === FALSE)
+       && (strpos($value, "[//") === FALSE)
+       && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)); 
+}
