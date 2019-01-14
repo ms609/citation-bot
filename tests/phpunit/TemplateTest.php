@@ -1571,14 +1571,6 @@ ER -  }}';
     $this->assertEquals('222', $prepared->get('number'));
     $this->assertEquals('12(44-33)', $prepared->get('volume'));
   }
-    
-  public function testBibcodeBook() {
-    $this->requires_secrets(function() {
-      $text = '{{cite book|bibcode=2003hoe..book.....K}}';
-      $expanded = $this->process_citation($text);
-      $this->assertEquals('{{cite book|bibcode=2003hoe..book.....K|year=2003|title=Hands-On Electronics|last1=Kaplan|first1=Daniel M.|last2=White|first2=Christopher G.}}', $expanded->parsed_text());
-    });
-  }
  
   public function testSpaces() {
       // None of the "spaces" in $text are normal spaces.  They are U+2000 to U+200A
