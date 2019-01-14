@@ -184,7 +184,7 @@ final class Template {
   }
   
   public function process() { // This code used to be the core of the Citation Bot, now it is only used by generate_template.php
-    if ($this->should_be_processed()) {  // This code is "tested" in testEmptyCitations()
+    if ($this->should_be_processed()) {  // This code is "tested" in testE mptyCitations()
       $this->prepare(); // This routine does much of the work, since incoming templates are always {{cite web}}
 
       switch ($this->wikiname()) {
