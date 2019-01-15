@@ -58,7 +58,7 @@ final class Parameter {
   protected function set_value($value) {
     switch ($this->param) {
       case 'pages':
-        if (can_safely_change($value)) {
+        if (can_safely_modify_dashes($value)) {
           $value = mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
         }
       default:
