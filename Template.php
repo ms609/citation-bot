@@ -184,7 +184,7 @@ final class Template {
   }
   
   public function process() { // This code used to be the core of the Citation Bot, now it is only used by generate_template.php
-    if ($this->should_be_processed()) {  // This code is "tested" in testEmptyCit ations()
+    if ($this->should_be_processed()) {  // This code is "tested" in testProcess
       $this->prepare(); // This routine does much of the work, since incoming templates are always {{cite web}}
 
       switch ($this->wikiname()) {
@@ -697,6 +697,7 @@ final class Template {
       return FALSE;
       
       case "page": case "pages":
+        if (in_array((string) $value, ['0', '0-0', '0–0'], TRUE)) return FALSE;  // Reject bogus zero page number
         if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
