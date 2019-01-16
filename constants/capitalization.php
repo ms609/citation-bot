@@ -44,7 +44,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' Meddelelser om Grønland ', ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
           ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
           ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
-          ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
+          ' PLOS ONE ', ' PNAS ', ' Revista geológica de Chile ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', ' uHealth ', ' uHealth ',
           ' z/Journal ', ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
           ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys '
