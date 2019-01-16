@@ -254,3 +254,9 @@ function straighten_quotes($str) {
   }
   return $str;
 }
+
+function can_safely_modify_dashes($value) {
+   return((stripos($value, "http") === FALSE)
+       && (strpos($value, "[//") === FALSE)
+       && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)); 
+}
