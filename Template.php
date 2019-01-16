@@ -1512,6 +1512,8 @@ final class Template {
     }
     if ($result->numFound == 1) {
       $record = $result->docs[0];
+      print_r($record);
+      echo "\n hoser " . $this->year() ."\n";
       if (isset($record->year) && $this->year()) {
         if (abs((int)$record->year - (int)$this->year()) > 2) {
           return FALSE;  // Probably a book review or something with same title, etc.  have to be fuzzy if arXiv year does not match published year
