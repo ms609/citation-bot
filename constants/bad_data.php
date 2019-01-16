@@ -62,5 +62,5 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    'gsfc.nasa.gov/', 'solarsystem.nasa.gov/', 'latimes.com/',
                                    'usatoday.com/', 'wsj.com/', 'haaretz.com/', 'buzzfeed.com/',
                                    'aljazeera.com/', 'vox.com/', 'reuters.com/', 'dailynews.com/', 
-                                   'newsweek.com/' ); 
+                                   'newsweek.com/', 'monitor.com/', 'observer.com/' ); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
