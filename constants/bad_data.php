@@ -64,6 +64,6 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    'aljazeera.com/', 'vox.com/', 'reuters.com/', 'dailynews.com/', 
                                    'newsweek.com/', 'monitor.com/', 'observer.com/', '.pbs.org/', '.bbm.ca/' '//bbm.ca/',
                                    'mediaincanada.com/', 'cbspressexpress.com/', 'deadline.com/', 'zap2it.com/',
-                                   'yourentertainmentnow.com/', 'shows.ctv.ca/'); 
+                                   'yourentertainmentnow.com/', 'shows.ctv.ca/' ,'toronto.com/'); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add //bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
