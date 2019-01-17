@@ -3229,7 +3229,7 @@ final class Template {
   public function verify_doi() {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
-    fprint(STDERR, @get_headers('https://dx.doi.org/' . $doi, 1);
+    fprint(STDERR, "\n" . @get_headers('https://dx.doi.org/' . $doi, 1) . "\n");
     if ($this->doi_valid) return TRUE;
     
     // DOI not correctly formatted
