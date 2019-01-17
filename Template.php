@@ -1857,6 +1857,7 @@ final class Template {
   }
 
   public function get_open_access_url() {
+    if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
