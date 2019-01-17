@@ -1459,6 +1459,13 @@ final class Template {
     } elseif ($this->has('doi') 
               && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
+      if ($result->numFound == 0) { // there's a slew of citations, mostly in mathematics, that never get anything but an arxiv bibcode
+        if ($this->has('eprint')) {
+          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
+        } elseif ($this->has('arxiv')) {
+          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
+        }
+      }
     } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
       if ($this->has('eprint')) {
         $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
@@ -1850,6 +1857,7 @@ final class Template {
   }
 
   public function get_open_access_url() {
+    if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
@@ -3089,7 +3097,8 @@ final class Template {
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
           }
-          if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value) && (stripos($value, "http") === FALSE) && (strpos($value, "[//") === FALSE)) {
+          if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
+              && can_safely_modify_dashes($value)) {
             $this->mod_dashes = TRUE;
             report_modification("Upgrading to en-dash in " . echoable($param) .
                   " parameter");
@@ -3097,7 +3106,7 @@ final class Template {
             $this->set($param, $value);
           }
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
-              && (mb_stripos($value, "http") === FALSE) && (strpos($value, "[//") === FALSE)) { 
+              && can_safely_modify_dashes($value)) { 
             $the_dash = mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
             $part1 = trim(mb_substr($value, 0, $the_dash));
             $part2 = trim(mb_substr($value, $the_dash + 1));

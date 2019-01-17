@@ -6,7 +6,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -");
-const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor');
+const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign');
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
@@ -59,5 +59,11 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    '.ap.org/', 'nytimes.com/', 'theguardian.com/', 'washingtonpost.com/',
                                    'newyorker.com/', 'independent.co.uk/', 'cnbc.com/', 'vanityfair.com/',
                                    'theatlantic.com/', '-news.co.uk/', 'news.google.com/', 'jpl.nasa.gov/',
-                                   'gsfc.nasa.gov/', 'solarsystem.nasa.gov/'); 
+                                   'gsfc.nasa.gov/', 'solarsystem.nasa.gov/', 'latimes.com/',
+                                   'usatoday.com/', 'wsj.com/', 'haaretz.com/', 'buzzfeed.com/',
+                                   'aljazeera.com/', 'vox.com/', 'reuters.com/', 'dailynews.com/', 
+                                   'newsweek.com/', 'monitor.com/', 'observer.com/', '.pbs.org/', '.bbm.ca/', '/bbm.ca/',
+                                   'mediaincanada.com/', 'cbspressexpress.com/', 'deadline.com/', 'zap2it.com/',
+                                   'yourentertainmentnow.com/', 'shows.ctv.ca/' ,'toronto.com/'); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
+                                   // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
