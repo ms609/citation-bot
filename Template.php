@@ -1459,6 +1459,13 @@ final class Template {
     } elseif ($this->has('doi') 
               && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
+      if ($result->numFound == 0) { // there's a slew of citations, mostly in mathematics, that never get anything but an arxiv bibcode
+        if ($this->has('eprint')) {
+          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
+        } elseif ($this->has('arxiv')) {
+          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
+        }
+      }
     } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
       if ($this->has('eprint')) {
         $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
