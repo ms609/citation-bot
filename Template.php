@@ -1522,9 +1522,8 @@ final class Template {
       }
       
       if ($this->has('title') && titles_are_dissimilar($record->title[0],$this->get('title')) ) { // Verify the title matches.  We get some strange mis-matches {
-          report_info("Similar title not found in database");
-          return FALSE;
-        }
+        report_info("Similar title not found in database");
+        return FALSE;
       }
       
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
