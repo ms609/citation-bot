@@ -260,4 +260,14 @@ function can_safely_modify_dashes($value) {
        && (strpos($value, "[//") === FALSE)
        && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)); 
 }
-dfsdad
+
+function titles_are_dissimilar($inTitle, $dbTitle) {
+        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $inTitle)));
+        $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $dbTitle)));
+        return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
+              ? (strlen($inTitle) != strlen($dbTitle)
+                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
+              : levenshtein($inTitle, $dbTitle) > 3
+        );
+}
+
