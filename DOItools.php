@@ -261,7 +261,7 @@ function can_safely_modify_dashes($value) {
        && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)); 
 }
 
-function titles_are_dissimilar($inTitle, $dbTitle) ) {
+function titles_are_dissimilar($inTitle, $dbTitle) {
         $inTitle = str_replace(array(" ", "\n", "\r", "-", "—"), "", (mb_strtolower((string) $inTitle)));
         $dbTitle = str_replace(array(" ", "\n", "\r", "-", "—"), "", (mb_strtolower($dbTitle)));
         return (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
