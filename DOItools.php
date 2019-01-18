@@ -270,4 +270,3 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
               : levenshtein($inTitle, $dbTitle) > 3
         );
 }
-
