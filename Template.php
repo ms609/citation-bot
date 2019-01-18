@@ -1478,7 +1478,7 @@ final class Template {
         $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
-        if (!titles_are_similar($record->title[0], $this->get('title')) {
+        if (titles_are_dissimilar($record->title[0], $this->get('title')) {
           report_info("Similar title not found in database");
           return FALSE;
         }
@@ -1521,7 +1521,7 @@ final class Template {
         }
       }
       
-      if ($this->has('title') && titles_are_similar($record->title[0],$this->get('title')) ) { // Verify the title matches.  We get some strange mis-matches {
+      if ($this->has('title') && titles_are_dissimilar($record->title[0],$this->get('title')) ) { // Verify the title matches.  We get some strange mis-matches {
           report_info("Similar title not found in database");
           return FALSE;
         }
