@@ -162,8 +162,8 @@ class Page {
                       $this->text
                       );
      $this->text = preg_replace_callback(   // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
-                      "~(<(?:\s*)ref[^>]*?>)([^{}<\[\]]+)\[(https?://\S+/10\.[0-9]{4,6}\/[^\[\]{}\s]+) ([^\]\[{}]+)\]\s*([^<\]\[]+)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function($matches) {return $matches[1] . '{{Cite journal | url=' . $matches[3] . '|' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[3]) . '}}' . $matches[6] ;},
+                      "~(<(?:\s*)ref[^>]*?>)([^{}<\[\]]+\[)(https?://\S+/10\.[0-9]{4,6}\/[^\[\]{}\s]+)( [^\]\[{}]+\]\s*)([^<\]\[]+)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      function($matches) {return $matches[1] . '{{Cite journal | url=' . $matches[3] . '|' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . '}}' . $matches[6] ;},
                       $this->text
                       );
 
