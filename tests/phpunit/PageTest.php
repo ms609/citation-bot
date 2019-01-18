@@ -99,4 +99,6 @@ final class PageTest extends testBaseClass {
     }
     $this->assertTrue(TRUE);
   }
+ 
+  rubbish text, add tests here
 }
