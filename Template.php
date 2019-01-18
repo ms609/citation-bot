@@ -1478,14 +1478,7 @@ final class Template {
         $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
         if ($result->numFound == 0) return FALSE;
         $record = $result->docs[0];
-        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
-        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
-        if (
-           (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-              ? (strlen($inTitle) != strlen($dbTitle)
-                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
-              : levenshtein($inTitle, $dbTitle) > 3
-          ) {
+        if (!titles_are_similar($record->title[0], $this->get('title')) {
           report_info("Similar title not found in database");
           return FALSE;
         }
@@ -1528,15 +1521,7 @@ final class Template {
         }
       }
       
-      if ($this->has('title')) { // Verify the title matches.  We get some strange mis-matches
-        $inTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower((string) $record->title[0])));
-        $dbTitle = str_replace(array(" ", "\n", "\r"), "", (mb_strtolower($this->get('title'))));
-        if (
-           (strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-              ? (strlen($inTitle) != strlen($dbTitle)
-                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
-              : levenshtein($inTitle, $dbTitle) > 3
-          ) {
+      if ($this->has('title') && titles_are_similar($record->title[0],$this->get('title')) ) { // Verify the title matches.  We get some strange mis-matches {
           report_info("Similar title not found in database");
           return FALSE;
         }
