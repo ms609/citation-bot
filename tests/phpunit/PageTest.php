@@ -130,20 +130,26 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText9() { // Two "urls"
       $text = "<ref>http James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('1', $page->parsed_text());
+      $this->assertEquals($text, $page->parsed_text());
   }
 
   public function testUrlReferencesWithText10() { // See also
       $text = "<ref>See Also, James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('1', $page->parsed_text());
+      $this->assertEquals($text, $page->parsed_text());
   }
  
   public function testUrlReferencesWithText11() { // Two bad ones.  Make sure we do not loop or anything 
       $text = "<ref>See Also, James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
-      $test = $text . $text;
+      $text = $text . $text;
       $page = $this->process_page($text);
-      $this->assertEquals('1', $page->parsed_text());
+      $this->assertEquals($text, $page->parsed_text());
+  }
+ 
+  public function testUrlReferencesWithText12() {  // One that does not work and returns exact same text
+      $text = "<ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.FAKER_DOES_NOT_WORK358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
+      $page = $this->process_page($text);
+      $this->assertEquals($text, $page->parsed_text());
   }
  
   public function testRespectDates() {
