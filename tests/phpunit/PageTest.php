@@ -25,7 +25,7 @@ final class PageTest extends testBaseClass {
   }
  
   public function testBotRead() {
-   $this->requires_secrets(function() {
+   requires_secrets(function() {
       $page = new TestPage();
       $api = new WikipediaBot();
       $page->get_text_from('User:Blocked Testing Account/readtest', $api);
@@ -34,7 +34,7 @@ final class PageTest extends testBaseClass {
   }
   
   public function testBotExpandWrite() {
-   $this->requires_secrets(function() {
+   requires_secrets(function() {
       $api = new WikipediaBot();
       $page = new TestPage();
       $writeTestPage = 'User:Blocked Testing Account/writetest';
