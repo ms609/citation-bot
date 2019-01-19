@@ -355,6 +355,7 @@ function expand_by_doi($template, $force = FALSE) {
   }
   if ($doi && ($force || $template->incomplete())) {
     $crossRef = query_crossref($doi);
+    print_r($crossRef);
     if ($crossRef) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
       report_action("Querying CrossRef: doi:" . doi_link($doi));
