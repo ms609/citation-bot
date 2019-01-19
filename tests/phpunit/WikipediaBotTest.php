@@ -6,9 +6,7 @@
 
 require_once __DIR__ . '/../testBaseClass.php';
  
-if (getenv('TRAVIS_PULL_REQUEST')) {
-  echo (" - Skipping WikipediaBotTest.php: Testing bot in Travis pull requests would endanger secure tokens.\n");
-} else {
+requires_secrets(class() {
   class WikipediaBotTest extends testBaseClass {
       
     public function testLoggedInUser() {
@@ -86,4 +84,4 @@ if (getenv('TRAVIS_PULL_REQUEST')) {
     }
      
   }
-}
+});
