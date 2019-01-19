@@ -5,7 +5,7 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class apiFunctionsTest extends testBaseClass {
   
   public function testAdsabsApi() {
-    $this->requires_secrets(function() {
+    requires_secrets(function() {
       $bibcodes = [
        '2017NatCo...814879F', // 0
        '1974JPal...48..524M', // 1
