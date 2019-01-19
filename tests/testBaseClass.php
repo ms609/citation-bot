@@ -35,7 +35,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function requires_secrets($function) {
-    if (getenv('TRAVIS_PULL_REQUEST')) {
+    if (!getenv('PHP_ADSABSAPIKEY') || !getenv('PHP_OAUTH_CONSUMER_SECRET') || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
       echo 'S'; // Skipping test: Risks exposing secret keys
       $this->assertNull(NULL); // Make Travis think we tested something
     } else {
