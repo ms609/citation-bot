@@ -9,6 +9,15 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
     class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
 }
 
+function requires_secrets($function) {
+  if (getenv('TRAVIS_PULL_REQUEST')) {
+    echo 'S'; // Skipping test: Risks exposing secret keys
+    $this->assertNull(NULL); // Make Travis think we tested something
+  } else {
+    $function();
+  }
+}
+
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function setUp() {
@@ -32,15 +41,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     $parameter = new Parameter();
     $parameter->parse_text($text);
     return $parameter;
-  }
-
-  protected function requires_secrets($function) {
-    if (getenv('TRAVIS_PULL_REQUEST')) {
-      echo 'S'; // Skipping test: Risks exposing secret keys
-      $this->assertNull(NULL); // Make Travis think we tested something
-    } else {
-      $function();
-    }
   }
   
   protected function prepare_citation($text) {
