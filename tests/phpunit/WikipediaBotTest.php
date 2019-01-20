@@ -61,18 +61,18 @@ if (FALSE && getenv('TRAVIS_PULL_REQUEST')) {
         $this->assertEquals($ns_name, $api->namespace_name($ns_id));
       }
       
-      echo "\n\n! Namespaces are out of date. Please update constants/namespace.php with the below:\n\n";
-      echo "<?php\nconst NAMESPACES = Array(";
+      printf(SRDERR, "\n\n! Namespaces are out of date. Please update constants/namespace.php with the below:\n\n");
+      printf(SRDERR, "<?php\nconst NAMESPACES = Array(");
       foreach ($namespaces->query->namespaces as $ns) {
         $ns_name = isset($ns->canonical)? $ns->canonical : '';
-        echo ("\n  " . (string) $ns->id . " => '" . $ns_name . "',");
+      printf(SRDERR,"\n  " . (string) $ns->id . " => '" . $ns_name . "',");
       }
-      echo ");\n\nconst NAMESPACE_ID = Array(";
+      printf(SRDERR,");\n\nconst NAMESPACE_ID = Array(");
       foreach ($namespaces->query->namespaces as $ns) {
         $ns_name = isset($ns->canonical)? $ns->canonical : '';
-        echo ("\n  '" . strtolower($ns_name) . "' => " . (string) $ns->id . ",");
+      printf(SRDERR,"\n  '" . strtolower($ns_name) . "' => " . (string) $ns->id . ",");
       }
-      echo "\n);\n?" . ">\n";
+      printf(SRDERR,"\n);\n?" . ">\n");
 
     }
       
