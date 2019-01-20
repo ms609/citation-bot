@@ -61,9 +61,6 @@ if (FALSE && getenv('TRAVIS_PULL_REQUEST')) {
         $this->assertEquals($ns_name, $api->namespace_name($ns_id));
       }
       
-      /*
-      // If the above assertions are throwing an error, you can generate an updated 
-      // version of constants/namespace.php by running the below and pasting the content:
       echo "\n\n! Namespaces are out of date. Please update constants/namespace.php with the below:\n\n";
       echo "<?php\nconst NAMESPACES = Array(";
       foreach ($namespaces->query->namespaces as $ns) {
@@ -76,8 +73,7 @@ if (FALSE && getenv('TRAVIS_PULL_REQUEST')) {
         echo ("\n  '" . strtolower($ns_name) . "' => " . (string) $ns->id . ",");
       }
       echo "\n);\n?" . ">\n";
-      exit(0);
-      */
+
     }
       
     public function testGetLastRevision() {
