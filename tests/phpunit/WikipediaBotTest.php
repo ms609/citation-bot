@@ -57,8 +57,6 @@ if (FALSE && getenv('TRAVIS_PULL_REQUEST')) {
       foreach ($namespaces->query->namespaces as $ns) {
         $ns_name = isset($ns->canonical)? $ns->canonical : '';
         $ns_id = (string) $ns->id;
-        $this->assertEquals($ns_id, $api->namespace_id($ns_name));
-        $this->assertEquals($ns_name, $api->namespace_name($ns_id));
       }
       
       printf(SRDERR, "\n\n! Namespaces are out of date. Please update constants/namespace.php with the below:\n\n");
