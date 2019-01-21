@@ -206,7 +206,7 @@ function adsabs_api($ids, $templates, $identifier) {
     curl_setopt($ch, CURLOPT_HEADER, TRUE);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
     curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
-    if (getenv('TRA VIS')) {
+    if (getenv('TRAVIS') && defined('PHP_VERSION_ID') && (PHP_VERSION_ID < 60000)) {
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
     }
     $return = curl_exec($ch);
@@ -399,7 +399,7 @@ function expand_by_doi($template, $force = FALSE) {
       $template->add_if_new('isbn', $crossRef->isbn);
       $template->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
       if ($crossRef->volume > 0) $template->add_if_new('volume', $crossRef->volume);
-      if ((integer) $crossRef->issue > 1) {
+      if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1))) {
       // "1" may refer to a journal without issue numbers,
       //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
         $template->add_if_new('issue', $crossRef->issue);
