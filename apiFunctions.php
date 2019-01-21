@@ -206,7 +206,7 @@ function adsabs_api($ids, $templates, $identifier) {
     curl_setopt($ch, CURLOPT_HEADER, TRUE);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
     curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
-    if (getenv('TRAVIS')) {
+    if (getenv('TRA VIS')) {
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
     }
     $return = curl_exec($ch);
