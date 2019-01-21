@@ -399,7 +399,7 @@ function expand_by_doi($template, $force = FALSE) {
       $template->add_if_new('isbn', $crossRef->isbn);
       $template->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
       if ($crossRef->volume > 0) $template->add_if_new('volume', $crossRef->volume);
-      if (((integer) $crossRef->issue > 1) || (strpos($crossRef->issue, '-') > 0)) {
+      if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1))) {
       // "1" may refer to a journal without issue numbers,
       //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
         $template->add_if_new('issue', $crossRef->issue);
