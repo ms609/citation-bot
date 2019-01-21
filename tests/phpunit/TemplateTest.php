@@ -1313,6 +1313,17 @@ ER -  }}';
     $this->assertEquals('2006', $expanded->get('year'));
   }
  
+Information Processing Letters 115 (2015), pp. 633-634
+
+Theoretical Computer Science, Volume 561, Pages 113-121, 2015
+
+Scientometrics, volume 69, number 3, pp. 669-687, 2006
+
+International Journal of Geographical Information Science, 23(7), 2009, 823-837.
+
+journal of Statistical Mechanics: Theory and Experiment, 2008 July
+ 
+ 
    public function testDoiInline() {
     $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
     $expanded = $this->process_citation($text);
