@@ -6,28 +6,32 @@
 
 require_once __DIR__ . '/../testBaseClass.php';
  
-if (getenv('TRAVIS_PULL_REQUEST')) {
-  echo (" - Skipping WikipediaBotTest.php: Testing bot in Travis pull requests would endanger secure tokens.\n");
-} else {
   class WikipediaBotTest extends testBaseClass {
       
     public function testLoggedInUser() {
+     $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $this->assertEquals("Citation bot test", $api->username());
+     });
     }
       
     public function testCategoryMembers() {
+     $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $this->assertTrue(count($api->category_members('GA-Class cricket articles')) > 10);
       $this->assertEquals(0, count($api->category_members('A category we expect to be empty')));
+     });
     }
     
     public function testWhatTranscludes() {
+     $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $this->assertTrue(count($api->what_transcludes('Graphical timeline')) > 10);
+     });
     }
       
     public function testGetPrefixIndex() {
+     $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $namespace = $api->get_namespace('Template:Cite journal');
       $this->assertEquals($api->namespace_id('Template'), $namespace);
@@ -35,16 +39,20 @@ if (getenv('TRAVIS_PULL_REQUEST')) {
       $this->assertTrue(array_search('Template:Cite journal', $results) !== FALSE);
       $results = $api->get_prefix_index("If we retrieve anything here, it's an error", $namespace);
       $this->assertTrue(empty($results));
+     });
     }
     
     public function testRedirects() {
+     $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $this->assertEquals(-1, $api->is_redirect('NoSuchPage:ThereCan-tBe'));
       $this->assertEquals( 0, $api->is_redirect('User:Citation_bot'));
       $this->assertEquals( 1, $api->is_redirect('WP:UCB'));
-    }  
+     });
+    }
     
     public function testNamespaces() {
+     $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $vars = array(
             'format' => 'json',
@@ -78,12 +86,13 @@ if (getenv('TRAVIS_PULL_REQUEST')) {
       echo "\n);\n?" . ">\n";
       exit(0);
       */
+     });
     }
       
     public function testGetLastRevision() {
+     $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $this->assertEquals(805321380, 1 * $api->get_last_revision('User:Blocked testing account/readtest'));
+     });
     }
-     
-  }
 }
