@@ -3227,13 +3227,16 @@ final class Template {
     if (substr($doi, 0, 3) != "10.") {
       $trial[] = $doi;
     }
-    if (preg_match("~^(.+)(10\.\d{4}/.+)~", trim($doi), $match)) {
+    if (preg_match("~^(.+)(10\.\d{4,6}/.+)~", trim($doi), $match)) {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
     $replacements = array (      "&lt;" => "<",      "&gt;" => ">",    );
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
+    }
+    if (isset($trial) && !in_array($doi, $trial) && preg_match("~^10\.\d{4,6}/.~", trim($doi))) {
+      array_unshift($trial, $doi); // doi:10.1126/science.10.1126/SCIENCE.291.5501.24 is valid, not the subparts
     }
     if (isset($trial)) foreach ($trial as $try) {
       // Check that it begins with 10.
