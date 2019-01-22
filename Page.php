@@ -167,8 +167,8 @@ class Page {
                       $this->text
                       );
      if (
-        ($ref_count < 3 && $citation_count > 0) ||
-        ($ref_count > 0 && ($citation_count/$ref_count) >= 0.5)
+        ($ref_count == 1) ||
+        (($citation_count/$ref_count) >= 0.5)
      ) {
      $this->text = preg_replace_callback(   // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
                                             // also without titles on the urls
