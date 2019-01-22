@@ -467,7 +467,7 @@ function expand_doi_with_dx($template, $doi) {
      $json = @json_decode($ris);
      if($json === FALSE) return FALSE;
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
-     printf(STDERR, print_r($json,TRUE));
+     print_r($json);
      return TRUE;
 }
 
