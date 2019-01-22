@@ -3150,6 +3150,9 @@ final class Template {
     // Future tidying should occur when parameters are added using tidy_parameter.
     if (!$this->param) return TRUE;
     foreach ($this->param as $param) $this->tidy_parameter($param->param);
+    // changing one item can cause others to change
+    // also when we convert one parameter, we should tidy it under its new name
+    foreach ($this->param as $param) $this->tidy_parameter($param->param);
   }
   
   public function final_tidy() {
