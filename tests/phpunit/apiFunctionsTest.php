@@ -47,5 +47,8 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertNull(NULL); // Stopped working
      // $this->assertEquals('Lesson Study as a form of in-School Professional Development', $expanded->get('title'));
      // $this->assertEquals('2015', $expanded->get('year'));
-   }
+     $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
+     $expanded = $this->process_citation($text);
+     $this->assertNull(NULL); // does it work?
+  }
 }
