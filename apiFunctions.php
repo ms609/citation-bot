@@ -605,6 +605,35 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       } elseif (preg_match("~^Astrophys\.J\.\d.*:L.+,(\d{4})F$~", $journal_data, $matches)) {
         $arxiv_journal='The Astrophysical Journal'; // We expand this out
         $arxiv_year=$matches[1];
+      //Information Processing Letters 115 (2015), pp. 633-634
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \((\d{4})\), pp\. (\d{1,5}-\d{1,5})$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[4];
+        $arxiv_year=$matches[3];           
+      //Theoretical Computer Science, Volume 561, Pages 113-121, 2015
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), Volume ([0-9]+), Pages (\d{1,5}-\d{1,5}), (\d{4})$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[3];
+        $arxiv_year=$matches[4];        
+      // Scientometrics, volume 69, number 3, pp. 669-687, 2006
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), volume ([0-9]+), number ([0-9]+), pp\. (\d{1,5}-\d{1,5}), (\d{4})$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[4];
+        $arxiv_year=$matches[5];
+        $arxiv_issue=$matches[3]; 
+      // International Journal of Geographical Information Science, 23(7), 2009, 823-837.
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), (\d{1,3})\((\d{1,3})\), (\d{4}), (\d{1,5}-\d{1,5})\.$~", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[5];
+        $arxiv_year=$matches[4];
+        $arxiv_issue=$matches[3];
+      // journal of Statistical Mechanics: Theory and Experiment, 2008 July
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.\:]+), (\d{4}) ([a-zA-ZÀ-ÿ])+$~", $journal_data, $matches)) {  
+         // not enough to reliably go on
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
