@@ -167,7 +167,7 @@ class Page {
                       $this->text
                       );
      if (
-        ($ref_count == 1) ||
+        ($ref_count < 2) ||
         (($citation_count/$ref_count) >= 0.5)
      ) {
      $this->text = preg_replace_callback(   // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
