@@ -141,7 +141,7 @@ class Page {
                       substr_count($this->text, '{{Cite ') +
                       substr_count($this->text, '{{citation') +
                       substr_count($this->text, '{{Citation');
-    $ref_count = substr_count($this-text, '<ref') + substr_count($this-text, '<Ref');
+    $ref_count = substr_count($this->text, '<ref') + substr_count($this->text, '<Ref');
     // PLAIN URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
