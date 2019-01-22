@@ -1316,22 +1316,46 @@ ER -  }}';
   public function testArxivMore15() {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("", $expanded, TRUE);
+    parse_plain_text_reference("Information Processing Letters 115 (2015), pp. 633-634", $expanded, TRUE);
     $this->assertEquals('cite journal', $expanded->wikiname());
-    $this->assertEquals('', $expanded->get('year'));
-    $this->assertEquals('', $expanded->get('pages'));
+    $this->assertEquals('2015', $expanded->get('year'));
+    $this->assertEquals('633–634', $expanded->get('pages'));
   }
 
-Information Processing Letters 115 (2015), pp. 633-634
+  public function testArxivMore16() {
+    $text = "{{cite arxiv}}";
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("Theoretical Computer Science, Volume 561, Pages 113-121, 2015", $expanded, TRUE);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2015', $expanded->get('year'));
+    $this->assertEquals('113–121', $expanded->get('pages'));
+  }
 
-Theoretical Computer Science, Volume 561, Pages 113-121, 2015
+  public function testArxivMore17() {
+    $text = "{{cite arxiv}}";
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("Scientometrics, volume 69, number 3, pp. 669-687, 2006", $expanded, TRUE);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2006', $expanded->get('year'));
+    $this->assertEquals('669–687', $expanded->get('pages'));
+  }
 
-Scientometrics, volume 69, number 3, pp. 669-687, 2006
-
-International Journal of Geographical Information Science, 23(7), 2009, 823-837.
-
-journal of Statistical Mechanics: Theory and Experiment, 2008 July
- 
+  public function testArxivMore18() {
+    $text = "{{cite arxiv}}";
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("International Journal of Geographical Information Science, 23(7), 2009, 823-837.", $expanded, TRUE);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('2009', $expanded->get('year'));
+    $this->assertEquals('823–837', $expanded->get('pages'));
+  }
+  
+  public function testArxivMore19() {
+    $text = "{{cite arxiv}}";
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("journal of Statistical Mechanics: Theory and Experiment, 2008 July", $expanded, TRUE);
+    $this->assertEquals('cite arxiv', $expanded->wikiname());
+    $this->assertNull($expanded->get('year'));
+  }
  
    public function testDoiInline() {
     $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} }}';
