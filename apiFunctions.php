@@ -451,7 +451,7 @@ function expand_doi_with_dx($template, $doi) {
      if (!$doi) return FALSE;
      $ch = curl_init();
      curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
-     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
+     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: 	application/vnd.citationstyles.csl+json"));
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      try {
@@ -464,8 +464,10 @@ function expand_doi_with_dx($template, $doi) {
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
+     $json = @json_decode($ris);
+     if($json === FALSE) return FALSE;
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
-     $template->expand_by_RIS($ris, FALSE);
+     printf(STDERR, print_r($json,TRUE));
      return TRUE;
 }
 
