@@ -605,6 +605,40 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       } elseif (preg_match("~^Astrophys\.J\.\d.*:L.+,(\d{4})F$~", $journal_data, $matches)) {
         $arxiv_journal='The Astrophysical Journal'; // We expand this out
         $arxiv_year=$matches[1];
+        //Information Processing Letters 115 (2015), pp. 633-634
+     
+        
+        //Theoretical Computer Science, Volume 561, Pages 113-121, 2015
+     
+   }
+
+   public function testArxivMore17() {
+     $text = "{{cite arxiv}}";
+     $expanded = $this->process_citation($text);
+     parse_plain_text_reference("Scientometrics, volume 69, number 3, pp. 669-687, 2006", $expanded, TRUE);
+     $this->assertEquals('cite journal', $expanded->wikiname());
+     $this->assertEquals('2006', $expanded->get('year'));
+     $this->assertEquals('669–687', $expanded->get('pages'));
+   }
+
+   public function testArxivMore18() {
+     $text = "{{cite arxiv}}";
+     $expanded = $this->process_citation($text);
+     parse_plain_text_reference("International Journal of Geographical Information Science, 23(7), 2009, 823-837.", $expanded, TRUE);
+     $this->assertEquals('cite journal', $expanded->wikiname());
+     $this->assertEquals('2009', $expanded->get('year'));
+     $this->assertEquals('823–837', $expanded->get('pages'));
+   }
+   
+   public function testArxivMore19() {
+     $text = "{{cite arxiv}}";
+     $expanded = $this->process_citation($text);
+     parse_plain_text_reference("journal of Statistical Mechanics: Theory and Experiment, 2008 July", $expanded, TRUE);
+     $this->assertEquals('cite arxiv', $expanded->wikiname());
+     $this->assertNull($expanded->get('year'));
+   }
+        
+        
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
