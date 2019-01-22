@@ -606,7 +606,7 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
         $arxiv_journal='The Astrophysical Journal'; // We expand this out
         $arxiv_year=$matches[1];
       //Information Processing Letters 115 (2015), pp. 633-634
-      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \(\d{4})\), pp\. (\d{1,5}-\d{1,5})$~u", $journal_data, $matches)) {
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \((\d{4})\), pp\. (\d{1,5}-\d{1,5})$~u", $journal_data, $matches)) {
         $arxiv_journal=$matches[1];
         $arxiv_volume=$matches[2];
         $arxiv_pages=$matches[4];
