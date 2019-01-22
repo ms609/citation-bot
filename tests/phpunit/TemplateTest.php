@@ -1312,7 +1312,16 @@ ER -  }}';
     $this->assertEquals('The Astrophysical Journal', $expanded->get('journal'));
     $this->assertEquals('2006', $expanded->get('year'));
   }
- 
+
+  public function testArxivMore15() {
+    $text = "{{cite arxiv}}";
+    $expanded = $this->process_citation($text);
+    parse_plain_text_reference("", $expanded, TRUE);
+    $this->assertEquals('cite journal', $expanded->wikiname());
+    $this->assertEquals('', $expanded->get('year'));
+    $this->assertEquals('', $expanded->get('pages'));
+  }
+
 Information Processing Letters 115 (2015), pp. 633-634
 
 Theoretical Computer Science, Volume 561, Pages 113-121, 2015
