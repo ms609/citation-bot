@@ -464,10 +464,29 @@ function expand_doi_with_dx($template, $doi) {
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
-     $json = @json_decode($ris);
+     $json = @json_decode($ris, TRUE);
      if($json === FALSE) return FALSE;
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
-     print_r($json);
+     if ($json['type'] == 'article-journal') {
+       $template->add_if_new('year', @$json['issued']['date-parts']['0']['0']);    
+       $template->add_if_new('journal', @$json['container-title']);
+       $template->add_if_new('issue', @$json['issue']);
+       $template->add_if_new('pages', @$json['pages']);
+       $template->add_if_new('title', @$json['title']);
+       $template->add_if_new('volume', @$json['volume']); 
+       if (isset($json['author'])) {
+         $i = 0;
+         foreach ($json['author'] as $auth) {
+            $template->add_if_new('last' . (string) $i, $auth['family']);
+            $template->add_if_new('
+            $template->add_if_new(' 
+         }
+       }
+                    [given] => Hideki
+                    [family] => YUKAWA
+     } else {
+       print_r($json);
+     }
      return TRUE;
 }
 
