@@ -157,7 +157,7 @@ class Page {
                       ); 
      // PLAIN {{DOI}} Converted to templates
      $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
-                      "~(<(?:\s*)ref[^>]*?>)(\s*\{\{doi\|10\.[0-9]{4,6}\/\S+?\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\{\{doi\|10\.[0-9]{4,6}\/[^\s\}\{]+\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function($matches) {return $matches[1] . '{{Cite journal | id=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
