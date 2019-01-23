@@ -994,17 +994,7 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
-      if (stripos($url, 'jstor.org') && $this->blank('jstor') && strpos($doi, '10.2307')===FALSE) {
-         $test_url = "https://www.jstor.org/citation/ris/" . $doi;
-         $ch = curl_init($test_url);
-         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-         @curl_exec($ch);
-         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-         curl_close($ch);
-         if ($httpCode == 404) {
-            $this->add_if_new('jstor', $doi);
-         }
-      }
+      if (stripos($url, 'jstor')) check_for_jstor_from_doi($doi, $this);
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
