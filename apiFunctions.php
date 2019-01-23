@@ -471,7 +471,7 @@ function expand_doi_with_dx($template, $doi) {
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if (@$json['type'] == 'article-journal' ||
          @$json['type'] == 'article' ||
-         (@$json['type'] == '' && isset($json['container-title'])) {
+         (@$json['type'] == '' && isset($json['container-title']))) {
        $template->add_if_new('year', @$json['issued']['date-parts']['0']['0']);    
        $template->add_if_new('journal', @$json['container-title']);
        $template->add_if_new('issue', @$json['issue']);
