@@ -44,17 +44,17 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossref() {
      $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
      $expanded = $this->process_citation($text);
-     echo "\n"$expanded->parsed_text() . "\n";
+     echo "\n" . $expanded->parsed_text() . "\n";
      $this->assertEquals('Lesson Study as a form of in-School Professional Development', $expanded->get('title'));
      $this->assertEquals('2015', $expanded->get('year'));
      $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
      $expanded = $this->process_citation($text);
-     echo "\n"$expanded->parsed_text() . "\n";
+     echo "\n" . $expanded->parsed_text() . "\n";
      $this->assertEquals('On the Interaction of Elementary Particles. I', $expanded->get('title'));
      $this->assertEquals('1935', $expanded->get('year'));   
      $text = '{{Cite journal| doi= 10.7249/mg1078a.10}}';
      $expanded = $this->process_citation($text);
-     echo "\n"$expanded->parsed_text() . "\n";
+     echo "\n" . $expanded->parsed_text() . "\n";
      $this->assertEquals("CHAPTER TWO Historical Overview: 20th-Century Security Aid to Afghanistan Before the Soviet Invasion", $expanded->get('chapter'));
      $this->assertEquals('2011', $expanded->get('year'));
   }
