@@ -37,9 +37,9 @@ function zotero_request($url) {
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);   
-  if (getenv('TRAVIS') {
+  if (getenv('TRAVIS') { // try harder in TRAVIS to make tests more successful and make it his zotero less often
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 45);
   } else {
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
     curl_setopt($ch, CURLOPT_TIMEOUT, 5); 
