@@ -55,9 +55,5 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertEquals('17', $expanded->get('volume'));
      $this->assertEquals('YUKAWA', $expanded->get('last1'));
      $this->assertEquals('Hideki', $expanded->get('first1'));
-     $text = '{{Cite journal| doi= 10.7249/mg1078a}}';
-     $expanded = $this->process_citation($text);
-     echo "\n" . $expanded->parsed_text() . "\n";
-     $this->assertEquals('2011', $expanded->get('year'));
   }
 }
