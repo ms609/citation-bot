@@ -490,9 +490,9 @@ function expand_doi_with_dx($template, $doi) {
      } else {
        if (getenv('TRAVIS')) {
          print_r($json);
-         trigger_error('dx.doi.org returned unexpected data for ' . $doi);
+         trigger_error ('dx.doi.org returned unexpected data for ' . doi_link($doi));
        } else {
-         report_warning('dx.doi.org returned unexpected data for ' . $doi);
+         report_warning('dx.doi.org returned unexpected data for ' . doi_link($doi));
        }
      }
      return TRUE;
