@@ -467,7 +467,9 @@ function expand_doi_with_dx($template, $doi) {
      $json = @json_decode($ris, TRUE);
      if($json === FALSE) return FALSE;
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
-     if ($json['type'] == 'article-journal') {
+     // BE WARNED:  this code uses the "@$var" method.
+     // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
+     if (@$json['type'] == 'article-journal' || @$json['type'] == 'article') {
        $template->add_if_new('year', @$json['issued']['date-parts']['0']['0']);    
        $template->add_if_new('journal', @$json['container-title']);
        $template->add_if_new('issue', @$json['issue']);
@@ -477,9 +479,9 @@ function expand_doi_with_dx($template, $doi) {
        if (isset($json['author'])) {
          $i = 0;
          foreach ($json['author'] as $auth) {
-            $template->add_if_new('last' . (string) $i, $auth['family']);
-            $template->add_if_new('first' . (string) $i, $auth['given']);
-            $template->add_if_new('author' . (string) $i, $auth['literal']);
+            $template->add_if_new('last' . (string) $i, @$auth['family']);
+            $template->add_if_new('first' . (string) $i, @$auth['given']);
+            $template->add_if_new('author' . (string) $i, @$auth['literal']);
             $i = $i + 1;
          }
        }
