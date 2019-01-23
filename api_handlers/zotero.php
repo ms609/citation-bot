@@ -30,15 +30,15 @@ function query_url_api($ids, $templates) {
 function zotero_request($url) {
   
   #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
-  $ch = curl_init('http://tools.wmflabs.org/translation-server/web');
+  $ch = curl_init('https://tools.wmflabs.org/translation-server/web');
   
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
-  curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1); 
+  curl_setopt($ch, CURLOPT_TIMEOUT, 5);
   
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
