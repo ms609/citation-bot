@@ -36,9 +36,14 @@ function zotero_request($url) {
   curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1); 
-  curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);   
+  if (getenv('TRAVIS') {
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+  } else {
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5); 
+  }
   
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
