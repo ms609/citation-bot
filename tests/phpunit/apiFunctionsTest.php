@@ -44,7 +44,6 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossref() {
      $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
      $expanded = $this->process_citation($text);
-     echo "\n" . $expanded->parsed_text() . "\n";
      $this->assertEquals('Lesson Study as a form of in-School Professional Development', $expanded->get('title'));
      $this->assertEquals('2015', $expanded->get('year'));
      $this->assertEquals('Aoibhinn Ni Shuilleabhain', $expanded->get('author1'));
@@ -52,7 +51,6 @@ final class apiFunctionsTest extends testBaseClass {
      $expanded = $this->process_citation($text);
      $this->assertEquals('On the Interaction of Elementary Particles. I', $expanded->get('title'));
      $this->assertEquals('1935', $expanded->get('year'));
-     $this->assertEquals('Aoibhinn Ni Shuilleabhain', $expanded->get('author1'));
      $this->assertEquals('Proceedings of the Physico-Mathematical Society of Japan. 3Rd Series', $expanded->get('journal'));
      $this->assertEquals('17', $expanded->get('volume'));
      $this->assertEquals('YUKAWA', $expanded->get('last1'));
