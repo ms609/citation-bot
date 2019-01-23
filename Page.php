@@ -158,13 +158,13 @@ class Page {
      // PLAIN {{DOI}} Converted to templates
      $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*\{\{doi\|10\.[0-9]{4,6}\/\S+\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function($matches) {return $matches[1] . '{{Cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
+                      function($matches) {return $matches[1] . '{{Cite journal | id=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
      // PLAIN DOIS Converted to templates
      $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function($matches) {return $matches[1] . '{{Cite journal | id=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
+                      function($matches) {return $matches[1] . '{{Cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
      $this->text = preg_replace_callback(   // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
