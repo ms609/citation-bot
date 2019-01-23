@@ -1652,6 +1652,10 @@ final class Template {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
       }
       $return = curl_exec($ch);
+      if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
+        sleep(4);
+        $return = curl_exec($ch);
+      }
       if ($return === FALSE) {
         $exception = curl_error($ch);
         $number = curl_errno($ch);
