@@ -478,12 +478,11 @@ function expand_doi_with_dx($template, $doi) {
          $i = 0;
          foreach ($json['author'] as $auth) {
             $template->add_if_new('last' . (string) $i, $auth['family']);
-            $template->add_if_new('
-            $template->add_if_new(' 
+            $template->add_if_new('first' . (string) $i, $auth['given']);
+            $template->add_if_new('author' . (string) $i, $auth['literal']);
+            $i = $i + 1;
          }
        }
-                    [given] => Hideki
-                    [family] => YUKAWA
      } else {
        print_r($json);
      }
