@@ -488,7 +488,12 @@ function expand_doi_with_dx($template, $doi) {
          }
        }
      } else {
-       print_r($json);
+       if (getenv('TRAVIS')) {
+         print_r($json);
+         trigger_error('dx.doi.org returned unexpected data for ' . $doi);
+       } else {
+         report_warning('dx.doi.org returned unexpected data for ' . $doi);
+       }
      }
      return TRUE;
 }
