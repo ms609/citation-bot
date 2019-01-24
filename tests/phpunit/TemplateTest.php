@@ -53,8 +53,9 @@ final class TemplateTest extends testBaseClass {
   }
     
    public function testRISJstorExpansion() {
-    $text = "{{Cite journal|jstor=3073767}}";
-    $expanded = $this->process_citation($text);
+    $text = "<ref name='jstor'>{{jstor|3073767}}</ref>"; // Check Page expansion too
+    $page = $this->process_page($text);
+    $expanded = reference_to_template($page->parsed_text());
     $this->assertEquals('Are Helionitronium Trications Stable?', $expanded->get('title'));
     $this->assertEquals('99', $expanded->get('volume'));
     $this->assertEquals('24', $expanded->get('issue'));
