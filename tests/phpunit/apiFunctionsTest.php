@@ -41,13 +41,15 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertEquals('2010', $expanded->get('year'));
   }
   
-  public function testExpansion_doi_not_from_crossref() {
+  public function testExpansion_doi_not_from_crossrefRG() {
      $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('Lesson Study as a form of in-School Professional Development', $expanded->get('title'));
      $this->assertEquals('2015', $expanded->get('year'));
      $this->assertEquals('Aoibhinn Ni Shuilleabhain', $expanded->get('author1'));
-
+  }
+  
+    public function testExpansion_doi_not_from_crossrefJapanJournal() {
      $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals('On the Interaction of Elementary Particles. I', $expanded->get('title'));
@@ -56,9 +58,23 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertEquals('17', $expanded->get('volume'));
      $this->assertEquals('YUKAWA', $expanded->get('last1'));
      $this->assertEquals('Hideki', $expanded->get('first1'));
-
+    }
+  
+  public function testExpansion_doi_not_from_crossrefBook() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
+     $this->assertNull($expanded->parsed_text());
+  }
+  
+  public function testExpansion_doi_not_from_crossrefBookChapter() {
+     $expanded = $this->process_citation('{{Cite journal}}');
+     expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
+     $this->assertNull($expanded->parsed_text());
+  }
+  
+  public function testExpansion_doi_not_from_crossrefDataCiteEarthquake() {
+     $expanded = $this->process_citation('{{Cite journal}}');
+     expand_doi_with_dx($expanded, '10.1594/PANGAEA.726855');
      $this->assertNull($expanded->parsed_text());
   }
 }
