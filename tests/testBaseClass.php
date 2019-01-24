@@ -80,7 +80,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
  
   protected function reference_to_template($text) {
     $text=trim($text);
-    if (preg_match("~^(?:<(?:\s*)ref[^>]*?>)(.*)(?:<\s*?\/\s*?ref(?:\s*)>)$~i", $text, $matches) {
+    if (preg_match("~^(?:<(?:\s*)ref[^>]*?>)(.*)(?:<\s*?\/\s*?ref(?:\s*)>)$~i", $text, $matches)) {
       $template = new Template();
       $template->parse_text($matches[1]);
       return $template;
