@@ -79,6 +79,12 @@ final class PageTest extends testBaseClass {
       $this->assertEquals($text, $page->parsed_text());
   }
  
+   public function testUrlReferencesWithText0() {
+      $text = "<ref>{{doi|10.2307/962034}}</ref>";
+      $page = $this->process_page($text);
+      $this->assertEquals('<ref>{{Cite journal | doi=10.2307/962034| jstor=962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto| journal=The Musical Times| volume=124| issue=1682| pages=218–223|last1 = Jarman|first1 = Douglas| year=1983}}</ref>', $page->parsed_text());
+  }
+ 
   public function testUrlReferencesWithText1() {
       $text = "<ref>Jarman, D. (1983). [https://www.jstor.org/discover/10.2307/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=3&amp;uid=60&amp;sid=21102523353593 Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto]. ''The Musical Times'' Vol. 124, No. 1682 (Apr. 1983), pp. 218–223</ref>";
       $page = $this->process_page($text);
