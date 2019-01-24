@@ -482,7 +482,10 @@ function check_doi_for_jstor($doi, &$template) {
   @curl_exec($ch);
   $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
   curl_close($ch);
-  if ($httpCode == 404) {
+  if ($httpCode == 200) {
       $template->add_if_new('jstor', $doi);
-  }
+  } elseif ($pos = strpos($doi, '?')) {
+      $doi = substr($doi, 0, $pos);
+      check_doi_for_jstor($doi, $template);
+  }      
 }
