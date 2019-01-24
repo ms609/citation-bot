@@ -984,7 +984,7 @@ final class Template {
        }
     }
     
-    if (preg_match('~^https?://(?:www-|)jstor-org[-\.][^\s/]+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
+    if (preg_match('~^https?://(?:www-|)jstor-org[-\.]\S+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
        if (!is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
