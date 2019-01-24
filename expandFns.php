@@ -470,4 +470,25 @@ function str_equivalent($str1, $str2) {
   return 0 === strcasecmp(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
 }
   
-  
+function check_doi_for_jstor($doi, &$template) {
+  if ($template->has('jstor')) return;
+  $doi = trim($doi);
+  if ($doi == '') return;
+  if (strpos($doi, '10.2307') === 0) { // special case
+    $doi = substr($doi, 8);
+  }
+  $test_url = "https://www.jstor.org/citation/ris/" . $doi;
+  $ch = curl_init($test_url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  $ris = @curl_exec($ch);
+  $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  curl_close($ch);
+  if ($httpCode == 200 &&
+      stripos($ris, $doi) !== FALSE &&
+      strpos($ris, 'Provider') !== FALSE) {
+      $template->add_if_new('jstor', $doi);
+  } elseif ($pos = strpos($doi, '?')) {
+      $doi = substr($doi, 0, $pos);
+      check_doi_for_jstor($doi, $template);
+  }      
+}
