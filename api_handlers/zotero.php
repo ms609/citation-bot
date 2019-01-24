@@ -42,7 +42,7 @@ function zotero_request($url) {
     curl_setopt($ch, CURLOPT_TIMEOUT, 45);
   } else {
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5); 
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10); 
   }
   
   $zotero_response = curl_exec($ch);
