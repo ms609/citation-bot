@@ -473,6 +473,7 @@ function str_equivalent($str1, $str2) {
 function check_doi_for_jstor($doi, &$template) {
   if ($template->has('jstor')) return;
   $doi = trim($doi);
+  if ($doi == '') return;
   if (strpos($doi, '10.2307') === 0) { // special case
     $doi = substr($doi, 8);
   }
@@ -484,7 +485,7 @@ function check_doi_for_jstor($doi, &$template) {
   curl_close($ch);
   if ($httpCode == 200 &&
       stripos($ris, $doi) !== FALSE &&
-      k) {
+      strpos($ris, 'Provider') !== FALSE) {
       $template->add_if_new('jstor', $doi);
   } elseif ($pos = strpos($doi, '?')) {
       $doi = substr($doi, 0, $pos);
