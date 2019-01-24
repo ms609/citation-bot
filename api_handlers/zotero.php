@@ -30,15 +30,20 @@ function query_url_api($ids, $templates) {
 function zotero_request($url) {
   
   #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
-  $ch = curl_init('http://tools.wmflabs.org/translation-server/web');
+  $ch = curl_init('https://tools.wmflabs.org/translation-server/web');
   
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
-  curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);   
+  if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+  } else {
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10); 
+  }
   
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
@@ -161,6 +166,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->DOI) && $template->blank('doi')) {
     $template->add_if_new('doi', $result->DOI);
     expand_by_doi($template);
+    if (stripos($url, 'jstor')) check_doi_for_jstor($template->get('doi'), $template);
     if (!$template->incomplete() && doi_active($template->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
         (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url)) { // This is the use a replace to see if a substring is present trick
       report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");

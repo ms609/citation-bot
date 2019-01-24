@@ -994,6 +994,7 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
+      if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
@@ -1652,6 +1653,10 @@ final class Template {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
       }
       $return = curl_exec($ch);
+      if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
+        sleep(4);
+        $return = curl_exec($ch);
+      }
       if ($return === FALSE) {
         $exception = curl_error($ch);
         $number = curl_errno($ch);

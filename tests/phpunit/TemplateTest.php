@@ -44,17 +44,22 @@ final class TemplateTest extends testBaseClass {
 
     $text = "{{Cite web | url = http://www.jstor.org/stable/10.1017/s0022381613000030}}";
     $prepared = $this->prepare_citation($text);
-    $this->assertNull($prepared->get('jstor'));
+    $this->assertEquals('10.1017/s0022381613000030', $prepared->get('jstor'));
     
     $text = '{{cite web | via = UTF8 characters from JSTOR | url = https://www.jstor.org/stable/27695659}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('Mórdha', $expanded->get('last1'));
-    
+   
+    $text = '{{cite journal | url = https://www.jstor.org/stable/10.7249/mg1078a.10?seq=1#metadata_info_tab_contents }}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.7249/mg1078a.10', $expanded->get('jstor'));
+   
   }
     
    public function testRISJstorExpansion() {
-    $text = "{{Cite journal|jstor=30737 67}}";
-    $expanded = $this->process_citation($text);
+    $text = "<ref name='jstor'>{{jstor|3073767}}</ref>"; // Check Page expansion too
+    $page = $this->process_page($text);
+    $expanded = $this->reference_to_template($page->parsed_text());
     $this->assertEquals('Are Helionitronium Trications Stable?', $expanded->get('title'));
     $this->assertEquals('99', $expanded->get('volume'));
     $this->assertEquals('24', $expanded->get('issue'));
