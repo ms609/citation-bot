@@ -30,7 +30,7 @@ function query_url_api($ids, $templates) {
 function zotero_request($url) {
   
   #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
-  $ch = curl_init('http://tools.wmflabs.org/translation-server/web');
+  $ch = curl_init('htt p://tools.wmflabs.org/translation-server/web');
   
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
