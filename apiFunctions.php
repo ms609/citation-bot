@@ -503,6 +503,11 @@ function expand_doi_with_dx($template, $doi) {
        $template->add_if_new('journal', @$json['container-title']);
        $template->add_if_new('title', @$json['title']);
      } elseif (@$json['type'] == 'monograph') {
+       $template->add_if_new('title', @$json['title']);
+       $template->add_if_new('title', @$json['container-title']);// Usually not set, but just in case this and not title is set
+       $template->add_if_new('location', @$json['publisher-location']);
+       $template->add_if_new('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'chapter') {
        $template->add_if_new('title', @$json['container-title']);
        $template->add_if_new('chapter', @$json['title']);
        $template->add_if_new('location', @$json['publisher-location']);
