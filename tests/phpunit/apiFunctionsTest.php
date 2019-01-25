@@ -59,7 +59,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertEquals('YUKAWA', $expanded->get('last1'));
      $this->assertEquals('Hideki', $expanded->get('first1'));
     }
-  // See https://www.doi.org/demos.html
+  // See https://www.doi.org/demos.html  NOT ALL EXPAND AT THIS TIME
   public function testExpansion_doi_not_from_crossrefBook() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
@@ -81,7 +81,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefDataCiteEarthquake() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/GFZ.GEOFON.gfz2009kciu');
-    $this->assertEquals("",$expanded->parsed_text());
+    $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefDataCiteMappedVisualization() {
@@ -99,19 +99,19 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefISTIC_Journal() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
-     $this->assertEquals("", $expanded->parsed_text());
+     $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefISTIC_Data() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3972/water973.0145.db');
-    $this->assertEquals("", $expanded->parsed_text());
+    $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   }
  
   public function testExpansion_doi_not_from_crossrefISTIC_Thesis() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.7666/d.y351065');
-     $this->assertEquals("", $expanded->parsed_text());
+     $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefJaLC_Journal() {
@@ -135,7 +135,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefmEDRA_Monograph() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1392/BC1.0');
-     $this->assertEquals("", $expanded->parsed_text());
+     $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   }     
 
 }
