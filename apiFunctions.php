@@ -470,11 +470,11 @@ function expand_doi_with_dx($template, $doi) {
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
-       if (isset($json['issued']['date-parts']['0']['0')) {
+       if (isset($json['issued']['date-parts']['0']['0'])) {
          $template->add_if_new('year', $json['issued']['date-parts']['0']['0']);
-       } elseif (isset($json['created']['date-parts']['0']['0')) {
+       } elseif (isset($json['created']['date-parts']['0']['0'])) {
          $template->add_if_new('year', $json['created']['date-parts']['0']['0']);
-       } elseif (isset($json['published-print']['date-parts']['0']['0')) {
+       } elseif (isset($json['published-print']['date-parts']['0']['0'])) {
          $template->add_if_new('year', $json['published-print']['date-parts']['0']['0']);
        }
      }
