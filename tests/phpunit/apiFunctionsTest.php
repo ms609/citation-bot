@@ -69,7 +69,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefBookChapter() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals('{{Cite book|year = 2003|isbn = 978-0471975144|title = Internetworking LANs and WANs|chapter = Network Concepts|location = Chichester, UK|publisher = John Wiley & Sons, Ltd}}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefDataCiteSubsets() {
@@ -99,19 +99,19 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefISTIC_Journal() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
-     $this->assertEquals("{{Cite journal|year = 2002|issue = 4|author1 = Romano Prodi|title = L'Industria dopo l'euro|journal = L'Industria}}", $expanded->parsed_text());
+     $this->assertEquals("", $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefISTIC_Data() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3972/water973.0145.db');
-     $this->assertNull($expanded->parsed_text());
+    $this->assertEquals("", $expanded->parsed_text());
   }
  
   public function testExpansion_doi_not_from_crossrefISTIC_Thesis() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.7666/d.y351065');
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals("", $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefJaLC_Journal() {
@@ -129,13 +129,13 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefmEDRA_Journal() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1430/8105');
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals("{{Cite journal|year = 2002|issue = 4|author1 = Romano Prodi|title = L'Industria dopo l'euro|journal = L'Industria}}", $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefmEDRA_Monograph() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1392/BC1.0');
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals("", $expanded->parsed_text());
   }     
 
 }
