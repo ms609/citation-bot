@@ -499,7 +499,7 @@ function expand_doi_with_dx($template, $doi) {
      }
      if (@$json['type'] == 'article-journal' ||
          @$json['type'] == 'article' ||
-         (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0']))) {
+         (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
        $template->add_if_new('journal', @$json['container-title']);
        $template->add_if_new('title', @$json['title']);
      } elseif (@$json['type'] == 'monograph') {
