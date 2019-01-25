@@ -137,6 +137,11 @@ class Page {
       return FALSE;
     }
 
+    $citation_count = substr_count($this->text, '{{cite ') +
+                      substr_count($this->text, '{{Cite ') +
+                      substr_count($this->text, '{{citation') +
+                      substr_count($this->text, '{{Citation');
+    $ref_count = substr_count($this->text, '<ref') + substr_count($this->text, '<Ref');
     // PLAIN URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
@@ -167,6 +172,10 @@ class Page {
                       function($matches) {return $matches[1] . '{{Cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
+     if (
+        ($ref_count < 2) ||
+        (($citation_count/$ref_count) >= 0.5)
+     ) {
      $this->text = preg_replace_callback(   // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
                                             // also without titles on the urls
                       "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+)( [^\]\[\{\}]+\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
@@ -176,6 +185,7 @@ class Page {
                         return $matches[1] . '{{Cite journal | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . '}}' . $matches[6] ;},
                       $this->text
                       );
+     }
 
     // TEMPLATES
     $all_templates = $this->extract_object('Template');
