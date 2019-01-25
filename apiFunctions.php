@@ -482,7 +482,7 @@ function expand_doi_with_dx($template, $doi) {
      $template->add_if_new('pages', @$json['pages']);
      $template->add_if_new('volume', @$json['volume']);
      if ($template->blank('isbn')) {
-       if (isset($json['ISBN']['0']) {
+       if (isset($json['ISBN']['0'])) {
          $template->add_if_new('isbn', $json['ISBN']['0']);
        } elseif (isset($json['isbn-type']['0']['value'])) {
          $template->add_if_new('isbn', $json['isbn-type']['0']['value']);
