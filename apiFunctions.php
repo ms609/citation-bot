@@ -519,7 +519,7 @@ function expand_doi_with_dx($template, $doi) {
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
      } elseif (@$json['type'] == 'chapter') {
-       $try_to_add_itw('title', @$json['container-title']);
+       $try_to_add_it('title', @$json['container-title']);
        $try_to_add_it('chapter', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
