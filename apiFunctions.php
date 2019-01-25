@@ -469,30 +469,57 @@ function expand_doi_with_dx($template, $doi) {
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
+     if ($template->blank(['date', 'year']) {
+       if (isset($json['issued']['date-parts']['0']['0')) {
+         $template->add_if_new('year', $json['issued']['date-parts']['0']['0']);
+       } elseif (isset($json['created']['date-parts']['0']['0')) {
+         $template->add_if_new('year', $json['created']['date-parts']['0']['0']);
+       } elseif (isset($json['published-print']['date-parts']['0']['0')) {
+         $template->add_if_new('year', $json['published-print']['date-parts']['0']['0']);
+       }
+     }
+     $template->add_if_new('issue', @$json['issue']);
+     $template->add_if_new('pages', @$json['pages']);
+     $template->add_if_new('volume', @$json['volume']);
+     if ($template->blank('isbn')) {
+       if (isset($json['ISBN']['0']) {
+         $template->add_if_new('isbn', $json['ISBN']['0']);
+       } elseif (isset($json['isbn-type']['0']['value'])) {
+         $template->add_if_new('isbn', $json['isbn-type']['0']['value']);
+       }
+     }
+     if (isset($json['author'])) {
+       $i = 0;
+       foreach ($json['author'] as $auth) {
+          $i = $i + 1;
+          $template->add_if_new('last' . (string) $i, @$auth['family']);
+          $template->add_if_new('first' . (string) $i, @$auth['given']);
+          $template->add_if_new('author' . (string) $i, @$auth['literal']);
+       }
+     }
      if (@$json['type'] == 'article-journal' ||
          @$json['type'] == 'article' ||
-         (@$json['type'] == '' && isset($json['container-title']))) {
-       $template->add_if_new('year', @$json['issued']['date-parts']['0']['0']);    
+         (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0']))) {
        $template->add_if_new('journal', @$json['container-title']);
-       $template->add_if_new('issue', @$json['issue']);
-       $template->add_if_new('pages', @$json['pages']);
        $template->add_if_new('title', @$json['title']);
-       $template->add_if_new('volume', @$json['volume']); 
-       if (isset($json['author'])) {
-         $i = 0;
-         foreach ($json['author'] as $auth) {
-            $i = $i + 1;
-            $template->add_if_new('last' . (string) $i, @$auth['family']);
-            $template->add_if_new('first' . (string) $i, @$auth['given']);
-            $template->add_if_new('author' . (string) $i, @$auth['literal']);
-         }
-       }
+     } elseif (@$json['type'] == 'monograph') {
+       $template->add_if_new('title', @$json['container-title']);
+       $template->add_if_new('chapter', @$json['title']);
+       $template->add_if_new('location', @$json['publisher-location']);
+       $template->add_if_new('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'dataset') {
+       $template->add_if_new('type', 'Data Set');
+       $template->add_if_new('title', @$json['title']);
+       $template->add_if_new('location', @$json['publisher-location']);
+       $template->add_if_new('publisher', @$json['publisher']);
+       $template->add_if_new('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
      } else {
        if (getenv('TRAVIS')) {
          print_r($json);
-         trigger_error ('dx.doi.org returned unexpected data for ' . doi_link($doi));
+         trigger_error ('dx.doi.org returned unexpected data type for ' . doi_link($doi));
        } else {
-         report_warning('dx.doi.org returned unexpected data for ' . doi_link($doi));
+         $template->add_if_new('title', @$json['title']);
+         report_warning('dx.doi.org returned unexpected data type for ' . doi_link($doi));
        }
      }
      return TRUE;
