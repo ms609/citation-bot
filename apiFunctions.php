@@ -448,11 +448,12 @@ function expand_doi_with_dx($template, $doi) {
      // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve this way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
-     $try_to_add_it = function($name, $data) {
+     $try_to_add_it = function($name, $data) use($template) {
        if (is_null($data)) return;
        while (is_array($data)) {
          if (empty($data)) return;
          if (!is_set($data['0'])) return;
+         if (is_set($data['1'])) return; // How dow we choose?
          $data = $data['0'];  // Going down deeper
        }
        if ($data == '') return;
