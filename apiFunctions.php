@@ -513,6 +513,10 @@ function expand_doi_with_dx($template, $doi) {
        $template->add_if_new('location', @$json['publisher-location']);
        $template->add_if_new('publisher', @$json['publisher']);
        $template->add_if_new('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
+     } elseif (@$json['type'] == '') {  // Add what we can where we can
+       $template->add_if_new('title', @$json['title']);
+       $template->add_if_new('location', @$json['publisher-location']);
+       $template->add_if_new('publisher', @$json['publisher']);
      } else {
        if (getenv('TRAVIS')) {
          print_r($json);
