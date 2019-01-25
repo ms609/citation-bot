@@ -63,7 +63,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefBook() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals('{{Cite book|year = 1996|isbn = 9780511983658|last1 = Luo|first1 = Zhi-Quan|title = Mathematical Programs with Equilibrium Constraints|last2 = Pang|first2 = Jong-Shi|last3 = Ralph|first3 = Daniel|location = Cambridge|publisher = Cambridge University Press}}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefBookChapter() {
@@ -75,7 +75,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefDataCiteSubsets() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.726855');
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals('{{Cite journal|year = 2009|last1 = Irino|first1 = Tomohisa|title = Chemical and mineral compositions of sediments from ODP Site 127-797, supplement to: Irino, Tomohisa; Tada, Ryuji (2000): Quantification of aeolian dust (Kosa) contribution to the Japan Sea sediments and its variation during the last 200 ky. Geochemical Journal, 34(1), 59-93|last2 = Tada|first2 = Ryuji}}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefDataCiteEarthquake() {
@@ -87,19 +87,19 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefDataCiteMappedVisualization() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.667386');
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals('{{Cite book|year = 2008|last1 = Kraus|first1 = Stefan|title = Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula)|last2 = del Valle|first2 = Rodolfo|type = Data Set|publisher = PANGAEA - Data Publisher for Earth & Environmental Science|chapter = Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet)}}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefDataCitevideo() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3207/2959859860');
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals('{{Cite journal|year = 2009|last1 = Kirchhof|first1 = Bernd|title = Silicone oil bubbles entrapped in the vitreous base during silicone oil removal}}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefISTIC_Journal() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals("{{Cite journal|year = 2002|issue = 4|author1 = Romano Prodi|title = L'Industria dopo l'euro|journal = L'Industria}}", $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefISTIC_Data() {
@@ -117,13 +117,13 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefJaLC_Journal() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals('{{Cite journal|year = 2009|volume = 7|last1 = 竹本|first1 = 賢太郎|title = 大学におけるWebメールとターミナルサービスの研究|last2 = 川東|first2 = 正美|last3 = 久保|first3 = 信行|last4 = 左近|first4 = 多喜男|publisher = 標準化研究学会}}',$expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefJaLC_Journal2() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.7875/leading.author.2.e008');
-     $this->assertNull($expanded->parsed_text());
+     $this->assertEquals('{{Cite journal|year = 2013|volume = 2|last1 = 川崎|first1 = 努.|title = 植物における免疫誘導と病原微生物の感染戦略|journal = 領域融合レビュー}}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefmEDRA_Journal() {
