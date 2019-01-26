@@ -96,46 +96,73 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertEquals('{{Cite journal|year = 2009|last1 = Kirchhof|first1 = Bernd|title = Silicone oil bubbles entrapped in the vitreous base during silicone oil removal}}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossrefISTIC_Journal() {
+  public function testExpansion_doi_not_from_crossre_fISTIC_Journal() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
      $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   }
   
-  public function testExpansion_doi_not_from_crossrefISTIC_Data() {
+  public function testExpansion_doi_not_from_crossre_fISTIC_Data() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3972/water973.0145.db');
     $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   }
  
-  public function testExpansion_doi_not_from_crossrefISTIC_Thesis() {
+  public function testExpansion_doi_not_from_crossref_ISTIC_Thesis() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.7666/d.y351065');
      $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossrefJaLC_Journal() {
+  public function testExpansion_doi_not_from_crossref_JaLC_Journal() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
      $this->assertEquals('{{Cite journal|year = 2009|volume = 7|last1 = 竹本|first1 = 賢太郎|title = 大学におけるWebメールとターミナルサービスの研究|last2 = 川東|first2 = 正美|last3 = 久保|first3 = 信行|last4 = 左近|first4 = 多喜男|publisher = 標準化研究学会}}',$expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossrefJaLC_Journal2() {
+  public function testExpansion_doi_not_from_crossref_JaLC_Journal2() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.7875/leading.author.2.e008');
      $this->assertEquals('{{Cite journal|year = 2013|volume = 2|last1 = 川崎|first1 = 努.|title = 植物における免疫誘導と病原微生物の感染戦略|journal = 領域融合レビュー}}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossrefmEDRA_Journal() {
+  public function testExpansion_doi_not_from_crossref_mEDRA_Journal() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1430/8105');
      $this->assertEquals("{{Cite journal|year = 2002|issue = 4|author1 = Romano Prodi|title = L'Industria dopo l'euro|journal = L'Industria}}", $expanded->parsed_text());
   }
   
-  public function testExpansion_doi_not_from_crossrefmEDRA_Monograph() {
+  public function testExpansion_doi_not_from_crossref_mEDRA_Monograph() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1392/BC1.0');
      $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   }     
 
+  // http://doi.airiti.com/
+  public function testExpansion_doi_not_from_crossref_airiti_journal() {
+     $expanded = $this->process_citation('{{Cite journal}}');
+     expand_doi_with_dx($expanded, '10.6620/ZS.2018.57-30');
+     $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
+  }    
+  // http://www.eidr.org/
+  public function testExpansion_doi_not_from_crossref_eidr_Black_Panther_Movie() {
+     $expanded = $this->process_citation('{{Cite journal}}');
+     expand_doi_with_dx($expanded, '10.5240/7B2F-ED76-31F6-8CFB-4DB9-M');
+     $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
+  } 
+ 
+  // http://www.kisti.re.kr/eng/
+  public function testExpansion_doi_not_from_crossref_kisti_journal() {
+     $expanded = $this->process_citation('{{Cite journal}}');
+     expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
+     $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
+  } 
+  
+  // https://publications.europa.eu/en/
+  public function testExpansion_doi_not_from_crossref_europa_monograph() {
+     $expanded = $this->process_citation('{{Cite journal}}');
+     expand_doi_with_dx($expanded, '10.2788/14231');
+     $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
+  } 
+  
 }
