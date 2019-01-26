@@ -64,7 +64,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE;
   }
   if (!$template->profoundly_incomplete($url)) {
-    if ($template->has('doi')) &&
+    if ($template->has('doi') &&
         !$template->incomplete() &&
         $template->get('url') === $url &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
@@ -73,7 +73,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         $template->blank(DOI_BROKEN_ALIASES) &&
         doi_active($template->get('doi')) // check one that accesses network last
     {
-          report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
+          report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
           $template->forget('url');
     }
     return FALSE; // Only risk unvetted data if there's little good data to sully
