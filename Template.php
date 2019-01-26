@@ -1661,7 +1661,6 @@ final class Template {
            $return = curl_exec($ch);
         }
       }
-      }
       if ($return === FALSE) {
         $exception = curl_error($ch);
         $number = curl_errno($ch);
