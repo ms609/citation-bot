@@ -64,11 +64,13 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE;
   }
   if (!$template->profoundly_incomplete($url)) {
-    if (doi_active($template->has('doi')) &&
+    if ($template->has('doi')) &&
         $template->get('url') === $url &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
         (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url)) && // This is the use a replace to see if a substring is present trick
-        stripos($url, 'pdf' and figure
+        (str_irellace(['pdf', 'image', 'plate', 'figure', 'picture'], '', $url) == $url && // might be a link to a specific image or direct pdf link
+        $template->blank(DOI_BROKEN_ALIASES) &&
+        doi_active($template->get('doi')) // check one that accesses network last
     {   report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
           $template->forget('url');
     }
