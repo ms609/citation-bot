@@ -155,7 +155,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossref_kisti_journal() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
-     $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
+     $this->assertEquals('{{Cite journal|year = 2011|issue = 2|volume = 28|last1 = Kim|first1 = Byung-Kyu|title = Kscd를 활용한 국내 과학기술자의 해외 학술지 인용행태 연구|journal = 정보관리학회지|last2 = Kang|first2 = Mu-Yeong|last3 = Choi|first3 = Seon-Heui|last4 = Kim|first4 = Soon-Young|last5 = You|first5 = Beom-Jong|last6 = Shin|first6 = Jae-Do}}', $expanded->parsed_text());
   } 
   
   // https://publications.europa.eu/en/
