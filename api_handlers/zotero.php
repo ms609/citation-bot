@@ -63,7 +63,17 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
   }
-  if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
+  if (!$template->profoundly_incomplete($url)) {
+    if (doi_active($template->has('doi')) &&
+        $template->get('url') === $url &&
+        !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
+        (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url)) && // This is the use a replace to see if a substring is present trick
+        stripos($url, 'pdf' and figure
+    {   report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
+          $template->forget('url');
+    }
+    return FALSE; // Only risk unvetted data if there's little good data to sully
+  }
   
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   
