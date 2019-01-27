@@ -24,6 +24,20 @@ function query_url_api($ids, $templates) {
        if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
        if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
        if ($template->has('doi') && !doi_active($template->get('doi')))  expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($template->get('doi'))); // Non-crossref DOIs, such as 10.13140/RG.2.1.1002.9609
+    // This is in wrong place
+    if ($template->has('doi') &&
+        !$template->incomplete() &&
+        $template->get('url') === $url &&
+        !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
+        str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url && // This is the use a replace to see if a substring is present trick
+        str_ireplace(['pdf', 'image', 'plate', 'figure', 'picture'], '', $url) == $url && // might be a link to a specific image or direct pdf link
+        $template->blank(DOI_BROKEN_ALIASES) &&
+        doi_active($template->get('doi'))) // check one that accesses network last
+      // DOI Active needs changed to be a dx.doi.org check
+    {
+          report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+          $template->forget('url');
+    }
   }
 }
 
@@ -64,18 +78,6 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE;
   }
   if (!$template->profoundly_incomplete($url)) {
-    if ($template->has('doi') &&
-        !$template->incomplete() &&
-        $template->get('url') === $url &&
-        !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
-        str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url && // This is the use a replace to see if a substring is present trick
-        str_ireplace(['pdf', 'image', 'plate', 'figure', 'picture'], '', $url) == $url && // might be a link to a specific image or direct pdf link
-        $template->blank(DOI_BROKEN_ALIASES) &&
-        doi_active($template->get('doi'))) // check one that accesses network last
-    {
-          report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
-          $template->forget('url');
-    }
     return FALSE; // Only risk unvetted data if there's little good data to sully
   }
   
