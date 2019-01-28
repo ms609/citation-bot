@@ -32,6 +32,7 @@ function query_url_api($ids, $templates) {
   curl_setopt($ch, CURLOPT_MAXREDIRS, 100); // No infinite loops for us
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
@@ -52,9 +53,9 @@ function query_url_api($ids, $templates) {
             } else {
               $redirectedUrl_url = '';
             }
-            $redirectedU_url_short   = strtok(strtok($redirectedUrl_url, '?'), '#');
-            $url_short               = strtok(strtok($url,               '?'), '#');
-            $redirectedUrl_doi_short = strtok(strtok($redirectedUrl_doi, '?'), '#');
+            $redirectedUrl_url_short = strtok($redirectedUrl_url, '?#');
+            $url_short               = strtok($url,               '?#');
+            $redirectedUrl_doi_short = strtok($redirectedUrl_doi, '?#');
             // Now we compare the URLS
             foreach ([$redirectedUrl_doi, $redirectedUrl_doi_short] as $a_doi_url) {
               foreach ([$url, $url_short, $redirectedUrl_url_short, $redirectedUrl_url] as $a_url) {
