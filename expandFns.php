@@ -408,7 +408,7 @@ function tidy_date($string) {
   }
   
   if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1]; // Last ditch effort - ends in a year
-  return $string; // And we give up
+  return ''; // And we give up
 }
 
 function remove_brackets($string) {
