@@ -52,9 +52,9 @@ function query_url_api($ids, $templates) {
             } else {
               $redirectedUrl_url = '';
             }
-            $redirectedU_url_short = substr($redirectedUrl_url, 0, (int) strpos($redirectedUrl_url, '?'));
-            $url_short = substr($url, 0, (int) strpos($url, '?'));
-            $redirectedUrl_doi_short = substr($redirectedUrl_doi, 0, (int) strpos($redirectedUrl_doi, '?'));
+            $redirectedU_url_short   = strtok(strtok($redirectedUrl_url, '?'), '#');
+            $url_short               = strtok(strtok($url,               '?'), '#');
+            $redirectedUrl_doi_short = strtok(strtok($redirectedUrl_doi, '?'), '#');
             // Now we compare the URLS
             foreach ([$redirectedUrl_doi, $redirectedUrl_doi_short] as $a_doi_url) {
               foreach ([$url, $url_short, $redirectedUrl_url_short, $redirectedUrl_url] as $a_url) {
