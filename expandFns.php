@@ -362,13 +362,16 @@ function tidy_date($string) {
   if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
   if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
     if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
+      if (strlen($matches[1]) === 1) $matches[1] = '0' . $matches[1];
       return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
     } elseif (intval($matches[2]) < 13 && intval($matches[1]) > 12) {
+      if (strlen($matches[2]) === 1) $matches[2] = '0' . $matches[2];
       return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
     } elseif (intval($matches[2]) > 12 && intval($matches[1]) > 12) {
       return '';
     } elseif ($matches[1] === $matches[2]) {
-      return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+      if (strlen($matches[2]) === 1) $matches[2] = '0' . $matches[2];
+      return $matches[3] . '-' . $matches[2] . '-' . $matches[2];
     } else {
       return $matches[3];// do not know. just give year
     }
