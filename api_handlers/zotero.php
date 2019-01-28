@@ -7,7 +7,7 @@ function query_url_api($ids, $templates) {
     }
   }
   report_action("Using Zotero translation server to retrieve details from identifiers.");
-  foreach ($templates as $template) {
+
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
            $template->add_if_new('doi', '10.1101/' . $template->get('biorxiv'));
@@ -24,32 +24,51 @@ function query_url_api($ids, $templates) {
        if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
        if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
        if ($template->has('doi') && !doi_active($template->get('doi')))  expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($template->get('doi'))); // Non-crossref DOIs, such as 10.13140/RG.2.1.1002.9609
-    
-    
-    // This is not in the best place
-    $doi = $this->get_without_comments_and_placeholders('doi');
-    if ($template->has('doi') &&
+  }
+   
+  // Now that we have expanded URLs, try to lose them
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+  curl_setopt($ch, CURLOPT_MAXREDIRS, 100); // No infinite loops for us
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
+  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+  foreach ($templates as $template) {
+    $doi = $template->get_without_comments_and_placeholders('doi');
+    $url = $template->get('url');
+    if ($doi &&
+        $url &&
         !$template->incomplete() &&
-        $template->get('url') === $url &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
-        str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url && // This is the use a replace to see if a substring is present trick
-        str_ireplace(['pdf', 'image', 'plate', 'figure', 'picture'], '', $url) == $url && // might be a link to a specific image or direct pdf link
-        $template->blank(DOI_BROKEN_ALIASES) &&
-
-
-    $url_test = "https://dx.doi.org/" . urlencode($doi);
-    $headers_test = @get_headers($url_test, 1);
-    if ($headers_test !== FALSE && empty($headers_test['Location'])) {
-      $this->add_if_new('doi-broken-date', date('Y-m-d'));  
-    }
-        
-        
-      // DOI Active needs changed to be a dx.doi.org check
+        str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url &&
+        str_ireplace(['pdf', 'image', 'plate', 'figure', 'picture'], '', $url) == $url &&
+        $template->blank(DOI_BROKEN_ALIASES))
     {
-          report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
-          $template->forget('url');
+          curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
+          if (@curl_exec($ch)) {
+            $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            if (@curl_exec($ch)) {
+              $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+            } else {
+              $redirectedUrl_url = '';
+            }
+            $redirectedU_url_short = substr($redirectedUrl_url, 0, (int) strpos($redirectedUrl_url, '?'));
+            $url_short = substr($url, 0, (int) strpos($url, '?'));
+            $redirectedUrl_doi_short = substr($redirectedUrl_doi, 0, (int) strpos($redirectedUrl_doi, '?'));
+            // Now we compare the URLS
+            foreach ([$redirectedUrl_doi, $redirectedUrl_doi_short] as $a_doi_url) {
+              foreach ([$url, $url_short, $redirectedUrl_url_short, $redirectedUrl_url] as $a_url) {
+                if ($a_doi_url !== '' && $a_url !== '' && $a_doi_url === $a_url) {
+                  report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
+                  $template->forget('url');
+                  break 2;
+                }
+              }
+            }
+          }
     }
   }
+  curl_close($ch);
 }
 
 function zotero_request($url) {
