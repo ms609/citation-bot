@@ -46,30 +46,28 @@ function query_url_api($ids, $templates) {
     {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
-            $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-            curl_setopt($ch, CURLOPT_URL, $url);
-            if (@curl_exec($ch)) {
-              $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-            } else {
-              $redirectedUrl_url = '';
-            }
-            $redirectedUrl_url_short = strtok($redirectedUrl_url, '?#');
-            $url_short               = strtok($url,               '?#');
-            $redirectedUrl_doi_short = strtok($redirectedUrl_doi, '?#');
-            // Now we compare the URLS
-            foreach ([$redirectedUrl_doi, $redirectedUrl_doi_short] as $a_doi_url) {
-              foreach ([$url, $url_short, $redirectedUrl_url_short, $redirectedUrl_url] as $a_url) {
-                if ($a_doi_url !== '' && $a_url !== '' && 0 === strcasecmp($a_doi_url, $a_url)) {
-                  report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
-                  $template->forget('url');
-                  break 2;
-                }
-              }
+            $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+            $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
+            $url_short         = strtok($url,               '?#');
+            if (0 === strcasecmp($url_short, $redirectedUrl_doi)) {
+               report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+               $template->forget('url');
+            } else { // See if $url redirects
+               curl_setopt($ch, CURLOPT_URL, $url);
+               if (@curl_exec($ch)) {
+                  $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+                  $redirectedUrl_url = strtok($redirectedUrl_url, '?#');
+                  if (0 === strcasecmp($redirectedUrl_url, $redirectedUrl_doi)) {
+                    report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+                    $template->forget('url');
+                  }
+               }
             }
           }
     }
   }
   curl_close($ch);
+  @strtok('',''); // Free internal buffers
 }
 
 function zotero_request($url) {
