@@ -58,7 +58,7 @@ function query_url_api($ids, $templates) {
             // Now we compare the URLS
             foreach ([$redirectedUrl_doi, $redirectedUrl_doi_short] as $a_doi_url) {
               foreach ([$url, $url_short, $redirectedUrl_url_short, $redirectedUrl_url] as $a_url) {
-                if ($a_doi_url !== '' && $a_url !== '' && $a_doi_url === $a_url) {
+                if ($a_doi_url !== '' && $a_url !== '' && 0 === strcasecmp($a_doi_url, $a_url)) {
                   report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
                   $template->forget('url');
                   break 2;
