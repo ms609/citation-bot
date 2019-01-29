@@ -47,7 +47,7 @@ const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'www.webcitation.org',
-                              'waybackmachine.org');
+                              'waybackmachine.org' );
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
