@@ -765,8 +765,8 @@ final class Template {
         return FALSE;
         
       case 'doi':
-        if (strpos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
-        if (strpos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
+        if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
+        if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (preg_match(REGEXP_DOI_ISSN_ONLY, $value)) return FALSE; // We do not add DOI's that are just an ISSN.
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
