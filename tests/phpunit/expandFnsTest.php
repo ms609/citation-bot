@@ -60,7 +60,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertEquals('2008-04-29', tidy_date('07:30 , 04.29.08'));
     $this->assertEquals('', tidy_date('-0001-11-30T00:00:00+00:00'));
     $this->assertEquals('', tidy_date('22/22/2010'));  // That is not valid date code
-    $this->assertEquals('The date is 88 but not three', tidy_date('The date is 88 but not three')); // Not a date, but has some numbers
+    $this->assertEquals('', tidy_date('The date is 88 but not three')); // Not a date, but has some numbers
   }
   
   public function testRemoveComments() {
