@@ -55,18 +55,19 @@ function query_url_api($ids, $templates) {
             if ( preg_match('~https://linkinghub.elsevier.com/retrieve/pii/(S[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
                  $redirectedUrl_doi = 'https://www.sciencedirect.com/science/article/pii/' . $matches[1] ;
              }
-            if (0 === strcasecmp($url_short, $redirectedUrl_doi)) {
+            if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
+                stripos($redirectedUrl_doi, $url_short) !== FALSE) {
                report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
                $template->forget('url');
             } else { // See if $url redirects
                curl_setopt($ch, CURLOPT_URL, $url);
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-                  $redirectedUrl_url = strtok($redirectedUrl_url, '?#');
-                  if (0 === strcasecmp($redirectedUrl_url, $redirectedUrl_doi)) {
+                  $url_short = strtok($redirectedUrl_url, '?#');
+                  if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
+                      stripos($redirectedUrl_doi, $url_short) !== FALSE) {
                     report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
                     $template->forget('url');
-                  }
                }
             }
           }
