@@ -25,7 +25,7 @@ function query_url_api($ids, $templates) {
        if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
        if ($template->has('doi')) {
          $doi = $template->get('doi');
-         if (!doi_active($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $value)) {
+         if (!doi_active($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
            expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($doi));  // DOIs without meta-data
          }
        }
