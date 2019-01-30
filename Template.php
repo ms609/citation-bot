@@ -765,8 +765,9 @@ final class Template {
         return FALSE;
         
       case 'doi':
-        if (strpos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
-        if (strpos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
+        if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
+        if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
+        if (preg_match(REGEXP_DOI_ISSN_ONLY, $value)) return FALSE; // We do not add DOI's that are just an ISSN.
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             $this->add('doi', $match[0]);          
@@ -984,13 +985,20 @@ final class Template {
        }
     }
     
+    if (preg_match('~^https?://(?:www-|)jstor-org[-\.]\S+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
+       $url = 'https://www.jstor.org/stable/' . $matches[1] ;
+       if (!is_null($url_sent)) {
+         $this->set($url_type, $url); // Update URL with cleaner one
+       }
+    }   
+    
     if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
-        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
+        return $this->add_if_new('doi', urldecode($match[1])); // Will expand from DOI when added
     }
     
     if ($doi = extract_doi($url)[1]) {

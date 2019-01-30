@@ -360,15 +360,19 @@ function tidy_date($string) {
   // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
   if (strpos($string, '0001-11-30') !== FALSE) return '';
   if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
+  if (preg_match('~^\d{4} \d{4}\-\d{4}$~', $string)) return ''; // si.edu
   if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
     if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
+      if (strlen($matches[1]) === 1) $matches[1] = '0' . $matches[1];
       return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
     } elseif (intval($matches[2]) < 13 && intval($matches[1]) > 12) {
+      if (strlen($matches[2]) === 1) $matches[2] = '0' . $matches[2];
       return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
     } elseif (intval($matches[2]) > 12 && intval($matches[1]) > 12) {
       return '';
     } elseif ($matches[1] === $matches[2]) {
-      return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+      if (strlen($matches[2]) === 1) $matches[2] = '0' . $matches[2];
+      return $matches[3] . '-' . $matches[2] . '-' . $matches[2];
     } else {
       return $matches[3];// do not know. just give year
     }
@@ -392,10 +396,10 @@ function tidy_date($string) {
     if (stripos($string, 'Invalid') !== FALSE) return '';
     return $string;
   }
-  if (preg_match('~^(.*?\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
-  if (preg_match(  '~\s(\d{4}\-\d?\d(?:\-?\d\d?))$~', $string, $matches)) return $matches[1];
-  if (preg_match( '~^(\d\d?/\d\d?/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); //Recusion to clean up 3/27/2000
-  if (preg_match('~[^0-9](\d\d?/\d\d?/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
+  if (preg_match( '~^(\d{4}\-\d{1,2}\-\d{1,2})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); // Starts with date
+  if (preg_match('~\s(\d{4}\-\d{1,2}\-\d{1,2})$~',     $string, $matches)) return tidy_date($matches[1]);  // Ends with a date
+  if (preg_match('~^(\d{1,2}/\d{1,2}/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); //Recusion to clean up 3/27/2000
+  if (preg_match('~[^0-9](\d{1,2}/\d{1,2}/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
   
   // Dates with dots -- convert to slashes and try again.
   if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
@@ -405,7 +409,7 @@ function tidy_date($string) {
   }
   
   if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1]; // Last ditch effort - ends in a year
-  return $string; // And we give up
+  return ''; // And we give up
 }
 
 function remove_brackets($string) {
