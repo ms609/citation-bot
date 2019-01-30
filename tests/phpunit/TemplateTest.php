@@ -1705,6 +1705,7 @@ ER -  }}';
   public function testDoiThatIsJustAnISSN() {
     $text = '{{cite web |url=http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html}}';
     $expanded = $this->process_citation($text);
+    $this->assertEquals('DEBUGGING - WHAT DO WE GET', $expanded->parsed_text());
     $this->assertEquals('10.1002/(ISSN)1099-0739', $expanded->get('doi'));
     $this->assertEquals('http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html');
   }
