@@ -30,7 +30,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'lease this domain', 'domain available', 'metaTags', 'An Error Occurred', 'User Cookie',
                                  'Cookies Disabled', 'page not found', '411 error', 'url not found',
                                  'limit exceeded', 'Error Page', '}}', '{{', 'EU Login', 'bad gateway', 'Captcha',
-                                 '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist'];
+                                 '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
+                                 'Subscribe to read' ];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -38,8 +39,8 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'cambridge.org', '.oup.com', 'nature.com', 'macmillan.com', 'ieeexplore.ieee.org',
                                 'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org', 'journals.ametsoc.org',
                                 'pubs.geoscienceworld.org', 'pubs.rsc.org', 'journals.uchicago.edu',
-                                'annualreviews.org', 'aip.scitation.org',                
-                                 //  Below are sites that are simply DOI resolvers, like dx.doi.org
+                                'annualreviews.org', 'aip.scitation.org',
+                                //  Below are sites that are simply DOI resolvers, like dx.doi.org
                                 'doi.library.ubc.ca');
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport');
@@ -47,7 +48,7 @@ const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'www.webcitation.org',
-                              'waybackmachine.org');
+                              'waybackmachine.org', 'siarchives.si.edu');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
