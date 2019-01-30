@@ -9,7 +9,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' IEEE ', ' if ', ' ILR ', ' in ', ' into ', ' is ', 
           ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' mot ', ' NASA ', ' NEJM ', ' non ',
           ' nor ', ' NY ', ' NYC ', ' NYT ', ' och ', ' OECD ', ' of ', ' off ', ' on ', ' og ', ' or ', 
-          ' over ', ' PCR ', ' per ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
+          ' o ver ', ' PCR ', ' per ', ' PNAS ', ' RNA ', ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' von ', ' voor ', ' when ', ' with ', ' within ', ' woor ', 
           ' y ', ' zu ', ' zum ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
