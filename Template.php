@@ -765,8 +765,9 @@ final class Template {
         return FALSE;
         
       case 'doi':
-        if (strpos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
-        if (strpos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
+        if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
+        if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
+        if (preg_match(REGEXP_DOI_ISSN_ONLY, $value)) return FALSE; // We do not add DOI's that are just an ISSN.
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             $this->add('doi', $match[0]);          
@@ -997,7 +998,7 @@ final class Template {
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
-        return $this->add_if_new("doi", urldecode($match[1])); // Will expand from DOI when added
+        return $this->add_if_new('doi', urldecode($match[1])); // Will expand from DOI when added
     }
     
     if ($doi = extract_doi($url)[1]) {

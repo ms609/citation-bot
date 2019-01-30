@@ -350,6 +350,7 @@ function expand_by_doi($template, $force = FALSE) {
   
   if (!$template->verify_doi()) return FALSE;
   $doi = $template->get_without_comments_and_placeholders('doi');
+  if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) return FALSE; // We do not use DOI's that are just an ISSN.
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       $template->add_if_new('jstor', substr($doi, 8));
   }
@@ -383,6 +384,7 @@ function expand_by_doi($template, $force = FALSE) {
                     || author_is_human($existing_author);
         
         foreach ($crossRef->contributors->contributor as $author) {
+          if (strtoupper($author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && $crossRef->journal_title === NULL) {
