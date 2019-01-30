@@ -383,6 +383,7 @@ function expand_by_doi($template, $force = FALSE) {
                     || author_is_human($existing_author);
         
         foreach ($crossRef->contributors->contributor as $author) {
+          if (strtoupper($author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && $crossRef->journal_title === NULL) {
