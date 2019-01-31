@@ -767,7 +767,6 @@ final class Template {
       case 'doi':
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
-        if (preg_match(REGEXP_DOI_ISSN_ONLY, $value)) return FALSE; // We do not add DOI's that are just an ISSN.
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             $this->add('doi', $match[0]);          
@@ -1664,6 +1663,10 @@ final class Template {
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
         sleep(4);
         $return = curl_exec($ch);
+        if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && getenv('TRAVIS')) {
+           sleep(20); // better slow than not at all in TRAVIS
+           $return = curl_exec($ch);
+        }
       }
       if ($return === FALSE) {
         $exception = curl_error($ch);

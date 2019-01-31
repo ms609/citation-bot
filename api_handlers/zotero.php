@@ -23,7 +23,12 @@ function query_url_api($ids, $templates) {
        if ($template->has('osti'))      expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
        if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
        if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
-       if ($template->has('doi') && !doi_active($template->get('doi')))  expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($template->get('doi'))); // Non-crossref DOIs, such as 10.13140/RG.2.1.1002.9609
+       if ($template->has('doi')) {
+         $doi = $template->get('doi');
+         if (!doi_active($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+           expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($doi));  // DOIs without meta-data
+         }
+       }
   }
 }
 
@@ -243,8 +248,9 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'book':
       case 'bookSection':
         // Too much bad data to risk switching journal to book or vice versa.
-        if ($template->wik iname() == 'cite web') 
-          $template->change_name_to('cite book');      
+        // also reject 'review' 
+        if ($template->wikiname() === 'cite web' && stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE) 
+          $template->change_name_to('cite book');
         break;
       case 'journalArticle':
       case 'report':  // ssrn uses this

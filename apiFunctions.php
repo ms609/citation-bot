@@ -447,13 +447,25 @@ function query_crossref($doi) {
 }
 
 function expand_doi_with_dx($template, $doi) {
-     // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve this way
+     // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
+     // Examples of DOI usage   https://www.doi.org/demos.html
+     $try_to_add_it = function($name, $data) use($template) {
+       if (is_null($data)) return;
+       while (is_array($data)) {
+         if (empty($data)) return;
+         if (!is_set($data['0'])) return;
+         if (is_set($data['1'])) return; // How dow we choose?
+         $data = $data['0'];  // Going down deeper
+       }
+       if ($data == '') return;
+       $template->add_if_new($name, $data);
+     };
      if (!$doi) return FALSE;
      $ch = curl_init();
      curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
-     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
+     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/vnd.citationstyles.csl+json"));
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      try {
@@ -466,8 +478,73 @@ function expand_doi_with_dx($template, $doi) {
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
+     $json = @json_decode($ris, TRUE);
+     if($json === FALSE) return FALSE;
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
-     $template->expand_by_RIS($ris, FALSE);
+     // BE WARNED:  this code uses the "@$var" method.
+     // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
+     if ($template->blank(['date', 'year'])) {
+       if (isset($json['issued']['date-parts']['0']['0'])) {
+         $try_to_add_it('year', $json['issued']['date-parts']['0']['0']);
+       } elseif (isset($json['created']['date-parts']['0']['0'])) {
+         $try_to_add_it('year', $json['created']['date-parts']['0']['0']);
+       } elseif (isset($json['published-print']['date-parts']['0']['0'])) {
+         $try_to_add_it('year', $json['published-print']['date-parts']['0']['0']);
+       }
+     }
+     $try_to_add_it('issue', @$json['issue']);
+     $try_to_add_it('pages', @$json['pages']);
+     $try_to_add_it('volume', @$json['volume']);
+     if ($template->blank('isbn')) {
+       if (isset($json['ISBN']['0'])) {
+         $try_to_add_it('isbn', $json['ISBN']['0']);
+       } elseif (isset($json['isbn-type']['0']['value'])) {
+         $try_to_add_it('isbn', $json['isbn-type']['0']['value']);
+       }
+     }
+     if (isset($json['author'])) {
+       $i = 0;
+       foreach ($json['author'] as $auth) {
+          $i = $i + 1;
+          $try_to_add_it('last' . (string) $i, @$auth['family']);
+          $try_to_add_it('first' . (string) $i, @$auth['given']);
+          $try_to_add_it('author' . (string) $i, @$auth['literal']);
+       }
+     }
+     if (@$json['type'] == 'article-journal' ||
+         @$json['type'] == 'article' ||
+         (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
+       $try_to_add_it('journal', @$json['container-title']);
+       $try_to_add_it('title', @$json['title']);
+     } elseif (@$json['type'] == 'monograph') {
+       $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this and not title is set
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'chapter') {
+       $try_to_add_it('title', @$json['container-title']);
+       $try_to_add_it('chapter', @$json['title']);
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'dataset') {
+       $try_to_add_it('type', 'Data Set');
+       $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
+       $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
+     } elseif (@$json['type'] == '') {  // Add what we can where we can
+       $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
+     } else {
+       if (getenv('TRAVIS')) {
+         print_r($json);
+         trigger_error ('dx.doi.org returned unexpected data type for ' . doi_link($doi));
+       } else {
+         $try_to_add_it('title', @$json['title']);
+         report_warning('dx.doi.org returned unexpected data type for ' . doi_link($doi));
+       }
+     }
      return TRUE;
 }
 
