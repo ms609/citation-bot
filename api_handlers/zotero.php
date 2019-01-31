@@ -248,8 +248,9 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'book':
       case 'bookSection':
         // Too much bad data to risk switching journal to book or vice versa.
-        if ($template->wikiname() == 'cite web') 
-          $template->change_name_to('cite book');      
+        // also reject 'review' 
+        if ($template->wikiname() === 'cite web' && stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE) 
+          $template->change_name_to('cite book');
         break;
       case 'journalArticle':
       case 'report':  // ssrn uses this
