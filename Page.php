@@ -221,7 +221,7 @@ class Page {
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
     $this->expand_templates_from_identifier('jstor',   $our_templates);
-    $list_dois = [];
+    $list_dois = array();
     for ($i = 0; $i < count($our_templates); $i++) { // DOIs are so important that we try to check them twice
       $list_dois[$i] = $our_templates[$i]->get('doi');
     }
