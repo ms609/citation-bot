@@ -1663,6 +1663,10 @@ final class Template {
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
         sleep(4);
         $return = curl_exec($ch);
+        if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && getenv('TRAVIS')) {
+           sleep(20); // better slow than not at all in TRAVIS
+           $return = curl_exec($ch);
+        }
       }
       if ($return === FALSE) {
         $exception = curl_error($ch);
