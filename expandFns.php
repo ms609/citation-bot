@@ -166,7 +166,7 @@ function wikify_external_text($title) {
   }
   $title = html_entity_decode($title, NULL, "UTF-8");
   $title = preg_replace("/\s+/"," ", $title);  // Remove all white spaces before
-  $title = (mb_substr($title, -1) == ".")
+  $title = (mb_substr($ti tle, -1) == ".")
             ? mb_substr($title, 0, -1)
             :(
               (mb_substr($title, -6) == "&nbsp;")
