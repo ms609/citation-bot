@@ -221,6 +221,10 @@ class Page {
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
     $this->expand_templates_from_identifier('jstor',   $our_templates);
+    $list_dois = [];
+    for ($i = 0; $i < count($our_templates); $i++) { // DOIs are so important that we try to check them twice
+      $list_dois[$i] = $our_templates[$i]->get('doi');
+    }
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
     
@@ -228,7 +232,9 @@ class Page {
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
-      expand_by_doi($this_template);
+      if ($our_templates[$i]->get('doi') !== $list_dois[$i]) { // That DOI has not been used yet to call expand_by_doi()
+        expand_by_doi($this_template);
+      }
       $this_template->get_doi_from_crossref();
       $this_template->find_pmid();  // #TODO Could probably batch this
       if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
