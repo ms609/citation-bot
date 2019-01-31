@@ -166,13 +166,11 @@ function wikify_external_text($title) {
   }
   $title = html_entity_decode($title, NULL, "UTF-8");
   $title = preg_replace("/\s+/"," ", $title);  // Remove all white spaces before
-  $title = (mb_substr($title, -1) == ".")
-            ? mb_substr($title, 0, -1)
-            :(
-              (mb_substr($title, -6) == "&nbsp;")
-              ? mb_substr($title, 0, -6)
-              : $title
-            );
+  if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
+  if (mb_substr($title, -1) == ".") {
+    $last_word = mb_substr($title, mb_strpos($title, ' ') + 1);
+    if (mb_substr_count($last_word, '.') === 1) $last_word = mb_substr($title, 0, -1); // Do not remove if something like D.C.  (will not catch D. C. though)
+  }
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
   
