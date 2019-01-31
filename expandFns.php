@@ -168,7 +168,7 @@ function wikify_external_text($title) {
   $title = preg_replace("/\s+/"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
   if (mb_substr($title, -1) == ".") {
-    $last_word = mb_substr($title, mb_strpos($string, ' ') + 1);
+    $last_word = mb_substr($title, mb_strpos($title, ' ') + 1);
     if (mb_substr_count($last_word, '.') === 1) $last_word = mb_substr($title, 0, -1); // Do not remove if something like D.C.  (will not catch D. C. though)
   }
   $title = preg_replace('~[\*]$~', '', $title);
