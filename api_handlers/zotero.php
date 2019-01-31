@@ -243,7 +243,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'book':
       case 'bookSection':
         // Too much bad data to risk switching journal to book or vice versa.
-        if ($template->wikiname() == 'cite web') 
+        if ($template->wik iname() == 'cite web') 
           $template->change_name_to('cite book');      
         break;
       case 'journalArticle':
