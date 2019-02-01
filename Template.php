@@ -1314,6 +1314,7 @@ final class Template {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));
       }
       elseif ($result["status"] == "resolved") {
+        print_r($result);
         return $result;
       }
     }
@@ -1337,6 +1338,7 @@ final class Template {
       report_warning("Cannot search CrossRef: " . echoable($result->msg));
     } elseif ($result["status"]=="resolved") {
       echo " Successful!";
+        print_r($result);
       return $result;
     }
   }
