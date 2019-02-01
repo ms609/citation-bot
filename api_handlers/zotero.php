@@ -60,6 +60,7 @@ function zotero_request($url) {
   
 function expand_by_zotero(&$template, $url = NULL) {
   $access_date = FALSE;
+  return FALSE;
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
   }
