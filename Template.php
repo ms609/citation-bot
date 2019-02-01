@@ -1270,7 +1270,7 @@ final class Template {
 
   public function get_doi_from_crossref() {
     if ($this->has('doi')) {
-      return $this->get_without_comments_and_placeholders('doi');
+      return TRUE;
     }
     report_action("Checking CrossRef database for doi. ");
     $data = [
@@ -1314,12 +1314,13 @@ final class Template {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));
       }
       elseif ($result["status"] == "resolved") {
-        print_r($result);
-        return $result;
+        if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
+        echo " Successful!";
+        return $this->add_if_new('doi', $result['doi']);
       }
     }
     
-    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return;
+    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
     
     // If fail, try again with fewer constraints...
     report_info("Full search failed. Dropping author & end_page... ");
@@ -1337,10 +1338,11 @@ final class Template {
     elseif ($result['status'] == 'malformed') {
       report_warning("Cannot search CrossRef: " . echoable($result->msg));
     } elseif ($result["status"]=="resolved") {
+      if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
       echo " Successful!";
-        print_r($result);
-      return $result;
+      return $this->add_if_new('doi', $result['doi']);
     }
+    return FALSE;
   }
 
   public function find_pmid() {
