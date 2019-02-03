@@ -375,6 +375,8 @@ final class TemplateTest extends testBaseClass {
     
     $text = "{{Cite web | Journal=My Journal| issn=1357-4321 | publisher=Unwarranted }}";
     $prepared = $this->prepare_citation($text);
+    $this->assertEquals('{{Cite journal | journal=My Journal| issn=1357-4321 | publisher=Unwarranted }}', $prepared->parsed_text());
+    $expanded = $this->process_citation($text);
     $this->assertEquals('{{Cite journal | journal=My Journal| issn=1357-4321 }}', $prepared->parsed_text());
   }
     
@@ -1613,7 +1615,7 @@ ER -  }}';
   
   public function testRemovePublisherWithWork() {
     $text = '{{cite journal|jstor=1148172|title=Strategic Acupuncture|work=Foreign Policy|issue=Winter 1980|pages=44–61|publisher=Washingtonpost.Newsweek Interactive, LLC|year=1980}}';
-    $expanded = $this->prepare_citation($text);
+    $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('publisher'));  
   }
     
