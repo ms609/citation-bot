@@ -2850,15 +2850,6 @@ final class Template {
           
         case 'journal':
           if ($this->lacks($param)) return;
-          if ($this->blank(['chapter', 'isbn'])) {
-            // Avoid renaming between cite journal and cite book
-            $this->change_name_to('cite journal');
-            $this->forget('publisher');
-            $this->forget('location');
-          } else {
-            report_warning('Citation should probably not have journal = ' . $this->get('journal')
-            . ' as well as chapter / ISBN ' . $this->get('chapter') . $this->get('isbn'));
-          }
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           // No break here: Continue on from journal into periodical
         case 'periodical':
@@ -3216,6 +3207,18 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') && strpos($this->get('doi'), '10.2307') === 0) {
       $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+    }
+    if ($this->has('journal') {  // Do this at the very end of work in case we change type/etc during expansion
+          if ($this->blank(['chapter', 'isbn', 'lccn', 'olcn'])) {
+            // Avoid renaming between cite journal and cite book
+            $this->change_name_to('cite journal');
+            $this->forget('publisher');
+            $this->forget('location');
+          } else {
+            report_warning('Citation should probably not have journal = ' . $this->get('journal')
+            . ' as well as chapter / ISBN / LCCN / OLCN ' . $this->get('chapter') . ' ' .  $this->get('isbn') . ' '
+            .  $this->get('lccn') . ' ' .  $this->get('olcn'));
+          }
     }
     foreach (ALL_ALIASES as $alias_list) {
       if (!$this->blank($alias_list)) { // At least one is set
