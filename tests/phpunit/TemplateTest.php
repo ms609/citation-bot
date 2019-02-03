@@ -369,7 +369,7 @@ final class TemplateTest extends testBaseClass {
   public function testGarbageRemovalAndSpacing() {
     // Also tests handling of upper-case parameters
     $text = "{{Cite web | title=Ellipsis... | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01}}";
-    $prepared = $this->prepare_citation($text);
+    $prepared = $this->process_citation($text);
     // ISSN should be retained when journal is originally present
     $this->assertEquals('{{Cite journal | title=Ellipsis... | pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $prepared->parsed_text());
     
