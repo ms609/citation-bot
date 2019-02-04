@@ -1285,18 +1285,18 @@ final class Template {
       'issn'       => $this->get('issn'),
       'url'        => trim($this->get('url')),
     ];
-    
+    print_r($data);
     $novel_data = FALSE;
     foreach ($data as $key => $value) if ($value) {
       if ($this->api_has_not_used('crossref', equivalent_parameters($key))) $novel_data = TRUE;
       $this->record_api_usage('crossref', $key);    
     }
-
+echo '222222';
     if (!$novel_data) {
       report_info("No new data since last CrossRef search.");
       return FALSE;
     } 
-  
+  echo '3333332';
     if ($data['journal'] || $data['issn']) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
            . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
@@ -1307,11 +1307,12 @@ final class Template {
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['issn'] ? ("&issn=" . $data['issn'])
                             : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
+      echo "\n $url \n";
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
-        report_warning("Error loading simpleXML file from CrossRef.");
+        echo("Error loading simpleXML file from CrossRef.");
       }
       elseif ($result['status'] == 'malformed') {
-        report_warning("Cannot search CrossRef: " . echoable($result->msg));
+        echo("Cannot search CrossRef: " . echoable($result->msg));
       }
       elseif ($result["status"] == "resolved") {
         if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
@@ -1322,8 +1323,8 @@ final class Template {
     
     if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
     
-    // If fail, try again with fewer constraints...
-    report_info("Full search failed. Dropping author & end_page... ");
+    // If sfail, try again with fewer constraints...
+    echo("Full search failed. Dropping author & end_page... ");
     $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
            . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
            . ($data['issn'] ? "&issn=$issn" 
@@ -1333,10 +1334,10 @@ final class Template {
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
     
     if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
-      report_warning("Error loading simpleXML file from CrossRef.");
+      echo("Error loading simpleXML file from CrossRef.");
     }
     elseif ($result['status'] == 'malformed') {
-      report_warning("Cannot search CrossRef: " . echoable($result->msg));
+      echo("Cannot search CrossRef: " . echoable($result->msg));
     } elseif ($result["status"]=="resolved") {
       if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
       echo " Successful!";
