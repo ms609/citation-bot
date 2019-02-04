@@ -29,12 +29,13 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('5–6'         ,      $prepared->get('pages'));
   }
  
-  public function testGetDoi() {
-     $expanded = $this->process_citation('{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Fried | first2 = L. E. | doi = | title = Improved wood–kirkwood detonation chemical kinetics | journal = Theoretical Chemistry Accounts | volume = 120 | pages = 37–43 | year = 2007 |issue=1–3}}');
+  public function testGetDoiFromCrossref() {
+     $text = '{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Fried | first2 = L. E. | doi = | title = Improved wood–kirkwood detonation chemical kinetics | journal = Theoretical Chemistry Accounts | volume = 120 | pages = 37–43 | year = 2007 |issue=1–3}}';
+     $expanded = $this->process_citation($text);
      $this->assertEquals('10.1007/s00214-007-0303-9', $expanded->get('doi'));
-     $this->assertNull($expanded->get('pmid'));
+     $this->assertNull($expanded->get('pmid'));  // do not want reference where pmid leads to doi
      $this->assertNull($expanded->get('bibcode'));
-     $this->assertNull($expanded->get('pmvc'));
+     $this->assertNull($expanded->get('pmc'));
   }
   
   public function testJstorExpansion() {
