@@ -1311,12 +1311,15 @@ echo '222222';
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         echo("Error loading simpleXML file from CrossRef.");
       }
-      elseif ($result['@attributes']['status'] == 'malformed') {
+      elseif ($result['status'] == 'malformed') {
         echo("Cannot search CrossRef: " . echoable($result->msg));
       }
-      elseif ($result['@attributes']["status"] == "resolved") {
+      elseif ($result['status'] == 'resolved') {
         echo "\n resolved\n";
         print_r($result);
+        echo "\n" . isset($result['doi']) . "\n";
+        echo "\n" . is_array($result['doi']) . "\n";
+        echo "$result['doi']";
         if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
         echo " Successful!";
         return $this->add_if_new('doi', $result['doi']);
