@@ -1317,12 +1317,10 @@ echo '222222';
       elseif ($result['status'] == 'resolved') {
         echo "\n resolved\n";
         print_r($result);
-        echo "\n" . isset($result['doi']) . "\n";
-        echo "\n" . is_array($result['doi']) . "\n";
-        echo "X" . $result['doi'] . "X\n";
-        if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
+        echo "X" . $result->doi . "X\n";
+        if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
         echo " Successful!";
-        return $this->add_if_new('doi', $result['doi']);
+        return $this->add_if_new('doi', $result->doi);
       }
     }
     echo "77777777";
