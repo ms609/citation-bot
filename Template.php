@@ -1308,10 +1308,10 @@ final class Template {
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         report_warning("Error loading simpleXML file from CrossRef.");
       }
-      elseif ($result['@attributes']['status'] == 'malformed') {
+      elseif ($result['status'] == 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));
       }
-      elseif ($result['@attributes']['status'] == 'resolved') {
+      elseif ($result['status'] == 'resolved') {
         if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
         report_info(" Successful!");
         return $this->add_if_new('doi', $result['doi']);
