@@ -216,15 +216,12 @@ class Page {
     
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
+    $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
     $this->expand_templates_from_identifier('jstor',   $our_templates);
-    $list_dois = array();
-    for ($i = 0; $i < count($our_templates); $i++) { // DOIs are so important that we try to check them twice
-      $list_dois[$i] = $our_templates[$i]->get('doi');
-    }
-    $this->expand_templates_from_identifier('doi',     $our_templates);
+    $this->expand_templates_from_identifier('doi',     $our_templates);  // Did we gain a DOI?
     expand_arxiv_templates($our_templates);
     $this->expand_templates_from_identifier('url',     $our_templates);
     
@@ -232,14 +229,12 @@ class Page {
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
-      if ($our_templates[$i]->get('doi') !== $list_dois[$i]) { // That DOI has not been used yet to call expand_by_doi()
-        expand_by_doi($this_template);
-      }
       $this_template->get_doi_from_crossref();
       $this_template->find_pmid();  // #TODO Could probably batch this
       if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
       $this_template->get_open_access_url();
     }
+    $this->expand_templates_from_identifier('doi',     $our_templates);  // Did we gain a DOI from CrossRef or Google or bibcode?
     
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
