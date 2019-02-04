@@ -1270,7 +1270,7 @@ final class Template {
 
   public function get_doi_from_crossref() {
     if ($this->has('doi')) {
-      return $this->get_without_comments_and_placeholders('doi');
+      return $this->get_wi thout_comments_and_placeholders('doi');
     }
     report_action("Checking CrossRef database for doi. ");
     $data = [
