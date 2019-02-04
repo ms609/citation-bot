@@ -1272,13 +1272,13 @@ final class Template {
       return TRUE;
     }
     report_action("Checking CrossRef database for doi. ");
+    $page_range = $this->page_range();
     $data = [
       'title'      => $this->get('title'),
       'journal'    => $this->get('journal'),
       'author'     => $this->first_surname(),
       'year'       => $this->get('year'),
       'volume'     => $this->get('volume'),
-      'page_range' => $this->page_range(),
       'start_page' => isset($page_range[1]) ? $page_range[1] : NULL,
       'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
       'issn'       => $this->get('issn'),
