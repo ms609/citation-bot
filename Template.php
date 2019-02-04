@@ -1286,6 +1286,7 @@ final class Template {
     ];
     
     $novel_data = FALSE;
+    foreach ($data as $key => $value) if ($value) {		
       if ($this->api_has_not_used('crossref', equivalent_parameters($key))) $novel_data = TRUE;
       $this->record_api_usage('crossref', $key);    
     }
