@@ -1319,7 +1319,7 @@ echo '222222';
         print_r($result);
         echo "\n" . isset($result['doi']) . "\n";
         echo "\n" . is_array($result['doi']) . "\n";
-        echo "$result['doi']";
+        echo "X" . $result['doi'] . "X\n";
         if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
         echo " Successful!";
         return $this->add_if_new('doi', $result['doi']);
