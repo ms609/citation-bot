@@ -1272,14 +1272,14 @@ final class Template {
     if ($this->has('doi')) {
       return TRUE;
     }
-    report_action("Checking CrossRef database for doi. ");
+    echo ("Checking CrossRef database for doi. ");
+    $page_range = $this->page_range();
     $data = [
       'title'      => $this->get('title'),
       'journal'    => $this->get('journal'),
       'author'     => $this->first_surname(),
       'year'       => $this->get('year'),
       'volume'     => $this->get('volume'),
-      'page_range' => $this->page_range(),
       'start_page' => isset($page_range[1]) ? $page_range[1] : NULL,
       'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
       'issn'       => $this->get('issn'),
@@ -1315,12 +1315,14 @@ echo '222222';
         echo("Cannot search CrossRef: " . echoable($result->msg));
       }
       elseif ($result["status"] == "resolved") {
+        echo "\n resolved\n";
+        print_r($result);
         if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
         echo " Successful!";
         return $this->add_if_new('doi', $result['doi']);
       }
     }
-    
+    echo "77777777";
     if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
     
     // If sfail, try again with fewer constraints...
