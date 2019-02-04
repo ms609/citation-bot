@@ -1311,10 +1311,10 @@ echo '222222';
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         echo("Error loading simpleXML file from CrossRef.");
       }
-      elseif ($result['status'] == 'malformed') {
+      elseif ($result['@attributes']['status'] == 'malformed') {
         echo("Cannot search CrossRef: " . echoable($result->msg));
       }
-      elseif ($result["status"] == "resolved") {
+      elseif ($result['@attributes']["status"] == "resolved") {
         echo "\n resolved\n";
         print_r($result);
         if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
