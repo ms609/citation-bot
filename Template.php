@@ -1268,6 +1268,7 @@ final class Template {
   }
 
   public function get_doi_from_crossref() {
+    echo "\n 11111\n";
     if ($this->has('doi')) {
       return TRUE;
     }
