@@ -721,7 +721,6 @@ final class Template {
                 && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
               )
         ) {
-            if (mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
             if ($param_name !== "page")  $this->forget("page");
             if ($param_name !== "pp")    $this->forget("pp");
@@ -1270,7 +1269,7 @@ final class Template {
 
   public function get_doi_from_crossref() {
     if ($this->has('doi')) {
-      return $this->get_wi thout_comments_and_placeholders('doi');
+      return TRUE;
     }
     report_action("Checking CrossRef database for doi. ");
     $data = [
@@ -1314,11 +1313,13 @@ final class Template {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));
       }
       elseif ($result["status"] == "resolved") {
-        return $result;
+        if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
+        echo " Successful!";
+        return $this->add_if_new('doi', $result['doi']);
       }
     }
     
-    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return;
+    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
     
     // If fail, try again with fewer constraints...
     report_info("Full search failed. Dropping author & end_page... ");
@@ -1336,9 +1337,11 @@ final class Template {
     elseif ($result['status'] == 'malformed') {
       report_warning("Cannot search CrossRef: " . echoable($result->msg));
     } elseif ($result["status"]=="resolved") {
+      if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
       echo " Successful!";
-      return $result;
+      return $this->add_if_new('doi', $result['doi']);
     }
+    return FALSE;
   }
 
   public function find_pmid() {

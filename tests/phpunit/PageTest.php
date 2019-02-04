@@ -170,7 +170,7 @@ final class PageTest extends testBaseClass {
       $this->assertEquals('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal | doi=10.1145/358589.358596|title = Improving computer program readability to aid modification| journal=Communications of the ACM| volume=25| issue=8| pages=512–521|year = 1982|last1 = Elshoff|first1 = James L.| last2=Marcotty| first2=Michael}}</ref>', $page->parsed_text());
   }
  
-  public function testRespectDates() {
+  public function testRespectDatesZotero() {
       $text = '{{Use mdy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
       $page = $this->process_page($text);
       $this->assertTrue((boolean) strpos($page->parsed_text(), '12-05-2016'));
