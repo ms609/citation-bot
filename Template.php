@@ -1286,7 +1286,6 @@ final class Template {
     ];
     
     $novel_data = FALSE;
-    foreach ($data as $key => $value) if ($value) {
       if ($this->api_has_not_used('crossref', equivalent_parameters($key))) $novel_data = TRUE;
       $this->record_api_usage('crossref', $key);    
     }
@@ -1314,7 +1313,7 @@ final class Template {
       }
       elseif ($result['@attributes']['status'] == 'resolved') {
         if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
-        echo " Successful!";
+        report_info(" Successful!");
         return $this->add_if_new('doi', $result['doi']);
       }
     }
@@ -1338,7 +1337,7 @@ final class Template {
       report_warning("Cannot search CrossRef: " . echoable($result->msg));
     } elseif ($result["status"]=="resolved") {
       if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
-      echo " Successful!";
+      report_info(" Successful!");
       return $this->add_if_new('doi', $result['doi']);
     }
     return FALSE;
