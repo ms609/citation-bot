@@ -377,7 +377,7 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text); // Do not drop publisher at start
     $this->assertEquals('{{Cite journal | journal=My Journal| issn=1357-4321 | publisher=Unwarranted }}', $prepared->parsed_text());
     $expanded = $this->process_citation($text);  // Drop it at end
-    $this->assertEquals('{{Cite journal | journal=My Journal| issn=1357-4321 }}', $prepared->parsed_text());
+    $this->assertEquals('{{Cite journal | journal=My Journal| issn=1357-4321 }}', $expanded->parsed_text());
   }
     
   public function testPublisherRemoval() {
