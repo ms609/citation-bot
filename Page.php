@@ -234,7 +234,7 @@ class Page {
       if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
       $this_template->get_open_access_url();
     }
-    $this->expand_templates_from_identifier('doi',     $our_templates);  // On rare occasion we get one, such as biorxiv
+    $this->expand_templates_from_identifier('doi',     $our_templates);  // On rare occasions we have a new one, such as biorxiv
     
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
