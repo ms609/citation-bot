@@ -113,6 +113,7 @@ class ZoteroTest extends testBaseClass {
   public function testZoteroExpansion_biorxiv() {
     $text = '{{Cite journal| biorxiv=326363 }}';
     $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->parsed_text());
     $this->assertEquals('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get('title'));
   }
  
