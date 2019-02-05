@@ -1460,7 +1460,7 @@ final class Template {
       return $this->expand_book_adsabs();
     }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
-      report_info("No need to repeat AdsAbs search for " . $this->get('bibcode'));
+      report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode')));
       return FALSE;
     }
   
@@ -1553,7 +1553,7 @@ final class Template {
         if($this->has('journal'))   $book_count -= 2;
         if($this->wikiname() === 'cite book') $book_count += 3;
         if($book_count > 3) {
-          report_info("Suspect that BibCode " . (string) $record->bibcode . " is book review.  Rejecting.");
+          report_info("Suspect that BibCode " . bibcode_link((string) $record->bibcode) . " is book review.  Rejecting.");
           return FALSE;
         }
       }
