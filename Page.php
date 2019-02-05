@@ -240,7 +240,7 @@ class Page {
       if ($this_doi != $this_template->get('doi')) expand_by_doi($this_template); // We found one, so use it
       $this_template->get_open_access_url();
     }
-
+    
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
