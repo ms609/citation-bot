@@ -358,7 +358,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('Verstraete', $expanded->get('last1'));
   }
  
-  public function testAP() {
+  public function testAP_zotero() {
     $text = '{{cite web|author=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('author'));
@@ -1707,7 +1707,8 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('10.1002/(ISSN)1099-0739', $expanded->get('doi'));
     $this->assertEquals('http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html', $expanded->get('url'));
-   }
+    $this->assertEquals('cite web', $expanded->wikiname());
+  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
