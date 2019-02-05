@@ -1460,7 +1460,7 @@ final class Template {
       return $this->expand_book_adsabs();
     }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
-      report_info("No need to repeat AdsAbs search for " . $this->get('bibcode'));
+      report_info("No need to repeat  AdsAbs search for " . $this->get('bibcode'));
       return FALSE;
     }
   
