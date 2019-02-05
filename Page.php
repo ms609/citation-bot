@@ -228,12 +228,8 @@ class Page {
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
-      $this_template->expand_by_google_books();
-    }
-    report_phase('Add identifiers to individual templates by API calls'); 
-    for ($i = 0; $i < count($our_templates); $i++) {
-      $this_template = $our_templates[$i];
       $this_doi = $this_template->get('doi');
+      $this_template->expand_by_google_books();
       $this_template->get_doi_from_crossref();
       $this_template->find_pmid();  // #TODO Could probably batch this
       if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
