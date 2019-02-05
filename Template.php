@@ -721,7 +721,6 @@ final class Template {
                 && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
               )
         ) {
-            if (mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;  // A comment or template will block the bot
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
             if ($param_name !== "page")  $this->forget("page");
             if ($param_name !== "pp")    $this->forget("pp");
@@ -1270,7 +1269,7 @@ final class Template {
 
   public function get_doi_from_crossref() {
     if ($this->has('doi')) {
-      return $this->get_without_comments_and_placeholders('doi');
+      return TRUE;
     }
     report_action("Checking CrossRef database for doi. ");
     $data = [
@@ -1314,11 +1313,13 @@ final class Template {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));
       }
       elseif ($result["status"] == "resolved") {
-        return $result;
+        if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
+        echo " Successful!";
+        return $this->add_if_new('doi', $result['doi']);
       }
     }
     
-    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return;
+    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
     
     // If fail, try again with fewer constraints...
     report_info("Full search failed. Dropping author & end_page... ");
@@ -1336,9 +1337,11 @@ final class Template {
     elseif ($result['status'] == 'malformed') {
       report_warning("Cannot search CrossRef: " . echoable($result->msg));
     } elseif ($result["status"]=="resolved") {
+      if (!isset($result['doi']) || is_array($result['doi'])) return FALSE; // Never seen array, but pays to be paranoid
       echo " Successful!";
-      return $result;
+      return $this->add_if_new('doi', $result['doi']);
     }
+    return FALSE;
   }
 
   public function find_pmid() {
@@ -1457,7 +1460,7 @@ final class Template {
       return $this->expand_book_adsabs();
     }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
-      report_info("No need to repeat AdsAbs search for " . $this->get('bibcode'));
+      report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode')));
       return FALSE;
     }
   
@@ -1550,7 +1553,7 @@ final class Template {
         if($this->has('journal'))   $book_count -= 2;
         if($this->wikiname() === 'cite book') $book_count += 3;
         if($book_count > 3) {
-          report_info("Suspect that BibCode " . (string) $record->bibcode . " is book review.  Rejecting.");
+          report_info("Suspect that BibCode " . bibcode_link((string) $record->bibcode) . " is book review.  Rejecting.");
           return FALSE;
         }
       }
@@ -2790,7 +2793,7 @@ final class Template {
             return;
           }
           $this->set($param, sanitize_doi($doi));
-          $this->change_name_to('cite journal', FALSE);
+          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) $this->change_name_to('cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }

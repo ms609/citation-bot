@@ -31,7 +31,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Cookies Disabled', 'page not found', '411 error', 'url not found',
                                  'limit exceeded', 'Error Page', '}}', '{{', 'EU Login', 'bad gateway', 'Captcha',
                                  '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
-                                 'Subscribe to read' ];
+                                 'Subscribe to read', 'Wiley Online Library' ];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
