@@ -237,9 +237,7 @@ class Page {
       $this_template->find_pmid();  // #TODO Could probably batch this
       if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
       $this_template->get_open_access_url();
-    }
-    for ($i = 0; $i < count($our_templates); $i++) {
-      if ($our_dois[$i] != $our_templates[$i]->get('doi')) expand_by_crossref($our_templates[$i]);
+      if ($our_dois[$i] != $our_templates[$i]->get('doi')) expand_by_doi($our_templates[$i]);
     }
       
     report_phase('Remedial work to clean up templates');
