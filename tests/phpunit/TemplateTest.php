@@ -546,8 +546,11 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertEquals('10.1.1.752.4896', $expanded->get('citeseerx')); // get it even with a url
     
-    $text = '{{cite journal|doi=10.1038//TODO}}';
-    /*
+    $text = '{{citation|doi = 10.1007/978-3-642-60408-9_19}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('citeseerx')); // detect bad OA data
+
+   /*
     $this->assertEquals('http://some.url', $expanded->get('url'));
     $this->assertEquals('Accepted manuscript', $expanded->get('format'));
     */
