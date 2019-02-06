@@ -3216,15 +3216,14 @@ final class Template {
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
     }
     if ($this->has('journal')) {  // Do this at the very end of work in case we change type/etc during expansion
-          if ($this->blank(['chapter', 'isbn', 'lccn', 'olcn'])) {
+          if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
             $this->forget('publisher');
             $this->forget('location');
           } else {
             report_warning('Citation should probably not have journal = ' . $this->get('journal')
-            . ' as well as chapter / ISBN / LCCN / OLCN ' . $this->get('chapter') . ' ' .  $this->get('isbn') . ' '
-            .  $this->get('lccn') . ' ' .  $this->get('olcn'));
+            . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn'));
           }
     }
     foreach (ALL_ALIASES as $alias_list) {
