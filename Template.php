@@ -2853,7 +2853,8 @@ final class Template {
           
         case 'journal':
           if ($this->lacks($param)) return;
-          if ($this->blank(['chapter', 'isbn', 'lccn', 'olcn'])) { // Avoid cyclic renaming between journal and book	
+          if ($this->blank(['chapter', 'isbn'])) {
+             // Avoid renaming between cite journal and cite book
              $this->change_name_to('cite journal');
           }
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
