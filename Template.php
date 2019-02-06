@@ -1858,7 +1858,7 @@ final class Template {
       return TRUE;
     } else return FALSE;
   }
-
+  
   public function get_open_access_url() {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
@@ -1873,6 +1873,10 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
+        if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)') {
+          // false positives are too common
+          return FALSE;
+        }  
         // sometimes url_for_landing_page = null, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
         if ($best_location->url_for_landing_page != null) {
           $oa_url = $best_location->url_for_landing_page;
