@@ -21,6 +21,7 @@ final class Template {
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
   public $date_style = DATES_WHATEVER;  // Will get from the page
   protected $rawtext;
+  public last_searched_doi = '';
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
             $used_by_api, $doi_valid = FALSE,
