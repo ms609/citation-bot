@@ -1709,7 +1709,7 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('10.1002/(ISSN)1099-0739', $expanded->get('doi'));
     $this->assertEquals('http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html', $expanded->get('url'));
-  }
+   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
