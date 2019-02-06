@@ -214,6 +214,10 @@ class Page {
       }
     }
     
+    $our_dois = array();
+    for ($i = 0; $i < count($our_templates); $i++) {
+      $our_dois[$i] = $our_templates[$i]->get('doi');
+    }
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
@@ -234,8 +238,10 @@ class Page {
       if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
       $this_template->get_open_access_url();
     }
-    $this->expand_templates_from_identifier('doi',     $our_templates);  // On rare occasions we have a new one, such as biorxiv
-    
+    for ($i = 0; $i < count($our_templates); $i++) {
+      if ($our_dois[$i] != $our_templates[$i]->get('doi')) expand_by_crossref($our_templates[$i]);
+    }
+      
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
