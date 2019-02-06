@@ -239,7 +239,7 @@ class Page {
       $this_template->get_open_access_url();
       if ($our_dois[$i] != $our_templates[$i]->get('doi')) expand_by_doi($our_templates[$i]);
     }
-
+    
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
