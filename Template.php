@@ -1858,7 +1858,7 @@ final class Template {
       return TRUE;
     } else return FALSE;
   }
-  
+
   public function get_open_access_url() {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
