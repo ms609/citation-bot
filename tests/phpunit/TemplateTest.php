@@ -1493,28 +1493,6 @@ ER -  }}';
     $this->assertEquals('bad things like {{cite journal}}{{cite book}}{{cite arxiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
   }
  
-  public function testProcess() { // Just looking for a crash
-    $t = new Template();
-    $t->parse_text('{{cite web}}');
-    $t->process();
-    $t = new Template();
-    $t->parse_text('{{cite book}}');
-    $t->process();
-    $t = new Template();
-    $t->parse_text('{{cite arxiv}}');
-    $t->process();
-    $t = new Template();
-    $t->parse_text('{{cite journal}}');
-    $t->process();
-    $t = new Template();
-    $t->parse_text('{{}}'); // Empty
-    $t->process();
-    $t = new Template();
-    $t->parse_text('{{Dog}}'); // One we do not process
-    $t->process();
-    $this->assertNull(NULL);
-  }
- 
   public function testBadBibcodeARXIVPages() {
     $text = '{{cite journal|bibcode=2017arXiv171102260L}}'; // Some bibcodes have pages set to arXiv:1711.02260
     $expanded = $this->process_citation($text);
