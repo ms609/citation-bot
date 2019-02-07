@@ -2529,9 +2529,6 @@ final class Template {
           $this->rename('eprint', 'arxiv'); 
           $this->forget('class'); 
           break;
-        case 'cite arxiv': 
-          $this->rename('arxiv', 'eprint');
-          break;
       }
     }
     if ($new_name === 'cite book') {
