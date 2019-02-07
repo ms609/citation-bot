@@ -39,7 +39,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'cambridge.org', '.oup.com', 'nature.com', 'macmillan.com', 'ieeexplore.ieee.org',
                                 'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org', 'journals.ametsoc.org',
                                 'pubs.geoscienceworld.org', 'pubs.rsc.org', 'journals.uchicago.edu',
-                                'annualreviews.org', 'aip.scitation.org', 'psyche.entclub.org',
+                                'annualreviews.org', 'aip.scitation.org', 'psyche.entclub.org', 'thelancet.com',
                                 //  Below are sites that are simply DOI resolvers, like dx.doi.org
                                 'doi.library.ubc.ca');
 
