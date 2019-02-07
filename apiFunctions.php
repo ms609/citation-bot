@@ -715,6 +715,9 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       // journal of Statistical Mechanics: Theory and Experiment, 2008 July
       } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.\:]+), (\d{4}) ([a-zA-ZÀ-ÿ])+$~", $journal_data, $matches)) {  
          // not enough to reliably go on
+      // ICALP 2013, Part I, LNCS 7965, 2013, pp 497-503
+       } elseif (preg_match("~^ICALP *.$~", $journal_data, $matches)) {  
+          // not wanting to figure this out
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
