@@ -3077,6 +3077,15 @@ final class Template {
         }
       }
       $this->tidy('url'); // depending upon end state, convert to chapter-url
+      if ($this->blank(['display-authors', 'displayauthors'])) {
+        $i = 2;
+        while (!$this->blank(['author' . $i, 'last' . $i])) {
+          $i = $i + 1;
+        }
+        $i = $i - 1;
+        if (preg_match('~^et\.? ?al\.?$~i', $this->get('author' . $i))) $this->rename('author' . $i, 'display-authors', 'etal');
+        if (preg_match('~^et\.? ?al\.?$~i', $this->get('last'   . $i))) $this->rename('last'   . $i, 'display-authors', 'etal');
+      }
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
