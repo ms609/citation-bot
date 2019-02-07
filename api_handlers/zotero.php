@@ -58,7 +58,7 @@ function query_url_api($ids, $templates) {
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
             if ( preg_match('~https://linkinghub.elsevier.com/retrieve/pii/(S[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
-                 $redirectedUrl_doi = 'https://www.sciencedirect.com/science/article/pii/' . $matches[1] ;
+                 $redirectedUrl_doi = '/pii/' . $matches[1] ;
             }
             if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                 stripos($redirectedUrl_doi, $url_short) !== FALSE) {
