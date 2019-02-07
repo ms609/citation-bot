@@ -57,7 +57,10 @@ function query_url_api($ids, $templates) {
             $url_short         = strtok($url,               '?#');
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
-            if ( preg_match('~https?://linkinghub.elsevier.com/retrieve/pii/(S[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
+            if ( preg_match('~^https?://linkinghub\.elsevier\.com/retrieve/pii/(S\d{4}[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
+                 $redirectedUrl_doi = $matches[1] ;
+            }
+            if ( preg_match('~^https?://(?:www\.|)sciencedirect\.com/science/article/pii/(S\d{4}[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
                  $redirectedUrl_doi = $matches[1] ;
             }
             $url_short = str_ireplace('https', 'http', $url_short);
