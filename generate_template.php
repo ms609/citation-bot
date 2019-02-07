@@ -14,10 +14,13 @@ foreach ($_GET as $param=>$value) {
   if (strlen($param . $value) > 256) exit('Excessively long parameter passed');
   $t->set($param, $value);
 }
-$t->process(); // better than calling expand_by_doi because it also sets the wikiname
+
+$page = new Page();
+$page->parse_text($t->parsed_text());
+$page->expand_text();
 echo "\n";
 echo "\n";
-print("<ref>".$t->parsed_text()."</ref>");
+print("<ref>".$page->parsed_text()."</ref>");
 exit(0);
 
 ?>
