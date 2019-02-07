@@ -30,6 +30,57 @@ function query_url_api($ids, $templates) {
          }
        }
   }
+   
+  // Now that we have expanded URLs, try to lose them
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+  curl_setopt($ch, CURLOPT_MAXREDIRS, 20); // No infinite loops for us, 20 for Elsivier and Springer websites
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
+  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_COOKIESESSION, TRUE);
+  foreach ($templates as $template) {
+    $doi = $template->get_without_comments_and_placeholders('doi');
+    $url = $template->get('url');
+    if ($doi &&
+        $url &&
+        !$template->incomplete() &&
+        !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
+        str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url &&
+        str_ireplace(['pdf', 'image', 'plate', 'figure', 'picture'], '', $url) == $url &&
+        $template->blank(DOI_BROKEN_ALIASES))
+    {
+          curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
+          if (@curl_exec($ch)) {
+            $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+            $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
+            $url_short         = strtok($url,               '?#');
+            if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
+            if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
+            if ( preg_match('~https://linkinghub.elsevier.com/retrieve/pii/(S[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
+                 $redirectedUrl_doi = 'https://www.sciencedirect.com/science/article/pii/' . $matches[1] ;
+            }
+            if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
+                stripos($redirectedUrl_doi, $url_short) !== FALSE) {
+               report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+               $template->forget('url');
+            } else { // See if $url redirects
+               curl_setopt($ch, CURLOPT_URL, $url);
+               if (@curl_exec($ch)) {
+                  $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+                  $url_short = strtok($redirectedUrl_url, '?#');
+                  if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
+                      stripos($redirectedUrl_doi, $url_short) !== FALSE) {
+                    report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+                    $template->forget('url');
+                  }
+               }
+            }
+          }
+    }
+  }
+  curl_close($ch);
+  @strtok('',''); // Free internal buffers
 }
 
 function zotero_request($url) {
