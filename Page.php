@@ -216,6 +216,7 @@ class Page {
     
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
+    $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
@@ -228,12 +229,12 @@ class Page {
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
-      expand_by_doi($this_template);
       $this_template->get_doi_from_crossref();
       $this_template->find_pmid();  // #TODO Could probably batch this
       if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
       $this_template->get_open_access_url();
     }
+    $this->expand_templates_from_identifier('doi',     $our_templates);
     
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {

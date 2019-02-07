@@ -350,6 +350,8 @@ function expand_by_doi($template, $force = FALSE) {
   
   if (!$template->verify_doi()) return FALSE;
   $doi = $template->get_without_comments_and_placeholders('doi');
+  if ($doi === $template->last_searched_doi) return FALSE;
+  $template->last_searched_doi = $doi;
   if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) return FALSE; // We do not use DOI's that are just an ISSN.
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       $template->add_if_new('jstor', substr($doi, 8));

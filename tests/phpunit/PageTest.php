@@ -82,7 +82,7 @@ final class PageTest extends testBaseClass {
    public function testUrlReferencesWithText0() {
       $text = "<ref>{{doi|10.2307/962034}}</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi=10.2307/962034| jstor=962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto| journal=The Musical Times| volume=124| issue=1682| pages=218–223|last1 = Jarman|first1 = Douglas| year=1983}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal | doi=10.2307/962034| jstor=962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto| journal=The Musical Times| volume=124| issue=1682| pages=218–223|year = 1983|last1 = Jarman|first1 = Douglas}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText1() {
