@@ -677,6 +677,6 @@ private function doAuthorizationRedirect() {
 		'oauth_token' => $token->key,
 		'oauth_consumer_key' => $this->gConsumerKey,
 	) );
-  trigger_error('Please see  htmlspecialchars( $url ));
+  trigger_error('Please see  ' . htmlspecialchars($url));
  }
 }
