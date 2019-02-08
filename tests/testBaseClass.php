@@ -3,23 +3,7 @@ error_reporting(E_ALL); // All tests run this way
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
 
- // backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&
-    class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
-}
-
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
-
-  protected function setUp() {
-  }
-
-  protected function tearDown() {
-  }
-
-  public function __construct() {
-        parent::__construct();
-  }
 
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
