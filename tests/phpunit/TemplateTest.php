@@ -587,9 +587,9 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testSiciExtraction() {
-    $text = "{{cite journal|url=http://fake.url/0097-3157(2 002)152[0215:HPOVBM]2.0.CO;2}}";
+    $text='{{cite journal|url=http://fake.url/9999-9999(2002)152[0215:XXXXXX]2.0.CO;2}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('0097-3157', $expanded->get('issn'));
+    $this->assertEquals('9999-9999', $expanded->get('issn')); // Fake to avoid cross-ref search
     $this->assertEquals('2002', $this->getDateAndYear($expanded));
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));

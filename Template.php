@@ -385,12 +385,13 @@ final class Template {
         if ($this->blank(DISPLAY_AUTHORS)) {
           return $this->add($param_name, $value);
         }
-      return FALSE;
+        return FALSE;
+
       case 'display-editors': case 'displayeditors':
         if ($this->blank(DISPLAY_EDITORS)) {
           return $this->add($param_name, $value);
         }
-      return FALSE;
+        return FALSE;
       
       case 'author_separator': case 'author-separator':
         report_warning("'author-separator' is deprecated.");
@@ -399,7 +400,7 @@ final class Template {
         } else {
           echo " Please fix manually.";
         }
-      return FALSE;
+        return FALSE;
       
       ### DATE AND YEAR ###
       
@@ -554,13 +555,13 @@ final class Template {
             return $this->add($param_name, $value);
           }
         }
-      return FALSE;      
+        return FALSE;      
       
       case 'issue':
         if ($this->blank(ISSUE_ALIASES)) {        
           return $this->add($param_name, $value);
         } 
-      return FALSE;
+        return FALSE;
       
       case "page": case "pages":
         if (in_array((string) $value, ['0', '0-0', '0–0'], TRUE)) return FALSE;  // Reject bogus zero page number
@@ -664,7 +665,7 @@ final class Template {
         if ($this->blank(DOI_BROKEN_ALIASES)) {
           return $this->add($param_name, $value);
         }
-      return FALSE;
+        return FALSE;
       
       case 'pmid':
         if ($value === 0 || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
@@ -674,7 +675,7 @@ final class Template {
           $this->get_doi_from_crossref();
           return TRUE;
         }
-      return FALSE;
+        return FALSE;
 
       case 'pmc':
         if ($value === 0 || $value === "PMC0" || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
@@ -682,7 +683,7 @@ final class Template {
           $this->add($param_name, sanitize_string($value));
           return TRUE;
         }
-      return FALSE;
+        return FALSE;
       
       case 'bibcode':
         if ($this->blank($param_name)) { 
@@ -694,21 +695,21 @@ final class Template {
           $this->expand_by_adsabs();
           return TRUE;
         } 
-      return FALSE;
+        return FALSE;
       
       case 'isbn';
         if ($this->blank($param_name)) { 
           $value = $this->isbn10Toisbn13($value);
           return $this->add($param_name, $value);
         }
-      return FALSE;
+        return FALSE;
       
       ### POSTSCRIPT... ###
       case 'postscript':
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
         }
-      return FALSE;
+        return FALSE;
 
       case 'asin':
         if ($this->blank($param_name)) {
@@ -736,7 +737,7 @@ final class Template {
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
         }
-      return FALSE;
+        return FALSE;
 
       default:
         if ($this->blank($param_name)) {
