@@ -363,9 +363,10 @@ function expand_by_doi($template, $force = FALSE) {
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
       if ($crossRef->volume_title && $template->blank('journal')) {
-        $template->add_if_new('chapter', $crossRef->article_title); // add_if_new formats this value as a title
         if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
-          $template->forget('title');
+           $template->rename('title', 'chapter');
+         } else {
+           $template->add_if_new('chapter', restore_italics($crossRef->article_title)); // add_if_new formats this value as a title
         }
         $template->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will wikify title and sanitize the string
       } else {
@@ -513,8 +514,8 @@ function expand_doi_with_dx($template, $doi) {
           $try_to_add_it('author' . (string) $i, @$auth['literal']);
        }
      }
-     if (isset($json['container-title']) && strtoupper(@$json['publisher']) === strtoupper(@$json['container-title'])) {
-       unset($json['container-title']);  // Publisher hiding as journal name too
+     if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
+        unset($json['container-title']);  // Publisher hiding as journal name too
      }
      if (@$json['type'] == 'article-journal' ||
          @$json['type'] == 'article' ||
@@ -718,6 +719,9 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       // journal of Statistical Mechanics: Theory and Experiment, 2008 July
       } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.\:]+), (\d{4}) ([a-zA-ZÀ-ÿ])+$~", $journal_data, $matches)) {  
          // not enough to reliably go on
+      // ICALP 2013, Part I, LNCS 7965, 2013, pp 497-503
+       } elseif (preg_match("~^ICALP .*$~", $journal_data, $matches)) {  
+          // not wanting to figure this out
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
