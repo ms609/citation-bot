@@ -57,7 +57,7 @@ class WikipediaBot {
     );
     // Load the user token (request or access) from the session
     $this->gTokenKey = '';
-    $this-gTokenSecret = '';
+    $this->gTokenSecret = '';
     session_start();
     if ( isset( $_SESSION['tokenKey'] ) ) {
       	$this->gTokenKey = $_SESSION['tokenKey'];
