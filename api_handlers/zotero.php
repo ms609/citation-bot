@@ -57,9 +57,11 @@ function query_url_api($ids, $templates) {
             $url_short         = strtok($url,               '?#');
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
-            if ( preg_match('~https://linkinghub.e lsevier.com/retrieve/pii/(S[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
-                 $redirectedUrl_doi = 'https://www.sciencedirect.com/science/article/pii/' . $matches[1] ;
+            if ( preg_match('~^https?://*+/pii/(S\d{4}[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
+                 $redirectedUrl_doi = $matches[1] ;  // Grab PII numbers
             }
+            $url_short = str_ireplace('https', 'http', $url_short);
+            $redirectedUrl_doi = str_ireplace('https', 'http', $redirectedUrl_doi);
             if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                 stripos($redirectedUrl_doi, $url_short) !== FALSE) {
                report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
@@ -69,6 +71,7 @@ function query_url_api($ids, $templates) {
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
                   $url_short = strtok($redirectedUrl_url, '?#');
+                  $url_short = str_ireplace('https', 'http', $url_short);
                   if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                       stripos($redirectedUrl_doi, $url_short) !== FALSE) {
                     report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
