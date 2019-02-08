@@ -603,8 +603,8 @@ final class Template {
                       $this->rename($change_to_at, 'at');
                     }
                   }
+                  return FALSE;
                 }
-                return FALSE;
             }
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
             if ($param_name !== "page")  $this->forget("page");
