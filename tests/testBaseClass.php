@@ -4,7 +4,7 @@ if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
-d
+
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
     $page->parse_text($text);
