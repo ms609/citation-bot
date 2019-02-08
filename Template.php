@@ -448,7 +448,7 @@ final class Template {
       case 'periodical': case 'journal': case 'newspaper':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
-        if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine"])) {
+        if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
@@ -944,7 +944,7 @@ final class Template {
         if ($this->get('jstor')) {
           quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
         } else {
-          quietly('report_modification', "Converting URL to JSTOR parameter");
+          quietly('report_modification', "Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
           $this->set("jstor", urldecode($match[1]));
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
@@ -2529,9 +2529,6 @@ final class Template {
         case 'cite journal': 
           $this->rename('eprint', 'arxiv'); 
           $this->forget('class'); 
-          break;
-        case 'cite arxiv': 
-          $this->rename('arxiv', 'eprint');
           break;
       }
     }
