@@ -363,9 +363,10 @@ function expand_by_doi($template, $force = FALSE) {
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
       if ($crossRef->volume_title && $template->blank('journal')) {
-        $template->add_if_new('chapter', $crossRef->article_title); // add_if_new formats this value as a title
         if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
-          $template->forget('title');
+           $template->rename('title', 'chapter');
+         } else {
+           $template->add_if_new('chapter', restore_italics($crossRef->article_title)); // add_if_new formats this value as a title
         }
         $template->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will wikify title and sanitize the string
       } else {
