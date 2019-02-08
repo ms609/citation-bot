@@ -37,14 +37,16 @@ class WikipediaBot {
     
     // Setup user oauth ######################
     
-    $ini = parse_ini_file( $this->inifile );
-    if ( $ini === false ) {
-	     trigger_error( "oauth ini file not found" );
+    if (getenv('TRAVIS')) {
+       $ini = array();
+       $this->gTokenKey = getenv('PHP_OAUTH_ACCESS_TOKEN');
+       $this->gTokenSecret = getenv('PHP_OAUTH_ACCESS_SECRET');
+       return;
+    } else {
+       $ini = parse_ini_file( $this->inifile );
     }
-    if ( !isset( $ini['consumerKey'] ) ||
-	       !isset( $ini['consumerSecret'] ))
-    {
-	    trigger_error('Required configuration directives not found in oauth ini file');
+    if ($ini === false || !isset($ini['consumerKey']) || !isset($ini['consumerSecret'])) {
+       trigger_error('Valid oauth ini file not found');
     }
     $this->gConsumerKey = $ini['consumerKey'];
     $this->gConsumerSecret = $ini['consumerSecret'];
@@ -52,8 +54,8 @@ class WikipediaBot {
     session_name( 'OAuth Citation Bot');
     $params = session_get_cookie_params();
     session_set_cookie_params(
-	      $params['lifetime'],
-       	dirname( $_SERVER['SCRIPT_NAME'] )
+       $params['lifetime'],
+       dirname( $_SERVER['SCRIPT_NAME'] )
     );
     // Load the user token (request or access) from the session
     $this->gTokenKey = '';
@@ -66,7 +68,7 @@ class WikipediaBot {
     session_write_close();
     // Fetch the access token if this is the callback from requesting authorization
     if ( isset( $_GET['oauth_verifier'] ) && $_GET['oauth_verifier'] ) {
-	      $this->fetchAccessToken();
+       $this->fetchAccessToken();
     }
   }
   
