@@ -11,7 +11,7 @@ if (!class_exists('\PHPUnit\Framework\TestCase') &&
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
-  protected function setUp() {
+  protected function se tUp() {
   }
 
   protected function tearDown() {
