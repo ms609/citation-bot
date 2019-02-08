@@ -239,7 +239,7 @@ function title_capitalization($in, $caps_after_punctuation) {
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
-    $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
+    $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalise after punctuation */,
       function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles
