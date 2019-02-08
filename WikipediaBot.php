@@ -37,7 +37,7 @@ class WikipediaBot {
     
     // Setup user oauth ######################
     
-    $ini = parse_ini_file( $inifile );
+    $ini = parse_ini_file( $this->inifile );
     if ( $ini === false ) {
 	     trigger_error( "oauth ini file not found" );
     }
