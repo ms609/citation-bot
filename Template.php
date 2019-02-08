@@ -590,8 +590,8 @@ final class Template {
         ) {
             // One last check to see if old template had a specific page listed
             if ($all_page_values != '' &&
-                preg_match("~^\w?\w?(\d+)\w?\w?[-–—‒]+\w?\w?(\d+)\w?\w?$~u", $value, $newpagenos) && // Adding a range
-                preg_match("~^\w?\w?(\d+)\w?\w?$~u", $all_page_values, $oldpagenos)) { // Just had a single number before
+                preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?[-–—‒]+[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?$~u", $value, $newpagenos) && // Adding a range
+                preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?~u", $all_page_values, $oldpagenos)) { // Just had a single number before
                 $first_page = (int) $newpagenos[1];
                 $last_page  = (int) $newpagenos[2];
                 $old_page   = (int) $oldpagenos[1];
