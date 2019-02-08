@@ -173,4 +173,11 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
   } 
   
+  public function testComplexCrossRef() {
+     $text = '{{citation | title = Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete| arxiv = 1209.1750| bibcode = 2012arXiv1209.1750G}}';
+     $expanded = $this->process_citation($text);
+     $this->assertEquals('Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete', $expanded->get('chapter'));
+     $this->assertEquals('Lecture Notes in Computer Science', $expanded->get('series'));
+     $this->assertEquals('Automata, Languages, and Programming', $expanded->get('title'));
+  }
 }

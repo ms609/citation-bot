@@ -364,9 +364,9 @@ function expand_by_doi($template, $force = FALSE) {
 
       if ($crossRef->volume_title && $template->blank('journal')) {
         if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
-          $template->rename('title', 'chapter');
-        } else {
-          $template->add_if_new('chapter', restore_italics($crossRef->article_title)); // add_if_new formats this value as a title
+           $template->rename('title', 'chapter');
+         } else {
+           $template->add_if_new('chapter', restore_italics($crossRef->article_title)); // add_if_new formats this value as a title
         }
         $template->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will wikify title and sanitize the string
       } else {
@@ -513,6 +513,9 @@ function expand_doi_with_dx($template, $doi) {
           $try_to_add_it('first' . (string) $i, @$auth['given']);
           $try_to_add_it('author' . (string) $i, @$auth['literal']);
        }
+     }
+     if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
+        unset($json['container-title']);  // Publisher hiding as journal name too
      }
      if (@$json['type'] == 'article-journal' ||
          @$json['type'] == 'article' ||
@@ -717,8 +720,8 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.\:]+), (\d{4}) ([a-zA-ZÀ-ÿ])+$~", $journal_data, $matches)) {  
          // not enough to reliably go on
       // ICALP 2013, Part I, LNCS 7965, 2013, pp 497-503
-      } elseif (preg_match("~^ICALP .*$~", $journal_data, $matches)) {  
-         // not wanting to figure this out
+       } elseif (preg_match("~^ICALP .*$~", $journal_data, $matches)) {  
+          // not wanting to figure this out
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {
