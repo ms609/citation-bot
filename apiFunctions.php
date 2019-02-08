@@ -514,6 +514,9 @@ function expand_doi_with_dx($template, $doi) {
           $try_to_add_it('author' . (string) $i, @$auth['literal']);
        }
      }
+     if (isset(json['container-title']) && strtoupper(@$json['publisher']) === strtoupper(@$json['container-title'])) {
+        unset(json['container-title']);  // Publisher hiding as journal name too
+     }
      if (@$json['type'] == 'article-journal' ||
          @$json['type'] == 'article' ||
          (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
