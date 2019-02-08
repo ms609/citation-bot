@@ -943,7 +943,7 @@ final class Template {
         if ($this->get('jstor')) {
           quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
         } else {
-          quietly('report_modification', "Converting URL to JSTOR parameter");
+          quietly('report_modification', "Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
           $this->set("jstor", urldecode($match[1]));
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
