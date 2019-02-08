@@ -602,6 +602,7 @@ final class Template {
                     } else {
                       $this->rename($change_to_at, 'at');
                     }
+                  }
                 }
                 return FALSE;
             }
