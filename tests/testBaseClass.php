@@ -5,16 +5,6 @@ $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
-  protected function setUp() {
-  }
-
-  protected function tearDown() {
-  }
-
-  public function __construct() {
-        parent::__construct();
-  }
-
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
     $page->parse_text($text);
