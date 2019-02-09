@@ -22,9 +22,10 @@ final class userOauth {
   private $mytalkUrl = 'https://en.wikipedia.org/wiki/User_talk:Citation_bot';
   private $errorCode = 200;
  
-  public $gConsumerKey;
- 	public $gTokenKey;
-  public $gTokenSecret;
+  private $gConsumerKey;
+ 	private $gTokenKey;
+  private $gTokenSecret;
+  private $gConsumerSecret;
 
   function __construct() {
     
@@ -61,6 +62,15 @@ final class userOauth {
         $this->fetchAccessToken();
      }
     
+  }
+  
+  public function getKeys() {
+    $keys = array();
+    $keys['ConsumerKey']    = $gConsumerKey;
+    $keys['TokenKey']       = $gTokenKey;
+    $keys['TokenSecret']    = $gTokenSecret;
+    $keys['ConsumerSecret'] = $gConsumerSecret;
+ 	  return $keys;
   }
 
  /**
