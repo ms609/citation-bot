@@ -1,5 +1,6 @@
 <?php 
 global $zotero_failures_count;
+const ZOTERO_GIVE_UP = 5;
 
 function query_url_api($ids, $templates) {
   $zotero_failures_count = 0;
@@ -107,14 +108,16 @@ function zotero_request($url) {
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
     report_warning(curl_error($ch) . "   For URL: " . $url);
-    if (strpos('timed out after', curl_error($ch)) !== FALSE) $zotero_failures_count = $zotero_failures_count + 1;
+    if (strpos('timed out after', curl_error($ch)) !== FALSE) {
+      $zotero_failures_count = $zotero_failures_count + 1;
+      if ($zotero_failures_count > ZOTERO_GIVE_UP) report_warning("Giving up on URL expansion");
   }
   curl_close($ch);
   return $zotero_response;
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
-  if ($zotero_failures_count > 5) return;
+  if ($zotero_failures_count > ZOTERO_GIVE_UP) return;
   $access_date = FALSE;
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
