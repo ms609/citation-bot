@@ -124,14 +124,14 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (is_null($url)) $url = $template->get('url');
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
-    return NULL;
+    return FALSE;
   }
-  if (!$template->profoundly_incomplete($url)) return NULL; // Only risk unvetted data if there's little good data to sully
+  if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
   
-  if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return NULL; // That's a bad url
+  if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
-  if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return NULL; 
+  if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
