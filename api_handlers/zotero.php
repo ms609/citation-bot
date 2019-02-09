@@ -111,6 +111,7 @@ function zotero_request($url) {
     if (strpos(curl_error($ch), 'timed out after') !== FALSE) {
       $zotero_failures_count = $zotero_failures_count + 1;
       if ($zotero_failures_count > ZOTERO_GIVE_UP) report_warning("Giving up on URL expansion");
+    }
   }
   curl_close($ch);
   return $zotero_response;
