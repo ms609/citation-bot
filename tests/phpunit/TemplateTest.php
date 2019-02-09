@@ -1051,6 +1051,25 @@ ER -  }}';
     $this->assertEquals('Charlie C.', $prepared->get('first3'));
     $this->assertEquals('etal', $prepared->get('displayauthors'));
   }
+ 
+  public function testEtAlAsAuthor() {
+    $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|author3 = et al. }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('etal', $prepared->get('displayauthors'));
+    $this->assertNull($prepared->get('author3'));
+    $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|last3 = et al. }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('etal', $prepared->get('displayauthors'));
+    $this->assertNull($prepared->get('last3'));
+    $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|author3 = etal. }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('etal', $prepared->get('displayauthors'));
+    $this->assertNull($prepared->get('author3'));
+    $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|last3 = etal }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('etal', $prepared->get('displayauthors'));
+    $this->assertNull($prepared->get('last3'));
+  }
        
   public function testWebsite2Url() {
       $text = '{{cite book |website=ttp://example.org }}';
