@@ -104,6 +104,7 @@ final class Template {
       $this->id_to_param();
       $this->correct_param_spelling();
       $this->get_doi_from_text();
+      $this->fix_rogue_etal();
       $this->tidy();
       
       switch ($this->wikiname()) {
@@ -128,6 +129,18 @@ final class Template {
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
+    }
+  }
+  
+  public function fix_rogue_etal() {
+    if ($this->blank(DISPLAY_AUTHORS)) {
+      $i = 2;
+      while (!$this->blank(['author' . $i, 'last' . $i])) {
+        $i = $i + 1;
+      }
+      $i = $i - 1;
+      if (preg_match('~^et\.? ?al\.?$~i', $this->get('author' . $i))) $this->rename('author' . $i, 'display-authors', 'etal');
+      if (preg_match('~^et\.? ?al\.?$~i', $this->get('last'   . $i))) $this->rename('last'   . $i, 'display-authors', 'etal');
     }
   }
   
@@ -3073,16 +3086,6 @@ final class Template {
         if ($this->has('title') || $this->has('chapter')) {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
-      }
-      $this->tidy('url'); // depending upon end state, convert to chapter-url
-      if ($this->blank(DISPLAY_AUTHORS)) {
-        $i = 2;
-        while (!$this->blank(['author' . $i, 'last' . $i])) {
-          $i = $i + 1;
-        }
-        $i = $i - 1;
-        if (preg_match('~^et\.? ?al\.?$~i', $this->get('author' . $i))) $this->rename('author' . $i, 'display-authors', 'etal');
-        if (preg_match('~^et\.? ?al\.?$~i', $this->get('last'   . $i))) $this->rename('last'   . $i, 'display-authors', 'etal');
       }
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
