@@ -6,7 +6,7 @@ function query_url_api($ids, $templates) {
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
     if ($template->has('url')) {
-      $response = expand_by_zotero($template);
+      expand_by_zotero($template);
     }
   }
   report_action("Using Zotero translation server to retrieve details from identifiers.");
