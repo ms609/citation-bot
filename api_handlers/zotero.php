@@ -1,16 +1,12 @@
 <?php 
+global $zotero_failures_count;
+
 function query_url_api($ids, $templates) {
+  $zotero_failures_count = 0;
   report_action("Using Zotero translation server to retrieve details from URLs.");
-  $failures = 0;
   foreach ($templates as $template) {
     if ($template->has('url')) {
       $response = expand_by_zotero($template);
-    }
-    if ($response === FALSE) $failures += 1;
-    if ($failures >= 5 ) {
-      // Repeat failures for errors on our side: probably a chronic timeout.
-      report_action("Giving up on generic URLs and identifiers for this page.");
-      return;
     }
   }
   report_action("Using Zotero translation server to retrieve details from identifiers.");
@@ -111,12 +107,14 @@ function zotero_request($url) {
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
     report_warning(curl_error($ch) . "   For URL: " . $url);
+    if (strpos('timed out after', curl_error($ch)) !== FALSE) $zotero_failures_count = $zotero_failures_count + 1;
   }
   curl_close($ch);
   return $zotero_response;
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
+  if ($zotero_failures_count > 5) return;
   $access_date = FALSE;
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
