@@ -87,6 +87,7 @@ function query_url_api($ids, $templates) {
 }
 
 function zotero_request($url) {
+  global $zotero_failures_count;
   
   #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
   $ch = curl_init('https://tools.wmflabs.org/translation-server/web');
