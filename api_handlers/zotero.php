@@ -229,6 +229,13 @@ function expand_by_zotero(&$template, $url = NULL) {
       $result->extra = str_replace(trim($matches[1]), '', $result->extra);
       $result->extra = trim($result->extra);
     }
+    if (preg_match('~PMID: (\d+), (\d+)~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+      $result->extra = trim($result->extra);
+      if ($matches[1] === $matches[2]) {
+        $template->add_if_new('pmid', $matches[1]);
+      }
+    }
     if ($result->extra !== '') {
         if (getenv('TRAVIS')) {
           trigger_error("Unhandled extra data: " . $result->extra);
