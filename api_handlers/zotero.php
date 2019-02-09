@@ -10,7 +10,7 @@ function query_url_api($ids, $templates) {
     if ($failures >= 5 ) {
       // Repeat failures for errors on our side: probably a chronic timeout.
       report_action("Giving up on generic URLs for this page.")
-      break;
+      return;
     }
   }
   report_action("Using Zotero translation server to retrieve details from identifiers.");
