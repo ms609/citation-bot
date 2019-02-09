@@ -1,9 +1,16 @@
 <?php 
 function query_url_api($ids, $templates) {
   report_action("Using Zotero translation server to retrieve details from URLs.");
+  $failures = 0;
   foreach ($templates as $template) {
     if ($template->has('url')) {
-      expand_by_zotero($template);
+      $response = expand_by_zotero($template);
+    }
+    if ($response === FALSE) $failures += 1;
+    if ($failures >= 5 ) {
+      // Repeat failures for errors on our side: probably a chronic timeout.
+      report_action("Giving up on generic URLs for this page.")
+      break;
     }
   }
   report_action("Using Zotero translation server to retrieve details from identifiers.");
@@ -117,14 +124,14 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (is_null($url)) $url = $template->get('url');
   if (!$url) {
     report_info("Aborting Zotero expansion: No URL found");
-    return FALSE;
+    return NULL;
   }
-  if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
+  if (!$template->profoundly_incomplete($url)) return NULL; // Only risk unvetted data if there's little good data to sully
   
-  if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
+  if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return NULL; // That's a bad url
   
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
-  if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
+  if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return NULL; 
 
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
@@ -137,7 +144,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       return FALSE;
     case 'Remote page not found':
       report_info("Remote page not found for URL ". $url);
-      return FALSE;
+      return NULL;
   }
   
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
