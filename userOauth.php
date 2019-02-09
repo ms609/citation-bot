@@ -21,16 +21,17 @@ final class userOauth {
   private $apiUrl = 'https://en.wikipedia.org/w/api.php';
   private $mytalkUrl = 'https://en.wikipedia.org/wiki/User_talk:Citation_bot';
   private $errorCode = 200;
-  
+ 
+  public $gConsumerKey;
+ 	public $gTokenKey;
+  public $gTokenSecret;
+
   function __construct() {
     
     // Setup user oauth ######################
      
      if (getenv('TRAVIS')) {
-        $ini = array();
-        $this->gTokenKey = getenv('PHP_OAUTH_ACCESS_TOKEN');
-        $this->gTokenSecret = getenv('PHP_OAUTH_ACCESS_SECRET');
-        return;
+        trigger_err('Should not do User OAUTH under TRAVIS');
      } else {
         $ini = parse_ini_file( $this->inifile );
      }
