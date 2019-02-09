@@ -6,9 +6,12 @@ use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
+require_once('userOauth.php');
+
 class WikipediaBot {
   
   protected $consumer, $token, $ch;
+  protected $user_oauth = NULL;
   
   function __construct() {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
@@ -79,6 +82,7 @@ class WikipediaBot {
     }
     $params['format'] = 'json';
     
+    if (isnull($user_oauth)) $user_oauth = new userOauth();
   
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
     $request->signRequest(new HmacSha1(), $this->consumer, $this->token);
