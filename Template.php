@@ -3075,7 +3075,7 @@ final class Template {
         }
       }
       $this->tidy('url'); // depending upon end state, convert to chapter-url
-      if ($this->blank(['display-authors', 'displayauthors'])) {
+      if ($this->blank(DISPLAY_AUTHORS)) {
         $i = 2;
         while (!$this->blank(['author' . $i, 'last' . $i])) {
           $i = $i + 1;
