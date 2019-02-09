@@ -2564,6 +2564,8 @@ final class Template {
     
     if($this->has($param)) {
       $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
+      $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
+      $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
       if (stripos($param, 'separator') === FALSE && stripos($param, 'postscript') === FALSE && stripos($param, 'url') === FALSE) {
          $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
       }
