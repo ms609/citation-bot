@@ -23,7 +23,7 @@ final class userOauth {
   private $errorCode = 200;
  
   private $gConsumerKey;
- 	private $gTokenKey;
+  private $gTokenKey;
   private $gTokenSecret;
   private $gConsumerSecret;
 
