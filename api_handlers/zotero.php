@@ -1,9 +1,8 @@
 <?php 
-global $zotero_failures_count;
 const ZOTERO_GIVE_UP = 5;
 
 function query_url_api($ids, $templates) {
-  $zotero_failures_count = 0;
+  global $zotero_failures_count = 0;
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
     if ($template->has('url')) {
@@ -118,6 +117,7 @@ function zotero_request($url) {
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
+  global $zotero_failures_count;
   if ($zotero_failures_count > ZOTERO_GIVE_UP) return;
   $access_date = FALSE;
   if (is_null($url)) {
