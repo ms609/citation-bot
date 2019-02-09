@@ -588,6 +588,26 @@ final class Template {
                 && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
               )
         ) {
+            // One last check to see if old template had a specific page listed
+             if ($all_page_values != '' &&
+                 preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?[-–—‒]+[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?$~u", $value, $newpagenos) && // Adding a range
+                 preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?~u", $all_page_values, $oldpagenos)) { // Just had a single number before
+                 $first_page = (int) $newpagenos[1];
+                 $last_page  = (int) $newpagenos[2];
+                 $old_page   = (int) $oldpagenos[1];
+                 print_r($newpagenos);
+                 print_r($oldpagenos);
+                 if ($old_page > $first_page && $old_page <= $last_page) {
+                   foreach (['pages', 'page', 'pp', 'p'] as $change_to_at) {
+                     if ($this->blank($change_to_at)) {
+                       $this->forget($change_to_at);
+                     } else {
+                       $this->rename($change_to_at, 'at');
+                     }
+                   }
+                   return FALSE;
+                 }
+             }
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
             if ($param_name !== "page")  $this->forget("page");
             if ($param_name !== "pp")    $this->forget("pp");
