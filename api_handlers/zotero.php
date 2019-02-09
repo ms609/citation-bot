@@ -9,7 +9,7 @@ function query_url_api($ids, $templates) {
     if ($response === FALSE) $failures += 1;
     if ($failures >= 5 ) {
       // Repeat failures for errors on our side: probably a chronic timeout.
-      report_action("Giving up on generic URLs for this page.")
+      report_action("Giving up on generic URLs and identifiers for this page.");
       return;
     }
   }
