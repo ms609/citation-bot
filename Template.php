@@ -3087,6 +3087,7 @@ final class Template {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
+      $this->tidy('url'); // depending upon end state, convert to chapter-url
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
