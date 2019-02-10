@@ -28,12 +28,8 @@ final class userOauth {
   private $gConsumerSecret;
 
   function __construct() {
-    
-    // Setup user oauth ######################
-     
-     if (getenv('TRAVIS')) {
-        trigger_error('Should not do User OAUTH under TRAVIS');
-     }
+ 
+     if (getenv('TRAVIS')) return; // this isn't gonna work
      $ini = parse_ini_file( $this->inifile );
      if ($ini === false || !isset($ini['consumerKey']) || !isset($ini['consumerSecret'])) {
         trigger_error('Valid oauth ini file not found');
