@@ -60,7 +60,7 @@ final class userOauth {
   }
   
   public function getKeys() {
- 	  return $this->$gTokenSecret;
+ 	  return $this->gTokenSecret;
   }
 
  /**
