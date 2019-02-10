@@ -65,12 +65,7 @@ final class userOauth {
   }
   
   public function getKeys() {
-    $keys = array();
-    $keys['ConsumerKey']    = $gConsumerKey;
-    $keys['TokenKey']       = $gTokenKey;
-    $keys['TokenSecret']    = $gTokenSecret;
-    $keys['ConsumerSecret'] = $gConsumerSecret;
- 	  return $keys;
+ 	  return $this->$gTokenSecret;
   }
 
  /**
