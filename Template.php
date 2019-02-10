@@ -197,7 +197,7 @@ final class Template {
           return (!(
              ($this->has('journal') || $this->has('periodical') || $this->has('work') ||
               $this->has('website') || $this->has('publisher') || $this->has('newspaper') ||
-              $this->has('magazine'))
+              $this->has('magazine')|| $this->has('encyclopedia') || $this->has('contribution'))
           &&  $this->has("title")
           &&  $has_date
     ));
