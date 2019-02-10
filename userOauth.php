@@ -32,10 +32,9 @@ final class userOauth {
     // Setup user oauth ######################
      
      if (getenv('TRAVIS')) {
-        trigger_err('Should not do User OAUTH under TRAVIS');
-     } else {
-        $ini = parse_ini_file( $this->inifile );
+        trigger_error('Should not do User OAUTH under TRAVIS');
      }
+     $ini = parse_ini_file( $this->inifile );
      if ($ini === false || !isset($ini['consumerKey']) || !isset($ini['consumerSecret'])) {
         trigger_error('Valid oauth ini file not found');
      }
@@ -108,7 +107,7 @@ final class userOauth {
  		trigger_error('Error retrieving token: ' . $token->error . '  ' . $token->message);
  	}
  	if ( !is_object( $token ) || !isset( $token->key ) || !isset( $token->secret ) ) {
- 		trigger_error('Invalid response from auth token request');
+ 		$this->doAuthorizationRedirect();
  	}
  	// Save the access token
  	session_start();
@@ -226,7 +225,7 @@ final class userOauth {
  		'oauth_token' => $token->key,
  		'oauth_consumer_key' => $this->gConsumerKey,
  	) );
-   trigger_error('Please see  ' . htmlspecialchars($url));
+   trigger_error('Please see  ' . $url);
   }
   
 }
