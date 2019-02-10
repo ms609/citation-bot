@@ -3088,7 +3088,7 @@ final class Template {
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
-            if (!$this->blank(['publisher', 'location']) && !$this->blank(['doi', 'pmid', 'pmc', 'issn', 'bibcode']) {  // pitchforks prevention
+            if (!$this->blank(['publisher', 'location']) && !$this->blank(['doi', 'pmid', 'pmc', 'issn', 'bibcode'])) {  // pitchforks prevention
               $forget_string = 'Removing publisher/location from journal already uniquely identified by ';
               foreach (['doi', 'pmid', 'pmc', 'issn', 'bibcode'] as $id) {
                 if ($this->has($id)) $forget_string .= $id . ' ';
