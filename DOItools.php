@@ -27,7 +27,7 @@ function de_wikify($string){
 
 /*
  * unused
- * @codeCoverageIgnore
+ * @code CoverageIgnore
  */
 function truncate_publisher($p){
   return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
