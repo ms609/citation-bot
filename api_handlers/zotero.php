@@ -218,19 +218,16 @@ function expand_by_zotero(&$template, $url = NULL) {
   
   if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
     if (preg_match('~\sdoi:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-      if (!isset($result->DOI) && !isset($matches[2])) $result->DOI = trim($matches[1]); // Only set if only one DOI
-      $result->extra = str_ireplace('doi:', '', $result->extra);
-      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+      if (!isset($result->DOI)) $result->DOI = trim($matches[1]);
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
       $result->extra = trim($result->extra);
-      if (isset($matches[2])) $result->extra = ''; // Obviously not gonna parse this in any way
     }
     if (preg_match('~\stype:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) { // [extra] => type: dataset has been seen in the wild
-      $result->extra = str_ireplace('type:', '', $result->extra);
-      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
       $result->extra = trim($result->extra);
     }
-    if (preg_match('~PMID: (\d+), (\d+)~i', ' ' . $result->extra . ' ', $matches)) {
-      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+    if (preg_match('~\sPMID: (\d+), (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
       $result->extra = trim($result->extra);
       if ($matches[1] === $matches[2]) {
         $template->add_if_new('pmid', $matches[1]);
