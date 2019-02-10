@@ -69,7 +69,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefBookChapter() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertEquals('{{Cite book|year = 2003|isbn = 978-0471975144|title = Internetworking LANs and WANs|chapter = Network Concepts|location = Chichester, UK|publisher = John Wiley & Sons, Ltd}}', $expanded->parsed_text());
+     $this->assertEquals('{{Cite book|year = 2003|isbn = 978-0471975144|title = Internetworking LANs and WANs|chapter = Network Concepts|location = Chichester, UK|publisher = John Wiley & Sons}}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefDataCiteSubsets() {

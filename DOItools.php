@@ -25,10 +25,6 @@ function de_wikify($string){
   return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
-/*
- * unused
- * @code CoverageIgnore
- */
 function truncate_publisher($p){
   return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
 }
