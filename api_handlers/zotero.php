@@ -46,6 +46,7 @@ function query_url_api($ids, $templates) {
         $url &&
         !$template->incomplete() &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
+        (stripos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
