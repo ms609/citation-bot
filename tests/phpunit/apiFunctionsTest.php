@@ -21,9 +21,9 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
    }
      
-       public function testZoteroExpansionPII2() {
+   public function testDropUrlCode5() {
      $text = '{{cite journal | url = https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(17)30401-5/fulltext | doi = 10.1016/S1474-4422(17)30401-5 }}';
-     $expanded = $this->expand_via_zotero($text);
+     $expanded = $this->process_citation($text);
      $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
    }
  
