@@ -56,7 +56,7 @@ function query_url_api($ids, $templates) {
         (strpos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
-      echo "\n\n\n\n" . $doi  $url  . "\n";
+      echo "\n\n\n\n  $doi   $url  \n";
 
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
