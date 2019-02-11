@@ -40,7 +40,7 @@ function query_url_api($ids, $templates) {
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-  curl_setopt($ch, CURLOPT_MAXREDIRS, 20); // No infinite loops for us, 20 for Elsivier and Springer websites
+  curl_setopt($ch, CURLOPT_MAXREDIRS, 40); // No infinite loops for us, 40 for Elsivier and Springer websites
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -49,14 +49,15 @@ function query_url_api($ids, $templates) {
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
-echo "\n\n\n\n$doi  $url " . !$template->profoundly_incomplete() . "   " . !$template->incomplete() . "  " . !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) . "   " .  $template->blank(DOI_BROKEN_ALIASES) . "    " .  (strpos('10.1093/', $doi) === FALSE) . "\n";
     if ($doi &&
         $url &&
-        !$template->profoundly_incomplete() &&
+        !$template->incomplete() &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
         (strpos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
+      echo "\n\n\n\n" . $doi  $url  . "\n";
+
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
