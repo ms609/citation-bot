@@ -104,6 +104,7 @@ final class Template {
       $this->id_to_param();
       $this->correct_param_spelling();
       $this->get_doi_from_text();
+      $this->fix_rogue_etal();
       $this->tidy();
       
       switch ($this->wikiname()) {
@@ -128,6 +129,18 @@ final class Template {
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
+    }
+  }
+  
+  public function fix_rogue_etal() {
+    if ($this->blank(DISPLAY_AUTHORS)) {
+      $i = 2;
+      while (!$this->blank(['author' . $i, 'last' . $i])) {
+        $i = $i + 1;
+      }
+      $i = $i - 1;
+      if (preg_match('~^et\.? ?al\.?$~i', $this->get('author' . $i))) $this->rename('author' . $i, 'display-authors', 'etal');
+      if (preg_match('~^et\.? ?al\.?$~i', $this->get('last'   . $i))) $this->rename('last'   . $i, 'display-authors', 'etal');
     }
   }
   
@@ -2564,9 +2577,14 @@ final class Template {
     }
     
     if($this->has($param)) {
-      $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
-      if (stripos($param, 'separator') === FALSE && stripos($param, 'postscript') === FALSE && stripos($param, 'url') === FALSE) {
-         $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
+      if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
+          stripos($param, 'postscript') === FALSE &&  // periods valid
+          stripos($param, 'url') === FALSE &&  // all characters are valid
+          stripos($param, 'quot') === FALSE) { // someone might have formatted the quote
+        $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
+        $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
+        $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
+        $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
       }
     }
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {

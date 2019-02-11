@@ -14,8 +14,10 @@ function query_url_api($ids, $templates) {
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
-           $template->add_if_new('doi', '10.1101/' . $template->get('biorxiv')); 
+           $template->add_if_new('doi', '10.1101/' . $template->get('biorxiv'));
+           expand_by_doi($template, TRUE);  // this data is better than zotero
          } elseif (strstr($template->get('doi') , '10.1101') === FALSE) {
+           expand_doi_with_dx($template, '10.1101/' . $template->get('biorxiv'));  // dx data is better than zotero
            expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv'));  // Rare case there is a different DOI
          }
        }
