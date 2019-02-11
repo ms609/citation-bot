@@ -51,7 +51,7 @@ function query_url_api($ids, $templates) {
     $url = $template->get('url');
     if ($doi &&
         $url &&
-        !$template->incomplete() &&
+        !$template->profoundly_incomplete() &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
         (strpos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
