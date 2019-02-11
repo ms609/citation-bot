@@ -1,6 +1,6 @@
 <?php
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' AAP ', ' ABC ', ' AC ', ' ACM ', ' AI ', ' AIAA ', ' AJHG ', ' al ', ' an ', 
+          ' AAP ', ' ABC ', ' AC ', ' ACM ', ' AI ', ' AIAA ', ' AJHG ', ' al ', ' an ',
           ' and ', ' and then ', ' as ', ' at ', ' at ',
           ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' BJPsych ', ' BMC ', ' BMJ ', ' but ', ' by ',
           ' CBC ', ' CNS ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
