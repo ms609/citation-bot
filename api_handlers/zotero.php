@@ -59,7 +59,7 @@ function query_url_api($ids, $templates) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-            $redirectedUrl_doi = str_replace('action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
+            $redirectedUrl_doi = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
             $redirectedUrl_doi = urldecode($redirectedUrl_doi);
             $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
             $url_short         = strtok(urldecode($url), '?#');
@@ -78,7 +78,7 @@ function query_url_api($ids, $templates) {
                curl_setopt($ch, CURLOPT_URL, $url);
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-                  $redirectedUrl_url = str_replace('action/captchaChallenge?redirectUri=', '', $redirectedUrl_url);
+                  $redirectedUrl_url = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_url);
                   $redirectedUrl_url = urldecode($redirectedUrl_url);
                   $url_short = strtok($redirectedUrl_url, '?#');
                   $url_short = str_ireplace('https', 'http', $url_short);
