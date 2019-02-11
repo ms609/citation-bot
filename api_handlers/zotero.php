@@ -62,7 +62,7 @@ function query_url_api($ids, $templates) {
             $url_short         = strtok($url,               '?#');
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
-            if ( preg_match('~^https?://.+/pii/(S\d{4}[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
+            if ( preg_match('~^https?://.+/pii/?(S\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
                  $redirectedUrl_doi = $matches[1] ;  // Grab PII numbers
             }
             $url_short = str_ireplace('https', 'http', $url_short);
