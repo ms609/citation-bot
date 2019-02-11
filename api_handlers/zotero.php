@@ -48,7 +48,7 @@ function query_url_api($ids, $templates) {
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
-echo "\n\n\n\n$doi  $url !$template->profoundly_incomplete()  !$template->incomplete()  !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) $template->blank(DOI_BROKEN_ALIASES)  (strpos('10.1093/', $doi) === FALSE)\n";
+echo "\n\n\n\n$doi  $url " . !$template->profoundly_incomplete() . "   " . !$template->incomplete() . "  " . !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) . "   " .  $template->blank(DOI_BROKEN_ALIASES) . "    " .  (strpos('10.1093/', $doi) === FALSE) . "\n";
     if ($doi &&
         $url &&
         !$template->profoundly_incomplete() &&
