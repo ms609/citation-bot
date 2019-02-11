@@ -48,18 +48,19 @@ function query_url_api($ids, $templates) {
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
+echo "\n\n\n\n$doi  $url !$template->profoundly_incomplete()  !$template->incomplete()  !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) $template->blank(DOI_BROKEN_ALIASES)  (strpos('10.1093/', $doi) === FALSE)\n";
     if ($doi &&
         $url &&
-        !$template->incomplete() &&
+        !$template->profoundly_incomplete() &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
         (strpos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
-      echo "\n\n\n\n$doi  $url \n";
+
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
-            echo "$redirectedUrl_doi\n";
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+            echo "$redirectedUrl_doi\n";
             $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
             $url_short         = strtok($url,               '?#');
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
