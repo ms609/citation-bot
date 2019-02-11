@@ -62,7 +62,7 @@ function query_url_api($ids, $templates) {
             $redirectedUrl_doi = str_replace('action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
             $redirectedUrl_doi = urldecode($redirectedUrl_doi);
             $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
-            $url_short         = strtok($url,               '?#');
+            $url_short         = strtok(urldecode($url), '?#');
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
             if ( preg_match('~^https?://.+/pii/?(S\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
