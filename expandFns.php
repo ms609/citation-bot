@@ -381,6 +381,9 @@ function tidy_date($string) {
     if ($string > -2 && $string < 2) return ''; // reject -1,0,1
     return $string; // year
   }
+  if (preg_match('~^(\d{1,2}) ([A-Za-z]+\.?), ?(\d{4})$~', $string, $matches) { // strtotime('3 October, 2016') gives 2019-10-03.  The comma is evil and strtotime is stupid
+    $string = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];   // Remove comma
+  }
   $time = strtotime($string);
   if ($time) {
     $day = date('d', $time);
