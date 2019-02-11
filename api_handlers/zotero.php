@@ -45,6 +45,7 @@ function query_url_api($ids, $templates) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch, CURLOPT_COOKIESESSION, TRUE);
+  curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
