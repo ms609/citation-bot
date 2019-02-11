@@ -21,11 +21,6 @@ class ZoteroTest extends testBaseClass {
     $this->assertEquals('10.1016/j.laa.2012.05.036', $expanded->get('doi'));
     $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
   }
-  public function testZoteroExpansionPII2() {
-    $text = '{{cite journal | url = https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(17)30401-5/fulltext | doi = 10.1016/S1474-4422(17)30401-5 }}';
-    $expanded = $this->expand_via_zotero($text);
-    $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
-  }
 
   public function testZoteroExpansionNBK() {
     $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';  // Date is before access-date so will expand
@@ -153,4 +148,10 @@ class ZoteroTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
   }
+ 
+   public function testDropUrlCode5() {
+     $text = '{{cite journal | url = https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(17)30401-5/fulltext | doi = 10.1016/S1474-4422(17)30401-5 }}';
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
+   }
 }
