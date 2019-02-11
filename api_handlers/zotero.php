@@ -61,7 +61,7 @@ echo "\n\n\n\n$doi  $url " . !$template->profoundly_incomplete() . "   " . !$tem
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             echo "$redirectedUrl_doi\n";
-            $redirectedUrl_doi = str_replace('action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
+            $redirectedUrl_doi = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
             $redirectedUrl_doi = urldecode($redirectedUrl_doi);
             $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
             $url_short         = urldecode($url);
@@ -82,7 +82,7 @@ echo "\n\n\n\n$doi  $url " . !$template->profoundly_incomplete() . "   " . !$tem
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
                   echo "$redirectedUrl_url\n";
-                  $redirectedUrl_url = str_replace('action/captchaChallenge?redirectUri=', '', $redirectedUrl_url);
+                  $redirectedUrl_url = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_url);
                   $redirectedUrl_url = urldecode($redirectedUrl_url);
                   $url_short = strtok($redirectedUrl_url, '?#');
                   $url_short = str_ireplace('https', 'http', $url_short);
