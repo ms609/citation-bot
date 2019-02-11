@@ -143,15 +143,4 @@ class ZoteroTest extends testBaseClass {
      $expanded = $this->process_citation($text);
      $this->assertNull($expanded->get('url'));
   }
-  public function testDropUrlCode4() {
-    $text = '{{cite journal | url = https://www.cell.com/trends/genetics/fulltext/S0168-9525(18)30054-4 | doi = 10.1016/j.tig.2018.03.001 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
-  }
- 
-   public function testDropUrlCode5() {
-     $text = '{{cite journal | url = https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(17)30401-5/fulltext | doi = 10.1016/S1474-4422(17)30401-5 }}';
-     $expanded = $this->process_citation($text);
-     $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
-   }
 }
