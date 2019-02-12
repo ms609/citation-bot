@@ -58,7 +58,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
   }
-  if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
+  if (!$template->prooundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
   
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   
