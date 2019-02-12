@@ -3565,6 +3565,7 @@ final class Template {
     $this->forgetter($par, TRUE);
   }
   private function forgetter($par, $echo_forgetting) { // Do not call this function directly
+   if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
       $this->forgetter('accessdate', $echo_forgetting);
       $this->forgetter('access-date', $echo_forgetting);
@@ -3598,6 +3599,7 @@ final class Template {
     if ($par == 'chapter-url' || $par == 'chapterurl') {
        $this->forgetter('chapter-format', $echo_forgetting);
     }
+   }  // even if blank try to remove
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
       if ($echo_forgetting && $this->has($par) && stripos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
