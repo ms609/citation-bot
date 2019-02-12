@@ -180,10 +180,8 @@ function adsabs_api($ids, $templates, $identifier) {
     }
   }
   foreach ($templates as $template) {
-    if (strpos($template->get('bibcode'), '&') !== false) {
-      $template->expand_by_adsabs();
-    } elseif (strpos($template->get('bibcode'), 'book') !== false) {
-      $template->expand_book_adsabs();
+    if ((strpos($template->get('bibcode'), '&') !== false) || (strpos($template->get('bibcode'), 'book') !== false)) {
+      $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them, and special book code
     }
   }
   if (count($ids) == 0) return TRUE; // None left after removing books and & symbol
@@ -208,7 +206,7 @@ function adsabs_api($ids, $templates, $identifier) {
     curl_setopt($ch, CURLOPT_HEADER, TRUE);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
     curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
-    if (getenv('TRAVIS')) {
+    if (getenv('TRAVIS') && defined('PHP_VERSION_ID') && (PHP_VERSION_ID < 60000)) {
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
     }
     $return = curl_exec($ch);
@@ -352,6 +350,9 @@ function expand_by_doi($template, $force = FALSE) {
   
   if (!$template->verify_doi()) return FALSE;
   $doi = $template->get_without_comments_and_placeholders('doi');
+  if ($doi === $template->last_searched_doi) return FALSE;
+  $template->last_searched_doi = $doi;
+  if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) return FALSE; // We do not use DOI's that are just an ISSN.
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       $template->add_if_new('jstor', substr($doi, 8));
   }
@@ -362,9 +363,10 @@ function expand_by_doi($template, $force = FALSE) {
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
       if ($crossRef->volume_title && $template->blank('journal')) {
-        $template->add_if_new('chapter', $crossRef->article_title); // add_if_new formats this value as a title
         if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
-          $template->forget('title');
+           $template->rename('title', 'chapter');
+         } else {
+           $template->add_if_new('chapter', restore_italics($crossRef->article_title)); // add_if_new formats this value as a title
         }
         $template->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will wikify title and sanitize the string
       } else {
@@ -385,6 +387,7 @@ function expand_by_doi($template, $force = FALSE) {
                     || author_is_human($existing_author);
         
         foreach ($crossRef->contributors->contributor as $author) {
+          if (strtoupper($author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && $crossRef->journal_title === NULL) {
@@ -401,7 +404,7 @@ function expand_by_doi($template, $force = FALSE) {
       $template->add_if_new('isbn', $crossRef->isbn);
       $template->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
       if ($crossRef->volume > 0) $template->add_if_new('volume', $crossRef->volume);
-      if ((integer) $crossRef->issue > 1) {
+      if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1))) {
       // "1" may refer to a journal without issue numbers,
       //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
         $template->add_if_new('issue', $crossRef->issue);
@@ -414,7 +417,7 @@ function expand_by_doi($template, $force = FALSE) {
         }
       }
     } else {
-      report_warning("No CrossRef record found for doi '" . echoable($doi) ."'; marking as broken");
+      report_warning("No CrossRef record found for doi '" . echoable($doi) ."'");
       expand_doi_with_dx($template, $doi);
     }
   }
@@ -447,13 +450,25 @@ function query_crossref($doi) {
 }
 
 function expand_doi_with_dx($template, $doi) {
-     // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve this way
+     // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
+     // Examples of DOI usage   https://www.doi.org/demos.html
+     $try_to_add_it = function($name, $data) use($template) {
+       if (is_null($data)) return;
+       while (is_array($data)) {
+         if (empty($data)) return;
+         if (!is_set($data['0'])) return;
+         if (is_set($data['1'])) return; // How dow we choose?
+         $data = $data['0'];  // Going down deeper
+       }
+       if ($data == '') return;
+       $template->add_if_new($name, $data);
+     };
      if (!$doi) return FALSE;
      $ch = curl_init();
      curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
-     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/x-research-info-systems"));
+     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/vnd.citationstyles.csl+json"));
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      try {
@@ -466,8 +481,76 @@ function expand_doi_with_dx($template, $doi) {
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
+     $json = @json_decode($ris, TRUE);
+     if($json === FALSE) return FALSE;
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
-     $template->expand_by_RIS($ris, FALSE);
+     // BE WARNED:  this code uses the "@$var" method.
+     // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
+     if ($template->blank(['date', 'year'])) {
+       if (isset($json['issued']['date-parts']['0']['0'])) {
+         $try_to_add_it('year', $json['issued']['date-parts']['0']['0']);
+       } elseif (isset($json['created']['date-parts']['0']['0'])) {
+         $try_to_add_it('year', $json['created']['date-parts']['0']['0']);
+       } elseif (isset($json['published-print']['date-parts']['0']['0'])) {
+         $try_to_add_it('year', $json['published-print']['date-parts']['0']['0']);
+       }
+     }
+     $try_to_add_it('issue', @$json['issue']);
+     $try_to_add_it('pages', @$json['pages']);
+     $try_to_add_it('volume', @$json['volume']);
+     if ($template->blank('isbn')) {
+       if (isset($json['ISBN']['0'])) {
+         $try_to_add_it('isbn', $json['ISBN']['0']);
+       } elseif (isset($json['isbn-type']['0']['value'])) {
+         $try_to_add_it('isbn', $json['isbn-type']['0']['value']);
+       }
+     }
+     if (isset($json['author'])) {
+       $i = 0;
+       foreach ($json['author'] as $auth) {
+          $i = $i + 1;
+          $try_to_add_it('last' . (string) $i, @$auth['family']);
+          $try_to_add_it('first' . (string) $i, @$auth['given']);
+          $try_to_add_it('author' . (string) $i, @$auth['literal']);
+       }
+     }
+     if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
+        unset($json['container-title']);  // Publisher hiding as journal name too
+     }
+     if (@$json['type'] == 'article-journal' ||
+         @$json['type'] == 'article' ||
+         (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
+       $try_to_add_it('journal', @$json['container-title']);
+       $try_to_add_it('title', @$json['title']);
+     } elseif (@$json['type'] == 'monograph') {
+       $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this and not title is set
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'chapter') {
+       $try_to_add_it('title', @$json['container-title']);
+       $try_to_add_it('chapter', @$json['title']);
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'dataset') {
+       $try_to_add_it('type', 'Data Set');
+       $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
+       $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
+     } elseif (@$json['type'] == '') {  // Add what we can where we can
+       $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
+     } else {
+       if (getenv('TRAVIS')) {
+         print_r($json);
+         trigger_error ('dx.doi.org returned unexpected data type for ' . doi_link($doi));
+       } else {
+         $try_to_add_it('title', @$json['title']);
+         report_warning('dx.doi.org returned unexpected data type for ' . doi_link($doi));
+       }
+     }
      return TRUE;
 }
 
@@ -607,6 +690,38 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       } elseif (preg_match("~^Astrophys\.J\.\d.*:L.+,(\d{4})F$~", $journal_data, $matches)) {
         $arxiv_journal='The Astrophysical Journal'; // We expand this out
         $arxiv_year=$matches[1];
+      //Information Processing Letters 115 (2015), pp. 633-634
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+) ([0-9]+) \((\d{4})\), pp\. (\d{1,5}-\d{1,5})$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[4];
+        $arxiv_year=$matches[3];           
+      //Theoretical Computer Science, Volume 561, Pages 113-121, 2015
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), Volume ([0-9]+), Pages (\d{1,5}-\d{1,5}), (\d{4})$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[3];
+        $arxiv_year=$matches[4];        
+      // Scientometrics, volume 69, number 3, pp. 669-687, 2006
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), volume ([0-9]+), number ([0-9]+), pp\. (\d{1,5}-\d{1,5}), (\d{4})$~u", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[4];
+        $arxiv_year=$matches[5];
+        $arxiv_issue=$matches[3]; 
+      // International Journal of Geographical Information Science, 23(7), 2009, 823-837.
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.]+), (\d{1,3})\((\d{1,3})\), (\d{4}), (\d{1,5}-\d{1,5})\.$~", $journal_data, $matches)) {
+        $arxiv_journal=$matches[1];
+        $arxiv_volume=$matches[2];
+        $arxiv_pages=$matches[5];
+        $arxiv_year=$matches[4];
+        $arxiv_issue=$matches[3];
+      // journal of Statistical Mechanics: Theory and Experiment, 2008 July
+      } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.\:]+), (\d{4}) ([a-zA-ZÀ-ÿ])+$~", $journal_data, $matches)) {  
+         // not enough to reliably go on
+      // ICALP 2013, Part I, LNCS 7965, 2013, pp 497-503
+       } elseif (preg_match("~^ICALP .*$~", $journal_data, $matches)) {  
+          // not wanting to figure this out
       // Future formats -- print diagnostic message
       } else {
         if (getenv('TRAVIS')) {

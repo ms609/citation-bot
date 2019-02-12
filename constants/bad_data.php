@@ -7,7 +7,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder for arabic language transliteration");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors");
-const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor');
+const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign');
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
@@ -26,19 +26,22 @@ const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.c
                         'zenodo', 'archive.org']; // Google Inc is a valid publisher, however.
 const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Service', 'http://', 'https://',
                                  'ZbMATH - the first resource for mathematics', 'MR: Matches for:',
-                                 ' Log In', 'Log In ', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request',
+                                 ' Log In', 'Log In ', 'Sign in', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request',
                                  'domain for sale', 'website for sale', 'domain is for sale', 'website is for sale',
                                  'lease this domain', 'domain available', 'metaTags', 'An Error Occurred', 'User Cookie',
                                  'Cookies Disabled', 'page not found', '411 error', 'url not found',
                                  'limit exceeded', 'Error Page', '}}', '{{', 'EU Login', 'bad gateway', 'Captcha',
-                                 '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist'];
+                                 '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
+                                 'Subscribe to read', 'Wiley Online Library', 'pagina is niet gevonden',
+                                 'Zoeken in over NA', 'na een 404', '404 error'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
                                 'scielo.org', 'scielo.br', 'degruyter.com', 'hindawi.com', 'inderscience.com',
                                 'cambridge.org', '.oup.com', 'nature.com', 'macmillan.com', 'ieeexplore.ieee.org',
                                 'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org', 'journals.ametsoc.org',
-                                'pubs.geoscienceworld.org',
+                                'pubs.geoscienceworld.org', 'pubs.rsc.org', 'journals.uchicago.edu',
+                                'annualreviews.org', 'aip.scitation.org', 'psyche.entclub.org', 'thelancet.com',
                                 //  Below are sites that are simply DOI resolvers, like dx.doi.org
                                 'doi.library.ubc.ca');
 
@@ -47,7 +50,7 @@ const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'www.webcitation.org',
-                              'waybackmachine.org');
+                              'waybackmachine.org', 'siarchives.si.edu');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
@@ -60,5 +63,11 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    '.ap.org/', 'nytimes.com/', 'theguardian.com/', 'washingtonpost.com/',
                                    'newyorker.com/', 'independent.co.uk/', 'cnbc.com/', 'vanityfair.com/',
                                    'theatlantic.com/', '-news.co.uk/', 'news.google.com/', 'jpl.nasa.gov/',
-                                   'gsfc.nasa.gov/', 'solarsystem.nasa.gov/'); 
+                                   'gsfc.nasa.gov/', 'solarsystem.nasa.gov/', 'latimes.com/',
+                                   'usatoday.com/', 'wsj.com/', 'haaretz.com/', 'buzzfeed.com/',
+                                   'aljazeera.com/', 'vox.com/', 'reuters.com/', 'dailynews.com/', 
+                                   'newsweek.com/', 'monitor.com/', 'observer.com/', '.pbs.org/', '.bbm.ca/', '/bbm.ca/',
+                                   'mediaincanada.com/', 'cbspressexpress.com/', 'deadline.com/', 'zap2it.com/',
+                                   'yourentertainmentnow.com/', 'shows.ctv.ca/' ,'toronto.com/'); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
+                                   // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites

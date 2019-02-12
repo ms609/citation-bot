@@ -25,10 +25,6 @@ function de_wikify($string){
   return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
-/*
- * unused
- * @codeCoverageIgnore
- */
 function truncate_publisher($p){
   return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
 }
@@ -217,7 +213,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
       }
       $bits = $bitts; unset($bitts);
       #dbg($bits, '$BITS');
-      if ($bits[1] || $savedChunk) {
+      if ((isset($bits[1]) && $bits[1]) || $savedChunk) {
         $return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
         $savedChunk = NULL;
       } else $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
@@ -253,4 +249,20 @@ function straighten_quotes($str) {
      $str = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);            // Websites tiles: Jobs » Iowa » Cows » Ames
   }
   return $str;
+}
+
+function can_safely_modify_dashes($value) {
+   return((stripos($value, "http") === FALSE)
+       && (strpos($value, "[//") === FALSE)
+       && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)); 
+}
+
+function titles_are_dissimilar($inTitle, $dbTitle) {
+        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $inTitle)));
+        $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $dbTitle)));
+        return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
+              ? (strlen($inTitle) != strlen($dbTitle)
+                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
+              : levenshtein($inTitle, $dbTitle) > 3
+        );
 }

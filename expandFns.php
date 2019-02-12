@@ -166,13 +166,11 @@ function wikify_external_text($title) {
   }
   $title = html_entity_decode($title, NULL, "UTF-8");
   $title = preg_replace("/\s+/"," ", $title);  // Remove all white spaces before
-  $title = (mb_substr($title, -1) == ".")
-            ? mb_substr($title, 0, -1)
-            :(
-              (mb_substr($title, -6) == "&nbsp;")
-              ? mb_substr($title, 0, -6)
-              : $title
-            );
+  if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
+  if (mb_substr($title, -1) == ".") {
+    $last_word = mb_substr($title, mb_strpos($title, ' ') + 1);
+    if (mb_substr_count($last_word, '.') === 1) $last_word = mb_substr($title, 0, -1); // Do not remove if something like D.C.  (will not catch D. C. though)
+  }
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
   
@@ -241,7 +239,7 @@ function title_capitalization($in, $caps_after_punctuation) {
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
-    $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
+    $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalise after punctuation */,
       function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles
@@ -360,15 +358,19 @@ function tidy_date($string) {
   // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
   if (strpos($string, '0001-11-30') !== FALSE) return '';
   if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
+  if (preg_match('~^\d{4} \d{4}\-\d{4}$~', $string)) return ''; // si.edu
   if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
     if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
+      if (strlen($matches[1]) === 1) $matches[1] = '0' . $matches[1];
       return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
     } elseif (intval($matches[2]) < 13 && intval($matches[1]) > 12) {
+      if (strlen($matches[2]) === 1) $matches[2] = '0' . $matches[2];
       return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
     } elseif (intval($matches[2]) > 12 && intval($matches[1]) > 12) {
       return '';
     } elseif ($matches[1] === $matches[2]) {
-      return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+      if (strlen($matches[2]) === 1) $matches[2] = '0' . $matches[2];
+      return $matches[3] . '-' . $matches[2] . '-' . $matches[2];
     } else {
       return $matches[3];// do not know. just give year
     }
@@ -395,10 +397,10 @@ function tidy_date($string) {
     if (stripos($string, 'Invalid') !== FALSE) return '';
     return $string;
   }
-  if (preg_match('~^(.*?\d{4}\-\d?\d(?:\-?\d\d?))\S*~', $string, $matches)) return $matches[1];
-  if (preg_match(  '~\s(\d{4}\-\d?\d(?:\-?\d\d?))$~', $string, $matches)) return $matches[1];
-  if (preg_match( '~^(\d\d?/\d\d?/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); //Recusion to clean up 3/27/2000
-  if (preg_match('~[^0-9](\d\d?/\d\d?/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
+  if (preg_match( '~^(\d{4}\-\d{1,2}\-\d{1,2})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); // Starts with date
+  if (preg_match('~\s(\d{4}\-\d{1,2}\-\d{1,2})$~',     $string, $matches)) return tidy_date($matches[1]);  // Ends with a date
+  if (preg_match('~^(\d{1,2}/\d{1,2}/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); //Recusion to clean up 3/27/2000
+  if (preg_match('~[^0-9](\d{1,2}/\d{1,2}/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
   
   // Dates with dots -- convert to slashes and try again.
   if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
@@ -408,7 +410,7 @@ function tidy_date($string) {
   }
   
   if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1]; // Last ditch effort - ends in a year
-  return $string; // And we give up
+  return ''; // And we give up
 }
 
 function remove_brackets($string) {
@@ -466,6 +468,7 @@ function str_remove_irrelevant_bits($str) {
   $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   $str = str_replace(array('.', ',', ';', ':', '   ', '  '), ' ', $str); // punctuation and multiple spaces
   $str = trim($str);
+  $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium'), array('Proc', 'Proc', 'Sym'), $str);
   return $str;
 }
 
@@ -473,4 +476,25 @@ function str_equivalent($str1, $str2) {
   return 0 === strcasecmp(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
 }
   
-  
+function check_doi_for_jstor($doi, &$template) {
+  if ($template->has('jstor')) return;
+  $doi = trim($doi);
+  if ($doi == '') return;
+  if (strpos($doi, '10.2307') === 0) { // special case
+    $doi = substr($doi, 8);
+  }
+  $test_url = "https://www.jstor.org/citation/ris/" . $doi;
+  $ch = curl_init($test_url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  $ris = @curl_exec($ch);
+  $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  curl_close($ch);
+  if ($httpCode == 200 &&
+      stripos($ris, $doi) !== FALSE &&
+      strpos($ris, 'Provider') !== FALSE) {
+      $template->add_if_new('jstor', $doi);
+  } elseif ($pos = strpos($doi, '?')) {
+      $doi = substr($doi, 0, $pos);
+      check_doi_for_jstor($doi, $template);
+  }      
+}

@@ -1,5 +1,9 @@
 <?php 
+const ZOTERO_GIVE_UP = 5;
+
 function query_url_api($ids, $templates) {
+  global $zotero_failures_count;
+  $zotero_failures_count = 0;
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
     if ($template->has('url')) {
@@ -11,7 +15,9 @@ function query_url_api($ids, $templates) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
            $template->add_if_new('doi', '10.1101/' . $template->get('biorxiv'));
+           expand_by_doi($template, TRUE);  // this data is better than zotero
          } elseif (strstr($template->get('doi') , '10.1101') === FALSE) {
+           expand_doi_with_dx($template, '10.1101/' . $template->get('biorxiv'));  // dx data is better than zotero
            expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv'));  // Rare case there is a different DOI
          }
        }
@@ -23,32 +29,107 @@ function query_url_api($ids, $templates) {
        if ($template->has('osti'))      expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
        if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
        if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
-       if ($template->has('doi') && !doi_active($template->get('doi')))  expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($template->get('doi'))); // Non-crossref DOIs, such as 10.13140/RG.2.1.1002.9609
+       if ($template->has('doi')) {
+         $doi = $template->get('doi');
+         if (!doi_active($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+           expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($doi));  // DOIs without meta-data
+         }
+       }
   }
+   
+  // Now that we have expanded URLs, try to lose them
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+  curl_setopt($ch, CURLOPT_MAXREDIRS, 20); // No infinite loops for us, 20 for Elsivier and Springer websites
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
+  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_COOKIEFILE, "");
+  curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+  foreach ($templates as $template) {
+    $doi = $template->get_without_comments_and_placeholders('doi');
+    $url = $template->get('url');
+    if ($doi &&
+        $url &&
+        !$template->profoundly_incomplete() &&
+        !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
+        (strpos('10.1093/', $doi) === FALSE) &&
+        $template->blank(DOI_BROKEN_ALIASES))
+    {
+          curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
+          if (@curl_exec($ch)) {
+            $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+            $redirectedUrl_doi = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
+            $redirectedUrl_doi = urldecode($redirectedUrl_doi);
+            $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
+            $url_short         = strtok(urldecode($url), '?#');
+            if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
+            if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
+            if ( preg_match('~^https?://.+/pii/?(S\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
+                 $redirectedUrl_doi = $matches[1] ;  // Grab PII numbers
+            }
+            $url_short = str_ireplace('https', 'http', $url_short);
+            $redirectedUrl_doi = str_ireplace('https', 'http', $redirectedUrl_doi);
+            if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
+                stripos($redirectedUrl_doi, $url_short) !== FALSE) {
+               report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+               $template->forget('url');
+            } else { // See if $url redirects
+               curl_setopt($ch, CURLOPT_URL, $url);
+               if (@curl_exec($ch)) {
+                  $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+                  $redirectedUrl_url = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_url);
+                  $redirectedUrl_url = urldecode($redirectedUrl_url);
+                  $url_short = strtok($redirectedUrl_url, '?#');
+                  $url_short = str_ireplace('https', 'http', $url_short);
+                  if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
+                      stripos($redirectedUrl_doi, $url_short) !== FALSE) {
+                    report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+                    $template->forget('url');
+                  }
+               }
+            }
+          }
+    }
+  }
+  curl_close($ch);
+  @strtok('',''); // Free internal buffers
 }
 
 function zotero_request($url) {
+  global $zotero_failures_count;
   
   #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
-  $ch = curl_init('http://tools.wmflabs.org/translation-server/web');
+  $ch = curl_init('https://tools.wmflabs.org/translation-server/web');
   
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);      
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
-  curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);   
+  if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+  } else {
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10); 
+  }
   
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
     report_warning(curl_error($ch) . "   For URL: " . $url);
+    if (strpos(curl_error($ch), 'timed out after') !== FALSE) {
+      $zotero_failures_count = $zotero_failures_count + 1;
+      if ($zotero_failures_count > ZOTERO_GIVE_UP) report_warning("Giving up on URL expansion");
+    }
   }
   curl_close($ch);
   return $zotero_response;
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
+  global $zotero_failures_count;
+  if ($zotero_failures_count > ZOTERO_GIVE_UP) return;
   $access_date = FALSE;
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
@@ -129,25 +210,48 @@ function expand_by_zotero(&$template, $url = NULL) {
         return FALSE;
       }
   }
-  foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
-      if (strcasecmp($test_data, $bad_title) === 0) {
-        report_info("Received invalid title data for URL ". $url . ": $test_data");
+  if (isset($result->bookTitle)) {
+   foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
+      if (strcasecmp($result->bookTitle, $bad_title) === 0) {
+        report_info("Received invalid book title data for URL ". $url . ": $result->bookTitle");
         return FALSE;
       }
+   }
+  }
+  if (isset($result->title)) {
+   foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
+      if (strcasecmp($result->title, $bad_title) === 0) {
+        report_info("Received invalid title data for URL ". $url . ": $result->title");
+        return FALSE;
+      }
+   }
+  }
+  if (isset($result->publicationTitle)) {
+   foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
+      if (strcasecmp($result->publicationTitle, $bad_title) === 0) {
+        report_info("Received invalid publication title data for URL ". $url . ": $result->publicationTitle");
+        return FALSE;
+      }
+   }
   }
   
   if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
     if (preg_match('~\sdoi:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-      if (!isset($result->DOI) && !isset($matc hes[2])) $result->DOI = trim($matches[1]); // Only set if only one DOI
-      $result->extra = str_ireplace('doi:', '', $result->extra);
-      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+      if (!isset($result->DOI)) $result->DOI = trim($matches[1]);
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
       $result->extra = trim($result->extra);
-      if (isset($matches[2])) $result->extra = ''; // Obviously not gonna parse this in any way
     }
     if (preg_match('~\stype:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) { // [extra] => type: dataset has been seen in the wild
-      $result->extra = str_ireplace('type:', '', $result->extra);
-      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
       $result->extra = trim($result->extra);
+    }
+    if (preg_match('~\sPMID: (\d+), (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
+      $result->extra = trim($result->extra);
+      if ($matches[1] === $matches[2]) {
+        $template->add_if_new('pmid', $matches[1]);
+        entrez_api(array($matches[1]), array($template), 'pubmed');
+      }
     }
     if ($result->extra !== '') {
         if (getenv('TRAVIS')) {
@@ -161,6 +265,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->DOI) && $template->blank('doi')) {
     $template->add_if_new('doi', $result->DOI);
     expand_by_doi($template);
+    if (stripos($url, 'jstor')) check_doi_for_jstor($template->get('doi'), $template);
     if (!$template->incomplete() && doi_active($template->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
         (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url)) { // This is the use a replace to see if a substring is present trick
       report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
@@ -237,8 +342,9 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'book':
       case 'bookSection':
         // Too much bad data to risk switching journal to book or vice versa.
-        if ($template->wikiname() == 'cite web') 
-          $template->change_name_to('cite book');      
+        // also reject 'review' 
+        if ($template->wikiname() === 'cite web' && stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE) 
+          $template->change_name_to('cite book');
         break;
       case 'journalArticle':
       case 'report':  // ssrn uses this

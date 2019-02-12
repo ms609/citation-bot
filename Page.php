@@ -137,6 +137,11 @@ class Page {
       return FALSE;
     }
 
+    $citation_count = substr_count($this->text, '{{cite ') +
+                      substr_count($this->text, '{{Cite ') +
+                      substr_count($this->text, '{{citation') +
+                      substr_count($this->text, '{{Citation');
+    $ref_count = substr_count($this->text, '<ref') + substr_count($this->text, '<Ref');
     // PLAIN URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
@@ -146,7 +151,7 @@ class Page {
                       );
    // Ones like <ref>[http://www... http://www...]</ref>
     $this->text = preg_replace_callback(   
-                      "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^ >}{\]\[]+)(\s+)(https?:\/\/[^ >}{\]\[]+)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+)(\s+)(https?:\/\/[^\s>\}\{\]\[]+)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function($matches) {
                         if ($matches[4] === $matches[6]) {
                             return $matches[1] . '{{Cite web | url=' . $matches[4] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[8] ;
@@ -154,13 +159,33 @@ class Page {
                         return $matches[0];
                       },
                       $this->text
-                      );           
-     // PLAIN DOIS Converted to templates 
+                      ); 
+     // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{olcn}} Converted to templates
+     $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+|pmid\|\d{4,7}|pmc\|\d{4,7}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+|jstor\|[^\s\}\{\|]+)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      function($matches) {return $matches[1] . '{{Cite journal | id=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
+                      $this->text
+                      );
+     // PLAIN DOIS Converted to templates
      $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
-                      "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]+\/\S+\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function($matches) {return $matches[1] . '{{Cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
+     if (
+        ($ref_count < 2) ||
+        (($citation_count/$ref_count) >= 0.5)
+     ) {
+     $this->text = preg_replace_callback(   // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
+                                            // also without titles on the urls
+                      "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+)( [^\]\[\{\}]+\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      function($matches) {
+                        if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'HTTP') !== 1) return $matches[0]; // more than one url
+                        if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'SEE ALSO') !== 0) return $matches[0];
+                        return $matches[1] . '{{Cite journal | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . '}}' . $matches[6] ;},
+                      $this->text
+                      );
+     }
 
     // TEMPLATES
     $all_templates = $this->extract_object('Template');
@@ -191,24 +216,25 @@ class Page {
     
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
-    $this->expand_templates_from_identifier('url',     $our_templates);
+    $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
     $this->expand_templates_from_identifier('jstor',   $our_templates);
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
+    $this->expand_templates_from_identifier('url',     $our_templates);
     
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
-      expand_by_doi($this_template);
       $this_template->get_doi_from_crossref();
       $this_template->find_pmid();  // #TODO Could probably batch this
       if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
       $this_template->get_open_access_url();
     }
+    $this->expand_templates_from_identifier('doi',     $our_templates);
     
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
