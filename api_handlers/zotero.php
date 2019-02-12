@@ -48,7 +48,7 @@ function query_url_api($ids, $templates) {
     $url = $template->get('url');
     if ($doi &&
         $url &&
-        !$template->incomplete() &&
+        !$template->incom plete() &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
         str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url &&
         str_ireplace(['pdf', 'image', 'plate', 'figure', 'picture'], '', $url) == $url &&
