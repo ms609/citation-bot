@@ -58,7 +58,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_info("Aborting Zotero expansion: No URL found");
     return FALSE;
   }
-  if (!$template->prooundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
+  if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
   
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   
@@ -138,7 +138,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   
   if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
     if (preg_match('~\sdoi:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-      if (!isset($result->DOI) && !isset($matches[2])) $result->DOI = trim($matches[1]); // Only set if only one DOI
+      if (!isset($result->DOI) && !isset($matc hes[2])) $result->DOI = trim($matches[1]); // Only set if only one DOI
       $result->extra = str_ireplace('doi:', '', $result->extra);
       $result->extra = str_replace(trim($matches[1]), '', $result->extra);
       $result->extra = trim($result->extra);
