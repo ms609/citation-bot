@@ -18,12 +18,6 @@
   </header>
   <form id="botForm" action="process_page.php" method="post">
     <p>
-      <label for="user">Please enter your Wikipedia username to sign the bot's edits.</label><br />
-      <input name="user" id="user" value="" onchange="SaveUsername();" placeholder="Username" /> 
-      <input type="checkbox" id="saveUsername" name="saveUsername" onchange="SaveUsername();" /> 
-      <label for="saveUsername">Remember?</label>
-    </p>
-    <p>
       <input type="checkbox" name="slow" checked />
       <label for="slow">Thorough mode - a slower, but more exhaustive, search. Finds bibcodes and flags "broken" DOIs.</label>
     </p>
