@@ -9,7 +9,7 @@
  final class userOauth {
 
     private $oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
-    private $apiUrl;
+    private $apiUrl   = 'https://meta.wikimedia.org/w/api.php';
     private $consumerKey = ''; // NEED THIS
     private $consumerSecret = '';  // NEED THIS
     private $username;
@@ -25,7 +25,6 @@
       $conf = new ClientConfig($this->$oauthUrl);
       $conf->setConsumer( new Consumer($this->consumerKey, $this->consumerSecret) );
       $this->client = new Client($conf);
-      $this->apiUrl = preg_replace( '/index\.php.*/', 'api.php', $this->oauthUrl);
     }
  
     public function get_username() {
