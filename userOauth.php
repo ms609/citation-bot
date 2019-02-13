@@ -9,25 +9,30 @@
  final class userOauth {
 
     private $oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
-    private $consumerKey = ''; 
-    private $consumerSecret = '';
+	private $apiUrl;
+    private $consumerKey = ''; // NEED THIS
+    private $consumerSecret = '';  // NEED THIS
     private $username;
-	private $editToken;
+    private $editToken;
+	private $client;
   
-    public function logout() {
+    function __destruct() {
       session_start();
       session_destroy();
     }
   
+	function __construct() {
+      $conf = new ClientConfig($this->$oauthUrl);
+      $conf->setConsumer( new Consumer($this->consumerKey, $this->consumerSecret) );
+      $this->client = new Client($conf);
+	  $this->apiUrl = preg_replace( '/index\.php.*/', 'api.php', $this->oauthUrl);
+	}
+	 
   public function callback() {
    if ( !isset( $_GET['oauth_verifier'] ) ) {
 	echo "This page should only be access after redirection back from the wiki.";
 	exit( 1 );
    }
-
-   $conf = new ClientConfig($this->$oauthUrl);
-   $conf->setConsumer( new Consumer($this->consumerKey, $this->consumerSecret) );
-   $client = new Client( $conf );
    // Get the Request Token's details from the session and create a new Token object.
    session_start();
    $requestToken = new Token( $_SESSION['request_key'], $_SESSION['request_secret'] );
@@ -41,12 +46,6 @@
   }
   
   public function api_request() {
-   // Get the wiki URL and OAuth consumer details from the config file.
-    $apiUrl = preg_replace( '/index\.php.*/', 'api.php', $this->oauthUrl);
-    // Configure the OAuth client with the URL and consumer details.
-    $conf = new ClientConfig($this->oauthUrl);
-    $conf->setConsumer( new Consumer($this->consumerKey, $this->consumerSecret) );
-    $client = new Client( $conf );
     // Load the Access Token from the session.
     session_start();
     $accessToken = new Token( $_SESSION['access_key'], $_SESSION['access_secret'] );
@@ -56,18 +55,12 @@
     // get the authenticated user's edit token.
     $this->editToken = json_decode( $client->makeOAuthCall(
 	$accessToken,
-	"$apiUrl?action=query&meta=tokens&format=json"
+	"$this->apiUrl?action=query&meta=tokens&format=json"
     ) )->query->tokens->csrftoken;
   }
  
   
   public function index() {
-    // Get the wiki URL and OAuth consumer details from the config file.
-    $apiUrl = preg_replace( '/index\.php.*/', 'api.php', $this->oauthUrl);
-    // Configure the OAuth client with the URL and consumer details.
-    $conf = new ClientConfig($this->oauthUrl);
-    $conf->setConsumer( new Consumer($this->consumerKey, $this->consumerSecret) );
-    $client = new Client( $conf );
     // Send an HTTP request to the wiki to get the authorization URL and a Request Token.
     // These are returned together as two elements in an array (with keys 0 and 1).
     list( $authUrl, $token ) = $client->initiate();
