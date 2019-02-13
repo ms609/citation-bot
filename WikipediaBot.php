@@ -10,6 +10,8 @@ class WikipediaBot {
   
   protected $consumer, $token, $ch;
   
+  private $user_oauth = NULL;
+  
   function __construct() {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
       // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
@@ -20,6 +22,10 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) trigger_error("PHP_OAUTH_ACCESS_TOKEN not set", E_USER_ERROR);
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
+  }
+  
+  public function authenticate_user() {
+    $this->user_oauth = new userOauth();
   }
   
   function __destruct() {
