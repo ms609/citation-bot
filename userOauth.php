@@ -9,26 +9,34 @@
  final class userOauth {
 
     private $oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
-	private $apiUrl;
+    private $apiUrl;
     private $consumerKey = ''; // NEED THIS
     private $consumerSecret = '';  // NEED THIS
     private $username;
     private $editToken;
-	private $client;
+    private $client;
   
     function __destruct() {
       session_start();
       session_destroy();
     }
   
-	function __construct() {
+    function __construct() {
       $conf = new ClientConfig($this->$oauthUrl);
       $conf->setConsumer( new Consumer($this->consumerKey, $this->consumerSecret) );
       $this->client = new Client($conf);
-	  $this->apiUrl = preg_replace( '/index\.php.*/', 'api.php', $this->oauthUrl);
-	}
-	 
-  public function callback() {
+      $this->apiUrl = preg_replace( '/index\.php.*/', 'api.php', $this->oauthUrl);
+    }
+ 
+    public function get_username() {
+      return $this->username;
+    }
+
+    public function get_edit_token() {
+      return $this->editToken;
+    }
+
+  private function callback() {
    if ( !isset( $_GET['oauth_verifier'] ) ) {
 	echo "This page should only be access after redirection back from the wiki.";
 	exit( 1 );
@@ -45,7 +53,7 @@
    unset( $_SESSION['request_key'], $_SESSION['request_secret'] );
   }
   
-  public function api_request() {
+  private function api_request() {
     // Load the Access Token from the session.
     session_start();
     $accessToken = new Token( $_SESSION['access_key'], $_SESSION['access_secret'] );
@@ -60,7 +68,7 @@
   }
  
   
-  public function index() {
+  private function index() {
     // Send an HTTP request to the wiki to get the authorization URL and a Request Token.
     // These are returned together as two elements in an array (with keys 0 and 1).
     list( $authUrl, $token ) = $client->initiate();
