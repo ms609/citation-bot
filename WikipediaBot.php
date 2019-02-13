@@ -6,9 +6,12 @@ use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
+require_once('userOauth.php');
+
 class WikipediaBot {
   
   protected $consumer, $token, $ch;
+  protected $user_oauth = NULL;
   
   function __construct() {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
@@ -139,6 +142,8 @@ class WikipediaBot {
   }
   
   public function write_page($page, $text, $editSummary, $lastRevId = NULL, $startedEditing = NULL) {
+    if (is_null($this->user_oauth)) $this->user_oauth = new userOauth(); // Need one to write a page
+    NEED TO SOMEHOW PASS THIS IN!!!!!
     $response = $this->fetch(array(
             'action' => 'query',
             'prop' => 'info|revisions',
