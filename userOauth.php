@@ -7,5 +7,10 @@
  use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
  final class userOauth {
+  
+  protected function logout() {
+    session_start();
+    session_destroy();
+  }
  
  }
