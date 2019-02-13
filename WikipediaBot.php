@@ -9,7 +9,6 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 class WikipediaBot {
   
   protected $consumer, $token, $ch;
-  protected $user_oauth = NULL;
   
   function __construct() {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
