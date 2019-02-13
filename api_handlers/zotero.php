@@ -128,6 +128,7 @@ function zotero_request($url) {
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
+  return FALSE; // DEBUGGING OTHER CODE
   global $zotero_failures_count;
   if ($zotero_failures_count > ZOTERO_GIVE_UP) return;
   $access_date = FALSE;
