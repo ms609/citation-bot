@@ -32,7 +32,7 @@ $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
 
 $api = new WikipediaBot();
-$oauth = $api->authenticate_user();
+$api->authenticate_user();
 
 if (HTML_OUTPUT) {
 ?>
