@@ -30,7 +30,7 @@ if (HTML_OUTPUT) {?>
 require_once("expandFns.php");
 
 $api = new WikipediaBot();
-$oauth = $api->authenticate_user();
+$api->authenticate_user();
 
 $edit_summary_end = " | [[WP:UCB|User-activated]].";
 
