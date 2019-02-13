@@ -12,7 +12,7 @@ class WikipediaBot {
   
   protected $consumer, $token, $ch;
   
-  private $user_oauth = NULL;
+  private $user_oauth;
   
   function __construct() {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
