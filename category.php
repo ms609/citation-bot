@@ -29,14 +29,10 @@ require_once __DIR__ . '/expandFns.php';
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-if (is_valid_user($user)) {
-  echo " Activated by $user.\n";
-  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
-} else {
-  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits";
-  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
-}
+$edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
+
+$api = new WikipediaBot();
+$oauth = $api->authenticate_user();
 
 if (HTML_OUTPUT) {
 ?>
@@ -55,7 +51,6 @@ if (HTML_OUTPUT) {
 }
 if ($category) {
   $attempts = 0;
-  $api = new WikipediaBot();
   $pages_in_category = $api->category_members($category);
   shuffle($pages_in_category);
   $page = new Page();
