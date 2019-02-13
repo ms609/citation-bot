@@ -11,6 +11,8 @@
     private $oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
     private $consumerKey = ''; 
     private $consumerSecret = '';
+    private $username;
+	private $editToken;
   
     public function logout() {
       session_start();
@@ -48,36 +50,14 @@
     // Load the Access Token from the session.
     session_start();
     $accessToken = new Token( $_SESSION['access_key'], $_SESSION['access_secret'] );
-    // Example 1: get the authenticated user's identity.
+    // get the authenticated user's identity.
     $ident = $client->identify( $accessToken );
-    echo "You are authenticated as $ident->username.\n\n";
-    // Example 2: do a simple API call.
-    $userInfo = json_decode( $client->makeOAuthCall(
-	$accessToken,
-	"$apiUrl?action=query&meta=userinfo&uiprop=rights&format=json"
-    ) );
-    echo "== User info ==\n\n";
-    print_r( $userInfo );
-    // Example 3: make an edit (getting the edit token first).
-    $editToken = json_decode( $client->makeOAuthCall(
+    $this->username = $ident->username;
+    // get the authenticated user's edit token.
+    $this->editToken = json_decode( $client->makeOAuthCall(
 	$accessToken,
 	"$apiUrl?action=query&meta=tokens&format=json"
     ) )->query->tokens->csrftoken;
-    $apiParams = [
-	'action' => 'edit',
-	'title' => 'User:' . $ident->username,
-	'section' => 'new',
-	'summary' => 'Hello World',
-	'text' => 'I am learning to use the <code>mediawiki/oauthclient</code> library.',
-	'token' => $editToken,
-	'format' => 'json',
-    ];
-    $editResult = json_decode( $client->makeOAuthCall(
-	$accessToken,
-	$apiUrl,
-	true,
-	$apiParams
-    ) );
   }
  
   
