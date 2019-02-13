@@ -29,6 +29,8 @@ require_once __DIR__ . '/expandFns.php';
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 
+$api = new WikipediaBot();
+
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   echo " Activated by $user.\n";
@@ -55,7 +57,6 @@ if (HTML_OUTPUT) {
 }
 if ($category) {
   $attempts = 0;
-  $api = new WikipediaBot();
   $pages_in_category = $api->category_members($category);
   shuffle($pages_in_category);
   $page = new Page();
