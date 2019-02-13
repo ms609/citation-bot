@@ -17,11 +17,11 @@
    private $client;
   
    function __destruct() {
-      session_start();
-      session_destroy();
+      session_write_close();
    }
   
    function __construct() {
+      session_start();
       $conf = new ClientConfig($this->$oauthUrl);
       $conf->setConsumer( new Consumer($this->consumerKey, $this->consumerSecret) );
       $this->client = new Client($conf);
@@ -42,7 +42,6 @@
 
    private function get_token() {
      // Get the Request Token's details from the session and create a new Token object.
-     session_start();
      $requestToken = new Token( $_SESSION['request_key'], $_SESSION['request_secret'] );
      // Send an HTTP request to the wiki to retrieve an Access Token.
      $accessToken = $client->complete( $requestToken,  $_GET['oauth_verifier'] );
@@ -65,7 +64,6 @@
     // These are returned together as two elements in an array (with keys 0 and 1).
     list( $authUrl, $token ) = $client->initiate();
     // Store the Request Token in the session. We will retrieve it from there when the user is sent back from the wiki
-    session_start();
     $_SESSION['request_key'] = $token->key;
     $_SESSION['request_secret'] = $token->secret;
     // Redirect the user to the authorization URL.
