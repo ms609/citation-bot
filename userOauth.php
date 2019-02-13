@@ -10,8 +10,6 @@
 
    private $oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
    private $apiUrl   = 'https://meta.wikimedia.org/w/api.php';
-   private $consumerKey = ''; // NEED THIS
-   private $consumerSecret = '';  // NEED THIS
    private $username;
    private $editToken;
    private $client;
@@ -23,7 +21,7 @@
    function __construct() {
       session_start();
       $conf = new ClientConfig($this->$oauthUrl);
-      $conf->setConsumer( new Consumer($this->consumerKey, $this->consumerSecret) );
+      $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET')));  // Is this correct, or do we need a new token?
       $this->client = new Client($conf);
       if (isset( $_GET['oauth_verifier'] ) ) {
          $this->get_token();
