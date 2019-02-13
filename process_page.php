@@ -28,6 +28,9 @@ if (HTML_OUTPUT) {?>
 <?php
 }
 require_once("expandFns.php");
+
+$api = new WikipediaBot();
+
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
@@ -50,7 +53,6 @@ foreach (explode('|', $pages) as $title) {
 
   report_phase("Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.");
   $my_page = new Page();
-  $api = new WikipediaBot();
   if ($my_page->get_text_from($title, $api)) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
