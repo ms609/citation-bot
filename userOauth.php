@@ -36,7 +36,7 @@
       return $this->editToken;
     }
 
-  private function callback() {
+  private function get_token() {
    if ( !isset( $_GET['oauth_verifier'] ) ) {
 	echo "This page should only be access after redirection back from the wiki.";
 	exit( 1 );
@@ -53,7 +53,7 @@
    unset( $_SESSION['request_key'], $_SESSION['request_secret'] );
   }
   
-  private function api_request() {
+  private function use_token() {
     // Load the Access Token from the session.
     session_start();
     $accessToken = new Token( $_SESSION['access_key'], $_SESSION['access_secret'] );
@@ -68,7 +68,7 @@
   }
  
   
-  private function index() {
+  private function authorize token() {
     // Send an HTTP request to the wiki to get the authorization URL and a Request Token.
     // These are returned together as two elements in an array (with keys 0 and 1).
     list( $authUrl, $token ) = $client->initiate();
