@@ -42,12 +42,12 @@
      // Get the Request Token's details from the session and create a new Token object.
      $requestToken = new Token( $_SESSION['request_key'], $_SESSION['request_secret'] );
      // Send an HTTP request to the wiki to retrieve an Access Token.
-     $accessToken = $client->complete( $requestToken,  $_GET['oauth_verifier'] );
+     $accessToken = $this->client->complete( $requestToken,  $_GET['oauth_verifier'] );
      // At this point, the user is authenticated, and the access token can be used
      $_SESSION['access_key'] = $accessToken->key;
      $_SESSION['access_secret'] = $accessToken->secret;
      //   get the authenticated user's identity.
-     $ident = $client->identify( $accessToken );
+     $ident = $this->client->identify( $accessToken );
      $this->username = $ident->username;
      // get the authenticated user's edit token.
      $this->editToken = json_decode( $client->makeOAuthCall(
@@ -60,7 +60,7 @@
    private function authorize_token() {
     // Send an HTTP request to the wiki to get the authorization URL and a Request Token.
     // These are returned together as two elements in an array (with keys 0 and 1).
-    list( $authUrl, $token ) = $client->initiate();
+    list( $authUrl, $token ) = $this->client->initiate();
     // Store the Request Token in the session. We will retrieve it from there when the user is sent back from the wiki
     $_SESSION['request_key'] = $token->key;
     $_SESSION['request_secret'] = $token->secret;
