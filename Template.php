@@ -3099,7 +3099,12 @@ final class Template {
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
     }
-    
+    if ($this->wikiname() === 'citation') { // Special CS2 code goes here
+      if ($this->has('title') && $this->has('chapter') && !$this->blank(WORK_ALIASES)) { // Invalid combination
+          report_info('CS2 template has incompatible parameters.  Changing to CS1 cite book. Please verify.');
+          $this->change_name_to('cite book');
+      }
+    }
     if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') && strpos($this->get('doi'), '10.2307') === 0) {
       $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
