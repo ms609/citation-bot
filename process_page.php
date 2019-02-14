@@ -1,6 +1,8 @@
 <?php
 ## Set up - including DOT_DECODE array
 define("HTML_OUTPUT", !isset($argv));
+require_once("expandFns.php");
+$api = new WikipediaBot();
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -27,7 +29,6 @@ if (HTML_OUTPUT) {?>
 <pre id="botOutput">
 <?php
 }
-require_once("expandFns.php");
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
@@ -36,9 +37,17 @@ if (is_valid_user($user)) {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
-$pages = (isset($argv) && isset($argv[1])) // argv set on command line
+if (isset($_REQUEST["cat"]) {
+   $category = $_REQUEST["cat"];
+   $ON = TRUE;
+   $edit_summary_end .= ' [[Category:$category]].';
+   $pages = $api->category_members($category);
+   shuffle($pages);
+} else {
+   $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
-if (!isset($ON)) $ON = isset($argv[2]);
+   if (!isset($ON)) $ON = isset($argv[2]);
+}
 
 foreach (explode('|', $pages) as $title) {
 
@@ -50,7 +59,6 @@ foreach (explode('|', $pages) as $title) {
 
   report_phase("Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.");
   $my_page = new Page();
-  $api = new WikipediaBot();
   if ($my_page->get_text_from($title, $api)) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
