@@ -15,11 +15,9 @@
    private $client;
   
    function __destruct() {
-      session_write_close();
    }
   
    function __construct() {
-      session_start();
       $conf = new ClientConfig($this->$oauthUrl);
       $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET')));  // Is this correct, or do we need a new token?
       $this->client = new Client($conf);
