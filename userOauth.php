@@ -21,7 +21,7 @@
   
    function __construct() {
       $conf = new ClientConfig($this->oauthUrl);
-      $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET')));  // Is this correct, or do we need a new token?
+      $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN_USER'), getenv('PHP_OAUTH_CONSUMER_SECRET_USER')));  // Is this correct, or do we need a new token?
       $this->client = new Client($conf);
       if (isset( $_GET['oauth_verifier'] ) ) {
          $this->get_token();
