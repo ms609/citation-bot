@@ -1524,6 +1524,7 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs($options) {  
+    return FALSE; // DEBUGGING Other code
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     
     if (!getenv('PHP_ADSABSAPIKEY')) {
