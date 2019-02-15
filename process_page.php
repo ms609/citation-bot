@@ -37,7 +37,7 @@ if (is_valid_user($user)) {
   $edit_summary_end = " | [[WP:UCB|User-activated]].";
 }
 
-if (isset($_REQUEST["cat"]) {
+if (isset($_REQUEST["cat"])) {
    $category = $_REQUEST["cat"];
    $ON = TRUE;
    $edit_summary_end .= ' [[Category:$category]].';
