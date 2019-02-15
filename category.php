@@ -1,33 +1,16 @@
 <?php
 error_reporting(E_ALL^E_NOTICE);
-if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
-$argument["cat"] = NULL;
-foreach ($argv as $arg) {
-  if (substr($arg, 0, 2) == "--") {
-    $argument[substr($arg, 2)] = 1;
-  } elseif (substr($arg, 0, 1) == "-") {
-    $oArg = substr($arg, 1);
-  } else {
-    switch ($oArg) {
-      case "P": case "A": case "T":
-        $argument["pages"][] = $arg;
-        break;
-      default:
-      $argument[$oArg][] = $arg;
-    }
-  }
-}
-$SLOW_MODE = FALSE;
-if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
+
+if (isset($_REQUEST["slow"])) {
   $SLOW_MODE = TRUE;
+} else {
+  $SLOW_MODE = FALSE;
 }
 
-if (php_sapi_name() !== "cli") {
-    define("HTML_OUTPUT", TRUE);// Not in cli-mode
-}
+define("HTML_OUTPUT", TRUE);
 require_once __DIR__ . '/expandFns.php';
 
-$category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
+$category = $_REQUEST["cat"];
 
 $api = new WikipediaBot();
 
@@ -40,7 +23,6 @@ if (is_valid_user($user)) {
   $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
 }
 
-if (HTML_OUTPUT) {
 ?>
 <html>
   <body>
@@ -52,9 +34,7 @@ if (HTML_OUTPUT) {
   <body>
     <pre>
 <?php
-} else {
-  echo "\n";
-}
+
 if ($category) {
   $attempts = 0;
   $pages_in_category = $api->category_members($category);
