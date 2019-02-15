@@ -452,18 +452,4 @@ class WikipediaBot {
     return $results['page_id'];
   }
 
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function touch_page($page) {
-    $text = $this->get_raw_wikitext($page);
-    if ($text) {
-      $this->write_page($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
-      return TRUE;
-    } else {
-      return FALSE;
-    }
-  }
-
 }
