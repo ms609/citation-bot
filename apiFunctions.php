@@ -163,7 +163,6 @@ function arxiv_api($ids, $templates) {
 }
 
 function adsabs_api($ids, $templates, $identifier) {
-  return FALSE; // DEBUGGING other stuff
   if (count($ids) == 0) return FALSE;
   if (count($ids) < 5) {
     foreach ($templates as $template) {
