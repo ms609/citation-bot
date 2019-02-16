@@ -26,7 +26,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       global $DO_SECRET_TESTS;
       $DO_SECRET_TESTS = TRUE;
       $function();
-      $DO_SECRET_TESTS = FALSE;
+      unset($DO_SECRET_TESTS); // The default
     }
   }
   
