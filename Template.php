@@ -1524,8 +1524,8 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs($options) {  
-    global $SKIP_SECRET_TESTS; // Only set in TRAVIS
-    if (@$SKIP_SECRET_TESTS === TRUE) return (object) array('numFound' => 0);
+    global $DO_SECRET_TESTS; // Only set in TRAVIS
+    if (getenv('TRAVIS') && @$DO_SECRET_TESTS !== TRUE) return (object) array('numFound' => 0);
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     
     if (!getenv('PHP_ADSABSAPIKEY')) {
