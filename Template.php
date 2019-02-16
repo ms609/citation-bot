@@ -3113,8 +3113,15 @@ final class Template {
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
-            $this->forget('publisher');
-            $this->forget('location');
+            if (!$this->blank(['publisher', 'location']) && !$this->blank(['doi', 'pmid', 'pmc', 'issn', 'bibcode'])) {  // pitchforks prevention
+              $forget_string = 'Removing publisher/location from journal already uniquely identified by ';
+              foreach (['doi', 'pmid', 'pmc', 'issn', 'bibcode'] as $id) {
+                if ($this->has($id)) $forget_string .= $id . ' ';
+              }
+              report_info($forget_string);
+              $this->forget('publisher');
+              $this->forget('location');
+            }
           } else {
             report_warning('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn'));
