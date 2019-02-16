@@ -145,13 +145,13 @@ class Page {
     // PLAIN URLS Converted to Templates
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
-                      "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+)\]?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function($matches) {return $matches[1] . '{{Cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
                       $this->text
                       );
    // Ones like <ref>[http://www... http://www...]</ref>
     $this->text = preg_replace_callback(   
-                      "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+)(\s+)(https?:\/\/[^\s>\}\{\]\[]+)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function($matches) {
                         if ($matches[4] === $matches[6]) {
                             return $matches[1] . '{{Cite web | url=' . $matches[4] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[8] ;
@@ -162,13 +162,13 @@ class Page {
                       ); 
      // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{olcn}} Converted to templates
      $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
-                      "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+|pmid\|\d{4,7}|pmc\|\d{4,7}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+|jstor\|[^\s\}\{\|]+)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,7}|pmc\|\d{4,7}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function($matches) {return $matches[1] . '{{Cite journal | id=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
      // PLAIN DOIS Converted to templates
      $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
-                      "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function($matches) {return $matches[1] . '{{Cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
@@ -178,7 +178,7 @@ class Page {
      ) {
      $this->text = preg_replace_callback(   // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
                                             // also without titles on the urls
-                      "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+)( [^\]\[\{\}]+\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function($matches) {
                         if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'HTTP') !== 1) return $matches[0]; // more than one url
                         if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'SEE ALSO') !== 0) return $matches[0];
