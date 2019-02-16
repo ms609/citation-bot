@@ -104,6 +104,7 @@ final class Template {
       $this->id_to_param();
       $this->correct_param_spelling();
       $this->get_doi_from_text();
+      $this->fix_rogue_etal();
       $this->tidy();
       
       switch ($this->wikiname()) {
@@ -128,6 +129,18 @@ final class Template {
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
+    }
+  }
+  
+  public function fix_rogue_etal() {
+    if ($this->blank(DISPLAY_AUTHORS)) {
+      $i = 2;
+      while (!$this->blank(['author' . $i, 'last' . $i])) {
+        $i = $i + 1;
+      }
+      $i = $i - 1;
+      if (preg_match('~^et\.? ?al\.?$~i', $this->get('author' . $i))) $this->rename('author' . $i, 'display-authors', 'etal');
+      if (preg_match('~^et\.? ?al\.?$~i', $this->get('last'   . $i))) $this->rename('last'   . $i, 'display-authors', 'etal');
     }
   }
   
@@ -197,7 +210,7 @@ final class Template {
           return (!(
              ($this->has('journal') || $this->has('periodical') || $this->has('work') ||
               $this->has('website') || $this->has('publisher') || $this->has('newspaper') ||
-              $this->has('magazine'))
+              $this->has('magazine')|| $this->has('encyclopedia') || $this->has('contribution'))
           &&  $this->has("title")
           &&  $has_date
     ));
@@ -752,6 +765,7 @@ final class Template {
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE; 
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
+        $value = truncate_publisher($value);
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
         }
@@ -2581,9 +2595,14 @@ final class Template {
     }
     
     if($this->has($param)) {
-      $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
-      if (stripos($param, 'separator') === FALSE && stripos($param, 'postscript') === FALSE && stripos($param, 'url') === FALSE) {
-         $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
+      if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
+          stripos($param, 'postscript') === FALSE &&  // periods valid
+          stripos($param, 'url') === FALSE &&  // all characters are valid
+          stripos($param, 'quot') === FALSE) { // someone might have formatted the quote
+        $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
+        $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
+        $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
+        $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
       }
     }
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
@@ -3097,6 +3116,12 @@ final class Template {
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
     }
+    if ($this->wikiname() === 'citation') { // Special CS2 code goes here
+      if ($this->has('title') && $this->has('chapter') && !$this->blank(WORK_ALIASES)) { // Invalid combination
+          report_info('CS2 template has incompatible parameters.  Changing to CS1 cite book. Please verify.');
+          $this->change_name_to('cite book');
+      }
+    }
     if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') && strpos($this->get('doi'), '10.2307') === 0) {
       $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
@@ -3105,8 +3130,15 @@ final class Template {
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
-            $this->forget('publisher');
-            $this->forget('location');
+            if (!$this->blank(['publisher', 'location']) && !$this->blank(['doi', 'pmid', 'pmc', 'issn', 'bibcode'])) {  // pitchforks prevention
+              $forget_string = 'Removing publisher/location from journal already uniquely identified by ';
+              foreach (['doi', 'pmid', 'pmc', 'issn', 'bibcode'] as $id) {
+                if ($this->has($id)) $forget_string .= $id . ' ';
+              }
+              report_info($forget_string);
+              $this->forget('publisher');
+              $this->forget('location');
+            }
           } else {
             report_warning('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn'));
@@ -3472,6 +3504,7 @@ final class Template {
     $this->forgetter($par, TRUE);
   }
   private function forgetter($par, $echo_forgetting) { // Do not call this function directly
+   if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
       $this->forgetter('accessdate', $echo_forgetting);
       $this->forgetter('access-date', $echo_forgetting);
@@ -3505,6 +3538,7 @@ final class Template {
     if ($par == 'chapter-url' || $par == 'chapterurl') {
        $this->forgetter('chapter-format', $echo_forgetting);
     }
+   }  // even if blank try to remove
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
       if ($echo_forgetting && $this->has($par) && stripos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {

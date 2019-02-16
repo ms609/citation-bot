@@ -1,5 +1,9 @@
 <?php 
+const ZOTERO_GIVE_UP = 5;
+
 function query_url_api($ids, $templates) {
+  global $zotero_failures_count;
+  $zotero_failures_count = 0;
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
     if ($template->has('url')) {
@@ -11,7 +15,9 @@ function query_url_api($ids, $templates) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
            $template->add_if_new('doi', '10.1101/' . $template->get('biorxiv'));
+           expand_by_doi($template, TRUE);  // this data is better than zotero
          } elseif (strstr($template->get('doi') , '10.1101') === FALSE) {
+           expand_doi_with_dx($template, '10.1101/' . $template->get('biorxiv'));  // dx data is better than zotero
            expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv'));  // Rare case there is a different DOI
          }
        }
@@ -38,26 +44,28 @@ function query_url_api($ids, $templates) {
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($ch, CURLOPT_COOKIESESSION, TRUE);
+  curl_setopt($ch, CURLOPT_COOKIEFILE, "");
+  curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
     if ($doi &&
         $url &&
-        !$template->incomplete() &&
+        !$template->profoundly_incomplete() &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
-        str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) != $url &&
-        str_ireplace(['pdf', 'image', 'plate', 'figure', 'picture'], '', $url) == $url &&
+        (strpos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+            $redirectedUrl_doi = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
+            $redirectedUrl_doi = urldecode($redirectedUrl_doi);
             $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
-            $url_short         = strtok($url,               '?#');
+            $url_short         = strtok(urldecode($url), '?#');
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
-            if ( preg_match('~^https?://*+/pii/(S\d{4}[0-9]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
+            if ( preg_match('~^https?://.+/pii/?(S\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
                  $redirectedUrl_doi = $matches[1] ;  // Grab PII numbers
             }
             $url_short = str_ireplace('https', 'http', $url_short);
@@ -70,6 +78,8 @@ function query_url_api($ids, $templates) {
                curl_setopt($ch, CURLOPT_URL, $url);
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+                  $redirectedUrl_url = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_url);
+                  $redirectedUrl_url = urldecode($redirectedUrl_url);
                   $url_short = strtok($redirectedUrl_url, '?#');
                   $url_short = str_ireplace('https', 'http', $url_short);
                   if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
@@ -87,6 +97,7 @@ function query_url_api($ids, $templates) {
 }
 
 function zotero_request($url) {
+  global $zotero_failures_count;
   
   #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
   $ch = curl_init('https://tools.wmflabs.org/translation-server/web');
@@ -107,12 +118,18 @@ function zotero_request($url) {
   $zotero_response = curl_exec($ch);
   if ($zotero_response === FALSE) {
     report_warning(curl_error($ch) . "   For URL: " . $url);
+    if (strpos(curl_error($ch), 'timed out after') !== FALSE) {
+      $zotero_failures_count = $zotero_failures_count + 1;
+      if ($zotero_failures_count > ZOTERO_GIVE_UP) report_warning("Giving up on URL expansion");
+    }
   }
   curl_close($ch);
   return $zotero_response;
 }
   
 function expand_by_zotero(&$template, $url = NULL) {
+  global $zotero_failures_count;
+  if ($zotero_failures_count > ZOTERO_GIVE_UP) return;
   $access_date = FALSE;
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
@@ -220,16 +237,21 @@ function expand_by_zotero(&$template, $url = NULL) {
   
   if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
     if (preg_match('~\sdoi:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-      if (!isset($result->DOI) && !isset($matches[2])) $result->DOI = trim($matches[1]); // Only set if only one DOI
-      $result->extra = str_ireplace('doi:', '', $result->extra);
-      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+      if (!isset($result->DOI)) $result->DOI = trim($matches[1]);
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
       $result->extra = trim($result->extra);
-      if (isset($matches[2])) $result->extra = ''; // Obviously not gonna parse this in any way
     }
     if (preg_match('~\stype:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) { // [extra] => type: dataset has been seen in the wild
-      $result->extra = str_ireplace('type:', '', $result->extra);
-      $result->extra = str_replace(trim($matches[1]), '', $result->extra);
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
       $result->extra = trim($result->extra);
+    }
+    if (preg_match('~\sPMID: (\d+), (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
+      $result->extra = trim($result->extra);
+      if ($matches[1] === $matches[2]) {
+        $template->add_if_new('pmid', $matches[1]);
+        entrez_api(array($matches[1]), array($template), 'pubmed');
+      }
     }
     if ($result->extra !== '') {
         if (getenv('TRAVIS')) {

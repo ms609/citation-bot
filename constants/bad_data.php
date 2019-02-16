@@ -5,7 +5,8 @@ const HAS_NO_VOLUME = array("zookeys");  // Some journals have issues only, no v
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
-const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -");
+const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
+                           "no authors");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign');
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
@@ -31,7 +32,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Cookies Disabled', 'page not found', '411 error', 'url not found',
                                  'limit exceeded', 'Error Page', '}}', '{{', 'EU Login', 'bad gateway', 'Captcha',
                                  '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
-                                  'Subscribe to read', 'Wiley Online Library' ];
+                                 'Subscribe to read', 'Wiley Online Library', 'pagina is niet gevonden',
+                                 'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',

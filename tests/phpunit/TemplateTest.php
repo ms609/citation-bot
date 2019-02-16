@@ -1051,6 +1051,25 @@ ER -  }}';
     $this->assertEquals('Charlie C.', $prepared->get('first3'));
     $this->assertEquals('etal', $prepared->get('displayauthors'));
   }
+ 
+  public function testEtAlAsAuthor() {
+    $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|author3 = et al. }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('etal', $prepared->get('display-authors'));
+    $this->assertNull($prepared->get('author3'));
+    $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|last3 = et al. }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('etal', $prepared->get('display-authors'));
+    $this->assertNull($prepared->get('last3'));
+    $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|author3 = etal. }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('etal', $prepared->get('display-authors'));
+    $this->assertNull($prepared->get('author3'));
+    $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|last3 = etal }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('etal', $prepared->get('display-authors'));
+    $this->assertNull($prepared->get('last3'));
+  }
        
   public function testWebsite2Url() {
       $text = '{{cite book |website=ttp://example.org }}';
@@ -1460,6 +1479,9 @@ ER -  }}';
                          
   public function testAccessDates() {
     $text = '{{cite book |last1=Tanimoto |first1=Toshiro |editor=Thomas J. Ahrens |date=1995 |chapter=Crustal Structure of the Earth |title=Global Earth Physics: A Handbook of Physical Constants |chapter-url=http://www.agu.org/reference/gephys/15_tanimoto.pdf |accessdate=16 October 2006}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get('accessdate'));
+    $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapterurl=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('accessdate'));
   }

@@ -239,7 +239,7 @@ function title_capitalization($in, $caps_after_punctuation) {
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
-    $new_case = preg_replace_callback("~[?.:!]\s+[a-z]~u" /* Capitalise after punctuation */,
+    $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalise after punctuation */,
       function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles
@@ -381,6 +381,9 @@ function tidy_date($string) {
     if ($string > -2 && $string < 2) return ''; // reject -1,0,1
     return $string; // year
   }
+  if (preg_match('~^(\d{1,2}) ([A-Za-z]+\.?), ?(\d{4})$~', $string, $matches)) { // strtotime('3 October, 2016') gives 2019-10-03.  The comma is evil and strtotime is stupid
+    $string = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];   // Remove comma
+  }
   $time = strtotime($string);
   if ($time) {
     $day = date('d', $time);
@@ -465,6 +468,7 @@ function str_remove_irrelevant_bits($str) {
   $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   $str = str_replace(array('.', ',', ';', ':', '   ', '  '), ' ', $str); // punctuation and multiple spaces
   $str = trim($str);
+  $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium'), array('Proc', 'Proc', 'Sym'), $str);
   return $str;
 }
 
