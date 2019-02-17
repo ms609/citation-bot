@@ -23,10 +23,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       echo 'S'; // Skipping test: Risks exposing secret keys
       $this->assertNull(NULL); // Make Travis think we tested something
     } else {
-      global $DO_SECRET_TESTS;
-      $DO_SECRET_TESTS = TRUE;
       $function();
-      unset($DO_SECRET_TESTS); // The default
     }
   }
   
