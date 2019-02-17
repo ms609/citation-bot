@@ -1608,8 +1608,8 @@ final class Template {
         trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_NOTICE);
       } else {
-        trigger_error(sprintf(" Error %d in query_adsabs: %s",
-                      $e->getCode(), $e->getMessage()), E_USER_WARNING);
+        report_warning(sprintf("Error %d in query_adsabs: %s",
+                      $e->getCode(), $e->getMessage()));
       }
       return (object) array('numFound' => 0);
     }

@@ -302,14 +302,6 @@ class WikipediaBot {
     return $list;
   }
 
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function wikititle_encode($in) {
-    return str_replace(DOT_DECODE, DOT_ENCODE, $in);
-  }
-
   public function get_last_revision($page) {
     $res = $this->fetch(Array(
         "action" => "query",
