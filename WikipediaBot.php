@@ -363,10 +363,6 @@ class WikipediaBot {
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
 
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
   public function redirect_target($page) {
     $res = $this->fetch(Array(
         "action" => "query",
@@ -378,30 +374,6 @@ class WikipediaBot {
         return FALSE;
     }
     return $xml->pages->page["title"];
-  }
-
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function parse_wikitext($text, $title = "API") {
-    $vars = array(
-          'format' => 'json',
-          'action' => 'parse',
-          'text'   => $text,
-          'title'  => $title,
-      );
-    $res = $this->fetch($vars, 'POST');
-    if (!$res) {
-      // Wait a sec and try again
-      sleep(2);
-      $res = $this->fetch($vars, 'POST');
-    }
-    if (!isset($res->parse->text)) {
-      trigger_error("Could not parse text of $title.", E_USER_WARNING);
-      return FALSE;
-    }
-    return $res->parse->text->{"*"};
   }
 
   public function namespace_id($name) {
