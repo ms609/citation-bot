@@ -290,14 +290,6 @@ class WikipediaBot {
     return $list;
   }
 
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function wikititle_encode($in) {
-    return str_replace(DOT_DECODE, DOT_ENCODE, $in);
-  }
-
   public function get_last_revision($page) {
     $res = $this->fetch(Array(
         "action" => "query",
@@ -450,20 +442,6 @@ class WikipediaBot {
     @mysql_close($enwiki_db);
     if (!$results) return NULL;
     return $results['page_id'];
-  }
-
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function touch_page($page) {
-    $text = $this->get_raw_wikitext($page);
-    if ($text) {
-      $this->write_page($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
-      return TRUE;
-    } else {
-      return FALSE;
-    }
   }
 
 }
