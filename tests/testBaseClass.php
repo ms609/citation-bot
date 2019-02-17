@@ -5,6 +5,23 @@ $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
+  public function runBare() {
+    $retryCount = 2;
+    for ($i = 0; $i < $retryCount; $i++) {
+      try {
+         parent::runBare();
+         return;
+      }
+      catch (Exception $e) {
+         sleep(30);
+         // last one thrown below
+      }
+    }
+    if ($e) {
+      throw $e;
+    }
+  }
+
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
     $page->parse_text($text);
