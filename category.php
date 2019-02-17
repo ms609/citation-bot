@@ -26,6 +26,7 @@ if (php_sapi_name() !== "cli") {
     define("HTML_OUTPUT", TRUE);// Not in cli-mode
 }
 require_once __DIR__ . '/expandFns.php';
+$api = new WikipediaBot();
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 
@@ -55,7 +56,6 @@ if (HTML_OUTPUT) {
 }
 if ($category) {
   $attempts = 0;
-  $api = new WikipediaBot();
   $pages_in_category = $api->category_members($category);
   shuffle($pages_in_category);
   $page = new Page();
