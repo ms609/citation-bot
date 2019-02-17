@@ -8,6 +8,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   public function runBare() {
     $retryCount = 2;
     for ($i = 0; $i < $retryCount; $i++) {
+      if ($retryCount !== 0) echo 'R';
       try {
          parent::runBare();
          return;
