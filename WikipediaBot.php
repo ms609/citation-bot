@@ -372,7 +372,7 @@ class WikipediaBot {
 
   /**
    * Unused
-   * @codeCoverageIgnore
+   * @codeCoverag eIgnore
    */
   public function redirect_target($page) {
     $res = $this->fetch(Array(
