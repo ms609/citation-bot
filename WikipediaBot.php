@@ -379,30 +379,6 @@ class WikipediaBot {
     return $xml->pages->page["title"];
   }
 
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function parse_wikitext($text, $title = "API") {
-    $vars = array(
-          'format' => 'json',
-          'action' => 'parse',
-          'text'   => $text,
-          'title'  => $title,
-      );
-    $res = $this->fetch($vars, 'POST');
-    if (!$res) {
-      // Wait a sec and try again
-      sleep(2);
-      $res = $this->fetch($vars, 'POST');
-    }
-    if (!isset($res->parse->text)) {
-      trigger_error("Could not parse text of $title.", E_USER_WARNING);
-      return FALSE;
-    }
-    return $res->parse->text->{"*"};
-  }
-
   public function namespace_id($name) {
     $lc_name = strtolower($name);
     return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : NULL;
