@@ -362,10 +362,6 @@ class WikipediaBot {
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
 
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
   public function redirect_target($page) {
     $res = $this->fetch(Array(
         "action" => "query",
