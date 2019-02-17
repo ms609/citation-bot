@@ -48,6 +48,7 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertEquals(-1, $api->is_redirect('NoSuchPage:ThereCan-tBe'));
       $this->assertEquals( 0, $api->is_redirect('User:Citation_bot'));
       $this->assertEquals( 1, $api->is_redirect('WP:UCB'));
+      $this->assertEquals('User:Citation_bot', $api->redirect_target('WP:UCB'));
      });
     }
     
