@@ -1608,7 +1608,7 @@ final class Template {
         trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_NOTICE);
       } else {
-        trigger_error(sprintf("Error %d in query_adsabs: %s",
+        trigger _error(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_WARNING);
       }
       return (object) array('numFound' => 0);
