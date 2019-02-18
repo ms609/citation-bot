@@ -15,7 +15,7 @@ class WikipediaBot {
   private $user_oauth;
   
   function __construct() {
-    session_start();
+    @session_start(); // in travis the session will already exist
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
       // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
       // if they are not set already. Remember to set permissions (not readable!)
