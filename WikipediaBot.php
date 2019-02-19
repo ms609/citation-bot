@@ -183,7 +183,7 @@ class WikipediaBot {
     }
     
     // No obvious errors; looks like we're good to go ahead and edit
-    $auth_token = $response->query->tokens->csrftoken;
+    $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
