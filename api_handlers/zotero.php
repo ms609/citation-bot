@@ -100,11 +100,10 @@ function zotero_request($url) {
   global $zotero_failures_count;
   
   #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
-  $ch = curl_init('https://tools.wmflabs.org/translation-server/web');
+  $ch = curl_init('https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));
   
-  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
-  curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
+  usleep(200000); // fifth of a second
+  curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot"); 
   curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);   
   if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
