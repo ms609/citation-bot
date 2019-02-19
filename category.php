@@ -2,7 +2,7 @@
 error_reporting(E_ALL^E_NOTICE);
 @session_start();
 $api = new WikipediaBot();
-$api->authenticate_user();
+if (php_sapi_name() !== "cli") $api->authenticate_user();
 
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
