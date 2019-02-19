@@ -1,5 +1,9 @@
 <?php
 error_reporting(E_ALL^E_NOTICE);
+@session_start();
+$api = new WikipediaBot();
+$api->authenticate_user();
+
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
 foreach ($argv as $arg) {
@@ -30,9 +34,6 @@ require_once __DIR__ . '/expandFns.php';
 $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 
 $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
-
-$api = new WikipediaBot();
-$api->authenticate_user();
 
 if (HTML_OUTPUT) {
 ?>
