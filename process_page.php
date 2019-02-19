@@ -1,6 +1,9 @@
 <?php
-## Set up - including DOT_DECODE array
+@session_start();
 define("HTML_OUTPUT", !isset($argv));
+require_once("expandFns.php");
+$api = new WikipediaBot();
+$api->authenticate_user();
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -27,16 +30,12 @@ if (HTML_OUTPUT) {?>
 <pre id="botOutput">
 <?php
 }
-require_once("expandFns.php");
-
 
 $edit_summary_end = " | [[WP:UCB|User-activated]].";
 
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
 if (!isset($ON)) $ON = isset($argv[2]);
-$api = new WikipediaBot();
-$api->authenticate_user();
 foreach (explode('|', $pages) as $title) {
 
 
