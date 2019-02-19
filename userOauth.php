@@ -29,10 +29,6 @@
          $this->authorize_token();
       }
    }
- 
-   public function get_username() {
-      return $this->username;
-   }
 
    public function get_edit_token() {
       return $this->editToken;
@@ -58,15 +54,15 @@
    }
   
    private function authorize_token() {
-    // Send an HTTP request to the wiki to get the authorization URL and a Request Token.
-    // These are returned together as two elements in an array (with keys 0 and 1).
-    list( $authUrl, $token ) = $this->client->initiate();
-    // Store the Request Token in the session. We will retrieve it from there when the user is sent back from the wiki
-    $_SESSION['request_key'] = $token->key;
-    $_SESSION['request_secret'] = $token->secret;
-    // Redirect the user to the authorization URL.
-    header("Location: $authUrl"); // Automatic
-    echo "<br />Go to this URL to authorize Citation Bot:<br /><a href='$authUrl'>$authUrl</a>"; // Manual too
-    exit();
+     // Send an HTTP request to the wiki to get the authorization URL and a Request Token.
+     // These are returned together as two elements in an array (with keys 0 and 1).
+     list( $authUrl, $token ) = $this->client->initiate();
+     // Store the Request Token in the session. We will retrieve it from there when the user is sent back from the wiki
+     $_SESSION['request_key'] = $token->key;
+     $_SESSION['request_secret'] = $token->secret;
+     // Redirect the user to the authorization URL.
+     @header("Location: $authUrl"); // Automatic, but assumes that no HTML has been sent
+     echo "<br />Go to this URL to authorize Citation Bot:<br /><a href='$authUrl'>$authUrl</a>"; // Manual too
+     exit();
    }
  }
