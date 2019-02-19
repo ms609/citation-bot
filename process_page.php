@@ -36,6 +36,7 @@ $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
 if (!isset($ON)) $ON = isset($argv[2]);
 $api = new WikipediaBot();
+$api->authenticate_user();
 foreach (explode('|', $pages) as $title) {
 
 
