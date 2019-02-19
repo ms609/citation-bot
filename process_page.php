@@ -39,7 +39,7 @@ if (is_valid_user($user)) {
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
 if (!isset($ON)) $ON = isset($argv[2]);
-
+$api = new WikipediaBot();
 foreach (explode('|', $pages) as $title) {
 
 
@@ -50,7 +50,6 @@ foreach (explode('|', $pages) as $title) {
 
   report_phase("Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.");
   $my_page = new Page();
-  $api = new WikipediaBot();
   if ($my_page->get_text_from($title, $api)) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
