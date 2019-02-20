@@ -1,5 +1,5 @@
 <?php
-
+@session_start();
 error_reporting(E_ALL^E_NOTICE);
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
