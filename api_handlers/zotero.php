@@ -116,7 +116,7 @@ function zotero_request($url) {
   }
   
   $zotero_response = curl_exec($ch);
-  if ($zotero_response === FALSE) {  // Try wikipedia server
+  if (($zotero_response === FALSE) && (strpos(curl_error($ch), 'timed out after') !== FALSE)) {  // Try wikipedia server
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
     curl_setopt($ch, CURLOPT_URL, 'https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/' . urlencode($url));
     $zotero_response = curl_exec($ch);
