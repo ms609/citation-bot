@@ -1,7 +1,6 @@
 <?php
-
-error_reporting(E_ALL^E_NOTICE);
 @session_start();
+error_reporting(E_ALL^E_NOTICE);
 $api = new WikipediaBot();
 if (php_sapi_name() !== "cli") $api->authenticate_user();
 
