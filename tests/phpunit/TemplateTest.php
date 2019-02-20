@@ -1677,6 +1677,15 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('222', $prepared->get('number'));
     $this->assertEquals('12(44-33)', $prepared->get('volume'));
+   
+    $text = '{{cite journal|volume = 12, no. 44-33}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('44–33', $prepared->get('issue'));
+    $this->assertEquals('12', $prepared->get('volume'));
+    $text = '{{cite journal|volume = 12, no. 44-33| number=222}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('222', $prepared->get('number'));
+    $this->assertEquals('12, no. 44-33', $prepared->get('volume'));
   }
  
   public function testSpaces() {

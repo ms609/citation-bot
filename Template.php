@@ -1608,8 +1608,8 @@ final class Template {
         trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()), E_USER_NOTICE);
       } else {
-        trigger_error(sprintf("Error %d in query_adsabs: %s",
-                      $e->getCode(), $e->getMessage()), E_USER_WARNING);
+        report_warning(sprintf("Error %d in query_adsabs: %s",
+                      $e->getCode(), $e->getMessage()));
       }
       return (object) array('numFound' => 0);
     }
@@ -2944,7 +2944,8 @@ final class Template {
               $this->forget('volume');
             }
           }
-          if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
+          if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches) ||
+              preg_match("~^(\d+),\s*no\.\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches)) {
             $possible_volume=$matches[1];
             $possible_issue=$matches[2];
             if ($this->blank(ISSUE_ALIASES)) {

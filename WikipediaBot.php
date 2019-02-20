@@ -290,14 +290,6 @@ class WikipediaBot {
     return $list;
   }
 
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function wikititle_encode($in) {
-    return str_replace(DOT_DECODE, DOT_ENCODE, $in);
-  }
-
   public function get_last_revision($page) {
     $res = $this->fetch(Array(
         "action" => "query",
@@ -370,10 +362,6 @@ class WikipediaBot {
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
 
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
   public function redirect_target($page) {
     $res = $this->fetch(Array(
         "action" => "query",
@@ -385,30 +373,6 @@ class WikipediaBot {
         return FALSE;
     }
     return $xml->pages->page["title"];
-  }
-
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function parse_wikitext($text, $title = "API") {
-    $vars = array(
-          'format' => 'json',
-          'action' => 'parse',
-          'text'   => $text,
-          'title'  => $title,
-      );
-    $res = $this->fetch($vars, 'POST');
-    if (!$res) {
-      // Wait a sec and try again
-      sleep(2);
-      $res = $this->fetch($vars, 'POST');
-    }
-    if (!isset($res->parse->text)) {
-      trigger_error("Could not parse text of $title.", E_USER_WARNING);
-      return FALSE;
-    }
-    return $res->parse->text->{"*"};
   }
 
   public function namespace_id($name) {
@@ -450,20 +414,6 @@ class WikipediaBot {
     @mysql_close($enwiki_db);
     if (!$results) return NULL;
     return $results['page_id'];
-  }
-
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function touch_page($page) {
-    $text = $this->get_raw_wikitext($page);
-    if ($text) {
-      $this->write_page($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
-      return TRUE;
-    } else {
-      return FALSE;
-    }
   }
 
 }
