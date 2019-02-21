@@ -36,6 +36,7 @@ $edit_summary_end = " | [[WP:UCB|User-activated]].";
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
 if (!isset($ON)) $ON = isset($argv[2]);
+
 foreach (explode('|', $pages) as $title) {
 
 
