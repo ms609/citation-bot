@@ -26,10 +26,11 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) trigger_error("PHP_OAUTH_ACCESS_TOKEN not set", E_USER_ERROR);
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
+    if (php_sapi_name() !== "cli") $this->authenticate_user();
   }
   
-  public function get_user() {
-    return $this->user;
+  public function set_authenticated_user(&$user) {
+    if (isset($this->user)) $user = $this->user
   }
   
   function __destruct() {
@@ -430,7 +431,7 @@ class WikipediaBot {
 
   function authenticate_user() {
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
-      $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN_USER'), getenv('PHP_OAUTH_CONSUMER_SECRET_USER')));  // Is this correct, or do we need a new token?
+      $conf->setConsumer($this->consumer);  // Is this correct, or do we need a new token?
       $this->client = new Client($conf);
       if (isset( $_GET['oauth_verifier'] ) ) {
          $this->get_token();
