@@ -55,6 +55,19 @@ function InitializeForm() {
   document.getElementById("botForm").onsubmit = ValidateForm;
   document.getElementById("botPage").oninput  = ValidatePageName;
   document.getElementById("botCat").oninput   = ValidateCategory;
+  username = localStorage.getItem('username');
+  if (username) {
+    document.getElementById("user").value = username;
+    document.getElementById("saveUsername").checked = "checked";
+  }
+}
+
+function SaveUsername() {
+  if (document.getElementById("saveUsername").checked) {
+    localStorage.setItem("username", document.getElementById("user").value);
+  } else {
+    localStorage.removeItem("username");
+  }
 }
 
 window.onload = InitializeForm;
