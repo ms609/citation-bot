@@ -28,6 +28,10 @@
    public function get_edit_token() {
       return $this->editToken;
    }
+	 
+   public function get_user() {
+      return $this->user;
+   }
 
    private function get_token() {
      // Get the Request Token's details from the session and create a new Token object.
@@ -46,7 +50,6 @@
 	'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
      ) )->query->tokens->csrftoken;
      unset( $_SESSION['request_key'], $_SESSION['request_secret'] ); // No longer needed
-     return $this->editToken;
    }
   
    private function authorize_token() {
