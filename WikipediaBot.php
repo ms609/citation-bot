@@ -369,11 +369,11 @@ class WikipediaBot {
         "titles" => $page,
         ), 'POST');
     print_r($res);
-    if (!isset($res->query->redirects->to)) {
+    if (!isset($res->query->redirects[0]->to)) {
         report_warning("Failed to get redirect target");
         return FALSE;
     }
-    return $res->query->redirects->to;
+    return $res->query->redirects[0]->to;
   }
 
   public function namespace_id($name) {
