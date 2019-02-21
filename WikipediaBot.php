@@ -368,6 +368,7 @@ class WikipediaBot {
         "redirects" => "1",
         "titles" => $page,
         ), 'POST');
+    print_r($res);
     if (!isset($res->pages->page)) {
         report_warning("Failed to get redirect target");
         return FALSE;
