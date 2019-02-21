@@ -10,17 +10,11 @@
 
  final class userOauth {
 
-   private $oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
-   private $apiUrl   = 'https://meta.wikimedia.org/w/api.php';
-   private $username;
    private $editToken;
    private $client;
   
-   function __destruct() {
-   }
-  
    function __construct() {
-      $conf = new ClientConfig($this->oauthUrl);
+      $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
       $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN_USER'), getenv('PHP_OAUTH_CONSUMER_SECRET_USER')));  // Is this correct, or do we need a new token?
       $this->client = new Client($conf);
       if (isset( $_GET['oauth_verifier'] ) ) {
@@ -44,11 +38,11 @@
      $_SESSION['access_secret'] = $accessToken->secret;
      //   get the authenticated user's identity.
      $ident = $this->client->identify( $accessToken );
-     $this->username = $ident->username;
+     // user is $ident->username;
      // get the authenticated user's edit token.
      $this->editToken = json_decode( $client->makeOAuthCall(
 	$accessToken,
-	"$this->apiUrl?action=query&meta=tokens&format=json"
+	'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
      ) )->query->tokens->csrftoken;
      unset( $_SESSION['request_key'], $_SESSION['request_secret'] ); // No longer needed
    }
@@ -61,8 +55,8 @@
      $_SESSION['request_key'] = $token->key;
      $_SESSION['request_secret'] = $token->secret;
      // Redirect the user to the authorization URL.
-     @header("Location: $authUrl"); // Automatic, but assumes that no HTML has been sent
-     echo "<br />Go to this URL to authorize Citation Bot:<br /><a href='$authUrl'>$authUrl</a>"; // Manual too
+     @header("Location: https://meta.wikimedia.org/w/index.php?title=Special:OAuth"); // Automatic, but assumes that no HTML has been sent
+     echo "<br />Go to this URL to <a href='https://meta.wikimedia.org/w/index.php?title=Special:OAuth'>authorize citation bot</a>"; // Manual too
      exit();
    }
  }
