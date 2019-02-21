@@ -31,7 +31,7 @@ if (HTML_OUTPUT) {?>
 }
 
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-if (php_sapi_name() !== "cli") $user = $api->get_user();
+$api->set_authenticated_user($user);
 if (is_valid_user($user)) {
   echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
