@@ -30,6 +30,10 @@ class WikipediaBot {
     $this->user_oauth = new userOauth();
   }
   
+  public function get_user() {
+    return $this->user_oauth->get_user();
+  }
+  
   function __destruct() {
     if ($this->ch) curl_close($this->ch);
   }
