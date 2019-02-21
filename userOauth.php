@@ -12,6 +12,7 @@
 
    private $editToken;
    private $client;
+   private $user;
   
    function __construct() {
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
@@ -38,13 +39,14 @@
      $_SESSION['access_secret'] = $accessToken->secret;
      //   get the authenticated user's identity.
      $ident = $this->client->identify( $accessToken );
-     // user is $ident->username;
+     $this->user = $ident->username;
      // get the authenticated user's edit token.
      $this->editToken = json_decode( $client->makeOAuthCall(
 	$accessToken,
 	'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
      ) )->query->tokens->csrftoken;
      unset( $_SESSION['request_key'], $_SESSION['request_secret'] ); // No longer needed
+     return $this->editToken;
    }
   
    private function authorize_token() {
