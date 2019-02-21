@@ -3,7 +3,6 @@
 define("HTML_OUTPUT", !isset($argv));
 require_once("expandFns.php");
 $api = new WikipediaBot();
-if (php_sapi_name() !== "cli") $api->authenticate_user();
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
