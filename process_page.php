@@ -68,6 +68,7 @@ foreach (explode('|', $pages) as $title) {
   ?>
   <form method="post" action="process_page.php">
     <input type="hidden" name="page" value="<?php echo $title;?>" />
+    <input type="hidden" name="user" value="<?php echo $user;?>" />
     <input type="hidden" name="edit" value="on" />
     <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>" />
     <input type="submit" value="Submit edits" />
