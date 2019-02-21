@@ -31,7 +31,13 @@ if (HTML_OUTPUT) {?>
 <?php
 }
 
-$edit_summary_end = " | [[WP:UCB|User-activated]].";
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
+if (is_valid_user($user)) {
+  echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
+  $edit_summary_end = " | [[User:$user|$user]]";
+} else {
+  $edit_summary_end = " | [[WP:UCB|User-activated]].";
+}
 
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
