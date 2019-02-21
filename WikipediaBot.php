@@ -30,7 +30,7 @@ class WikipediaBot {
   }
   
   public function set_authenticated_user(&$user) {
-    if (isset($this->user)) $user = $this->user
+    if (isset($this->user)) $user = $this->user;
   }
   
   function __destruct() {
