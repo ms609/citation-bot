@@ -19,7 +19,7 @@ class Page {
   public $lastrevid;
 
   function __construct() {
-    $this->api = new WikipediaBot();
+    ;
   }
     
   /*
