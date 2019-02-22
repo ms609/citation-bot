@@ -3113,13 +3113,6 @@ final class Template {
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
-            if (!$this->blank(['publisher', 'location']) && !$this->blank(['doi', 'pmid', 'pmc', 'issn', 'bibcode'])) {  // pitchforks prevention
-              $forget_string = 'Found ' . $this->get('publisher') . ' ' . $this->get('location') .' for a journal already uniquely identified by ';
-              foreach (['doi', 'pmid', 'pmc', 'issn', 'bibcode'] as $id) {
-                if ($this->has($id)) $forget_string .= $id . ' ';
-              }
-              report_warning($forget_string);
-            }
           } else {
             report_warning('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn'));
