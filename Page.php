@@ -293,7 +293,11 @@ class Page {
     }
 
     if ((count($this->modifications["deletions"]) !== 0)
-    && ($pos = array_search('url', $this->modifications["deletions"])) !== FALSE
+    && (
+        ($pos = array_search('url', $this->modifications["deletions"])) !== FALSE)
+     || ($pos = array_search('chapter-url', $this->modifications["deletions"])) !== FALSE)
+     || ($pos = array_search('chapterurl', $this->modifications["deletions"])) !== FALSE)
+        )
     ) {
       $auto_summary .= "Removed URL that duplicated unique identifier. ";
       unset($this->modifications["deletions"][$pos]);
