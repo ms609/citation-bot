@@ -299,8 +299,12 @@ class Page {
      || (($pos = array_search('chapterurl', $this->modifications["deletions"])) !== FALSE)
         )
     ) {
-      $auto_summary .= "Removed URL that duplicated unique identifier. ";
-      unset($this->modifications["deletions"][$pos]);
+        if (strpos($auto_summary, 'chapter-url') !== FALSE) {
+          $auto_summary .= "Removed or converted URL. ";
+        } else {
+          $auto_summary .= "Removed URL that duplicated unique identifier. ";
+        }
+        unset($this->modifications["deletions"][$pos]);
     }
     if ((count($this->modifications["deletions"]) !== 0)
     && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE
