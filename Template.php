@@ -3114,13 +3114,11 @@ final class Template {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
             if (!$this->blank(['publisher', 'location']) && !$this->blank(['doi', 'pmid', 'pmc', 'issn', 'bibcode'])) {  // pitchforks prevention
-              $forget_string = 'Removing publisher/location from journal already uniquely identified by ';
+              $forget_string = 'You should probably remove ' . $this->get('publisher') . ' ' . $this->get('location') .' from journal already uniquely identified by ';
               foreach (['doi', 'pmid', 'pmc', 'issn', 'bibcode'] as $id) {
                 if ($this->has($id)) $forget_string .= $id . ' ';
               }
-              report_info($forget_string);
-              $this->forget('publisher');
-              $this->forget('location');
+              report_warning($forget_string);
             }
           } else {
             report_warning('Citation should probably not have journal = ' . $this->get('journal')
