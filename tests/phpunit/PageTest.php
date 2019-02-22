@@ -22,6 +22,9 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page('{{cite web|journal<!-- comment -->=Journal Name}}'); // Comment AFTER parameter
       $this->assertEquals('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
       $this->assertEquals('{{cite journal|journal<!-- comment -->=Journal Name}}', $page->parsed_text());
+      $page = $this->process_page('{{cite book|url=http://a.fake.url.fake/|chapter=Chap|title=Title}}');
+      $this->assertEquals('{{cite book|chapter-url=http://a.fake.url.fake/|chapter=Chap|title=Title}}', $page->parsed_text());
+      $this->assertEquals('XXXXXX' ,$page->edit_summary());
   }
  
   public function testBotRead() {
