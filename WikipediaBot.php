@@ -13,7 +13,6 @@ class WikipediaBot {
   protected $consumer, $token, $ch;
 
   private $editToken;
-  private $client;
   private $user;
   
   function __construct() {
@@ -29,7 +28,7 @@ class WikipediaBot {
     if (TRUE || php_sapi_name() !== "cli") $this->authenticate_user();
   }
   
-  public function set_authenticated_user(&$user) {
+  public function set_authenticated_user(&$user) { // Note pointer
     if (isset($this->user)) $user = $this->user;
   }
   
@@ -429,14 +428,11 @@ class WikipediaBot {
     return $results['page_id'];
   }
 
-  function authenticate_user() {
-      $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
-      $conf->setConsumer($this->consumer);  // Is this correct, or do we need a new token?
-      $this->client = new Client($conf);
+  private function authenticate_user() {
       if (isset( $_GET['oauth_verifier'] ) ) {
          $this->get_token();
       } else {
-         $this->authorize_token();
+         $this->authorize_token(); // Will call exit(), and hope that user comes back with tokens
       }
    }
 
@@ -444,12 +440,15 @@ class WikipediaBot {
      // Get the Request Token's details from the session and create a new Token object.
      $requestToken = new Token( $_SESSION['request_key'], $_SESSION['request_secret'] );
      // Send an HTTP request to the wiki to retrieve an Access Token.
-     $accessToken = $this->client->complete( $requestToken,  $_GET['oauth_verifier'] );
+     $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
+     $conf->setConsumer($this->consumer);  // This is not correct: our token does not allow this, and needs upgraded
+     $client = new Client($conf);
+     $accessToken = $client->complete( $requestToken,  $_GET['oauth_verifier'] );
      // At this point, the user is authenticated, and the access token can be used
      $_SESSION['access_key'] = $accessToken->key;
      $_SESSION['access_secret'] = $accessToken->secret;
      //   get the authenticated user's identity.
-     $ident = $this->client->identify( $accessToken );
+     $ident = $client->identify( $accessToken );
      $this->user = $ident->username;
      // get the authenticated user's edit token.
      $this->editToken = json_decode( $client->makeOAuthCall(
@@ -461,8 +460,11 @@ class WikipediaBot {
   
    private function authorize_token() {
      // Send an HTTP request to the wiki to get the authorization URL and a Request Token.
+     $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
+     $conf->setConsumer($this->consumer);  // Is this correct, or do we need a new token?
+     $client = new Client($conf);
      // These are returned together as two elements in an array (with keys 0 and 1).
-     list( $authUrl, $token ) = $this->client->initiate();
+     list( $authUrl, $token ) = $client->initiate();
      // Store the Request Token in the session. We will retrieve it from there when the user is sent back from the wiki
      $_SESSION['request_key'] = $token->key;
      $_SESSION['request_secret'] = $token->secret;
