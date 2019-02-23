@@ -791,8 +791,7 @@ final class Template {
   // it looks for a parameter before adding the url.
   public function get_identifiers_from_url($url_sent = NULL) {
     if (is_null($url_sent)) {
-       // Chapter URLs are generally better than URLs for the whole book.
-       // We don't forget them, since the regular URLs will get converted for "readability"
+        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
            $return_code = FALSE;
            $return_code += $this->get_identifiers_from_url($this->get('chapterurl'));
@@ -848,7 +847,17 @@ final class Template {
     } else {
       $url = $url_sent;
       $url_type = NULL;
-      check if it matches here chapter or regular -- just a note before I leave so I do not forget
+      // This is for special code above for citations with both chapter-url and url.
+      if ($url === $this->get('url')) {
+        $url_sent = NULL;
+        $url_type = 'url';
+      } elseif ($url === $this->get('chatperurl')) {
+        $url_sent = NULL;
+        $url_type = 'chatperurl';
+      } elseif ($url === $this->get('chatper-url')) {
+        $url_sent = NULL;
+        $url_type = 'chatper-url';
+      }
     }
     
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
