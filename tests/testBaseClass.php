@@ -19,7 +19,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function requires_secrets($function) {
-    if (FALSE && getenv('TRAVIS_PULL_REQUEST')) {  // DEBUGGING THIS CODE
+    if (getenv('TRAVIS_PULL_REQUEST')) {
       echo 'S'; // Skipping test: Risks exposing secret keys
       $this->assertNull(NULL); // Make Travis think we tested something
     } else {
