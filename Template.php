@@ -795,7 +795,7 @@ final class Template {
        // We don't forget them, since the regular URLs will get converted for "readability"
         if ($this->has('url') && $this->has('chapterurl')) {
            $return_code = FALSE;
-           if ($this->get_identifiers_from_url($this->get('chapterurl')) {
+           if ($this->get_identifiers_from_url($this->get('chapterurl'))) {
              $this->forget('chapterurl'); // Not done in above call since we pass it in
              $return_code = TRUE;
            }
@@ -804,7 +804,7 @@ final class Template {
              $return_code = TRUE;
            }
            return $return_code;
-        } elseif ($this->has('url') && $this->has('chapter-url')) {
+        } elseif ($this->has('url') && $this->has('chapter-url'))) {
            $return_code = FALSE;
            if ($this->get_identifiers_from_url($this->get('chapter-url')) {
              $this->forget('chapter-url');
