@@ -799,18 +799,18 @@ final class Template {
              $this->forget('chapterurl'); // Not done in above call since we pass it in
              $return_code = TRUE;
            }
-           if ($this->get_identifiers_from_url($this->get('url')) {
+           if ($this->get_identifiers_from_url($this->get('url'))) {
              $this->forget('url');
              $return_code = TRUE;
            }
            return $return_code;
-        } elseif ($this->has('url') && $this->has('chapter-url'))) {
+        } elseif ($this->has('url') && $this->has('chapter-url')) {
            $return_code = FALSE;
-           if ($this->get_identifiers_from_url($this->get('chapter-url')) {
+           if ($this->get_identifiers_from_url($this->get('chapter-url'))) {
              $this->forget('chapter-url');
              $return_code = TRUE;
            }
-           if ($this->get_identifiers_from_url($this->get('url')) {
+           if ($this->get_identifiers_from_url($this->get('url'))) {
              $this->forget('url');
              $return_code = TRUE;
            }
