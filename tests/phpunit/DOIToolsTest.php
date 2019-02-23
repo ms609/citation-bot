@@ -88,6 +88,16 @@ final class doiToolsTest extends testBaseClass {
     $result=format_author($author,FALSE);
     $this->assertEquals('Smith, M.A.', $result);
   }
+  public function testFormatAuthor10() {  
+    $author = "S. C. D."; // Real example
+    $result=format_author($author,FALSE);
+    $this->assertEquals('D., S. C.', $result);
+  }
+  public function testFormatAuthor11() {  
+    $author = "A. B. C. D. E. F. G. H."; // Made up
+    $result=format_author($author,FALSE);
+    $this->assertEquals('H., A. B. C. D. E. F. G.', $result);
+  }
 
    public function testJunior() {
        $text = ""; // Empty string should work
