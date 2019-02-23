@@ -950,8 +950,8 @@ final class Template {
       }
       if (stripos($url, "plants.jstor.org")) {
         return FALSE; # Plants database, not journal
-      } elseif (preg_match("~^(?:\w+/)*(\d{6,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match) ||
-                preg_match("~^https?://(?:www\.)?jstor\.org\S+proxy\S+(?:stable|discovery)/(\d{6,}|[jJ]\.[a-zA-Z]+)$~", $url, $match)) {
+      } elseif (preg_match("~^(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match) ||
+                preg_match("~^https?://(?:www\.)?jstor\.org\S+proxy\S+(?:stable|discovery)/(\d{5,}|[jJ]\.[a-zA-Z]+)$~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
@@ -1801,7 +1801,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $oa_url, $match)) {
+        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{5,})~", $oa_url, $match)) {
           if ($this->has('pmid')) {
              return TRUE;
           }
