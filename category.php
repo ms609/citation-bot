@@ -1,6 +1,8 @@
 <?php
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
+$api = new WikipediaBot();
+
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
 foreach ($argv as $arg) {
@@ -31,6 +33,7 @@ require_once __DIR__ . '/expandFns.php';
 $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
+$api->set_authenticated_user($user);
 if (is_valid_user($user)) {
   echo " Activated by $user.\n";
   $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
@@ -56,7 +59,6 @@ if (HTML_OUTPUT) {
 }
 if ($category) {
   $attempts = 0;
-  $api = new WikipediaBot();
   $pages_in_category = $api->category_members($category);
   shuffle($pages_in_category);
   $page = new Page();
