@@ -848,6 +848,7 @@ final class Template {
     } else {
       $url = $url_sent;
       $url_type = NULL;
+      check if it matches here chapter or regular -- just a note before I leave so I do not forget
     }
     
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
