@@ -16,7 +16,9 @@ class Page {
   protected $text, $title, $modifications, $date_style;
   protected $read_at, $namespace, $touched, $start_text, $last_write_time;
   public $lastrevid;
-    
+
+  function __construct() { ; }
+
   /*
  * cannot be tested on Travis
  * @codeCoverageIgnore
