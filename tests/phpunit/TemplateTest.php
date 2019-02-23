@@ -374,20 +374,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('publisher'));
     $this->assertEquals('Associated Press', $expanded->get('agency'));
   }
- 
-  public function testGarbageRemovalAndSpacing() {
-    // Also tests handling of upper-case parameters
-    $text = "{{Cite web | title=Ellipsis... | pages=10-11| Edition = 3rd ed. |journal=My Journal| issn=1234-4321 | publisher=Unwarranted |issue=0|accessdate=2013-01-01}}";
-    $prepared = $this->process_citation($text);
-    // ISSN should be retained when journal is originally present
-    $this->assertEquals('{{Cite journal | title=Ellipsis... | pages=10–11| edition = 3rd |journal=My Journal| issn=1234-4321 }}', $prepared->parsed_text());
-    
-    $text = "{{Cite web | Journal=My Journal| issn=1357-4321 | publisher=Unwarranted }}";
-    $prepared = $this->prepare_citation($text); // Do not drop publisher at start
-    $this->assertEquals('{{Cite journal | journal=My Journal| issn=1357-4321 | publisher=Unwarranted }}', $prepared->parsed_text());
-    $expanded = $this->process_citation($text);  // Drop it at end
-    $this->assertEquals('{{Cite journal | journal=My Journal| issn=1357-4321 }}', $expanded->parsed_text());
-  }
     
   public function testPublisherRemoval() {
     foreach (array('Google News Archive', '[[Google]]', 'Google News',
@@ -1623,12 +1609,6 @@ ER -  }}';
     $text = '{{cite journal |url=https://link.springer.com/content/pdf/10.1007/BF00428580.pdf}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('10.1007/BF00428580', $prepared->get('doi'));
-  }
-  
-  public function testRemovePublisherWithWork() {
-    $text = '{{cite journal|jstor=1148172|title=Strategic Acupuncture|work=Foreign Policy|issue=Winter 1980|pages=44–61|publisher=Washingtonpost.Newsweek Interactive, LLC|year=1980}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('publisher'));  
   }
     
   public function testRemoveQuotes() {
