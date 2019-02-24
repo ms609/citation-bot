@@ -1,7 +1,7 @@
 <?php
 // outputs a list of wikipedia pages linked to
 // usage: https://tools.wmflabs.org/citations/get_linked_pages.php?page=<PAGE>
-// PAGE in some cases will need to be URL encoded
+// <PAGE> will need to be URL encoded
 
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/plain");
