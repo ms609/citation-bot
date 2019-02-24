@@ -8,9 +8,9 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' du ', ' e ', ' ed ', ' ein ', 
           ' eine ', ' einen ', ' el ', ' else ', ' EMBO ', ' en ', ' et ', ' FASEB ', ' FEBS ', 
           ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' IEEE ', ' if ', ' ILR ', ' in ', ' into ', ' is ', 
-          ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' MNRAS ', ' mot ', ' NASA ', ' NEJM ', ' non ',
+          ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' mit ',  ' MNRAS ', ' mot ', ' NASA ', ' NEJM ', ' non ',
           ' nor ', ' NY ', ' NYC ', ' NYT ', ' och ', ' OECD ', ' of ', ' off ', ' on ', ' og ', ' or ', 
-          ' over ', ' PCR ', ' per ', ' PNAS ', ' R&D ', ' RNA ', ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
+          ' over ', ' PCR ', ' per ', ' PNAS ', ' PS: ', ' R&D ', ' RNA ', ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' von ', ' voor ', ' when ', ' with ', ' within ', ' woor ', 
           ' y ', ' zu ', ' zum ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
@@ -24,9 +24,9 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' Du ', ' E ', ' Ed ', ' Ein ', 
           ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' En ', ' Et ', ' Faseb ', ' Febs ', 
           ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' Ieee ', ' If ', ' Ilr ', ' In ', ' Into ', ' Is ', 
-          ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
+          ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mit ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
           ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Och ', ' Oecd ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
-          ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' R&d ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
+          ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Ps: ', ' R&d ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
           ' Um ', ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' Voor ', ' When ', ' With ', ' Within ', ' Woor ', 
           ' Y ', ' Zu ', ' Zum ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
 
@@ -35,7 +35,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
+          ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', ' Baseball Mit ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
           ' e-Print ', ' e-Print ', ' e-Prints ', ' e-Prints ', ' Early Modern Japan: an Interdisciplinary Journal ',
           ' EFSA ', ' eJournal ', ' eJournal ', ' eLife ', ' eLife ', ' eLS ', ' eLS ', ' EMBO J ', 
@@ -55,7 +55,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
+          ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' Baseball mit ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
           ' E-print ', ' E-Print ', ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ',
           ' Efsa ', ' Ejournal ', ' EJournal ', ' ELife ', ' Elife ', ' Els ', ' ELS ', ' Embo J ', 
