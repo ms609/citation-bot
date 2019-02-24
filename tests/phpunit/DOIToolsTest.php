@@ -91,17 +91,17 @@ final class doiToolsTest extends testBaseClass {
   public function testFormatAuthor10() {  
     $author = "A B C D E F G H";
     $result=format_author($author);
-    $this->assertEquals('A. B. C. D. E. F. G. H.', $result); // Probably not best, but what we get
+    $this->assertEquals('A. B. C. D. E. F. G. H.', $result);
   }
   public function testFormatAuthor11() {  
     $author = "A. B. C. D. E. F. G. H.";
     $result=format_author($author);
-    $this->assertEquals('A.B.C.D.E.F.G.H.', $result); // Probably not best, but what we get
+    $this->assertEquals('A.B.C.D.E.F.G.H.', $result);
   }
   public function testFormatAuthor12() {  
     $author = "A.B.C.D.E.F.G.H.";
     $result=format_author($author);
-    $this->assertEquals('A.B.C.D.E.F.G.H.', $result); // Probably not best, but what we get
+    $this->assertEquals('A.B.C.D.E.F.G.H.', $result);
   }
   public function testFormatAuthor13() {  
     $author = "Smith";
