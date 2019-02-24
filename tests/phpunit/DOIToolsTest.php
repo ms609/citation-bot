@@ -91,17 +91,17 @@ final class doiToolsTest extends testBaseClass {
   public function testFormatAuthor10() {  
     $author = "A B C D E F G H";
     $result=format_author($author);
-    $this->assertEquals(', A. B. C. D. E. F. G. H.', $result); // Probably not best, but what we get
+    $this->assertEquals('A. B. C. D. E. F. G. H.', $result); // Probably not best, but what we get
   }
   public function testFormatAuthor11() {  
     $author = "A. B. C. D. E. F. G. H.";
     $result=format_author($author);
-    $this->assertEquals(', A.B.C.D.E.F.G.H.', $result); // Probably not best, but what we get
+    $this->assertEquals('A.B.C.D.E.F.G.H.', $result); // Probably not best, but what we get
   }
   public function testFormatAuthor12() {  
     $author = "A.B.C.D.E.F.G.H.";
     $result=format_author($author);
-    $this->assertEquals(', A.B.C.D.E.F.G.H.', $result); // Probably not best, but what we get
+    $this->assertEquals('A.B.C.D.E.F.G.H.', $result); // Probably not best, but what we get
   }
   public function testFormatAuthor13() {  
     $author = "Smith";
@@ -181,6 +181,6 @@ final class doiToolsTest extends testBaseClass {
     $this->assertEquals(FALSE, format_multiple_authors(''));
     $this->assertEquals('John, Bob; Kim, Billy', format_multiple_authors('John,Bob,Kim,Billy'));
     $this->assertEquals('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
-    $this->assertEquals(['John, .','Bob, .','Kim, .','Billy,'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
+    $this->assertEquals(['John','Bob','Kim','Billy'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
   }
 }
