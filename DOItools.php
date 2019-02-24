@@ -177,6 +177,9 @@ function format_author($author){
       $fore = implode(" ", $i);
     }
   }
+  if ($surname == "") {
+    return str_replace("..", ".", format_forename($fore)); // Do not add leading comma
+  }
   return str_replace("..", ".", format_surname($surname) . ", " . format_forename($fore)); // Sometimes add period after period
 }
 
