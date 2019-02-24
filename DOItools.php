@@ -178,9 +178,9 @@ function format_author($author){
     }
   }
   // Special cases when code cannot fully determine things, or if the name is only Smith
-  if (trim($surname) == '') { // Have seen this with A. B. C.
+  if (trim($surname) == '') { // get this with A. B. C.
     return str_replace("..", ".", format_forename($fore));
-  } elseif (trim($fore) == '') {  // Never seen this
+  } elseif (trim($fore) == '') {  // Get this with just Smith
     return str_replace("..", ".", format_surname($surname));
   }
   return str_replace("..", ".", format_surname($surname) . ", " . format_forename($fore)); // Sometimes add period after period
