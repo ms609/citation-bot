@@ -96,23 +96,28 @@ final class doiToolsTest extends testBaseClass {
   public function testFormatAuthor11() {  
     $author = "A. B. C. D. E. F. G. H.";
     $result=format_author($author);
-    $this->assertEquals('A.B.C.D.E.F.G.H.', $result);
+    $this->assertEquals('A. B. C. D. E. F. G. H.', $result);
   }
   public function testFormatAuthor12() {  
     $author = "A.B.C.D.E.F.G.H.";
     $result=format_author($author);
-    $this->assertEquals('A.B.C.D.E.F.G.H.', $result);
+    $this->assertEquals('A. B. C. D. E. F. G. H.', $result);
   }
   public function testFormatAuthor13() {  
-    $author = "Smith";
+    $author = "Smith"; // No first
     $result=format_author($author);
     $this->assertEquals('Smith', $result);
   }
   public function testFormatAuthor14() {  
-    $author = "Smith.";  // Totally made up
+    $author = "Smith.";  // No first, but with a period oddly
     $result=format_author($author);
     $this->assertEquals('Smith', $result);
   }
+  public function testFormatAuthor15() {  
+     $author = "S.SmithGuy.X.";  // Totally made up, but we should not eat parts of it - code used to
+     $result=format_author($author);
+     $this->assertEquals('Smith', $result);
+   }
 
    public function testJunior() {
        $text = ""; // Empty string should work
