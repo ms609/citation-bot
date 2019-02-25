@@ -2,6 +2,7 @@
 @session_start();
 define("HTML_OUTPUT", !isset($argv));
 require_once("expandFns.php");
+require_once('WikipediaBot.php');
 $api = new WikipediaBot();
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
