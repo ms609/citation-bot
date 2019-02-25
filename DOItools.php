@@ -151,14 +151,22 @@ function format_author($author){
           }
           unset($auth[0]);
           foreach ($auth as $bit){
-            if (is_initials($bit)) $i[] = format_initials($bit);
+            if (is_initials($bit)) {
+              $i[] = format_initials($bit) . '.';
+            } else {
+              $i[] = $bit;
+            }
           }
         } else {
-          foreach ($auth as $A){
-            if (is_initials($A)) $i[] = format_initials($A);
+          foreach ($auth as $A) {
+            if (is_initials($A)) {
+                $i[] = format_initials($A) . '.';
+            } else {
+                $i[] = $A;
+            }
           }
         }
-        $fore = mb_strtoupper(implode(".", $i));
+        $fore = mb_strtoupper(implode(" ", $i));
       } else {
         // it ends with the surname
         $surname = $auth[$countAuth-1];
@@ -178,11 +186,17 @@ function format_author($author){
   }
   // Special cases when code cannot fully determine things, or if the name is only Smith
   if (trim($surname) == '') { // get this with A. B. C.
-    return str_replace("..", ".", format_forename($fore));
+    $full_name = format_forename($fore);
   } elseif (trim($fore) == '') {  // Get this with just Smith
-    return str_replace("..", ".", format_surname($surname));
+    $full_name = format_surname($surname);
+  } else {
+    $full_name = format_surname($surname) . ", " . format_forename($fore);
   }
-  return str_replace("..", ".", format_surname($surname) . ", " . format_forename($fore)); // Sometimes add period after period
+  $full_name = str_replace("..", ".", $full_name);  // Sometimes add period after period
+  $full_name = str_replace(".", ". ", $full_name);  // Add spaces after all periods
+  $full_name = str_replace("   ", " ", $full_name); // Remove extra spaces
+  $full_name = str_replace("  ", " ", $full_name);
+  return trim($full_name);
 }
 
 function format_multiple_authors($authors, $returnAsArray = FALSE){
