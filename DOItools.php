@@ -195,8 +195,7 @@ function format_author($author){
   }
   $full_name = str_replace("..", ".", $full_name);  // Sometimes add period after period
   $full_name = str_replace(".", ". ", $full_name);  // Add spaces after all periods
-  $full_name = str_replace("   ", " ", $full_name); // Remove extra spaces
-  $full_name = str_replace("  ", " ", $full_name);
+  $full_name = str_replace(["   ", "  "], [" ", " "], $full_name); // Remove extra spaces
   return trim($full_name);
 }
 
