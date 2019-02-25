@@ -2,6 +2,8 @@
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
 require_once('expandFns.php');
+require_once('WikipediaBot.php');
+
 $api = new WikipediaBot();
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
