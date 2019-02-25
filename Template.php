@@ -874,20 +874,27 @@ final class Template {
         $this->set($url_type, $url); // Save it
       }
     }
-   
+    // https://www.jstor.org.stuff/proxy/stuff/stable/3347357 and such
     if (preg_match('~^(https?://(?:www\.|)jstor\.org)(?:\S*proxy\S*/|/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
        $url = $matches[1] . '/stable/' . $matches[2] ; // that is default.  This also means we get jstor not doi
        if (!is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one.  Will probably call forget on it below
        }
     }
-    
+    // https://www.jstor.org.libweb.lib.utsa.edu/stable/3347357 and such
+    if (preg_match('~^https?://(?:www\.|)jstor\.org\.[^/]+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
+       $url = 'https://www.jstor.org/stable/' . $matches[1] ;
+       if (!is_null($url_sent)) {
+         $this->set($url_type, $url); // Update URL with cleaner one
+       }
+    }
+    // https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10 and such
     if (preg_match('~^https?://(?:www-|)jstor-org[-\.]\S+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
        if (!is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
        }
-    }   
+    }
     
     if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
@@ -968,8 +975,8 @@ final class Template {
       }
       if (stripos($url, "plants.jstor.org")) {
         return FALSE; # Plants database, not journal
-      } elseif (preg_match("~^(?:\w+/)*(\d{6,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match) ||
-                preg_match("~^https?://(?:www\.)?jstor\.org\S+proxy\S+(?:stable|discovery)/(\d{6,}|[jJ]\.[a-zA-Z]+)$~", $url, $match)) {
+      } elseif (preg_match("~^(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match) ||
+                preg_match("~^https?://(?:www\.)?jstor\.org\S+proxy\S+(?:stable|discovery)/(\d{5,}|[jJ]\.[a-zA-Z]+)$~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
@@ -1722,7 +1729,7 @@ final class Template {
     if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
     if (isset($start_page)) { // Have to do at end since might get end pages before start pages
       if (isset($end_page)) {
-         $this->add_if_new("pages", $start_page . REGEXP_EN_DASH . $end_page);
+         $this->add_if_new("pages", $start_page . '–' . $end_page);
       } else {
          $this->add_if_new("pages", $start_page);
       }
@@ -1819,7 +1826,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{6,})~", $oa_url, $match)) {
+        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{5,})~", $oa_url, $match)) {
           if ($this->has('pmid')) {
              return TRUE;
           }
@@ -2962,7 +2969,8 @@ final class Template {
               $this->forget('volume');
             }
           }
-          if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches)) {
+          if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches) ||
+              preg_match("~^(?:vol. |)(\d+),\s*no\.\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches)) {
             $possible_volume=$matches[1];
             $possible_issue=$matches[2];
             if ($this->blank(ISSUE_ALIASES)) {
@@ -3130,15 +3138,6 @@ final class Template {
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
-            if (!$this->blank(['publisher', 'location']) && !$this->blank(['doi', 'pmid', 'pmc', 'issn', 'bibcode'])) {  // pitchforks prevention
-              $forget_string = 'Removing publisher/location from journal already uniquely identified by ';
-              foreach (['doi', 'pmid', 'pmc', 'issn', 'bibcode'] as $id) {
-                if ($this->has($id)) $forget_string .= $id . ' ';
-              }
-              report_info($forget_string);
-              $this->forget('publisher');
-              $this->forget('location');
-            }
           } else {
             report_warning('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn'));
