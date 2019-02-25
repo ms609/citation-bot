@@ -10,18 +10,15 @@
 require_once('Comment.php');
 require_once('Template.php');
 require_once('apiFunctions.php');
-require_once('WikipediaBot.php');
 
 class Page {
 
   protected $text, $title, $modifications, $date_style;
-  protected $read_at, $api, $namespace, $touched, $start_text, $last_write_time;
+  protected $read_at, $namespace, $touched, $start_text, $last_write_time;
   public $lastrevid;
 
-  function __construct() {
-    ;
-  }
-    
+  function __construct() { ; }
+
   /*
  * cannot be tested on Travis
  * @codeCoverageIgnore
@@ -290,6 +287,21 @@ class Page {
       } else {
         $auto_summary = substr($auto_summary, 0, -2) . '. ';
       }
+    }
+
+    if ((count($this->modifications["deletions"]) !== 0)
+    && (
+        (($pos = array_search('url', $this->modifications["deletions"])) !== FALSE)
+     || (($pos = array_search('chapter-url', $this->modifications["deletions"])) !== FALSE)
+     || (($pos = array_search('chapterurl', $this->modifications["deletions"])) !== FALSE)
+        )
+    ) {
+        if (strpos($auto_summary, 'chapter-url') !== FALSE) {
+          $auto_summary .= "Removed or converted URL. ";
+        } else {
+          $auto_summary .= "Removed URL that duplicated unique identifier. ";
+        }
+        unset($this->modifications["deletions"][$pos]);
     }
     if ((count($this->modifications["deletions"]) !== 0)
     && ($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE

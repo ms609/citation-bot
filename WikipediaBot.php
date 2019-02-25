@@ -380,11 +380,11 @@ class WikipediaBot {
         "redirects" => "1",
         "titles" => $page,
         ), 'POST');
-    if (!isset($res->pages->page)) {
+    if (!isset($res->query->redirects[0]->to)) {
         report_warning("Failed to get redirect target");
         return FALSE;
     }
-    return $xml->pages->page["title"];
+    return $res->query->redirects[0]->to;
   }
 
   public function namespace_id($name) {
@@ -394,38 +394,6 @@ class WikipediaBot {
 
   public function namespace_name($id) {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
-  }
-
-  // TODO mysql login is failing.
-    /*
-     * unused
-   * @codeCoverageIgnore
-   */
-  public function article_id($page, $namespace = 0) {
-    if (stripos($page, ':')) {
-      $bits = explode(':', $page);
-      if (isset($bits[2])) return NULL; # Too many colons; improperly formatted page name?
-      $namespace = $this->namespace_id($bits[0]);
-      if (is_null($namespace)) return NULL; # unrecognized namespace
-      $page = $bits[1];
-    }
-    $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
-    $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
-    if (defined('PHP_VERSION_ID') && (PHP_VERSION_ID >= 50600)) { 
-       $result = NULL; // mysql_query does not exist in PHP 7
-    } else {
-       $result = @mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
-            . "' && page_title='$page'");
-    }
-    if (!$result) {
-      echo @mysql_error();
-      @mysql_close($enwiki_db);
-      return NULL;
-    }
-    $results = @mysql_fetch_array($result, MYSQL_ASSOC);
-    @mysql_close($enwiki_db);
-    if (!$results) return NULL;
-    return $results['page_id'];
   }
 
   private function authenticate_user() {
@@ -452,8 +420,8 @@ class WikipediaBot {
      $this->user = $ident->username;
      // get the authenticated user's edit token.
      $this->editToken = json_decode( $client->makeOAuthCall(
-	$accessToken,
-	'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
+      	$accessToken,
+      	'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
      ) )->query->tokens->csrftoken;
      unset( $_SESSION['request_key'], $_SESSION['request_secret'] ); // No longer needed
    }
@@ -473,5 +441,5 @@ class WikipediaBot {
      echo "<br />Go to this URL to <a href='https://meta.wikimedia.org/w/index.php?title=Special:OAuth'>authorize citation bot</a>"; // Manual too
      exit();
    }
-	
+
 }
