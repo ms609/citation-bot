@@ -10,18 +10,15 @@
 require_once('Comment.php');
 require_once('Template.php');
 require_once('apiFunctions.php');
-require_once('WikipediaBot.php');
 
 class Page {
 
   protected $text, $title, $modifications, $date_style;
-  protected $read_at, $api, $namespace, $touched, $start_text, $last_write_time;
+  protected $read_at, $namespace, $touched, $start_text, $last_write_time;
   public $lastrevid;
 
-  function __construct() {
-    $this->api = new WikipediaBot();
-  }
-    
+  function __construct() { ; }
+
   /*
  * cannot be tested on Travis
  * @codeCoverageIgnore
