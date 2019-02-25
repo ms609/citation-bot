@@ -1,5 +1,5 @@
 <?php
-## Set up - including DOT_DECODE array
+@session_start();
 define("HTML_OUTPUT", !isset($argv));
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
