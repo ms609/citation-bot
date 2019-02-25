@@ -1,8 +1,8 @@
-#!/usr/bin/php
 <?php
-
+@session_start();
 error_reporting(E_ALL^E_NOTICE);
-$argument["cat"]=NULL;
+if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
+$argument["cat"] = NULL;
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
@@ -18,42 +18,74 @@ foreach ($argv as $arg) {
     }
   }
 }
+$SLOW_MODE = FALSE;
+if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
+  $SLOW_MODE = TRUE;
+}
 
-$account_suffix='_4'; // Whilst testing
-$account_suffix='_1'; // Keep this before including expandFns
-include("expandFns.php");
+if (php_sapi_name() !== "cli") {
+    define("HTML_OUTPUT", TRUE);// Not in cli-mode
+}
+require_once __DIR__ . '/expandFns.php';
 
-$category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
-if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
+$category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
+
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
+if (is_valid_user($user)) {
+  echo " Activated by $user.\n";
+  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
+} else {
+  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits";
+  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
+}
+
+if (HTML_OUTPUT) {
+?>
+<html>
+  <body>
+  <head>
+  <title>Citation bot: Category mode</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="css/results.css" />
+  </head>
+  <body>
+    <pre>
+<?php
+} else {
+  echo "\n";
+}
 if ($category) {
   $attempts = 0;
   $api = new WikipediaBot();
   $pages_in_category = $api->category_members($category);
-  #print_r($pages_in_category);
   shuffle($pages_in_category);
   $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
-    echo ("\n\n\n*** Processing page '{" . echoable($page_title) . "}' : " . date("H:i:s") . "\n");
+    // $page->expand_text will take care of this notice if we are in HTML mode.
+    html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
-      echo "\n # Writing to " . echoable($page_title) . '... ';
-      while (!$page->write($api) && $attempts < 2) ++$attempts;
-      safely_echo($page->parsed_text());
+      report_phase("Writing to " . echoable($page_title) . '... ');
+      while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
+      // Parsed text can be viewed by diff link; don't clutter page. 
+      // print "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
-        " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&action=history>history</a> / "
-        . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . get_last_revision($page_title) . ">last edit</a></small></i>\n\n<br>"
-        , ".");
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . $api->get_last_revision($page_title) . ">diff</a>" .
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
       } else {
-         echo "\n # Failed. \n";
+         report_warning("Write failed.");
       }
     } else {
-      echo "\n # " . ($page->parsed_text() ? 'No changes required.' : 'Blank page') . "\n # # # ";
+      report_phase($page->parsed_text() ? 'No changes required.' : 'Blank page');
+      echo "\n\n    # # # ";
     }
   }
-
-  exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
+  echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL.");
+  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
+html_echo(' # # #</pre></body></html>', "\n");
+ob_end_flush(); 
+exit(0);

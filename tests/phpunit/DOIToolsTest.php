@@ -3,22 +3,10 @@
 /*
  * Tests for DOITools.php.
  */
-error_reporting(E_ALL);
- // backward compatibility
-if (!class_exists('\PHPUnit\Framework\TestCase') &&
-    class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
-}
 
+require_once __DIR__ . '/../testBaseClass.php';
 
-final class doiToolsTest extends PHPUnit\Framework\TestCase {
-
-  protected function setUp() {
-  }
-
-  protected function tearDown() {
-  }
-
+final class doiToolsTest extends testBaseClass {
   public function testFormatMultipleAuthors1() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
     $result=format_multiple_authors($authors,FALSE);
@@ -139,6 +127,17 @@ final class doiToolsTest extends PHPUnit\Framework\TestCase {
     $page->expand_text();
     $this->assertNotNull($page->edit_summary());
   }
+
+  public function testArrowAreQuotes() {
+    $text = "This » That";
+    $this->assertEquals($text,straighten_quotes($text));
+    $text = "X«Y»Z";
+    $this->assertEquals('X"Y"Z',straighten_quotes($text));
+    $text = "This › That";
+    $this->assertEquals($text,straighten_quotes($text));
+    $text = "X‹Y›Z";
+    $this->assertEquals("X'Y'Z",straighten_quotes($text));
+  }
   
   public function testMathInTitle() {
     // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
@@ -148,5 +147,15 @@ final class doiToolsTest extends PHPUnit\Framework\TestCase {
     $this->assertEquals($text_math,sanitize_string($text_math));      // Should not change
     $this->assertEquals($text_math,wikify_external_text($text_math)); // Should not change
     $this->assertEquals($text_math,wikify_external_text($text_mml));  // The most important test: mml converstion to <math>
-  }  
+  }
+  
+  public function testFormat() { // Random extra code coverage tests
+    $this->assertEquals('& a. Johnson', format_surname('& A. Johnson'));
+    $this->assertEquals('Johnson; Smith', format_surname('Johnson; Smith'));
+    $this->assertEquals(FALSE, format_author(''));
+    $this->assertEquals(FALSE, format_multiple_authors(''));
+    $this->assertEquals('John, Bob; Kim, Billy', format_multiple_authors('John,Bob,Kim,Billy'));
+    $this->assertEquals('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
+    $this->assertEquals(['John, .','Bob, .','Kim, .','Billy,'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
+  }
 }

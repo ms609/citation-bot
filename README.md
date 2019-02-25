@@ -1,13 +1,13 @@
 [![Build Status](https://travis-ci.org/ms609/citation-bot.svg?branch=master)](https://travis-ci.org/ms609/citation-bot)
 [![codecov](https://codecov.io/gh/ms609/citation-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/ms609/citation-bot)
-[![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/inactive.svg)](http://www.repostatus.org/#inactive)
+[![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
 
 # Citation bot
 
 ## GitHub repository details
-There are two main branches of the bot: 
-- The **master** code is implemented at https://tools.wmflabs.org/citations/doibot.html, and is intended for public use.
-- The **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/doibot.html .  
+There are one to two main branches of the bot: 
+- The **master** code is implemented at https://tools.wmflabs.org/citations/, and is intended for public use.
+- When needed, the **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/ .  
 
 ## Overview
 
@@ -15,12 +15,13 @@ This is some basic documentation about what this bot is and how some of the part
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
-* DOIBot, found in doibot.html (web frontend) and doibot.php (information is
+* DOIBot, found in index.html (web frontend) and process_page.php (information is
   POSTed to this and it does the citation expansion; backend). This automatically
   posts a new page revision with expanded citations and thus requires a bot account.
   All activity takes place on Tool Labs.
 * Citation expander (:en:Mediawiki:Gadget-citations.js) + gadgetapi.php. This
   is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
+* [Generic template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://tools.wmflabs.org/citations/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
 Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot .
 
@@ -33,26 +34,22 @@ Basic structure of a Citation bot script:
 
 
 A quick tour of the main files:
-* `credentials/doibot.login`: on-wiki login credentials
 * `constants.php`: constants defined
 * `wikiFunctions.php`: functions related to Wikipedia ineractions, including some marked
    as "untested".
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
-* `DOItools.php`: defines Crossref-related functions
-* `expandFns.php`: sets up needed functions and global variables, requires most
-  of the other files listed here
-* `credentials/crossref.login` allows crossref searches.
-* `login.php`: Logs the bot in to Wikipedia servers
+* `DOItools.php`: defines text/name functions
+* `expandFns.php`: sets up needed functions, requires most of the other files listed here
+* `apiFunctions.php`: sets up needed functions
 
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
   `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
 * `Template.php`: most of the actual expansion happens here.
-  `Template::process()` handles most of template expansion and checking;
   `Template::add_if_new()` is generally (but not always) used to add
    parameters to the updated template; `Template::tidy()` cleans up the
    template, but may add parameters as well and have side effects.
-* `Comment.php`: Handles comments and nokwiki tags
+* `Comment.php`: Handles comments, nokwiki, etc. tags
 * `Parameter.php`: contains information about template parameter names, values,
    and metadata, and methods to parse template parameters.
 
