@@ -9,7 +9,7 @@ $page = str_replace(' ', '_', trim($_REQUEST['page']));
 if ($page == '') exit('Nothing requested');
 if (strlen($page) > 128) exit('Excessively long page name passed');
 
-$url = 'https://en.wikipedia.org/w/api.php?action=parse&prop=links&page=' . $page . '&format=json';
+$url = 'https://en.wikipedia.org/w/api.php?action=parse&prop=links&page=' . $p age . '&format=json';
 $json = file_get_contents($url);
 $array = json_decode($json, true);
 $links = $array['parse']['links'];
