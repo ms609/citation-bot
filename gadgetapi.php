@@ -7,7 +7,7 @@ ob_start();
 define("FLUSHING_OKAY", FALSE);
   
 //Set up tool requirements
-require_once __DIR__ . '/expandFns.php';
+require_once('expandFns.php');
 
 $originalText = $_POST['text'];
 $editSummary = $_POST['summary'];
