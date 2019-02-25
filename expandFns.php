@@ -22,7 +22,7 @@ require_once("Parameter.php");
 require_once("Comment.php");
 require_once("wikiFunctions.php");
 require_once("user_messages.php");
-
+ 
 $api_files = glob('api_handlers/*.php');
 foreach ($api_files as $file) {
     require_once($file);
