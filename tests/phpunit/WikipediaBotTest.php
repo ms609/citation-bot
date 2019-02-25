@@ -5,7 +5,7 @@
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
-
+ 
   class WikipediaBotTest extends testBaseClass {
       
     public function testLoggedInUser() {
