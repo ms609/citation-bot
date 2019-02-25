@@ -77,6 +77,7 @@ function format_initials($str) {
 }
 
 function is_initials($str){
+        $str = trim($str);
         if (!$str) return FALSE;
         if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return FALSE;
         if (strlen(str_replace(array("-", ".", ";"), "", $str)) ==1) return TRUE;
