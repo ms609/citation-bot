@@ -45,47 +45,47 @@ final class doiToolsTest extends testBaseClass {
     
   public function testFormatAuthor1() {  
     $author = "Conway Morris S.C.";
-    $result=format_author($author,FALSE);
+    $result=format_author($author);
     $this->assertEquals('Conway Morris, S.C.', $result); // Was c, Conway Morris S 
   }
   public function testFormatAuthor2() {  
     $author = "M.A. Smith";
-    $result=format_author($author,FALSE);
+    $result=format_author($author);
     $this->assertEquals('Smith, M.A', $result);
   }
   public function testFormatAuthor3() {  
     $author = "Smith M.A.";
-    $result=format_author($author,FALSE);
+    $result=format_author($author);
     $this->assertEquals('Smith, M.A.', $result); // Was a, Smith M
   }
   public function testFormatAuthor4() {  
     $author = "Smith MA.";
-    $result=format_author($author,FALSE);
+    $result=format_author($author);
     $this->assertEquals('Smith, M.A.', $result);
   }
   public function testFormatAuthor5() {  
     $author = "Martin A. Smith";
-    $result=format_author($author,FALSE);
+    $result=format_author($author);
     $this->assertEquals('Smith, Martin A', $result);
   }
   public function testFormatAuthor6() {  
     $author = "MA Smith";
-    $result=format_author($author,FALSE);
+    $result=format_author($author);
     $this->assertEquals('Smith, M.A.', $result);
   }
   public function testFormatAuthor7() {  
     $author = "Martin Smith";
-    $result=format_author($author,FALSE);
+    $result=format_author($author);
     $this->assertEquals('Smith, Martin', $result);
   }
   public function testFormatAuthor8() {  
     $author = "Conway Morris S.C..";
-    $result=format_author($author,FALSE);
+    $result=format_author($author);
     $this->assertEquals('Conway Morris, S.C.', $result); //Was c, Conway Morris S
   }
   public function testFormatAuthor9() {  
     $author = "Smith MA";
-    $result=format_author($author,FALSE);
+    $result=format_author($author);
     $this->assertEquals('Smith, M.A.', $result);
   }
 
