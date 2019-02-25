@@ -1424,6 +1424,10 @@ ER -  }}';
     $text = '{{cite book|pages=[//books.google.com/books?id=-_rxBwAAQBAJ&pg=PA107 107]}}';
     $expanded = $this->process_citation($text); // Do not change dashes in this hidden URL, but upgrade URL to real one
     $this->assertEquals('[https://books.google.com/books?id=-_rxBwAAQBAJ&pg=PA107 107]', $expanded->get('pages'));
+   
+    $text = '{{cite journal|pages=AB-2|title=do change}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('AB-2', $prepared->get('pages'));
   }
  
   public function testBogusPageRanges() {  // At some point this test will age out (perhaps add special TRAVIS code to template.php

@@ -254,7 +254,8 @@ function straighten_quotes($str) {
 function can_safely_modify_dashes($value) {
    return((stripos($value, "http") === FALSE)
        && (strpos($value, "[//") === FALSE)
-       && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)); 
+       && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)
+       && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1)); // A-3, A3-5 etc.  Use "." for generic dash
 }
 
 function titles_are_dissimilar($inTitle, $dbTitle) {
