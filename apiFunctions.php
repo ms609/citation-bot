@@ -265,7 +265,7 @@ function adsabs_api($ids, $templates, $identifier) {
       report_warning(sprintf("Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
     }
-    @curl_close($ch);
+    @curl_close($ch); // Some code paths have it closed, others do not
     return FALSE;
   }
   
