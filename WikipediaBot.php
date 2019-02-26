@@ -436,5 +436,10 @@ class WikipediaBot {
      echo "<br />Go to this URL to <a href='https://meta.wikimedia.org/w/index.php?title=Special:OAuth'>authorize citation bot</a>"; // Manual too
      exit();
    }
+  
+   public function has_user_token() {
+     if (isset($this->editToken)) return TRUE;
+     return FALSE;
+   }
 
 }
