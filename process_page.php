@@ -30,7 +30,7 @@ if (HTML_OUTPUT) {?>
 <?php
 }
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-$user = NULL; // Edit as user, no need to name.
+if ($api->has_user_token()) $user = NULL; // Editing as user, no need to name.
 if (is_valid_user($user)) {
   echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
