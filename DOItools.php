@@ -51,7 +51,7 @@ function format_surname_2($surname) {
     mb_ereg_replace(" - ", "-", $surname));
   $ret = str_ireplace(array('Von ', 'Und ', 'De La '), array('von ', 'und ', 'de la '), $ret);
   $ret = preg_replace_callback('~;\w~', function($matches) {return strtolower($matches[0]);}, $ret);
-  if (preg_match('~^\S\.?$~, $ret)) $ret = mb_strtoupper($ret); // Just a single initial, with or without period
+  if (preg_match('~^\S\.?$~', $ret)) $ret = mb_strtoupper($ret); // Just a single initial, with or without period
   return $ret;
 }
 
