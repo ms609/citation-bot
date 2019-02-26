@@ -24,7 +24,7 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) trigger_error("PHP_OAUTH_ACCESS_TOKEN not set", E_USER_ERROR);
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
-    if (TRUE || php_sapi_name() !== "cli") $this->authenticate_user(); // DEBUGGING, THUS TRUE OR
+    if (TRUE || php_sapi_name() !== "cli") $this->authenticate_user(); // DEBUGGING THIS CODE
   }
   
   function __destruct() {
