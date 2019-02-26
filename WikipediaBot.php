@@ -27,10 +27,6 @@ class WikipediaBot {
     if (TRUE || php_sapi_name() !== "cli") $this->authenticate_user(); // DEBUGGING, THUS TRUE OR
   }
   
-  public function set_authenticated_user(&$user) { // Note pointer
-    if (isset($this->editToken)) $user = NULL; // Edit will be done as user, so do not include in edit summary
-  }
-  
   function __destruct() {
     if ($this->ch) curl_close($this->ch);
   }
