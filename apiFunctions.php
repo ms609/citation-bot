@@ -256,14 +256,14 @@ function adsabs_api($ids, $templates, $identifier) {
     }
   } catch (Exception $e) {
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
-      trigger_error(sprintf("API Error in query_adsabs: %s",
-                    $e->getMessage()), E_USER_NOTICE);
+      report_warning(sprintf("API Error in query_adsabs: %s",
+                    $e->getMessage()));
     } else if (strpos($e->getMessage(), 'HTTP') === 0) {
-      trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
-                    $e->getCode(), $e->getMessage()), E_USER_NOTICE);
+      report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
+                    $e->getCode(), $e->getMessage()));
     } else {
-      trigger_error(sprintf("Error %d in query_adsabs: %s",
-                    $e->getCode(), $e->getMessage()), E_USER_WARNING);
+      report_warning(sprintf("Error %d in query_adsabs: %s",
+                    $e->getCode(), $e->getMessage()));
       curl_close($ch);
     }
   }
