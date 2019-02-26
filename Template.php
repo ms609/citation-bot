@@ -1626,11 +1626,11 @@ final class Template {
       return $response;
     } catch (Exception $e) {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
-        trigger_error(sprintf("API Error in query_adsabs: %s",
-                      $e->getMessage()), E_USER_NOTICE);
+        report_warning(sprintf("API Error in query_adsabs: %s",
+                      $e->getMessage()));
       } else if (strpos($e->getMessage(), 'HTTP') === 0) {
-        trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
-                      $e->getCode(), $e->getMessage()), E_USER_NOTICE);
+        report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
+                      $e->getCode(), $e->getMessage()));
       } else {
         report_warning(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
@@ -3669,7 +3669,7 @@ final class Template {
              $url .=  $part . "&" ;
              break;
           default:
-             if (getenv('TRAVIS')) trigger_error("Unexpected Google URL component:  " . $part);
+             if (getenv('TRAVIS')) trigger_error("Unexpected Google URL component:  " . $part, E_USER_NOTICE);
              $url .=  $part . "&" ;
              break;
         }
