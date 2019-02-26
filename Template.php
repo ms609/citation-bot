@@ -609,11 +609,9 @@ final class Template {
                 $last_page  = (int) $newpagenos[2];
                 $old_page   = (int) $oldpagenos[1];
                 if ($old_page > $first_page && $old_page <= $last_page) {
-                  foreach (['pages', 'page', 'pp', 'p'] as $change_to_at) {
-                    if ($this->blank($change_to_at)) {
-                      $this->forget($change_to_at);
-                    } else {
-                      $this->rename($change_to_at, 'at');
+                  foreach (['pages', 'page', 'pp', 'p'] as $forget_blank) {
+                    if ($this->blank($forget_blank)) {
+                      $this->forget($forget_blank);
                     }
                   }
                   return FALSE;
