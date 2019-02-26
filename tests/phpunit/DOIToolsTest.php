@@ -10,58 +10,58 @@ final class doiToolsTest extends testBaseClass {
   public function testFormatMultipleAuthors1() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('m.a. Smith, Smith M.A.; Smith, M.A.; Martin A. Smith, M.A. Smith', $result);
+    $this->assertEquals('M. A. Smith, Smith M. A.; Smith, M. A.; Martin A. Smith, M.A. Smith', $result);
   }
   public function testFormatMultipleAuthors2() {  // Semi-colon
     $authors = 'M.A. Smith; M.A. Smith';
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+    $this->assertEquals('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors3() { // Spaces
     $authors = 'M.A. Smith  M.A. Smith';
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+    $this->assertEquals('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors4() { // Commas
     $authors = 'M.A. Smith,  M.A. Smith';
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+    $this->assertEquals('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors5() { // Commas, no space
     $authors = 'M.A. Smith,M.A. Smith';
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+    $this->assertEquals('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors6() { // & symbol
     $authors = 'M.A. Smith & M.A. Smith';
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+    $this->assertEquals('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors7() { // The word "and"
     $authors = 'M.A. Smith and M.A. Smith';
     $result=format_multiple_authors($authors,FALSE);
-    $this->assertEquals('Smith, M.A.; Smith, M.A.', $result);
+    $this->assertEquals('Smith, M. A.; Smith, M. A.', $result);
   }
     
   public function testFormatAuthor1() {  
     $author = "Conway Morris S.C.";
     $result=format_author($author);
-    $this->assertEquals('Conway Morris, S.C.', $result); // Was c, Conway Morris S 
+    $this->assertEquals('Conway Morris, S. C.', $result); // Was c, Conway Morris S 
   }
   public function testFormatAuthor2() {  
     $author = "M.A. Smith";
     $result=format_author($author);
-    $this->assertEquals('Smith, M.A', $result);
+    $this->assertEquals('Smith, M. A', $result);
   }
   public function testFormatAuthor3() {  
     $author = "Smith M.A.";
     $result=format_author($author);
-    $this->assertEquals('Smith, M.A.', $result); // Was a, Smith M
+    $this->assertEquals('Smith, M. A.', $result); // Was a, Smith M
   }
   public function testFormatAuthor4() {  
     $author = "Smith MA.";
     $result=format_author($author);
-    $this->assertEquals('Smith, M.A.', $result);
+    $this->assertEquals('Smith, M. A.', $result);
   }
   public function testFormatAuthor5() {  
     $author = "Martin A. Smith";
@@ -71,7 +71,7 @@ final class doiToolsTest extends testBaseClass {
   public function testFormatAuthor6() {  
     $author = "MA Smith";
     $result=format_author($author);
-    $this->assertEquals('Smith, M.A.', $result);
+    $this->assertEquals('Smith, M. A.', $result);
   }
   public function testFormatAuthor7() {  
     $author = "Martin Smith";
@@ -81,13 +81,43 @@ final class doiToolsTest extends testBaseClass {
   public function testFormatAuthor8() {  
     $author = "Conway Morris S.C..";
     $result=format_author($author);
-    $this->assertEquals('Conway Morris, S.C.', $result); //Was c, Conway Morris S
+    $this->assertEquals('Conway Morris, S. C.', $result); //Was c, Conway Morris S
   }
   public function testFormatAuthor9() {  
     $author = "Smith MA";
     $result=format_author($author);
-    $this->assertEquals('Smith, M.A.', $result);
+    $this->assertEquals('Smith, M. A.', $result);
   }
+  public function testFormatAuthor10() {  
+    $author = "A B C D E F G H";
+    $result=format_author($author);
+    $this->assertEquals('A. B. C. D. E. F. G. H.', $result);
+  }
+  public function testFormatAuthor11() {  
+    $author = "A. B. C. D. E. F. G. H.";
+    $result=format_author($author);
+    $this->assertEquals('A. B. C. D. E. F. G. H.', $result);
+  }
+  public function testFormatAuthor12() {  
+    $author = "A.B.C.D.E.F.G.H.";
+    $result=format_author($author);
+    $this->assertEquals('A. B. C. D. E. F. G. H.', $result);
+  }
+  public function testFormatAuthor13() {  
+    $author = "Smith"; // No first
+    $result=format_author($author);
+    $this->assertEquals('Smith', $result);
+  }
+  public function testFormatAuthor14() {  
+    $author = "Smith.";  // No first, but with a period oddly
+    $result=format_author($author);
+    $this->assertEquals('Smith', $result);
+  }
+  public function testFormatAuthor15() {  
+     $author = "S.SmithGuy.X.";  // Totally made up, but we should not eat parts of it - code used to
+     $result=format_author($author);
+     $this->assertEquals('S. Smithguy X.', $result);
+   }
 
    public function testJunior() {
        $text = ""; // Empty string should work
@@ -156,6 +186,6 @@ final class doiToolsTest extends testBaseClass {
     $this->assertEquals(FALSE, format_multiple_authors(''));
     $this->assertEquals('John, Bob; Kim, Billy', format_multiple_authors('John,Bob,Kim,Billy'));
     $this->assertEquals('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
-    $this->assertEquals(['John, .','Bob, .','Kim, .','Billy,'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
+    $this->assertEquals(['John','Bob','Kim','Billy'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
   }
 }
