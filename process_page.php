@@ -29,7 +29,6 @@ if (HTML_OUTPUT) {?>
 <pre id="botOutput">
 <?php
 }
-
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 $api->set_authenticated_user($user);
 if (is_valid_user($user)) {
