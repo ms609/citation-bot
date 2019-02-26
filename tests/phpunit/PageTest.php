@@ -14,7 +14,7 @@ final class PageTest extends testBaseClass {
       $this->assertNull($page->parsed_text());
   }
   public function test2() {
-      $text = "{{cite journal |title=The Old Straight Track - Alfred Watkins |journal=The Geographical Journal, published by The Royal Geographical Society (with the Institute of British Geographers |date=August 1926 |volume=68 |issue=2 |pages=152-153 |doi=10.2307/1782454 |url=https://www.jstor.org/stable/1782454 |accessdate=1 January 2019}}
+      $text = "{{cite journal |title=The Old Straight Track - Alfred Watkins |journal=The Geographical Journal, published by The Royal Geographical Society (with the Institute of British Geographers |date=August 1926 |volume=68 |issue=2 |pages=152-153 |doi=10.2307/1782454 |url=https://www.jstor.org/stable/1782454 |accessdate=1 January 2019}}";
       $page = $this->process_citation($text);
       $this->assertNull($page->parsed_text());
   }
