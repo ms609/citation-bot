@@ -18,8 +18,8 @@ class WikipediaBot {
       // if they are not set already. Remember to set permissions (not readable!)
       include_once('env.php'); 
     }
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) trigger_error("PHP_OAUTH_CONSUMER_TOKEN not set", E_USER_ERROR);
-    if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) trigger_error("PHP_OAUTH_ACCESS_TOKEN not set", E_USER_ERROR);
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
+    if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
   }
@@ -35,14 +35,14 @@ class WikipediaBot {
   
   private function ret_okay($response) {
     if ($response === CURLE_HTTP_RETURNED_ERROR) {
-      trigger_error("Curl encountered HTTP response error", E_USER_ERROR);
+      report_error("Curl encountered HTTP response error");
     }
     if (isset($response->error)) {
       if ($response->error->code == 'blocked') {
-        trigger_error('Account "' . $this->username() . 
-        '" or this IP is blocked from editing.', E_USER_ERROR); // Yes, Travis CI IPs are blocked, even to logged in users.
+        report_error('Account "' . $this->username() . 
+        '" or this IP is blocked from editing.'); // Yes, Travis CI IPs are blocked, even to logged in users.
       } else {
-        trigger_error('API call failed: ' . $response->error->info, E_USER_ERROR);
+        report_error('API call failed: ' . $response->error->info);
       }
       return FALSE;
     }
@@ -75,8 +75,7 @@ class WikipediaBot {
   public function fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
       curl_close($this->ch);
-      trigger_error('Could not initialize CURL resource: ' .
-        echoable(curl_error($this->ch)), E_USER_ERROR);
+      report_error('Could not initialize CURL resource: ' . echoable(curl_error($this->ch)));
       return FALSE;
     }
     $params['format'] = 'json';
@@ -97,7 +96,7 @@ class WikipediaBot {
           set_time_limit(45);
           $data = curl_exec($this->ch);
           if (!$data) {
-            trigger_error("Curl error: " . echoable(curl_error($this->ch)), E_USER_NOTICE);
+            report_error("Curl error: " . echoable(curl_error($this->ch)));
             return FALSE;
           }
           $ret = @json_decode($data);
@@ -150,37 +149,37 @@ class WikipediaBot {
           ));
     
     if (!$response) {
-      trigger_error("Write request failed", E_USER_WARNING);
+      report_error("Write request failed");
       return FALSE;
     }
     if (isset($response->warnings)) {
       if (isset($response->warnings->prop)) {
-        trigger_error((string) $response->warnings->prop->{'*'}, E_USER_WARNING);
+        report_error((string) $response->warnings->prop->{'*'});
       }
       if (isset($response->warnings->info)) {
-        trigger_error((string) $response->warnings->info->{'*'}, E_USER_WARNING);
+        report_error((string) $response->warnings->info->{'*'});
       }
     }
     if (!isset($response->batchcomplete)) {
-      trigger_error("Write request triggered no response from server", E_USER_WARNING);
+      report_error("Write request triggered no response from server");
       return FALSE;
     }
     
     $myPage = reset($response->query->pages); // reset gives first element in list
     
     if (!isset($myPage->lastrevid)) {
-      trigger_error("Page seems not to exist. Aborting.", E_USER_WARNING);
+      report_error("Page seems not to exist. Aborting.");
       return FALSE;
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
     if ((!is_null($lastRevId) && $myPage->lastrevid != $lastRevId)
      || (!is_null($startedEditing) && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-      trigger_error("Possible edit conflict detected. Aborting.", E_USER_WARNING);
+      report_error("Possible edit conflict detected. Aborting.");
       return FALSE;
     }
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
-      trigger_error("\n ! Placeholder left escaped in text. Aborting.", E_USER_ERROR);
+      report_error("\n ! Placeholder left escaped in text. Aborting.");
       return FALSE;
     }
     
@@ -203,14 +202,14 @@ class WikipediaBot {
     $result = $this->fetch($submit_vars, 'POST');
     
     if (isset($result->error)) {
-      trigger_error("Write error: " . 
+      report_error("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
-                    echoable($result->error->info)), E_USER_ERROR);
+                    echoable($result->error->info)));
       return FALSE;
     } elseif (isset($result->edit)) {
       if (isset($result->edit->captcha)) {
-        trigger_error("Write error: We encountered a captcha, so can't be properly logged in.", E_USER_ERROR);
+        report_error("Write error: We encountered a captcha, so can't be properly logged in.");
         return FALSE;
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
@@ -226,9 +225,9 @@ class WikipediaBot {
         return FALSE;
       }
     } else {
-      trigger_error("Unhandled write error.  Please copy this output and " .
+      report_error("Unhandled write error.  Please copy this output and " .
                     "<a href='https://github.com/ms609/citation-bot/issues/new'>" .
-                    "report a bug.</a>", E_USER_ERROR);
+                    "report a bug.</a>");
       return FALSE;
     }
   }
@@ -251,7 +250,7 @@ class WikipediaBot {
           $list[] = str_replace(array('_talk:', ' talk:'), ':', (string) $page->title); 
         }
       } else {
-        trigger_error('Error reading API from ' . echoable($url) . "\n\n", E_USER_WARNING);
+        report_error('Error reading API from ' . echoable($url) . "\n\n");
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
@@ -280,7 +279,7 @@ class WikipediaBot {
       set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->embeddedin->ei)) {
-        trigger_error('Error reading API from ' . echoable($url), E_USER_NOTICE);
+        report_error('Error reading API from ' . echoable($url));
       } else {
         foreach($res->query->embeddedin as $page) {
           $list["title"][] = $page->title;
@@ -300,7 +299,7 @@ class WikipediaBot {
         "titles" => $page,
       ));
     if (!isset($res->query->pages)) {
-        trigger_error("Failed to get article's last revision", E_USER_NOTICE);
+        report_error("Failed to get article's last revision");
         return FALSE;
     }
     $page = reset($res->query->pages);
@@ -327,7 +326,7 @@ class WikipediaBot {
           # $page_ids[] = $page->pageid;
         }
       } else {
-        trigger_error('Error reading API with vars ' . http_build_query($vars), E_USER_NOTICE);
+        report_error('Error reading API with vars ' . http_build_query($vars));
         if (isset($res->error)) echo $res->error;
       }
       $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
