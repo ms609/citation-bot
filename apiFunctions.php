@@ -360,6 +360,7 @@ function expand_by_doi($template, $force = FALSE) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
       print_r($crossRef);
+      echo "from cross ref\n";
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
@@ -397,6 +398,8 @@ function expand_by_doi($template, $force = FALSE) {
             }
           } elseif ($author['contributor_role'] == 'author' && $add_authors) {
             ++$au_i;
+            echo $author->surname . "\n" . format_surname($author->surname) . "\n";
+            
             $template->add_if_new("last$au_i", format_surname($author->surname));
             $template->add_if_new("first$au_i", format_forename($author->given_name));
           }
@@ -487,6 +490,7 @@ function expand_doi_with_dx($template, $doi) {
      if($json === FALSE) return FALSE;
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      print_r($json);
+     echo 'from dx' . "\n";
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
@@ -593,7 +597,7 @@ function expand_by_jstor($template) {
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
-  print_r($dat);
+  
   if ($dat === FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));
     return FALSE;
