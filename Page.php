@@ -361,7 +361,7 @@ class Page {
       }
       if ($preg_ok === FALSE) {
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.
-        trigger_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's', E_USER_ERROR);
+        report_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
       }
     }
     $this->text = $text;
