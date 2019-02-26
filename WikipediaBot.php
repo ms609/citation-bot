@@ -13,7 +13,6 @@ class WikipediaBot {
   protected $consumer, $token, $ch;
 
   private $editToken;
-  private $user;
   
   function __construct() {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
@@ -29,7 +28,7 @@ class WikipediaBot {
   }
   
   public function set_authenticated_user(&$user) { // Note pointer
-    if (isset($this->user)) $user = $this->user;
+    if (isset($this->editToken)) $user = NULL; // Edit will be done as user, so do not include in edit summary
   }
   
   function __destruct() {
@@ -417,7 +416,7 @@ class WikipediaBot {
      $_SESSION['access_secret'] = $accessToken->secret;
      //   get the authenticated user's identity.
      $ident = $client->identify( $accessToken );
-     $this->user = $ident->username;
+     // Note: user's name is stored in $ident->username;
      // get the authenticated user's edit token.
      $this->editToken = json_decode( $client->makeOAuthCall(
       	$accessToken,
