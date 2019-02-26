@@ -150,7 +150,7 @@ final class Template {
   }
   
   public function api_has_used($api, $param) {
-    if (!isset($this->used_by_api[$api])) trigger_error("Invalid API: $api", E_USER_ERROR);
+    if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
     return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
