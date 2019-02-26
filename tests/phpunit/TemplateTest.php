@@ -1436,7 +1436,7 @@ ER -  }}';
     $this->assertEquals('955–971', $expanded->get('pages')); // Converted should use long dashes
     $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|pages = 960}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('960', $expanded->get('at')); // Existing page number was within existing range
+    $this->assertEquals('960', $expanded->get('pages')); // Existing page number was within existing range
   }
     
   public function testCollapseRanges() {
