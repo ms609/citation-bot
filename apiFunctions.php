@@ -264,8 +264,9 @@ function adsabs_api($ids, $templates, $identifier) {
     } else {
       report_warning(sprintf("Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
-      curl_close($ch);
     }
+    @curl_close($ch);
+    return FALSE;
   }
   
   foreach ($response->docs as $record) {
