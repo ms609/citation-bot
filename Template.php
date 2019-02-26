@@ -577,11 +577,13 @@ final class Template {
         return FALSE;
       
       case "page": case "pages":
+      
         if (in_array((string) $value, ['0', '0-0', '0–0'], TRUE)) return FALSE;  // Reject bogus zero page number
         if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
         $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
+        $en_dash_X = ['X', 'X', 'X', 'X', 'X'];
         if (  mb_stripos($all_page_values, 'see ')  !== FALSE   // Someone is pointing to a specific part
            || mb_stripos($all_page_values, 'table') !== FALSE // Someone is pointing to a specific table
            || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
@@ -592,12 +594,12 @@ final class Template {
            || (strcasecmp($all_page_values,'no') === 0 || strcasecmp($all_page_values,'none') === 0) // Is exactly "no" or "none"
            || (strpos(strtolower($all_page_values), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
            || (
-                (  str_replace($en_dash, 'X', $value) != $value) // dash in new `pages`
-                && str_replace($en_dash, 'X', $pages_value) == $pages_value // No dash already
+                (  str_replace($en_dash, $en_dash_X, $value) != $value) // dash in new `pages`
+                && str_replace($en_dash, $en_dash_X, $pages_value) == $pages_value // No dash already
               )
            || (   // Document with bogus pre-print page ranges
-                   ($value           !== '1' && substr(str_replace($en_dash, 'X', $value), 0, 2)           !== '1X') // New is not 1-
-                && ($all_page_values === '1' || substr(str_replace($en_dash, 'X', $all_page_values), 0, 2) === '1X') // Old is 1-
+                   ($value           !== '1' && substr(str_replace($en_dash, $en_dash_X, $value), 0, 2)           !== '1X') // New is not 1-
+                && ($all_page_values === '1' || substr(str_replace($en_dash, $en_dash_X, $all_page_values), 0, 2) === '1X') // Old is 1-
                 && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
               )
         ) {
