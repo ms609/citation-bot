@@ -32,7 +32,7 @@ if (php_sapi_name() !== "cli") {
 $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-$user = NULL; // Edit as user, no need to name.
+if ($api->has_user_token()) $user = NULL; // Editing as user, no need to name.
 if (is_valid_user($user)) {
   echo " Activated by $user.\n";
   $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
