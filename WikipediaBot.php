@@ -12,6 +12,8 @@ class WikipediaBot {
   
   protected $consumer, $token, $ch;
   
+  private $editToken;
+  
   function __construct() {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
       // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
@@ -387,4 +389,8 @@ class WikipediaBot {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
 
+  public function has_user_token() {
+    if (isset($this->editToken)) return TRUE;
+    return FALSE;
+  }
 }
