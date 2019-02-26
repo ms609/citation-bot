@@ -240,7 +240,6 @@ final class Template {
    *
    */
   public function add_if_new($param_name, $value, $api = NULL) {
-    echo "\n" . $param_name .  ' = ' . $value . "\n";
     $value = trim($value);
     if ($value == '') {
       return FALSE;
@@ -1648,6 +1647,7 @@ final class Template {
           $ris_authors++;
           $ris_parameter = "author$ris_authors";
           $ris_part[1] = format_author($ris_part[1]);
+          echo "\n RIS " . $ris_part[1] . "\n";
           break;
         case "Y1":
           $ris_parameter = "date";
