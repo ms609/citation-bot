@@ -24,6 +24,7 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) trigger_error("PHP_OAUTH_ACCESS_TOKEN not set", E_USER_ERROR);
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
+    $this->authenticate_user();
   }
   
   function __destruct() {
@@ -188,6 +189,7 @@ class WikipediaBot {
     
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
+    if (isset($this->editToken)) $auth_token = $this->editToken;  // User tokens
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
@@ -387,6 +389,10 @@ class WikipediaBot {
 
   public function namespace_name($id) {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
+  }
+
+  private function authenticate_user() {
+    ; // Empty stub function
   }
 
   public function has_user_token() {
