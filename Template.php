@@ -3669,7 +3669,7 @@ final class Template {
              $url .=  $part . "&" ;
              break;
           default:
-             if (getenv('TRAVIS')) trigger_error("Unexpected Google URL component:  " . $part, E_USER_NOTICE);
+             if (getenv('TRAVIS')) trigger_error("Unexpected Google URL component:  " . $part);
              $url .=  $part . "&" ;
              break;
         }
