@@ -2709,8 +2709,8 @@ final class Template {
             $this->forget($param);
           }
           // Citation templates do this automatically -- also remove if there is no url, which is template error
-          if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]'])) {
-            if ($this->blank('url') || substr($this->get('url'), -4) === '.pdf' || substr($this->get('url'), -4) === '.PDF') {
+          if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]', '[[pdf]]'])) {
+            if ($this->blank('url') || strtolower(substr($this->get('url'), -4)) === '.pdf') {
                $this->forget($param);
             }
           }
