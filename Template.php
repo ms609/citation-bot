@@ -582,6 +582,7 @@ final class Template {
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
         $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
+        $en_dash_X = ['X', 'X', 'X', 'X', 'X'];
         if (  mb_stripos($all_page_values, 'see ')  !== FALSE   // Someone is pointing to a specific part
            || mb_stripos($all_page_values, 'table') !== FALSE // Someone is pointing to a specific table
            || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
@@ -592,15 +593,31 @@ final class Template {
            || (strcasecmp($all_page_values,'no') === 0 || strcasecmp($all_page_values,'none') === 0) // Is exactly "no" or "none"
            || (strpos(strtolower($all_page_values), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
            || (
-                (  str_replace($en_dash, 'X', $value) != $value) // dash in new `pages`
-                && str_replace($en_dash, 'X', $pages_value) == $pages_value // No dash already
+                (  str_replace($en_dash, $en_dash_X, $value) != $value) // dash in new `pages`
+                && str_replace($en_dash, $en_dash_X, $pages_value) == $pages_value // No dash already
               )
            || (   // Document with bogus pre-print page ranges
-                   ($value           !== '1' && substr(str_replace($en_dash, 'X', $value), 0, 2)           !== '1X') // New is not 1-
-                && ($all_page_values === '1' || substr(str_replace($en_dash, 'X', $all_page_values), 0, 2) === '1X') // Old is 1-
+                   ($value           !== '1' && substr(str_replace($en_dash, $en_dash_X, $value), 0, 2)           !== '1X') // New is not 1-
+                && ($all_page_values === '1' || substr(str_replace($en_dash, $en_dash_X, $all_page_values), 0, 2) === '1X') // Old is 1-
                 && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
               )
         ) {
+            // One last check to see if old template had a specific page listed
+            if ($all_page_values != '' &&
+                preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?[-–—‒]+[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?$~u", $value, $newpagenos) && // Adding a range
+                preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?~u", $all_page_values, $oldpagenos)) { // Just had a single number before
+                $first_page = (int) $newpagenos[1];
+                $last_page  = (int) $newpagenos[2];
+                $old_page   = (int) $oldpagenos[1];
+                if ($old_page > $first_page && $old_page <= $last_page) {
+                  foreach (['pages', 'page', 'pp', 'p'] as $forget_blank) {
+                    if ($this->blank($forget_blank)) {
+                      $this->forget($forget_blank);
+                    }
+                  }
+                  return FALSE;
+                }
+            }
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
             if ($param_name !== "page")  $this->forget("page");
             if ($param_name !== "pp")    $this->forget("pp");
@@ -1720,7 +1737,7 @@ final class Template {
     }
     if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
     if (isset($start_page)) { // Have to do at end since might get end pages before start pages
-      if (isset($end_page)) {
+      if (isset($end_page) && ($start_page != $end_page)) {
          $this->add_if_new("pages", $start_page . '–' . $end_page);
       } else {
          $this->add_if_new("pages", $start_page);
@@ -2718,8 +2735,8 @@ final class Template {
             $this->forget($param);
           }
           // Citation templates do this automatically -- also remove if there is no url, which is template error
-          if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]'])) {
-            if ($this->blank('url') || substr($this->get('url'), -4) === '.pdf' || substr($this->get('url'), -4) === '.PDF') {
+          if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]', '[[pdf]]'])) {
+            if ($this->blank('url') || strtolower(substr($this->get('url'), -4)) === '.pdf') {
                $this->forget($param);
             }
           }
@@ -2962,7 +2979,9 @@ final class Template {
             }
           }
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches) ||
-              preg_match("~^(?:vol. |)(\d+),\s*no\.\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches)) {
+              preg_match("~^(?:vol. |)(\d+),\s*no\.\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches) ||
+              preg_match("~^(\d+)\.(\d+)$~i", trim($this->get('volume')), $matches)
+             ) {
             $possible_volume=$matches[1];
             $possible_issue=$matches[2];
             if ($this->blank(ISSUE_ALIASES)) {
