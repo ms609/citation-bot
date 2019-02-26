@@ -240,6 +240,7 @@ final class Template {
    *
    */
   public function add_if_new($param_name, $value, $api = NULL) {
+    echo "\n" . $param_name .  ' = ' . $value . "\n";
     $value = trim($value);
     if ($value == '') {
       return FALSE;
