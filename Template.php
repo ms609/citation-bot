@@ -812,13 +812,13 @@ final class Template {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'chapterurl ');
-           $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'url ');
+           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapterurl ');
+           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
            return (boolean) $return_code;
         } elseif ($this->has('url') && $this->has('chapter-url')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'chapter-url ');
-           $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'url ');
+           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapter-url ');
+           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
            return (boolean) $return_code;
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
@@ -862,7 +862,7 @@ final class Template {
           // If no URL or website, nothing to worth with.
           return FALSE;
         }
-    } elseif (preg_match('~^' . MAGIC_STRING . '(\S+) $~', $url_sent, $matches)) {
+    } elseif (preg_match('~^' . Template::MAGIC_STRING . '(\S+) $~', $url_sent, $matches)) {
       $url_sent = NULL;
       $url_type = $matches[1];
       $url      = $this->get($matches[1]);
