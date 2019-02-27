@@ -219,7 +219,7 @@ class WikipediaBot {
           . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
           . echoable($myPage->title) . '</a></span>';
         }
-        else echo "\n Written to " . echoable($myPage->title) . '.  ';
+        else echo "\n Written to " . echoable($myPage->title) . ". \n";
         return TRUE;
       } elseif (isset($result->edit->result)) {
         report_warning(echoable('Attempt to write page returned error: ' .  $result->edit->result));
