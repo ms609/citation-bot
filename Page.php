@@ -335,7 +335,7 @@ class Page {
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at);
     } else {
-      trigger_error("Can't write to " . htmlspecialchars($this->title) . 
+      trigger_e ror("Can't write to " . htmlspecialchars($this->title) . 
         " - prohibited by {{bots}} template.", E_USER_NOTICE);
       return FALSE;
     }
