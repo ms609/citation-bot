@@ -3536,7 +3536,21 @@ final class Template {
     }
   }
 
-    
+  protected function unhide($par) {
+   foreach ($this->param as $p) {
+       if ($p->param == $par . '-hidden-CITATION_BOT_PLACEHOLDER') {
+         $p->param = $par;
+       }
+     } 
+  }
+  protected function hide($par) {
+   foreach ($this->param as $p) {
+       if ($p->param == $par) {
+         $p->param = $par . '-hidden-CITATION_BOT_PLACEHOLDER';
+       }
+     } 
+  }
+  
   public function quietly_forget($par) {
     $this->forgetter($par, FALSE);
   }
