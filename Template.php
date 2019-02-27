@@ -807,25 +807,17 @@ final class Template {
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
   public function get_identifiers_from_url($url_sent = NULL) {
+    const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
        // We don't forget them, since the regular URLs will get converted for "readability"
         if ($this->has('url') && $this->has('chapterurl')) {
-           $this->hide('url');
-           $return_code += $this->get_identifiers_from_url(); // Do chapter
-           $this->unhide('url');
-           $this->hide('chapterurl');
-           $return_code += $this->get_identifiers_from_url(); // Do url
-           $this->unhide('chapterurl');
+           $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'chapterurl');
+           $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'url');
            return (boolean) $return_code;
         } elseif ($this->has('url') && $this->has('chapter-url')) {
-           $return_code = FALSE;
-           $this->hide('url');
-           $return_code += $this->get_identifiers_from_url(); // Do chapter
-           $this->unhide('url');
-           $this->hide('chapter-url');
-           $return_code += $this->get_identifiers_from_url(); // Do url
-           $this->unhide('chapter-url');
+           $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'chapter-url');
+           $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'url');
            return (boolean) $return_code;
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
@@ -872,6 +864,12 @@ final class Template {
     } else {
       $url = $url_sent;
       $url_type = NULL;
+      // Special code when doing both chapter and book urls, and want to doing template URL, not really passing in the url
+      if (preg_match('~^' . MAGIC_STRING . '(\S+)$~', $url, $matches) {
+        $url_sent = NULL;
+        $url_type = $matches[1];
+        $url      = $this->get($matches[1]);
+      }
     }
     
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
@@ -3501,21 +3499,6 @@ final class Template {
     } else {
       return $this->set($par, $val);
     }
-  }
-
-  protected function unhide($par) {
-   foreach ($this->param as $p) {
-       if ($p->param == $par . '-hidden-CITATION_BOT_PLACEHOLDER') {
-         $p->param = $par;
-       }
-     } 
-  }
-  protected function hide($par) {
-   foreach ($this->param as $p) {
-       if ($p->param == $par) {
-         $p->param = $par . '-hidden-CITATION_BOT_PLACEHOLDER';
-       }
-     } 
   }
   
   public function quietly_forget($par) {
