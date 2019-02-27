@@ -34,7 +34,7 @@ if (is_valid_user($user)) {
   echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
   $edit_summary_end = " | [[User:$user|$user]]";
 } else {
-  $edit_summary_end = " | [[WP:UCB|User-activated]].";
+  $edit_summary_end = " | [[WP:UCB|User-activated]]";
 }
 
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
@@ -42,9 +42,11 @@ $pages = (isset($argv) && isset($argv[1])) // argv set on command line
 if (!isset($ON)) $ON = isset($argv[2]);
 if (isset($_REQUEST["cat"])) {
    $cat = $_REQUEST["cat"];
-   $edit_summary_end .= " | [[Category:" . $cat . "]].";
+   $edit_summary_end .= "; [[Category:$category]].";
    $pages = $api->category_members($cat);
    shuffle($pages);
+} else {
+   $edit_summary_end .= ".";
 }
 
 foreach (explode('|', $pages) as $title) {
