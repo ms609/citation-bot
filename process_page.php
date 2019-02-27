@@ -40,6 +40,9 @@ if (is_valid_user($user)) {
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
 if (!isset($ON)) $ON = isset($argv[2]);
+if (isset($_REQUEST["category"])) {
+   $edit_summary_end .= " | [[Category:" . $_REQUEST["category"] . "]]."
+}
 
 foreach (explode('|', $pages) as $title) {
 
