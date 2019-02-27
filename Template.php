@@ -810,12 +810,13 @@ final class Template {
     const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
-       // We don't forget them, since the regular URLs will get converted for "readability"
         if ($this->has('url') && $this->has('chapterurl')) {
+           $return_code = FALSE;
            $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'chapterurl');
            $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'url');
            return (boolean) $return_code;
         } elseif ($this->has('url') && $this->has('chapter-url')) {
+           $return_code = FALSE;
            $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'chapter-url');
            $return_code += $this->get_identifiers_from_url(MAGIC_STRING . 'url');
            return (boolean) $return_code;
