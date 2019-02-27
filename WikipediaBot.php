@@ -391,7 +391,7 @@ class WikipediaBot {
   }
 
   private function authenticate_user() {
-      if (php_sapi_name() === "cli" && TRUE) return; // Not on wikipedia -- TRUE is for debugging 
+      if (php_sapi_name() === "cli" && FALSE) return; // Not on wikipedia -- FALSE is for debugging 
       if (isset( $_GET['oauth_verifier'] ) ) {
          $this->get_token();
       } else {
