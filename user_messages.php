@@ -21,7 +21,8 @@ function report_modification($text) { user_notice("  ~", "changed", $text); }
 function report_add($text) { user_notice("  +", "added", $text); }
 function report_forget($text) { user_notice("  -", "removed", $text); }
 function report_inline($text) { if (!getenv('TRAVIS')) echo " $text"; }
-
+function report_error($text) { report_warning($text); trigger_error($text, E_USER_ERROR); } // call report_warning to give users a message before we die
+  
 function quietly($function = report_info, $text) {
   if (defined('VERBOSE') || HTML_OUTPUT ) {
     $function($text);

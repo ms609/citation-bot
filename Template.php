@@ -151,7 +151,7 @@ final class Template {
   }
   
   public function api_has_used($api, $param) {
-    if (!isset($this->used_by_api[$api])) trigger_error("Invalid API: $api", E_USER_ERROR);
+    if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
     return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
@@ -1630,11 +1630,11 @@ final class Template {
       return $response;
     } catch (Exception $e) {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
-        trigger_error(sprintf("API Error in query_adsabs: %s",
-                      $e->getMessage()), E_USER_NOTICE);
+        report_warning(sprintf("API Error in query_adsabs: %s",
+                      $e->getMessage()));
       } else if (strpos($e->getMessage(), 'HTTP') === 0) {
-        trigger_error(sprintf("HTTP Error %d in query_adsabs: %s",
-                      $e->getCode(), $e->getMessage()), E_USER_NOTICE);
+        report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
+                      $e->getCode(), $e->getMessage()));
       } else {
         report_warning(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
