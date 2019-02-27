@@ -812,13 +812,53 @@ final class Template {
        // We don't forget them, since the regular URLs will get converted for "readability"
         if ($this->has('url') && $this->has('chapterurl')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url($this->get('chapterurl'));
-           $return_code += $this->get_identifiers_from_url($this->get('url'));
+    foreach ($this->param as $p) {
+      if ($p->param == 'url') {
+        $p->param = 'url-hidden-CITATION-BOT-PLACEHOLDER';
+      }
+    } 
+           $return_code += $this->get_identifiers_from_url(); // Do chapter
+    foreach ($this->param as $p) {
+      if ($p->param == 'url-hidden-CITATION-BOT-PLACEHOLDER') {
+        $p->param = 'url';
+      }
+    }
+    foreach ($this->param as $p) {
+      if ($p->param == 'chapterurl') {
+        $p->param = 'chapterurl-hidden-CITATION-BOT-PLACEHOLDER';
+      }
+    }
+           $return_code += $this->get_identifiers_from_url();  // Do url
+    foreach ($this->param as $p) {
+      if ($p->param == 'chapterurl-hidden-CITATION_BOT_PLACEHOLDER') {
+        $p->param = 'chapterurl';
+      }
+    }
            return (boolean) $return_code;
         } elseif ($this->has('url') && $this->has('chapter-url')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url($this->get('chapter-url'));
-           $return_code += $this->get_identifiers_from_url($this->get('url'));
+    foreach ($this->param as $p) {
+      if ($p->param == 'url') {
+        $p->param = 'url-hidden-CITATION_BOT_PLACEHOLDER';
+      }
+    } 
+           $return_code += $this->get_identifiers_from_url(); // Do chapter
+    foreach ($this->param as $p) {
+      if ($p->param == 'url-hidden-CITATION_BOT_PLACEHOLDER') {
+        $p->param = 'url';
+      }
+    }
+    foreach ($this->param as $p) {
+      if ($p->param == 'chapter-url') {
+        $p->param = 'chapter-url-hidden-CITATION_BOT_PLACEHOLDER';
+      }
+    }
+           $return_code += $this->get_identifiers_from_url();  // Do url
+    foreach ($this->param as $p) {
+      if ($p->param == 'chapter-url-hidden-CITATION_BOT_PLACEHOLDER') {
+        $p->param = 'chapter-url';
+      }
+    }
            return (boolean) $return_code;
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
