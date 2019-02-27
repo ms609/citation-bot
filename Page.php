@@ -335,8 +335,8 @@ class Page {
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at);
     } else {
-      trigger_error("Can't write to " . htmlspecialchars($this->title) . 
-        " - prohibited by {{bots}} template.", E_USER_NOTICE);
+      report_warning("Can't write to " . htmlspecialchars($this->title) . 
+        " - prohibited by {{bots}} template.");
       return FALSE;
     }
   }
@@ -361,7 +361,7 @@ class Page {
       }
       if ($preg_ok === FALSE) {
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.
-        trigger_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's', E_USER_ERROR);
+        report_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
       }
     }
     $this->text = $text;
