@@ -1,11 +1,9 @@
 <?php
 error_reporting(E_ALL^E_NOTICE);
 
-$category = isset($_REQUEST["cat"]) ? $_REQUEST["cat"] : NULL;
-
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-
-$slow = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : NULL;
+$category = isset($_REQUEST["cat"])  ? $_REQUEST["cat"]  : NULL;
+$user     = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
+$slow     = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : NULL;
   
 if ($category) {
   $url = "https://tools.wmflabs.org/citations/process_page.php?edit=category" .
