@@ -862,15 +862,13 @@ final class Template {
           // If no URL or website, nothing to worth with.
           return FALSE;
         }
+    } elseif (preg_match('~^' . MAGIC_STRING . '(\S+)$~', $url_sent, $matches)) {
+      $url_sent = NULL;
+      $url_type = $matches[1];
+      $url      = $this->get($matches[1]);
     } else {
       $url = $url_sent;
       $url_type = NULL;
-      // Special code when doing both chapter and book urls, and want to doing template URL, not really passing in the url
-      if (preg_match('~^' . MAGIC_STRING . '(\S+)$~', $url, $matches) {
-        $url_sent = NULL;
-        $url_type = $matches[1];
-        $url      = $this->get($matches[1]);
-      }
     }
     
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
