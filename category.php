@@ -1,91 +1,38 @@
 <?php
-@session_start();
 error_reporting(E_ALL^E_NOTICE);
-require_once('expandFns.php');
+define("HTML_OUTPUT", TRUE);
+require_once('expandFns.php');		
 $api = new WikipediaBot();
-if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
-$argument["cat"] = NULL;
-foreach ($argv as $arg) {
-  if (substr($arg, 0, 2) == "--") {
-    $argument[substr($arg, 2)] = 1;
-  } elseif (substr($arg, 0, 1) == "-") {
-    $oArg = substr($arg, 1);
-  } else {
-    switch ($oArg) {
-      case "P": case "A": case "T":
-        $argument["pages"][] = $arg;
-        break;
-      default:
-      $argument[$oArg][] = $arg;
-    }
-  }
-}
-$SLOW_MODE = FALSE;
-if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
-  $SLOW_MODE = TRUE;
-}
 
-if (php_sapi_name() !== "cli") {
-    define("HTML_OUTPUT", TRUE);// Not in cli-mode
-}
-
-$category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
+$category = isset($_REQUEST["cat"]) ? $_REQUEST["cat"] : NULL;
 
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-if (is_valid_user($user)) {
-  echo " Activated by $user.\n";
-  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
-} else {
-  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits";
-  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
-}
 
-if (HTML_OUTPUT) {
-?>
-<html>
-  <body>
-  <head>
-  <title>Citation bot: Category mode</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/results.css" />
-  </head>
-  <body>
-    <pre>
-<?php
-} else {
-  echo "\n";
-}
+$slow = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : NULL;
+  
 if ($category) {
-  $attempts = 0;
+  $api = new WikipediaBot();
   $pages_in_category = $api->category_members($category);
   shuffle($pages_in_category);
-  $page = new Page();
-  #$pages_in_category = array('User:DOI bot/Zandbox');
+  $url = "https://tools.wmflabs.org/citations/process_page.php?edit=category&slow=" . $slow . ' . "&user=" . $user . "&category=" . $category . "&page=";
   foreach ($pages_in_category as $page_title) {
-    // $page->expand_text will take care of this notice if we are in HTML mode.
-    html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
-    if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
-      report_phase("Writing to " . echoable($page_title) . '... ');
-      while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
-      // Parsed text can be viewed by diff link; don't clutter page. 
-      // print "\n\n"; safely_echo($page->parsed_text());
-      if ($attempts < 3 ) {
-        html_echo(
-        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . $api->get_last_revision($page_title) . ">diff</a>" .
-        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
-      } else {
-         report_warning("Write failed.");
-      }
-    } else {
-      report_phase($page->parsed_text() ? 'No changes required.' : 'Blank page');
-      echo "\n\n    # # # ";
-    }
+     $url = $url . urlencode($page_title) . "|";
   }
-  echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
+  header("Location: " . $url);
 } else {
-  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
+  echo '<!DOCTYPE html>';
+  echo '<html lang="en" dir="ltr">';
+  echo '<head>';
+  echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+  echo '<meta content="Smith609" name="author">';
+  echo '<meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />';
+  echo '<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />';
+  echo '<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />';
+  echo '<title>Citation bot: Category landing page</title>';
+  echo '<link rel="stylesheet" type="text/css" href="css/results.css" />';
+  echo '</head>';
+  echo '<body>';
+  echo 'You must specify a category.  Try appending ?cat=Blah+blah to the URL';
+  echo '</body></html>';
 }
-html_echo(' # # #</pre></body></html>', "\n");
-ob_end_flush(); 
 exit(0);
