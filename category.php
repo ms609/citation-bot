@@ -23,7 +23,7 @@ if ($cat) {
    <title>Citation bot: Category landing page</title>
   </head>
   <body>
-   You must specify a category.  Try appending ?cat=Blah+blah to the URL
+   You must specify a category. See <a href="https://tools.wmflabs.org/citations/">https://tools.wmflabs.org/citations/</a>
   </body>
  </html>
 <?php
