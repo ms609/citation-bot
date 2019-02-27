@@ -42,7 +42,7 @@ $pages = (isset($argv) && isset($argv[1])) // argv set on command line
 if (!isset($ON)) $ON = isset($argv[2]);
 if (isset($_REQUEST["cat"])) {
    $cat = $_REQUEST["cat"];
-   $edit_summary_end .= " | [[Category:" . $cat . "]]."
+   $edit_summary_end .= " | [[Category:" . $cat . "]].";
    $pages = $api->category_members($cat);
    shuffle($pages);
 }
