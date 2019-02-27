@@ -11,7 +11,6 @@ $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 $slow = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : NULL;
   
 if ($category) {
-  $api = new WikipediaBot();
   $pages_in_category = $api->category_members($category);
   shuffle($pages_in_category);
   $url = "https://tools.wmflabs.org/citations/process_page.php?edit=category&slow=" . $slow . ' . "&user=" . $user . "&category=" . $category . "&page=";
