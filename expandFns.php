@@ -45,7 +45,7 @@ define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
-   $ON = TRUE;		
+  $ON = TRUE;		
 }
 
 ################ Functions ##############
