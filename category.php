@@ -1,13 +1,12 @@
 <?php
 error_reporting(E_ALL^E_NOTICE);
 
-$cat  = isset($_REQUEST["cat"])  ? $_REQUEST["cat"]  : NULL;
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-$slow = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : NULL;
+$cat  = isset($_REQUEST["cat"])  ? "&cat="  . $_REQUEST["cat"]  : "";
+$user = isset($_REQUEST["user"]) ? "&user=" . $_REQUEST["user"] : "";
+$slow = isset($_REQUEST["slow"]) ? "&slow=" . $_REQUEST["slow"] : "";
   
 if ($cat) {
-  $url = "https://tools.wmflabs.org/citations/process_page.php?edit=category" .
-    "&slow=" . $slow . "&user=" . $user . "&cat=" . $cat;
+  $url = "https://tools.wmflabs.org/citations/process_page.php?edit=category" . $slow . $user . $cat;
   header("Location: " . $url);
 } else {
   echo '<!DOCTYPE html>';
