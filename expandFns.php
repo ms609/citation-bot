@@ -44,7 +44,9 @@ ini_set("memory_limit", "256M");
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
-$ON = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : NULL;
+if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
+   $ON = TRUE;		
+}
 
 ################ Functions ##############
 
