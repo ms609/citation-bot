@@ -512,11 +512,11 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testOpenAccessLookup() {
-    $text = '{{cite journal|doi=10.1206/0003-0082(2008)3610[1:nrofwf]2.0.co;2}}';
+    $text = '{{cite journal|doi=10.1145/321850.321852}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('10.1.1.1001.5321', $expanded->get('citeseerx'));
-    $this->assertEquals('2008', $expanded->get('year')); // DOI does work though
-      
+    $this->assertEquals('10.1.1.419.9787', $expanded->get('citeseerx'));
+    $this->assertEquals('2008', $expanded->get('1974')); // DOI does work though
+   
    // $text = '{{cite journal | vauthors = Bjelakovic G, Nikolova D, Gluud LL, Simonetti RG, Gluud C | title = Antioxidant supplements for prevention of mortality in healthy participants and patients with various diseases | journal = The Cochrane Database of Systematic Reviews | volume = 3 | issue = 3 | pages = CD007176 | date = 14 March 2012 | pmid = 22419320 | doi = 10.1002/14651858.CD007176.pub2 }}';
    // $expanded = $this->process_citation($text);
    // $this->assertNotNull($expanded->get('url')); // currently gives a url 
