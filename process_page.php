@@ -37,8 +37,6 @@ if (is_valid_user($user)) {
   $edit_summary_end = " | [[WP:UCB|User-activated]]";
 }
 
-$pages = (isset($argv) && isset($argv[1])) // argv set on command line
-       ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
 if (!isset($ON)) $ON = isset($argv[2]);
 if (isset($_REQUEST["cat"])) {
    $cat = $_REQUEST["cat"];
@@ -46,6 +44,8 @@ if (isset($_REQUEST["cat"])) {
    $pages = $api->category_members($cat);
    shuffle($pages);
 } else {
+   $pages = (isset($argv) && isset($argv[1])) // argv set on command line
+       ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
    $edit_summary_end .= ".";
 }
 
