@@ -41,7 +41,10 @@ $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
 if (!isset($ON)) $ON = isset($argv[2]);
 if (isset($_REQUEST["category"])) {
-   $edit_summary_end .= " | [[Category:" . $_REQUEST["category"] . "]]."
+   $category = $_REQUEST["category"];
+   $edit_summary_end .= " | [[Category:" . $category . "]]."
+   $pages = $api->category_members($category);
+   shuffle($pages);
 }
 
 foreach (explode('|', $pages) as $title) {
