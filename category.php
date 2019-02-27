@@ -13,7 +13,7 @@ $slow = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : NULL;
 if ($category) {
   $pages_in_category = $api->category_members($category);
   shuffle($pages_in_category);
-  $url = "https://tools.wmflabs.org/citations/process_page.php?edit=category&slow=" . $slow . ' . "&user=" . $user . "&category=" . $category . "&page=";
+  $url = "https://tools.wmflabs.org/citations/process_page.php?edit=category&slow=" . $slow . "&user=" . $user . "&category=" . $category . "&page=";
   foreach ($pages_in_category as $page_title) {
      $url = $url . urlencode($page_title) . "|";
   }
