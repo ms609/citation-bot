@@ -3500,8 +3500,8 @@ final class Template {
       return $this->set($par, $val);
     }
   }
-  
-          
+
+
   public function quietly_forget($par) {
     $this->forgetter($par, FALSE);
   }
