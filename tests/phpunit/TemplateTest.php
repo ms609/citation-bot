@@ -480,7 +480,16 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertEquals('Cite arXiv', $expanded->name());
   }
-  
+ 
+  public function testTwoUrls() {
+    $text = '{{citation|url=http://jstor.org/stable/333111333|chapter-url=http://adsabs.harvard.edu/abs/2222NatSR...814768S}}'; // Both fake
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('333111333', $expanded->get('jstor'));
+    $this->assertEquals('2222NatSR...814768S', $expanded->get('bibcode'));
+    $this->assertNull($expanded->get('url'));
+    $this->assertNull($expanded->get('chapter-url'));
+  }
+
   public function testBrokenDoiDetection() {
     $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
     $expanded = $this->process_citation($text);

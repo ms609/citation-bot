@@ -15,10 +15,14 @@ $editSummary = $_POST['summary'];
 //Expand text from postvars
 $page = new Page();
 $page->parse_text($originalText);
-$page->expand_text();
+if ($page->expand_text()) {
+  $newText = $page->parsed_text();
+} else {
+  $newText = $orignalText; // something went wrong
+}
 
 //Modify edit summary to identify bot-assisted edits
-if ($page->parsed_text() !== $originalText) {
+if ($newText !== $originalText) {
   $UCB_Assisted = "[[WP:UCB|Assisted by Citation bot]]";
   if (mb_substr(trim($editSummary),-mb_strlen($UCB_Assisted)) !== $UCB_Assisted ){
     if ($editSummary) {
@@ -37,7 +41,7 @@ if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
 }
 
 $result = array(
-  'expandedtext' => $page->parsed_text(),
+  'expandedtext' => $newText,
   'editsummary' => $editSummary,
   'debug' => $debug_text,
 );

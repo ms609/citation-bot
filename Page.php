@@ -131,6 +131,7 @@ class Page {
     $preformated = $this->extract_object('Preformated');
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
+      $this->text = $this->start_text; // undo it
       return FALSE;
     }
 
