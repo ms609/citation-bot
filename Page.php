@@ -204,11 +204,14 @@ class Page {
         $this_template->prepare();
       } elseif (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
         $all_templates[$i]->get_identifiers_from_url();
-      } elseif ($all_templates[$i]->wikiname() == 'cite magazine' 
-                 && $all_templates[$i]->blank('magazine') 
-                 && $all_templates[$i]->has('work')) {
+      } elseif ($all_templates[$i]->wikiname() == 'cite magazine') {
         // This is all we do with cite magazine
-        $all_templates[$i]->rename('work', 'magazine');
+        if ($all_templates[$i]->blank('magazine') && $all_templates[$i]->has('work')) {
+            $all_templates[$i]->rename('work', 'magazine');
+        }
+        if ($all_templates[$i]->has('magazine')) {
+          $all_templates[$i]->set('magazine', straighten_quotes(trim($all_templates[$i]->get('magazine'))));
+        }
       }
     }
     
