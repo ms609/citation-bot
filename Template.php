@@ -18,6 +18,7 @@ final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
+  const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
   public $date_style = DATES_WHATEVER;  // Will get from the page
   protected $rawtext;
@@ -809,16 +810,15 @@ final class Template {
   public function get_identifiers_from_url($url_sent = NULL) {
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
-       // We don't forget them, since the regular URLs will get converted for "readability"
         if ($this->has('url') && $this->has('chapterurl')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url($this->get('chapterurl'));
-           $return_code += $this->get_identifiers_from_url($this->get('url'));
+           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapterurl ');
+           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
            return (boolean) $return_code;
         } elseif ($this->has('url') && $this->has('chapter-url')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url($this->get('chapter-url'));
-           $return_code += $this->get_identifiers_from_url($this->get('url'));
+           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapter-url ');
+           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
            return (boolean) $return_code;
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
@@ -862,6 +862,10 @@ final class Template {
           // If no URL or website, nothing to worth with.
           return FALSE;
         }
+    } elseif (preg_match('~^' . Template::MAGIC_STRING . '(\S+) $~', $url_sent, $matches)) {
+      $url_sent = NULL;
+      $url_type = $matches[1];
+      $url      = $this->get($matches[1]);
     } else {
       $url = $url_sent;
       $url_type = NULL;
