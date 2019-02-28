@@ -23,7 +23,8 @@ if ($page->expand_text()) {
 
 //Modify edit summary to identify bot-assisted edits
 if ($newText !== $originalText) {
-    $editSummary .=  ' | ' . $page->edit_summary();
+  if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
+  $editSummary .=  $page->edit_summary() . ' ';
 } elseif (!$editSummary) {
   $editSummary = "";
 }
