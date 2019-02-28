@@ -2953,7 +2953,15 @@ final class Template {
               $this->forget('via');
             } elseif (stripos($this->get('via'), 'JSTOR') !== FALSE && $this->has('jstor')) {
               $this->forget('via');
-            }
+            } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
+              if ((stripos($this->get('via'), 'Project MUSE') !== FALSE) ||
+                  (stripos($this->get('via'), 'Wiley') !== FALSE) ||
+                  (stripos($this->get('via'), 'springer') !== FALSE) ||
+                  (stripos($this->get('via'), 'elsevier') !== FALSE)
+              ) { 
+                $this->forget('via');
+              }
+            } 
           }
           return;
         case 'volume':
