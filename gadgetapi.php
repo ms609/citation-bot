@@ -23,13 +23,7 @@ if ($page->expand_text()) {
 
 //Modify edit summary to identify bot-assisted edits
 if ($newText !== $originalText) {
-  $UCB_Assisted = "Assisted by [[WP:UCB|Citation bot]], Report any [[WP:DBUG|bugs]].";
-  if (mb_substr(trim($editSummary),-mb_strlen($UCB_Assisted)) !== $UCB_Assisted ){
-    if ($editSummary) {
-      $editSummary .= " | ";
-    }
-    $editSummary .= $UCB_Assisted;
-  }
+    $editSummary .= $page->edit_summary();
 } elseif (!$editSummary) {
   $editSummary = "";
 }
