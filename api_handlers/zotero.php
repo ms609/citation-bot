@@ -254,11 +254,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       }
     }
     if ($result->extra !== '') {
-        if (getenv('TRAVIS')) {
-          trigger_error("Unhandled extra data: " . $result->extra);
-        } else {
-          report_warning("Unhandled extra data: " . $result->extra);
-        }
+      report_minor_error("Unhandled extra data: " . $result->extra);
     }
   } 
   
@@ -363,11 +359,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         
         break; // Could be a journal article or a genuine web page.
       default:
-        if (getenv('TRAVIS')) {
-          trigger_error("Unhandled itemType: " . $result->itemType . " for $url");
-        } else {
-          report_warning("Unhandled itemType: " . $result->itemType . " for $url");
-        } // see https://www.mediawiki.org/wiki/Citoid/itemTypes
+        report_minor_error("Unhandled itemType: " . $result->itemType . " for $url"); // see https://www.mediawiki.org/wiki/Citoid/itemTypes
     }
     
     $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
@@ -389,11 +381,7 @@ function expand_by_zotero(&$template, $url = NULL) {
               $authorParam = 'translator' . ++$translator_i;
               break;
             default:
-              if (getenv('TRAVIS')) {
-                trigger_error("Unrecognized creator type: " . $creatorType);
-              } else {
-                report_warning("Unrecognised creator type: " . $creatorType);
-              }
+              report_minor_error("Unrecognized creator type: " . $creatorType);
           }
           $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
                                       isset($result->rights) ? $result->rights : '');
