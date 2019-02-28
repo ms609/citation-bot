@@ -712,6 +712,9 @@ final class Template {
         if ($value === 0 || $value === "PMC0" || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
+          if ($this->blank('pmid')) {
+            $this->expand_by_pubmed(TRUE); // Almost always can get a PMID (it is rare not too)
+          }
           return TRUE;
         }
         return FALSE;
