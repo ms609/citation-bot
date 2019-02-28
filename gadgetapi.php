@@ -17,7 +17,7 @@ $page = new Page();
 $page->parse_text($originalText);
 $page->expand_text();
 $newText = $page->parsed_text();
-if ($newText == "") $newText = $originalText;
+if ($newText == "") exit(0); // Something went very wrong
 
 //Modify edit summary to identify bot-assisted edits
 if ($newText !== $originalText) {
