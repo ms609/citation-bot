@@ -51,6 +51,9 @@ final class Template {
       $this->param = NULL;
     }
     $this->initial_name = $this->name;
+    // Clean up outdated redirects
+    if ($this->name === 'cite') $this->name = 'citation';
+    if ($this->name === 'Cite') $this->name = 'Citation';
 
     // extract initial parameters/values from Parameters in $this->param
     if ($this->param) foreach ($this->param as $p) {
@@ -2588,9 +2591,7 @@ final class Template {
   }
   
   public function wikiname() {
-    $wikiname = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
-    if ($wikiname === 'cite') $wikiname = 'citation';
-    return $wikiname;
+    return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
   }
   
   public function should_be_processed() {
