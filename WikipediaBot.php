@@ -391,52 +391,32 @@ class WikipediaBot {
   }
 
   private function authenticate_user() {
-      if (php_sapi_name() === "cli" && FALSE) return; // Not on wikipedia -- FALSE is for debugging 
+      if (php_sapi_name() === "cli" && FALSE) return; // Not on wikipedia -- FALSE is there for debugging, so code always runs
+
+      $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
+      $conf->setConsumer($this->consumer);  // our current token does not allow this, and needs upgraded
+      $client = new Client($conf);
       if (isset( $_GET['oauth_verifier'] ) ) {
-         $this->get_token();
+        $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
+        $_SESSION['access_key'] = $accessToken->key;
+        $_SESSION['access_secret'] = $accessToken->secret;
+        $this->editToken = json_decode( $client->makeOAuthCall(
+           	$accessToken,
+      	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
+         ) )->query->tokens->csrftoken;
+        unset( $_SESSION['request_key'], $_SESSION['request_secret'] ); // No longer needed
       } else {
-         $this->authorize_token(); // Will call exit(), and hope that user comes back with tokens
+        list( $authUrl, $token ) = $client->initiate();
+        // Store the Request Token in the session. We will retrieve it from there when the user is sent back
+        $_SESSION['request_key'] = $token->key;
+        $_SESSION['request_secret'] = $token->secret;
+        // Redirect the user to the authorization URL.
+        @header("Location: https://meta.wikimedia.org/w/index.php?title=Special:OAuth"); // Automatic, but requires that no HTML has been sent
+        echo "<br />Go to this URL to <a href='https://meta.wikimedia.org/w/index.php?title=Special:OAuth'>authorize citation bot</a>"; // Manual too
+        exit(0);
       }
    }
 
-   private function get_token() {
-     // Get the Request Token's details from the session and create a new Token object.
-     $requestToken = new Token( $_SESSION['request_key'], $_SESSION['request_secret'] );
-     // Send an HTTP request to the wiki to retrieve an Access Token.
-     $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
-     $conf->setConsumer($this->consumer);  // This is not correct: our token does not allow this, and needs upgraded
-     $client = new Client($conf);
-     $accessToken = $client->complete( $requestToken,  $_GET['oauth_verifier'] );
-     // At this point, the user is authenticated, and the access token can be used
-     $_SESSION['access_key'] = $accessToken->key;
-     $_SESSION['access_secret'] = $accessToken->secret;
-     //   get the authenticated user's identity.
-     $ident = $client->identify( $accessToken );
-     // Note: user's name is stored in $ident->username;
-     // get the authenticated user's edit token.
-     $this->editToken = json_decode( $client->makeOAuthCall(
-      	$accessToken,
-      	'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
-     ) )->query->tokens->csrftoken;
-     unset( $_SESSION['request_key'], $_SESSION['request_secret'] ); // No longer needed
-   }
-  
-   private function authorize_token() {
-     // Send an HTTP request to the wiki to get the authorization URL and a Request Token.
-     $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
-     $conf->setConsumer($this->consumer);  // Is this correct, or do we need a new token?
-     $client = new Client($conf);
-     // These are returned together as two elements in an array (with keys 0 and 1).
-     list( $authUrl, $token ) = $client->initiate();
-     // Store the Request Token in the session. We will retrieve it from there when the user is sent back from the wiki
-     $_SESSION['request_key'] = $token->key;
-     $_SESSION['request_secret'] = $token->secret;
-     // Redirect the user to the authorization URL.
-     @header("Location: https://meta.wikimedia.org/w/index.php?title=Special:OAuth"); // Automatic, but assumes that no HTML has been sent
-     echo "<br />Go to this URL to <a href='https://meta.wikimedia.org/w/index.php?title=Special:OAuth'>authorize citation bot</a>"; // Manual too
-     exit();
-   }
-  
    public function has_user_token() {
      if (isset($this->editToken)) return TRUE;
      return FALSE;
