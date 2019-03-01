@@ -393,7 +393,7 @@ class WikipediaBot {
   private function authenticate_user() {
       if (!HTML_OUTPUT) return;
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
-      $conf->setConsumer($this->consumer);  // our current token does not allow this, and needs upgraded
+      $conf->setConsumer($this->consumer);
       $client = new Client($conf);
       if (isset( $_GET['oauth_verifier'] ) ) {
         $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
