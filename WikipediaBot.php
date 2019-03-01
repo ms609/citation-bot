@@ -391,8 +391,7 @@ class WikipediaBot {
   }
 
   private function authenticate_user() {
-      if (php_sapi_name() === "cli" && FALSE) return; // Not on wikipedia -- FALSE is there for debugging, so code always runs
-
+      if (!HTML_OUTPUT) return;
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
       $conf->setConsumer($this->consumer);  // our current token does not allow this, and needs upgraded
       $client = new Client($conf);
