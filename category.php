@@ -1,9 +1,7 @@
 <?php
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
-if (php_sapi_name() !== "cli") {
-    define("HTML_OUTPUT", TRUE);// Not in cli-mode
-}
+define("HTML_OUTPUT", !isset($argv));
 require_once('expandFns.php');
 $api = new WikipediaBot();
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
