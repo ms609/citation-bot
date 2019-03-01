@@ -1,6 +1,9 @@
 <?php
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
+if (php_sapi_name() !== "cli") {
+    define("HTML_OUTPUT", TRUE);// Not in cli-mode
+}
 require_once('expandFns.php');
 $api = new WikipediaBot();
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
@@ -23,10 +26,6 @@ foreach ($argv as $arg) {
 $SLOW_MODE = FALSE;
 if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
-}
-
-if (php_sapi_name() !== "cli") {
-    define("HTML_OUTPUT", TRUE);// Not in cli-mode
 }
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
