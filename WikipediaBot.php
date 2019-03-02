@@ -8,11 +8,9 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-class WikipediaBot {
+final class WikipediaBot {
   
-  protected $consumer, $token, $ch;
-
-  private $editToken;
+  protected $consumer, $token, $ch, $userEditToken;
   
   function __construct() {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
@@ -188,7 +186,7 @@ class WikipediaBot {
     
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
-    if (isset($this->editToken)) $auth_token = $this->editToken;  // User tokens
+    if (isset($this->userEditToken)) $auth_token = $this->userEditToken;  // User tokens
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
@@ -399,7 +397,7 @@ class WikipediaBot {
         $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
-        $this->editToken = json_decode( $client->makeOAuthCall(
+        $this->userEditToken = json_decode( $client->makeOAuthCall(
            	$accessToken,
       	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
          ) )->query->tokens->csrftoken;
@@ -417,7 +415,7 @@ class WikipediaBot {
    }
 
    public function has_user_token() {
-     if (isset($this->editToken)) return TRUE;
+     if (isset($this->userEditToken)) return TRUE;
      return FALSE;
    }
 
