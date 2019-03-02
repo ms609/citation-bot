@@ -405,7 +405,8 @@ final class WikipediaBot {
            	$accessToken,
       	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
          ) )->query->tokens->csrftoken;
-         $_SESSION['citation_bot_user_key'] = $this->userEditToken;
+        $_SESSION['citation_bot_user_key'] = $this->userEditToken;
+        unset($_SESSION['request_key']);unset($_SESSION['request_secret']);unset($_SESSION['access_key']);unset($_SESSION['access_secret']);
       } else {
         list( $authUrl, $token ) = $client->initiate();
         $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
