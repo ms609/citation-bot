@@ -390,23 +390,28 @@ final class WikipediaBot {
 
   private function authenticate_user() {
       if (!HTML_OUTPUT) return;
-      if (isset($_SESSION['citation_bot_user_key'])) {
-        $this->userEditToken = $_SESSION['citation_bot_user_key'];
+      // Existing Access Grant
+      if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
+        $this->userEditToken = json_decode( $client->makeOAuthCall(
+           	new Token($_SESSION['access_key'], $_SESSION['access_secret']),
+      	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
+         ) )->query->tokens->csrftoken;
         return;
       }
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
       $conf->setConsumer($this->consumer);
       $client = new Client($conf);
+      // New Incoming Access Grant
       if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($_SESSION['request_secret']) ) {
         $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
+        unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
         $this->userEditToken = json_decode( $client->makeOAuthCall(
            	$accessToken,
       	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
          ) )->query->tokens->csrftoken;
-        $_SESSION['citation_bot_user_key'] = $this->userEditToken;
-        unset($_SESSION['request_key']);unset($_SESSION['request_secret']);unset($_SESSION['access_key']);unset($_SESSION['access_secret']);
+      // Needs an access grant
       } else {
         list( $authUrl, $token ) = $client->initiate();
         $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
