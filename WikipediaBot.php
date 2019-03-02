@@ -395,7 +395,7 @@ final class WikipediaBot {
       $client = new Client($conf);
       if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
         $accessToken = new Token();
-        $accessToken-> = $_SESSION['request_key'];
+        $accessToken->key = $_SESSION['access_key'];
         $accessToken->secret = $_SESSION['access_secret'];
         $this->userEditToken = json_decode( $client->makeOAuthCall(
            	$accessToken,
