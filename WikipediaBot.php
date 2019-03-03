@@ -389,7 +389,8 @@ final class WikipediaBot {
   }
 
   private function authenticate_user() {
-      if (!HTML_OUTPUT) return;
+    if (!HTML_OUTPUT) return;
+    try { 
       // Existing Access Grant
       if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
         $this->userEditToken = json_decode( $client->makeOAuthCall(
@@ -421,11 +422,24 @@ final class WikipediaBot {
         echo "<br />Go to this URL to <a href='https://meta.wikimedia.org/w/index.php?title=Special:OAuth'>authorize citation bot</a>";
         exit(0);
       }
-   }
+    }
+    catch (Throwable $t) // PHP 7
+    {
+      @session_destroy();
+      echo "<br />Error authenticating"
+      exit(0);
+    }
+    catch (Exception $e) // PHP 5
+    {
+      @session_destroy();
+      echo "<br />Error authenticating"
+      exit(0);
+    }
+  }
 
-   public function has_user_token() {
-     if (isset($this->userEditToken)) return TRUE;
-     return FALSE;
-   }
+  public function has_user_token() {
+    if (isset($this->userEditToken)) return TRUE;
+    return FALSE;
+  }
 
 }
