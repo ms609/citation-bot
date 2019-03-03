@@ -389,7 +389,7 @@ final class WikipediaBot {
   }
 
   private function authenticate_user() {
-    if (!HTML_OUTPUT) return;
+    if (!HTML_OUTPUT && FALSE) return; // && FALSE is for TRAVIS DEBUG
     try {
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
       $conf->setConsumer($this->consumer);
