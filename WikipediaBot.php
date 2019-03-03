@@ -408,6 +408,7 @@ final class WikipediaBot {
         $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
+        setcookie(session_name(),session_id(),time()+(365*24*3600)); // We choose a one year duration
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
         echo "Authorization Success.  Future requests should just work now.";
         exit(0);
