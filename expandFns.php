@@ -6,6 +6,10 @@
 */
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
+ini_set('session.cookie_httponly', 1);  // Prevents javascript XSS attacks aimed to steal the session ID
+ini_set('session.use_only_cookies', 1); // Session ID cannot be passed through URLs, so people cannont share/bookmark them
+ini_set('session.cookie_secure', 1);    // Uses a secure connection (HTTPS) if possible
+
 include_once("./vendor/autoload.php");
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
