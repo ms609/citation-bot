@@ -25,9 +25,9 @@ final class constantsTest extends testBaseClass {
     $this->assertEquals(count(LC_SMALL_WORDS), count(UC_SMALL_WORDS));
     for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
       // Verify that they match
-      if (substr_count(UC_SMALL_WORDS[$i], ' ') === 2) {
+      if (substr_count(UC_SMALL_WORDS[$i], ' ') === 2 && substr_count(UC_SMALL_WORDS[$i], '&') === 0) {
         $this->assertEquals(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
-      } else {  // Weaker test for things with internal spaces
+      } else {  // Weaker test for things with internal spaces or an & symbol (PHP 7.3 and 5.6 treat & differently)
         $this->assertEquals(strtolower(UC_SMALL_WORDS[$i]), strtolower(LC_SMALL_WORDS[$i]));
       }
       // Verify that they are padded with a space
