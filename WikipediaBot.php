@@ -421,8 +421,8 @@ final class WikipediaBot {
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
       $_SESSION['request_secret'] = $token->secret;
       // Redirect the user to the authorization URL (only works if NO html has been sent).  Include non-header just in case
-      @header("Location: https://meta.wikimedia.org/w/index.php?title=Special:OAuth");
-      echo "<br />Go to this URL to <a href='https://meta.wikimedia.org/w/index.php?title=Special:OAuth'>authorize citation bot</a>";
+      @header("Location: $authUrl");
+      echo "<br />Go to this URL to <a href='$authUrl'>authorize citation bot</a>";
       exit(0);
     }
     // Something went wrong.  Blow it all away.
