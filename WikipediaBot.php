@@ -409,13 +409,14 @@ final class WikipediaBot {
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
-        $this->userEditToken = json_decode( $client->makeOAuthCall(
-           	$accessToken,
-      	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
-         ) )->query->tokens->csrftoken;
-         return;
+        echo "Authorization Success.  Future requests should just work now.";
+        exit(0);
       }
-      // Needs an access grant from scratch
+      // New Incoming Access Grant without SESSION.  Throw exeption to avoid possible infinite loop.
+      if (isset($_GET['oauth_verifier'])) {
+        throw new Exception("OAuth Verification without Session Key/Secret");
+      }
+      // Nothing found.  Needs an access grant from scratch
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
       $_SESSION['request_secret'] = $token->secret;
