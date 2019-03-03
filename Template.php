@@ -2981,7 +2981,7 @@ final class Template {
             }
           }
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches) ||
-              preg_match("~^(?:vol. |)(\d+),\s*no\.\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches) ||
+              preg_match("~^(?:vol. |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", trim($this->get('volume')), $matches)
              ) {
             $possible_volume=$matches[1];
