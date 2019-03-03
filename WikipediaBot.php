@@ -412,6 +412,7 @@ final class WikipediaBot {
            	$accessToken,
       	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
          ) )->query->tokens->csrftoken;
+         return;
       // Needs an access grant
       } else {
         list( $authUrl, $token ) = $client->initiate();
@@ -423,18 +424,11 @@ final class WikipediaBot {
         exit(0);
       }
     }
-    catch (Throwable $t) // PHP 7
-    {
-      @session_destroy();
-      echo "<br />Error authenticating";
-      exit(0);
-    }
-    catch (Exception $e) // PHP 5
-    {
-      @session_destroy();
-      echo "<br />Error authenticating";
-      exit(0);
-    }
+    catch (Throwable $t) { ; } // PHP 7
+    catch (Exception $e) { ; } // PHP 5
+    @session_destroy();
+    echo "<br />Error authenticating";
+    exit(0);
   }
 
   public function has_user_token() {
