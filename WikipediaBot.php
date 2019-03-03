@@ -390,30 +390,25 @@ final class WikipediaBot {
 
   private function authenticate_user() {
     if (!HTML_OUTPUT && FALSE) return; // && FALSE is for TRAVIS DEBUG
-    if (stristr($_SERVER["REQUEST_URI"], '-dev') !== FALSE) {
-      $bot_version = 'citation_bot_dev_';
-    } else {
-      $bot_version = 'citation_bot_';
-    }
     try {
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
       $conf->setConsumer($this->consumer);
       $client = new Client($conf);
       
       // Existing Access Grant
-      if (isset($_SESSION[$bot_version . 'access_key']) && isset($_SESSION[$bot_version . 'access_secret'])) {
+      if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
         $this->userEditToken = json_decode( $client->makeOAuthCall(
-           	new Token($_SESSION[$bot_version . 'access_key'], $_SESSION[$bot_version . 'access_secret']),
+           	new Token($_SESSION['access_key'], $_SESSION['access_secret']),
       	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
          ) )->query->tokens->csrftoken;
         return;
       }
       // New Incoming Access Grant
-      if (isset($_GET['oauth_verifier']) && isset($_SESSION[$bot_version . 'request_key']) && isset($_SESSION[$bot_version . 'request_secret']) ) {
-        $accessToken = $client->complete(new Token($_SESSION[$bot_version . 'request_key'], $_SESSION[$bot_version . 'request_secret']), $_GET['oauth_verifier']);
-        $_SESSION[$bot_version . 'access_key'] = $accessToken->key;
-        $_SESSION[$bot_version . 'access_secret'] = $accessToken->secret;
-        unset($_SESSION[$bot_version . 'request_key']);unset($_SESSION[$bot_version . 'request_secret']);
+      if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($_SESSION['request_secret']) ) {
+        $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
+        $_SESSION['access_key'] = $accessToken->key;
+        $_SESSION['access_secret'] = $accessToken->secret;
+        unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
         echo "Authorization Success.  Future requests should just work now.";
         exit(0);
       }
@@ -423,8 +418,8 @@ final class WikipediaBot {
       }
       // Nothing found.  Needs an access grant from scratch
       list( $authUrl, $token ) = $client->initiate();
-      $_SESSION[$bot_version . 'request_key'] = $token->key; // We will retrieve these from session when the user is sent back
-      $_SESSION[$bot_version . 'request_secret'] = $token->secret;
+      $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
+      $_SESSION['request_secret'] = $token->secret;
       // Redirect the user to the authorization URL (only works if NO html has been sent).  Include non-header just in case
       @header("Location: $authUrl");
       echo "<br />Go to this URL to <a href='$authUrl'>authorize citation bot</a>";
