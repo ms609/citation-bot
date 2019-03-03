@@ -390,7 +390,11 @@ final class WikipediaBot {
 
   private function authenticate_user() {
     if (!HTML_OUTPUT) return;
-    try { 
+    try {
+      $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
+      $conf->setConsumer($this->consumer);
+      $client = new Client($conf);
+      
       // Existing Access Grant
       if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
         $this->userEditToken = json_decode( $client->makeOAuthCall(
@@ -399,9 +403,6 @@ final class WikipediaBot {
          ) )->query->tokens->csrftoken;
         return;
       }
-      $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
-      $conf->setConsumer($this->consumer);
-      $client = new Client($conf);
       // New Incoming Access Grant
       if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($_SESSION['request_secret']) ) {
         $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
@@ -413,21 +414,21 @@ final class WikipediaBot {
       	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
          ) )->query->tokens->csrftoken;
          return;
-      // Needs an access grant
-      } else {
-        list( $authUrl, $token ) = $client->initiate();
-        $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
-        $_SESSION['request_secret'] = $token->secret;
-        // Redirect the user to the authorization URL (only works if NO html has been sent).  Include non-header just in case
-        @header("Location: https://meta.wikimedia.org/w/index.php?title=Special:OAuth");
-        echo "<br />Go to this URL to <a href='https://meta.wikimedia.org/w/index.php?title=Special:OAuth'>authorize citation bot</a>";
-        exit(0);
       }
+      // Needs an access grant from scratch
+      list( $authUrl, $token ) = $client->initiate();
+      $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
+      $_SESSION['request_secret'] = $token->secret;
+      // Redirect the user to the authorization URL (only works if NO html has been sent).  Include non-header just in case
+      @header("Location: https://meta.wikimedia.org/w/index.php?title=Special:OAuth");
+      echo "<br />Go to this URL to <a href='https://meta.wikimedia.org/w/index.php?title=Special:OAuth'>authorize citation bot</a>";
+      exit(0);
     }
+    // Something went wrong.  Blow it all away.
     catch (Throwable $t) { ; } // PHP 7
     catch (Exception $e) { ; } // PHP 5
     @session_destroy();
-    echo "<br />Error authenticating";
+    echo "<br />Error authenticating.  Resetting.";
     exit(0);
   }
 
