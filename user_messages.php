@@ -5,7 +5,7 @@ function html_echo($text, $alternate_text='') {
 }
 
 function user_notice($symbol, $class, $text) {
-  if (TRUE)) {
+  if (TRUE) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
   }
