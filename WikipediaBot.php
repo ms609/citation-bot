@@ -426,13 +426,13 @@ final class WikipediaBot {
     catch (Throwable $t) // PHP 7
     {
       @session_destroy();
-      echo "<br />Error authenticating"
+      echo "<br />Error authenticating";
       exit(0);
     }
     catch (Exception $e) // PHP 5
     {
       @session_destroy();
-      echo "<br />Error authenticating"
+      echo "<br />Error authenticating";
       exit(0);
     }
   }
