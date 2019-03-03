@@ -425,12 +425,12 @@ final class WikipediaBot {
       exit(0);
     }
     // Something went wrong.  Blow it all away.
-    catch (Throwable $t) { ; } // PHP 7
+    catch (Throwable $e) { ; } // PHP 7
     catch (Exception $e) { ; } // PHP 5
     @session_destroy();
-    echo "<br />Error authenticating.  Resetting.";
-    trigger_error('Error authenticating.  Resetting');
-    exit('Error authenticating.  Resetting');
+    html_echo("<br />Error authenticating.  Resetting.  Please try again.");
+    trigger_error($e->getMessage());
+    exit(0); // Should not get here
   }
 
   public function has_user_token() {
