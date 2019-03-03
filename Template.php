@@ -2615,6 +2615,10 @@ final class Template {
         $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
       }
     }
+    if (preg_match("~^[\'\"]([^\'\"]+)[\'\"]$~u", $this->get($param), $matches)) {
+      $this->set($param, $matches[1]); // Remove quotes, if only at start and end
+    }
+        
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
