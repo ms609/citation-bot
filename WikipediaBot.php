@@ -429,7 +429,8 @@ final class WikipediaBot {
     catch (Exception $e) { ; } // PHP 5
     @session_destroy();
     echo "<br />Error authenticating.  Resetting.";
-    exit(0);
+    trigger_error('Error authenticating.  Resetting');
+    exit('Error authenticating.  Resetting');
   }
 
   public function has_user_token() {
