@@ -521,6 +521,7 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testOpenAccessLookup() {
+   
    // $text = '{{cite journal|doi=10.1145/321850.321852}}';
    // $expanded = $this->process_citation($text);
    // $this->assertEquals('10.1.1.419.9787', $expanded->get('citeseerx'));
