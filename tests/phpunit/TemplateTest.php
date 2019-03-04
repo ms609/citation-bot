@@ -521,7 +521,6 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testOpenAccessLookup() {
-   
    // $text = '{{cite journal|doi=10.1145/321850.321852}}';
    // $expanded = $this->process_citation($text);
    // $this->assertEquals('10.1.1.419.9787', $expanded->get('citeseerx'));
@@ -1533,14 +1532,14 @@ ER -  }}';
   public function testBadBibcodeARXIVPages() {
     $text = '{{cite journal|bibcode=2017arXiv171102260L}}'; // Some bibcodes have pages set to arXiv:1711.02260
     $expanded = $this->process_citation($text);
-    $pages = $expanded->get('pages');
-    $volume = $expanded->get('volume');
+    $pages = (string) $expanded->get('pages');
+    $volume = (string) $expanded->get('volume');
     $this->assertEquals(FALSE, stripos($pages, 'arxiv'));
     $this->assertEquals(FALSE, stripos('1711', $volume));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
     $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
     $expanded = $this->process_citation($text);
-    $pages = $expanded->get('pages');
+    $pages = (string) $expanded->get('pages');
     $this->assertEquals(FALSE, stripos($pages, 'astro'));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
   }

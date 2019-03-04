@@ -44,16 +44,7 @@ ini_set("memory_limit", "256M");
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
-if (isset($_REQUEST["crossrefonly"])) {
-  $crossRefOnly = TRUE;
-} elseif (isset($_REQUEST["turbo"])) {
-  $crossRefOnly = $_REQUEST["turbo"];
-} else {
-  $crossRefOnly = FALSE;
-}
-$edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : NULL;
-
-if ($edit || isset($_GET["doi"]) || isset($_GET["pmid"])) {
+if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
   $ON = TRUE;
 }
 

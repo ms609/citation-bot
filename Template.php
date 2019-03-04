@@ -852,7 +852,7 @@ final class Template {
           if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
             $url = "http://" . $url; // Try it with http
           }
-          if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) === FALSE) return FALSE; // PHP does not like it
+          if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
           if (preg_match (REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
           $this->rename('website', 'url'); // Rename it first, so that parameters stay in same order
           $this->set('url', $url);
@@ -1005,8 +1005,8 @@ final class Template {
         }
         
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~i", $url, $match)) {
-        if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/pmc/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
+                      . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~i", $url, $match)) {
+        if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting URL to PMC parameter");
@@ -1060,8 +1060,8 @@ final class Template {
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
         
-      } elseif (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:pubmed|entrez/eutils/elink\.fcgi\S+dbfrom=pubmed\S+)/.*?=?(\d+)~i", $url, $match)) {
-        if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/pubmed/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
+      } elseif (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?(?:pubmed|entrez/eutils/elink\.fcgi\S+dbfrom=pubmed\S+)/.*?=?(\d+)~i", $url, $match)) {
+        if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?/pubmed/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget($url_type);
@@ -1802,7 +1802,7 @@ final class Template {
         if (stripos($oa_url, 'zenodo.org') !== FALSE) return TRUE;   //is currently blacklisted due to copyright concerns https://en.wikipedia.org/w/index.php?oldid=867438103#zenodo.org
         // Check if best location is already linked -- avoid double linki
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/pmc/articles/PMC(\d+)~", $oa_url, $match)) {
+                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~", $oa_url, $match)) {
           if ($this->has('pmc') ) {
              return TRUE;
           }
@@ -1826,7 +1826,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match("~https?://www.ncbi.nlm.nih.gov/pubmed/.*?=?(\d{5,})~", $oa_url, $match)) {
+        if (preg_match("~https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d{5,})~", $oa_url, $match)) {
           if ($this->has('pmid')) {
              return TRUE;
           }
@@ -1868,13 +1868,6 @@ final class Template {
             report_warning("Open access URL gave response code " . $response_code . " from oiDOI API for doi: " . echoable($doi));
             return FALSE;
           }
-          switch ($best_location->version) {
-            // case 'acceptedVersion': $format = 'Accepted manuscript'; break;
-            // case 'submittedVersion': $format = 'Submitted manuscript'; break;
-            // case 'publishedVersion': $format = 'Full text'; break; // This is the assumed default
-            default: $format = NULL;
-          }
-          if ($format) $this->add('type', $format);
         }
         return TRUE;
       }
@@ -2612,6 +2605,10 @@ final class Template {
         $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
       }
     }
+    if (preg_match("~^[\'\"]([^\'\"]+)[\'\"]$~u", $this->get($param), $matches)) {
+      $this->set($param, $matches[1]); // Remove quotes, if only at start and end
+    }
+        
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
@@ -2978,7 +2975,7 @@ final class Template {
             }
           }
           if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches) ||
-              preg_match("~^(?:vol. |)(\d+),\s*no\.\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches) ||
+              preg_match("~^(?:vol. |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", trim($this->get('volume')), $matches)
              ) {
             $possible_volume=$matches[1];
