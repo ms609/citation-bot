@@ -1871,13 +1871,6 @@ final class Template {
             report_warning("Open access URL gave response code " . $response_code . " from oiDOI API for doi: " . echoable($doi));
             return FALSE;
           }
-          switch ($best_location->version) {
-            // case 'acceptedVersion': $format = 'Accepted manuscript'; break;
-            // case 'submittedVersion': $format = 'Submitted manuscript'; break;
-            // case 'publishedVersion': $format = 'Full text'; break; // This is the assumed default
-            default: $format = NULL;
-          }
-          if ($format) $this->add('type', $format);
         }
         return TRUE;
       }
