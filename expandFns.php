@@ -133,7 +133,7 @@ function wikify_external_text($title) {
     }
   }
   $title = html_entity_decode($title, NULL, "UTF-8");
-  $title = preg_replace("/\s+/"," ", $title);  // Remove all white spaces before
+  $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
   if (mb_substr($title, -1) == ".") {
     $last_word = mb_substr($title, mb_strpos($title, ' ') + 1);
@@ -141,6 +141,14 @@ function wikify_external_text($title) {
   }
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
+  
+  // The following two do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
+  $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
+      function ($matches) {return ("<i>" . $matches[1]. "</i>");},
+      $title);
+  $title = preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
+      function ($matches) {return ("<b>" . $matches[1]. "</b>");},
+      $title);
   
   $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
   $wikiTags = array("''","''",'','',"");
@@ -210,7 +218,9 @@ function title_capitalization($in, $caps_after_punctuation) {
     $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalise after punctuation */,
       function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
-    
+    $new_case = preg_replace_callback("~/[a-z]~u" /* Capitalise after slash without space */,
+      function ($matches) {return mb_strtoupper($matches[0]);},
+      $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles
     $new_case = str_replace("Ann. Of ", "Ann. of ", $new_case);
   }
