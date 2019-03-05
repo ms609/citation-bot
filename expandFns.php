@@ -44,16 +44,7 @@ ini_set("memory_limit", "256M");
 define("FAST_MODE", isset($_REQUEST["fast"]) ? $_REQUEST["fast"] : FALSE);
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
-if (isset($_REQUEST["crossrefonly"])) {
-  $crossRefOnly = TRUE;
-} elseif (isset($_REQUEST["turbo"])) {
-  $crossRefOnly = $_REQUEST["turbo"];
-} else {
-  $crossRefOnly = FALSE;
-}
-$edit = isset($_REQUEST["edit"]) ? $_REQUEST["edit"] : NULL;
-
-if ($edit || isset($_GET["doi"]) || isset($_GET["pmid"])) {
+if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
   $ON = TRUE;
 }
 
@@ -142,7 +133,7 @@ function wikify_external_text($title) {
     }
   }
   $title = html_entity_decode($title, NULL, "UTF-8");
-  $title = preg_replace("/\s+/"," ", $title);  // Remove all white spaces before
+  $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
   if (mb_substr($title, -1) == ".") {
     $last_word = mb_substr($title, mb_strpos($title, ' ') + 1);
@@ -150,6 +141,14 @@ function wikify_external_text($title) {
   }
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
+  
+  // The following two do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
+  $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
+      function ($matches) {return ("<i>" . $matches[1]. "</i>");},
+      $title);
+  $title = preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
+      function ($matches) {return ("<b>" . $matches[1]. "</b>");},
+      $title);
   
   $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
   $wikiTags = array("''","''",'','',"");

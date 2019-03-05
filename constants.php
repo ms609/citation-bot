@@ -1,7 +1,7 @@
 <?php 
 $constant_files = glob('constants/*.php');
 foreach ($constant_files as $file) {
-    require($file);   
+    require_once($file);   
 }
 
 define('HOME', dirname(__FILE__) . '/');

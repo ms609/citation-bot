@@ -15,21 +15,14 @@ $editSummary = $_POST['summary'];
 //Expand text from postvars
 $page = new Page();
 $page->parse_text($originalText);
-if ($page->expand_text()) {
-  $newText = $page->parsed_text();
-} else {
-  $newText = $orignalText; // something went wrong
-}
+$page->expand_text();
+$newText = $page->parsed_text();
+if ($newText == "") $newText = $originalText; // Something went very wrong
 
 //Modify edit summary to identify bot-assisted edits
 if ($newText !== $originalText) {
-  $UCB_Assisted = "[[WP:UCB|Assisted by Citation bot]]";
-  if (mb_substr(trim($editSummary),-mb_strlen($UCB_Assisted)) !== $UCB_Assisted ){
-    if ($editSummary) {
-      $editSummary .= " | ";
-    }
-    $editSummary .= $UCB_Assisted;
-  }
+  if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
+  $editSummary .=  $page->edit_summary() . ' ';
 } elseif (!$editSummary) {
   $editSummary = "";
 }
