@@ -1574,9 +1574,6 @@ final class Template {
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
-      if (getenv('TRAVIS') && defined('PHP_VERSION_ID') && (PHP_VERSION_ID < 60000)) {
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Delete once Travis CI recompile their PHP binaries
-      }
       $return = curl_exec($ch);
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
         sleep(4);
