@@ -21,13 +21,8 @@ if ($newText == "") $newText = $originalText; // Something went very wrong
 
 //Modify edit summary to identify bot-assisted edits
 if ($newText !== $originalText) {
-  $UCB_Assisted = "[[WP:UCB|Assisted by Citation bot]]";
-  if (mb_substr(trim($editSummary),-mb_strlen($UCB_Assisted)) !== $UCB_Assisted ){
-    if ($editSummary) {
-      $editSummary .= " | ";
-    }
-    $editSummary .= $UCB_Assisted;
-  }
+  if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
+  $editSummary .=  $page->edit_summary() . ' ';
 } elseif (!$editSummary) {
   $editSummary = "";
 }
