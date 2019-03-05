@@ -438,7 +438,7 @@ final class Template {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
-        if (   ($this->blank("date")
+        if (   ($this->blank("d ate")
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES))
             && ($this->blank("year") 
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('year'))), IN_PRESS_ALIASES))
