@@ -2765,7 +2765,9 @@ final class Template {
         case 'isbn':
           if ($this->lacks('isbn')) return;
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
-          $this->change_name_to('cite book');
+          if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
+            $this->change_name_to('cite book');
+          }
           $this->forget('asin');
           return;
           
