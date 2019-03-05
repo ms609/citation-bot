@@ -441,9 +441,9 @@ final class Template {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
-        if (   ($this->blank("date")
+        if (   ($this->blank('date')
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES))
-            && ($this->blank("year") 
+            && ($this->blank('year') 
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('year'))), IN_PRESS_ALIASES))
           ) {
           if ($param_name != 'date') $this->forget('date'); // Delete any "in press" dates.
@@ -793,7 +793,7 @@ final class Template {
       // var_dump($check_against);
       if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE
           || stripos($check_against, $name_as_publisher) !== FALSE) {
-        $this->add_if_new("publisher" , $name_as_publisher);
+        $this->add_if_new('publisher' , $name_as_publisher);
       } else {
         $this->add_if_new($author_param, format_author($author . ($forename ? ", $forename" : '')));
       }
@@ -993,7 +993,7 @@ final class Template {
           quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
         } else {
           quietly('report_modification', "Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
-          $this->set("jstor", urldecode($match[1]));
+          $this->set('jstor', urldecode($match[1]));
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         return TRUE;
@@ -1007,7 +1007,7 @@ final class Template {
           if (is_null($url_sent)) {
             $this->forget($url_type);
           }
-          return $this->add_if_new("bibcode", urldecode($bibcode[1]));
+          return $this->add_if_new('bibcode', urldecode($bibcode[1]));
         }
         
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
@@ -1026,12 +1026,12 @@ final class Template {
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
             if ($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
-              return $this->add_if_new("pmc", $match[1] . $match[2]);
+              return $this->add_if_new('pmc', $match[1] . $match[2]);
             }
           }
           $this->forget($url_type);
         } 
-        return $this->add_if_new("pmc", $match[1] . $match[2]);
+        return $this->add_if_new('pmc', $match[1] . $match[2]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles/pmc(\d+)~i", $url, $match)  ||
                 preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d+)~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
@@ -1040,7 +1040,7 @@ final class Template {
           if (is_null($url_sent)) {
             $this->forget($url_type);
           }
-          return $this->add_if_new("pmc", $match[1]);
+          return $this->add_if_new('pmc', $match[1]);
         }
       } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)\?doi=([0-9.]*)(&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
@@ -1048,7 +1048,7 @@ final class Template {
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
-        return $this->add_if_new("citeseerx", urldecode($match[1])); // We cannot parse these at this time
+        return $this->add_if_new('citeseerx', urldecode($match[1])); // We cannot parse these at this time
         
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs|ftp/arxiv/papers/\d{4})/(.+?)(?:\.pdf)?$~i", $url, $match)) {
         
@@ -1062,7 +1062,7 @@ final class Template {
           if (is_null($url_sent)) {
             $this->forget($url_type);
           }
-          return $this->add_if_new("arxiv", $arxiv_id[0]);
+          return $this->add_if_new('arxiv', $arxiv_id[0]);
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
         
@@ -1474,11 +1474,11 @@ final class Template {
       }
       
       if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
-      $this->add_if_new("title", (string) $record->title[0]); // add_if_new will format the title text and check for unknown
+      $this->add_if_new('title', (string) $record->title[0]); // add_if_new will format the title text and check for unknown
       $i = 0;
       if (isset($record->author)) {
        foreach ($record->author as $author) {
-        $this->add_if_new("author" . ++$i, $author);
+        $this->add_if_new('author' . ++$i, $author);
        }
       }
       if (isset($record->pub)) {
@@ -1488,8 +1488,8 @@ final class Template {
           // Do nothing
         } elseif (substr($journal_start, 0, 6) == "eprint") {
           if (substr($journal_start, 7, 6) == "arxiv:") {
-            if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
-            $this->add_if_new("arxiv", substr($journal_start, 13));
+            if (isset($record->arxivclass)) $this->add_if_new('class', $record->arxivclass);
+            $this->add_if_new('arxiv', substr($journal_start, 13));
           } else {
             $this->append_to('id', ' ' . substr($journal_start, 13));
           }
@@ -1505,22 +1505,22 @@ final class Template {
          }
        }
       if (isset($record->volume)) {
-        $this->add_if_new("volume", (string) $record->volume);
+        $this->add_if_new('volume', (string) $record->volume);
       }
       if (isset($record->issue)) {
-        $this->add_if_new("issue", (string) $record->issue);
+        $this->add_if_new('issue', (string) $record->issue);
       }
       if (isset($record->year)) {
-        $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
+        $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
       }
       if (isset($record->page)) {
-        $this->add_if_new("pages", implode('–', $record->page));
+        $this->add_if_new('pages', implode('–', $record->page));
       }
       if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
         foreach ($record->identifier as $recid) {
           if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-             if (isset($record->arxivclass)) $this->add_if_new("class", $record->arxivclass);
-             $this->add_if_new("arxiv", substr($recid, 6));
+             if (isset($record->arxivclass)) $this->add_if_new('class', $record->arxivclass);
+             $this->add_if_new('arxiv', substr($recid, 6));
           }
         }
       }
@@ -1538,19 +1538,19 @@ final class Template {
     $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
     if ($result->numFound == 1) {
       $record = $result->docs[0];
-      if (isset($record->year)) $this->add_if_new("year", preg_replace("~\D~", "", (string) $record->year));
-      if (isset($record->title)) $this->add_if_new("title", (string) $record->title[0]);
+      if (isset($record->year)) $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
+      if (isset($record->title)) $this->add_if_new('title', (string) $record->title[0]);
       if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
        $i = 0;
        if (isset($record->author)) {
         foreach ($record->author as $author) {
-         $this->add_if_new("author" . ++$i, $author);
+         $this->add_if_new('author' . ++$i, $author);
         }
        }
       }
     }
     if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches)) {
-      $this->add_if_new("year", $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
+      $this->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
     }  
   }
   
@@ -1738,9 +1738,9 @@ final class Template {
     if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
     if (isset($start_page)) { // Have to do at end since might get end pages before start pages
       if (isset($end_page) && ($start_page != $end_page)) {
-         $this->add_if_new("pages", $start_page . '–' . $end_page);
+         $this->add_if_new('pages', $start_page . '–' . $end_page);
       } else {
-         $this->add_if_new("pages", $start_page);
+         $this->add_if_new('pages', $start_page);
       }
     }
     if ($this->blank('journal')) { // doing at end avoids adding if we have journal title
@@ -1763,13 +1763,13 @@ final class Template {
   protected function use_sici() {
     if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
-      $this->add_if_new("issn", $sici[1]); // Check whether journal is set in add_if_new
-      //if ($this->blank ("year") && $this->blank("month") && $sici[3]) $this->set("month", date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
-      $this->add_if_new("year", $sici[2]);
-      //if ($this->blank("day") && is("month") && $sici[4]) set ("day", $sici[4]);
-      $this->add_if_new("volume", 1*$sici[5]);
-      if ($sici[6]) $this->add_if_new("issue", 1*$sici[6]);
-      $this->add_if_new("pages", 1*$sici[7]);
+      $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
+      //if ($this->blank ("year") && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
+      $this->add_if_new('year', $sici[2]);
+      //if ($this->blank('day') && is("month") && $sici[4]) set ("day", $sici[4]);
+      $this->add_if_new('volume', 1*$sici[5]);
+      if ($sici[6]) $this->add_if_new('issue', 1*$sici[6]);
+      $this->add_if_new('pages', 1*$sici[7]);
       return TRUE;
     } else return FALSE;
   }
@@ -1999,24 +1999,24 @@ final class Template {
     $xml = @simplexml_load_string($simplified_xml);
     if ($xml === FALSE) return FALSE;
     if ($xml->dc___title[1]) {
-      $this->add_if_new("title",  
+      $this->add_if_new('title',  
                wikify_external_text(
                  str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]),
                  TRUE // $caps_after_punctuation
                )
              );
     } else {
-      $this->add_if_new("title",  wikify_external_text(str_replace("___", ":", $xml->title)));
+      $this->add_if_new('title',  wikify_external_text(str_replace("___", ":", $xml->title)));
     }
     // Possibly contains dud information on occasion
-    // $this->add_if_new("publisher", str_replace("___", ":", $xml->dc___publisher)); 
+    // $this->add_if_new('publisher', str_replace("___", ":", $xml->dc___publisher)); 
     $isbn = NULL;
     foreach ($xml->dc___identifier as $ident) {
       if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
         $isbn = $match[1];
       }
     }
-    $this->add_if_new("isbn", $isbn);
+    $this->add_if_new('isbn', $isbn);
     
     $i = 0;
     if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
@@ -2035,11 +2035,11 @@ final class Template {
           }
         }
     }
-    $this->add_if_new("date", $google_date);
+    $this->add_if_new('date', $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     // foreach ($xml->dc___format as $format) {
     //   if (preg_match("~([\d\-]+)~", $format, $matches)) {
-    //      $this->add_if_new("pages", '1–' . (string) $matches[0]); // If we did add the total pages, then we should include the whole range
+    //      $this->add_if_new('pages', '1–' . (string) $matches[0]); // If we did add the total pages, then we should include the whole range
     //   }
     // }
   }
@@ -2124,7 +2124,7 @@ final class Template {
           $endnote_datum = substr($endnote_line, 2); // cut line type and leading space
           switch ($endnote_linetype) {
             case "A": 
-              $this->add_if_new("author" . ++$endnote_authors, format_author($endnote_datum));
+              $this->add_if_new('author' . ++$endnote_authors, format_author($endnote_datum));
               $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
               $endnote_parameter = FALSE;
               break;
@@ -2174,7 +2174,7 @@ final class Template {
       $doi = extract_doi($dat);
       if (!is_null($doi)) {
         $this->add_if_new('doi', $doi[1]); 
-        $this->change_name_to("cite journal");
+        $this->change_name_to('cite journal');
         $dat = str_replace($doi[0], '', $dat);
       }
       
@@ -2379,12 +2379,12 @@ final class Template {
           case "arxiv":
             if ($subtemplate->get('id')) {
               $archive_parameter = trim($subtemplate->get('archive') ? $subtemplate->get('archive') . '/' : '');
-              $this->add_if_new("arxiv", $archive_parameter . $subtemplate->get('id'));
+              $this->add_if_new('arxiv', $archive_parameter . $subtemplate->get('id'));
             } elseif (!is_null($subtemplate->param_with_index(1))) {
-              $this->add_if_new("arxiv", trim($subtemplate->param_value(0)) .
+              $this->add_if_new('arxiv', trim($subtemplate->param_value(0)) .
                                 "/" . trim($subtemplate->param_value(1)));
             } else {
-              $this->add_if_new("arxiv", $subtemplate->param_value(0));
+              $this->add_if_new('arxiv', $subtemplate->param_value(0));
             }
             $id = str_replace($matches[0][$i], '', $id);
             break;
@@ -3225,7 +3225,7 @@ final class Template {
           }
         }
         if(empty($headers_test['Location'])) {
-           if ($this->blank(DOI_BROKEN_ALIASES)) $this->set("doi-broken-date", date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
+           if ($this->blank(DOI_BROKEN_ALIASES)) $this->set('doi-broken-date', date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
            report_inline("Broken doi: " . echoable($doi));
            return FALSE;
         } else {
