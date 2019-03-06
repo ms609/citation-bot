@@ -60,9 +60,11 @@ function query_url_api($ids, $templates) {
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             $redirectedUrl_doi = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
+            $redirectedUrl_doi = str_replace('/abstract/', '/', $redirectedUrl_doi);
             $redirectedUrl_doi = urldecode($redirectedUrl_doi);
             $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
             $url_short         = strtok(urldecode($url), '?#');
+            $url_short         = str_replace('/abstract/', '/', $url_short);
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
             if ( preg_match('~^https?://.+/pii/?(S\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
@@ -80,8 +82,10 @@ function query_url_api($ids, $templates) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
                   $redirectedUrl_url = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_url);
                   $redirectedUrl_url = urldecode($redirectedUrl_url);
+                  $redirectedUrl_url = str_replace('/abstract/', '/', $redirectedUrl_url);
                   $url_short = strtok($redirectedUrl_url, '?#');
                   $url_short = str_ireplace('https', 'http', $url_short);
+                  $url_short = str_replace('/abstract/', '/', $url_short);
                   if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                       stripos($redirectedUrl_doi, $url_short) !== FALSE) {
                     report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
