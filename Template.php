@@ -415,7 +415,7 @@ final class Template {
         if(!trim($value)) {
           $this->forget($param_name);
         } else {
-          echo " Please fix manually.";
+          report_warning(" Please fix manually.");
         }
         return FALSE;
       
@@ -2479,7 +2479,7 @@ final class Template {
       if ($mistake_id) {
         // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
         $p->param = $mistake_corrections[$mistake_id];
-        echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
+        report_modification('replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)');
         continue;
       }
       
