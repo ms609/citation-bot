@@ -525,8 +525,8 @@ function check_10_1093_doi($url) { // We assume dois are bad, unless on good lis
           'sq', 'ssjj', 'sw', 'swr', 'swra', 'synbio', 'sysbio', 'tandt', 'tas', 'tbm',
           'tcbh', 'teamat', 'toxsci', 'transactionslinnean', 'transactionslinneanbot', 'transactionslinneanzoo', 'treephys', 'tropej', 'trstmh', 'tse',
           'ulr', 've', 'wber', 'wbro', 'whq', 'wjaf', 'workar', 'yel', 'yielaw', 'ywcct',
-          'ywes', 'zoolinnean
+          'ywes', 'zoolinnean'
           ] as $journal) {
-    if(stripos($match[1], $journal . '/' ) === 0) return TRUE;
-  }
+              if (stripos($match[1], $journal . '/' ) === 0) return TRUE;
+    }
 }
