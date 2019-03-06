@@ -480,7 +480,8 @@ function check_doi_for_jstor($doi, &$template) {
 
 function check_10_1093_doi($url) { // We assume dois are bad, unless on good list
   if(!preg_match('~10.1093/(\S+)~u', $url, $match)) return TRUE;
-  foreach(['zoolinnean',
+  foreach([
+          'zoolinnean',
           'ywes', 'yel', 'yiel', 'ywcct',
           'whq', 'workar', 'wber', 'wbro',
           've',
@@ -488,9 +489,8 @@ function check_10_1093_doi($url) { // We assume dois are bad, unless on good lis
           'teamat', 'toxsci', 'imatrm', 'trstmh', 'tas', 'tbm', 'tes', 'treephys', 'tandt', 'tcbh',
           'schbul', 'scipol', 'screen', 'sleep', 'scan', 'sf', 'shm', 'sp', 'socpro', 'ssjj', 'sw', 'swr', 'swra', 'ser', 'socrel', 'slr', 'synbio', 'sysbio', 
           'qjemed', 'qje', 'qmath', 'qjmam',
-          'publius', 'pasj', 'ppar', 'poq', 'phe', 'protein', 'ptep', 'arisoc', 'pcmedi', 'police', 'pcp', 'ptj', 'pq', 'philmat', 'ppmgov', 'femspd', 'pastj', 'pa', 'pm', 'pch', 
-          
-          
+          'publius', 'pasj', 'ppar', 'poq', 'phe', 'protein', 'ptep', 'arisoc', 'pcmedi', 'police', 'pcp', 'ptj', 'pq', 'philmat', 'ppmgov', 'femspd', 'pastj', 'pa', 'pm', 'pch'
+          // TODO:  Still need to do A-O on https://academic.oup.com/journals/pages/journals_a_to_z  :-(
           ] as $journal) {
     if(stripos($match[1], $journal . '/' ) === 0) return TRUE;
   }
