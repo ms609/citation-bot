@@ -915,6 +915,9 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
+      echo "\n\n" . $doi . "\n\n";
+      echo "\n\n" . $url . "\n\n";
+      echo "\n\n" . $this->get('doi') . "\n\n";
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
