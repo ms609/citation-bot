@@ -480,17 +480,52 @@ function check_doi_for_jstor($doi, &$template) {
 
 function check_10_1093_doi($url) { // We assume dois are bad, unless on good list
   if(!preg_match('~10.1093/(\S+)~u', $url, $match)) return TRUE;
-  foreach([
-          'zoolinnean',
-          'ywes', 'yel', 'yiel', 'ywcct',
-          'whq', 'workar', 'wber', 'wbro',
-          've',
-          'ulr',
-          'teamat', 'toxsci', 'imatrm', 'trstmh', 'tas', 'tbm', 'tes', 'treephys', 'tandt', 'tcbh',
-          'schbul', 'scipol', 'screen', 'sleep', 'scan', 'sf', 'shm', 'sp', 'socpro', 'ssjj', 'sw', 'swr', 'swra', 'ser', 'socrel', 'slr', 'synbio', 'sysbio', 
-          'qjemed', 'qje', 'qmath', 'qjmam',
-          'publius', 'pasj', 'ppar', 'poq', 'phe', 'protein', 'ptep', 'arisoc', 'pcmedi', 'police', 'pcp', 'ptj', 'pq', 'philmat', 'ppmgov', 'femspd', 'pastj', 'pa', 'pm', 'pch'
-          // TODO:  Still need to do A-O on https://academic.oup.com/journals/pages/journals_a_to_z  :-(
+  foreach([ // March 2019 Good list :-(
+          'abbs', 'abm', 'abt', 'acn', 'adaptation', 'advances', 'ae', 'aepp', 'aesa', 'af', 'afraf',
+          'ageing', 'ahr', 'ajae', 'ajcl', 'ajcn', 'ajcp', 'aje', 'ajh', 'ajhp', 'ajj', 'ajlh',
+          'alcalc', 'aler', 'alh', 'alrr', 'amt', 'analysis', 'annhyg', 'annonc', 'antitrust', 'aob',
+          'aobpla', 'applij', 'arbitration', 'aristotelian', 'aristoteliansupp', 'asj', 'asjopenforum', 'astrogeo', 'auk', 'beheco',
+          'bfg', 'bib', 'bioinformatics', 'biolinnean', 'biolreprod', 'biomedgerontology', 'biomet', 'biomethods', 'bioscience', 'biostatistics',
+          'bjaesthetics', 'bjc', 'bjps', 'bjsw', 'bmb', 'botlinnean', 'brain', 'btcint', 'bybil', 'camqtly',
+          'carcin', 'cardiovascres', 'cb', 'ccc', 'cdj', 'cdn', 'ce', 'cercor', 'cesifo', 'chemse',
+          'chinesejil', 'chromsci', 'cid', 'cjcl', 'cje', 'cjip', 'cjres', 'ckj', 'clp', 'cmlj',
+          'comjnl', 'comnet', 'condor', 'conphys', 'cpe', 'criticalvalues', 'crj', 'crohnscolitis360', 'cs', 'ct',
+          'cww', 'cybersecurity', 'cz', 'database', 'dh', 'dnaresearch', 'dote', 'dsh', 'ecco-jcc', 'ecco-jccs',
+          'economicpolicy', 'ectj', 'edrv', 'ee', 'eep', 'ehjcimaging', 'ehjcr', 'ehjcvp', 'ehjqcco', 'ehr',
+          'eic', 'ej', 'ejcts', 'ejil', 'ejo', 'eltj', 'em', 'emph', 'endo', 'english',
+          'envhis', 'envihistrevi', 'epirev', 'erae', 'ereh', 'eshremonographs', 'esr', 'eurheartj', 'eurheartjsupp', 'europace',
+          'eurpub', 'fampra', 'femsec', 'femsle', 'femspd', 'femsre', 'femsyr', 'fh', 'fmls', 'foreconshist',
+          'forestry', 'forestscience', 'fpa', 'fqs', 'fs', 'fsb', 'gastro', 'gbe', 'geronj', 'gerontologist',
+          'gh', 'gigascience', 'gji', 'globalsummitry', 'glycob', 'gsmnras', 'hcr', 'heapol', 'heapro', 'her',
+          'hgs', 'hmg', 'hrlr', 'hropen', 'hsw', 'humrep', 'humupd', 'hwj', 'ia', 'ib',
+          'ibdjournal', 'icb', 'icc', 'icesjms', 'icon', 'icsidreview', 'icvts', 'idpl', 'ije', 'ijl',
+          'ijlct', 'ijlit', 'ijnp', 'ijpor', 'ijrl', 'ijtj', 'ilarjournal', 'ilj', 'imaiai', 'imajna',
+          'imaman', 'imamat', 'imamci', 'imammb', 'imatrm', 'imrn', 'imrp', 'imrs', 'innovateage', 'insilicoplants',
+          'integrablesystems', 'inthealth', 'intimm', 'intqhc', 'iob', 'ips', 'irap', 'isd', 'isle', 'isp',
+          'isq', 'isr', 'itnow', 'iwc', 'jaar', 'jac', 'jae', 'jah', 'jamia', 'jamiaopen',
+          'japr', 'jas', 'jat', 'jb', 'jbcr', 'jbi', 'jcag', 'jcb', 'jcem', 'jcle',
+          'jcmc', 'jcr', 'jcs', 'jcsl', 'jdh', 'jdsde', 'jeclap', 'jee', 'jeea', 'jel',
+          'jes', 'jfec', 'jfr', 'jge', 'jhc', 'jhered', 'jhmas', 'jhps', 'jhrp', 'jhs',
+          'jicj', 'jid', 'jids', 'jiel', 'jigpal', 'jinsectscience', 'jiplp', 'jipm', 'jis', 'jjco',
+          'jla', 'jlb', 'jleo', 'jmammal', 'jmcb', 'jme', 'jmicro', 'jmp', 'jmt', 'jn',
+          'jnci', 'jncics', 'jncimono', 'jnen', 'joc', 'joeg', 'jof', 'jogss', 'jole', 'jos',
+          'jpart', 'jpe', 'jpepsy', 'jpids', 'jpo', 'jpubhealth', 'jrls', 'jrr', 'jrs', 'jscr',
+          'jsh', 'jss', 'jssam', 'jtm', 'jts', 'jue', 'jvc', 'jwelb', 'jxb', 'labmed',
+          'lawfam', 'leobaeck', 'library', 'litimag', 'litthe', 'logcom', 'lpr', 'lril', 'maghis', 'mbe',
+          'medlaw', 'melus', 'mend', 'migration', 'milmed', 'mind', 'mj', 'ml', 'mmy', 'mnras',
+          'mnrasl', 'molehr', 'mollus', 'monist', 'mq', 'mspecies', 'mtp', 'mts', 'musictherapy', 'mutage',
+          'nar', 'nass', 'nc', 'ndt', 'neuro-oncology', 'neurosurgery', 'njaf', 'nop', 'nq', 'nsr',
+          'ntr', 'nutritionreviews', 'oaj', 'occmed', 'oep', 'ofid', 'ohr', 'ojlr', 'ojls', 'omcr',
+          'ons', 'oq', 'oxrep', 'pa', 'painmedicine', 'pasj', 'past', 'pch', 'pcm', 'pcp',
+          'peds', 'petrology', 'phe', 'philmat', 'plankt', 'policing', 'poq', 'ppar', 'ppmg', 'ppr',
+          'pq', 'proceedingslinnean', 'ps', 'psychsocgerontology', 'ptep', 'ptj', 'ptp', 'ptps', 'publius', 'qje',
+          'qjmam', 'qjmath', 'qjmed', 'raps', 'rb', 'rcfs', 'reep', 'res', 'restud', 'rev',
+          'rfs', 'rheumap', 'rheumatology', 'rof', 'rpc', 'rpd', 'rsq', 'scan', 'schizophreniabulletin', 'screen',
+          'ser', 'sf', 'shm', 'sjaf', 'sleep', 'slr', 'socpro', 'socrel', 'sp', 'spp',
+          'sq', 'ssjj', 'sw', 'swr', 'swra', 'synbio', 'sysbio', 'tandt', 'tas', 'tbm',
+          'tcbh', 'teamat', 'toxsci', 'transactionslinnean', 'transactionslinneanbot', 'transactionslinneanzoo', 'treephys', 'tropej', 'trstmh', 'tse',
+          'ulr', 've', 'wber', 'wbro', 'whq', 'wjaf', 'workar', 'yel', 'yielaw', 'ywcct',
+          'ywes', 'zoolinnean
           ] as $journal) {
     if(stripos($match[1], $journal . '/' ) === 0) return TRUE;
   }
