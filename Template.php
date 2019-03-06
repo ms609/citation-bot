@@ -1008,6 +1008,8 @@ final class Template {
             $this->forget($url_type);
           }
           return $this->add_if_new('bibcode', urldecode($bibcode[1]));
+        } elseif (is_null($url_sent) && urldecode($bibcode[1]) === $this->get('bibcode')) {
+          $this->forget($url_type);
         }
         
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
