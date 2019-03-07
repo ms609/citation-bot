@@ -479,8 +479,10 @@ function check_doi_for_jstor($doi, &$template) {
 }
 
 function check_10_1093_doi($url) { // We assume dois are bad, unless on good list
-  if(!preg_match('~10.1093/(\S+)~u', $url, $match)) return TRUE;
-  foreach([ // March 2019 Good list :-(
+  if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
+  $test = strtolower($mathch[0]);
+  // March 2019 Good list
+  if (in_array($test, [
           'abbs', 'abm', 'abt', 'acn', 'adaptation', 'advances', 'ae', 'aepp', 'aesa', 'af', 'afraf',
           'ageing', 'ahr', 'ajae', 'ajcl', 'ajcn', 'ajcp', 'aje', 'ajh', 'ajhp', 'ajj', 'ajlh',
           'alcalc', 'aler', 'alh', 'alrr', 'amt', 'analysis', 'annhyg', 'annonc', 'antitrust', 'aob',
@@ -526,8 +528,7 @@ function check_10_1093_doi($url) { // We assume dois are bad, unless on good lis
           'tcbh', 'teamat', 'toxsci', 'transactionslinnean', 'transactionslinneanbot', 'transactionslinneanzoo', 'treephys', 'tropej', 'trstmh', 'tse',
           'ulr', 've', 'wber', 'wbro', 'whq', 'wjaf', 'workar', 'yel', 'yielaw', 'ywcct',
           'ywes', 'zoolinnean'
-          ] as $journal) {
-              if (stripos($match[1], $journal . '/' ) === 0) return TRUE;
+          ])) return TRUE;
     }
     return FALSE;
 }
