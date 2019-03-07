@@ -92,6 +92,11 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi'));
     $this->assertNotNull($expanded->get('url'));
+   // valid 10.1098 DOI in contrast to evil ones
+    $text = '{{cite journal|url=https://academic.oup.com/zoolinnean/advance-article-abstract/doi/10.1093/zoolinnean/zly047/5049994}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1093/zoolinnean/zly047', $expanded->get('doi'));
+    $this->assertNull($expanded->get('url'));
     // This is an ISSN only doi: it is valid, but leave url too
     $text = '{{cite journal|url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1601-183X/issues }}';
     $expanded = $this->process_citation($text);
