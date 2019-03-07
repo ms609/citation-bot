@@ -22,6 +22,7 @@ foreach ($argv as $arg) {
     }
   }
 }
+global $SLOW_MODE;
 $SLOW_MODE = FALSE;
 if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
