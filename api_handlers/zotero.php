@@ -259,7 +259,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   } 
   
   if ( isset($result->DOI) && $template->blank('doi')) {
-    if (preg_match('~^https?://d?x?\.?doi.org/(.+)$~i', $result->DOI, $matches)) {
+    if (preg_match('~^(?:https://|http://|)(?:dx\.|)doi\.org/(.+)$~i', $result->DOI, $matches)) {
        $result->DOI = matches[1];
     }
     $template->add_if_new('doi', $result->DOI);
