@@ -529,4 +529,5 @@ function check_10_1093_doi($url) { // We assume dois are bad, unless on good lis
           ] as $journal) {
               if (stripos($match[1], $journal . '/' ) === 0) return TRUE;
     }
+    return FALSE;
 }
