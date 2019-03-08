@@ -480,7 +480,7 @@ function check_doi_for_jstor($doi, &$template) {
 
 function check_10_1093_doi($url) { // We assume dois are bad, unless on good list
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
-  $test = strtolower($mathch[0]);
+  $test = strtolower($match[0]);
   // March 2019 Good list
   if (in_array($test, GOOD_10_1093_DOIS)) return TRUE;
   return FALSE;
