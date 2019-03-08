@@ -59,18 +59,17 @@ function query_url_api($ids, $templates) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-            
             $redirectedUrl_doi = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
             $redirectedUrl_doi = urldecode($redirectedUrl_doi);
             $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
             $url_short         = strtok(urldecode($url), '?#');
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
+            $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
+            $url_short         = url_simplify($url);
             if ( preg_match('~^https?://.+/pii/?(S\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
                  $redirectedUrl_doi = $matches[1] ;  // Grab PII numbers
             }
-            $url_short = str_ireplace('https', 'http', $url_short);
-            $redirectedUrl_doi = str_ireplace('https', 'http', $redirectedUrl_doi);
             if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                 stripos($redirectedUrl_doi, $url_short) !== FALSE) {
                report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
@@ -79,12 +78,9 @@ function query_url_api($ids, $templates) {
                curl_setopt($ch, CURLOPT_URL, $url);
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-                  $redirectedUrl_url = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_url);
-                  $redirectedUrl_url = urldecode($redirectedUrl_url);
-                  $url_short = strtok($redirectedUrl_url, '?#');
-                  $url_short = str_ireplace('https', 'http', $url_short);
-                  if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
-                      stripos($redirectedUrl_doi, $url_short) !== FALSE) {
+                  $redirectedUrl_url = url_simplify($redirectedUrl_url);
+                  if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
+                      stripos($redirectedUrl_doi, $redirectedUrl_url) !== FALSE) {
                     report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
                     $template->forget('url');
                   }
@@ -406,6 +402,15 @@ function expand_by_zotero(&$template, $url = NULL) {
     }
   }
   return TRUE;
+}
+
+function url_simplify($url) {
+  $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
+  $url = urldecode($url);
+  $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/'], ['/', '/', '/', '/', '/', '/', '/'], $url);
+  $url = strtok($url, '?#');
+  $url = str_ireplace('https', 'http', $url);
+  return $url;
 }
 
 ?>
