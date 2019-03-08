@@ -59,10 +59,6 @@ function query_url_api($ids, $templates) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-            $redirectedUrl_doi = str_replace('/action/captchaChallenge?redirectUri=', '', $redirectedUrl_doi);
-            $redirectedUrl_doi = urldecode($redirectedUrl_doi);
-            $redirectedUrl_doi = strtok($redirectedUrl_doi, '?#');  // Remove session stuff
-            $url_short         = strtok(urldecode($url), '?#');
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
             $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
