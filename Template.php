@@ -415,7 +415,7 @@ final class Template {
         if(!trim($value)) {
           $this->forget($param_name);
         } else {
-          echo " Please fix manually.";
+          report_warning(" Please fix manually.");
         }
         return FALSE;
       
@@ -477,6 +477,13 @@ final class Template {
               return TRUE;
             } else {
               return FALSE;  // Cannot have both work and journal
+            }
+          }
+          if ($this->has('via')) {
+            if (str_equivalent($this->get('via'), $value)) {
+              $this->rename('via', $param_name);
+              $this->forget('issn');
+              return TRUE;
             }
           }
           $this->forget('issn');
@@ -772,6 +779,7 @@ final class Template {
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE; 
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
+        if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
         }
@@ -1008,6 +1016,8 @@ final class Template {
             $this->forget($url_type);
           }
           return $this->add_if_new('bibcode', urldecode($bibcode[1]));
+        } elseif (is_null($url_sent) && urldecode($bibcode[1]) === $this->get('bibcode')) {
+          $this->forget($url_type);
         }
         
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
@@ -2479,7 +2489,7 @@ final class Template {
       if ($mistake_id) {
         // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
         $p->param = $mistake_corrections[$mistake_id];
-        echo 'replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)';
+        report_modification('replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)');
         continue;
       }
       
