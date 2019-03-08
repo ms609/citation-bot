@@ -2,7 +2,6 @@
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT", !isset($argv));
-if (isset($_REQUEST["slow"])) $SLOW_MODE = $_REQUEST["slow"];
 require_once('expandFns.php');
 $api = new WikipediaBot();
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
@@ -22,6 +21,7 @@ foreach ($argv as $arg) {
     }
   }
 }
+global $SLOW_MODE;
 $SLOW_MODE = FALSE;
 if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
