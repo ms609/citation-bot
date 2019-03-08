@@ -3487,7 +3487,8 @@ final class Template {
       $example = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $example);
       // Now some paranoia
       if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) $example = '| param = val';
-      if (!preg_match("^.*\S.*=.*\S.*$", $example)) $example = '| param = val';
+      if (substr_count($example, '=') !== 1) $example = '| param = val';
+      if (!preg_match("\S[\S\s]*=[\S\s]*\S", $example)) $example = '| param = val';
     }
     $p->parse_text($example); // Try to match existing format
     $p->param = (string) $par;
