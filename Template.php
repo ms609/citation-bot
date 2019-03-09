@@ -3478,7 +3478,6 @@ final class Template {
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
       return $this->param[$pos]->val = (string) $val;
     }
-    $p = new Parameter();
     if (isset($this->param[0])) {
       // Use second param as a template if present, in case first pair 
       // is last1 = Smith | first1 = J.\n
@@ -3494,6 +3493,7 @@ final class Template {
     } else {
       $example = '| param = val';
     }
+    $p = new Parameter();
     $p->parse_text($example); // Try to match existing format
     $p->param = (string) $par;
     $p->val = (string) $val;
