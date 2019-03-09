@@ -195,24 +195,19 @@ class Page {
     $our_templates_slight = array();
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
-      if (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
-        // The objective in breaking this down into stages is to be able to send a single request to each API,
-        // rather than a separate request for each template.
-        // This is a work in progress...
-        $this_template = $all_templates[$i];
+      $this_template = $all_templates[$i];
+      if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
         array_push($our_templates, $this_template);
-        
         $this_template->prepare();
-      } elseif (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
-        $all_templates[$i]->get_identifiers_from_url();
-        array_push($our_templates_slight, $all_templates[$i]);
-      } elseif ($all_templates[$i]->wikiname() == 'cite magazine') {
-        // This is all we do with cite magazine
-        if ($all_templates[$i]->blank('magazine') && $all_templates[$i]->has('work')) {
-            $all_templates[$i]->rename('work', 'magazine');
+      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
+        $this_template->get_identifiers_from_url();
+        array_push($our_templates_slight, $this_template);
+      } elseif ($this_template->wikiname() == 'cite magazine') {
+        if ($this_template->blank('magazine') && $this_template->has('work')) {
+            $this_template->rename('work', 'magazine');
         }
-        if ($all_templates[$i]->has('magazine')) {
-          $all_templates[$i]->set('magazine', straighten_quotes(trim($all_templates[$i]->get('magazine'))));
+        if ($this_template->has('magazine')) {
+          $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine'))));
         }
       }
     }
