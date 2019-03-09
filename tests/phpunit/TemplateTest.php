@@ -696,7 +696,7 @@ final class TemplateTest extends testBaseClass {
       
       $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different tempalates
       $expanded = $this->process_page($text);
-      $this->assertEquals('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678}}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678}}', $expanded->parsed_text());
+      $this->assertEquals('{{cite book|pages=1–2|arxiv= astr.ph/1234.5678}}{{cite book|pages=1–3|arxiv= astr.ph/1234.5678}}', $expanded->parsed_text());
   }
   
   public function testNestedTemplates() {
