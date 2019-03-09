@@ -192,6 +192,7 @@ class Page {
        $all_templates[$i]->date_style = $this->date_style;
     }
     $our_templates = array();
+    $our_templates_slight = array();
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       if (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
@@ -204,6 +205,7 @@ class Page {
         $this_template->prepare();
       } elseif (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
         $all_templates[$i]->get_identifiers_from_url();
+        array_push($our_templates_slight, $all_templates[$i]);
       } elseif ($all_templates[$i]->wikiname() == 'cite magazine') {
         // This is all we do with cite magazine
         if ($all_templates[$i]->blank('magazine') && $all_templates[$i]->has('work')) {
@@ -246,6 +248,20 @@ class Page {
       }
       $this_template->final_tidy();
       
+      // Record any modifications that have been made:
+      $template_mods = $this_template->modifications();
+      foreach (array_keys($template_mods) as $key) {
+        if (!isset($this->modifications[$key])) {
+          $this->modifications[$key] = $template_mods[$key];
+        } elseif (is_array($this->modifications[$key])) {
+          $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
+        } else {
+          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // Boolean like mod_dashes
+        }
+      }
+    }
+    for ($i = 0; $i < count($our_templates_slight); $i++) {
+      $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {
