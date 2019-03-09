@@ -2618,7 +2618,7 @@ final class Template {
         $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
-        $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
+        $this->set($param, preg_replace('~[:;,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, semi-colons
       }
     }
     if (preg_match("~^[\'\"]([^\'\"]+)[\'\"]$~u", $this->get($param), $matches)) {
