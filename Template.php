@@ -3485,11 +3485,11 @@ final class Template {
       $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
       $example = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $example);
       // Now some paranoia
-      if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) $example = ' | param = val';
-      if (substr_count($example, '=') !== 1) $example = ' | param = val';
-      if (!preg_match('~\S[\S\s]*=[\S\s]*\S~', $example)) $example = ' | param = val';
+      if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) $example = '| param = val';
+      if (substr_count($example, '=') !== 1) $example = '| param = val';
+      if (!preg_match('~\S[\S\s]*=[\S\s]*\S~', $example)) $example = '| param = val';
     } else {
-      $example = ' | param = val';
+      $example = '| param = val';
     }
     $p->parse_text($example); // Try to match existing format
     $p->param = (string) $par;
