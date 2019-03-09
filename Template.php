@@ -3479,16 +3479,17 @@ final class Template {
       return $this->param[$pos]->val = (string) $val;
     }
     $p = new Parameter();
-    $example = '| param = val'; // Default choice
     if (isset($this->param[0])) {
       // Use second param as a template if present, in case first pair 
       // is last1 = Smith | first1 = J.\m
       $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
       $example = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $example);
       // Now some paranoia
-      if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) $example = '| param = val';
-      if (substr_count($example, '=') !== 1) $example = '| param = val';
-      if (!preg_match('~\S[\S\s]*=[\S\s]*\S~', $example)) $example = '| param = val';
+      if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) $example = ' | param = val';
+      if (substr_count($example, '=') !== 1) $example = ' | param = val';
+      if (!preg_match('~\S[\S\s]*=[\S\s]*\S~', $example)) $example = ' | param = val';
+    } else {
+      $example = ' | param = val';
     }
     $p->parse_text($example); // Try to match existing format
     $p->param = (string) $par;
