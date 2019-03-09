@@ -3483,10 +3483,14 @@ final class Template {
       // Use second param as a template if present, in case first pair 
       // is last1 = Smith | first1 = J.\n
       $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
-      $example = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $example);
-      // Now some paranoia
-      if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) $example = '| param = val';
-      if (substr_count($example, '=') !== 1) $example = '| param = val';
+      if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE)) {
+        $example = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', ' ', $example);
+        $example = str_replace(['     ', '    ', '   ', '  '], [' ', ' ', ' ', ' '], $example); // Compact extra spaces
+        if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) $example = '| param = val';  // Something survived
+      }
+      // Check if messed up
+      if (substr_count($example, '=') === 0) $example = '| param = val';
+      if (substr_count($example, "\n") > 1 ) $example = '| param = val';
     } else {
       $example = '| param = val';
     }
