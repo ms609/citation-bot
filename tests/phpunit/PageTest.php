@@ -85,7 +85,7 @@ final class PageTest extends testBaseClass {
    public function testUrlReferencesWithText0() {
       $text = "<ref>{{doi|10.2307/962034}}</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi = 10.2307/962034| jstor = 962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto| journal = The Musical Times| volume = 124| issue = 1682| pages = 218–223|year = 1983|last1 = Jarman|first1 = Douglas}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal |doi = 10.2307/962034|jstor = 962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|journal = The Musical Times|volume = 124|issue = 1682|pages = 218–223|year = 1983|last1 = Jarman|first1 = Douglas}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText1() {
@@ -103,7 +103,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText3() {
       $text = "<ref>Raymond O.  Silverstein, &quot;A note on the term 'Bantu' as first used by W. H. I. Bleek&quot;, ''African Studies'' 27 (1968), 211–212, [https://www.doi.org/10.1080/00020186808707298 doi:10.1080/00020186808707298].</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi = 10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek| journal = African Studies| volume = 27| issue = 4| pages = 211–212|year = 1968|last1 = Silverstein|first1 = Raymond O.}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal |doi = 10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek|journal = African Studies|volume = 27|issue = 4|pages = 211–212|year = 1968|last1 = Silverstein|first1 = Raymond O.}}</ref>', $page->parsed_text());
   }
   
   public function testUrlReferencesWithText4() { // Has [[ ]] in it
@@ -115,7 +115,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText5() {
       $text = "<ref>Stoeckelhuber, Mechthild, Alexander Sliwa, and Ulrich Welsch. &quot;[http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full Histo‐physiology of the scent‐marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)].&quot; The anatomical record 259.3 (2000): 312-326.</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi = 10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X|title = Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)| journal = The Anatomical Record| volume = 259| issue = 3| pages = 312–326|year = 2000|last1 = Stoeckelhuber|first1 = Mechthild| last2 = Sliwa| first2 = Alexander| last3 = Welsch| first3 = Ulrich}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal |doi = 10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X|title = Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)|journal = The Anatomical Record|volume = 259|issue = 3|pages = 312–326|year = 2000|last1 = Stoeckelhuber|first1 = Mechthild|last2 = Sliwa|first2 = Alexander|last3 = Welsch|first3 = Ulrich}}</ref>', $page->parsed_text());
   }
 
   public function testUrlReferencesWithText6() {
