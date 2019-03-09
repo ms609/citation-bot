@@ -3481,7 +3481,7 @@ final class Template {
     $p = new Parameter();
     if (isset($this->param[0])) {
       // Use second param as a template if present, in case first pair 
-      // is last1 = Smith | first1 = J.\m
+      // is last1 = Smith | first1 = J.\n
       $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
       $example = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $example);
       // Now some paranoia
