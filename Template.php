@@ -3482,7 +3482,7 @@ final class Template {
       // Use second param as a template if present, in case first pair 
       // is last1 = Smith | first1 = J.\n
       $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
-      if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE)) {
+      if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
         $example = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', ' ', $example);
         $example = str_replace(['     ', '    ', '   ', '  '], [' ', ' ', ' ', ' '], $example); // Compact extra spaces
         if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) $example = '| param = val';  // Something survived
