@@ -3484,9 +3484,9 @@ final class Template {
       $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
       if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
         // If it has white space next to it, then compact all down to one white space
-        $example = preg_replace('~ +# # # CITATION_BOT_PLACEHOLDER.*?# # # *~sui', ' ', $example);
-        $example = preg_replace('~ *# # # CITATION_BOT_PLACEHOLDER.*?# # # +~sui', ' ', $example);
-        $example = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $example);
+        $example = preg_replace('~ +# # # CITATION_BOT_PLACEHOLDER.*?# # # *~ui', ' ', $example);
+        $example = preg_replace('~ *# # # CITATION_BOT_PLACEHOLDER.*?# # # +~ui', ' ', $example);
+        $example = preg_replace(  '~# # # CITATION_BOT_PLACEHOLDER.*?# # #~ui', '', $example);
         if (stripos($example, 'CITATION_BOT_PLACEHOLDER') !== FALSE) $example = '| param = val';  // Something survived
       }
       // Check if messed up
