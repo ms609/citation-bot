@@ -22,8 +22,8 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page('{{cite web|journal<!-- comment -->=Journal Name}}'); // Comment AFTER parameter
       $this->assertEquals('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].',$page->edit_summary());
       $this->assertEquals('{{cite journal|journal<!-- comment -->=Journal Name}}', $page->parsed_text());
-      $page = $this->process_page('{{cite book|url=http://a.fake.url.fake/|chapter=Chap|title=Title}}');
-      $this->assertEquals('{{cite book|chapter-url=http://a.fake.url.fake/|chapter=Chap|title=Title}}', $page->parsed_text());
+      $page = $this->process_page('{{cite book|url=http://fake.url/|chapter=Chap|title=Title}}');
+      $this->assertEquals('{{cite book|chapter-url=http://fake.url/|chapter=Chap|title=Title}}', $page->parsed_text());
       $this->assertEquals('Add: chapter-url. Removed or converted URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].' ,$page->edit_summary());
   }
  
@@ -156,7 +156,7 @@ final class PageTest extends testBaseClass {
   }
  
   public function testUrlReferencesWithText12() {  // One that does not work and returns exact same text
-      $text = "<ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.FAKER_DOES_NOT_WORK358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
+      $text = "<ref>James L. Elshoff, Michael Marcotty, [http://fake.url/10.1145/358589.FAKER_DOES_NOT_WORK358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
       $this->assertEquals($text, $page->parsed_text());
   }
