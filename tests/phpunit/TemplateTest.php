@@ -695,7 +695,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} {{arxiv|astr.ph|1234.5678}} }}'; // Two of the same thing
       $expanded = $this->process_citation($text);
       $this->assertEquals('astr.ph/1234.5678', $expanded->get('arxiv'));
-      $this->assertEquals('{{cite book | arxiv=astr.ph/1234.5678}}', $expanded->parsed_text());
+      $this->assertEquals('{{cite book | arxiv=astr.ph/1234.5678 }}', $expanded->parsed_text());
       
       $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different tempalates
       $expanded = $this->process_page($text);
