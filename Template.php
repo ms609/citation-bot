@@ -1159,7 +1159,7 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal'); // Better template choice.  Often journal/paper
           return $this->add_if_new('ssrn', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/biblio/([0-9]+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
