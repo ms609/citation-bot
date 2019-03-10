@@ -1376,11 +1376,6 @@ final class Template {
 
   public function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
-    global $SLOW_MODE;
-    if (!$SLOW_MODE && $this->lacks('bibcode')) {
-     report_info("Skipping AdsAbs API: not in slow mode");
-     return FALSE;
-    }
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
       return $this->expand_book_adsabs();
     }
