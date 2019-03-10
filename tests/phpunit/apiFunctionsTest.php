@@ -126,11 +126,11 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertEquals('{{Cite journal|year = 2013|volume = 2|last1 = 川崎|first1 = 努.|title = 植物における免疫誘導と病原微生物の感染戦略|journal = 領域融合レビュー}}', $expanded->parsed_text());
   }
 
-  public function  testExpansion_doi_not_from_crossref_mEDRA_Journal() {
-     $expanded = $this->process_citation('{{Cite journal}}');
-     expand_doi_with_dx($expanded, '10.1430/8105');
-     $this->assertEquals("{{Cite journal|year = 2002|issue = 4|author1 = Romano Prodi|title = L'Industria dopo l'euro|journal = L'Industria}}", $expanded->parsed_text());
-  }
+//  public function testExpansion_doi_not_from_crossref_mEDRA_Journal() {
+//     $expanded = $this->process_citation('{{Cite journal}}');
+//     expand_doi_with_dx($expanded, '10.1430/8105');
+//     $this->assertEquals("{{Cite journal|year = 2002|issue = 4|author1 = Romano Prodi|title = L'Industria dopo l'euro|journal = L'Industria}}", $expanded->parsed_text());
+//  }
   
   public function testExpansion_doi_not_from_crossref_mEDRA_Monograph() {
      $expanded = $this->process_citation('{{Cite journal}}');
