@@ -87,11 +87,16 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('doi-broken-date'));
     $this->assertNotNull($expanded->get('url'));
-   // Newer code does not even add it
+    // Newer code does not even add it
     $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi'));
     $this->assertNotNull($expanded->get('url'));
+    // valid 10.1098 DOI in contrast to evil ones
+    $text = '{{cite journal|url=https://academic.oup.com/zoolinnean/advance-article-abstract/doi/10.1093/zoolinnean/zly047/5049994}}';
+    $expanded = $this->process_citation($text);
+    $this->assertEquals('10.1093/zoolinnean/zly047', $expanded->get('doi'));
+    $this->assertNull($expanded->get('url'));
     // This is an ISSN only doi: it is valid, but leave url too
     $text = '{{cite journal|url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1601-183X/issues }}';
     $expanded = $this->process_citation($text);
@@ -453,8 +458,8 @@ final class TemplateTest extends testBaseClass {
   }
     
   public function testPageDuplication() {
-     // Use fake bibcode to prevent adding/using of one
-     $text = '{{cite journal|bibcode=XXXXXXXXXXXX| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. }}';
+     // Fake bibcoce otherwise we'll find a bibcode
+     $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. |bibcode=XXXXXXXXXXXXX}}';
      $expanded = $this->process_citation($text);
      $this->assertEquals($text, $expanded->parsed_text());
    }

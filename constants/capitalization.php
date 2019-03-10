@@ -35,8 +35,8 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
-          ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
+          ' Angew Chem Int Ed Engl ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
+          ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
           ' e-Print ', ' e-Print ', ' e-Prints ', ' e-Prints ', ' Early Modern Japan: an Interdisciplinary Journal ',
           ' EFSA ', ' eJournal ', ' eJournal ', ' eLife ', ' eLife ', ' eLS ', ' eLS ', ' EMBO J ', 
           ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', ' eNeuro ', ' engrXiv ', ' ePlasty ',' ePlasty ',
@@ -46,8 +46,8 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' J SIAM ', ' J. SIAM ', ' JABS : Journal of Applied Biological Sciences ', 
           ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.I.E.E. ', ' Journal of the IEST ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
           ' Meddelelser om Grønland ', ' Meddelelser om Grønland, ', ' Methods in Molecular Biology ', ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
-          ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
-          ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
+          ' n.paradoxa ', ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
+          ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PhytoKeys ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', ' uHealth ', ' uHealth ',
           ' z/Journal ', ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
@@ -55,8 +55,8 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
-          ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
+          ' Angew Chem Int ed Engl ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
+          ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' Cmaj ', ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
           ' E-print ', ' E-Print ', ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ',
           ' Efsa ', ' Ejournal ', ' EJournal ', ' ELife ', ' Elife ', ' Els ', ' ELS ', ' Embo J ', 
           ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', ' ENeuro ', ' Engrxiv ', ' Eplasty ', ' EPlasty ',
@@ -66,8 +66,8 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' J Siam ', ' J. Siam ', ' Jabs : Journal of Applied Biological Sciences ', 
           ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.i.i.e ', ' Journal of the Iest ', ' Mabs ', ' MAbs ', ' Mbio ', ' MBio ',
           ' Meddelelser Om Grønland ', ' Meddelelser Om Grønland, ', ' Methods in Molecular Biology (Clifton, N.j.) ', ' Mhealth ', ' MHealth ', ' Molecular and Cellular Biology ', ' Msphere ', ' MSphere ', ' Msystems ', ' MSystems ', 
-          ' Nasa Tech Briefs ', ' NY Forskning I Grammatik ', ' Ocean Science Journal : Osj ', 
-          ' Paj: A Journal of Performance and Art ', ' Palaios ', ' Peerj ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
+          ' N.Paradoxa ', ' Nasa Tech Briefs ', ' NY Forskning I Grammatik ', ' Ocean Science Journal : Osj ', 
+          ' Paj: A Journal of Performance and Art ', ' Palaios ', ' Peerj ', ' Phytokeys ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus a ', ' The Embo Journal ', ' Time Out London ', ' Uhealth ', ' UHealth ',
           ' Z/journal ', ' Z/Journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
