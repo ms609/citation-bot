@@ -21,11 +21,6 @@ foreach ($argv as $arg) {
     }
   }
 }
-global $SLOW_MODE;
-$SLOW_MODE = FALSE;
-if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
-  $SLOW_MODE = TRUE;
-}
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
 
