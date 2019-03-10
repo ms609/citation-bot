@@ -926,7 +926,7 @@ final class Template {
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
-        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && check_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
         }
@@ -938,7 +938,7 @@ final class Template {
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
-            if (mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+            if (mb_strpos(strtolower($url), ".pdf") === FALSE && check_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
               report_forget("Recognized DOI in URL; dropping URL");
               $this->forget($url_type);
             } else {
@@ -959,7 +959,7 @@ final class Template {
     } elseif ($this->has('doi')) { // Did not find a doi, perhaps we were wrong
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (mb_stripos($url, $this->get('doi')) !== FALSE) { // DOIs are case-insensitive
-        if (doi_active($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && mb_strpos($url, "10.1093/") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
+        if (doi_active($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && check_10_1093_doi($this->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
         }
@@ -1159,7 +1159,7 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal'); // Better template choice.  Often journal/paper
           return $this->add_if_new('ssrn', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/biblio/([0-9]+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
