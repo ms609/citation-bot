@@ -252,6 +252,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   } 
   
   if ( isset($result->DOI) && $template->blank('doi')) {
+    
     $template->add_if_new('doi', $result->DOI);
     expand_by_doi($template);
     if (stripos($url, 'jstor')) check_doi_for_jstor($template->get('doi'), $template);
