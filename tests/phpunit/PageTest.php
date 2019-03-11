@@ -85,7 +85,7 @@ final class PageTest extends testBaseClass {
    public function testUrlReferencesWithText0() {
       $text = "<ref>{{doi|10.2307/962034}}</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi=10.2307/962034| jstor=962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto| journal=The Musical Times| volume=124| issue=1682| pages=218–223|year = 1983|last1 = Jarman|first1 = Douglas}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal |doi = 10.2307/962034|jstor = 962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|journal = The Musical Times|volume = 124|issue = 1682|pages = 218–223|year = 1983|last1 = Jarman|first1 = Douglas}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText1() {
@@ -103,7 +103,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText3() {
       $text = "<ref>Raymond O.  Silverstein, &quot;A note on the term 'Bantu' as first used by W. H. I. Bleek&quot;, ''African Studies'' 27 (1968), 211–212, [https://www.doi.org/10.1080/00020186808707298 doi:10.1080/00020186808707298].</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi=10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek| journal=African Studies| volume=27| issue=4| pages=211–212|year = 1968|last1 = Silverstein|first1 = Raymond O.}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal |doi = 10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek|journal = African Studies|volume = 27|issue = 4|pages = 211–212|year = 1968|last1 = Silverstein|first1 = Raymond O.}}</ref>', $page->parsed_text());
   }
   
   public function testUrlReferencesWithText4() { // Has [[ ]] in it
@@ -115,25 +115,25 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText5() {
       $text = "<ref>Stoeckelhuber, Mechthild, Alexander Sliwa, and Ulrich Welsch. &quot;[http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full Histo‐physiology of the scent‐marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)].&quot; The anatomical record 259.3 (2000): 312-326.</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X|title = Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)| journal=The Anatomical Record| volume=259| issue=3| pages=312–326|year = 2000|last1 = Stoeckelhuber|first1 = Mechthild| last2=Sliwa| first2=Alexander| last3=Welsch| first3=Ulrich}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal | doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X| title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)| journal=The Anatomical Record| volume=259| issue=3| pages=312–326| year=2000| last1=Stoeckelhuber| first1=Mechthild| last2=Sliwa| first2=Alexander| last3=Welsch| first3=Ulrich}}</ref>', $page->parsed_text());
   }
 
   public function testUrlReferencesWithText6() {
       $text = "<ref>Emma Ambrose, Cas Mudde (2015). ''[http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 Canadian Multiculturalism and the Absence of the Far Right]'' Nationalism and Ethnic Politics Vol. 21 Iss. 2.</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi=10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right| journal=Nationalism and Ethnic Politics| volume=21| issue=2| pages=213–236|year = 2015|last1 = Ambrose|first1 = Emma| last2=Mudde| first2=Cas}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal |doi = 10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right|journal = Nationalism and Ethnic Politics|volume = 21|issue = 2|pages = 213–236|year = 2015|last1 = Ambrose|first1 = Emma|last2 = Mudde|first2 = Cas}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText7() {
       $text = "<ref>Gregory, T. Ryan. (2008). [https://link.springer.com/article/10.1007/s12052-007-0001-z ''Evolution as Fact, Theory, and Path'']. ''Evolution: Education and Outreach'' 1 (1): 46–52.</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi=10.1007/s12052-007-0001-z|title = Evolution as Fact, Theory, and Path| journal=Evolution: Education and Outreach| volume=1| pages=46–52|year = 2008|last1 = Gregory|first1 = T. Ryan}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal |doi = 10.1007/s12052-007-0001-z|title = Evolution as Fact, Theory, and Path|journal = Evolution: Education and Outreach|volume = 1|pages = 46–52|year = 2008|last1 = Gregory|first1 = T. Ryan}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText8() {
       $text = "<ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{Cite journal | doi=10.1145/358589.358596|title = Improving computer program readability to aid modification| journal=Communications of the ACM| volume=25| issue=8| pages=512–521|year = 1982|last1 = Elshoff|first1 = James L.| last2=Marcotty| first2=Michael}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText9() { // Two "urls"
@@ -170,7 +170,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText14() {
       $text = "<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertEquals('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal | doi=10.1145/358589.358596|title = Improving computer program readability to aid modification| journal=Communications of the ACM| volume=25| issue=8| pages=512–521|year = 1982|last1 = Elshoff|first1 = James L.| last2=Marcotty| first2=Michael}}</ref>', $page->parsed_text());
+      $this->assertEquals('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael}}</ref>', $page->parsed_text());
   }
  
   public function testRespectDatesZotero() {
