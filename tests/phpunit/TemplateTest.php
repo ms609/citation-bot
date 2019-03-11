@@ -438,7 +438,7 @@ final class TemplateTest extends testBaseClass {
     $text = '{{Cite journal | publisher=archive.org}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('publisher'));
-
+      
     $text = '{{Cite journal | website=archive.org|url=http://fake.url/NOT_REAL}}';
     $expanded = $this->process_citation($text);
     $this->assertEquals('http://fake.url/NOT_REAL', $expanded->get('url'));
