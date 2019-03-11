@@ -1246,7 +1246,7 @@ final class Template {
       }
     }
     
-    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
+    if ( !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
     
     // If fail, try again with fewer constraints...
     report_info("Full search failed. Dropping author & end_page... ");
