@@ -25,9 +25,6 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page('{{cite book|url=http://fake.url/|chapter=Chap|title=Title}}');
       $this->assertEquals('{{cite book|chapter-url=http://fake.url/|chapter=Chap|title=Title}}', $page->parsed_text());
       $this->assertEquals('Add: chapter-url. Removed or converted URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].', $page->edit_summary());
-      $page = $this->process_page('{{cite news|years=1999}}');  // No changes
-      $this->assertEquals('{{cite news|years=1999}}', $page->parsed_text());
-      $this->assertEquals('', $page->edit_summary());
       $page = $this->process_page('{{cite news|url=http://zbmath.org/?format=complete&q=an:1111.22222}}'); // Very little done to cite news
       $this->assertEquals('Add: zbl. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].', $page->edit_summary());
   }
