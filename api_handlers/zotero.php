@@ -90,7 +90,6 @@ function query_url_api($ids, $templates) {
 }
 
 function zotero_request($url) {
-  return ; // debug
   global $zotero_failures_count;
   
   #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
