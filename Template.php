@@ -465,6 +465,7 @@ final class Template {
       case 'periodical': case 'journal': case 'newspaper':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
+        if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
         if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
