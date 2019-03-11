@@ -438,10 +438,10 @@ final class TemplateTest extends testBaseClass {
     $text = '{{Cite journal | publisher=archive.org}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('publisher'));
-      
-    $text = '{{Cite journal | website=archive.org|url=http://www.fake- url.com/NOT_REAL}}';
+
+    $text = '{{Cite journal | website=archive.org|url=http://fake.url/NOT_REAL}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('http://www.fake-url.com/NOT_REAL', $expanded->get('url'));
+    $this->assertEquals('http://fake.url/NOT_REAL', $expanded->get('url'));
     $this->assertNull($expanded->get('website'));
   }
  
@@ -1171,7 +1171,7 @@ ER -  }}';
   }   
     
   public function testSICI() {
-    $url = "https://www.fake-url.org/sici?sici=9999-9999(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
+    $url = "https://fake.url/sici?sici=9999-9999(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
     $text = "{{Cite journal|url=$url}}";  // We use a rubbish ISSN and website so that this does not expand any more -- only test SICI code
     $expanded = $this->process_citation($text);
       
