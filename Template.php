@@ -2856,6 +2856,9 @@ final class Template {
           if (str_replace(array('[', ' ', ']'), '', $publisher) == 'google') {
             $this->forget($param);
           }
+          if (strtolower($this->get('journal')) === $publisher) {
+            $this->forget($param);
+          }
           return;
           
         case 'quotes':
