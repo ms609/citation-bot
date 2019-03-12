@@ -1287,7 +1287,8 @@ final class Template {
         $Items = $xml->DocSum->Item;
         foreach ($Items as $item) {
            @print_r($item);
-           if ($item->attributes()->{'name'} === 'Title') {
+           if ($item->attributes()->{'Name'} === 'Title') {
+               echo "\n GOT ONE \n" . ((string) @$item[0]) . "\n" . ((string) @$item) . "\n";
                $new_title = str_replace(array("[", "]"), "", (string) $item[0]);
                echo "\n" . $new_title . "\n";
                if (titles_are_dissimilar($this->get('title'), $new_title)) {
