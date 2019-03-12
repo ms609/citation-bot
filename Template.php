@@ -1276,7 +1276,18 @@ final class Template {
     report_action("Searching PubMed... ");
     $results = ($this->query_pubmed());
     if ($results[1] == 1) {
-      $this->add_if_new('pmid', $results[0]);
+      $pmid = $results[0];
+      if ($this->blank('doi')) {
+        $query = "(" . "\"" . $pmid . "\"" . "[PMID])";
+        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
+        $xml = @simplexml_load_file($url);
+        if ($xml === FALSE) {
+          report_warning("Unable to do PMID search");
+          return;
+        }
+        print_r($xml);
+      }
+      $this->add_if_new('pmid', $pmid);
     } else {
       report_inline("nothing found.");
     }
