@@ -1277,7 +1277,7 @@ final class Template {
     $results = ($this->query_pubmed());
     if ($results[1] == 1) {
       $pmid = $results[0];
-      if ($this->blank('doi')) {
+      if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=pubmed&id=$pmid";
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
@@ -1285,7 +1285,7 @@ final class Template {
           return;
         }
         print_r($xml);
-        echo @$xml->title;
+        echo $xml->DocSum->Item["title"];
       }
       $this->add_if_new('pmid', $pmid);
     } else {
