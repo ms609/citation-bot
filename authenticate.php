@@ -62,7 +62,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
 // New Incoming Access Grant without SESSION
 if (isset($_GET['oauth_verifier'])) {
    @session_destroy();
-   report_error("Incoming authorization tokens did not have matching session -- possible cookies lost")
+   report_error("Incoming authorization tokens did not have matching session -- possible cookies lost");
 }
 
 
