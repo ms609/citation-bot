@@ -1287,11 +1287,13 @@ final class Template {
         $Items = $xml->DocSum->Item;
         foreach ($Items as $item) {
            if ($item['Name'] == 'Title') {
-               echo "\n GOT ONE \n" . ((string) @$item[0]) . "\n" . ((string) @$item) . "\n";
-               $new_title = str_replace(array("[", "]"), "", (string) $item[0]);
+               $new_title = str_replace(array("[", "]"), "", (string) $item);
                echo "\n" . $new_title . "\n";
                if (titles_are_dissimilar($this->get('title'), $new_title)) {
                  report_inline("nothing similar found.");
+                 return;
+               } else {
+                 $this->add_if_new('pmid', $pmid);
                  return;
                }
            }
