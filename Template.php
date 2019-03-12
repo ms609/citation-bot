@@ -3018,15 +3018,19 @@ final class Template {
           if ($this->get($param) === 'n.d.') return; // Special no-date code that citation template recognize.
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
+        case 'number':
           // Remove leading zeroes
-          if (!$this->blank(ISSUE_ALIASES)) {
-            $new_issue = preg_replace('~^0+~', '', $this->get('issue'));
-            if ($new_issue) {
-              $this->set('issue', $new_issue);
-            } else {
-              $this->forget('issue');
-              return;
+          $new_issue = preg_replace('~^0+~', '', $this->get($param));
+          if ($param === 'issue' || $param === 'number') {
+            if (preg_match('~^No\.? *(\d+)$~i', $new_issue, $matches)) {
+              $new_issue = $matches[1];
             }
+          }
+          if ($new_issue) {
+            $this->set($param, $new_issue);
+          } else {
+            $this->forget($param);
+            return;
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
