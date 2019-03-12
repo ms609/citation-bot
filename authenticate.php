@@ -74,7 +74,7 @@ try {
       // Redirect the user to the authorization URL (only works if NO html has been sent).  Include non-header just in case
       @header("Location: $authUrl");
       sleep(1);
-      @echo "<br />Go to this URL to <a href='$authUrl'>authorize citation bot</a>";
+      echo "Go to this URL to <a href='$authUrl'>authorize citation bot</a>";
       exit(0);
     }
     // Something went wrong.  Blow it all away.
