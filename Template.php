@@ -1278,14 +1278,14 @@ final class Template {
     if ($results[1] == 1) {
       $pmid = $results[0];
       if ($this->blank('doi')) {
-        $query = "(" . "\"" . $pmid . "\"" . "[PMID])";
-        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
+        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=pubmed&id=$pmid";
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
           report_warning("Unable to do PMID search");
           return;
         }
         print_r($xml);
+        echo @$xml->title;
       }
       $this->add_if_new('pmid', $pmid);
     } else {
