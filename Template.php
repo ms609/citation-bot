@@ -1284,11 +1284,14 @@ final class Template {
           report_warning("Unable to do PMID search");
           return;
         }
-        print_r($xml);
         foreach ($xml->DocSum->Item as $item) {
            if ($item["Name"] === "Title") {
-               $new_title = str_replace(array("[", "]"), "", (string) $item));
-               echo "\n" . $new_title . "\n" . $this->get('title') . "\n";
+               $new_title = str_replace(array("[", "]"), "", (string) $item);
+               if (titles_are_dissimilar($this->get('title'), $new_title)) {
+                 echo $new_title;
+                 report_inline("nothing similar found.");
+                 return;
+               }
            }
         }
       }
