@@ -1373,7 +1373,6 @@ final class Template {
     }
     $query = substr($query, 5); // Chop off initial " AND "
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
-    echo "\n" . $url . "\n";
     $xml = @simplexml_load_file($url);
     if ($xml === FALSE) {
       report_warning("Unable to do PMID search");
@@ -1388,6 +1387,7 @@ final class Template {
       }
       return array(NULL, 0);
     }
+
     return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
   }
 
