@@ -1276,6 +1276,29 @@ final class Template {
     report_action("Searching PubMed... ");
     $results = ($this->query_pubmed());
     if ($results[1] == 1) {
+      // Double check title if no DOI and no Journal were used
+      if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
+        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=pubmed&id=$pmid";
+        $xml = @simplexml_load_file($url);
+        if ($xml === FALSE) {
+          report_warning("Unable to do PMID search");
+          return;
+        }
+        $Items = $xml->DocSum->Item;
+        foreach ($Items as $item) {
+           if ($item['Name'] == 'Title') {
+               $new_title = str_replace(array("[", "]"), "", (string) $item);
+               $new_title = rtrim($new_title, '.'); // Trailing period
+               if (titles_are_dissimilar($this->get('title'), $new_title)) {
+                 report_inline("nothing similar found.");
+                 return;
+               } else {
+                 $this->add_if_new('pmid', $pmid);
+                 return;
+               }
+           }
+        }
+      }
       $this->add_if_new('pmid', $results[0]);
     } else {
       report_inline("nothing found.");
