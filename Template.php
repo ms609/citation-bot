@@ -1284,7 +1284,8 @@ final class Template {
           report_warning("Unable to do PMID search");
           return;
         }
-        foreach ($xml->DocSum->Item as $item) {
+        print_r($xml->DocSum[0]);
+        foreach ($xml->DocSum[0]->Item as $item) {
            if ($item["Name"] === "Title") {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
                if (titles_are_dissimilar($this->get('title'), $new_title)) {
