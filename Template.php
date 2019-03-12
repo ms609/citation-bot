@@ -1285,7 +1285,12 @@ final class Template {
           return;
         }
         print_r($xml);
-        echo $xml->DocSum->Item["title"];
+        foreach ($xml->DocSum->Item as $item) {
+           if ($item["Name"] === "Title") {
+               $new_title = str_replace(array("[", "]"), "", (string) $item));
+               echo "\n" . $new_title . "\n" . $this->get('title') . "\n";
+           }
+        }
       }
       $this->add_if_new('pmid', $pmid);
     } else {
@@ -1380,7 +1385,6 @@ final class Template {
       }
       return array(NULL, 0);
     }
-print_r($xml);
     return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
   }
 
