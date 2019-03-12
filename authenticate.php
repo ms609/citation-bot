@@ -1,4 +1,8 @@
 <?php
+@session_start();
+error_reporting(E_ALL^E_NOTICE);
+define("HTML_OUTPUT");
+
 // To use the oauthclient library, run:
 // composer require mediawiki/oauthclient
 use MediaWiki\OAuthClient\Consumer;
@@ -8,14 +12,14 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-  private function authenticate_user() {
-    if (!HTML_OUTPUT) return;
-    try {
+require_once('expandFns.php');
+
+try {
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
       $conf->setConsumer($this->consumer);
       $client = new Client($conf);
       
-      // Existing Access Grant
+      // Existing Access Grant - verify that it works
       if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
         $this->userEditToken = json_decode( $client->makeOAuthCall(
            	new Token($_SESSION['access_key'], $_SESSION['access_secret']),
@@ -53,4 +57,4 @@ use MediaWiki\OAuthClient\Client;
     html_echo("<br />Error authenticating.  Resetting.  Please try again.");
     trigger_error($e->getMessage());
     exit(0); // Should not get here
-  }
+
