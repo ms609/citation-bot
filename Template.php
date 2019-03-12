@@ -3019,17 +3019,18 @@ final class Template {
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
         case 'number':
-          // Remove leading zeroes
-          $new_issue = preg_replace('~^0+~', '', $this->get($param));
+          $new_issue = trim($this->get($param));
           if ($param === 'issue' || $param === 'number') {
             if (preg_match('~^No\.? *(\d+)$~i', $new_issue, $matches)) {
               $new_issue = $matches[1];
             }
           }
+          // Remove leading zeroes
+          $new_issue = preg_replace('~^0+~', '', $new_issue);
           if ($new_issue) {
             $this->set($param, $new_issue);
           } else {
-            $this->forget($param);
+            if(!$this->blank($param)) $this->forget($param);
             return;
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
