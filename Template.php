@@ -1288,7 +1288,7 @@ final class Template {
         foreach ($Items as $item) {
            @print_r($item);
            if ($item->attributes()->{'name'} === 'Title') {
-               $new_title = str_replace(array("[", "]"), "", (string) $item);
+               $new_title = str_replace(array("[", "]"), "", (string) $item[0]);
                echo "\n" . $new_title . "\n";
                if (titles_are_dissimilar($this->get('title'), $new_title)) {
                  report_inline("nothing similar found.");
