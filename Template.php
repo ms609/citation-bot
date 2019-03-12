@@ -1368,7 +1368,7 @@ final class Template {
       }
       return array(NULL, 0);
     }
-
+print_r($xml);
     return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
   }
 
