@@ -1278,7 +1278,7 @@ final class Template {
     if ($results[1] == 1) {
       // Double check title if no DOI and no Journal were used
       if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
-        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=pubmed&id=$pmid";
+        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=pubmed&id=" . $results[0];
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
           report_warning("Unable to do PMID search");
@@ -1293,7 +1293,7 @@ final class Template {
                  report_inline("nothing similar found.");
                  return;
                } else {
-                 $this->add_if_new('pmid', $pmid);
+                 $this->add_if_new('pmid', $results[0]);
                  return;
                }
            }
