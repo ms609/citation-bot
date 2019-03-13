@@ -1658,7 +1658,7 @@ ER -  }}';
   }
  
   public function testCleanRGTitles() {
-    $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup|title=Hello Request PDF}}';
+    $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup|title=Hello {{!}} Request PDF}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('Hello', $prepared->get('title'));
     $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup|title=(PDF) Hello}}';
