@@ -1274,7 +1274,7 @@ final class Template {
   public function find_pmid() {
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
-    $results = ($this->query_pubmed());
+    $results = $this->query_pubmed();
     if ($results[1] == 1) {
       $this->add_if_new('pmid', $results[0]);
     } else {
