@@ -1246,7 +1246,7 @@ final class Template {
       }
     }
     
-    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
+    if ( !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
     
     // If fail, try again with fewer constraints...
     report_info("Full search failed. Dropping author & end_page... ");
@@ -1274,7 +1274,7 @@ final class Template {
   public function find_pmid() {
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
-    $results = ($this->query_pubmed());
+    $results = $this->query_pubmed();
     if ($results[1] == 1) {
       // Double check title if no DOI and no Journal were used
       if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
@@ -2879,6 +2879,9 @@ final class Template {
           if (str_replace(array('[', ' ', ']'), '', $publisher) == 'google') {
             $this->forget($param);
           }
+          if (strtolower($this->get('journal')) === $publisher) {
+            $this->forget($param);
+          }
           return;
           
         case 'quotes':
@@ -3041,15 +3044,20 @@ final class Template {
           if ($this->get($param) === 'n.d.') return; // Special no-date code that citation template recognize.
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
-          // Remove leading zeroes
-          if (!$this->blank(ISSUE_ALIASES)) {
-            $new_issue = preg_replace('~^0+~', '', $this->get('issue'));
-            if ($new_issue) {
-              $this->set('issue', $new_issue);
-            } else {
-              $this->forget('issue');
-              return;
+        case 'number':
+          $value = trim($this->get($param));
+          if ($param === 'issue' || $param === 'number') {
+            if (preg_match('~^No\.? *(\d+)$~i', $value, $matches)) {
+              $value = $matches[1];
             }
+          }
+          // Remove leading zeroes
+          $value = preg_replace('~^0+~', '', $value);
+          if ($value) {
+            $this->set($param, $value);
+          } else {
+            if(!$this->blank($param)) $this->forget($param);
+            return;
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
