@@ -2923,8 +2923,7 @@ final class Template {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
               if (preg_match('~^(.+)\{\{!\}\} Request PDF$~i', trim($this->get('title')), $match)) {
                  $this->set('title', trim($match[1]));
-              }
-              if (preg_match('~^\(PDF\)(.+)$~i', trim($this->get('title')), $match)) {
+              } elseif (preg_match('~^\(PDF\)(.+)$~i', trim($this->get('title')), $match)) {
                  $this->set('title', trim($match[1]));
               }
           } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
