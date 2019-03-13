@@ -488,6 +488,13 @@ final class Template {
               return TRUE;
             }
           }
+          if ($this->has('publisher')) {
+            if (str_equivalent($this->get('publisher'), $value)) {
+              $this->rename('publisher', $param_name);
+              $this->forget('issn');
+              return TRUE;
+            }
+          }
           $this->forget('issn');
           $this->forget('class');
           
