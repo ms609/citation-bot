@@ -23,6 +23,7 @@ final class Template {
   public $date_style = DATES_WHATEVER;  // Will get from the page
   protected $rawtext;
   public $last_searched_doi = '';
+  protected $example_param;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
             $used_by_api, $doi_valid = FALSE,
@@ -465,6 +466,7 @@ final class Template {
       case 'periodical': case 'journal': case 'newspaper':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
+        if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
         if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
@@ -1244,7 +1246,7 @@ final class Template {
       }
     }
     
-    if (FAST_MODE || !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
+    if ( !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
     
     // If fail, try again with fewer constraints...
     report_info("Full search failed. Dropping author & end_page... ");
@@ -1272,7 +1274,7 @@ final class Template {
   public function find_pmid() {
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
-    $results = ($this->query_pubmed());
+    $results = $this->query_pubmed();
     if ($results[1] == 1) {
       $this->add_if_new('pmid', $results[0]);
     } else {
@@ -2618,7 +2620,7 @@ final class Template {
         $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
-        $this->set($param, preg_replace('~,$~u', '', $this->get($param)));  // Remove trailing commas
+        $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
       }
     }
     if (preg_match("~^[\'\"]([^\'\"]+)[\'\"]$~u", $this->get($param), $matches)) {
@@ -2854,6 +2856,9 @@ final class Template {
           if (str_replace(array('[', ' ', ']'), '', $publisher) == 'google') {
             $this->forget($param);
           }
+          if (strtolower($this->get('journal')) === $publisher) {
+            $this->forget($param);
+          }
           return;
           
         case 'quotes':
@@ -3022,15 +3027,20 @@ final class Template {
           if ($this->get($param) === 'n.d.') return; // Special no-date code that citation template recognize.
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
-          // Remove leading zeroes
-          if (!$this->blank(ISSUE_ALIASES)) {
-            $new_issue = preg_replace('~^0+~', '', $this->get('issue'));
-            if ($new_issue) {
-              $this->set('issue', $new_issue);
-            } else {
-              $this->forget('issue');
-              return;
+        case 'number':
+          $value = trim($this->get($param));
+          if ($param === 'issue' || $param === 'number') {
+            if (preg_match('~^No\.? *(\d+)$~i', $value, $matches)) {
+              $value = $matches[1];
             }
+          }
+          // Remove leading zeroes
+          $value = preg_replace('~^0+~', '', $value);
+          if ($value) {
+            $this->set($param, $value);
+          } else {
+            if(!$this->blank($param)) $this->forget($param);
+            return;
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
@@ -3484,15 +3494,23 @@ final class Template {
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
       return $this->param[$pos]->val = (string) $val;
     }
-    if (isset($this->param[0])) {
-      $p = new Parameter();
-      // Use second param as a template if present, in case first pair 
-      // is last1 = Smith | first1 = J.\n
-      $p->parse_text($this->param[isset($this->param[1]) ? 1 : 0]->parsed_text()); 
-    } else {
-      $p = new Parameter();
-      $p->parse_text('| param = val');
+    if (!isset($this->example_param)) {
+      if (isset($this->param[0])) {
+        // Use second param as a template if present, in case first pair 
+        // is last1 = Smith | first1 = J.\n
+        $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
+        $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
+        $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
+        // Check if messed up
+        if (substr_count($example, '=') !== 1) $example = '| param = val';
+        if (substr_count($example, "\n") > 1 ) $example = '| param = val';
+      } else {
+        $example = '| param = val';
+      }
+      $this->example_param = $example;
     }
+    $p = new Parameter();
+    $p->parse_text($this->example_param);
     $p->param = (string) $par;
     $p->val = (string) $val;
     
