@@ -192,6 +192,7 @@ class Page {
        $all_templates[$i]->date_style = $this->date_style;
     }
     $our_templates = array();
+    
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       if (in_array($all_templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
