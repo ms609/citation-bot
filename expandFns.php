@@ -446,7 +446,7 @@ function str_remove_irrelevant_bits($str) {
   $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   $str = str_replace(array('.', ',', ';', ':', '   ', '  '), ' ', $str); // punctuation and multiple spaces
   $str = trim($str);
-  $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium'), array('Proc', 'Proc', 'Sym'), $str);
+  $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the journal of '), array('Proc', 'Proc', 'Sym', 'Huff ', 'journal of '), $str);
   return $str;
 }
 
