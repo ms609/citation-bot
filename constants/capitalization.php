@@ -41,7 +41,8 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' EFSA ', ' eJournal ', ' eJournal ', ' eLife ', ' eLife ', ' eLS ', ' eLS ', ' EMBO J ', 
           ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', ' eNeuro ', ' engrXiv ', ' ePlasty ',' ePlasty ',
           ' ePrint ', ' ePrint ', ' ePrints ', ' ePrints ', ' eScholarship ', ' eVolo ', ' eVolo ',
-          ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', ' HannahArendt.net ', ' HOAJ biology ', ' hprints ', 
+          ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', ' HannahArendt.net ',
+          ' History of Science; An Annual Review of Literature ', ' HOAJ biology ', ' hprints ', 
           ' iConference ', ' IFAC-PapersOnLine ', ' iPhone ', ' ISRN Genetics ', ' J Gerontol A Biol Sci Med Sci ',
           ' J SIAM ', ' J. SIAM ', ' JABS : Journal of Applied Biological Sciences ', 
           ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.I.E.E. ', ' Journal of the IEST ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
@@ -49,7 +50,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' n.paradoxa ', ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
           ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PhytoKeys ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
-          ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', ' uHealth ', ' uHealth ',
+          ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', ' tot de ', ' uHealth ', ' uHealth ', ' v Astronomicheskii Zhurna ',
           ' z/Journal ', ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
           ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys '
           /* The above will be automatically updated to alphabetical order */ 
@@ -61,7 +62,8 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Efsa ', ' Ejournal ', ' EJournal ', ' ELife ', ' Elife ', ' Els ', ' ELS ', ' Embo J ', 
           ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', ' ENeuro ', ' Engrxiv ', ' Eplasty ', ' EPlasty ',
           ' Eprint ', ' EPrint ', ' Eprints ',' EPrints ', ' Escholarship ', ' Evolo ', ' EVolo ', 
-          ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Hannaharendt.net ', ' Hoaj Biology ', ' Hprints ', 
+          ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Hannaharendt.net ',
+          ' History of Science; an Annual Review of Literature ', ' Hoaj Biology ', ' Hprints ', 
           ' Iconference ', ' Ifac-Papersonline ', ' Iphone ', ' Isrn Genetics ', ' J Gerontol a Biol Sci Med Sci ',
           ' J Siam ', ' J. Siam ', ' Jabs : Journal of Applied Biological Sciences ', 
           ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.i.i.e ', ' Journal of the Iest ', ' Mabs ', ' MAbs ', ' Mbio ', ' MBio ',
@@ -69,7 +71,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' N.Paradoxa ', ' Nasa Tech Briefs ', ' NY Forskning I Grammatik ', ' Ocean Science Journal : Osj ', 
           ' Paj: A Journal of Performance and Art ', ' Palaios ', ' Peerj ', ' Phytokeys ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
-          ' Tellus a ', ' The Embo Journal ', ' Time Out London ', ' Uhealth ', ' UHealth ',
+          ' Tellus a ', ' The Embo Journal ', ' Time Out London ', ' Tot de ', ' Uhealth ', ' UHealth ', ' V Astronomicheskii Zhurna ',
           ' Z/journal ', ' Z/Journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
           ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys '
           /* The above will be automatically updated to alphabetical order */ 

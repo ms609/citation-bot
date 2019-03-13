@@ -28,6 +28,8 @@ if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
 }
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
+$category = trim($category);
+if (preg_match('~^category:([\s\S]*)$~i', $category, $matches)) $category = trim($matches[1]);
 
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if ($api->has_user_token()) $user = NULL; // Editing as user, no need to name.
