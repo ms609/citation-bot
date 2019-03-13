@@ -1657,6 +1657,15 @@ ER -  }}';
     $this->assertEquals('https://www.google.com/search?hl=en&safe=off&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)', $prepared->get('url'));
   }
  
+  public function cleanRGTitles() {
+    $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup|title=Hello Request PDF}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('Hello', $prepared->get('title');
+    $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup|title=(PDF) Hello}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('Hello', $prepared->get('title');
+  }
+ 
   public function testDoiValidation() {
     $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013}}';
     $prepared = $this->prepare_citation($text);
