@@ -1734,6 +1734,13 @@ ER -  }}';
     $this->assertEquals('{{cite web|year=}}', $expanded->parsed_text());
   }
  
+  public function testBadPMIDSearch() { // Matches a PMID search
+    $text = '{{cite journal |author=Fleming L |title=Ciguatera Fish Poisoning}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('pmid'));
+    $this->assertNull($expanded->get('doi'));
+  }
+ 
   public function testDoiThatIsJustAnISSN() {
     $text = '{{cite web |url=http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html}}';
     $expanded = $this->process_citation($text);
