@@ -2911,7 +2911,7 @@ final class Template {
           if ($title && str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           if ($title && str_equivalent($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
           if (preg_match('~^(.+)\{\{!\}\} Request PDF$~i', trim($this->get($param)), $match)) {
-                 $this->set('title', trim($match[1]));
+                 $this->set($param, trim($match[1]));
           }
           return;
      
