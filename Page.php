@@ -202,7 +202,7 @@ class Page {
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
         array_push($our_templates_slight, $this_template);
         $this_template->get_identifiers_from_url();
-        if (!$this->blank('journal')) {
+        if (!$this_template->blank('journal')) {
            $this_template->set('journal', title_capitalization(ucwords(trim($this_template->get('journal'))), TRUE));
         }
       } elseif ($this_template->wikiname() == 'cite magazine') {
