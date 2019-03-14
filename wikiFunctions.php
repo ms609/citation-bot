@@ -22,7 +22,7 @@ function is_valid_user($user) {
     return FALSE;
   }
   
-   echo "\n" . (string) $headers_test . "\n";
+  print_r($headers_test);
   if (strpos((string) $headers_test[0], '404')) return FALSE;  // Even non-existent pages for valid users do exist.  They redirect, but do exist
   return TRUE;
 }
