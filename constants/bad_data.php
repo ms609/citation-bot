@@ -34,7 +34,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
                                  'Subscribe to read', 'Wiley Online Library', 'pagina is niet gevonden',
                                  'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended',
-                                 '404 Error'];
+                                 'Error 404'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
