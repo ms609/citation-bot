@@ -504,6 +504,9 @@ final class Template {
              if (stripos($value, 'times') !== FALSE && stripos($this->get('via'), 'times') !== FALSE) {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
+             if (stripos($value, ' post') !== FALSE && stripos($this->get('via'), 'post') !== FALSE) {
+               $this->forget('via'); // eliminate via= that matches newspaper mostly
+             }
           }
           if ($param_name === 'newspaper' && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)
                   && $this->blank('website')) { // Website is an alias for newspaper/work/journal, and did not check above
@@ -2857,6 +2860,9 @@ final class Template {
             $this->forget($param);
           }
           if (strtolower($this->get('journal')) === $publisher) {
+            $this->forget($param);
+          }
+          if (strtolower($this->get('newspaper')) === $publisher) {
             $this->forget($param);
           }
           return;
