@@ -2859,6 +2859,9 @@ final class Template {
           if (strtolower($this->get('journal')) === $publisher) {
             $this->forget($param);
           }
+          if (strtolower($this->get('newspaper')) === $publisher) {
+            $this->forget($param);
+          }
           return;
           
         case 'quotes':
