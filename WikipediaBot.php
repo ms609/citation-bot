@@ -403,6 +403,8 @@ final class WikipediaBot {
      // Something went wrong
      catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
+     @session_destroy();
+     report_error('User token failure');
     }
   }
 
