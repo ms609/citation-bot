@@ -255,7 +255,9 @@ echo "\n" . $new_case . " " . __LINE__ . "\n";
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
     function($matches) {return "''" . ucfirst(strtolower($matches['taxon'])) . "'' " . strtolower($matches["nova"]);},
+  $new_case);
   
+  echo "\n" . $new_case . " " . __LINE__ . "\n";
   // "des" at end is "Des" for Design not german "The"
   if (mb_substr($new_case, -4, 4) == ' des') $new_case = mb_substr($new_case, 0, -4)  . ' Des';
   echo "\n" . $new_case . " " . __LINE__ . "\n";
