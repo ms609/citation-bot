@@ -11,6 +11,8 @@ final class wikiFunctionsTest extends testBaseClass {
     $this->assertEquals(TRUE, $result);
     $result = is_valid_user('Not_a_valid_user_at_Dec_2017'); 
     $this->assertEquals(FALSE, $result);
+    $result = is_valid_user('ericlewin2001@yahoo.com'); 
+    $this->assertEquals(FALSE, $result);
   }
   
 }
