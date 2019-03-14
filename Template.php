@@ -2614,7 +2614,7 @@ final class Template {
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
-    
+    echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
     if($this->has($param)) {
       if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
           stripos($param, 'postscript') === FALSE &&  // periods valid
@@ -2629,7 +2629,7 @@ final class Template {
     if (preg_match("~^[\'\"]([^\'\"]+)[\'\"]$~u", $this->get($param), $matches)) {
       $this->set($param, $matches[1]); // Remove quotes, if only at start and end
     }
-        
+    echo "\n" . $this->get($param) . " " . __LINE__ . "\n"; 
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
@@ -2785,20 +2785,26 @@ final class Template {
           
         case 'journal':
           if ($this->lacks($param)) return;
+              echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
           }
+              echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           // No break here: Continue on from journal into periodical
+              echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
         case 'periodical':
           $periodical = $this->get($param);
+              echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
           if (mb_substr($periodical, -1) === "," ) {
             $periodical = mb_substr($periodical, 0, -1);
             $this->set($param, $periodical);  // Remove comma
           }
+              echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
           if (substr(strtolower($periodical), 0, 7) === 'http://' || substr(strtolower($periodical), 0, 8) === 'https://') {
              if ($this->blank('url')) $this->rename($param, 'url');
+                echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
              return;
           } elseif (substr(strtolower($periodical), 0, 4) === 'www.') {
              if ($this->blank('website')) $this->rename($param, 'website');
@@ -2809,12 +2815,17 @@ final class Template {
                     || mb_substr_count($periodical, ']]') !== 1
                     )
           {
+                echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
               $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
               $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $this->get($param)));
+                echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
           }
           $periodical = $this->get($param);
+              echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
           if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { 
+                            echo "\n" . ucwords($periodical) . " " . __LINE__ . "\n";
              $this->set($param, title_capitalization(ucwords($periodical), TRUE));
+                echo "\n" . $this->get($param) . " " . __LINE__ . "\n";
           }
           return;
         
