@@ -168,25 +168,14 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_warning("JSON did not parse correctly for URL ". $url . ": $zotero_response");
     return FALSE;
   } else if (!isset($zotero_data[0])) {
-    report_warning("Did not understand parsed JSON for URL ". $url . ": $zotero_response");
-    return FALSE;
-  } else if (!isset($zotero_data[0]->title)) {
-    if (isset($zotero_data[0]->items)  && $template->blank('doi')) {
-      try { // Special DOI code
-        $items = (array) $array->items;
-        $key = ((string) key($items));
-        $val = (string) $items;
-        if ('[' . $key . ']' === $val) {
-          if (strpos($key, '10.') === 0) {
-            return $template->add_if_new('doi', $key);
-          }
-        }
-      } catch (Exception $e) {;} // Give up
-    }
-    report_warning("Did not get a title for URL ". $url . ": $zotero_response");
-    return FALSE;
+    $result = $zotero_data;
   } else {
     $result = $zotero_data[0];
+  }
+  
+  if (!isset($result->title)) {
+    report_warning("Did not get a title for URL ". $url . ": $zotero_response");
+    return FALSE;
   }
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
     report_info("Could not resolve URL ". $url);
