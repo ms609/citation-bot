@@ -1288,9 +1288,8 @@ final class Template {
         foreach ($Items as $item) {
            if ($item['Name'] == 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
-               $new_title = rtrim($new_title, '.'); // Trailing period
                if (titles_are_dissimilar($this->get('title'), $new_title)) {
-                 report_inline("nothing similar found.");
+                 report_inline("Similar matching pubmed title not similar enough.");
                  return;
                } else {
                  $this->add_if_new('pmid', $results[0]);
