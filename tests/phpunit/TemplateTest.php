@@ -1667,7 +1667,7 @@ ER -  }}';
   }
  
   public function testHTMLNotLost() {
-    $text = '{{cite journal|last=&ndash;|first=&ndash;|title=&ndash;|journal=&ndash;|publisher=&ndash;|edition=&ndash;|pages=&ndash;}}';
+    $text = '{{cite journal|last=&ndash;|first=&ndash;|title=&ndash;|journal=&ndash;|edition=&ndash;|pages=&ndash;}}';
     $prepared = $this->prepare_citation($text);
     $this->assertEquals($text, $prepared->parsed_text());
   }
