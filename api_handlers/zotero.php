@@ -164,8 +164,14 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
     return FALSE;
-  } else if (!is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
-    report_warning("Unsupported response for URL ". $url . ": $zotero_response");
+  } else if (!is_array($zotero_data)) {
+    report_warning("JSON did not parse correctly for URL ". $url . ": $zotero_response");
+    return FALSE;
+  } else if (!isset($zotero_data[0])) {
+    report_warning("Did not understand parsed JSON for URL ". $url . ": $zotero_response");
+    return FALSE;
+  } else if (!isset($zotero_data[0]->title)) {
+    report_warning("Did not get a title for URL ". $url . ": $zotero_response");
     return FALSE;
   } else {
     $result = $zotero_data[0];
