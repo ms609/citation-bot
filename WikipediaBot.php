@@ -47,7 +47,7 @@ class WikipediaBot {
            sleep(5);
            return FALSE;  // Would be best to retry, but we are down in the weeds of the code
         }
-        report_error('API call failed: ' . $response->error->info); // Just die on all other errors
+        report_error('API call failed: ' . $response->error->info);
       }
       return FALSE;
     }
