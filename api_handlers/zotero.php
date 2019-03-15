@@ -3,8 +3,6 @@ const ZOTERO_GIVE_UP = 5;
 
 function query_url_api($ids, $templates) {
   global $SLOW_MODE;
-  global $zotero_failures_count;
-  $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
