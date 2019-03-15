@@ -28,7 +28,7 @@ if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
 }
 
 $category = trim($argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"]);
-if (strtolower(substr($category, 0, 9)) == 'category:') $category = substr($category, 9);
+if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
 
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
