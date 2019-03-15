@@ -2609,12 +2609,12 @@ final class Template {
   public function tidy_parameter($param) {
     // Note: Parameters are treated in alphabetical order, except where one
     // case necessarily continues from the previous (without a return).
-    
+    echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
     if (!$param) return FALSE;
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
-    
+        echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
     if($this->has($param)) {
       if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
           stripos($param, 'postscript') === FALSE &&  // periods valid
@@ -2626,10 +2626,11 @@ final class Template {
         $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
       }
     }
+        echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
     if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~u", $this->get($param), $matches)) {
       $this->set($param, $matches[1]); // Remove quotes, if only at start and end
     }
-        
+        echo "\n" . __LINE__ . "   " . $this->get($param). "\n";    
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
@@ -3052,10 +3053,12 @@ final class Template {
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
+              echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
           if (strpos($value, "[//")  === 0) { // We can fix them, if they are the very first item
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
           }
+              echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && can_safely_modify_dashes($value)) {
             $this->mod_dashes = TRUE;
@@ -3064,6 +3067,7 @@ final class Template {
             $value =  mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
             $this->set($param, $value);
           }
+              echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
               && can_safely_modify_dashes($value)) { 
             $the_dash = mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
@@ -3075,7 +3079,9 @@ final class Template {
               $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
             }
           }
+              echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+              echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
           return;
           
         case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
