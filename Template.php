@@ -3075,7 +3075,11 @@ final class Template {
               $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
             }
           }
-          $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+          if (strpos($this->get($param), '&') === FALSE) {
+            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+          } else {
+            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
+          }
           return;
           
         case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
