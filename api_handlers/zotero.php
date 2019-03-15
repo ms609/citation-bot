@@ -363,6 +363,13 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'blogPost':
         
         break; // Could be a journal article or a genuine web page.
+        
+      case 'thesis':
+        $template->change_name_to('cite thesis');
+        if (isset($result->university)) $template->add_if_new('publisher' , $result->university);
+        if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) $template->add_if_new('type' , $result->thesisType); // Prefer type since it exists in cite journal too
+        break;
+
       default:
         report_minor_error("Unhandled itemType: " . $result->itemType . " for $url"); // see https://www.mediawiki.org/wiki/Citoid/itemTypes
     }
