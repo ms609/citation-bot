@@ -3080,7 +3080,11 @@ final class Template {
             }
           }
               echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
+          if (strpos($this->get($param), '&') === FALSE) {
           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+          } else {
+          $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
+          }
               echo "\n" . __LINE__ . "   " . $this->get($param). "\n";
           return;
           
