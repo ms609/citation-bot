@@ -2,6 +2,8 @@
 const ZOTERO_GIVE_UP = 5;
 
 function query_url_api($ids, $templates) {
+  global $zotero_failures_count;		
+  if (getenv('TRAVIS')) $zotero_failures_count = 0;
   global $SLOW_MODE;
   if (!$SLOW_MODE) return; // Zotero takes time
   report_action("Using Zotero translation server to retrieve details from URLs.");
