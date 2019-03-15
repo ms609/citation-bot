@@ -1,5 +1,6 @@
 <?php 
 const ZOTERO_GIVE_UP = 5;
+const ZOTERO_SKIPS = 100;
 
 function query_url_api($ids, $templates) {
   global $SLOW_MODE;
@@ -115,7 +116,9 @@ function zotero_request($url) {
     report_warning(curl_error($ch) . "   For URL: " . $url);
     if (strpos(curl_error($ch), 'timed out after') !== FALSE) {
       $zotero_failures_count = $zotero_failures_count + 1;
-      if ($zotero_failures_count > ZOTERO_GIVE_UP) report_warning("Giving up on URL expansion");
+      if ($zotero_failures_count > ZOTERO_GIVE_UP) {
+        report_warning("Giving up on URL expansion for a while");
+        $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
     }
   }
   curl_close($ch);
@@ -124,6 +127,10 @@ function zotero_request($url) {
   
 function expand_by_zotero(&$template, $url = NULL) {
   global $zotero_failures_count;
+  if ($zotero_failures_count > ZOTERO_GIVE_UP) {
+    $zotero_failures_count = $zotero_failures_count - 1;
+    if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // Reset
+  }
   if ($zotero_failures_count > ZOTERO_GIVE_UP) return;
   $access_date = FALSE;
   if (is_null($url)) {
