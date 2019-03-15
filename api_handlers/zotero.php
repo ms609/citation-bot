@@ -119,6 +119,7 @@ function zotero_request($url) {
       if ($zotero_failures_count > ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
         $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
+      }
     }
   }
   curl_close($ch);
