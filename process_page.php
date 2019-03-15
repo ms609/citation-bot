@@ -1,5 +1,6 @@
 <?php
 @session_start();
+global $zotero_failures_count;  $zotero_failures_count = 0;
 define("HTML_OUTPUT", !isset($argv));
 require_once("expandFns.php");
 $api = new WikipediaBot();

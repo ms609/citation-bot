@@ -1,6 +1,7 @@
 <?php
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
+global $zotero_failures_count;  $zotero_failures_count = 0;
 define("HTML_OUTPUT", !isset($argv));
 require_once('expandFns.php');
 $api = new WikipediaBot();
@@ -27,9 +28,8 @@ if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
   $SLOW_MODE = TRUE;
 }
 
-$category = $argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"];
-$category = trim($category);
-if (preg_match('~^category:([\s\S]*)$~i', $category, $matches)) $category = trim($matches[1]);
+$category = trim($argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"]);
+if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
 
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if ($api->has_user_token()) $user = NULL; // Editing as user, no need to name.

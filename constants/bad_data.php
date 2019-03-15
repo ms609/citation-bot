@@ -23,7 +23,7 @@ const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.p
                                    'math', 'nucl.ex', 'nucl.th', 'physics', 'quant.ph', 'alg.geom',
                                    'cond.mat', 'cs.', 'econ.', 'eess.', 'nlin.');
 const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'amazon.com',
-                        'zenodo', 'archive.org']; // Google Inc is a valid publisher, however.
+                        'zenodo', 'archive.org', 'citeseerx.ist.psu.edu']; // Google Inc is a valid publisher, however.
 const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Service', 'http://', 'https://',
                                  'ZbMATH - the first resource for mathematics', 'MR: Matches for:',
                                  ' Log In', 'Log In ', 'Sign in', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request',
@@ -33,7 +33,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'limit exceeded', 'Error Page', '}}', '{{', 'EU Login', 'bad gateway', 'Captcha',
                                  '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
                                  'Subscribe to read', 'Wiley Online Library', 'pagina is niet gevonden',
-                                 'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended'];
+                                 'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended',
+                                 'Error 404'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
