@@ -4,6 +4,7 @@ error_reporting(E_ALL^E_NOTICE);
 global $zotero_failures_count;  $zotero_failures_count = 0;
 define("HTML_OUTPUT", !isset($argv));
 require_once('expandFns.php');
+require_once('WikipediaBot.php');
 $api = new WikipediaBot();
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
