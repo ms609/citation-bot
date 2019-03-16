@@ -6,12 +6,12 @@ branches:
 language: php
 
 parameters:
-	autoload_directories:
-		- %rootDir%
-    - %rootDir%/tests/
-    - %rootDir%/tests/phpunit/
-    - %rootDir%/api_handlers
-    - %rootDir%/constants
+    autoload_directories:
+      - %rootDir%
+      - %rootDir%/tests/
+      - %rootDir%/tests/phpunit/
+      - %rootDir%/api_handlers
+      - %rootDir%/constants
 
 matrix:
   include:
