@@ -11,8 +11,16 @@ if ($page == '') exit('Nothing requested');
 if (strlen($page) > 128) exit('Excessively long page name passed');
 
 $url = 'https://en.wikipedia.org/w/api.php?action=parse&prop=links&format=json&page=' . $page;
-$json = file_get_contents($url);
-$array = json_decode($json, true);
+$json = @file_get_contents($url);
+if ($json === FALSE) {
+  echo ' Error getting page list';
+  exit(1);
+}    
+$array = @json_decode($json, true);
+if ($array === FALSE) {
+  echo ' Error interpreting page list';
+  exit(1);
+}
 $links = $array['parse']['links'];
 
 // List of things to not print links to, since they occur all the time
