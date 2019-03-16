@@ -7,5 +7,4 @@ parameters:
      autoload_files:
        - %currentWorkingDirectory%/user_messages.php
        - %currentWorkingDirectory%/wikiFunctions.php
-       - %currentWorkingDirectory%/maintain_files.php
        - %currentWorkingDirectory%/expandFns.php
