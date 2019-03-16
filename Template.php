@@ -1574,7 +1574,7 @@ final class Template {
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    
+    if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false')) return (object) array('numFound' => 0);
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
       return (object) array('numFound' => 0);
@@ -3075,7 +3075,11 @@ final class Template {
               $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
             }
           }
-           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+          if (strpos($this->get($param), '&') === FALSE) {
+            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+          } else {
+            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
+          }
           return;
           
         case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.

@@ -36,7 +36,8 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' Angew Chem Int Ed Engl ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
-          ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
+          ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ",
+          ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
           ' e-Print ', ' e-Print ', ' e-Prints ', ' e-Prints ', ' Early Modern Japan: an Interdisciplinary Journal ',
           ' EFSA ', ' eJournal ', ' eJournal ', ' eLife ', ' eLife ', ' eLS ', ' eLS ', ' EMBO J ', 
           ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', ' eNeuro ', ' engrXiv ', ' ePlasty ',' ePlasty ',
@@ -49,7 +50,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' Meddelelser om Grønland ', ' Meddelelser om Grønland, ', ' Methods in Molecular Biology ', ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
           ' n.paradoxa ', ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
           ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PhytoKeys ', ' PLOS Biology ', ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
-          ' PLOS ONE ', ' PNAS ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
+          ' PLOS ONE ', ' PNAS ', ' Published in: ', ' RNA ', ' S.A.P.I.EN.S ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', ' tot de ', ' uHealth ', ' uHealth ', ' v Astronomicheskii Zhurna ',
           ' z/Journal ', ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
           ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys '
@@ -57,7 +58,8 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' Angew Chem Int ed Engl ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
-          ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' Cmaj ', ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
+          ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' Cmaj ', " Dell'Accademia ",
+          ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
           ' E-print ', ' E-Print ', ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ',
           ' Efsa ', ' Ejournal ', ' EJournal ', ' ELife ', ' Elife ', ' Els ', ' ELS ', ' Embo J ', 
           ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', ' ENeuro ', ' Engrxiv ', ' Eplasty ', ' EPlasty ',
@@ -70,7 +72,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Meddelelser Om Grønland ', ' Meddelelser Om Grønland, ', ' Methods in Molecular Biology (Clifton, N.j.) ', ' Mhealth ', ' MHealth ', ' Molecular and Cellular Biology ', ' Msphere ', ' MSphere ', ' Msystems ', ' MSystems ', 
           ' N.Paradoxa ', ' Nasa Tech Briefs ', ' NY Forskning I Grammatik ', ' Ocean Science Journal : Osj ', 
           ' Paj: A Journal of Performance and Art ', ' Palaios ', ' Peerj ', ' Phytokeys ', ' Plos Biology ', ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
-          ' Plos One ', ' Pnas ', ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
+          ' Plos One ', ' Pnas ', ' Published In: ' , ' Rna ', ' S.a.p.i.en.s ', ' Star Trek: The Official Monthly Magazine ', 
           ' Tellus a ', ' The Embo Journal ', ' Time Out London ', ' Tot de ', ' Uhealth ', ' UHealth ', ' V Astronomicheskii Zhurna ',
           ' Z/journal ', ' Z/Journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
           ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys '
