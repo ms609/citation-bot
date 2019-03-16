@@ -1288,13 +1288,14 @@ final class Template {
         foreach ($Items as $item) {
            if ($item['Name'] == 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
-               if (titles_are_dissimilar($this->get('title'), $new_title)) {
-                 report_inline("Similar matching pubmed title not similar enough.");
-                 return;
-               } else {
-                 $this->add_if_new('pmid', $results[0]);
-                 return;
+               foreach (['chapter', 'title', 'series'] as $possible) {
+                 if ($this->has($possible)) && !titles_are_dissimilar($this->get($possible), $new_title)) {
+                   $this->add_if_new('pmid', $results[0]);
+                   return;
+                 }
                }
+               report_inline("Similar matching pubmed title not similar enough.");
+               return;
            }
         }
       }
