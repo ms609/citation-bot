@@ -504,6 +504,9 @@ final class Template {
              if (stripos($value, 'times') !== FALSE && stripos($this->get('via'), 'times') !== FALSE) {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
+             if (stripos($value, ' post') !== FALSE && stripos($this->get('via'), 'post') !== FALSE) {
+               $this->forget('via'); // eliminate via= that matches newspaper mostly
+             }
           }
           if ($param_name === 'newspaper' && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)
                   && $this->blank('website')) { // Website is an alias for newspaper/work/journal, and did not check above
@@ -1054,7 +1057,7 @@ final class Template {
           }
           return $this->add_if_new('pmc', $match[1]);
         }
-      } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)\?doi=([0-9.]*)(&.+)?~", $url, $match)) {
+      } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
@@ -1594,7 +1597,7 @@ final class Template {
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    
+    if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false')) return (object) array('numFound' => 0);
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
       return (object) array('numFound' => 0);
@@ -2646,7 +2649,7 @@ final class Template {
         $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
       }
     }
-    if (preg_match("~^[\'\"]([^\'\"]+)[\'\"]$~u", $this->get($param), $matches)) {
+    if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~u", $this->get($param), $matches)) {
       $this->set($param, $matches[1]); // Remove quotes, if only at start and end
     }
         
@@ -2658,9 +2661,10 @@ final class Template {
         // Parameters are listed alphabetically, though those with numerical content are grouped under "year"
 
         case 'accessdate':
-          if ($this->has('accessdate') && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
+        case 'access-date':
+          if ($this->has($pmatch[1]) && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
           {
-            $this->forget('accessdate');
+            $this->forget($pmatch[1]);
           }
           return;
 
@@ -2882,6 +2886,9 @@ final class Template {
           if (strtolower($this->get('journal')) === $publisher) {
             $this->forget($param);
           }
+          if (strtolower($this->get('newspaper')) === $publisher) {
+            $this->forget($param);
+          }
           return;
           
         case 'quotes':
@@ -2933,6 +2940,9 @@ final class Template {
           $this->set($param, $title);
           if ($title && str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           if ($title && str_equivalent($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
+          if (preg_match('~^(.+)\{\{!\}\} Request PDF$~i', trim($this->get($param)), $match)) {
+                 $this->set($param, trim($match[1]));
+          }
           return;
      
         case 'chapter-url':
@@ -2944,6 +2954,9 @@ final class Template {
         case 'url':
           if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
+              if (preg_match('~^\(PDF\)(.+)$~i', trim($this->get('title')), $match)) {
+                 $this->set('title', trim($match[1]));
+              }
           } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
           //} elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
@@ -3085,7 +3098,11 @@ final class Template {
               $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
             }
           }
-           $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+          if (strpos($this->get($param), '&') === FALSE) {
+            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+          } else {
+            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
+          }
           return;
           
         case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.

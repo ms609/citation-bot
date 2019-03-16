@@ -1,10 +1,11 @@
 <?php 
 const ZOTERO_GIVE_UP = 5;
+const ZOTERO_SKIPS = 100;
 
 function query_url_api($ids, $templates) {
   global $SLOW_MODE;
   global $zotero_failures_count;
-  $zotero_failures_count = 0;
+  if (getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
@@ -115,7 +116,10 @@ function zotero_request($url) {
     report_warning(curl_error($ch) . "   For URL: " . $url);
     if (strpos(curl_error($ch), 'timed out after') !== FALSE) {
       $zotero_failures_count = $zotero_failures_count + 1;
-      if ($zotero_failures_count > ZOTERO_GIVE_UP) report_warning("Giving up on URL expansion");
+      if ($zotero_failures_count > ZOTERO_GIVE_UP) {
+        report_warning("Giving up on URL expansion for a while");
+        $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
+      }
     }
   }
   curl_close($ch);
@@ -124,6 +128,10 @@ function zotero_request($url) {
   
 function expand_by_zotero(&$template, $url = NULL) {
   global $zotero_failures_count;
+  if ($zotero_failures_count > ZOTERO_GIVE_UP) {
+    $zotero_failures_count = $zotero_failures_count - 1;
+    if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // Reset
+  }
   if ($zotero_failures_count > ZOTERO_GIVE_UP) return;
   $access_date = FALSE;
   if (is_null($url)) {
@@ -164,11 +172,18 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
     return FALSE;
-  } else if (!is_array($zotero_data) || !isset($zotero_data[0]) || !isset($zotero_data[0]->title)) {
-    report_warning("Unsupported response for URL ". $url . ": $zotero_response");
+  } else if (!is_array($zotero_data)) {
+    report_warning("JSON did not parse correctly for URL ". $url . ": $zotero_response");
     return FALSE;
+  } else if (!isset($zotero_data[0])) {
+    $result = $zotero_data;
   } else {
     $result = $zotero_data[0];
+  }
+  
+  if (!isset($result->title)) {
+    report_warning("Did not get a title for URL ". $url . ": $zotero_response");
+    return FALSE;
   }
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
     report_info("Could not resolve URL ". $url);
@@ -356,6 +371,13 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'blogPost':
         
         break; // Could be a journal article or a genuine web page.
+        
+      case 'thesis':
+        $template->change_name_to('cite thesis');
+        if (isset($result->university)) $template->add_if_new('publisher' , $result->university);
+        if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) $template->add_if_new('type' , $result->thesisType); // Prefer type since it exists in cite journal too
+        break;
+
       default:
         report_minor_error("Unhandled itemType: " . $result->itemType . " for $url"); // see https://www.mediawiki.org/wiki/Citoid/itemTypes
     }
