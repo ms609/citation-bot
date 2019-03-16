@@ -229,6 +229,14 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertEquals('11573006', $expanded->get('pmid'));
   }
+ 
+  public function testRejectWrongDoiExpansion() {
+    $text = "{{cite web | last1=Coghlan | first1=Andy | title=First evidence of legendary flood reveals China's origin story| website=New Scientist | accessdate=4 August 2016 | doi=10.1126/science.aah4040}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('issue'));
+    $this->assertNull($expanded->get('volume'));
+    $this->assertNull($expanded->get('pages'));
+  }
   
   public function testArxivExpansion() {    
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
