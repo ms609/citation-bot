@@ -4,7 +4,15 @@ branches:
   except: release
 
 language: php
-    
+
+parameters:
+	autoload_directories:
+		- %rootDir%
+    - %rootDir%/tests/
+    - %rootDir%/tests/phpunit/
+    - %rootDir%/api_handlers
+    - %rootDir%/constants
+
 matrix:
   include:
     - stage: test
@@ -13,7 +21,7 @@ matrix:
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
         - composer require --dev phpstan/phpstan
-      script: vendor/bin/phpstan analyse --level 0 expandFns.php category.php process_page.php gadgetapi.php get_linked_pages.php  generate_template.php
+      script: vendor/bin/phpstan analyse --level 0 .
 
 git:
   depth: 3
