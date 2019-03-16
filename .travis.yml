@@ -13,7 +13,7 @@ matrix:
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
         - composer require --dev phpstan/phpstan
-      script: vendor/bin/phpstan analyse --level 0 . tests constants api_handlers tests/phpunit
+      script: vendor/bin/phpstan analyse --level 0 expand.php category.php process_page.php
 
 git:
   depth: 3
