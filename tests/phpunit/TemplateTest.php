@@ -1666,6 +1666,12 @@ ER -  }}';
     $this->assertEquals('Hello', $prepared->get('title'));
   }
  
+  public function testHTMLNotLost() {
+    $text = '{{cite journal|last=&ndash;|first=&ndash;|title=&ndash;|journal=&ndash;|edition=&ndash;|pages=&ndash;}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals($text, $prepared->parsed_text());
+  }
+ 
   public function testDoiValidation() {
     $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013}}';
     $prepared = $this->prepare_citation($text);
