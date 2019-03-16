@@ -1294,7 +1294,7 @@ final class Template {
                    return;
                  }
                }
-               report_inline("Similar matching pubmed title not similar enough.");
+               report_inline("Similar matching pubmed title not similar enough.  Rejected: " . pubmed_link('pmid', $results[0]));
                return;
            }
         }
