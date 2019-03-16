@@ -1397,6 +1397,7 @@ final class Template {
     report_action("Checking AdsAbs database");
     if ($bibcode = $this->has('bibcode')) {
       $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+      print_r($result);
     } elseif ($this->has('doi') 
               && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
