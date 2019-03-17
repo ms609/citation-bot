@@ -82,7 +82,7 @@ class WikipediaBot {
     
   
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
-    $request->signRequest(new HmacSha1(), $this->consumer, $this->token);
+    $request->signRequest(new HmacSha1(), $this->consumer, NULL);
     $authenticationHeader = $request->toHeader();
     
     try {
