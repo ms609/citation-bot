@@ -40,7 +40,7 @@ final class Template {
       'zotero'   => array(),
     );
     if ($this->rawtext) {
-        warning("Template already initialized; call new Template() before calling Template::parse_text()");
+        report_error("Template already initialized; call new Template() before calling Template::parse_text()");
     }
     $this->rawtext = $text;
     $pipe_pos = strpos($text, '|');
