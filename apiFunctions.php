@@ -209,7 +209,7 @@ function adsabs_api($ids, $templates, $identifier) {
     $return = curl_exec($ch);
     if ($return === FALSE) {
       $error = curl_error($ch);
-      $errno = curl_errno($ch)
+      $errno = curl_errno($ch);
       curl_close($ch);
       throw new Exception($error, $errno);
     } 
