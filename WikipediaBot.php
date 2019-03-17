@@ -278,7 +278,7 @@ class WikipediaBot {
     do {
       set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
-      if (isset($res->query->embeddedin->ei)) {
+      if (isset($res->query->embeddedin->ei) || $res === FALSE) {
         report_error('Error reading API from ' . echoable($url));
       } else {
         foreach($res->query->embeddedin as $page) {
