@@ -133,8 +133,12 @@ class WikipediaBot {
         return FALSE;
       }
     } catch(OAuthException $E) {
+      echo "\n\n GOT IT \n";
       report_warning("Exception caught!\n");
-      report_info("Response: ". $E->lastResponse);
+    }
+    } catch(exception $E) {
+      echo "\n\n GOT IT LATER \n";
+      report_warning("Exception caught!\n");
     }
     return FALSE;
   }
