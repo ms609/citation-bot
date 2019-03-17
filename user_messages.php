@@ -28,7 +28,7 @@ function report_minor_error($text) {  // For things we want to error on TRAVIS, 
 }
 
 
-function quietly($function = report_info, $text) {
+function quietly($function = 'report_info', $text) {
   if (defined('VERBOSE') || HTML_OUTPUT ) {
     $function($text);
   }
