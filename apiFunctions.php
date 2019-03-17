@@ -208,7 +208,10 @@ function adsabs_api($ids, $templates, $identifier) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
     $return = curl_exec($ch);
     if ($return === FALSE) {
-      throw new Exception(curl_error($ch), curl_errno($ch));
+      $error = curl_error($ch);
+      $errno = curl_errno($ch)
+      curl_close($ch);
+      throw new Exception($error, $errno);
     } 
     $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -473,9 +476,11 @@ function expand_doi_with_dx($template, $doi) {
      try {
        $ris = @curl_exec($ch);
      } catch (Exception $e) {
+       curl_close($ch);
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
+     curl_close($ch);
      if ($ris == FALSE || stripos($ris, 'DOI Not Found') !== FALSE || stripos($ris, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi($doi);
        return FALSE;
