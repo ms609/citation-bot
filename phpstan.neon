@@ -7,3 +7,6 @@ parameters:
        - %currentWorkingDirectory%/Comment.php
        - %currentWorkingDirectory%/Parameter.php
        - %currentWorkingDirectory%/DOItools.php
+       - %currentWorkingDirectory%/apiFunctions.php
+       - %currentWorkingDirectory%/Template.php
+       - %currentWorkingDirectory%/constants.php
