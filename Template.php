@@ -1255,7 +1255,7 @@ final class Template {
     report_info("Full search failed. Dropping author & end_page... ");
     $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
            . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
-           . ($data['issn'] ? "&issn=$data['issn']" 
+           . ($data['issn'] ? "&issn=" . $data['issn'] 
                             : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''))
            . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
