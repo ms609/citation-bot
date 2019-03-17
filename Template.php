@@ -714,7 +714,7 @@ final class Template {
         return FALSE;
       
       case 'pmid':
-        if ($value === 0 || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
+        if ($value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
           $this->expand_by_pubmed($this->blank('pmc') || $this->blank('doi'));  //Force = TRUE if missing DOI or PMC
@@ -724,7 +724,7 @@ final class Template {
         return FALSE;
 
       case 'pmc':
-        if ($value === 0 || $value === "PMC0" || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
+        if ($value === "PMC0" || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
           if ($this->blank('pmid')) {
