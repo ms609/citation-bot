@@ -1,9 +1,5 @@
 
 parameters:
-     autoload_directories:
-       - %currentWorkingDirectory%
-       - %currentWorkingDirectory%/api_handlers
-       - %currentWorkingDirectory%/constants
      autoload_files:
        - %currentWorkingDirectory%/user_messages.php
        - %currentWorkingDirectory%/wikiFunctions.php
