@@ -7,7 +7,6 @@ use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
-use MediaWiki\OAuthClient\OAuthException;
 
 class WikipediaBot {
   
@@ -133,9 +132,9 @@ class WikipediaBot {
         report_warning("Unrecognized method."); // @codecov ignore - will only be hit if error in our code
         return FALSE;
       }
-    } catch(OAuthException $E) {
+    } catch(exception $E) {
       report_warning("Exception caught!\n");
-      report_info("Response: ". $E->lastResponse);
+      report_info("Response: ". $E->getMessage());
     }
     return FALSE;
   }
