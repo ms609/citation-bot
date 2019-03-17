@@ -2012,11 +2012,7 @@ final class Template {
     if ($xml === FALSE) return FALSE;
     if ($xml->dc___title[1]) {
       $this->add_if_new('title',  
-               wikify_external_text(
-                 str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]),
-                 TRUE // $caps_after_punctuation
-               )
-             );
+               wikify_external_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
     } else {
       $this->add_if_new('title',  wikify_external_text(str_replace("___", ":", $xml->title)));
     }
