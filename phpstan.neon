@@ -4,3 +4,6 @@ parameters:
        - %currentWorkingDirectory%/user_messages.php
        - %currentWorkingDirectory%/wikiFunctions.php
        - %currentWorkingDirectory%/expandFns.php
+       - %currentWorkingDirectory%/Comment.php
+       - %currentWorkingDirectory%/Parameter.php
+       - %currentWorkingDirectory%/DOItools.php
