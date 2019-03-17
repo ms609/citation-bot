@@ -279,7 +279,7 @@ class WikipediaBot {
       set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->embeddedin->ei)) {
-        report_error('Error reading API in what_transcludes_2 for namespace: ' . (string) $namespace);
+        report_error('Error reading API in what_transcludes_2 for namespace: ' . echoable($namespace));
       } else {
         foreach($res->query->embeddedin as $page) {
           $list["title"][] = $page->title;
