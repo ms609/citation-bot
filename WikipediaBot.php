@@ -132,11 +132,12 @@ class WikipediaBot {
         report_warning("Unrecognized method."); // @codecov ignore - will only be hit if error in our code
         return FALSE;
       }
-    } catch(OAuthException $E) {
+    }
+    catch(OAuthException $E) {
       echo "\n\n GOT IT \n";
       report_warning("Exception caught!\n");
     }
-    } catch(exception $E) {
+    catch(exception $E) {
       echo "\n\n GOT IT LATER \n";
       report_warning("Exception caught!\n");
     }
