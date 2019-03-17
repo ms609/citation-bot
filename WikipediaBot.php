@@ -7,6 +7,7 @@ use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
+use MediaWiki\OAuthClient\OAuthException;
 
 class WikipediaBot {
   
