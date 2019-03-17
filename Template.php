@@ -56,7 +56,7 @@ final class Template {
     if ($this->name === 'cite') $this->name = 'citation';
     if ($this->name === 'Cite') $this->name = 'Citation';
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
-      if (preg_match('~< */? *ref *>~i', $this->rawtext) {
+      if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          report_error('reference within citation template: most likely unclosed template');
       }
     }
