@@ -119,3 +119,13 @@ const GOOD_10_1093_DOIS = array( // March 2019 list
           'tcbh', 'teamat', 'toxsci', 'transactionslinnean', 'transactionslinneanbot', 'transactionslinneanzoo', 'treephys', 'tropej', 'trstmh', 'tse',
           'ulr', 've', 'wber', 'wbro', 'whq', 'wjaf', 'workar', 'yel', 'yielaw', 'ywcct',
           'ywes', 'zoolinnean');
+
+
+// List of things to not print links to, since they occur all the time
+const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website', 'International_Standard_Book_Number',
+                            'Library_of_Congress_Control_Number', 'Handle_System', 'PubMed_Central', 'PubMed',
+                            'PubMed_Identifier', 'Bibcode', 'International_Standard_Serial_Number', 'bioRxiv',
+                            'CiteSeerX', 'Zentralblatt_MATH', 'Jahrbuch_über_die_Fortschritte_der_Mathematik',
+                            'Mathematical_Reviews', 'Office_of_Scientific_and_Technical_Information',
+                            'Request_for_Comments', 'Social_Science_Research_Network', 'Zentralblatt_MATH',
+                            'Open_Library', 'ArXiv', 'OCLC', 'Cf.');
