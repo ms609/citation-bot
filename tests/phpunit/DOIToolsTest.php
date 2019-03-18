@@ -42,6 +42,11 @@ final class doiToolsTest extends testBaseClass {
     $result=format_multiple_authors($authors,FALSE);
     $this->assertEquals('Smith, M. A.; Smith, M. A.', $result);
   }
+  public function testFormatMultipleAuthors8() { // extra commas
+    $authors = 'M.A. Smith, ,,,    , M.A. Smith';
+    $result=format_multiple_authors($authors,FALSE);
+    $this->assertEquals('Smith, M. A.; Smith, M. A.', $result);
+  }
     
   public function testFormatAuthor1() {  
     $author = "Conway Morris S.C.";
