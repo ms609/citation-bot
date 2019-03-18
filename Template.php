@@ -40,7 +40,7 @@ final class Template {
       'zotero'   => array(),
     );
     if ($this->rawtext) {
-        warning("Template already initialized; call new Template() before calling Template::parse_text()");
+        report_error("Template already initialized; call new Template() before calling Template::parse_text()");
     }
     $this->rawtext = $text;
     $pipe_pos = strpos($text, '|');
@@ -55,6 +55,11 @@ final class Template {
     // Clean up outdated redirects
     if ($this->name === 'cite') $this->name = 'citation';
     if ($this->name === 'Cite') $this->name = 'Citation';
+    if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
+      if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
+         report_error('reference within citation template: most likely unclosed template');
+      }
+    }
 
     // extract initial parameters/values from Parameters in $this->param
     if ($this->param) foreach ($this->param as $p) {
@@ -174,7 +179,7 @@ final class Template {
       ));
     }
     // And now everything else
-    if ($this->blank('pages', 'page') ||
+    if ($this->blank(['pages', 'page']) ||
         preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')) ||
         (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (date("Y") - $this->get('year')))) // It claims to be on page one
        ) {
@@ -714,7 +719,7 @@ final class Template {
         return FALSE;
       
       case 'pmid':
-        if ($value === 0 || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
+        if ($value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
           $this->expand_by_pubmed($this->blank('pmc') || $this->blank('doi'));  //Force = TRUE if missing DOI or PMC
@@ -724,7 +729,7 @@ final class Template {
         return FALSE;
 
       case 'pmc':
-        if ($value === 0 || $value === "PMC0" || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
+        if ($value === "PMC0" || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
           if ($this->blank('pmid')) {
@@ -991,9 +996,11 @@ final class Template {
               $this->set($url_type, $url); // Save it
             }
           } else {
+            curl_close($ch);
             return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
           }
         }
+        curl_close($ch);
       }
       if (stripos($url, "plants.jstor.org")) {
         return FALSE; # Plants database, not journal
@@ -1255,7 +1262,7 @@ final class Template {
     report_info("Full search failed. Dropping author & end_page... ");
     $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
            . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
-           . ($data['issn'] ? "&issn=$issn" 
+           . ($data['issn'] ? "&issn=" . $data['issn'] 
                             : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''))
            . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
@@ -1388,7 +1395,7 @@ final class Template {
     if ($check_for_errors && $xml->ErrorList) {
       if (isset($xml->ErrorList->PhraseNotFound)) {
         report_warning("Phrase not found in PMID search with query $query: "
-        . echoable(print_r($xml->ErrorList, 1)));
+        . echoable(print_r($xml->ErrorList, TRUE)));
       } else {
         report_inline('no results.');
       }
@@ -1837,6 +1844,7 @@ final class Template {
         } else {
           return FALSE;
         }
+        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return TRUE; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
@@ -2035,11 +2043,7 @@ final class Template {
     if ($xml === FALSE) return FALSE;
     if ($xml->dc___title[1]) {
       $this->add_if_new('title',  
-               wikify_external_text(
-                 str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1]),
-                 TRUE // $caps_after_punctuation
-               )
-             );
+               wikify_external_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
     } else {
       $this->add_if_new('title',  wikify_external_text(str_replace("___", ":", $xml->title)));
     }
@@ -3194,7 +3198,7 @@ final class Template {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
-      $this->tidy('url'); // depending upon end state, convert to chapter-url
+      $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
@@ -3315,6 +3319,7 @@ final class Template {
         switch(curl_getinfo($ch, CURLINFO_HTTP_CODE)){
           case "404":
             global $p;
+            curl_close($ch);
             return "{{dead link|date=" . date("F Y") . "}}";
           #case "403": case "401": return "subscription required"; Does not work for, e.g. http://arxiv.org/abs/cond-mat/9909293
         }
@@ -3692,7 +3697,7 @@ final class Template {
     if (preg_match("~[^0123456789]~", $isbn13) === 1)  return $isbn10;  // Not just numbers
     $sum = 0;
     for ($count=0; $count<12; $count++ ) {
-      $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
+      $sum = $sum + intval($isbn13[$count])*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
     }
     $sum = ((10-$sum%10)%10) ;
     $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
