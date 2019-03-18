@@ -991,9 +991,11 @@ final class Template {
               $this->set($url_type, $url); // Save it
             }
           } else {
+            curl_close($ch);
             return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
           }
         }
+        curl_close($ch);
       }
       if (stripos($url, "plants.jstor.org")) {
         return FALSE; # Plants database, not journal
@@ -3293,6 +3295,7 @@ final class Template {
         switch(curl_getinfo($ch, CURLINFO_HTTP_CODE)){
           case "404":
             global $p;
+            curl_close($ch);
             return "{{dead link|date=" . date("F Y") . "}}";
           #case "403": case "401": return "subscription required"; Does not work for, e.g. http://arxiv.org/abs/cond-mat/9909293
         }
