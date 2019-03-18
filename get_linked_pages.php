@@ -6,6 +6,7 @@
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/plain");
 
+require_once('constants/bad_data.php');
 $page = str_replace(' ', '_', trim($_REQUEST['page']));
 if ($page == '') exit('Nothing requested');
 if (strlen($page) > 128) exit('Excessively long page name passed');
@@ -22,15 +23,6 @@ if ($array === FALSE) {
   exit(1);
 }
 $links = $array['parse']['links'];
-
-// List of things to not print links to, since they occur all the time
-const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website', 'International_Standard_Book_Number',
-                            'Library_of_Congress_Control_Number', 'Handle_System', 'PubMed_Central', 'PubMed',
-                            'PubMed_Identifier', 'Bibcode', 'International_Standard_Serial_Number', 'bioRxiv',
-                            'CiteSeerX', 'Zentralblatt_MATH', 'Jahrbuch_über_die_Fortschritte_der_Mathematik',
-                            'Mathematical_Reviews', 'Office_of_Scientific_and_Technical_Information',
-                            'Request_for_Comments', 'Social_Science_Research_Network', 'Zentralblatt_MATH',
-                            'Open_Library', 'ArXiv', 'OCLC', 'Cf.');
 
 echo "\n";
 foreach($links as $link) {
