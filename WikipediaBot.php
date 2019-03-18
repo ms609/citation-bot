@@ -42,6 +42,7 @@ class WikipediaBot {
         report_error('Account "' . $this->username() . 
         '" or this IP is blocked from editing.'); // Yes, Travis CI IPs are blocked, even to logged in users.
       } else {
+        
         report_error('API call failed: ' . $response->error->info);
       }
       return FALSE;
