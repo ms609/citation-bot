@@ -2,6 +2,7 @@
 @session_start();
 global $zotero_failures_count;  $zotero_failures_count = 0;
 define("HTML_OUTPUT", !isset($argv));
+global $SLOW_MODE;
 require_once("expandFns.php");
 $api = new WikipediaBot();
 if (HTML_OUTPUT) {?>
@@ -53,6 +54,7 @@ foreach (explode('|', $pages) as $title) {
 
   report_phase("Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.");
   $my_page = new Page();
+  $attempts = 0;
   if ($my_page->get_text_from($title, $api)) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
