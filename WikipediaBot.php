@@ -278,7 +278,7 @@ class WikipediaBot {
     do {
       set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
-      if (isset($res->query->embeddedin->ei)) {
+      if (isset($res->query->embeddedin->ei) || $res === FALSE) {
         report_error('Error reading API for template/namespace: ' . echoable($template) . '/' . echoable(($namespace==99)?"Normal":$namespace));
       } else {
         foreach($res->query->embeddedin as $page) {

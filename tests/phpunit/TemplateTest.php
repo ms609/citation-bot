@@ -549,13 +549,13 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url')); // Do not add Arxiv URL if already has Arxiv
 
-    $text = '{{Cite journal|url=bogus| author1 = Marius Junge | author2 = Carlos Palazuelos |title =  Large violation of Bell inequalities with low entanglement | journal = Communications in Mathematical Physics | volume = 306 | issue = 3 | pages = 695–746 |arxiv=1007.3043v2 | year = 2010| doi = 10.1007/s00220-011-1296-8 |bibcode = 2011CMaPh.306..695J}}';
-    $expanded = $this->process_citation($text);
-    $this->assertEquals('10.1.1.752.4896', $expanded->get('citeseerx')); // get it even with a url
+   // $text = '{{Cite journal|url=bogus| author1 = Marius Junge | author2 = Carlos Palazuelos |title =  Large violation of Bell inequalities with low entanglement | journal = Communications in Mathematical Physics | volume = 306 | issue = 3 | pages = 695–746 |arxiv=1007.3043v2 | year = 2010| doi = 10.1007/s00220-011-1296-8 |bibcode = 2011CMaPh.306..695J}}';
+   // $expanded = $this->process_citation($text);
+   // $this->assertEquals('10.1.1.752.4896', $expanded->get('citeseerx')); // get it even with a url
     
-    $text = '{{citation|doi = 10.1007/978-3-642-60408-9_19}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('citeseerx')); // detect bad OA data
+   //  $text = '{{citation|doi = 10.1007/978-3-642-60408-9_19}}';
+   //  $expanded = $this->process_citation($text);
+   //  $this->assertNull($expanded->get('citeseerx')); // detect bad OA data
 
    /*
     $this->assertEquals('http://some.url', $expanded->get('url'));

@@ -40,7 +40,7 @@ final class Template {
       'zotero'   => array(),
     );
     if ($this->rawtext) {
-        warning("Template already initialized; call new Template() before calling Template::parse_text()");
+        report_error("Template already initialized; call new Template() before calling Template::parse_text()");
     }
     $this->rawtext = $text;
     $pipe_pos = strpos($text, '|');
@@ -714,7 +714,7 @@ final class Template {
         return FALSE;
       
       case 'pmid':
-        if ($value === 0 || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
+        if ($value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
           $this->expand_by_pubmed($this->blank('pmc') || $this->blank('doi'));  //Force = TRUE if missing DOI or PMC
@@ -724,7 +724,7 @@ final class Template {
         return FALSE;
 
       case 'pmc':
-        if ($value === 0 || $value === "PMC0" || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
+        if ($value === "PMC0" || $value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
         if ($this->blank($param_name)) {
           $this->add($param_name, sanitize_string($value));
           if ($this->blank('pmid')) {
@@ -1814,6 +1814,7 @@ final class Template {
         } else {
           return FALSE;
         }
+        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return TRUE; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
@@ -3171,7 +3172,7 @@ final class Template {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
-      $this->tidy('url'); // depending upon end state, convert to chapter-url
+      $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
@@ -3669,7 +3670,7 @@ final class Template {
     if (preg_match("~[^0123456789]~", $isbn13) === 1)  return $isbn10;  // Not just numbers
     $sum = 0;
     for ($count=0; $count<12; $count++ ) {
-      $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
+      $sum = $sum + intval($isbn13[$count])*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
     }
     $sum = ((10-$sum%10)%10) ;
     $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
