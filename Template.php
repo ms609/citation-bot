@@ -3670,7 +3670,7 @@ final class Template {
     if (preg_match("~[^0123456789]~", $isbn13) === 1)  return $isbn10;  // Not just numbers
     $sum = 0;
     for ($count=0; $count<12; $count++ ) {
-      $sum = $sum + $isbn13[$count]*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
+      $sum = $sum + intval($isbn13[$count])*($count%2?3:1);  // Depending upon even or odd, we multiply by 3 or 1 (strange but true)
     }
     $sum = ((10-$sum%10)%10) ;
     $isbn13 = '978' . '-' . substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
