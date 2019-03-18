@@ -42,6 +42,11 @@ class WikipediaBot {
         report_error('Account "' . $this->username() . 
         '" or this IP is blocked from editing.'); // Yes, Travis CI IPs are blocked, even to logged in users.
       } else {
+        if (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
+           report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.  Specifically: ' . $response->error->info);
+           sleep(5);
+           return FALSE;  // Would be best to retry, but we are down in the weeds of the code
+        }
         report_error('API call failed: ' . $response->error->info);
       }
       return FALSE;
