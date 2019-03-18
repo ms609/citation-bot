@@ -457,8 +457,8 @@ function expand_doi_with_dx($template, $doi) {
        if (is_null($data)) return;
        while (is_array($data)) {
          if (empty($data)) return;
-         if (!is_set($data['0'])) return;
-         if (is_set($data['1'])) return; // How dow we choose?
+         if (!isset($data['0'])) return;
+         if (isset($data['1'])) return; // How dow we choose?
          $data = $data['0'];  // Going down deeper
        }
        if ($data == '') return;
