@@ -2839,12 +2839,6 @@ final class Template {
           }
           return;
         
-        case 'origyear':
-          if ($this->has('origyear') && $this->blank(['date', 'year'])) {
-            $this->rename('origyear', 'year');
-          }
-          return;
-        
         case 'pmc':
           if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
              $this->set($param, $matches[1]);
