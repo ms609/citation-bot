@@ -2245,6 +2245,7 @@ final class Template {
       $parameter_list = PARAMETER_LIST;
       $test_dat = '';
       $shortish = -1;
+      $comp = '';
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
