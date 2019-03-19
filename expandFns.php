@@ -50,7 +50,7 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
 ################ Functions ##############
 
 function sanitize_doi($doi) {
-  if (pref_match('~^https?://d?x?\.?doi\.org/([\S\s]*)$~', $doi, $match)) $doi = $match[1]; // Strip URL part if present
+  if (preg_match('~^https?://d?x?\.?doi\.org/([\S\s]*)$~', $doi, $match)) $doi = $match[1]; // Strip URL part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   $extension = substr($doi, strrpos($doi, '.'));
