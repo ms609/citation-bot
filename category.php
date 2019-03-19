@@ -58,6 +58,12 @@ if (HTML_OUTPUT) {
 if ($category) {
   $attempts = 0;
   $pages_in_category = $api->category_members($category);
+  if (!is_array($pages_in_category) || !isset($pages_in_category[0])) {
+    echo('Category appears to be empty');
+    html_echo(' </pre></body></html>', "\n");
+    ob_end_flush(); 
+    exit(0);
+  }
   shuffle($pages_in_category);
   $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
