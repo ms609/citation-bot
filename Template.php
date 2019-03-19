@@ -2244,6 +2244,7 @@ final class Template {
       $shortest = -1;
       $parameter_list = PARAMETER_LIST;
       
+      
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
