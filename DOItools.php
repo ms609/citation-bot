@@ -228,6 +228,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
     $chunks = explode(",", $authors[0]);
     foreach ($chunks as $chunk){
       $bits = explode(" ", $chunk);
+      
       foreach ($bits as $bit){
         if ($bit) $bitts[] = $bit;
       }
