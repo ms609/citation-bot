@@ -2295,7 +2295,7 @@ final class Template {
       }
       if (  $shortest < 3
          && strlen($test_dat > 0)
-         && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
+         && similar_text($closest, $test_dat) / strlen($test_dat) > 0.4
          && ($shortest + 1 < $shortish  // No close competitor
              || $shortest / $shortish <= 2/3
              || strlen($closest) > strlen($comp)
