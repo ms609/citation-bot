@@ -3632,12 +3632,12 @@ final class Template {
 
   public function modifications($type='all') {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
+    $new = array();
+    $ret = array();
     if ($this->param) {
       foreach ($this->param as $p) {
         $new[$p->param] = $p->val;
       }
-    } else {
-      $new = array();
     }
 
     $old = ($this->initial_param) ? $this->initial_param : array();
