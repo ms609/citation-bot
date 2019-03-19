@@ -2243,6 +2243,7 @@ final class Template {
 
       $shortest = -1;
       $parameter_list = PARAMETER_LIST;
+      $test_dat = '';
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
@@ -2509,6 +2510,7 @@ final class Template {
       // Check the parameter list to find a likely replacement
       $shortest = -1;
       $closest = 0;
+      $comp = '';
       
       if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
          $param_number = $match[0];
