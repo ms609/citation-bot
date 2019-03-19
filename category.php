@@ -10,9 +10,11 @@ $argument["cat"] = NULL;
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
+    unset($oArg);
   } elseif (substr($arg, 0, 1) == "-") {
     $oArg = substr($arg, 1);
   } else {
+    if (!isset($oArg)) report_error('Unexpected text: ' . $arg);
     switch ($oArg) {
       case "P": case "A": case "T":
         $argument["pages"][] = $arg;
