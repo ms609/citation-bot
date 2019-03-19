@@ -228,7 +228,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
     $chunks = explode(",", $authors[0]);
     foreach ($chunks as $chunk){
       $bits = explode(" ", $chunk);
-      
+      $bitts = array();
       foreach ($bits as $bit){
         if ($bit) $bitts[] = $bit;
       }
@@ -237,7 +237,9 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
       if ((isset($bits[1]) && $bits[1]) || $savedChunk) {
         $return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
         $savedChunk = NULL;
-      } else $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
+      } else {
+        $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
+      }
     }
   }
   if ($savedChunk) $return[0] = $bits[0];
@@ -247,7 +249,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
   foreach ($frags as $frag){
     $return[] = is_initials($frag)?format_initials($frag):$frag;
   }
-    $returnString = preg_replace("~;$~", "", trim(implode(" ", $return)));
+  $returnString = preg_replace("~;$~", "", trim(implode(" ", $return)));
   if ($returnAsArray){
     $authors = explode ( "; ", $returnString);
     return $authors;
