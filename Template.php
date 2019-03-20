@@ -2838,7 +2838,7 @@ final class Template {
             $this->rename('magazine', 'journal');
           }
           return;
-          
+         
         case 'orig-year': case 'origyear':
           if ($this->blank(['year', 'date'])) { // Will not show unless one of these is set, so convert
             if (preg_match('~^\d\d\d\d$~', $this->get($param))) { // Only if a year, might contain text like "originally was...."
