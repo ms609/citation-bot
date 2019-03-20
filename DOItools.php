@@ -217,7 +217,6 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
   }
 
   $authors = explode(";", $authors);
-  print_r($authors);
   #dbg(array("IN"=>$authors));
   $savedChunk = NULL;
   if (isset($authors[1])) {
