@@ -227,6 +227,8 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
     //Use commas as delimiters
     $chunks = explode(",", $authors[0]);
     foreach ($chunks as $chunk){
+      $chunk = trim($chunk);
+      if ($chunk === '') continue; // Odd things with extra commas
       $bits = explode(" ", $chunk);
       $bitts = array();
       foreach ($bits as $bit){
