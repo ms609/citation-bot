@@ -110,7 +110,7 @@ function author_is_human($author) {
 function format_author($author){
   
   // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
-  $surname = NULL;
+  $surname = NU L;
   // Google and Zotero sometimes have these
   $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, NULL, 'UTF-8'));
 
