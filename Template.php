@@ -280,7 +280,7 @@ final class Template {
       return FALSE;
     }
 
-    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : NULL;        
+    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';        
 
     switch ($param_name) {
       ### EDITORS
