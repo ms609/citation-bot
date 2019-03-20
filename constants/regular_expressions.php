@@ -18,4 +18,4 @@ const REGEXP_IS_URL = '~^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.
 // This list is going to grow and grow based upon user requests
 // ALWAYS verify that they registered the examples you are given
 // http://oasis.postech.ac.kr/handle/2014.oak/9965 is not registered for example
-const REGEXP_HANDLES = "~^(?:https?://)(?:hdl\.handle\.net/|kb\.osu\.edu/dspace/handle/|oasis\.postech\.ac\.kr/handle/|idus\.us\.es/xmlui/handle/|dspace\.library\.uu\.nl/handle/|dspace\.mit\.edu/handle/)([^\?]*)~i";
+const REGEXP_HANDLES = "~^(?:https?://)(?:hdl\.handle\.net/|kb\.osu\.edu/dspace/handle/|oasis\.postech\.ac\.kr/handle/|idus\.us\.es/xmlui/handle/|dspace\.library\.uu\.nl/handle/|dspace\.mit\.edu/handle/|digital\.csic\.es/handle)([^\?]*)~i";
