@@ -280,7 +280,7 @@ final class Template {
       return FALSE;
     }
 
-    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : NULL;        
+    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';        
 
     switch ($param_name) {
       ### EDITORS
@@ -2013,9 +2013,10 @@ final class Template {
 
   protected function google_book_details($gid) {
     $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
+    $data = @file_get_contents($google_book_url);
+    if ($data === FALSE) return FALSE;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
-      str_replace(":", "___", @file_get_contents($google_book_url))
-    );
+      str_replace(":", "___", $data));
     $xml = @simplexml_load_string($simplified_xml);
     if ($xml === FALSE) return FALSE;
     if ($xml->dc___title[1]) {
@@ -2246,6 +2247,7 @@ final class Template {
       $test_dat = '';
       $shortish = -1;
       $comp = '';
+      $closest = NULL;
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
@@ -2511,7 +2513,7 @@ final class Template {
 
       // Check the parameter list to find a likely replacement
       $shortest = -1;
-      $closest = 0;
+      $closest = '';
       $comp = '';
       $shortish = -1;
       
@@ -3632,12 +3634,12 @@ final class Template {
 
   public function modifications($type='all') {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
+    $new = array();
+    $ret = array();
     if ($this->param) {
       foreach ($this->param as $p) {
         $new[$p->param] = $p->val;
       }
-    } else {
-      $new = array();
     }
 
     $old = ($this->initial_param) ? $this->initial_param : array();
