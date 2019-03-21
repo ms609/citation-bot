@@ -8,7 +8,7 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-final class WikipediaBot {
+class WikipediaBot {
   
   protected $consumer, $token, $ch, $userEditToken;
   
