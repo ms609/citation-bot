@@ -12,19 +12,22 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-require_once('expandFns.php');
-
+if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
+    include_once('env.php');
+}
 if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET')) {
-  report_error("Citation Bot's authorization tokens not configured");
+  echo("Citation Bot's authorization tokens not configured");
+  exit(1);
 }
 
 try {
   $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
   $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET')));
   $client = new Client($conf);
+  unset($conf);
 }
-catch (Throwable $e) { report_error("Citation Bot's authorization tokens did not work"); } // PHP 7
-catch (Exception $e) { report_error("Citation Bot's authorization tokens did not work"); } // PHP 5
+catch (Throwable $e) { echo("Citation Bot's authorization tokens did not work"); exit(1); } // PHP 7
+catch (Exception $e) { echo("Citation Bot's authorization tokens did not work"); exit(1); } // PHP 5
     
 // Existing Access Grant - verify that it works since we are here any way
 if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
@@ -55,14 +58,15 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         echo "Authorization Success.  Future requests should just work now.";
         exit(0);
    }
-   catch (Throwable $e) { report_error("Incoming authorization tokens did not work"); } // PHP 7
-   catch (Exception $e) { report_error("Incoming authorization tokens did not work"); } // PHP 5   
+   catch (Throwable $e) { echo("Incoming authorization tokens did not work"); exit(1); } // PHP 7
+   catch (Exception $e) { echo("Incoming authorization tokens did not work"); exit(1); } // PHP 5   
 }
 
 // New Incoming Access Grant without SESSION
 if (isset($_GET['oauth_verifier'])) {
    @session_destroy();
-   report_error("Incoming authorization tokens did not have matching session -- possible cookies lost");
+   echo("Incoming authorization tokens did not have matching session -- possible cookies lost");
+   exit(1);
 }
 
 
@@ -81,6 +85,7 @@ try {
     catch (Throwable $e) { ; } // PHP 7
     catch (Exception $e) { ; } // PHP 5
     @session_destroy();
-    report_error("Error authenticating.  Resetting.  Please try again.");
+    echo("Error authenticating.  Resetting.  Please try again.");
+    exit(1);
 
 
