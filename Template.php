@@ -836,13 +836,13 @@ final class Template {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapterurl ');
-           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
+           $return_code ||= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapterurl ');
+           $return_code ||= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
            return (boolean) $return_code;
         } elseif ($this->has('url') && $this->has('chapter-url')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapter-url ');
-           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
+           $return_code ||= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapter-url ');
+           $return_code ||= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
            return (boolean) $return_code;
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
