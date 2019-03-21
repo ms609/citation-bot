@@ -32,12 +32,11 @@ catch (Exception $e) { echo("Citation Bot's internal authorization tokens did no
 // Existing Access Grant - verify that it works since we are here any way
 if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
    try {
-     json_decode( $client->makeOAuthCall(
+      $client->makeOAuthCall(
       new Token($_SESSION['access_key'], $_SESSION['access_secret']),
-         'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
-      ) )->query->tokens->csrftoken;
-     echo ' Existing valid tokens user tokens already set';
-     exit(0);
+         'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json');
+      echo ' Existing valid tokens user tokens already set';
+      exit(0);
    }
    catch (Throwable $e) { ; } // PHP 7
    catch (Exception $e) { ; } // PHP 5
