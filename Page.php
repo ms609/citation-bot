@@ -53,6 +53,9 @@ class Page {
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
 
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
+    if ($this->text === FALSE) {
+       report_error('Unable to get anything for ', $title, ' from ' . WIKI_ROOT); 
+    }
     $this->start_text = $this->text;
     $this->construct_modifications_array();
     $this->set_date_pattern();
