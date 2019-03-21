@@ -58,6 +58,7 @@ if (HTML_OUTPUT) {
 if ($category) {
   $attempts = 0;
   $pages_in_category = $api->category_members($category);
+  
   shuffle($pages_in_category);
   $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
