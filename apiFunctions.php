@@ -1,5 +1,4 @@
 <?php
-require_once('constants.php');
 function query_pmid_api ($pmids, $templates) { return entrez_api($pmids, $templates, 'pubmed'); }
 function query_pmc_api  ($pmcs, $templates)  { return entrez_api($pmcs,  $templates, 'pmc'); }
   
