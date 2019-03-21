@@ -373,7 +373,6 @@ function expand_by_doi($template, $force = FALSE) {
           return FALSE;
         }
       }
-
       report_action("Querying CrossRef: doi:" . doi_link($doi));
       if ($crossRef->volume_title && $template->blank('journal')) {
         if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
