@@ -10,6 +10,7 @@
 require_once('Comment.php');
 require_once('Template.php');
 require_once('apiFunctions.php');
+
 class Page {
 
   protected $text, $title, $modifications, $date_style;
