@@ -7,7 +7,6 @@ use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
-require_once('constants.php');
 class WikipediaBot {
   
   protected $consumer, $token, $ch;
