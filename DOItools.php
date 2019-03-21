@@ -1,5 +1,4 @@
 <?php
-require_once('constants.php');
 /* junior_test - tests a name for a Junior appellation
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
