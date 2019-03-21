@@ -22,7 +22,7 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
-    $this->authenticate_user();
+    if (HTML_OUTPUT) $this->authenticate_user();
   }
   
   function __destruct() {
@@ -394,7 +394,6 @@ class WikipediaBot {
   }
 
   private function authenticate_user() {
-    if (!HTML_OUTPUT) return;  // Running as a script
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
@@ -409,11 +408,11 @@ class WikipediaBot {
      // Something went wrong
      catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
-     @session_destroy();
-     report_error('User token failure, go to https://tools.wmflabs.org/citations/authenticate.php');
+     sleep(3); // Slow down any looping
     }
+    @session_destroy();
     @header("Location: https://tools.wmflabs.org/citations/authenticate.php");
-    sleep(3);
+    sleep(5); // If the header line above works, we never print out the error line
     report_error('User token failure, go to https://tools.wmflabs.org/citations/authenticate.php');
   }
 
