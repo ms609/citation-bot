@@ -26,8 +26,8 @@ try {
   $client = new Client($conf);
   unset($conf);
 }
-catch (Throwable $e) { echo("Citation Bot's authorization tokens did not work"); exit(1); } // PHP 7
-catch (Exception $e) { echo("Citation Bot's authorization tokens did not work"); exit(1); } // PHP 5
+catch (Throwable $e) { echo("Citation Bot's internal authorization tokens did not work"); exit(1); } // PHP 7
+catch (Exception $e) { echo("Citation Bot's internal authorization tokens did not work"); exit(1); } // PHP 5
     
 // Existing Access Grant - verify that it works since we are here any way
 if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
@@ -58,8 +58,8 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         echo "Authorization Success.  Future requests should just work now.";
         exit(0);
    }
-   catch (Throwable $e) { echo("Incoming authorization tokens did not work"); exit(1); } // PHP 7
-   catch (Exception $e) { echo("Incoming authorization tokens did not work"); exit(1); } // PHP 5   
+   catch (Throwable $e) { @sesssion_destroy(); echo("Incoming authorization tokens did not work"); exit(1); } // PHP 7
+   catch (Exception $e) { @sesssion_destroy(); echo("Incoming authorization tokens did not work"); exit(1); } // PHP 5   
 }
 
 // New Incoming Access Grant without SESSION
@@ -77,7 +77,7 @@ try {
       $_SESSION['request_secret'] = $token->secret;
       // Redirect the user to the authorization URL (only works if NO html has been sent).  Include non-header just in case
       @header("Location: $authUrl");
-      sleep(1);
+      sleep(3);
       echo "Go to this URL to <a href='$authUrl'>authorize citation bot</a>";
       exit(0);
     }
