@@ -10,7 +10,6 @@
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
  * to find information that can be added to existing citations.
  */
-require_once('constants.php');
 require_once("Page.php");
 require_once("Parameter.php");
 
