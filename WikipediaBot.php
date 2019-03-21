@@ -186,7 +186,7 @@ final class WikipediaBot {
     
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
-    if (isset($this->userEditToken)) $auth_token = $this->userEditToken;  // User tokens
+    $auth_token = $this->userEditToken;  // User tokens
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
@@ -406,11 +406,6 @@ final class WikipediaBot {
      @session_destroy();
      report_error('User token failure');
     }
-  }
-
-  public function has_user_token() {
-    if (isset($this->userEditToken)) return TRUE;
-    return FALSE;
   }
 
 }
