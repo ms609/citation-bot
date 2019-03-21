@@ -2841,9 +2841,11 @@ final class Template {
           }
           return;
         
-        case 'origyear':
-          if ($this->has('origyear') && $this->blank(['date', 'year'])) {
-            $this->rename('origyear', 'year');
+        case 'orig-year': case 'origyear':
+          if ($this->blank(['year', 'date'])) { // Will not show unless one of these is set, so convert
+            if (preg_match('~^\d\d\d\d$~', $this->get($param))) { // Only if a year, might contain text like "originally was...."
+              $this->rename($param, 'year');
+            }
           }
           return;
         
@@ -3123,14 +3125,6 @@ final class Template {
             $this->rename($param, 'date'); // When date & year are blank, this is displayed as date.  So convert
           }
           return;
-          
-        case 'orig-year': case 'origyear':
-          if ($this->blank(['year', 'date'])) { // Will not show unless one of these is set, so convert
-            if (preg_match('~^\d\d\d\d$~', $this->get($param))) { // Only if a year, might contain text like "originally was...."
-              $this->rename($param, 'year');
-            }
-          }
-          return; 
       }
     }
   }
