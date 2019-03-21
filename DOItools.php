@@ -3,6 +3,7 @@
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
+
 function junior_test($name) {
   $junior = (substr($name, -3) == " Jr")?" Jr":FALSE;
   if ($junior) {
