@@ -3,7 +3,6 @@
  * Parameter includes parsing functions to extract parameters, values, and metadata
  * from templates.
  */
-require_once('constants.php');
 final class Parameter {
   public $pre, $param, $eq, $val, $post;
 
