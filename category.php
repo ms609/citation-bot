@@ -32,7 +32,7 @@ $category = trim($argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"]);
 if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
 
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-if ($api->has_user_token()) $user = NULL; // Editing as user, no need to name.
+$user = NULL; // Editing as user, no need to name.
 if (is_valid_user($user)) {
   echo " Activated by $user.\n";
   $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
