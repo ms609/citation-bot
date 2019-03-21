@@ -5,7 +5,7 @@ const ZOTERO_SKIPS = 100;
 function query_url_api($ids, $templates) {
   global $SLOW_MODE;
   global $zotero_failures_count;
-  if (getenv('TRAVIS')) $zotero_failures_count = 0;
+  if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
@@ -95,7 +95,6 @@ function query_url_api($ids, $templates) {
 function zotero_request($url) {
   global $zotero_failures_count;
   
-  #$ch = curl_init('http://' . TOOLFORGE_IP . '/translation-server/web');
   $ch = curl_init('https://tools.wmflabs.org/translation-server/web');
   
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");

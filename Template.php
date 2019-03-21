@@ -280,7 +280,7 @@ final class Template {
       return FALSE;
     }
 
-    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : NULL;        
+    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';        
 
     switch ($param_name) {
       ### EDITORS
@@ -1286,6 +1286,29 @@ final class Template {
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
     if ($results[1] == 1) {
+      // Double check title if no DOI and no Journal were used
+      if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
+        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=pubmed&id=" . $results[0];
+        $xml = @simplexml_load_file($url);
+        if ($xml === FALSE) {
+          report_warning("Unable to do PMID search");
+          return;
+        }
+        $Items = $xml->DocSum->Item;
+        foreach ($Items as $item) {
+           if ($item['Name'] == 'Title') {
+               $new_title = str_replace(array("[", "]"), "", (string) $item);
+               foreach (['chapter', 'title', 'series'] as $possible) {
+                 if ($this->has($possible) && !titles_are_dissimilar($this->get($possible), $new_title)) {
+                   $this->add_if_new('pmid', $results[0]);
+                   return;
+                 }
+               }
+               report_inline("Similar matching pubmed title not similar enough.  Rejected: " . pubmed_link('pmid', $results[0]));
+               return;
+           }
+        }
+      }
       $this->add_if_new('pmid', $results[0]);
     } else {
       report_inline("nothing found.");
@@ -2013,9 +2036,10 @@ final class Template {
 
   protected function google_book_details($gid) {
     $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
+    $data = @file_get_contents($google_book_url);
+    if ($data === FALSE) return FALSE;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
-      str_replace(":", "___", @file_get_contents($google_book_url))
-    );
+      str_replace(":", "___", $data));
     $xml = @simplexml_load_string($simplified_xml);
     if ($xml === FALSE) return FALSE;
     if ($xml->dc___title[1]) {
@@ -2243,6 +2267,10 @@ final class Template {
 
       $shortest = -1;
       $parameter_list = PARAMETER_LIST;
+      $test_dat = '';
+      $shortish = -1;
+      $comp = '';
+      $closest = NULL;
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
@@ -2508,7 +2536,9 @@ final class Template {
 
       // Check the parameter list to find a likely replacement
       $shortest = -1;
-      $closest = 0;
+      $closest = '';
+      $comp = '';
+      $shortish = -1;
       
       if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
          $param_number = $match[0];
@@ -2834,9 +2864,11 @@ final class Template {
           }
           return;
         
-        case 'origyear':
-          if ($this->has('origyear') && $this->blank(['date', 'year'])) {
-            $this->rename('origyear', 'year');
+        case 'orig-year': case 'origyear':
+          if ($this->blank(['year', 'date'])) { // Will not show unless one of these is set, so convert
+            if (preg_match('~^\d\d\d\d$~', $this->get($param))) { // Only if a year, might contain text like "originally was...."
+              $this->rename($param, 'year');
+            }
           }
           return;
         
@@ -3116,14 +3148,6 @@ final class Template {
             $this->rename($param, 'date'); // When date & year are blank, this is displayed as date.  So convert
           }
           return;
-          
-        case 'orig-year': case 'origyear':
-          if ($this->blank(['year', 'date'])) { // Will not show unless one of these is set, so convert
-            if (preg_match('~^\d\d\d\d$~', $this->get($param))) { // Only if a year, might contain text like "originally was...."
-              $this->rename($param, 'year');
-            }
-          }
-          return; 
       }
     }
   }
@@ -3627,12 +3651,12 @@ final class Template {
 
   public function modifications($type='all') {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
+    $new = array();
+    $ret = array();
     if ($this->param) {
       foreach ($this->param as $p) {
         $new[$p->param] = $p->val;
       }
-    } else {
-      $new = array();
     }
 
     $old = ($this->initial_param) ? $this->initial_param : array();

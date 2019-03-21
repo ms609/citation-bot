@@ -1,6 +1,5 @@
 <?php
 @session_start();
-global $zotero_failures_count;  $zotero_failures_count = 0;
 define("HTML_OUTPUT", !isset($argv));
 global $SLOW_MODE;
 require_once("expandFns.php");
