@@ -408,9 +408,9 @@ class WikipediaBot {
      // Something went wrong
      catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
+     @session_destroy();
      sleep(3); // Slow down any looping
     }
-    @session_destroy();
     @header("Location: https://tools.wmflabs.org/citations/authenticate.php");
     sleep(5); // If the header line above works, we never print out the error line
     report_error('User token failure, go to https://tools.wmflabs.org/citations/authenticate.php');
