@@ -411,9 +411,15 @@ class WikipediaBot {
      @session_destroy();
      sleep(3); // Slow down any looping
     }
-    @header("Location: https://tools.wmflabs.org/citations/authenticate.php");
-    sleep(5); // If the header line above works, we never print out the error line
-    report_error('User token failure, go to https://tools.wmflabs.org/citations/authenticate.php');
+    if (stripps($_SERVER["REQUEST_URI"], '-dev') === FALSE) {
+      @header("Location: https://tools.wmflabs.org/citations/authenticate.php");
+      sleep(5); // If the header line above works, we never print out the error line
+      report_error('User token failure, go to https://tools.wmflabs.org/citations/authenticate.php');
+    } else {
+      @header("Location: https://tools.wmflabs.org/citations-dev/authenticate.php");
+      sleep(5); // If the header line above works, we never print out the error line
+      report_error('User token failure, go to https://tools.wmflabs.org/citations-dev/authenticate.php');
+    }
   }
 
 }
