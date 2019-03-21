@@ -389,6 +389,7 @@ class WikipediaBot {
   }
 
   private function authenticate_user() {
+    if (!HTML_OUTPUT) return;  // Running as a script
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
@@ -404,8 +405,11 @@ class WikipediaBot {
      catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
      @session_destroy();
-     report_error('User token failure');
+     report_error('User token failure, go to https://tools.wmflabs.org/citations/authenticate.php');
     }
+    @header("Location: https://tools.wmflabs.org/citations/authenticate.php");
+    sleep(3);
+    report_error('User token failure, go to https://tools.wmflabs.org/citations/authenticate.php');
   }
 
 }
