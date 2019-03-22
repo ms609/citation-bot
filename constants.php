@@ -1,10 +1,10 @@
 <?php 
-require_once('bad_data.php');
-require_once('capitalization.php');
-require_once('math.php');
-require_once('mistakes.php');
-require_once('namespaces.php');
-require_once('parameters.php');
+require_once('constants/bad_data.php');
+require_once('constants/capitalization.php');
+require_once('constants/math.php');
+require_once('constants/mistakes.php');
+require_once('constants/namespaces.php');
+require_once('constants/parameters.php');
 	
 
 define('HOME', dirname(__FILE__) . '/');
