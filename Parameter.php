@@ -5,6 +5,7 @@
  */
 require_once('constants.php');
 require_once('user_messages.php');
+require_once('expandFns.php');
 final class Parameter {
   public $pre, $param, $eq, $val, $post;
 
