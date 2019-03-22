@@ -23,11 +23,7 @@ require_once("Comment.php");
 require_once("wikiFunctions.php");
 require_once("user_messages.php");
 require_once("WikipediaBot.php");
-
-$api_files = glob('api_handlers/*.php');
-foreach ($api_files as $file) {
-    require_once($file);
-}
+require_once("zotero.php");
 
 const CROSSREFUSERNAME = 'martins@gmail.com';
 // Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY and PHP_BOTUSERNAME environment variables
