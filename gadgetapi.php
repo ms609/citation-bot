@@ -6,7 +6,7 @@ header("Content-Type: text/json");
 ob_start();
 define("FLUSHING_OKAY", FALSE);
 
-$SLOW_MODE  = FALSE;
+$SLOW_MODE = FALSE;
 if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
 
 //Set up tool requirements
