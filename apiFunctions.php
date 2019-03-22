@@ -362,10 +362,11 @@ function expand_by_doi($template, $force = FALSE) {
     if ($crossRef) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
       if ($template->has('title')) { // Verify title of DOI matches existing data somewhat
-        $bad_data=TRUE;
+        $bad_data = TRUE;
         foreach (['chapter', 'title', 'series'] as $possible) {
-          if ($template->has($possible) && !titles_are_dissimilar($template->get($possible), $crossRef->article_title)) {
+          if ($template->has($possible) && titles_are_similar($template->get($possible), $crossRef->article_title)) {
             $bad_data = FALSE;
+            break;
           }
         }
         if ($bad_data) {
