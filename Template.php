@@ -40,7 +40,7 @@ final class Template {
       'jstor'    => array(),
       'zotero'   => array(),
     );
-    if ($this->rawtext) {
+    if ($this->rawt ext) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()");
     }
     $this->rawtext = $text;
