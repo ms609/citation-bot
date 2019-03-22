@@ -1,5 +1,5 @@
 <?php
-  
+  require_once('constants.php');
 function html_echo($text, $alternate_text='') {
   if (!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
 }
