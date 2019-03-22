@@ -1696,7 +1696,7 @@ final class Template {
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
     // Convert &#x__; to characters
-    $ris = explode("\n", html_entity_decode($dat, NULL, 'UTF-8'));
+    $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     $ris_authors = 0;
     
     if(preg_match('~(?:T[I1]).*-(.*)$~m', $dat,  $match)) {
@@ -2945,7 +2945,7 @@ final class Template {
           if (mb_substr($title, mb_strlen($title) - 3) == '...') {
             // MOS:ELLIPSIS says do not do
             // $title = mb_substr($title, 0, mb_strlen($title) - 3) 
-            //        . html_entity_decode("&hellip;", NULL, 'UTF-8');
+            //        . html_entity_decode("&hellip;", ENT_COMPAT | ENT_HTML401, 'UTF-8');
           } elseif (in_array(mb_substr($title, -1), array(',', ':'))) { 
               // Do not remove periods, which legitimately occur at the end of abreviations
               $title = mb_substr($title, 0, -1);
