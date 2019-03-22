@@ -1416,6 +1416,7 @@ final class Template {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
+    echo "\n".$this->get('bibcode')."  " . __LINE__ . "\n";
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
       return $this->expand_book_adsabs();
     }
@@ -1425,8 +1426,10 @@ final class Template {
     }
   
     report_action("Checking AdsAbs database");
+    echo "\n".$this->get('bibcode')."  " . __LINE__ . "\n";
     if ($bibcode = $this->has('bibcode')) {
       $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+      print_r($result);
     } elseif ($this->has('doi') 
               && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
@@ -1640,7 +1643,8 @@ final class Template {
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
       $decoded = @json_decode($body);
-      
+      echo "\n" . __LINE__ . "   " . $header . "\n";
+      print_r($decoded);
       if (is_object($decoded) && isset($decoded->error)) {
         if (is_object($decoded) && isset($decoded->error)) {
           throw new Exception(
