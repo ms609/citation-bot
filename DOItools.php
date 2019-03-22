@@ -112,7 +112,7 @@ function format_author($author){
   // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = '';
   // Google and Zotero sometimes have these
-  $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, NULL, 'UTF-8'));
+  $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
 
   $ends_with_period = (substr(trim($author), -1) === ".");
   
@@ -201,7 +201,7 @@ function format_author($author){
 }
 
 function format_multiple_authors($authors, $returnAsArray = FALSE){
-  $authors = html_entity_decode($authors, NULL, "UTF-8");
+  $authors = html_entity_decode($authors, ENT_COMPAT | ENT_HTML401, "UTF-8");
 
   $return = array();
   ## Split the citation into an author by author account
@@ -283,11 +283,23 @@ function can_safely_modify_dashes($value) {
        && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1)); // A-3, A3-5 etc.  Use "." for generic dash
 }
 
+function titles_are_similar($title1, $title2) {
+  return !titles_are_dissimilar($title1, $title2);
+}
+
 function titles_are_dissimilar($inTitle, $dbTitle) {
+        // Reduce punctuation
         $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $inTitle)));
         $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $dbTitle)));
-        $inTitle = trim(rtrim($inTitle, '.')); // Trailing periods
-        $dbTitle = trim(rtrim($dbTitle, '.')); // Trailing periods
+        // Strip trailing periods
+        $inTitle = trim(rtrim($inTitle, '.'));
+        $dbTitle = trim(rtrim($dbTitle, '.'));
+        // Strip trailing (Third Edition)
+        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        $dbTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $dbTitle);
+        // Strip trailing Online
+        $inTitle = preg_replace('~ Online^~iu', '', $inTitle);
+        $dbTitle = preg_replace('~ Online^~iu', '', $dbTitle);
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)

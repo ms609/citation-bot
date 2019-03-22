@@ -39,7 +39,7 @@ final class Template {
       'jstor'    => array(),
       'zotero'   => array(),
     );
-    if ($this->rawtext) {
+    if (isset($this->rawtext)) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()");
     }
     $this->rawtext = $text;
@@ -836,13 +836,13 @@ final class Template {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapterurl ');
-           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
+           $return_code |= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapterurl ');
+           $return_code |= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
            return (boolean) $return_code;
         } elseif ($this->has('url') && $this->has('chapter-url')) {
            $return_code = FALSE;
-           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapter-url ');
-           $return_code += $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
+           $return_code |= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapter-url ');
+           $return_code |= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
            return (boolean) $return_code;
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
@@ -1299,7 +1299,7 @@ final class Template {
            if ($item['Name'] == 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
                foreach (['chapter', 'title', 'series'] as $possible) {
-                 if ($this->has($possible) && !titles_are_dissimilar($this->get($possible), $new_title)) {
+                 if ($this->has($possible) && titles_are_similar($this->get($possible), $new_title)) {
                    $this->add_if_new('pmid', $results[0]);
                    return;
                  }
@@ -1696,7 +1696,7 @@ final class Template {
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
     // Convert &#x__; to characters
-    $ris = explode("\n", html_entity_decode($dat, NULL, 'UTF-8'));
+    $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     $ris_authors = 0;
     
     if(preg_match('~(?:T[I1]).*-(.*)$~m', $dat,  $match)) {
@@ -2945,7 +2945,7 @@ final class Template {
           if (mb_substr($title, mb_strlen($title) - 3) == '...') {
             // MOS:ELLIPSIS says do not do
             // $title = mb_substr($title, 0, mb_strlen($title) - 3) 
-            //        . html_entity_decode("&hellip;", NULL, 'UTF-8');
+            //        . html_entity_decode("&hellip;", ENT_COMPAT | ENT_HTML401, 'UTF-8');
           } elseif (in_array(mb_substr($title, -1), array(',', ':'))) { 
               // Do not remove periods, which legitimately occur at the end of abreviations
               $title = mb_substr($title, 0, -1);
