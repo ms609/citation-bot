@@ -67,3 +67,13 @@ function jstor_link($id) {
     ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . $id . '</a>'
     : "JSTOR $id";
 }
+
+/**
+ * Unused
+ * @codeCoverageIgnore
+ */
+function wiki_link($page, $style = "#036;", $target = NULL) {
+  if (!$target) $target = $page;
+  $css = $style?" style='color:$style !important'":"";
+  return "<a href='" . WIKI_ROOT . "?title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
+}
