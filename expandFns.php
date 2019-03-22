@@ -132,7 +132,7 @@ function wikify_external_text($title) {
       $title = str_replace($matches[0][$i], $placeholder[$i], $title);
     }
   }
-  $title = html_entity_decode($title, NULL, "UTF-8");
+  $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
   if (mb_substr($title, -1) == ".") {
