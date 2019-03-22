@@ -41,7 +41,7 @@ if (!getenv('TRAVIS')) {
 }
 ini_set("memory_limit", "256M");
 
-if (!isset($GLOBALS['SLOW_MODE'])) $GLOBALS['SLOW_MODE'] = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
+if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
   $ON = TRUE;
