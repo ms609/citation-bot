@@ -11,6 +11,7 @@ require_once('Comment.php');
 require_once('Template.php');
 require_once('apiFunctions.php');
 require_once('constants.php');
+require_once('user_messages.php');
 class Page {
 
   protected $text, $title, $modifications, $date_style;
