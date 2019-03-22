@@ -1,7 +1,7 @@
 <?php
 @session_start();
 define("HTML_OUTPUT", !isset($argv));
-global $SLOW_MODE;
+
 require_once("expandFns.php");
 $api = new WikipediaBot();
 if (HTML_OUTPUT) {?>
@@ -77,7 +77,7 @@ foreach (explode('|', $pages) as $title) {
     <input type="hidden" name="page" value="<?php echo $title;?>" />
     <input type="hidden" name="user" value="<?php echo $user;?>" />
     <input type="hidden" name="edit" value="on" />
-    <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>" />
+    <input type="hidden" name="slow" value="<?php echo $GLOBALS['SLOW_MODE'];?>" />
     <input type="submit" value="Submit edits" />
   </form>
   <?php
