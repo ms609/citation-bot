@@ -1299,7 +1299,7 @@ final class Template {
            if ($item['Name'] == 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
                foreach (['chapter', 'title', 'series'] as $possible) {
-                 if ($this->has($possible) && !titles_are_dissimilar($this->get($possible), $new_title)) {
+                 if ($this->has($possible) && titles_are_similar($this->get($possible), $new_title)) {
                    $this->add_if_new('pmid', $results[0]);
                    return;
                  }
@@ -2326,7 +2326,7 @@ final class Template {
         $comp    = str_replace('#', "", $comp);
       }
       if (  $shortest < 3
-         && strlen($test_dat > 0)
+         && strlen($test_dat) > 0
          && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
          && ($shortest + 1 < $shortish  // No close competitor
              || $shortest / $shortish <= 2/3
