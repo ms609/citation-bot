@@ -1605,44 +1605,64 @@ final class Template {
   // $options should be a series of field names, colons (optionally urlencoded), and
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
-  protected function query_adsabs($options) {  
+  protected function query_adsabs($options) { 
+    echo "\n" . $options . "\n";
+    echo "\n" . __LINE__ . "\n";
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false')) return (object) array('numFound' => 0);
+    echo "\n" . __LINE__ . "\n";
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
       return (object) array('numFound' => 0);
     }
-    
+    echo "\n" . __LINE__ . "\n";
     try {
       $ch = curl_init();
+          echo "\n" . __LINE__ . "\n";
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
       $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
+          echo "\n" . __LINE__ . "\n";
+      echo "\n" . $adsabs_url . "\n";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
+                echo "\n" . __LINE__ . "\n";
       $return = curl_exec($ch);
+                echo "\n" . __LINE__ . "\n";
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
+                  echo "\n" . __LINE__ . "\n";
         sleep(4);
         $return = curl_exec($ch);
+                  echo "\n" . __LINE__ . "\n";
         if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && getenv('TRAVIS')) {
+                    echo "\n" . __LINE__ . "\n";
            sleep(20); // better slow than not at all in TRAVIS
+                    echo "\n" . __LINE__ . "\n";
            $return = curl_exec($ch);
+                    echo "\n" . __LINE__ . "\n";
         }
       }
+                echo "\n" . __LINE__ . "\n";
       if ($return === FALSE) {
+                  echo "\n" . __LINE__ . "\n";
         $exception = curl_error($ch);
         $number = curl_errno($ch);
         curl_close($ch);
+                  echo "\n" . __LINE__ . "\n";
         throw new Exception($exception, $number);
       }
+                echo "\n" . __LINE__ . "\n";
       $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
       curl_close($ch);
+                echo "\n" . __LINE__ . "\n";
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
+                echo "\n" . __LINE__ . "\n";
       $decoded = @json_decode($body);
+                echo "\n" . __LINE__ . "\n";
       echo "\n" . __LINE__ . "   " . $header . "\n";
       print_r($decoded);
       if (is_object($decoded) && isset($decoded->error)) {
