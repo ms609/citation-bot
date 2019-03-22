@@ -5,9 +5,9 @@ header("Content-Type: text/json");
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
 ob_start();
 define("FLUSHING_OKAY", FALSE);
-global $SLOW_MODE;
-$SLOW_MODE = FALSE;
-if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
+
+$GLOBALS['SLOW_MODE'] = FALSE;
+if (isset($_REQUEST["slow"])) $GLOBALS['SLOW_MODE'] = TRUE;
 
 //Set up tool requirements
 require_once('expandFns.php');
