@@ -4,6 +4,7 @@
  * from templates.
  */
 require_once('constants.php');
+require_once('user_messages.php');
 final class Parameter {
   public $pre, $param, $eq, $val, $post;
 
