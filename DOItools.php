@@ -288,7 +288,7 @@ function titles_are_similar($title1, $title2) {
 }
 
 function titles_are_dissimilar($inTitle, $dbTitle) {
-        // Reduce puntuation
+        // Reduce punctuation
         $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $inTitle)));
         $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $dbTitle)));
         // Trailing periods
