@@ -43,10 +43,6 @@ ini_set("memory_limit", "256M");
 global $SLOW_MODE;
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
-if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
-  $ON = TRUE;
-}
-
 ################ Functions ##############
 
 function sanitize_doi($doi) {
