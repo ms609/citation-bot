@@ -291,13 +291,13 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         // Reduce punctuation
         $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $inTitle)));
         $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $dbTitle)));
-        // Trailing periods
+        // Strip trailing periods
         $inTitle = trim(rtrim($inTitle, '.'));
         $dbTitle = trim(rtrim($dbTitle, '.'));
         // Strip trailing (Third Edition)
         $inTitle = preg_replace('~\(\S+ Edition\)^~iu', '', $inTitle);
         $dbTitle = preg_replace('~\(\S+ Edition\)^~iu', '', $dbTitle);
-        // Trailing Online
+        // Strip trailing Online
         $inTitle = preg_replace('~ Online^~iu', '', $inTitle);
         $dbTitle = preg_replace('~ Online^~iu', '', $dbTitle);
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
