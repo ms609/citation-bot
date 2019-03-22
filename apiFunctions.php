@@ -369,6 +369,14 @@ function expand_by_doi($template, $force = FALSE) {
             break;
           }
         }
+        if (isset($crossRef->series_title)) {
+          foreach (['chapter', 'title'] as $possible) { // Series === series could easily be false possitive
+            if ($template->has($possible) && titles_are_similar($template->get($possible), $crossRef->series_title)) {
+                $bad_data = FALSE;
+                break;
+            }
+          }
+        }
         if ($bad_data) {
           report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
           return FALSE;
