@@ -1,0 +1,21 @@
+
+parameters:
+     autoload_files:
+       - %currentWorkingDirectory%/user_messages.php
+       - %currentWorkingDirectory%/wikiFunctions.php
+       - %currentWorkingDirectory%/expandFns.php
+       - %currentWorkingDirectory%/Comment.php
+       - %currentWorkingDirectory%/Parameter.php
+       - %currentWorkingDirectory%/DOItools.php
+       - %currentWorkingDirectory%/apiFunctions.php
+       - %currentWorkingDirectory%/Template.php
+       - %currentWorkingDirectory%/constants.php
+       - %currentWorkingDirectory%/Page.php
+       - %currentWorkingDirectory%/WikipediaBot.php
+	     - %currentWorkingDirectory%/constants/bad_data.php
+	     - %currentWorkingDirectory%/constants/capitalization.php
+	     - %currentWorkingDirectory%/constants/math.php
+	     - %currentWorkingDirectory%/constants/mistakes.php
+	     - %currentWorkingDirectory%/constants/namespaces.php
+	     - %currentWorkingDirectory%/constants/parameters.php
+	     - %currentWorkingDirectory%/constants/regular_expressions.php	       
