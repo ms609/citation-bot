@@ -1,8 +1,11 @@
 <?php 
-$constant_files = glob('constants/*.php');
-foreach ($constant_files as $file) {
-    require_once($file);   
-}
+require_once('bad_data.php');
+require_once('capitalization.php');
+require_once('math.php');
+require_once('mistakes.php');
+require_once('namespaces.php');
+require_once('parameters.php');
+	
 
 define('HOME', dirname(__FILE__) . '/');
 
