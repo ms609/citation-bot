@@ -24,9 +24,9 @@ foreach ($argv as $arg) {
   }
 }
 
-$GLOBALS['SLOW_MODE'] = FALSE;
+$SLOW_MODE = FALSE;
 if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
-  $GLOBALS['SLOW_MODE'] = TRUE;
+  $SLOW_MODE = TRUE;
 }
 
 $category = trim($argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"]);
