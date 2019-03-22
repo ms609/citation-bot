@@ -363,6 +363,27 @@ function expand_by_doi($template, $force = FALSE) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+      if ($template->has('title')) { // Verify title of DOI matches existing data somewhat
+        $bad_data = TRUE;
+        foreach (['chapter', 'title', 'series'] as $possible) {
+          if ($template->has($possible) && titles_are_similar($template->get($possible), $crossRef->article_title)) {
+            $bad_data = FALSE;
+            break;
+          }
+        }
+        if (isset($crossRef->series_title)) {
+          foreach (['chapter', 'title'] as $possible) { // Series === series could easily be false possitive
+            if ($template->has($possible) && titles_are_similar($template->get($possible), $crossRef->series_title)) {
+                $bad_data = FALSE;
+                break;
+            }
+          }
+        }
+        if ($bad_data) {
+          report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
+          return FALSE;
+        }
+      }
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
       if ($crossRef->volume_title && $template->blank('journal')) {
