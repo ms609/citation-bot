@@ -113,7 +113,7 @@ function format_author($author){
   // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = '';
   // Google and Zotero sometimes have these
-  $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, NULL, 'UTF-8'));
+  $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
 
   $ends_with_period = (substr(trim($author), -1) === ".");
   
@@ -202,7 +202,7 @@ function format_author($author){
 }
 
 function format_multiple_authors($authors, $returnAsArray = FALSE){
-  $authors = html_entity_decode($authors, NULL, "UTF-8");
+  $authors = html_entity_decode($authors, ENT_COMPAT | ENT_HTML401, "UTF-8");
 
   $return = array();
   ## Split the citation into an author by author account
