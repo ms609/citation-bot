@@ -283,6 +283,10 @@ function can_safely_modify_dashes($value) {
        && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1)); // A-3, A3-5 etc.  Use "." for generic dash
 }
 
+function titles_are_similar($title1, $title2) {
+  return !titles_are_dissimilar($title1, $title2);
+}
+
 function titles_are_dissimilar($inTitle, $dbTitle) {
         $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $inTitle)));
         $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $dbTitle)));
