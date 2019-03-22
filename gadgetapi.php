@@ -6,8 +6,8 @@ header("Content-Type: text/json");
 ob_start();
 define("FLUSHING_OKAY", FALSE);
 
-$GLOBALS['SLOW_MODE']  = FALSE;
-if (isset($_REQUEST["slow"])) $GLOBALS['SLOW_MODE'] = TRUE;
+$SLOW_MODE  = FALSE;
+if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
 
 //Set up tool requirements
 require_once('expandFns.php');
