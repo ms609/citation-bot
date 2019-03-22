@@ -295,8 +295,8 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         $inTitle = trim(rtrim($inTitle, '.'));
         $dbTitle = trim(rtrim($dbTitle, '.'));
         // Strip trailing (Third Edition)
-        $inTitle = preg_replace('~\(\S+ Edition\)^~iu', '', $inTitle);
-        $dbTitle = preg_replace('~\(\S+ Edition\)^~iu', '', $dbTitle);
+        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        $dbTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $dbTitle);
         // Strip trailing Online
         $inTitle = preg_replace('~ Online^~iu', '', $inTitle);
         $dbTitle = preg_replace('~ Online^~iu', '', $dbTitle);
