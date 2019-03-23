@@ -640,7 +640,7 @@ final class Template {
                 }
             }
             // 1-34 vs article 431234 -- Some give range and article ID as page numbers depending upon database - at least 4 characters though.  Prefer article number
-            if (preg_match('~^1[-–]\d+$~u', $param) && preg_match('~^[a-zA-Z1-9]\d{3,}$~', $all_page_values)) {
+            if (preg_match('~^1[-–]\d+$~u', $value) && preg_match('~^[a-zA-Z1-9]\d{3,}$~', $all_page_values)) {
               return FALSE;
             }
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
