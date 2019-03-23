@@ -14,6 +14,11 @@ if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
 if (!defined("FLUSHING_OKAY")) {  // Default when not gadget API
   define("FLUSHING_OKAY", TRUE);
 }
+if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
+  // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
+  // if they are not set already. Remember to set permissions (not readable!)
+  include_once('env.php'); 
+}
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
