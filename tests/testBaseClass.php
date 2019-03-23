@@ -1,5 +1,8 @@
 <?php
 error_reporting(E_ALL); // All tests run this way
+if (!defined('VERBOSE')) define('VERBOSE', TRUE);		
+global $SLOW_MODE;		
+$SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
