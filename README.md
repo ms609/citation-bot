@@ -29,17 +29,16 @@ Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_t
 
 Basic structure of a Citation bot script:
 * define configuration constants
-* require `expandFns.php`, which will set up the rest of the needed functions
+* require `expandFns.php`, which will set up the basic needed environment
 * use Page functions to fetch/expand/post the page's text
 
 
 A quick tour of the main files:
 * `constants.php`: constants defined
-* `wikiFunctions.php`: functions related to Wikipedia ineractions, including some marked
-   as "untested".
+* `wikiFunctions.php`: functions related to Wikipedia ineractions.
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
 * `DOItools.php`: defines text/name functions
-* `expandFns.php`: sets up needed functions, requires most of the other files listed here
+* `expandFns.php`: sets up everything, requires most of the other files listed here
 * `apiFunctions.php`: sets up needed functions
 
 Class files:
