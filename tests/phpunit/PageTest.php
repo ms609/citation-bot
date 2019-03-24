@@ -193,6 +193,6 @@ final class PageTest extends testBaseClass {
       $page->expand_text();
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
-    $this->assertTrue(TRUE);
+    $this->assertTrue(FALSE);  // Block PHP 8 travis from being committed to GIT on accident
   }
 }
