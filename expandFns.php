@@ -14,6 +14,11 @@ if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
 if (!defined("FLUSHING_OKAY")) {  // Default when not gadget API
   define("FLUSHING_OKAY", TRUE);
 }
+if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
+  // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
+  // if they are not set already. Remember to set permissions (not readable!)
+  include_once('env.php'); 
+}
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
@@ -29,9 +34,6 @@ foreach ($api_files as $file) {
     require_once($file);
 }
 
-const CROSSREFUSERNAME = 'martins@gmail.com';
-// Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY and PHP_BOTUSERNAME environment variables
-
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Optimisation
@@ -42,10 +44,6 @@ if (!getenv('TRAVIS')) {
 ini_set("memory_limit", "256M");
 
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
-
-if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
-  $ON = TRUE;
-}
 
 ################ Functions ##############
 
