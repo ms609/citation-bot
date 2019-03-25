@@ -5,6 +5,7 @@
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/plain");
 
+$SLOW_MODE = TRUE;
 require_once('expandFns.php');
 $t = new Template();
 $t->parse_text('{{Cite web}}');
