@@ -4,12 +4,12 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' and ', ' and then ', ' as ', ' at ', ' at ',
           ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' BJPsych ', ' BMC ', ' BMJ ', ' but ', ' by ',
           ' CBC ', ' CNS ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
-          ' das ', ' DC ', ' de ', ' de ', ' dei ', ' del ', ' della ', ' delle ', ' dem ', ' den ', ' der ', 
-          ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' du ', ' e ', ' ed ', ' ein ', 
+          ' das ', ' DC ', ' de ', ' dei ', ' del ', ' della ', ' delle ', ' dem ', ' den ', ' der ', 
+          ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' e ', ' ed ', ' ein ', 
           ' eine ', ' einen ', ' el ', ' else ', ' EMBO ', ' en ', ' et ', ' FASEB ', ' FEBS ', 
           ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' IEEE ', ' if ', ' ILR ', ' in ', ' into ', ' is ', 
           ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' mit ',  ' MNRAS ', ' mot ', ' NASA ', ' NEJM ', ' non ',
-          ' nor ', ' NY ', ' NYC ', ' NYT ', ' NZ ', ' och ', ' OECD ', ' of ', ' off ', ' on ', ' og ', ' or ', 
+          ' nor ', ' NRC ', ' NY ', ' NYC ', ' NYT ', ' NZ ', ' och ', ' OECD ', ' of ', ' off ', ' on ', ' og ', ' or ', 
           ' over ', ' PCR ', ' per ', ' PNAS ', ' PS: ', ' R&D ', ' RNA ', ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' von ', ' voor ', ' when ', ' with ', ' within ', ' woor ', 
           ' y ', ' zu ', ' zum ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
@@ -20,12 +20,12 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' and Then ', ' As ', ' At ', ' At ',
           ' Aus ', ' Av ', ' Bba ', ' Bbc ', ' Be ', ' Bjpsych ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
           ' Cbc ', ' Cns ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
-          ' Das ', ' Dc ', ' De ', ' De ', ' Dei ', ' Del ', ' Della ', ' Delle ', ' Dem ', ' Den ', ' Der ', 
-          ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' Du ', ' E ', ' Ed ', ' Ein ', 
+          ' Das ', ' Dc ', ' De ', ' Dei ', ' Del ', ' Della ', ' Delle ', ' Dem ', ' Den ', ' Der ', 
+          ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' E ', ' Ed ', ' Ein ', 
           ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' En ', ' Et ', ' Faseb ', ' Febs ', 
           ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' Ieee ', ' If ', ' Ilr ', ' In ', ' Into ', ' Is ', 
           ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mit ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
-          ' Nor ', ' Ny ', ' Nyc ', ' Nyt ', ' Nz ', ' Och ', ' Oecd ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
+          ' Nor ', ' Nrc ', ' Ny ', ' Nyc ', ' Nyt ', ' Nz ', ' Och ', ' Oecd ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
           ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Ps: ', ' R&d ', ' Rna ', ' Ssrn ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
           ' Um ', ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' Voor ', ' When ', ' With ', ' Within ', ' Woor ', 
           ' Y ', ' Zu ', ' Zum ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
@@ -35,7 +35,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Angew Chem Int Ed Engl ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
+          ' Angew Chem Int Ed Engl ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ",
           ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
           ' e-Print ', ' e-Print ', ' e-Prints ', ' e-Prints ', ' Early Modern Japan: an Interdisciplinary Journal ',
@@ -57,7 +57,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Angew Chem Int ed Engl ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
+          ' Angew Chem Int ed Engl ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' B/Gcvs ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' Cmaj ', " Dell'Accademia ",
           ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
           ' E-print ', ' E-Print ', ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ',
