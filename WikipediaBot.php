@@ -13,11 +13,7 @@ class WikipediaBot {
   protected $consumer, $token, $ch;
   
   function __construct() {
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
-      // An opportunity to s et the PHP_OAUTH_ environment variables used in this function,
-      // if they are not set already. Remember to set permissions (not readable!)
-      include_once('env.php'); 
-    }
+    // expandFns.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
