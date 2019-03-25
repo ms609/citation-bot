@@ -639,10 +639,6 @@ final class Template {
                   return FALSE;
                 }
             }
-            // 1-34 vs article 431234 -- Some give range and article ID as page numbers depending upon database - at least 4 characters though.  Prefer article number
-            if (preg_match('~^1[-–]\d+$~u', $value) && preg_match('~^[a-zA-Z1-9]\d{3,}$~', $all_page_values)) {
-              return FALSE;
-            }
             if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
             if ($param_name !== "page")  $this->forget("page");
             if ($param_name !== "pp")    $this->forget("pp");
@@ -1092,7 +1088,7 @@ final class Template {
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
         
-      } elseif (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?(?:pubmed|entrez/eutils/elink\.fcgi\S+dbfrom=pubmed\S+)/.*?=?(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?(?:pubmed/|entrez/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|entrez/query\.fcgi\S+db=pubmed\S+).*?=?(\d+)~i", $url, $match)) {
         if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?/pubmed/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
@@ -2327,7 +2323,7 @@ final class Template {
       }
       if (  $shortest < 3
          && strlen($test_dat) > 0
-         && similar_text($closest, $test_dat) / strlen($test_dat) > 0.4
+         && similar_text($shortest, $test_dat) / strlen($test_dat) > 0.4
          && ($shortest + 1 < $shortish  // No close competitor
              || $shortest / $shortish <= 2/3
              || strlen($closest) > strlen($comp)
