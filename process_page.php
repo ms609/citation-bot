@@ -1,7 +1,7 @@
 <?php
 @session_start();
 define("HTML_OUTPUT", !isset($argv));
-global $SLOW_MODE;
+
 require_once("expandFns.php");
 $api = new WikipediaBot();
 if (HTML_OUTPUT) {?>
@@ -40,6 +40,9 @@ if (is_valid_user($user)) {
 
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
+if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
+  $ON = TRUE;
+}
 if (!isset($ON)) $ON = isset($argv[2]);
 
 foreach (explode('|', $pages) as $title) {
