@@ -298,8 +298,11 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
         $dbTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $dbTitle);
         // Strip trailing Online
-        $inTitle = preg_replace('~ Online^~iu', '', $inTitle);
-        $dbTitle = preg_replace('~ Online^~iu', '', $dbTitle);
+        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
+        $dbTitle = preg_replace('~ Online$~iu', '', $dbTitle);
+        // Strip leading the
+        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
+        $dbTitle = preg_replace('~^The ~iu', '', $dbTitle);
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
