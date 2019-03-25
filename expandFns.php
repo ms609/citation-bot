@@ -14,6 +14,11 @@ if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
 if (!defined("FLUSHING_OKAY")) {  // Default when not gadget API
   define("FLUSHING_OKAY", TRUE);
 }
+if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
+  // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
+  // if they are not set already. Remember to set permissions (not readable!)
+  include_once('env.php'); 
+}
 require_once("constants.php");
 require_once("DOItools.php");
 require_once("Page.php");
@@ -25,9 +30,6 @@ require_once("user_messages.php");
 require_once("WikipediaBot.php");
 require_once("zotero.php");
 
-const CROSSREFUSERNAME = 'martins@gmail.com';
-// Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY and PHP_BOTUSERNAME environment variables
-
 mb_internal_encoding('UTF-8'); // Avoid ??s
 
 //Optimisation
@@ -36,12 +38,8 @@ if (!getenv('TRAVIS')) {
     ob_start();
 }
 ini_set("memory_limit", "256M");
-global $SLOW_MODE;
-if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
-if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
-  $ON = TRUE;
-}
+if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
 ################ Functions ##############
 

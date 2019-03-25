@@ -1,5 +1,6 @@
 <?php 
 // Source: http://www.tilman.de/programme/mathparser/substitutions.txt
+// This list includes some items twice.  That is okay, but some static analyis tools will complain
  const MML_TAGS = array (
   '<msqrt>'  => '\sqrt{',
   '<mi>'     => '',
