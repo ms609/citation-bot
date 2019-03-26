@@ -32,15 +32,6 @@ if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
 $category = trim($argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"]);
 if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
 
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-if (is_valid_user($user)) {
-  echo " Activated by $user.\n";
-  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
-} else {
-  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits";
-  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
-}
-
 if (HTML_OUTPUT) {
 ?>
 <html>
@@ -53,9 +44,17 @@ if (HTML_OUTPUT) {
   <body>
     <pre>
 <?php
-} else {
-  echo "\n";
 }
+
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
+if (is_valid_user($user)) {
+  echo " Activated by $user.\n\n";
+  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
+} else {
+  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits\n\n";
+  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
+}
+
 if ($category) {
   $attempts = 0;
   $pages_in_category = $api->category_members($category);
