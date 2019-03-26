@@ -399,12 +399,10 @@ class WikipediaBot {
          ) )->query->tokens->csrftoken;
       return;
      }
-     // Something went wrong
      catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
-     unset($_SESSION['access_key']);
-     unset($_SESSION['access_secret']);
     }
+    @session_destroy();
     if (stripps($_SERVER["REQUEST_URI"], '-dev') === FALSE) {
       echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations/authenticate.php">https://tools.wmflabs.org/citations/authenticate.php</a>');
     } else {
