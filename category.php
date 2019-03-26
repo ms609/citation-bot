@@ -3,7 +3,6 @@
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT", !isset($argv));
 require_once('expandFns.php');
-$api = new WikipediaBot();
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
 foreach ($argv as $arg) {
@@ -57,6 +56,7 @@ if (HTML_OUTPUT) {
   echo "\n";
 }
 if ($category) {
+  $api = new WikipediaBot();
   $attempts = 0;
   $pages_in_category = $api->category_members($category);
   if (!is_array($pages_in_category) || empty($pages_in_category)) {
