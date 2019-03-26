@@ -406,11 +406,11 @@ class WikipediaBot {
     if (stripps($_SERVER["REQUEST_URI"], '-dev') === FALSE) {
       @header("Location: https://tools.wmflabs.org/citations/authenticate.php");
       sleep(3);
-      @echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations/authenticate.php">https://tools.wmflabs.org/citations/authenticate.php</a>');
+      echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations/authenticate.php">https://tools.wmflabs.org/citations/authenticate.php</a>');
     } else {
       @header("Location: https://tools.wmflabs.org/citations-dev/authenticate.php");
       sleep(3);
-      @echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations-dev/authenticate.php">https://tools.wmflabs.org/citations-dev/authenticate.php</a>');
+      echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations-dev/authenticate.php">https://tools.wmflabs.org/citations-dev/authenticate.php</a>');
     }
     exit(0);
   }
