@@ -17,7 +17,12 @@ if (!defined("FLUSHING_OKAY")) {  // Default when not gadget API
 if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
   // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
   // if they are not set already. Remember to set permissions (not readable!)
+ try {
+  ob_start(); // Suppress output before <html>, unless there is an error
   include_once('env.php'); 
+  ob_end_clean();
+ }
+ catch (Exception $e) { report_error(ob_get_flush()); }
 }
 require_once("constants.php");
 require_once("DOItools.php");
