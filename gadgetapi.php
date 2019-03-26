@@ -31,9 +31,9 @@ if ($newText !== $originalText) {
 }
 
 if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
-  $debug_text = @ob_end_flush();
-  $debug_text = @ob_end_flush() . $debug_text;
-  $debug_text = @ob_end_flush() . $debug_text;
+  $debug_text = @ob_get_flush();
+  $debug_text = @ob_get_flush() . $debug_text;
+  $debug_text = @ob_get_flush() . $debug_text;
 } else {
   $debug_text = '';
 }
