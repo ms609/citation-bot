@@ -28,8 +28,8 @@ try {
   unset($conf);
   @ob_end_clean(); // Throw away output
 }
-catch (Throwable $e) { @ob_get_contents() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 7
-catch (Exception $e) { @ob_get_contents() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 5
+catch (Throwable $e) { @ob_end_flush() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 7
+catch (Exception $e) { @ob_end_flush() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 5
 
 // Existing Access Grant - verify that it works since we are here any way
 if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
