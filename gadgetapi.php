@@ -31,7 +31,7 @@ if ($newText !== $originalText) {
 }
 
 if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
-  $debug_text = @ob_get_contents() . @ob_get_contents() . @ob_get_contents(); // Just in case some other part of the code sets up a buffer
+  $debug_text = @ob_end_flush() . @ob_end_flush() . @ob_end_flush(); // Just in case some other part of the code sets up a buffer
 } else {
   $debug_text = '';
 }
