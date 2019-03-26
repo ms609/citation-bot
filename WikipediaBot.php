@@ -403,17 +403,14 @@ class WikipediaBot {
      catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
      @session_destroy();
-     sleep(3); // Slow down any looping
+     sleep(1); // Slow down any looping
     }
     if (stripps($_SERVER["REQUEST_URI"], '-dev') === FALSE) {
-      @header("Location: https://tools.wmflabs.org/citations/authenticate.php");
-      sleep(5); // If the header line above works, we never print out the error line
-      report_error('User token failure, go to https://tools.wmflabs.org/citations/authenticate.php');
+      echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations/authenticate.php">https://tools.wmflabs.org/citations/authenticate.php</a>');
     } else {
-      @header("Location: https://tools.wmflabs.org/citations-dev/authenticate.php");
-      sleep(5); // If the header line above works, we never print out the error line
-      report_error('User token failure, go to https://tools.wmflabs.org/citations-dev/authenticate.php');
+      echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations-dev/authenticate.php">https://tools.wmflabs.org/citations-dev/authenticate.php</a>');
     }
+    exit(1);
   }
 
 }
