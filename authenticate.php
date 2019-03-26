@@ -19,16 +19,17 @@ if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET'))
   echo("Citation Bot's authorization tokens not configured");
   exit(1);
 }
-ob_start(); // Do not send any text before header() call
+
 try {
+  ob_start(); // Do not send any text before header() call
   $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
   $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET')));
   $client = new Client($conf);
   unset($conf);
+  @ob_end_clean(); // Throw away output
 }
 catch (Throwable $e) { @ob_get_contents() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 7
 catch (Exception $e) { @ob_get_contents() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 5
-@ob_end_clean(); // Throw away output
 
 // Existing Access Grant - verify that it works since we are here any way
 if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
