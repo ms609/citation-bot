@@ -12,21 +12,20 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
-    include_once('env.php');
-}
+ob_start();
+include_once('env.php');  // This outputs stuff
+ob_end_clean();
+
 if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET')) {
   echo("Citation Bot's authorization tokens not configured");
   exit(1);
 }
 
 try {
-  ob_start(); // Do not send any text before header() call
   $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
   $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET')));
   $client = new Client($conf);
   unset($conf);
-  @ob_end_clean(); // Throw away output
 }
 catch (Throwable $e) { @ob_end_flush() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 7
 catch (Exception $e) { @ob_end_flush() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 5
@@ -84,12 +83,11 @@ try {
       sleep(3);
       echo "Go to this URL to <a href='$authUrl'>authorize citation bot</a>";
       exit(0);
-    }
-    // Something went wrong.  Blow it all away.
-    catch (Throwable $e) { ; } // PHP 7
-    catch (Exception $e) { ; } // PHP 5
-    @session_destroy();
-    echo("Error authenticating.  Resetting.  Please try again.");
-    exit(1);
+}
+catch (Throwable $e) { ; } // PHP 7
+catch (Exception $e) { ; } // PHP 5
+@session_destroy();
+echo("Error authenticating.  Resetting.  Please try again.");
+exit(1);
 
 
