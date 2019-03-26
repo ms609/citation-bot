@@ -16,8 +16,14 @@ class WikipediaBot {
     // expandFns.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
-    $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
-    $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
+    try {
+      ob_start();
+      $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
+      $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
+      ob_end_clean(); // Throw away output
+    }
+    catch (Throwable $e) { report_error(ob_get_flush() . "\n Citation Bot's internal authorization tokens did not work"); } // PHP 7
+    catch (Exception $e) { report_error(ob_get_flush() . "\n Citation Bot's internal authorization tokens did not work"); } // PHP 5
   }
   
   function __destruct() {
