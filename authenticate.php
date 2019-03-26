@@ -42,11 +42,12 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
    }
    catch (Throwable $e) { ; } // PHP 7
    catch (Exception $e) { ; } // PHP 5
-   @sesssion_destroy();
-   @session_start();
    // We continue on and try to get a new key setup
    sleep(1);
 }
+// clear anything left over that did not work
+unset($_SESSION['access_key']);
+unset($_SESSION['access_secret']);
 
 // New Incoming Access Grant
 if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($_SESSION['request_secret']) ) {
@@ -59,8 +60,11 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         echo "Authorization Success.  Future requests should just work now.";
         exit(0);
    }
-   catch (Throwable $e) { @sesssion_destroy(); echo("Incoming authorization tokens did not work"); exit(1); } // PHP 7
-   catch (Exception $e) { @sesssion_destroy(); echo("Incoming authorization tokens did not work"); exit(1); } // PHP 5   
+   catch (Throwable $e) { ; } // PHP 7
+   catch (Exception $e) { ; } // PHP 5
+   @sesssion_destroy();
+   echo("Incoming authorization tokens did not work");
+   exit(1);  
 }
 
 // New Incoming Access Grant without SESSION
@@ -69,7 +73,6 @@ if (isset($_GET['oauth_verifier'])) {
    echo("Incoming authorization tokens did not have matching session -- possible cookies lost");
    exit(1);
 }
-
 
 // Nothing found.  Needs an access grant from scratch
 try {
