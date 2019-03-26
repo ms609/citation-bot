@@ -3,7 +3,6 @@
 define("HTML_OUTPUT", !isset($argv));
 
 require_once("expandFns.php");
-$api = new WikipediaBot();
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -30,6 +29,7 @@ if (HTML_OUTPUT) {?>
 <pre id="botOutput">
 <?php
 }
+$api = new WikipediaBot();
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 if (is_valid_user($user)) {
   echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
