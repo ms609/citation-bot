@@ -402,8 +402,8 @@ class WikipediaBot {
      // Something went wrong
      catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
-     @session_destroy();
-     sleep(1); // Slow down any looping
+     unset($_SESSION['access_key']);
+     unset($_SESSION['access_secret']);
     }
     if (stripps($_SERVER["REQUEST_URI"], '-dev') === FALSE) {
       echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations/authenticate.php">https://tools.wmflabs.org/citations/authenticate.php</a>');
