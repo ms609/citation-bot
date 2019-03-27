@@ -6,6 +6,7 @@
 */
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
+ini_set("memory_limit", "256M");
 include_once("./vendor/autoload.php");
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
@@ -14,6 +15,13 @@ if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
 if (!defined("FLUSHING_OKAY")) {  // Default when not gadget API
   define("FLUSHING_OKAY", TRUE);
 }
+
+//Optimisation
+ob_implicit_flush();
+if (!getenv('TRAVIS') && (ob_get_level() == 0)) { // The gadget API turns this on earlier
+    ob_start();
+}
+
 if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
   // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
   // if they are not set already. Remember to set permissions (not readable!)
@@ -35,13 +43,6 @@ foreach ($api_files as $file) {
 }
 
 mb_internal_encoding('UTF-8'); // Avoid ??s
-
-//Optimisation
-ob_implicit_flush();
-if (!getenv('TRAVIS') && (ob_get_level() == 0)) { // The gadget API turns this on earlier
-    ob_start();
-}
-ini_set("memory_limit", "256M");
 
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
