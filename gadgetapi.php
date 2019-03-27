@@ -12,6 +12,11 @@ if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
 //Set up tool requirements
 require_once('expandFns.php');
 
+if ('POST' !== $_SERVER['REQUEST_METHOD']) {
+   ob_end_clean();
+   report_error('Incorrect Calling Method');
+}
+
 $originalText = $_POST['text'];
 $editSummary = $_POST['summary'];
 
