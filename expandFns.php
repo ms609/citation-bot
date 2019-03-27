@@ -6,7 +6,6 @@
 */
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
-ini_set("memory_limit", "256M");
 include_once("./vendor/autoload.php");
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
@@ -43,6 +42,7 @@ foreach ($api_files as $file) {
 }
 
 mb_internal_encoding('UTF-8'); // Avoid ??s
+ini_set("memory_limit", "256M");
 
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
