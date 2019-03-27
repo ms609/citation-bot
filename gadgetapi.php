@@ -32,8 +32,6 @@ if ($newText !== $originalText) {
 
 if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
   $debug_text = @ob_get_flush();
-  $debug_text = @ob_get_flush() . $debug_text;
-  $debug_text = @ob_get_flush() . $debug_text;
 } else {
   $debug_text = '';
 }
@@ -45,6 +43,6 @@ $result = array(
 );
 
 // Throw away all output
-@ob_end_clean(); @ob_end_clean(); @ob_end_clean();  // Other parts of the code might open a buffer
+@ob_end_clean();
 
 echo @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
