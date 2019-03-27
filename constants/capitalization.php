@@ -35,7 +35,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Angew Chem Int Ed ', ' AAPOS ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
+          ' AAPOS ', ' Angew Chem Int Ed ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ",
           ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
           ' e-Print ', ' e-Print ', ' e-Prints ', ' e-Prints ', ' Early Modern Japan: an Interdisciplinary Journal ',
@@ -57,7 +57,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Angew Chem Int ed ', ' Aapos ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' B/Gcvs ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
+          ' Aapos ', ' Angew Chem Int ed ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' B/Gcvs ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' Cmaj ', " Dell'Accademia ",
           ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
           ' E-print ', ' E-Print ', ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ',
