@@ -13,7 +13,6 @@ if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
 require_once('expandFns.php');
 
 if ('POST' !== $_SERVER['REQUEST_METHOD']) report_error('Incorrect Calling Method');
-
 $originalText = $_POST['text'];
 $editSummary = $_POST['summary'];
 
