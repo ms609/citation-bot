@@ -17,7 +17,7 @@ if (!defined("FLUSHING_OKAY")) {  // Default when not gadget API
 
 //Optimisation
 ob_implicit_flush();
-if (!getenv('TRAVIS') && (ob_get_level() == 0)) { // The gadget API turns this on earlier
+if (!getenv('TRAVIS')) {
     ob_start();
 }
 
