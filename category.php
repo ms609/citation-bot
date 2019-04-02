@@ -61,7 +61,6 @@ if ($category) {
   if (!is_array($pages_in_category) || empty($pages_in_category)) {
     echo('Category appears to be empty');
     html_echo(' </pre></body></html>', "\n");
-    ob_end_flush(); 
     exit(0);
   }
   shuffle($pages_in_category);
@@ -93,5 +92,4 @@ if ($category) {
   echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
 html_echo(' # # #</pre></body></html>', "\n");
-ob_end_flush(); 
 exit(0);
