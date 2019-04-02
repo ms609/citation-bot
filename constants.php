@@ -1,9 +1,14 @@
-<?php 
-$constant_files = glob('constants/*.php');
-foreach ($constant_files as $file) {
-    require_once($file);   
-}
-
+<?php
+// all new constant files need listed here
+require_once("constants/bad_data.php");   
+require_once("constants/capitalization.php");   
+require_once("constants/math.php");   
+require_once("constants/mistakes.php");   
+require_once("constants/namespaces.php");   
+require_once("constants/parameters.php");   
+require_once("constants/regular_expressions.php");   
+    
+    
 define('HOME', dirname(__FILE__) . '/');
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
