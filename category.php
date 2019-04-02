@@ -62,7 +62,7 @@ if ($category) {
   if (!is_array($pages_in_category) || empty($pages_in_category)) {
     echo('Category appears to be empty');
     html_echo(' </pre></body></html>', "\n");
-    ob_end_flush(); 
+    ob_end_f lush(); 
     exit(0);
   }
   shuffle($pages_in_category);
