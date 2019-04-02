@@ -4,7 +4,7 @@ exec ("git checkout constants/capitalization.php", $output);
 exec ("git pull", $output, $return_var);
 #exec ("git fetch --all", $output, $return_var); // Doesn't seem to do much...
 ?><pre>
-<?php foreach($output as $line) print "$line \n"; ?>
+<?php foreach($output as $line) echo "$line \n"; ?>
 </pre>
 <?php if ($return_var) {
   echo "Returned error code $return_var";
@@ -19,6 +19,6 @@ exec ("git pull", $output, $return_var);
 <?php
 unset($output);
 exec("git show --oneline -s", $output, $return_var);
-foreach ($output as $line) print "$line \n";
+foreach ($output as $line) echo "$line \n";
 ?>
 </pre>
