@@ -21,7 +21,7 @@ $page->parse_text($t->parsed_text());
 $page->expand_text();
 echo "\n";
 echo "\n";
-print("<ref>".$page->parsed_text()."</ref>");
+echo("<ref>".$page->parsed_text()."</ref>");
 exit(0);
 
 ?>

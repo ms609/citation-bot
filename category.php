@@ -32,15 +32,6 @@ if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
 $category = trim($argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"]);
 if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
 
-$user = NULL; // Editing as user or script, no need to name.
-if (is_valid_user($user)) {
-  echo " Activated by $user.\n";
-  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
-} else {
-  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits";
-  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
-}
-
 if (HTML_OUTPUT) {
 ?>
 <html>
@@ -53,16 +44,24 @@ if (HTML_OUTPUT) {
   <body>
     <pre>
 <?php
-} else {
-  echo "\n";
 }
+
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
+$user = NULL; // Editing as user or script, no need to name.
+if (is_valid_user($user)) {
+  echo " Activated by $user.\n\n";
+  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
+} else {
+  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits\n\n";
+  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
+}
+
 if ($category) {
   $attempts = 0;
   $pages_in_category = $api->category_members($category);
   if (!is_array($pages_in_category) || empty($pages_in_category)) {
     echo('Category appears to be empty');
     html_echo(' </pre></body></html>', "\n");
-    ob_end_flush(); 
     exit(0);
   }
   shuffle($pages_in_category);
@@ -75,7 +74,7 @@ if ($category) {
       report_phase("Writing to " . echoable($page_title) . '... ');
       while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
       // Parsed text can be viewed by diff link; don't clutter page. 
-      // print "\n\n"; safely_echo($page->parsed_text());
+      // echo "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
         " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
@@ -94,5 +93,4 @@ if ($category) {
   echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
 html_echo(' # # #</pre></body></html>', "\n");
-ob_end_f lush(); 
 exit(0);
