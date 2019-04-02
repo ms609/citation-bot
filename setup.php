@@ -36,11 +36,7 @@ require_once("wikiFunctions.php");
 require_once("user_messages.php");
 require_once("WikipediaBot.php");
 require_once("expandFns.php");
-
-$api_files = glob('api_handlers/*.php');
-foreach ($api_files as $file) {
-    require_once($file);
-}
+require_once("zotero.php");
 
 mb_internal_encoding('UTF-8'); // Avoid ??s
 ini_set("memory_limit", "256M");
