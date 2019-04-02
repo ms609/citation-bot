@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Tests for Page.php, called from expandFns.php.
+ * Tests for Page.php
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
