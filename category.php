@@ -46,7 +46,6 @@ if (HTML_OUTPUT) {
 <?php
 }
 
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
 $user = NULL; // Editing as user or script, no need to name.
 if (is_valid_user($user)) {
   echo " Activated by $user.\n\n";
