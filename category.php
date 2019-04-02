@@ -2,7 +2,7 @@
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT", !isset($argv));
-require_once('expandFns.php');
+require_once('setup.php');
 $api = new WikipediaBot();
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
 $argument["cat"] = NULL;
