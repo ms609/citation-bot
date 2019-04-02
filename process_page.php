@@ -75,6 +75,7 @@ foreach (explode('|', $pages) as $title) {
       echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
       safely_echo($my_page->parsed_text());
       echo "</pre>";
+      ob_flush();
   ?>
   <form method="post" action="process_page.php">
     <input type="hidden" name="page" value="<?php echo $title;?>" />

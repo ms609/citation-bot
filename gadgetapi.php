@@ -3,7 +3,6 @@ header("Access-Control-Allow-Origin: *"); //This is ok because the API is not au
 header("Content-Type: text/json");
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
-ob_start();
 define("FLUSHING_OKAY", FALSE);
 
 $SLOW_MODE = FALSE;
@@ -31,9 +30,10 @@ if ($newText !== $originalText) {
 }
 
 if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
-  $debug_text = @ob_get_contents() . @ob_get_contents() . @ob_get_contents(); // Just in case some other part of the code sets up a buffer
+  $debug_text = ob_get_flush();
 } else {
   $debug_text = '';
+  ob_end_clean();
 }
 
 $result = array(
@@ -41,8 +41,5 @@ $result = array(
   'editsummary' => $editSummary,
   'debug' => $debug_text,
 );
-
-// Throw away all output
-@ob_end_clean(); @ob_end_clean(); @ob_end_clean();  // Other parts of the code might open a buffer
 
 echo @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
