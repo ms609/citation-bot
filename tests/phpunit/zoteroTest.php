@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Tests for api_handler s/zotero.php, called from expandFns.php.
+ * Tests for zotero.php, called from expandFns.php.
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
