@@ -552,9 +552,9 @@ function expand_doi_with_dx($template, $doi) {
          (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
        $try_to_add_it('journal', @$json['container-title']);
        $try_to_add_it('title', @$json['title']);
-     } elseif (@$json['type'] == 'monograph') {
+     } elseif (@$json['type'] == 'monograph' || @$json['type'] == 'book') {
        $try_to_add_it('title', @$json['title']);
-       $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this and not title is set
+       $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
      } elseif (@$json['type'] == 'chapter') {
