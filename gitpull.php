@@ -10,6 +10,9 @@ exec ("git pull", $output, $return_var);
   echo "Returned error code $return_var";
   if ($return_var == 1) {
     echo "\n<br /> Check that there are no uncommitted changes on the server.";
+    unset($output);
+    exec("git status -git status -uno", $output, $return_var);
+    echo "\n<br /> $output";
   }
 } else {
   echo "Successfully updated from Git repository.";
