@@ -6,7 +6,7 @@ header("Access-Control-Allow-Origin: *"); //This is ok because the API is not au
 header("Content-Type: text/plain");
 
 $SLOW_MODE = TRUE;
-require_once('expandFns.php');
+require_once('setup.php');
 $t = new Template();
 $t->parse_text('{{Cite web}}');
 if (count($_GET) > 10) exit('Excessive number of parameters passed');
