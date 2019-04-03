@@ -82,3 +82,14 @@ Before entering the k8s shell, it may be necessary to install phpunit
     webservice --backend=kubernetes php5.6 shell
     php phpunit-5.phar --bootstrap setup.php tests/phpunit/TemplateTest.php
 
+
+## Dependency services
+
+The bot accesses an instance of the Zotero translation server.
+
+This can be updated by maintainers logging on to Toolforge, then entering the commands 
+
+    become translation-server
+    npm update
+    webservice restart
+    
