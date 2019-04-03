@@ -39,7 +39,7 @@ A quick tour of the main files:
    as "untested".
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
 * `DOItools.php`: defines text/name functions
-* `expandFns.php`: sets up needed functions, requires most of the other files listed here
+* `expandFns.php`: sets  up needed functions, requires most of the other files listed here
 * `apiFunctions.php`: sets up needed functions
 
 Class files:
