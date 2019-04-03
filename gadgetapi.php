@@ -9,7 +9,7 @@ $SLOW_MODE = FALSE;
 if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
 
 //Set up tool requirements
-require_once('expandFns.php');
+require_once('setup.php');
 
 $originalText = $_POST['text'];
 $editSummary = $_POST['summary'];

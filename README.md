@@ -29,7 +29,7 @@ Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_t
 
 Basic structure of a Citation bot script:
 * define configuration constants
-* require `expandFn s.php`, which will set up the rest of the needed functions
+* require `setup.php`, which will set up the rest of the needed functions
 * use Page functions to fetch/expand/post the page's text
 
 
@@ -39,8 +39,9 @@ A quick tour of the main files:
    as "untested".
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
 * `DOItools.php`: defines text/name functions
-* `expandFns.php`: sets up needed functions, requires most of the other files listed here
-* `apiFunctions.php`: sets up needed functions
+* `setup.php`: sets up needed functions, requires most of the other files listed here
+* `expandFns.php`: a variety of functions
+* `apiFunctions.php`: sets up needed functions for expanding pmid/doi/etc
 
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
@@ -79,5 +80,16 @@ Before entering the k8s shell, it may be necessary to install phpunit
 
     wget https://phar.phpunit.de/phpunit-5.phar
     webservice --backend=kubernetes php5.6 shell
-    php phpunit-5.phar --bootstrap expandFns.php tests/phpunit/TemplateTest.php
+    php phpunit-5.phar --bootstrap setup.php tests/phpunit/TemplateTest.php
 
+
+## Dependency services
+
+The bot accesses an instance of the Zotero translation server.
+
+This can be updated by maintainers logging on to Toolforge, then entering the commands 
+
+    become translation-server
+    npm update
+    webservice restart
+    

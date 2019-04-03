@@ -10,8 +10,7 @@ final class Parameter {
 /*
  * Breaks a citation template down to component parts.
  * Expects that any instances of "|" in $text will have been replaced with
- * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%' and set
- * in expandFns.php) before this function is called.
+ * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%') before this is called.
  */
   public function parse_text($text) {
     $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
