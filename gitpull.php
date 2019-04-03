@@ -12,7 +12,7 @@ exec ("git pull", $output, $return_var);
     echo "\n<br /> Check that there are no uncommitted changes on the server.";
     unset($output);
     exec("git status -uno", $output, $return_var);
-    echo "\n<br /> $output";
+    foreach ($output as $line) echo "$line \n";
   }
 } else {
   echo "Successfully updated from Git repository.";
