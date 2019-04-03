@@ -29,7 +29,7 @@ Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_t
 
 Basic structure of a Citation bot script:
 * define configuration constants
-* require `expandFns.php`, which will set up the rest of the needed functions
+* require `expandFn s.php`, which will set up the rest of the needed functions
 * use Page functions to fetch/expand/post the page's text
 
 
