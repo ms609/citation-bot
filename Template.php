@@ -559,6 +559,7 @@ final class Template {
           if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
             return FALSE;
           }
+          if ($this->has('article') && $this->wikiname() === 'cite encyclopedia') return FALSE; // Probably the same thing
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
@@ -1092,7 +1093,12 @@ final class Template {
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
         
-      } elseif (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?(?:pubmed/|entrez/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|entrez/query\.fcgi\S+db=pubmed\S+).*?=?(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?" 
+      . "(?:pubmed/|" 
+      . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
+      . "entrez/query\.fcgi\S+db=pubmed\S+|"
+      . "pmc/articles/pmid/)"
+      . ".*?=?(\d+)~i", $url, $match)) {
         if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?/pubmed/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {

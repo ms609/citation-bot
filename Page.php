@@ -423,10 +423,10 @@ class Page {
     // https://en.wikipedia.org/wiki/Template:Use_mdy_dates
     // https://en.wikipedia.org/wiki/Template:Use_dmy_dates
     $date_style = DATES_WHATEVER;
-    if (preg_match('/\{\{(Use mdy dates*?)\}\}/iS',$this->text)) {
+    if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~iS',$this->text)) {
       $date_style = DATES_MDY;
     }
-    if (preg_match('/\{\{(Use dmy dates*?)\}\}/iS',$this->text)) {
+    if (preg_match('~\{\{Use dmy dates[^\}\{]*\}\}~iS',$this->text)) {
       if ($date_style === DATES_MDY) {
         $date_style = DATES_WHATEVER;  // Found both :-(
       } else {

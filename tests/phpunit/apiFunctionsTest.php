@@ -81,7 +81,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefDataCiteEarthquake() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/GFZ.GEOFON.gfz2009kciu');
-    $this->assertEquals('{{Cite journal}}', $expanded->parsed_text());
+    $this->assertEquals('{{Cite journal|year = 2009|author1 = Geofon Operator|title = GEOFON event gfz2009kciu (NW Balkan Region)|type = Data Set|publisher = Deutsches GeoForschungsZentrum GFZ}}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefDataCiteMappedVisualization() {
