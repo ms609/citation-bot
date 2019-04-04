@@ -8,7 +8,7 @@ exec ("git pull", $output, $return_var);
 <?php if ($return_var) {
   echo "Returned error code $return_var \n";
   if ($return_var == 1) {
-    echo "\nCheck that there are no uncommitted changes on the server.\n";
+    echo "\n Check that there are no uncommitted changes on the server.\n";
     unset($output);
     exec("git status -uno", $output, $return_var);
     foreach ($output as $line) echo "$line \n";
