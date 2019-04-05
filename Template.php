@@ -2951,6 +2951,9 @@ final class Template {
                $this->add_if_new('title-link', $matches[1]);
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
              }
+            // Messed up cases.  [[sdfsad] or [dsfasdf]]
+          } elseif (preg_match('~^\[\[([^\]\[\|]+)\]$~', $title, $matches) || preg_match('~^\[([^\]\[\|]+)\]\]$~', $title, $matches)) {
+             $title = $matches[1];
           }
           if (mb_substr($title, mb_strlen($title) - 3) == '...') {
             // MOS:ELLIPSIS says do not do
