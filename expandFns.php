@@ -1,4 +1,4 @@
-e<?php
+<?php
 
 function sanitize_doi($doi) {
   $doi = preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
