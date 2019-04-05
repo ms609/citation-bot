@@ -92,11 +92,10 @@ function wikify_external_text($title) {
   }
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
-  
-  
+
   $htmlBraces  = array("&lt;", "&gt;");
   $angleBraces = array("<", ">");
-  $title = str_ireplace($htmlBraces, $angleBraces, $title)
+  $title = str_ireplace($htmlBraces, $angleBraces, $title);
 
   $originalTags = array('<title>', '</title>', 'From the Cover: ');
   $wikiTags = array('','','');
@@ -109,7 +108,7 @@ function wikify_external_text($title) {
       function ($matches) {return ("'" . $matches[1] . "'");},
       $title);
     $title = preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
-      function ($matches) {return ("<b>" . $matches[1] . "</b>");},
+      function ($matches) {return ("'''" . $matches[1] . "'''");},
       $title);
     $title = preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
       function ($matches) {return ("'" . $matches[1] . "'");},
