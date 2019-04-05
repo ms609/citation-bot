@@ -10,7 +10,7 @@ exec ("git pull", $output, $return_var);
   if ($return_var == 1) {
     echo "\n Check that there are no uncommitted changes on the server.\n\n";
     unset($output);
-    exec("git status -uno", $output, $return_var);
+    exec("git status", $output, $return_var);
     foreach ($output as $line) echo "$line \n";
   }
 } else {
