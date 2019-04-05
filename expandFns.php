@@ -1,4 +1,4 @@
-<?php
+e<?php
 
 function sanitize_doi($doi) {
   $doi = preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
@@ -95,10 +95,13 @@ function wikify_external_text($title) {
   
   // The following two do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
   $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
-      function ($matches) {return ("<i>" . $matches[1]. "</i>");},
+      function ($matches) {return ("<i>" . $matches[1] . "</i>");},
       $title);
   $title = preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
-      function ($matches) {return ("<b>" . $matches[1]. "</b>");},
+      function ($matches) {return ("<b>" . $matches[1] . "</b>");},
+      $title);
+  $title = preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
+      function ($matches) {return ("<i>" . $matches[1] . "</i>");},
       $title);
   
   $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
