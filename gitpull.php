@@ -24,3 +24,4 @@ exec("git show --oneline -s", $output, $return_var);
 foreach ($output as $line) echo "$line \n";
 
 echo "</pre></body></html>"
+?>
