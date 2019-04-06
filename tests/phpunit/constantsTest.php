@@ -55,6 +55,8 @@ final class constantsTest extends testBaseClass {
     // Y is neither
     $this->assertEquals('Aeiouy', title_capitalization('aeiouy', TRUE));
     $this->assertEquals('Xzzzy', title_capitalization('xzzzy', TRUE));
+    // Relationship Status = It's Complicated :-)
+    $this->assertEquals('Xzzzy Aeiouy AEIOU Xzzzy Aeiouy AEIOU', title_capitalization('xzzzy Aeiouy aeiou xzzzy Aeiouy aeiou', TRUE));
   }
   
   public function testConstantsOrder() {
