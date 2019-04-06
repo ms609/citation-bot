@@ -161,6 +161,15 @@ function title_capitalization($in, $caps_after_punctuation) {
     // ALL CAPS to Title Case
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
+
+  // Implicit acronyms
+  $new_case = preg_replace_callback("~ [b-df-hj-np-tv-xz]{3,} ~ui", 
+      function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
+      $new_case);
+  $new_case = preg_replace_callback("~ [aeiou]{3,} ~ui", 
+      function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
+      $new_case);
+
   $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
   
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
