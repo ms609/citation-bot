@@ -163,6 +163,9 @@ function title_capitalization($in, $caps_after_punctuation) {
   }
 
   // Implicit acronyms
+  $new_case = preg_replace_callback("~ ~u", 
+      function ($matches) {return '  ';},
+      $new_case);  // convert single spaces to double spaces
   $new_case = ' ' . $new_case . ' ';
   $new_case = preg_replace_callback("~ [b-df-hj-np-tv-xz]{3,} ~ui", 
       function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
@@ -170,6 +173,9 @@ function title_capitalization($in, $caps_after_punctuation) {
   $new_case = preg_replace_callback("~ [aeiou]{3,} ~ui", 
       function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
       $new_case);
+  $new_case = preg_replace_callback("~  ~u", 
+      function ($matches) {return ' ';},
+      $new_case);  // convert double spaces back to single spaces
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
 
   $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
