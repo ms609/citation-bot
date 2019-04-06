@@ -1,24 +1,26 @@
 <?php
+echo "<pre>";
 // Local changes seem to accumulate in capitalization.php, preventing a pull
 exec ("git checkout constants/capitalization.php", $output);
 exec ("git pull", $output, $return_var);
-?><pre>
-<?php foreach($output as $line) echo "$line \n"; ?>
-<?php if ($return_var) {
-  echo "Returned error code $return_var \n";
+foreach($output as $line) echo "$line \n";
+
+if ($return_var) {
   if ($return_var == 1) {
-    echo "\n Check that there are no uncommitted changes on the server.\n\n";
+    echo "\n Failure.  Check that there are no uncommitted changes on the server.\n\n";
     unset($output);
     exec("git status", $output, $return_var);
     foreach ($output as $line) echo "$line \n";
+    echo "\n";
+  } else {
+    echo "\n Returned error code $return_var \n\n";
   }
 } else {
   echo "Successfully updated from Git repository.\n";
 }
-?>
-<?php
+
 unset($output);
 exec("git show --oneline -s", $output, $return_var);
 foreach ($output as $line) echo "$line \n";
-?>
-</pre>
+
+echo "</pre>"
