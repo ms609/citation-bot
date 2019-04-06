@@ -57,7 +57,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Aapos ', ' Angew Chem Int ed ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme Mtd ', ' B/Gcvs ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
+          ' Aapos ', ' Angew Chem Int ed ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme MTD ', ' B/Gcvs ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' Cfsk-Dt ', ' Cmaj ', " Dell'Accademia ",
           ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
           ' E-print ', ' E-Print ', ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ',
