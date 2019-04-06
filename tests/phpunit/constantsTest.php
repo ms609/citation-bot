@@ -44,17 +44,17 @@ final class constantsTest extends testBaseClass {
   
   public function testImplicitConstants() {
     // Consonants
-    $this->asserEquals('X', title_capitalization('x'));
-    $this->asserEquals('Xz', title_capitalization('xz'));
-    $this->asserEquals('XZZ', title_capitalization('xzz'));
-    $this->asserEquals('XZZZ', title_capitalization('xzzz'));
+    $this->assertEquals('X', title_capitalization('x'));
+    $this->assertEquals('Xz', title_capitalization('xz'));
+    $this->assertEquals('XZZ', title_capitalization('xzz'));
+    $this->assertEquals('XZZZ', title_capitalization('xzzz'));
     // Mixed
-    $this->asserEquals('Xzza', title_capitalization('xzza'));
+    $this->assertEquals('Xzza', title_capitalization('xzza'));
     // Vowels
-    $this->asserEquals('AEIOU', title_capitalization('aeiou'));
+    $this->assertEquals('AEIOU', title_capitalization('aeiou'));
     // Y is neither
-    $this->asserEquals('Aeiouy', title_capitalization('aeiouy'));
-    $this->asserEquals('Xzzzy', title_capitalization('xzzzy'));
+    $this->assertEquals('Aeiouy', title_capitalization('aeiouy'));
+    $this->assertEquals('Xzzzy', title_capitalization('xzzzy'));
   }
   
   public function testConstantsOrder() {
