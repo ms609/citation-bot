@@ -42,6 +42,21 @@ final class constantsTest extends testBaseClass {
     $this->assertEquals($text, $expanded->parsed_text());
   }
   
+  public function testImplicitConstants() {
+    // Consonants
+    $this->asserEquals('X', title_capitalization('x'));
+    $this->asserEquals('Xz', title_capitalization('xz'));
+    $this->asserEquals('XZZ', title_capitalization('xzz'));
+    $this->asserEquals('XZZZ', title_capitalization('xzzz'));
+    // Mixed
+    $this->asserEquals('Xzza', title_capitalization('xzza'));
+    // Vowels
+    $this->asserEquals('AEIOU', title_capitalization('aeiou'));
+    // Y is neither
+    $this->asserEquals('Aeiouy', title_capitalization('aeiouy'));
+    $this->asserEquals('Xzzzy', title_capitalization('xzzzy'));
+  }
+  
   public function testConstantsOrder() {
     $acronyms = JOURNAL_ACRONYMS; sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
     $expected = current($acronyms);
