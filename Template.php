@@ -2950,10 +2950,8 @@ final class Template {
                  $this->add_if_new('title-link', $matches[1]);
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches)) {
+               $this->add_if_new('title-link', $matches[1]);
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
-               if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
-                 $this->add_if_new('title-link', $matches[1]);
-               }
              }
           }
           if (mb_substr($title, mb_strlen($title) - 3) == '...') {
