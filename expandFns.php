@@ -164,7 +164,7 @@ function title_capitalization($in, $caps_after_punctuation) {
 
   // Implicit acronyms
   $new_case = ' ' . $new_case . ' ';
-  $new_case = preg_replace_callback("~ [b-df-hj-np-tv-xz]{3,}(?= )~ui", 
+  $new_case = preg_replace_callback("~\W[b-df-hj-np-tv-xz]{3,}(?=\W)~ui", 
       function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
       $new_case);
   $new_case = preg_replace_callback("~ [aeiou]{3,}(?= )~ui", 
