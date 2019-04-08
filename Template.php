@@ -2960,8 +2960,10 @@ final class Template {
              $title = preg_replace("~\]\]~", "", $title);
           } else { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
-               $this->add_if_new('title-link', $matches[1]);
                $title = str_replace(array("[[", "]]"), "", $title);
+               if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
+                 $this->add_if_new('title-link', $matches[1]);
+               }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches)) {
                $this->add_if_new('title-link', $matches[1]);
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
