@@ -2695,7 +2695,22 @@ final class Template {
           }
           return;
           
-        case 'author': case 'authors':
+        case 'author':
+          $the_author = $this->get($param);
+          if (substr($the_author, 0, 2) == '[[' &&
+              substr($the_author,   -2) == ']]' &&
+              mb_substr_count($the_author, '[[') === 1 && 
+              mb_substr_count($the_author, ']]') === 1) {  // Has a normal wikilink
+            if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+              $this->add_if_new($param . '-link', $matches[1]);
+              $this->set($param, $matches[1]);
+            } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+              $this->add_if_new($param . '-link', $matches[1]);
+              $this->set($param, $matches[2]);
+            }
+          }
+          // No return here
+        case 'authors':
           if (!$pmatch[2]) {
             if ($this->has('author') && $this->has('authors')) {
               $this->rename('author', 'DUPLICATE_authors');
