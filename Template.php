@@ -472,6 +472,7 @@ final class Template {
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
+        if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE; // Messed up already or in database
         if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
@@ -2695,7 +2696,22 @@ final class Template {
           }
           return;
           
-        case 'author': case 'authors':
+        case 'author':
+          $the_author = $this->get($param);
+          if (substr($the_author, 0, 2) == '[[' &&
+              substr($the_author,   -2) == ']]' &&
+              mb_substr_count($the_author, '[[') === 1 && 
+              mb_substr_count($the_author, ']]') === 1) {  // Has a normal wikilink
+            if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+              $this->add_if_new($param . '-link', $matches[1]);
+              $this->set($param, $matches[1]);
+            } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+              $this->add_if_new($param . '-link', $matches[1]);
+              $this->set($param, $matches[2]);
+            }
+          }
+          // No return here
+        case 'authors':
           if (!$pmatch[2]) {
             if ($this->has('author') && $this->has('authors')) {
               $this->rename('author', 'DUPLICATE_authors');
@@ -2950,8 +2966,10 @@ final class Template {
              $title = preg_replace("~\]\]~", "", $title);
           } else { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
-               $this->add_if_new('title-link', $matches[1]);
                $title = str_replace(array("[[", "]]"), "", $title);
+               if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
+                 $this->add_if_new('title-link', $matches[1]);
+               }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches)) {
                $this->add_if_new('title-link', $matches[1]);
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
