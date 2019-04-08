@@ -111,7 +111,7 @@ function wikify_external_text($title) {
       function ($matches) {return ("'''" . $matches[1] . "'''");},
       $title);
     $title = preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
-      function ($matches) {return ("'" . $matches[1] . "'");},
+      function ($matches) {return ("''" . $matches[1] . "''");},
       $title);
     $title = preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
       function ($matches) {return ("'" . $matches[1] . "'");},
