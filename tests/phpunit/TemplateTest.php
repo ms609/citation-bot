@@ -390,6 +390,15 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testRemoveWikilinks() {
+    $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil]]}}");
+    $this->assertEquals('Pure Evil', $expanded->get('author1'));
+    $this->assertEquals('Pure Evil', $expanded->get('author1-link'));
+    $expanded = $this->process_citation("{{Cite journal|author1=[[Pure]] and [[Evil]]}}");
+    $this->assertEquals('[[Pure]] and [[Evil]]', $expanded->get('author1'));
+    $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil|Approximate Physics]]}}");
+    $this->assertEquals('Approximate Physics', $expanded->get('author1'));
+    $this->assertEquals('Pure Evil', $expanded->get('author1-link'));
+   
     $expanded = $this->process_citation("{{Cite journal|journal=[[Pure Evil]]}}");
     $this->assertEquals('[[Pure Evil]]', $expanded->get('journal')); // leave fully linked journals
     $expanded = $this->process_citation("{{Cite journal|journal=[[Pure]] and [[Evil]]}}");
