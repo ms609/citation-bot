@@ -2953,6 +2953,11 @@ final class Template {
           ) {
             $title = mb_substr($title, 1, -1);   // Remove quotes -- if only one set that wraps entire title
           }
+          // Messed up cases:   [[sdfsad] or [dsfasdf]]
+          if (preg_match('~^\[\[([^\]\[\|]+)\]$~', $title, $matches) ||
+              preg_match('~^\[([^\]\[\|]+)\]\]$~', $title, $matches)) {
+             $title = $matches[1];
+          }
           if (mb_substr_count($title, '[[') !== 1 ||  // Completely remove multiple wikilinks
               mb_substr_count($title, ']]') !== 1) {
              $title = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $title);   // Convert [[X]] wikilinks into X
