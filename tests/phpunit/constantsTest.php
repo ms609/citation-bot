@@ -46,7 +46,7 @@ final class constantsTest extends testBaseClass {
     // Consonants
     $this->assertEquals('X', title_capitalization('x', TRUE));
     $this->assertEquals('Xz', title_capitalization('xz', TRUE));
-    $this->assertEquals('XZZ', title_capitalization('xzz', TRUE));
+    $this->assertEquals('XZZ BBBB/EEE', title_capitalization('xzz bbbb/eee', TRUE));
     $this->assertEquals('XZZZ', title_capitalization('xzzz', TRUE));
     // Mixed
     $this->assertEquals('Xzza', title_capitalization('xzza', TRUE));
