@@ -1,7 +1,7 @@
 <?php
 echo "<!DOCTYPE html><html><head><title>Update</title></head><body><pre>";
 // Local changes seem to accumulate in capitalization.php, preventing a pull
-echo shell_exec ("git checkout constants/capitalization.php");
+echo shell_exec ("/usr/bin/git checkout constants/capitalization.php");
 echo shell_exec ("/usr/bin/git pull  2>&1"); 
 /*exec ("git pull", $output, $return_var);
 foreach($output as $line) echo "$line \n";
