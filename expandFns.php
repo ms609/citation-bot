@@ -105,7 +105,7 @@ function wikify_external_text($title) {
   while ($title != $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
     $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
-      function ($matches) {return ("'" . $matches[1] . "'");},
+      function ($matches) {return ("''" . $matches[1] . "''");},
       $title);
     $title = preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
       function ($matches) {return ("'''" . $matches[1] . "'''");},
