@@ -2695,7 +2695,16 @@ final class Template {
           }
           return;
           
-        case 'author': case 'authors':
+        case 'author':
+          if (preg_match(REGEXP_PLAIN_WIKILINK, $this->get($param), $matches)) {
+            $this->add_if_new($param . '-link', $matches[1]);
+            $this->set($param, str_replace(array("[[", "]]"), "", $this->get($param));
+          } elseif (preg_match(REGEXP_PIPED_WIKILINK, $this->get($param), $matches)) {
+            $this->add_if_new($param . '-link', $matches[1]);
+            $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title));
+          }
+          // No return here
+        case 'authors':
           if (!$pmatch[2]) {
             if ($this->has('author') && $this->has('authors')) {
               $this->rename('author', 'DUPLICATE_authors');
