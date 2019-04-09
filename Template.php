@@ -1862,8 +1862,6 @@ final class Template {
         }
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
-        if (stripos($oa_url, 'zenodo.org') !== FALSE) return TRUE;   //is currently blacklisted due to copyright concerns https://en.wikipedia.org/w/index.php?oldid=867438103#zenodo.org
-        // Check if best location is already linked -- avoid double linki
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~", $oa_url, $match)) {
           if ($this->has('pmc') ) {
@@ -3005,8 +3003,8 @@ final class Template {
               }
           } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/([0-9]+)/*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
-          //} elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
-          //    $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
+          } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
+              $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
               $this->set($param, $this->simplify_google_search($this->get($param)));
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
