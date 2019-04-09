@@ -93,7 +93,7 @@ function wikify_external_text($title) {
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
   
-  // The following two do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
+  // The following two do not allow < within the inner  match since the end tag is the same :-( and they might nest or who knows what
   $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
       function ($matches) {return ("<i>" . $matches[1]. "</i>");},
       $title);
