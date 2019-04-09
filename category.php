@@ -34,6 +34,7 @@ if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr(
 
 if (HTML_OUTPUT) {
 ?>
+<!DOCTYPE html>
 <html>
   <body>
   <head>
