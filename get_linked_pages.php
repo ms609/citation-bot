@@ -6,21 +6,21 @@
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 header("Content-Type: text/plain");
 
+echo "<!DOCTYPE html><html><body><pre>\n";
+
 require_once('constants/bad_data.php');
 $page = str_replace(' ', '_', trim($_REQUEST['page']));
-if ($page == '') exit('Nothing requested');
-if (strlen($page) > 128) exit('Excessively long page name passed');
+if ($page == '') exit('Nothing requested</pre></body></html>');
+if (strlen($page) > 128) exit('Excessively long page name passed</pre></body></html>');
 
 $url = 'https://en.wikipedia.org/w/api.php?action=parse&prop=links&format=json&page=' . $page;
 $json = @file_get_contents($url);
 if ($json === FALSE) {
-  echo ' Error getting page list';
-  exit(1);
+  exit(' Error getting page list</pre></body></html>');
 }    
 $array = @json_decode($json, true);
 if ($array === FALSE) {
-  echo ' Error interpreting page list';
-  exit(1);
+  exit(' Error interpreting page list</pre></body></html>');
 }
 $links = $array['parse']['links'];
 
@@ -34,6 +34,6 @@ foreach($links as $link) {
     }
 }
 echo  "\n";
-
+echo "</pre></body></html>\n";
 exit(0);
 ?>
