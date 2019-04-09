@@ -92,24 +92,33 @@ function wikify_external_text($title) {
   }
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
-  
-  // The following two do not allow < within the inner  match since the end tag is the same :-( and they might nest or who knows what
-  $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
-      function ($matches) {return ("<i>" . $matches[1]. "</i>");},
-      $title);
-  $title = preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
-      function ($matches) {return ("<b>" . $matches[1]. "</b>");},
-      $title);
-  
-  $originalTags = array("<i>","</i>", '<title>', '</title>',"From the Cover: ");
-  $wikiTags = array("''","''",'','',"");
+
   $htmlBraces  = array("&lt;", "&gt;");
   $angleBraces = array("<", ">");
-  $title = sanitize_string(// order of functions here IS important!
-             str_ireplace($originalTags, $wikiTags, 
-               str_ireplace($htmlBraces, $angleBraces, $title)
-             )
-           );
+  $title = str_ireplace($htmlBraces, $angleBraces, $title);
+
+  $originalTags = array('<title>', '</title>', 'From the Cover: ');
+  $wikiTags = array('','','');
+  $title = str_ireplace($originalTags, $wikiTags, $title);
+
+  $title_orig = '';
+  while ($title != $title_orig) {
+    $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
+    $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
+      function ($matches) {return ("''" . $matches[1] . "''");},
+      $title);
+    $title = preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
+      function ($matches) {return ("'''" . $matches[1] . "'''");},
+      $title);
+    $title = preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
+      function ($matches) {return ("''" . $matches[1] . "''");},
+      $title);
+    $title = preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
+      function ($matches) {return ("''" . $matches[1] . "''");},
+      $title);
+  }
+
+  $title = sanitize_string($title);
   
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title);
@@ -161,6 +170,17 @@ function title_capitalization($in, $caps_after_punctuation) {
     // ALL CAPS to Title Case
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
+
+  // Implicit acronyms
+  $new_case = ' ' . $new_case . ' ';
+  $new_case = preg_replace_callback("~\W[b-df-hj-np-tv-xz]{3,}(?=\W)~ui", 
+      function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
+      $new_case);
+  $new_case = preg_replace_callback("~\W[aeiou]{3,}(?=\W)~ui", 
+      function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
+      $new_case);
+  $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
+
   $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
   
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {

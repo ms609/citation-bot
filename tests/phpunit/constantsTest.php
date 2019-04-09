@@ -42,6 +42,24 @@ final class constantsTest extends testBaseClass {
     $this->assertEquals($text, $expanded->parsed_text());
   }
   
+  public function testImplicitConstants() {
+    // Consonants
+    $this->assertEquals('X', title_capitalization('x', TRUE));
+    $this->assertEquals('Xz', title_capitalization('xz', TRUE));
+    $this->assertEquals('XZZ BBBB/EEE', title_capitalization('xzz bbbb/eee', TRUE));
+    $this->assertEquals('XZZZ', title_capitalization('xzzz', TRUE));
+    // Mixed
+    $this->assertEquals('Xzza', title_capitalization('xzza', TRUE));
+    // Vowels
+    $this->assertEquals('AEIOU', title_capitalization('aeiou', TRUE));
+    // Y is neither
+    $this->assertEquals('Aeiouy', title_capitalization('aeiouy', TRUE));
+    $this->assertEquals('Xzzzy', title_capitalization('xzzzy', TRUE));
+    // Relationship Status = It's Complicated :-)
+    $this->assertEquals('Xzzzy Aeiouy AEIOU and xzzzy Aeiouy AEIOU', title_capitalization('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou', TRUE));
+    $this->assertEquals('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), TRUE));
+  }
+  
   public function testConstantsOrder() {
     $acronyms = JOURNAL_ACRONYMS; sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
     $expected = current($acronyms);
