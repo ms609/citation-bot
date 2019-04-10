@@ -4,7 +4,6 @@
 // <PAGE> will need to be URL encoded
 
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
-header("Con tent-Type: text/plain");
 
 echo "<!DOCTYPE html><html><body><pre>\n";
 
