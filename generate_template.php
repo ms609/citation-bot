@@ -3,7 +3,7 @@
 // usage: https://tools.wmflabs.org/citations/generate_template.php?doi=<DOI>
 
 header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
-header("Content-Type: text/plain");
+
 echo "<!DOCTYPE html><html><body><pre>\n";
 $SLOW_MODE = TRUE;
 require_once('setup.php');
