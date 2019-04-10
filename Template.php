@@ -2908,6 +2908,16 @@ final class Template {
           
         case 'publisher':
           $publisher = strtolower($this->get($param));
+          if (substr($publisher, 0, 2) == '[[' &&
+              substr($publisher,   -2) == ']]' &&
+              mb_substr_count($publisher, '[[') === 1 && 
+              mb_substr_count($publisher, ']]') === 1) {
+            if (preg_match(REGEXP_PLAIN_WIKILINK, $publisher, $matches)) {
+              $publisher = $matches[1];
+            } elseif (preg_match(REGEXP_PIPED_WIKILINK, $publisher, $matches)) {
+              $publisher = $matches[2];
+            }
+          }
           if (stripos($this->get('url'), 'maps.google') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
             $this->set($param, 'Google Maps');  // Case when Google actually IS a publisher
             return;
