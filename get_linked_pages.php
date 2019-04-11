@@ -27,7 +27,7 @@ echo "\n";
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {  // normal and draft articles only
         $linked_page = str_replace(' ', '_', $link['*']);
-        if(!in_array($linked_page, AVOIDED_LINKS)) {
+        if(!in_array($linked_page, AVOIDED_LINKS) && stripos($linked_page, 'disambiguation') === FALSE) {
             echo $linked_page . "|";
         }
     }
