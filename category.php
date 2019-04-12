@@ -47,7 +47,7 @@ if (HTML_OUTPUT) {
 <?php
 }
 
-$edit_summary_end = " | [[WP:UCB|Citation Bot]]; [[Category:$category]].";
+$edit_summary_end = " | [[Category:$category]].";
 
 if ($category) {
   $attempts = 0;
