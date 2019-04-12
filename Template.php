@@ -3245,8 +3245,11 @@ final class Template {
         ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
         ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
         $crossRef = query_crossref($this->get('doi'));
-        print_r($crossRef);
         $orig_data = $this->get('volume');
+        print_r($crossRef);
+        echo "$crossRef->issue\n";
+        echo "$crossRef->volume\n";
+        echo "$orig_data\n";
         if ($crossRef && isset($crossRef->issue) && isset($crossRef->volume) && ($crossRef->issue != $crossRef->volume)) { // They don't match
           if ((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1) && ($crossRef->volume > 0)) { // Legit data
             if ($crossRef->issue == $orig_data) {
