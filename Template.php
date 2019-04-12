@@ -3241,6 +3241,23 @@ final class Template {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
+      if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume'))) { // Issue = Volume and not NULL
+        $crossRef = query_crossref($this->get('doi'));
+        $orig_data = $this->get('volume');
+        if ($crossRef && isset($crossRef->issue) && isset($crossRef->volume) && ($crossRef->issue != $crossRef->volume)) { // They don't match
+          if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1)) && ($crossRef->volume > 0)) { // Legit data
+            if ($crossRef->issue == $orig_data) {
+              $this->set('volume', $crossRef->volume);
+              report_warning('Citation had volume and issue the same.  Changing volume.');
+            } elseif ($crossRef->volume == $orig_data) {
+              $this->set('issue', $crossRef->issue);
+              report_warning('Citation had volume and issue the same.  Changing issue.');
+            } else {
+              report_warning('Citation has volume and issue both set to ' . $orig_data);
+            }
+          }
+        }
+      }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
@@ -3269,23 +3286,6 @@ final class Template {
       if (!$this->blank($alias_list)) { // At least one is set
         foreach ($alias_list as $alias) {
           if ($this->blank($alias)) $this->forget($alias); // Delete all the other ones
-        }
-      }
-    }
-    if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume'))) { // Issue = Volume and not NULL
-      $crossRef = query_crossref($doi);
-      $orig_data = $this->get('volume');
-      if ($crossRef && isset($crossRef->issue) && isset($crossRef->volume) && ($crossRef->issue != $crossRef->volume)) { // They don't match
-        if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1)) && ($crossRef->volume > 0)) { // Legit data
-           if ($crossRef->issue == $orig_data) {
-             $this->set('volume', $crossRef->volume);
-             report_warning('Citation had volume and issue the same.  Changing volume.');
-           } elseif ($crossRef->volume == $orig_data) {
-             $this->set('issue', $crossRef->issue);
-             report_warning('Citation had volume and issue the same.  Changing issue.');
-           } else {
-             report_warning('Citation has volume and issue both set to ' . $orig_data);
-           }
         }
       }
     }
