@@ -3245,18 +3245,19 @@ final class Template {
         ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
         ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
         $crossRef = query_crossref($this->get('doi'));
-        $orig_data = $this->get('volume');
-        print_r($crossRef);
-        echo "$crossRef->issue\n";
-        echo "$crossRef->volume\n";
+        $orig_data = (string) $this->get('volume');
+        $possible_issue = (string) @$crossRef->issue;
+        $possible_volume = (string) @$crossRef->volume;
+        echo "$possible_issue\n";
+        echo "$possible_volume\n";
         echo "$orig_data\n";
-        if ($crossRef && isset($crossRef->issue) && isset($crossRef->volume) && ($crossRef->issue != $crossRef->volume)) { // They don't match
-          if ((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1) && ($crossRef->volume > 0)) { // Legit data
-            if ($crossRef->issue == $orig_data) {
-              $this->set('volume', $crossRef->volume);
+        if ($possible_issue != $possible_volume && $possible_volume != "") { // They don't match
+          if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && $possible_volume != '0')) { // Legit data
+            if ($possible_issue == $orig_data) {
+              $this->set('volume', $possible_volume);
               report_warning('Citation had volume and issue the same.  Changing volume.');
-            } elseif ($crossRef->volume == $orig_data) {
-              $this->set('issue', $crossRef->issue);
+            } elseif ($possible_volume == $orig_data) {
+              $this->set('issue', $possible_issue);
               report_warning('Citation had volume and issue the same.  Changing issue.');
             } else {
               report_warning('Citation has volume and issue both set to ' . $orig_data);
