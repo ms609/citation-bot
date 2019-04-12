@@ -3248,11 +3248,8 @@ final class Template {
         $orig_data = trim((string) $this->get('volume'));
         $possible_issue = trim((string) @$crossRef->issue);
         $possible_volume = trim((string) @$crossRef->volume);
-        echo "$possible_issue\n";
-        echo "$possible_volume\n";
-        echo "$orig_data\n";
-        if ($possible_issue != $possible_volume && $possible_volume != "") { // They don't match
-          if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && $possible_volume != '0') { // Legit data
+        if ($possible_issue != $possible_volume) { // They don't match
+          if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && (integer) $possible_volume > 0) { // Legit data
             if ($possible_issue == $orig_data) {
               $this->set('volume', $possible_volume);
               report_warning('Citation had volume and issue the same.  Changing volume.');
