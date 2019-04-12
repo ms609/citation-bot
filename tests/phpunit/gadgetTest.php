@@ -6,6 +6,7 @@ require_once __DIR__ . '/../testBaseClass.php';
  
 final class gadgetTest extends testBaseClass {
   public function testGadget() {
+      // Run Gadget API
       ob_start();
       $_POST['text'] = '{{cite|pmid=34213}}';
       $_POST['summary'] = 'Something Nice';
@@ -13,8 +14,10 @@ final class gadgetTest extends testBaseClass {
       $json_text = ob_get_contents();
       ob_end_clean();
       // Reset everything
+      global $FLUSHING_OKAY;
+      global $SLOW_MODE;
       $FLUSHING_OKAY = TRUE;
-      $SLOW_MODE = TRUE; // Reset
+      $SLOW_MODE = TRUE;
       while (ob_get_level()) { ob_end_flush(); };
       // Output checking time
       $json = json_decode($json_text);
