@@ -1,6 +1,8 @@
 <?php
-@header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
-@header("Content-Type: text/json");
+if (!getenv('TRAVIS')) {
+  header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
+  header("Content-Type: text/json");
+}
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
 $FLUSHING_OKAY = FALSE;
