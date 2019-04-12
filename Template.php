@@ -3284,7 +3284,7 @@ final class Template {
              $this->set('issue', $crossRef->issue);
              report_warning('Citation had volume and issue the same.  Changing issue.');
            } else {
-             report_warning('Citation has volume and issue both set to ' . $orig_data;
+             report_warning('Citation has volume and issue both set to ' . $orig_data);
            }
         }
       }
