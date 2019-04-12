@@ -3272,6 +3272,23 @@ final class Template {
         }
       }
     }
+    if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume'))) { // Issue = Volume and not NULL
+      $crossRef = query_crossref($doi);
+      $orig_data = $this->get('volume');
+      if ($crossRef && isset($crossRef->issue) && isset($crossRef->volume) && ($crossRef->issue != $crossRef->volume)) { // They don't match
+        if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1)) && ($crossRef->volume > 0)) { // Legit data
+           if ($crossRef->issue == $orig_data) {
+             $this->set('volume', $crossRef->volume);
+             report_warning('Citation had volume and issue the same.  Changing volume.');
+           } elseif ($crossRef->volume == $orig_data) {
+             $this->set('issue', $crossRef->issue);
+             report_warning('Citation had volume and issue the same.  Changing issue.');
+           } else {
+             report_warning('Citation has volume and issue both set to ' . $orig_data;
+           }
+        }
+      }
+    }
   }
   
   public function verify_doi() {
