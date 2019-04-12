@@ -3,7 +3,7 @@
 @header("Content-Type: text/json");
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
-define("FLUSHING_OKAY", FALSE);
+if (!getenv("TRAVIS")) define("FLUSHING_OKAY", FALSE);
 
 $SLOW_MODE = FALSE;
 if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
