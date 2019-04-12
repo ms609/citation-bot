@@ -3241,7 +3241,9 @@ final class Template {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
-      if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume'))) { // Issue = Volume and not NULL
+      if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume')) && // Issue = Volume and not NULL
+        ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
+        ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
         $crossRef = query_crossref($this->get('doi'));
         print_r($crossRef);
         $orig_data = $this->get('volume');
