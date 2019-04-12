@@ -3245,14 +3245,14 @@ final class Template {
         ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
         ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
         $crossRef = query_crossref($this->get('doi'));
-        $orig_data = (string) $this->get('volume');
-        $possible_issue = (string) @$crossRef->issue;
-        $possible_volume = (string) @$crossRef->volume;
+        $orig_data = trim((string) $this->get('volume'));
+        $possible_issue = trim((string) @$crossRef->issue);
+        $possible_volume = trim((string) @$crossRef->volume);
         echo "$possible_issue\n";
         echo "$possible_volume\n";
         echo "$orig_data\n";
         if ($possible_issue != $possible_volume && $possible_volume != "") { // They don't match
-          if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && $possible_volume != '0')) { // Legit data
+          if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && $possible_volume != '0') { // Legit data
             if ($possible_issue == $orig_data) {
               $this->set('volume', $possible_volume);
               report_warning('Citation had volume and issue the same.  Changing volume.');
