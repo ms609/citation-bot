@@ -15,3 +15,4 @@ final class gadgetTest extends testBaseClass {
       print_r($result);
       $this->assertNULL($result);
   }
+}
