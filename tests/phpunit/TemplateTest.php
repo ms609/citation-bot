@@ -1780,6 +1780,14 @@ ER -  }}';
     $this->assertEquals('http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html', $expanded->get('url'));
     $this->assertEquals('cite web', $expanded->wikiname());
   }
+ 
+  public function testFixRubbishVolumeWithDoi() {
+    $text = '{{Cite journal|doi= 10.1136/bmj.2.3798.759-a |volume=3798 |issue=3798}}';
+    $template = $this->prepare_citation($text);
+    $template->final_tidy(); 
+    $this->assertEquals('3798', $expanded->get('issue'));
+    $this->assertEquals('2', $expanded->get('volume'));
+  }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
   Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
