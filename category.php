@@ -47,14 +47,7 @@ if (HTML_OUTPUT) {
 <?php
 }
 
-$user = NULL; // Editing as user or script, no need to name.
-if (is_valid_user($user)) {
-  echo " Activated by $user.\n\n";
-  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
-} else {
-  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits\n\n";
-  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
-}
+$edit_summary_end = " | [[WP:UCB|Citation Bot]]; [[Category:$category]].";
 
 if ($category) {
   $attempts = 0;
