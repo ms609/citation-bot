@@ -31,7 +31,7 @@ if (HTML_OUTPUT) {?>
 <?php
 }
 
-$edit_summary_end = " | [[WP:UCB|Citation Bot]].";
+$edit_summary_end = " |";
 
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
