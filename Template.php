@@ -3354,6 +3354,7 @@ final class Template {
      * Therefore, probably best only if template is alone within <ref> tags. 
      * That would also mean that once {{deadlink}} was added, the bot would not try again
      * https://github.com/wikimedia/DeadlinkChecker is a good repository/dependency to check if a link is dead.
+     * Should also consider flagging alive links with titles of "Buy this domain!"
      * BIG WARNING: This task will need a new request for approval round.  Flagging wrong will really anger the mobs
 
      function assessUrl($url){
