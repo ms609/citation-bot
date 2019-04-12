@@ -3243,6 +3243,7 @@ final class Template {
       }
       if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume'))) { // Issue = Volume and not NULL
         $crossRef = query_crossref($this->get('doi'));
+        print_r($crossRef);
         $orig_data = $this->get('volume');
         if ($crossRef && isset($crossRef->issue) && isset($crossRef->volume) && ($crossRef->issue != $crossRef->volume)) { // They don't match
           if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1)) && ($crossRef->volume > 0)) { // Legit data
