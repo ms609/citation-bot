@@ -1785,8 +1785,8 @@ ER -  }}';
     $text = '{{Cite journal|doi= 10.1136/bmj.2.3798.759-a |volume=3798 |issue=3798}}';
     $template = $this->prepare_citation($text);
     $template->final_tidy(); 
-    $this->assertEquals('3798', $expanded->get('issue'));
-    $this->assertEquals('2', $expanded->get('volume'));
+    $this->assertEquals('3798', $template->get('issue'));
+    $this->assertEquals('2', $template->get('volume'));
   }
   /* TODO 
   Test adding a paper with > 4 editors; this should trigger displayeditors
