@@ -388,6 +388,6 @@ class WikipediaBot {
   }
 
   private function authenticate_user() {
-    @unset($this->userEditToken);
+    $this->userEditToken = FALSE;
   }
 }
