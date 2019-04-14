@@ -185,7 +185,7 @@ class WikipediaBot {
     
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
-    if (HTML_OUTPUT) $auth_token = $this->userEditToken;  // User tokens
+    if ($this->userEditToken) $auth_token = $this->userEditToken;  // User tokens
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
@@ -388,6 +388,7 @@ class WikipediaBot {
   }
 
   private function authenticate_user() {
+    @unset($this->userEditToken);
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
       $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
