@@ -2874,7 +2874,7 @@ final class Template {
           }
           $periodical = $this->get($param);
           if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { 
-             $this->set($param, title_capitalization(ucwords($periodical), TRUE));
+             $this->set($param, title_capitalization(ucwords($periodical), TRUE, FALSE));
           }
           return;
         
