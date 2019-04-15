@@ -3241,6 +3241,27 @@ final class Template {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
+      if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume')) && // Issue = Volume and not NULL
+        ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
+        ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
+        $crossRef = query_crossref($this->get('doi'));
+        $orig_data = trim((string) $this->get('volume'));
+        $possible_issue = trim((string) @$crossRef->issue);
+        $possible_volume = trim((string) @$crossRef->volume);
+        if ($possible_issue != $possible_volume) { // They don't match
+          if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && (integer) $possible_volume > 0) { // Legit data
+            if ($possible_issue == $orig_data) {
+              $this->set('volume', $possible_volume);
+              report_action('Citation had volume and issue the same.  Changing volume.');
+            } elseif ($possible_volume == $orig_data) {
+              $this->set('issue', $possible_issue);
+              report_action('Citation had volume and issue the same.  Changing issue.');
+            } else {
+              report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');
+            }
+          }
+        }
+      }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
