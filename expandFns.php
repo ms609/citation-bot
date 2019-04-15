@@ -91,7 +91,7 @@ function wikify_external_text($title) {
     if (mb_substr_count($last_word, '.') === 1) $last_word = mb_substr($title, 0, -1); // Do not remove if something like D.C.  (will not catch D. C. though)
   }
   $title = preg_replace('~[\*]$~', '', $title);
-  $title = title_capitalization($title, TRUE);
+  $title = title_capitalization($title, TRUE, TRUE);
 
   $htmlBraces  = array("&lt;", "&gt;");
   $angleBraces = array("<", ">");
@@ -156,7 +156,7 @@ function restore_italics ($text) {
  *      letter after colons and other punctuation marks to remain capitalized.
  *      If not, it won't capitalise after : etc.
  */
-function title_capitalization($in, $caps_after_punctuation) {
+function title_capitalization($in, $caps_after_punctuation, $new_text) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
   if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
