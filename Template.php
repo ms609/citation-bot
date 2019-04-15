@@ -3252,12 +3252,12 @@ final class Template {
           if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && (integer) $possible_volume > 0) { // Legit data
             if ($possible_issue == $orig_data) {
               $this->set('volume', $possible_volume);
-              report_warning('Citation had volume and issue the same.  Changing volume.');
+              report_action('Citation had volume and issue the same.  Changing volume.');
             } elseif ($possible_volume == $orig_data) {
               $this->set('issue', $possible_issue);
-              report_warning('Citation had volume and issue the same.  Changing issue.');
+              report_action('Citation had volume and issue the same.  Changing issue.');
             } else {
-              report_warning('Citation has volume and issue both set to ' . $orig_data);
+              report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');
             }
           }
         }
