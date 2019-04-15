@@ -8,7 +8,7 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
 class WikipediaBot {
   
-  protected $consumer, $token, $ch;
+  protected $consumer, $token, $ch, $userEditToken;
   
   function __construct() {
     // setup.php must already be run at this point
@@ -16,6 +16,8 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
+    $this->userEditToken = FALSE;
+    if (HTML_OUTPUT) $this->authenticate_user();
   }
   
   function __destruct() {
@@ -184,6 +186,7 @@ class WikipediaBot {
     
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
+    if ($this->userEditToken) $auth_token = $this->userEditToken;  // User tokens
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
@@ -385,4 +388,7 @@ class WikipediaBot {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
 
+  private function authenticate_user() {
+    ;
+  }
 }
