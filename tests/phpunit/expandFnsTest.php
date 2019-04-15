@@ -10,27 +10,27 @@ final class expandFnsTest extends testBaseClass {
 
   public function testCapitalization() {
     $this->assertEquals('Molecular and Cellular Biology', 
-                        title_capitalization(title_case('Molecular and cellular biology'), TRUE));
+                        title_capitalization(title_case('Molecular and cellular biology'), TRUE, TRUE));
     $this->assertEquals('z/Journal', 
-                        title_capitalization(title_case('z/Journal'), TRUE));
+                        title_capitalization(title_case('z/Journal'), TRUE, TRUE));
     $this->assertEquals('The Journal of Journals', // The, not the
-                        title_capitalization('The Journal Of Journals', TRUE));
+                        title_capitalization('The Journal Of Journals', TRUE, TRUE));
     $this->assertEquals('A Journal of Chemistry A',
-                        title_capitalization('A Journal of Chemistry A', TRUE));
+                        title_capitalization('A Journal of Chemistry A', TRUE, TRUE));
     $this->assertEquals('A Journal of Chemistry E',
-                        title_capitalization('A Journal of Chemistry E', TRUE));                      
+                        title_capitalization('A Journal of Chemistry E', TRUE, TRUE));                      
     $this->assertEquals('This a Journal', 
-                        title_capitalization('THIS A JOURNAL', TRUE));
+                        title_capitalization('THIS A JOURNAL', TRUE, TRUE));
     $this->assertEquals('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE)); // Do not touch links
   }
   
   public function testFrenchCapitalization() {
     $this->assertEquals("L'Aerotecnica",
-                        title_capitalization(title_case("L'Aerotecnica"), TRUE));
+                        title_capitalization(title_case("L'Aerotecnica"), TRUE, TRUE));
     $this->assertEquals("Phénomènes d'Évaporation d'Hydrologie",
-                        title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), TRUE));
+                        title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), TRUE, TRUE));
     $this->assertEquals("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica",
-                        title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE));
+                        title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE, TRUE));
   }
     
   public function testExtractDoi() {
