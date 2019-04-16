@@ -92,3 +92,6 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys '
           /* The above will be automatically updated to alphabetical order */ 
 ); 
+
+
+
