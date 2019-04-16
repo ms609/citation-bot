@@ -2873,8 +2873,9 @@ final class Template {
               $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $this->get($param)));
           }
           $periodical = $this->get($param);
-          if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { 
-             $this->set($param, title_capitalization($periodical, TRUE, FALSE));
+          if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { ;
+             if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
+             $this->set($param, title_capitalization($periodical, TRUE));
           }
           return;
         
