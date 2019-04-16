@@ -165,7 +165,8 @@ function title_capitalization($in, $caps_after_punctuation, $is_new_text) {
   }
   
   if (!$is_new_text) {
-    if(str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $new_case . ' ') != ' ' . $new_case . ' ') return; // Found foreign words/phrase in EXISTING data
+    if(str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $new_case . ' ') != ' ' . $new_case . ' ') return $new_case; // Found foreign words/phrase in EXISTING data
+    $new_case = ucwords($new_case);  // Why do we not do this always????
   }
   
   if ($new_case == mb_strtoupper($new_case) 
