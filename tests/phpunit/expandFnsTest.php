@@ -21,6 +21,10 @@ final class expandFnsTest extends testBaseClass {
                         title_capitalization('A Journal of Chemistry E', TRUE));                      
     $this->assertEquals('This a Journal', 
                         title_capitalization('THIS A JOURNAL', TRUE));
+    $this->assertEquals('This a Journal', 
+                        title_capitalization('THIS A JOURNAL', TRUE));
+    $this->assertEquals("THIS 'A' JOURNAL mittEilUngen", 
+                        title_capitalization("THIS `A` JOURNAL mittEilUngen", TRUE));
     $this->assertEquals('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE)); // Do not touch links
   }
   
