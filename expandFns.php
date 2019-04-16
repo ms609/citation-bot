@@ -91,7 +91,7 @@ function wikify_external_text($title) {
     if (mb_substr_count($last_word, '.') === 1) $last_word = mb_substr($title, 0, -1); // Do not remove if something like D.C.  (will not catch D. C. though)
   }
   $title = preg_replace('~[\*]$~', '', $title);
-  $title = title_capitalization($title, TRUE, TRUE);
+  $title = title_capitalization($title, TRUE);
 
   $htmlBraces  = array("&lt;", "&gt;");
   $angleBraces = array("<", ">");
@@ -156,16 +156,12 @@ function restore_italics ($text) {
  *      letter after colons and other punctuation marks to remain capitalized.
  *      If not, it won't capitalise after : etc.
  */
-function title_capitalization($in, $caps_after_punctuation, $is_new_text) {
+function title_capitalization($in, $caps_after_punctuation) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
   if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
-  }
-  
-  if (!$is_new_text) {
-    if(str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $new_case . ' ') == ' ' . $new_case . ' ') $new_case = ucwords($new_case); // Found NO foreign words/phrase
   }
   
   if ($new_case == mb_strtoupper($new_case) 
