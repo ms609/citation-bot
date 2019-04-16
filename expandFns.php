@@ -165,7 +165,7 @@ function title_capitalization($in, $caps_after_punctuation, $is_new_text) {
   }
   
   if (!$is_new_text) {
-    ;  // placeholder for code that will detect foreign languages are bale out on "fixing them"
+    if(str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $new_case . ' ') != ' ' . $new_case . ' ') return; // Found foreign words/phrase in EXISTING data
   }
   
   if ($new_case == mb_strtoupper($new_case) 
