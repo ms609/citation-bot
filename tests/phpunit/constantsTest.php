@@ -11,7 +11,7 @@ final class constantsTest extends testBaseClass {
   public function testConstantsDefined() {
     $this->assertEquals(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
     for ($i = 0; $i < sizeof(JOURNAL_ACRONYMS); $i++) {
-      $this->assertEquals(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), TRUE, TRUE)));
+      $this->assertEquals(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), TRUE)));
       // Verify that they are padded with a space
       $this->assertEquals   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], -1, 1));
       $this->assertEquals   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i],  0, 1));
@@ -44,20 +44,20 @@ final class constantsTest extends testBaseClass {
   
   public function testImplicitConstants() {
     // Consonants
-    $this->assertEquals('X', title_capitalization('x', TRUE, TRUE));
-    $this->assertEquals('Xz', title_capitalization('xz', TRUE, TRUE));
-    $this->assertEquals('XZZ BBBB/EEE', title_capitalization('xzz bbbb/eee', TRUE, TRUE));
-    $this->assertEquals('XZZZ', title_capitalization('xzzz', TRUE, TRUE));
+    $this->assertEquals('X', title_capitalization('x', TRUE));
+    $this->assertEquals('Xz', title_capitalization('xz', TRUE));
+    $this->assertEquals('XZZ BBBB/EEE', title_capitalization('xzz bbbb/eee', TRUE));
+    $this->assertEquals('XZZZ', title_capitalization('xzzz', TRUE));
     // Mixed
-    $this->assertEquals('Xzza', title_capitalization('xzza', TRUE, TRUE));
+    $this->assertEquals('Xzza', title_capitalization('xzza', TRUE));
     // Vowels
-    $this->assertEquals('AEIOU', title_capitalization('aeiou', TRUE, TRUE));
+    $this->assertEquals('AEIOU', title_capitalization('aeiou', TRUE));
     // Y is neither
-    $this->assertEquals('Aeiouy', title_capitalization('aeiouy', TRUE, TRUE));
-    $this->assertEquals('Xzzzy', title_capitalization('xzzzy', TRUE, TRUE));
+    $this->assertEquals('Aeiouy', title_capitalization('aeiouy', TRUE));
+    $this->assertEquals('Xzzzy', title_capitalization('xzzzy', TRUE));
     // Relationship Status = It's Complicated :-)
-    $this->assertEquals('Xzzzy Aeiouy AEIOU and xzzzy Aeiouy AEIOU', title_capitalization('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou', TRUE, TRUE));
-    $this->assertEquals('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), TRUE, TRUE));
+    $this->assertEquals('Xzzzy Aeiouy AEIOU and xzzzy Aeiouy AEIOU', title_capitalization('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou', TRUE));
+    $this->assertEquals('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), TRUE));
   }
   
   public function testConstantsOrder() {
