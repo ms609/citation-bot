@@ -21,6 +21,12 @@ final class expandFnsTest extends testBaseClass {
                         title_capitalization('A Journal of Chemistry E', TRUE, TRUE));                      
     $this->assertEquals('This a Journal', 
                         title_capitalization('THIS A JOURNAL', TRUE, TRUE));
+    // Existing text without foreign
+    $this->assertEquals('This a Journal', 
+                        title_capitalization('THIS A JOURNAL', TRUE, FALSE));
+    // Existing text with foreign -- does fix single quotes
+    $this->assertEquals("THIS 'A' JOURNAL MittEilUngen", 
+                        title_capitalization("THIS `A´ JOURNAL MittEilUngen", TRUE, FALSE));
     $this->assertEquals('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE, TRUE)); // Do not touch links
   }
   
