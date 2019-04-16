@@ -3371,6 +3371,13 @@ final class Template {
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
+     * Therefore, this might be better done at Page() level.
+     * Code must not just keep adding deadlink flags every time run
+     * Therefore, probably best only if template is alone within <ref> tags. 
+     * That would also mean that once {{deadlink}} was added, the bot would not try again
+     * https://github.com/wikimedia/DeadlinkChecker is a good repository/dependency to check if a link is dead.
+     * Should also consider flagging alive links with titles of "Buy this domain!"
+     * This task should be debugged heavily since flagging wrong will anger some people
 
      function assessUrl($url){
         echo "assessing URL ";
