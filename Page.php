@@ -207,7 +207,7 @@ class Page {
         $this_template->get_identifiers_from_url();
         if (!$this_template->blank('journal')) {
            $journal = trim($this_template->get('journal'));
-           $this_template->set('journal', title_capitalization(ucwords($journal), TRUE, FALSE));
+           $this_template->set('journal', title_capitalization($journal, TRUE, FALSE));
         }
       } elseif ($this_template->wikiname() == 'cite magazine') {
         if ($this_template->blank('magazine') && $this_template->has('work')) {
