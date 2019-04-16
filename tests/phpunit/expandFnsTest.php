@@ -10,33 +10,31 @@ final class expandFnsTest extends testBaseClass {
 
   public function testCapitalization() {
     $this->assertEquals('Molecular and Cellular Biology', 
-                        title_capitalization(title_case('Molecular and cellular biology'), TRUE, TRUE));
+                        title_capitalization(title_case('Molecular and cellular biology'), TRUE));
     $this->assertEquals('z/Journal', 
-                        title_capitalization(title_case('z/Journal'), TRUE, TRUE));
+                        title_capitalization(title_case('z/Journal'), TRUE));
     $this->assertEquals('The Journal of Journals', // The, not the
-                        title_capitalization('The Journal Of Journals', TRUE, TRUE));
+                        title_capitalization('The Journal Of Journals', TRUE));
     $this->assertEquals('A Journal of Chemistry A',
-                        title_capitalization('A Journal of Chemistry A', TRUE, TRUE));
+                        title_capitalization('A Journal of Chemistry A', TRUE));
     $this->assertEquals('A Journal of Chemistry E',
-                        title_capitalization('A Journal of Chemistry E', TRUE, TRUE));                      
+                        title_capitalization('A Journal of Chemistry E', TRUE));                      
     $this->assertEquals('This a Journal', 
-                        title_capitalization('THIS A JOURNAL', TRUE, TRUE));
-    // Existing text without foreign
+                        title_capitalization('THIS A JOURNAL', TRUE));
     $this->assertEquals('This a Journal', 
-                        title_capitalization('THIS A JOURNAL', TRUE, FALSE));
-    // Existing text with foreign -- does fix single quotes
+                        title_capitalization('THIS A JOURNAL', TRUE));
     $this->assertEquals("THIS 'A' JOURNAL mittEilUngen", 
-                        title_capitalization("THIS `A` JOURNAL mittEilUngen", TRUE, FALSE));
-    $this->assertEquals('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE, TRUE)); // Do not touch links
+                        title_capitalization("THIS `A` JOURNAL mittEilUngen", TRUE));
+    $this->assertEquals('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE)); // Do not touch links
   }
   
   public function testFrenchCapitalization() {
     $this->assertEquals("L'Aerotecnica",
-                        title_capitalization(title_case("L'Aerotecnica"), TRUE, TRUE));
+                        title_capitalization(title_case("L'Aerotecnica"), TRUE));
     $this->assertEquals("Phénomènes d'Évaporation d'Hydrologie",
-                        title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), TRUE, TRUE));
+                        title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), TRUE));
     $this->assertEquals("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica",
-                        title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE, TRUE));
+                        title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE));
   }
     
   public function testExtractDoi() {
