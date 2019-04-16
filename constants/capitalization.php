@@ -93,5 +93,9 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           /* The above will be automatically updated to alphabetical order */ 
 ); 
 
-
-
+const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' Archiv ', ' Archives de ',
+           ' Archives du  ', ' Archives des ', ' Beiträge ', ' Berichten ', ' Blätter ', ' Bulletin de ',
+           ' Bulletin des ', ' Bulletin du ', ' Cahiers ', ' Carnets ', ' Comptes rendus ', ' Fachberichte ',
+           ' Jahrbuch ', ' Journal du ', ' Journal de ', ' Journal des ', ' Journal für ', ' Mitteilungen ',
+           ' Monatshefte ', ' Monatsschrift ', ' Mémoires ', ' Notizblatt ', ' Recueil ', ' Revue ', ' Travaux ',
+           ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ');

@@ -2873,8 +2873,9 @@ final class Template {
               $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $this->get($param)));
           }
           $periodical = $this->get($param);
-          if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { 
-             $this->set($param, title_capitalization(ucwords($periodical), TRUE));
+          if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { ;
+             if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
+             $this->set($param, title_capitalization($periodical, TRUE));
           }
           return;
         
@@ -3241,6 +3242,27 @@ final class Template {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
+      if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume')) && // Issue = Volume and not NULL
+        ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
+        ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
+        $crossRef = query_crossref($this->get('doi'));
+        $orig_data = trim((string) $this->get('volume'));
+        $possible_issue = trim((string) @$crossRef->issue);
+        $possible_volume = trim((string) @$crossRef->volume);
+        if ($possible_issue != $possible_volume) { // They don't match
+          if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && (integer) $possible_volume > 0) { // Legit data
+            if ($possible_issue == $orig_data) {
+              $this->set('volume', $possible_volume);
+              report_action('Citation had volume and issue the same.  Changing volume.');
+            } elseif ($possible_volume == $orig_data) {
+              $this->set('issue', $possible_issue);
+              report_action('Citation had volume and issue the same.  Changing issue.');
+            } else {
+              report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');
+            }
+          }
+        }
+      }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
@@ -3349,6 +3371,13 @@ final class Template {
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
+     * Therefore, this might be better done at Page() level.
+     * Code must not just keep adding deadlink flags every time run
+     * Therefore, probably best only if template is alone within <ref> tags. 
+     * That would also mean that once {{deadlink}} was added, the bot would not try again
+     * https://github.com/wikimedia/DeadlinkChecker is a good repository/dependency to check if a link is dead.
+     * Should also consider flagging alive links with titles of "Buy this domain!"
+     * This task should be debugged heavily since flagging wrong will anger some people
 
      function assessUrl($url){
         echo "assessing URL ";
