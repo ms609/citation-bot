@@ -208,7 +208,7 @@ class Page {
         if (!$this_template->blank('journal')) {
            $journal = trim($this_template->get('journal'));
            if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $journal . ' ') == ' ' . $journal . ' ') $journal = ucwords($journal); // Found NO foreign words/phrase
-           $this_template->set('journal', title_capitalization($journal), TRUE));
+           $this_template->set('journal', title_capitalization($journal, TRUE));
         }
       } elseif ($this_template->wikiname() == 'cite magazine') {
         if ($this_template->blank('magazine') && $this_template->has('work')) {
