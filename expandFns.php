@@ -156,12 +156,16 @@ function restore_italics ($text) {
  *      letter after colons and other punctuation marks to remain capitalized.
  *      If not, it won't capitalise after : etc.
  */
-function title_capitalization($in, $caps_after_punctuation, $new_text) {
+function title_capitalization($in, $caps_after_punctuation, $is_new_text) {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
   if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
+  }
+  
+  if (!$is_new_text) {
+    ;  // placeholder for code that will detect foreign languages are bale out on "fixing them"
   }
   
   if ($new_case == mb_strtoupper($new_case) 
