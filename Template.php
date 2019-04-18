@@ -2671,7 +2671,7 @@ final class Template {
       }
     }
     if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~u", $this->get($param), $matches)) {
-      $this->set($param, $matches[1]); // Remove quotes, if only at start and end
+      $this->set($param, $matches[1]); // Re move quotes, if only at start and end
     }
         
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
