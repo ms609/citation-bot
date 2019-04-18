@@ -2670,8 +2670,13 @@ final class Template {
         $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
       }
     }
-    if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~u", $this->get($param), $matches)) {
-      $this->set($param, $matches[1]); // Remove quotes, if only at start and end
+    // Remove quotes, if only at start and end
+    if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
+      if ($param === 'title' && $matches[1] === "'''" && $matches[3] === "'''" && $this->wikiname() === 'cite web') {
+        ; // Do not remove entire title being italics in cite web
+      } else {
+        $this->set($param, $matches[2]);
+      }
     }
         
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
