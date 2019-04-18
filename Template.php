@@ -2671,10 +2671,8 @@ final class Template {
       }
     }
     // Remove quotes, if only at start and end
-    if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-      if ($param === 'title' && $matches[1] === "'''" && $matches[3] === "'''" && $this->wikiname() === 'cite web') {
-        ; // Do not remove entire title being italics in cite web
-      } else {
+    if ($param !== 'title' || preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
+      if ($matches[1] !== $matches[3]) {
         $this->set($param, $matches[2]);
       }
     }
