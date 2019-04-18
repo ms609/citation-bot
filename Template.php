@@ -2671,8 +2671,8 @@ final class Template {
       }
     }
     // Remove quotes, if only at start and end
-    if ($param !== 'title' && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-      if ($matches[1] !== $matches[3]) {
+    if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
+      if (($matches[1] !== $matches[3]) || ($param !== 'title')) {
         $this->set($param, $matches[2]);
       }
     }
