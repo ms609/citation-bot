@@ -19,7 +19,7 @@ matrix:
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit --coverage-clover coverage.xml --bootstrap setup.php tests/phpunit
       after_success: bash <(curl -s https://codecov.io/bash)
-    - php: nightly  # Newer version has SSL in php curl
+    - php: nightly # PHP 8 alpha
       addons:
         apt:
           packages:
