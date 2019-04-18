@@ -12,7 +12,7 @@ matrix:
       addons:
         apt:
           packages:
-           - libonig-dev
+           - libonig
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
@@ -23,7 +23,7 @@ matrix:
       addons:
         apt:
           packages:
-           - libonig-dev
+           - libonig
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
