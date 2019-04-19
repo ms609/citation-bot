@@ -618,6 +618,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
   }
+ 
+  public function testUseSici() {
+      $text = "{{Cite book|sici=0031-0603}}";
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Pan-Pacific Entomologist', $expanded->get('journal'));
+  }
   
   public function testNoBibcodesForArxiv() {
     $text = "{{Cite arxiv|last=Sussillo|first=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
