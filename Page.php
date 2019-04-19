@@ -210,7 +210,7 @@ class Page {
            if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $journal . ' ') == ' ' . $journal . ' ') $journal = ucwords($journal); // Found NO foreign words/phrase
            $this_template->set('journal', title_capitalization($journal, TRUE));
         }
-        $this_template->use_sici();
+        $this_template->use_issn();
       } elseif ($this_template->wikiname() == 'cite magazine') {
         if ($this_template->blank('magazine') && $this_template->has('work')) {
             $this_template->rename('work', 'magazine');
@@ -218,7 +218,7 @@ class Page {
         if ($this_template->has('magazine')) {
           $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine'))));
         }
-        $this_template->use_sici();
+        $this_template->use_issn();
       }
     }
     
@@ -238,7 +238,7 @@ class Page {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
       $this_template->get_doi_from_crossref();
-      $this_template->use_sici();
+      $this_template->use_issn();
       $this_template->find_pmid();  // #TODO Could probably batch this
       if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
       $this_template->get_open_access_url();
