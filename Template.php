@@ -3844,7 +3844,7 @@ final class Template {
   
   public function use_issn() {
     if ($this->blank('issn')) return FALSE; // Nothing to use
-    if (!$this->blank(['newspaper', 'magazine', 'periodical', 'journal'])) return FALSE; // Nothing to add
+    if (!$this->blank(['newspaper', 'magazine', 'periodical', 'journal', 'work'])) return FALSE; // Nothing to add
     $xml = @simplexml_load_file('https://portal.issn.org/resource/ISSN/' . $this->get('issn'));
     print_r($xml);
   }
