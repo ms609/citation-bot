@@ -37,7 +37,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' AAPOS ', ' Angew Chem Int Ed ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', 
           ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
-          ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ",
+          ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ", ' Dtsch ',
           ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
           ' e-Print ', ' e-Print ', ' e-Prints ', ' e-Prints ', ' Early Modern Japan: an Interdisciplinary Journal ',
           ' EFSA ', ' eJournal ', ' eJournal ', ' eLife ', ' eLife ', ' eLS ', ' eLS ', ' EMBO J ', 
@@ -66,7 +66,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' Aapos ', ' Angew Chem Int ed ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme MTD ',
           ' B/GCVS ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
-          ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', " Dell'Accademia ",
+          ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', " Dell'Accademia ", ' DTSCH ',
           ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
           ' E-print ', ' E-Print ', ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ',
           ' Efsa ', ' Ejournal ', ' EJournal ', ' ELife ', ' Elife ', ' Els ', ' ELS ', ' Embo J ', 
