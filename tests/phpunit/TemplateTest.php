@@ -619,8 +619,8 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('215', $expanded->get('pages'));
   }
  
-  public function testUseSici() {
-      $text = "{{Cite book|sici=0031-0603}}";
+  public function testUseISSN() {
+      $text = "{{Cite book|issn=0031-0603}}";
       $expanded = $this->process_citation($text);
       $this->assertEquals('Pan-Pacific Entomologist', $expanded->get('journal'));
   }
