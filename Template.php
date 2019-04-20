@@ -3595,7 +3595,7 @@ final class Template {
   public function lacks($par) {return !$this->has($par);}
 
   public function add($par, $val) {
-    report_add("Adding $par: $val");
+    echo("\n Adding $par: $val \n");
     $could_set = $this->set($par, $val);
     $this->tidy_parameter($par);
     return $could_set;
