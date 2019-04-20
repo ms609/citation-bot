@@ -3846,7 +3846,7 @@ final class Template {
     if ($this->blank('issn')) return FALSE; // Nothing to use
     if (!$this->blank(['newspaper', 'magazine', 'periodical', 'journal', 'work'])) return FALSE; // Nothing to add
     if ($this->get('issn') === '9999-9999') return FALSE ; // Fake test suite data
-    $xml = @simplexml_load_file('https://www.worldcat.org/issn/' . $this->get('issn'));
+    $xml = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
     echo('XML ' . $xml . ' XML');
   }
 }
