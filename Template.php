@@ -3846,7 +3846,11 @@ final class Template {
     if ($this->blank('issn')) return FALSE; // Nothing to use
     if (!$this->blank(['newspaper', 'magazine', 'periodical', 'journal', 'work'])) return FALSE; // Nothing to add
     if ($this->get('issn') === '9999-9999') return FALSE ; // Fake test suite data
-    $xml = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
-    echo('XML ' . $xml . ' XML');
+    $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
+    if (preg_match('~<title>(.*)\(eJournal~', $html, $matches)) {
+      $this->add('journal', trim($matches[1]));
+    } elseif (getenv('TRAVIS') && (preg_match('~<title>(.*)</title>~', $html, $matches)) {
+      report_error('unexpected title from ISSN ' . $matches[1]);
+    }
   }
 }
