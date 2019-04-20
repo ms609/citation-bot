@@ -3092,21 +3092,7 @@ final class Template {
               $this->forget('volume');
             }
           }
-          if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches) ||
-              preg_match("~^(?:vol. |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches) ||
-              preg_match("~^(\d+)\.(\d+)$~i", trim($this->get('volume')), $matches) ||
-              preg_match("~^Volume (\d+), Number (\d+)$~i", trim($this->get('volume')), $matches) ||
-              FALSE // This line makes seeing changes in GIT easier since all lines end with ||
-             ) {
-            $possible_volume=$matches[1];
-            $possible_issue=$matches[2];
-            if ($this->blank(ISSUE_ALIASES)) {
-              $this->add_if_new('issue', $possible_issue);
-              $this->set('volume',$possible_volume); 
-            } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
-              $this->set('volume', $possible_volume);
-            }               
-          }
+          $this->volume_issue_demix($this->get('volume'), $param);
           return;
           
         case 'year':
@@ -3133,6 +3119,7 @@ final class Template {
             if(!$this->blank($param)) $this->forget($param);
             return;
           }
+          $this->volume_issue_demix($this->get($param), $param);
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
@@ -3802,6 +3789,34 @@ final class Template {
            quietly('report_modification', "Remove duplicate inline DOI ");
          }
        }
+     }
+  }
+  
+  protected function volume_issue_demix($data, $param) {
+     $data = trim($data);
+     if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
+              preg_match("~^(?:vol. |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
+              preg_match("~^Volume (\d+), Number (\d+)$~i", $data, $matches) ||
+              FALSE // This line makes seeing changes in GIT easier since all lines end with ||
+         ) {
+         $possible_volume=$matches[1];
+         $possible_issue=$matches[2];
+         if ($param == 'volume') {
+            if ($this->blank(ISSUE_ALIASES)) {
+              $this->add_if_new('issue', $possible_issue);
+              $this->set('volume',$possible_volume); 
+            } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
+              $this->set('volume', $possible_volume);
+            }
+         } else {
+            if ($this->blank('volume')) {
+              $this->set('issue', $possible_issue);
+              $this->add_if_new('volume',$possible_volume); 
+            } elseif ($this->get('volume') === $possible_volume) {
+              $this->set('issue', $possible_issue);
+            }
+         }
      }
   }
                          
