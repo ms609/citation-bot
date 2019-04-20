@@ -3848,9 +3848,10 @@ final class Template {
     if ($this->get('issn') === '9999-9999') return FALSE ; // Fake test suite data
     $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
     if (preg_match('~<title>(.*)\(eJournal~', $html, $matches)) {
-      $this->add('journal', trim($matches[1]));
-    } elseif (getenv('TRAVIS') && (preg_match('~<title>(.*)</title>~', $html, $matches)) {
+      return $this->add_if_new('journal', trim($matches[1]));
+    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {
       report_error('unexpected title from ISSN ' . $matches[1]);
     }
+    return FALSE;
   }
 }
