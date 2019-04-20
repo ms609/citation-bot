@@ -3797,7 +3797,7 @@ final class Template {
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol. |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
-              preg_match("~^Volume (\d+), Number (\d+)$~i", $data, $matches) ||
+              preg_match("~^Volume (\d+), (?:Number|Issue) (\d+)$~i", $data, $matches) ||
               FALSE // This line makes seeing changes in GIT easier since all lines end with ||
          ) {
          $possible_volume=$matches[1];
