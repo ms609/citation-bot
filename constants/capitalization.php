@@ -2,7 +2,7 @@
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' AAP ', ' ABC ', ' AC ', ' ACM ', ' AI ', ' AIAA ', ' AJHG ', ' al ', ' an ',
           ' and ', ' and then ', ' as ', ' at ', ' at ',
-          ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' BJPsych ', ' BMC ', ' BMJ ', ' but ', ' by ',
+          ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' bei ',  ' BJPsych ', ' BMC ', ' BMJ ', ' but ', ' by ',
           ' CBC ', ' CNS ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
           ' das ', ' DC ', ' de ', ' dei ', ' del ', ' della ', ' delle ', ' dem ', ' den ', ' der ', 
           ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' e ', ' ed ', ' ein ', 
@@ -18,7 +18,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' Aap ', ' Abc ', ' Ac ', ' Acm ', ' Ai ', ' Aiaa ', ' Ajhg ', ' Al ', ' An ', ' And ',
           ' and Then ', ' As ', ' At ', ' At ',
-          ' Aus ', ' Av ', ' Bba ', ' Bbc ', ' Be ', ' Bjpsych ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
+          ' Aus ', ' Av ', ' Bba ', ' Bbc ', ' Be ', ' Bei ', ' Bjpsych ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
           ' Cbc ', ' Cns ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
           ' Das ', ' Dc ', ' De ', ' Dei ', ' Del ', ' Della ', ' Delle ', ' Dem ', ' Den ', ' Der ', 
           ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' E ', ' Ed ', ' Ein ', 
