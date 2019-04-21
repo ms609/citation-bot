@@ -3795,10 +3795,8 @@ final class Template {
   protected function volume_issue_demix($data, $param) {
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-              preg_match("~^(?:vol. |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
-              preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
-              preg_match("~^Volume (\d+), (?:Number|Issue) (\d+)$~i", $data, $matches) ||
-              FALSE // This line makes seeing changes in GIT easier since all lines end with ||
+              preg_match("~^(?:vol. |Volume )(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(\d+)\.(\d+)$~i", $data, $matches))
          ) {
          $possible_volume=$matches[1];
          $possible_issue=$matches[2];
