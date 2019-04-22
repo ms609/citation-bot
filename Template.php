@@ -3796,7 +3796,7 @@ final class Template {
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol. |Volume )(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
-              preg_match("~^(\d+)\.(\d+)$~i", $data, $matches))
+              preg_match("~^(\d+)\.(\d+)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
          $possible_issue=$matches[2];
