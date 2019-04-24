@@ -22,6 +22,7 @@
         <file>./WikipediaBot.php</file>
         <file>./generate_template.php</file>
         <file>./get_linked_pages.php</file>
+        <file>./authenticate.php</file>
       </exclude>
     </whitelist>
   </filter>
