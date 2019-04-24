@@ -8,7 +8,7 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
 class WikipediaBot {
   
-  protected $consumer, $token, $ch;
+  protected $consumer, $token, $ch, $userEditToken;
   
   function __construct() {
     // setup.php must already be run at this point
@@ -16,6 +16,8 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
+    $this->userEditToken = FALSE;
+    if (HTML_OUTPUT) $this->authenticate_user();
   }
   
   function __destruct() {
@@ -184,6 +186,7 @@ class WikipediaBot {
     
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
+    if ($this->userEditToken) $auth_token = $this->userEditToken;  // User tokens
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
@@ -383,6 +386,34 @@ class WikipediaBot {
 
   public function namespace_name($id) {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
+  }
+
+  private function authenticate_user() {
+    if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
+     try {
+      $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
+      $conf->setConsumer($this->consumer);
+      $client = new Client($conf);
+      $this->userEditToken = json_decode( $client->makeOAuthCall(
+           	new Token($_SESSION['access_key'], $_SESSION['access_secret']),
+      	    'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json'
+         ) )->query->tokens->csrftoken;
+      return;
+     }
+     catch (Throwable $e) { ; } // PHP 7
+     catch (Exception $e) { ; } // PHP 5
+    }
+    @session_destroy();
+    if (stripps($_SERVER["REQUEST_URI"], '-dev') === FALSE) {
+      @header("Location: https://tools.wmflabs.org/citations/authenticate.php");
+      sleep(3);
+      echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations/authenticate.php">https://tools.wmflabs.org/citations/authenticate.php</a>');
+    } else {
+      @header("Location: https://tools.wmflabs.org/citations-dev/authenticate.php");
+      sleep(3);
+      echo('Valid user Token not found, go to <a href="https://tools.wmflabs.org/citations-dev/authenticate.php">https://tools.wmflabs.org/citations-dev/authenticate.php</a>');
+    }
+    exit(0);
   }
 
 }
