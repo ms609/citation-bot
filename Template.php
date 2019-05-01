@@ -802,6 +802,7 @@ final class Template {
         return FALSE;
 
       default:
+        if (getenv('TRAVIS')) report_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
