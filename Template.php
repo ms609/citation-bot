@@ -291,8 +291,7 @@ final class Template {
         } else {
           return FALSE;
         }
-      case 'editor4': case 'editor4-last': case 'editor4-first':
-        $this->add_if_new('displayeditors', 29);
+      case preg_match('~^editor\d{1,}(?:||-last|-first)$~', $param_name) :
         return $this->add($param_name, sanitize_string($value));
       break;
       
