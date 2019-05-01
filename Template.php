@@ -284,15 +284,26 @@ final class Template {
 
     switch ($param_name) {
       ### EDITORS
-      case "editor": case "editor-last": case "editor-first":
-        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        if ($this->blank(['editor', 'editor-last', 'editor-first'])) {
+      case preg_match('~^editor(\d{1,})$~', $param_name, $match) :
+        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first'])) {
           return $this->add($param_name, sanitize_string($value));
         } else {
           return FALSE;
         }
-      case preg_match('~^editor\d{1,}(?:||-last|-first)$~', $param_name) :
-        return $this->add($param_name, sanitize_string($value));
+      break;
+      case preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
+        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first'])) {
+          return $this->add($param_name, sanitize_string($value));
+        } else {
+          return FALSE;
+        }
+      break;
+      case preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
+        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last'])) {
+          return $this->add($param_name, sanitize_string($value));
+        } else {
+          return FALSE;
+        }
       break;
       
       ### AUTHORS
