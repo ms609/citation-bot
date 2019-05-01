@@ -26,10 +26,9 @@ if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
   // if they are not set already. Remember to set permissions (not readable!)
   ob_start();
   include_once('env.php');
-  $env_output = ob_get_contents();
   $env_output = trim(str_replace(['Reading authentication tokens from tools.wmflabs.org.',
                                   'Reading authentication tokens from tools.wmflabs.org-dev.'],
-                                 ['', ''], $env_output));
+                                 ['', ''], ob_get_contents()));
   if ($env_output) {
     ob_end_flush();  // Something unexpeted, so print it out
   } else {
