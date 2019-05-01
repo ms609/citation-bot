@@ -284,7 +284,7 @@ final class Template {
 
     switch ($param_name) {
       ### EDITORS
-      case preg_match('~^editor(\d{1,})$~', $param_name, $match) :
+      case (boolean) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
         if (!$this->blank(['editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first'])) {
           return $this->add($param_name, sanitize_string($value));
@@ -292,7 +292,7 @@ final class Template {
           return FALSE;
         }
       break;
-      case preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
+      case (boolean) preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
         if (!$this->blank(['editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first'])) {
           return $this->add($param_name, sanitize_string($value));
@@ -300,7 +300,7 @@ final class Template {
           return FALSE;
         }
       break;
-      case preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
+      case (boolean) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
         if (!$this->blank(['editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last'])) {
           return $this->add($param_name, sanitize_string($value));
