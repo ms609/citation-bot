@@ -32,7 +32,6 @@ require_once("Page.php");
 require_once("Template.php");
 require_once("Parameter.php");
 require_once("Comment.php");
-require_once("wikiFunctions.php");
 require_once("user_messages.php");
 require_once("WikipediaBot.php");
 require_once("expandFns.php");
