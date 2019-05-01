@@ -48,7 +48,7 @@ if (HTML_OUTPUT) {
 }
 
 $user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-if (is_valid_user($user)) {
+if (WikipediaBot::is_valid_user($user)) {
   echo " Activated by $user.\n\n";
   $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
 } else {
