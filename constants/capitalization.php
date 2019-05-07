@@ -14,7 +14,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' von ', ' voor ', ' when ', ' with ', ' within ', ' woor ', 
           ' y ', ' zu ', ' zum ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
-          ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ', ' Jpn ', ' Ltd ');
+          ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           ' Aap ', ' Abc ', ' Ac ', ' Acm ', ' Ai ', ' Aiaa ', ' Ajhg ', ' Al ', ' An ', ' And ',
           ' and Then ', ' As ', ' At ', ' At ',
@@ -30,8 +30,8 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Um ', ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' Voor ', ' When ', ' With ', ' Within ', ' Woor ', 
           ' Y ', ' Zu ', ' Zum ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
 
-          // After this line we list exceptions that need re-(de)capitalizing after they've been decapitalized.
-          ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', ' U S a ', ' JPN ', ' LTD ');
+          // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
+          ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', ' U S a ');
 
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -50,7 +50,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' J Gerontol A Biol Sci Med Sci ',
           ' J SIAM ', ' J. SIAM ', ' JABS : Journal of Applied Biological Sciences ', 
           ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.I.E.E. ',
-          ' Journal of the IEST ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
+          ' Journal of the IEST ', ' Jpn ', ' Ltd ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
           ' Meddelelser om Grønland ', ' Meddelelser om Grønland, ', ' MERIP ', ' Methods in Molecular Biology ',
           ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
           ' n.paradoxa ', ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
@@ -79,7 +79,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' J Gerontol a Biol Sci Med Sci ',
           ' J Siam ', ' J. Siam ', ' Jabs : Journal of Applied Biological Sciences ', 
           ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.i.i.e ', 
-          ' Journal of the Iest ', ' Mabs ', ' MAbs ', ' Mbio ', ' MBio ',
+          ' Journal of the Iest ', 'JPN ', ' LTD ', ' Mabs ', ' MAbs ', ' Mbio ', ' MBio ',
           ' Meddelelser Om Grønland ', ' Meddelelser Om Grønland, ', ' Merip ',  ' Methods in Molecular Biology (Clifton, N.j.) ',
           ' Mhealth ', ' MHealth ', ' Molecular and Cellular Biology ', ' Msphere ', ' MSphere ', ' Msystems ', ' MSystems ', 
           ' N.Paradoxa ', ' Nasa Tech Briefs ', ' NY Forskning I Grammatik ', ' Ocean Science Journal : Osj ', 
