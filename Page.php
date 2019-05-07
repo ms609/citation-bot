@@ -210,7 +210,6 @@ class Page {
            if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $journal . ' ') == ' ' . $journal . ' ') $journal = ucwords($journal); // Found NO foreign words/phrase
            $this_template->set('journal', title_capitalization($journal, TRUE));
         }
-        $this_template->use_issn();
       } elseif ($this_template->wikiname() == 'cite magazine') {
         if ($this_template->blank('magazine') && $this_template->has('work')) {
             $this_template->rename('work', 'magazine');
@@ -218,7 +217,6 @@ class Page {
         if ($this_template->has('magazine')) {
           $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine'))));
         }
-        $this_template->use_issn();
       }
     }
     
@@ -244,6 +242,14 @@ class Page {
       $this_template->get_open_access_url();
     }
     $this->expand_templates_from_identifier('doi',     $our_templates);
+    
+    $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
+    for ($i = 0; $i < count($all_templates); $i++) {
+      $this_template = $all_templates[$i];
+      if (in_array($this_template->wikiname(), $issn_templates)) {
+        $this_template->use_issn();
+      }
+    }
     
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
