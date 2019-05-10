@@ -63,6 +63,8 @@ final class Template {
     if ($this->name === 'Citeweb') $this->name = 'Cite web';
     if ($this->name === 'citepaper') $this->name = 'cite paper';
     if ($this->name === 'Citepaper') $this->name = 'Cite paper';
+    if ($this->name === 'citation journal') $this->name = 'cite journal';
+    if ($this->name === 'Citation journal') $this->name = 'Cite journal';
     
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
