@@ -1862,6 +1862,7 @@ final class Template {
         }
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
+        if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return TRUE;
         // Check if best location is already linked -- avoid double links
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~", $oa_url, $match)) {
