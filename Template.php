@@ -2655,8 +2655,8 @@ final class Template {
   
   public function wikiname() {
     $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
-    if ($name === 'cite work') return 'cite book'; // Treat the same since alias
-    return ;
+    if ($name === 'cite work') $name = 'cite book'; // Treat the same since alias
+    return $name ;
   }
   
   public function should_be_processed() {
