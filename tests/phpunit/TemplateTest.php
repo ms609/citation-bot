@@ -64,6 +64,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('10.7249/mg1078a.10', $expanded->get('jstor'));
    
   }
+ 
+  public function testDrop10.2307() {
+    $text = "{{Cite journal | jstor=10.2307/40237667}}";  // This should get cleaned up in tidy
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('40237667', $prepared->get('jstor'));
+  }
     
    public function testRISJstorExpansion() {
     $text = "<ref name='jstor'>{{jstor|3073767}}</ref>"; // Check Page expansion too
