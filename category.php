@@ -54,6 +54,7 @@ if (is_valid_user($user)) {
 } else {
   echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits\n\n";
   $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
+  $user = NULL;
 }
 
 if ($category) {
