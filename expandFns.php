@@ -2,6 +2,7 @@
 
 function sanitize_doi($doi) {
   $doi = preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
+  $doi = preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   $extension = substr($doi, strrpos($doi, '.'));
