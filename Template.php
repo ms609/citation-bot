@@ -2628,6 +2628,7 @@ final class Template {
       if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
         $this->rename('url', 'chapter-url');
         $this->rename('format', 'chapter-format');
+        $this->rename('url-access', 'chapter-url-access');
       } elseif (!$this->blank(['chapter-url','chapterurl']) && (0 === strcasecmp($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
       }  // otherwise they are differnt urls
@@ -3023,6 +3024,7 @@ final class Template {
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
             $this->rename($param, 'chapter-url');
             $this->rename('format', 'chapter-format');
+            $this->rename('url-access', 'chapter-url-access');
             $param = 'chapter-url';
           }
           return;
@@ -3687,9 +3689,11 @@ final class Template {
       if($this->has('chapter-url')) {
         $this->rename('chapter-url', 'url');
         $this->rename('chapter-format', 'format');
+        $this->rename('chapter-url-access', 'url-access');
       } elseif ($this->has('chapterurl')) {
         $this->rename('chapterurl', 'url');
         $this->rename('chapter-format', 'format');
+        $this->rename('chapter-url-access', 'url-access');
       }
     }
     if ($par == 'chapter-url' || $par == 'chapterurl') {
