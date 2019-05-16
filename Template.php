@@ -2893,6 +2893,9 @@ final class Template {
           return;
         
         case 'jstor':
+          if (substr($this->get($param), 0, 8) ===  '10.2307/') {
+            $this->set($param, substr($this->get($param), 8));
+          }
           $this->change_name_to('cite journal', FALSE);
           return;
         
