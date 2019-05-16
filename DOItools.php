@@ -291,6 +291,8 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         // Reduce punctuation
         $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $inTitle)));
         $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $dbTitle)));
+        $inTitle = str_replace(array("'", '"'), "", $inTitle); // Drop normal quotes
+        $dbTitle = str_replace(array("'", '"'), "", $dbTitle);
         // Strip trailing periods
         $inTitle = trim(rtrim($inTitle, '.'));
         $dbTitle = trim(rtrim($dbTitle, '.'));
