@@ -328,14 +328,6 @@ final class Template {
           return $this->add($param_name, $value);
       }
       return FALSE;
-      case "coauthors": //FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
-        $value = trim(straighten_quotes($value));
-        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-
-        if ($this->blank(array_merge(COAUTHOR_ALIASES, ["last2", "author"])))
-          return $this->add($param_name, sanitize_string($value));
-          // Note; we shouldn't be using this parameter ever....
-      return FALSE;
       case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
       case "last10": case "last20": case "last30": case "last40": case "last50": case "last60": case "last70": case "last80": case "last90":
       case "last11": case "last21": case "last31": case "last41": case "last51": case "last61": case "last71": case "last81": case "last91":
