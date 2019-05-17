@@ -2,6 +2,7 @@
 
 function sanitize_doi($doi) {
   $doi = preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
+  $doi = preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   $extension = substr($doi, strrpos($doi, '.'));
@@ -173,10 +174,10 @@ function title_capitalization($in, $caps_after_punctuation) {
 
   // Implicit acronyms
   $new_case = ' ' . $new_case . ' ';
-  $new_case = preg_replace_callback("~\W[b-df-hj-np-tv-xz]{3,}(?=\W)~ui", 
+  $new_case = preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui", 
       function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
       $new_case);
-  $new_case = preg_replace_callback("~\W[aeiou]{3,}(?=\W)~ui", 
+  $new_case = preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui", 
       function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
       $new_case);
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
