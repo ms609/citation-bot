@@ -1,8 +1,8 @@
 <?php
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' AAP ', ' ABC ', ' AC ', ' ACM ', ' AI ', ' AIAA ', ' AJHG ', ' al ', ' an ',
+          ' AAP ', ' AAUP ', ' ABC ', ' AC ', ' ACM ', ' AI ', ' AIAA ', ' AJHG ', ' al ', ' an ',
           ' and ', ' and then ', ' as ', ' at ', ' at ',
-          ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' BJPsych ', ' BMC ', ' BMJ ', ' but ', ' by ',
+          ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' bei ',  ' BJPsych ', ' BMC ', ' BMJ ', ' but ', ' by ',
           ' CBC ', ' CNS ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
           ' das ', ' DC ', ' de ', ' dei ', ' del ', ' della ', ' delle ', ' dem ', ' den ', ' der ', 
           ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' e ', ' ed ', ' ein ', 
@@ -10,15 +10,15 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' IEEE ', ' if ', ' ILR ', ' in ', ' into ', ' is ', 
           ' its ', ' JAMA ', ' la ', ' las ', ' le ', ' les ', ' los ', ' mit ',  ' MNRAS ', ' mot ', ' NASA ', ' NEJM ', ' non ',
           ' nor ', ' NRC ', ' NY ', ' NYC ', ' NYT ', ' NZ ', ' och ', ' OECD ', ' of ', ' off ', ' on ', ' og ', ' or ', 
-          ' over ', ' PCR ', ' per ', ' PNAS ', ' PS: ', ' R&D ', ' RNA ', ' S&P ', ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
+          ' over ', ' PCR ', ' per ', ' PNAS ', ' PS: ', ' R&D ', ' RNA ', ' S&P ', ' SAE ',  ' SSRN ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' von ', ' voor ', ' when ', ' with ', ' within ', ' woor ', 
           ' y ', ' zu ', ' zum ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' Aap ', ' Abc ', ' Ac ', ' Acm ', ' Ai ', ' Aiaa ', ' Ajhg ', ' Al ', ' An ', ' And ',
+          ' Aap ', ' Aaup ', ' Abc ', ' Ac ', ' Acm ', ' Ai ', ' Aiaa ', ' Ajhg ', ' Al ', ' An ', ' And ',
           ' and Then ', ' As ', ' At ', ' At ',
-          ' Aus ', ' Av ', ' Bba ', ' Bbc ', ' Be ', ' Bjpsych ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
+          ' Aus ', ' Av ', ' Bba ', ' Bbc ', ' Be ', ' Bei ', ' Bjpsych ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
           ' Cbc ', ' Cns ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
           ' Das ', ' Dc ', ' De ', ' Dei ', ' Del ', ' Della ', ' Delle ', ' Dem ', ' Den ', ' Der ', 
           ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' E ', ' Ed ', ' Ein ', 
@@ -26,7 +26,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' Ieee ', ' If ', ' Ilr ', ' In ', ' Into ', ' Is ', 
           ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mit ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
           ' Nor ', ' Nrc ', ' Ny ', ' Nyc ', ' Nyt ', ' Nz ', ' Och ', ' Oecd ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
-          ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Ps: ', ' R&d ', ' Rna ', ' S&p ', ' Ssrn ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
+          ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Ps: ', ' R&d ', ' Rna ', ' S&p ', ' Sae ', ' Ssrn ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
           ' Um ', ' Und ', ' Up ', ' Usa ', ' Van ', ' Von ', ' Voor ', ' When ', ' With ', ' Within ', ' Woor ', 
           ' Y ', ' Zu ', ' Zum ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
 
@@ -50,7 +50,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' J Gerontol A Biol Sci Med Sci ',
           ' J SIAM ', ' J. SIAM ', ' JABS : Journal of Applied Biological Sciences ', 
           ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.I.E.E. ',
-          ' Journal of the IEST ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
+          ' Journal of the IEST ', ' Jpn ', ' Ltd ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
           ' Meddelelser om Grønland ', ' Meddelelser om Grønland, ', ' MERIP ', ' Methods in Molecular Biology ',
           ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
           ' n.paradoxa ', ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
@@ -79,7 +79,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' J Gerontol a Biol Sci Med Sci ',
           ' J Siam ', ' J. Siam ', ' Jabs : Journal of Applied Biological Sciences ', 
           ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.i.i.e ', 
-          ' Journal of the Iest ', ' Mabs ', ' MAbs ', ' Mbio ', ' MBio ',
+          ' Journal of the Iest ', ' JPN ', ' LTD ', ' Mabs ', ' MAbs ', ' Mbio ', ' MBio ',
           ' Meddelelser Om Grønland ', ' Meddelelser Om Grønland, ', ' Merip ',  ' Methods in Molecular Biology (Clifton, N.j.) ',
           ' Mhealth ', ' MHealth ', ' Molecular and Cellular Biology ', ' Msphere ', ' MSphere ', ' Msystems ', ' MSystems ', 
           ' N.Paradoxa ', ' Nasa Tech Briefs ', ' NY Forskning I Grammatik ', ' Ocean Science Journal : Osj ', 
