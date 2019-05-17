@@ -248,6 +248,15 @@ class Page {
     }
     $this->expand_templates_from_identifier('doi',     $our_templates);
     
+    // Last ditch usage of ISSN - This could mean running the bot again will add more things
+    $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
+    for ($i = 0; $i < count($all_templates); $i++) {
+      $this_template = $all_templates[$i];
+      if (in_array($this_template->wikiname(), $issn_templates)) {
+        $this_template->use_issn();
+      }
+    }
+    
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
