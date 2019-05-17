@@ -237,7 +237,13 @@ class Page {
       $this_template->expand_by_google_books();
       $this_template->get_doi_from_crossref();
       $this_template->find_pmid();  // #TODO Could probably batch this
-      if ($this_template->blank('bibcode')) $this_template->expand_by_adsabs(); // Try to get a bibcode
+      if ($this_template->blank('bibcode')) {
+        $no_arxiv = $this_template->blank('arxiv');
+        $this_template->expand_by_adsabs(); // Try to get a bibcode
+        if (!$this_template->blank('arxiv') && $no_arxiv) {
+          expand_arxiv_templates([$this_template]); // Added an arXiv.  Stuff to learn and sometimes even find a DOI
+        }
+      }
       $this_template->get_open_access_url();
     }
     $this->expand_templates_from_identifier('doi',     $our_templates);

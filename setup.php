@@ -24,7 +24,16 @@ if (!getenv('TRAVIS')) {
 if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
   // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
   // if they are not set already. Remember to set permissions (not readable!)
-  include_once('env.php'); 
+  ob_start();
+  include_once('env.php');
+  $env_output = trim(str_replace(['Reading authentication tokens from tools.wmflabs.org.',
+                                  'Reading authentication tokens from tools.wmflabs.org-dev.'],
+                                 ['', ''], ob_get_contents()));
+  if ($env_output) {
+    ob_end_flush();  // Something unexpeted, so print it out
+  } else {
+    ob_end_clean();
+  }
 }
 require_once("constants.php");
 require_once("DOItools.php");
