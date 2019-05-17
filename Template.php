@@ -510,7 +510,6 @@ final class Template {
               return TRUE;
             }
           }
-          $this->forget('issn');
           $this->forget('class');
           
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
@@ -935,7 +934,7 @@ final class Template {
     }
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
     // We do this since not all jstor urls are recognized below
-    if (preg_match(~^(https?://\S*jstor.org\S*)\?seq=1#page_scan_tab_contents$~) {
+    if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#page_scan_tab_contents$~", $url, $matches)) {
        $url = $matches[1];
        if (!is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
