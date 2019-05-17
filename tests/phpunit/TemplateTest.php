@@ -624,6 +624,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
   }
+ 
+  public function testUseISSN() {
+      $text = "{{Cite book|issn=0031-0603}}";
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Pan-Pacific Entomologist', $expanded->get('journal'));
+  }
   
   public function testNoBibcodesForArxiv() {
     $text = "{{Cite arxiv|last=Sussillo|first=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
@@ -1787,6 +1793,31 @@ ER -  }}';
     $this->assertEquals('cite web', $expanded->wikiname());
   }
  
+  public function testEditors() {
+    $text = '{{cite journal|editor3=Set}}';
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('editor3-last', 'SetItL');
+    $prepared->add_if_new('editor3-first', 'SetItF');
+    $prepared->add_if_new('editor3', 'SetItN');
+    $this->assertEquals('Set', $prepared->get('editor3'));
+    $this->assertNull($prepared->get('editor3-last'));
+    $this->assertNull($prepared->get('editor3-first'));
+   
+    $text = '{{cite journal}}';
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('editor3-last', 'SetItL');
+    $prepared->add_if_new('editor3-first', 'SetItF');
+    $prepared->add_if_new('editor3', 'SetItN'); // Should not get set
+    $this->assertEquals('SetItL', $prepared->get('editor3-last'));
+    $this->assertEquals('SetItF', $prepared->get('editor3-first'));
+    $this->assertNull($prepared->get('editor3'));
+   
+    $text = '{{cite journal}}';
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('editor33333-last', 'SetIt'); // Huge number
+    $this->assertEquals('SetIt', $prepared->get('editor33333-last'));
+  }
+ 
   public function testFixRubbishVolumeWithDoi() {
     $text = '{{Cite journal|doi= 10.1136/bmj.2.3798.759-a |volume=3798 |issue=3798}}';
     $template = $this->prepare_citation($text);
@@ -1794,8 +1825,5 @@ ER -  }}';
     $this->assertEquals('3798', $template->get('issue'));
     $this->assertEquals('2', $template->get('volume'));
   }
-  /* TODO 
-  Test adding a paper with > 4 editors; this should trigger displayeditors
-  Test finding a DOI and using it to expand a paper [See testLongAuthorLists - Arxiv example?]
-  */    
+    
 }

@@ -55,6 +55,17 @@ final class Template {
     // Clean up outdated redirects
     if ($this->name === 'cite') $this->name = 'citation';
     if ($this->name === 'Cite') $this->name = 'Citation';
+    if ($this->name === 'citebook') $this->name = 'cite book';
+    if ($this->name === 'Citebook') $this->name = 'Cite book';
+    if ($this->name === 'citejournal') $this->name = 'cite journal';
+    if ($this->name === 'Citejournal') $this->name = 'Cite journal';
+    if ($this->name === 'citeweb') $this->name = 'cite web';
+    if ($this->name === 'Citeweb') $this->name = 'Cite web';
+    if ($this->name === 'citepaper') $this->name = 'cite paper';
+    if ($this->name === 'Citepaper') $this->name = 'Cite paper';
+    if ($this->name === 'citation journal') $this->name = 'cite journal';
+    if ($this->name === 'Citation journal') $this->name = 'Cite journal';
+    
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          report_error('reference within citation template: most likely unclosed template');
@@ -284,16 +295,29 @@ final class Template {
 
     switch ($param_name) {
       ### EDITORS
-      case "editor": case "editor-last": case "editor-first":
-        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        if ($this->blank(['editor', 'editor-last', 'editor-first'])) {
+      case (boolean) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
+        if (!$this->blank(['editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
+        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first'])) {
           return $this->add($param_name, sanitize_string($value));
         } else {
           return FALSE;
         }
-      case 'editor4': case 'editor4-last': case 'editor4-first':
-        $this->add_if_new('displayeditors', 29);
-        return $this->add($param_name, sanitize_string($value));
+      break;
+      case (boolean) preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
+        if (!$this->blank(['editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
+        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first'])) {
+          return $this->add($param_name, sanitize_string($value));
+        } else {
+          return FALSE;
+        }
+      break;
+      case (boolean) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
+        if (!$this->blank(['editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
+        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last'])) {
+          return $this->add($param_name, sanitize_string($value));
+        } else {
+          return FALSE;
+        }
       break;
       
       ### AUTHORS
@@ -793,10 +817,20 @@ final class Template {
         }
         return FALSE;
 
-      default:
+      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'type': case 'titlelink': 
+      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx':
+      case (boolean) preg_match('~author\d{1,}-link~', $param_name):
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
+        return FALSE;
+
+      default:  // We want to make sure we understand what we are adding
+        if (getenv('TRAVIS')) report_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
     }
   }
 
@@ -1854,6 +1888,7 @@ final class Template {
         }
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
+        if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return TRUE;
         // Check if best location is already linked -- avoid double links
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~", $oa_url, $match)) {
@@ -2636,7 +2671,9 @@ final class Template {
   }
   
   public function wikiname() {
-    return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+    $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+    if ($name === 'cite work') $name = 'cite book'; // Treat the same since alias
+    return $name ;
   }
   
   public function should_be_processed() {
@@ -2663,9 +2700,9 @@ final class Template {
         $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
       }
     }
-    // Remove quotes, if only at start and end
-    if ($param !== 'title' && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-      if ($matches[1] !== $matches[3]) {
+    // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
+    if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
+      if (($matches[1] !== $matches[3]) || ($param !== 'title')) {
         $this->set($param, $matches[2]);
       }
     }
@@ -3089,19 +3126,7 @@ final class Template {
               $this->forget('volume');
             }
           }
-          if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", trim($this->get('volume')), $matches) ||
-              preg_match("~^(?:vol. |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", trim($this->get('volume')), $matches) ||
-              preg_match("~^(\d+)\.(\d+)$~i", trim($this->get('volume')), $matches)
-             ) {
-            $possible_volume=$matches[1];
-            $possible_issue=$matches[2];
-            if ($this->blank(ISSUE_ALIASES)) {
-              $this->add_if_new('issue', $possible_issue);
-              $this->set('volume',$possible_volume); 
-            } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
-              $this->set('volume', $possible_volume);
-            }               
-          }
+          $this->volume_issue_demix($this->get('volume'), $param);
           return;
           
         case 'year':
@@ -3128,6 +3153,7 @@ final class Template {
             if(!$this->blank($param)) $this->forget($param);
             return;
           }
+          $this->volume_issue_demix($this->get($param), $param);
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
@@ -3801,6 +3827,32 @@ final class Template {
        }
      }
   }
+  
+  protected function volume_issue_demix($data, $param) {
+     $data = trim($data);
+     if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
+              preg_match("~^(?:vol. |Volume |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(\d+)\.(\d+)$~i", $data, $matches)
+         ) {
+         $possible_volume=$matches[1];
+         $possible_issue=$matches[2];
+         if ($param == 'volume') {
+            if ($this->blank(ISSUE_ALIASES)) {
+              $this->add_if_new('issue', $possible_issue);
+              $this->set('volume',$possible_volume); 
+            } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
+              $this->set('volume', $possible_volume);
+            }
+         } else {
+            if ($this->blank('volume')) {
+              $this->set('issue', $possible_issue);
+              $this->add_if_new('volume',$possible_volume); 
+            } elseif ($this->get('volume') === $possible_volume) {
+              $this->set('issue', $possible_issue);
+            }
+         }
+     }
+  }
                          
   protected function simplify_google_search($url) {
       $hash = '';
@@ -3839,5 +3891,22 @@ final class Template {
       if (substr($url, -1) === "&") $url = substr($url, 0, -1);  //remove trailing &
       $url= $url . $hash;
       return $url;
+  }
+  
+  public function use_issn() {
+    if ($this->blank('issn')) return FALSE; // Nothing to use
+    if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
+    if ($this->get('issn') === '9999-9999') return FALSE ; // Fake test suite data
+    $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
+    if (preg_match('~<title>(.*)\(eJournal~', $html, $matches)) {
+      if ($this->wikiname() === 'cite magazine') {
+        return $this->add_if_new('magazine', trim($matches[1]));
+      } else {   
+        return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
+      }
+    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {
+      report_error('unexpected title from ISSN ' . $matches[1]);
+    }
+    return FALSE;
   }
 }
