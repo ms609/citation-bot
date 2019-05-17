@@ -55,6 +55,17 @@ final class Template {
     // Clean up outdated redirects
     if ($this->name === 'cite') $this->name = 'citation';
     if ($this->name === 'Cite') $this->name = 'Citation';
+    if ($this->name === 'citebook') $this->name = 'cite book';
+    if ($this->name === 'Citebook') $this->name = 'Cite book';
+    if ($this->name === 'citejournal') $this->name = 'cite journal';
+    if ($this->name === 'Citejournal') $this->name = 'Cite journal';
+    if ($this->name === 'citeweb') $this->name = 'cite web';
+    if ($this->name === 'Citeweb') $this->name = 'Cite web';
+    if ($this->name === 'citepaper') $this->name = 'cite paper';
+    if ($this->name === 'Citepaper') $this->name = 'Cite paper';
+    if ($this->name === 'citation journal') $this->name = 'cite journal';
+    if ($this->name === 'Citation journal') $this->name = 'Cite journal';
+    
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          report_error('reference within citation template: most likely unclosed template');
@@ -327,14 +338,6 @@ final class Template {
           }
           return $this->add($param_name, $value);
       }
-      return FALSE;
-      case "coauthors": //FIXME: this should convert "coauthors" to "authors" maybe, if "authors" doesn't exist.
-        $value = trim(straighten_quotes($value));
-        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-
-        if ($this->blank(array_merge(COAUTHOR_ALIASES, ["last2", "author"])))
-          return $this->add($param_name, sanitize_string($value));
-          // Note; we shouldn't be using this parameter ever....
       return FALSE;
       case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
       case "last10": case "last20": case "last30": case "last40": case "last50": case "last60": case "last70": case "last80": case "last90":
@@ -801,10 +804,20 @@ final class Template {
         }
         return FALSE;
 
-      default:
+      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'type': case 'titlelink': 
+      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx':
+      case (boolean) preg_match('~author\d{1,}-link~', $param_name):
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
+        return FALSE;
+
+      default:  // We want to make sure we understand what we are adding
+        if (getenv('TRAVIS')) report_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
     }
   }
 
@@ -1862,6 +1875,7 @@ final class Template {
         }
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
+        if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return TRUE;
         // Check if best location is already linked -- avoid double links
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~", $oa_url, $match)) {
@@ -2636,6 +2650,7 @@ final class Template {
       if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
         $this->rename('url', 'chapter-url');
         $this->rename('format', 'chapter-format');
+        $this->rename('url-access', 'chapter-url-access');
       } elseif (!$this->blank(['chapter-url','chapterurl']) && (0 === strcasecmp($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
       }  // otherwise they are differnt urls
@@ -2643,7 +2658,9 @@ final class Template {
   }
   
   public function wikiname() {
-    return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+    $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+    if ($name === 'cite work') $name = 'cite book'; // Treat the same since alias
+    return $name ;
   }
   
   public function should_be_processed() {
@@ -3031,6 +3048,7 @@ final class Template {
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
             $this->rename($param, 'chapter-url');
             $this->rename('format', 'chapter-format');
+            $this->rename('url-access', 'chapter-url-access');
             $param = 'chapter-url';
           }
           return;
@@ -3695,9 +3713,11 @@ final class Template {
       if($this->has('chapter-url')) {
         $this->rename('chapter-url', 'url');
         $this->rename('chapter-format', 'format');
+        $this->rename('chapter-url-access', 'url-access');
       } elseif ($this->has('chapterurl')) {
         $this->rename('chapterurl', 'url');
         $this->rename('chapter-format', 'format');
+        $this->rename('chapter-url-access', 'url-access');
       }
     }
     if ($par == 'chapter-url' || $par == 'chapterurl') {
@@ -3843,5 +3863,22 @@ final class Template {
       if (substr($url, -1) === "&") $url = substr($url, 0, -1);  //remove trailing &
       $url= $url . $hash;
       return $url;
+  }
+  
+  public function use_issn() {
+    if ($this->blank('issn')) return FALSE; // Nothing to use
+    if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
+    if ($this->get('issn') === '9999-9999') return FALSE ; // Fake test suite data
+    $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
+    if (preg_match('~<title>(.*)\(eJournal~', $html, $matches)) {
+      if ($this->wikiname() === 'cite magazine') {
+        return $this->add_if_new('magazine', trim($matches[1]));
+      } else {   
+        return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
+      }
+    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {
+      report_error('unexpected title from ISSN ' . $matches[1]);
+    }
+    return FALSE;
   }
 }
