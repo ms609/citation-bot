@@ -55,6 +55,17 @@ final class Template {
     // Clean up outdated redirects
     if ($this->name === 'cite') $this->name = 'citation';
     if ($this->name === 'Cite') $this->name = 'Citation';
+    if ($this->name === 'citebook') $this->name = 'cite book';
+    if ($this->name === 'Citebook') $this->name = 'Cite book';
+    if ($this->name === 'citejournal') $this->name = 'cite journal';
+    if ($this->name === 'Citejournal') $this->name = 'Cite journal';
+    if ($this->name === 'citeweb') $this->name = 'cite web';
+    if ($this->name === 'Citeweb') $this->name = 'Cite web';
+    if ($this->name === 'citepaper') $this->name = 'cite paper';
+    if ($this->name === 'Citepaper') $this->name = 'Cite paper';
+    if ($this->name === 'citation journal') $this->name = 'cite journal';
+    if ($this->name === 'Citation journal') $this->name = 'Cite journal';
+    
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          report_error('reference within citation template: most likely unclosed template');
@@ -2647,7 +2658,9 @@ final class Template {
   }
   
   public function wikiname() {
-    return trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+    $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+    if ($name === 'cite work') $name = 'cite book'; // Treat the same since alias
+    return $name ;
   }
   
   public function should_be_processed() {
