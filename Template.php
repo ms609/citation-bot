@@ -2687,9 +2687,9 @@ final class Template {
         $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
       }
     }
-    // Remove quotes, if only at start and end
-    if ($param !== 'title' && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-      if ($matches[1] !== $matches[3]) {
+    // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
+    if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
+      if (($matches[1] !== $matches[3]) || ($param !== 'title')) {
         $this->set($param, $matches[2]);
       }
     }
