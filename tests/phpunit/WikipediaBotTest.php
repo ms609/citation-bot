@@ -100,4 +100,13 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertEquals(805321380, 1 * $api->get_last_revision('User:Blocked testing account/readtest'));
      });
     }
+   
+    public function testIsValidUser() {
+      $result = WikipediaBot::is_valid_user('Smith609');
+      $this->assertEquals(TRUE, $result);
+      $result = WikipediaBot::is_valid_user('Stanlha'); // Random user who exists but does not have page as of Nov 2017
+      $this->assertEquals(TRUE, $result);
+      $result = WikipediaBot::is_valid_user('Not_a_valid_user_at_Dec_2017'); 
+      $this->assertEquals(FALSE, $result);
+    }
 }
