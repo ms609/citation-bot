@@ -64,6 +64,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('10.7249/mg1078a.10', $expanded->get('jstor'));
    
   }
+ 
+  public function testDrop10_2307() {
+    $text = "{{Cite journal | jstor=10.2307/40237667}}";  // This should get cleaned up in tidy
+    $prepared = $this->prepare_citation($text);
+    $this->assertEquals('40237667', $prepared->get('jstor'));
+  }
     
    public function testRISJstorExpansion() {
     $text = "<ref name='jstor'>{{jstor|3073767}}</ref>"; // Check Page expansion too
@@ -617,6 +623,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals('2002', $this->getDateAndYear($expanded));
     $this->assertEquals('152', $expanded->get('volume'));
     $this->assertEquals('215', $expanded->get('pages'));
+  }
+ 
+  public function testUseISSN() {
+      $text = "{{Cite book|issn=0031-0603}}";
+      $expanded = $this->process_citation($text);
+      $this->assertEquals('Pan-Pacific Entomologist', $expanded->get('journal'));
   }
   
   public function testNoBibcodesForArxiv() {
