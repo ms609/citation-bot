@@ -68,7 +68,7 @@ final class Template {
     
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
-         report_error('reference within citation template: most likely unclosed template');
+         report_error('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
       }
     }
 
@@ -3157,7 +3157,9 @@ final class Template {
             }
           }
           // Remove leading zeroes
-          $value = preg_replace('~^0+~', '', $value);
+          if ($this->get('journal') != 'Insecta Mundi') {
+            $value = preg_replace('~^0+~', '', $value);
+          }
           if ($value) {
             $this->set($param, $value);
           } else {
