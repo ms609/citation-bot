@@ -3157,7 +3157,7 @@ final class Template {
             }
           }
           // Remove leading zeroes
-          if ($this->get('journal') != 'Insecta Mundi) {
+          if ($this->get('journal') != 'Insecta Mundi') {
             $value = preg_replace('~^0+~', '', $value);
           }
           if ($value) {
