@@ -2920,6 +2920,16 @@ final class Template {
           if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { ;
              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
              $this->set($param, title_capitalization($periodical, TRUE));
+          } else {
+            if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
+              $linked_text = $matches[1];
+              $human_text  = $matches[1];
+              // Now what?
+            } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
+              $linked_text = $matches[1];
+              $human_text  = $matches[2];
+              // Now what?
+            }
           }
           return;
         
