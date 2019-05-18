@@ -468,6 +468,13 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('website'));
   }
  
+  public function testPreferLinkedPublisher() {
+    $text = "{{cite journal| journal=The History Teacher| publisher=''[[The History Teacher]]'' }}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertEquals("[[The History Teacher]]", $expanded->get('journal')); // Quotes do get dropped
+  }
+ 
   public function testLeaveArchiveURL() {
     $text = '{{cite book |chapterurl=http://faculty.haas.berkeley.edu/shapiro/thicket.pdf|isbn=978-0-262-60041-5|archiveurl=https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf }}';
     $expanded = $this->process_citation($text);
