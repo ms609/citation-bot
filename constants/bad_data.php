@@ -49,7 +49,6 @@ const CANONICAL_PROXY_URLS = array (
                                 '.serialsolutions.com',
                                 //  Below are proxys
                                 'proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.'
-
                                 //  Below are sites that are simply DOI resolvers, like dx.doi.org
                                 'doi.library.ubc.ca');
 
