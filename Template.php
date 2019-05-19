@@ -2965,6 +2965,13 @@ final class Template {
             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $publisher, $matches)) {
               $publisher = $matches[2];
             }
+            foreach (['journal', 'newspaper'] as $the_same) { // Prefer wiki-linked
+              if (strtolower($this->get($the_same)) === $publisher) {
+                $this->forget($the_same);
+                $this->rename($param, $the_same);
+                return;
+              }
+            }
           }
           if (stripos($this->get('url'), 'maps.google') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
             $this->set($param, 'Google Maps');  // Case when Google actually IS a publisher
