@@ -276,11 +276,11 @@ function expand_by_zotero(&$template, $url = NULL) {
     if (stripos($url, 'jstor')) check_doi_for_jstor($template->get('doi'), $template);
     if (!$template->incomplete() && doi_active($template->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi'))) {
         if ((str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get('url')) != $template->get('url'))) { // This is the use a replace to see if a substring is present trick
-           report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
-           $template->forget('url');
+          report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
+          $template->forget('url');
         } elseif (str_ireplace(CANONICAL_PROXY_URLS, '', $template->get('url')) != $template->get('url')) {
-           report_forget("Existing proxy URL resulting in equivalent DOI; dropping URL");
-           $template->forget('url');
+          report_forget("Existing proxy URL resulting in equivalent DOI; dropping URL");
+          $template->forget('url');
         }
     }
     if (!$template->profoundly_incomplete()) return TRUE;
