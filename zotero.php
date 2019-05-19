@@ -281,6 +281,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         } elseif (str_ireplace(CANONICAL_PROXY_URLS, '', $template->get('url')) != $template->get('url')) {
            report_forget("Existing proxy URL resulting in equivalent DOI; dropping URL");
            $template->forget('url');
+        }
     }
     if (!$template->profoundly_incomplete()) return TRUE;
   }
