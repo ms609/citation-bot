@@ -15,7 +15,7 @@ const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company'
                            'museum', "press", "publishers", "publishing", 'science'];
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints", 
                          "ssrn electronic journal", "dissertations available from proquest",
-                         "ebscohost login");
+                         "ebscohost login",  "library login");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
