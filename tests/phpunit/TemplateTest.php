@@ -44,6 +44,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertEquals("{{Citation|page=2}}", $expanded->parsed_text());
    
+    $text = "{{Citeweb |page=2}}";
     $expanded = $this->process_citation($text);
     $this->assertEquals("{{Cite web |page=2}}", $expanded->parsed_text());
     $text = "{{citeweb |page=2}}";
