@@ -73,7 +73,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', ' ENeuro ',
           ' Engrxiv ', ' Eplasty ', ' EPlasty ',
           ' Eprint ', ' EPrint ', ' Eprints ',' EPrints ', ' Escholarship ', ' Evolo ', ' EVolo ', 
-          ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' für Anorganische und Allgemeine ', ' Hannaharendt.net ',
+          ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Für Anorganische und Allgemeine ', ' Hannaharendt.net ',
           ' History of Science; an Annual Review of Literature ', ' Hoaj Biology ', ' Hprints ', 
           ' Iconference ', ' Ifac-Papersonline ', ' Im Gesundheitswesen ', ' Iphone ', ' Isrn Genetics ',
           ' J Gerontol a Biol Sci Med Sci ',
