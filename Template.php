@@ -53,18 +53,20 @@ final class Template {
     }
     $this->initial_name = $this->name;
     // Clean up outdated redirects
-    if ($this->name === 'cite') $this->name = 'citation';
-    if ($this->name === 'Cite') $this->name = 'Citation';
-    if ($this->name === 'citebook') $this->name = 'cite book';
-    if ($this->name === 'Citebook') $this->name = 'Cite book';
-    if ($this->name === 'citejournal') $this->name = 'cite journal';
-    if ($this->name === 'Citejournal') $this->name = 'Cite journal';
-    if ($this->name === 'citeweb') $this->name = 'cite web';
-    if ($this->name === 'Citeweb') $this->name = 'Cite web';
-    if ($this->name === 'citepaper') $this->name = 'cite paper';
-    if ($this->name === 'Citepaper') $this->name = 'Cite paper';
-    if ($this->name === 'citation journal') $this->name = 'cite journal';
-    if ($this->name === 'Citation journal') $this->name = 'Cite journal';
+    preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+    $trim_name = trim($this->name);
+    if ($trim_name === 'cite') $this->name = $spacing[1] . 'citation' . $spacing[2];
+    if ($trim_name === 'Cite') $this->name = $spacing[1] . 'Citation' . $spacing[2];
+    if ($trim_name === 'citebook') $this->name = $spacing[1] . 'cite book' . $spacing[2];
+    if ($trim_name === 'Citebook') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+    if ($trim_name === 'citejournal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+    if ($trim_name === 'Citejournal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+    if ($trim_name === 'citeweb') $this->name = $spacing[1] . 'cite web' . $spacing[2];
+    if ($trim_name === 'Citeweb') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'citepaper') $this->name = $spacing[1] . 'cite paper' . $spacing[2];
+    if ($trim_name === 'Citepaper') $this->name = $spacing[1] . 'Cite paper' . $spacing[2];
+    if ($trim_name === 'citation journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+    if ($trim_name === 'Citation journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
     
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
@@ -571,7 +573,8 @@ final class Template {
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')
-                                      || ($this->get($param_name) === "{title}")) {
+                                      || ($this->get($param_name) === "{title}")
+                                      || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
           if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
             return FALSE;
           }
