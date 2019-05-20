@@ -14,7 +14,8 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
                            'museum', "press", "publishers", "publishing", 'science'];
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints", 
-                         "ssrn electronic journal", "dissertations available from proquest");
+                         "ssrn electronic journal", "dissertations available from proquest",
+                         "ebscohost login",  "library login");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -34,7 +35,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
                                  'Subscribe to read', 'Wiley Online Library', 'pagina is niet gevonden',
                                  'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended',
-                                 'Error 404'];
+                                 'Error 404', 'EZProxy', 'EBSCOhost Login'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -45,7 +46,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'annualreviews.org', 'aip.scitation.org', 'psyche.entclub.org', 'thelancet.com',
                                 'amjbot.org',
                                 //  Below are journal search engines
-                                '.serialsolutions.com',
+                                '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
                                 'proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
                                 //  Below are sites that are simply DOI resolvers, like dx.doi.org
