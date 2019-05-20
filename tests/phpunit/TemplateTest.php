@@ -17,6 +17,46 @@ final class TemplateTest extends testBaseClass {
     $this->assertEquals($text, $expanded->parsed_text());
   }
   
+  public function testCleanUpTemplates() {
+    $text = "{{Citeweb}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{Cite web}}", $expanded->parsed_text());
+    $text = "{{citeweb}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{cite web}}", $expanded->parsed_text());
+    $text = "{{cite}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{citation}}", $expanded->parsed_text());
+    $text = "{{Cite}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{Citation}}", $expanded->parsed_text());
+   
+    $text = "{{Citeweb|page=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{Cite web|page=2}}", $expanded->parsed_text());
+    $text = "{{citeweb|page=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{cite web|page=2}}", $expanded->parsed_text());
+    $text = "{{cite|page=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{citation|page=2}}", $expanded->parsed_text());
+    $text = "{{Cite|page=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{Citation|page=2}}", $expanded->parsed_text());
+   
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{Cite web |page=2}}", $expanded->parsed_text());
+    $text = "{{citeweb |page=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{cite web |page=2}}", $expanded->parsed_text());
+    $text = "{{cite |page=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{citation |page=2}}", $expanded->parsed_text());
+    $text = "{{Cite |page=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertEquals("{{Citation |page=2}}", $expanded->parsed_text());
+  }
+
   public function testUseUnusedData() {
     $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
     $prepared = $this->prepare_citation($text);
