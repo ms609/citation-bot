@@ -1243,6 +1243,12 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite book');  // Better template choice
           return $this->add_if_new('oclc', $match[1]); 
+      } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{4})$~i", $url, $match)) {
+          quietly('report_modification', "Converting URL to ISSN parameter");
+          if (is_null($url_sent)) {
+             $this->forget($url_type);
+          }
+          return $this->add_if_new('issn', $match[1] . '-' . $match[2]); 
       }
     }
     return FALSE ;
