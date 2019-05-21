@@ -486,6 +486,12 @@ final class Template {
         }
         return FALSE;
         
+      case 'issn_force': // When dropping URL, force adding it
+        if ($this->blank('issn') && preg_match('~^\d{4}-\d{3}[\dxX]$~', $value)) {
+          return $this->add('issn', $value);
+        }
+        return FALSE;
+        
       case 'periodical': case 'journal': case 'newspaper':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
@@ -499,7 +505,6 @@ final class Template {
           if ($this->has('work')) {
             if (str_equivalent($this->get('work'), $value)) {
               $this->rename('work', $param_name);
-              $this->forget('issn');
               return TRUE;
             } else {
               return FALSE;  // Cannot have both work and journal
@@ -508,7 +513,6 @@ final class Template {
           if ($this->has('via')) {
             if (str_equivalent($this->get('via'), $value)) {
               $this->rename('via', $param_name);
-              $this->forget('issn');
               return TRUE;
             }
           }
@@ -1243,12 +1247,12 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite book');  // Better template choice
           return $this->add_if_new('oclc', $match[1]); 
-      } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{4})$~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{3}[\dxX])$~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ISSN parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          return $this->add_if_new('issn', $match[1] . '-' . $match[2]); 
+          return $this->add_if_new('issn_force', $match[1] . '-' . $match[2]); 
       }
     }
     return FALSE ;
