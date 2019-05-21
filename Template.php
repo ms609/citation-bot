@@ -505,7 +505,7 @@ final class Template {
           if ($this->has('work')) {
             if (str_equivalent($this->get('work'), $value)) {
               $this->rename('work', $param_name);
-              if (!$this->blank(['pmc', 'doi', 'pmid']) $this->forget('issn');
+              if (!$this->blank(['pmc', 'doi', 'pmid'])) $this->forget('issn');
               return TRUE;
             } else {
               return FALSE;  // Cannot have both work and journal
@@ -514,7 +514,7 @@ final class Template {
           if ($this->has('via')) {
             if (str_equivalent($this->get('via'), $value)) {
               $this->rename('via', $param_name);
-              if (!$this->blank(['pmc', 'doi', 'pmid']) $this->forget('issn');
+              if (!$this->blank(['pmc', 'doi', 'pmid'])) $this->forget('issn');
               return TRUE;
             }
           }
