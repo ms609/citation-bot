@@ -99,3 +99,4 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' Jahrbuch ', ' Journal du ', ' Journal de ', ' Journal des ', ' Journal für ', ' Mitteilungen ',
            ' Monatshefte ', ' Monatsschrift ', ' Mémoires ', ' Notizblatt ', ' Recueil ', ' Revista ', ' Revue ', ' Travaux ',
            ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ');
+
