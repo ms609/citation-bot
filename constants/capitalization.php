@@ -95,7 +95,8 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
 
 const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' Archiv ', ' Archives de ',
            ' Archives du  ', ' Archives des ', ' Beiträge ', ' Berichten ', ' Blätter ', ' Bulletin de ',
-           ' Bulletin des ', ' Bulletin du ', ' Cahiers ', ' Carnets ', ' Comptes rendus ', ' Fachberichte ',
+           ' Bulletin des ', ' Bulletin du ', ' Cahiers ', ' canaria ', ' Carnets ', ' Comptes rendus ', ' Fachberichte ', ' Historia ',
            ' Jahrbuch ', ' Journal du ', ' Journal de ', ' Journal des ', ' Journal für ', ' Mitteilungen ',
-           ' Monatshefte ', ' Monatsschrift ', ' Mémoires ', ' Notizblatt ', ' Recueil ', ' Revue ', ' Travaux ',
+           ' Monatshefte ', ' Monatsschrift ', ' Mémoires ', ' Notizblatt ', ' Recueil ', ' Revista ', ' Revue ', ' Travaux ',
            ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ');
+
