@@ -59,7 +59,7 @@ function query_url_api($ids, $templates) {
         (strpos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
-       if (stri_replace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
+       if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; dropping URL");
           $template->forget('url');
        } else {
