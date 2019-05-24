@@ -1255,6 +1255,13 @@ final class Template {
              $this->forget($url_type);
           }
           return $this->add_if_new('issn_force', $match[1] . '-' . $match[2]); 
+      } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match)  &&
+                (stripos($this->parsed_text(), 'library') === FALSE)) { // Sometimes it is web cite to Library of Congress
+          quietly('report_modification', "Converting URL to LCCN parameter");
+          if (is_null($url_sent)) {
+             $this->forget($url_type);
+          }
+          return $this->add_if_new('lccn', $match[1]); 
       }
     }
     return FALSE ;
