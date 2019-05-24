@@ -59,6 +59,10 @@ function query_url_api($ids, $templates) {
         (strpos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
+       if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
+          report_forget("Existing proxy URL resulting from equivalent DOI; dropping URL");
+          $template->forget('url');
+       } else {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
@@ -86,6 +90,7 @@ function query_url_api($ids, $templates) {
                }
             }
           }
+       }
     }
   }
   curl_close($ch);
