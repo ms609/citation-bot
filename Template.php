@@ -816,6 +816,7 @@ final class Template {
       
       case 'publisher':
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
+        Do something with BAD_PUBLISHERS here;
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE; 
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
