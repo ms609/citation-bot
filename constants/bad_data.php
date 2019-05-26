@@ -9,7 +9,8 @@ const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship in
                            "no authors");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee',
-                                'society', ' of america', 'association', ' at the ');
+                                'society', ' of america', 'association', ' at the ', 'board of ',
+                                'corporation', 'incorporated', 'editorial');
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
