@@ -2903,6 +2903,7 @@ final class Template {
           
         case 'isbn':
           if ($this->lacks('isbn')) return;
+          $this->set('isbn', preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
           if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
             $this->change_name_to('cite book');
