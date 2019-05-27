@@ -41,7 +41,7 @@ function query_url_api($ids, $templates) {
   }
 }
 
-public function drop_urls_that_match_dois($templates) {
+function drop_urls_that_match_dois($templates) {
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
