@@ -247,6 +247,7 @@ class Page {
       $this_template->get_open_access_url();
     }
     $this->expand_templates_from_identifier('doi',     $our_templates);
+    drop_urls_that_match_dois($our_templates);
     
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
     $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
