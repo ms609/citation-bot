@@ -3168,7 +3168,7 @@ final class Template {
               $this->forget('volume');
             }
           }
-          $this->volume_issue_demix($this->get('volume'), $param);
+          $this->volume_issue_demix($this->get($param), $param);
           return;
           
         case 'year':
@@ -3875,7 +3875,7 @@ final class Template {
   protected function volume_issue_demix($data, $param) {
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-              preg_match("~^(?:vol. |Volume |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(?:vol\. |Volume |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
@@ -3895,6 +3895,14 @@ final class Template {
               $this->set('issue', $possible_issue);
             }
          }
+     } elseif ($param === 'volume') {
+       if (preg_match("~^(?:vol\.|volume|vol)\s+(\d+)$~i", $data, $matches)) {
+         $this->set('volume', $matches[1]);
+       }
+     } elseif ($param === 'issue' || $param === 'number') {
+       if (preg_match("~^(?:iss\.|iss|issue|num|num\.|no|no\.)\s+(\d+)$~i", $data, $matches)) {
+         $this->set($param, $matches[1]);
+       }
      }
   }
                          
