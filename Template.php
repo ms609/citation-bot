@@ -3016,6 +3016,11 @@ final class Template {
           if (strtolower($this->get('newspaper')) === $publisher) {
             $this->forget($param);
           }
+          if ($this->blank(WORK_ALIASES)) {
+            if (in_array(str_replace(array('[', ' ', ']'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+               $this->rename($param, 'work'); // Don't think about which work it is
+            }
+          }
           return;
           
         case 'quotes':
