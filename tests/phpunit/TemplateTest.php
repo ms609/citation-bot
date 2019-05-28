@@ -436,6 +436,13 @@ final class TemplateTest extends testBaseClass {
     }
   }
 
+  public function testPublisherCoversion() {
+    $text = '{{cite web|publisher=New york TiMES}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertEquals('New york TiMES', $expanded->get('work'));
+  }
+ 
   public function testRemoveWikilinks() {
     $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil]]}}");
     $this->assertEquals('Pure Evil', $expanded->get('author1'));
