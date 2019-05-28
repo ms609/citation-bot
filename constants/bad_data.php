@@ -13,8 +13,8 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'corporation', 'incorporated', 'editorial');
 const BAD_PUBLISHERS = array('London');
 
-const PUBLISHERS_ARE_WORKS = array('The San Diego Union-Tribune', 'Forbes', 'Salon', 'San Jose Mercury News', 'New York Times',
-                                   'The New York Times');
+const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'new york times',
+                                   'the new york times'); // LOWER CASE!
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
