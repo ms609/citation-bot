@@ -555,7 +555,6 @@ final class Template {
              $my_return = $this->add($param_name, $value);
              // Avoid running twice
              $this->tidy_parameter('publisher');
-             $this->tidy_parameter($param_name); 
              return $my_return;
           }
         }
