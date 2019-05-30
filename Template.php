@@ -552,7 +552,11 @@ final class Template {
              }
              return TRUE;
           } else {   
-             return $this->add($param_name, $value);
+             $my_return = $this->add($param_name, $value);
+             // Avoid running twice
+             $this->tidy_parameter('publisher');
+             $this->tidy_parameter($param_name); 
+             return $my_return;
           }
         }
         return FALSE;
