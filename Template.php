@@ -4,7 +4,7 @@
  * parsing, handling, and expansion.
  *
  * Of particular note:
- *     add_if_new() is generally c alled to add or sometimes overwrite parameters. The central
+ *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
  *       switch statement handles various parameters differently.
  *     
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
