@@ -4,7 +4,7 @@
  * parsing, handling, and expansion.
  *
  * Of particular note:
- *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
+ *     add_if_new() is generally c alled to add or sometimes overwrite parameters. The central
  *       switch statement handles various parameters differently.
  *     
  * A range of functions will search CrossRef/adsabs/Google Books/other online databases
@@ -3344,6 +3344,7 @@ final class Template {
         }
       }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
+      $this->tidy_parameter('via');
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
