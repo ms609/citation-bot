@@ -1933,6 +1933,9 @@ final class Template {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
         }
+        preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
+        $host_name = @$match[1];
+        if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return FALSE; // Its the publisher
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
         if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return TRUE;
