@@ -386,6 +386,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         break;
 
       default:
+        print_r($result);
         report_minor_error("Unhandled itemType: " . $result->itemType . " for $url"); // see https://www.mediawiki.org/wiki/Citoid/itemTypes
     }
     
