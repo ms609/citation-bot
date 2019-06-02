@@ -2,7 +2,7 @@
 const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite document', 
                              'cite encyclopaedia', 'cite encyclopedia', 'cite journal', 'cite web', 'cite work',
                              'cite paper', 'cite', 'citebook', 'citejournal', 'citeweb', 'citepaper', 'citation journal',
-                             'cite publication', 'cite citeseerx', 'cite website');
+                             'cite publication', 'cite citeseerx', 'cite website', 'cite dictionary');
 const TEMPLATES_WE_SLIGHTLY_PROCESS = array('cite news', 'cite newspaper', 'cite conference', 'cite article', 'cite press release');
 const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite article', 'cite paper', 'cite website');
 

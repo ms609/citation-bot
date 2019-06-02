@@ -587,7 +587,8 @@ final class Template {
           if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
             return FALSE;
           }
-          if ($this->has('article') && $this->wikiname() === 'cite encyclopedia') return FALSE; // Probably the same thing
+          if ($this->has('article') && 
+                 ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary')) return FALSE; // Probably the same thing
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
