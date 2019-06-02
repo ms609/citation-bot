@@ -3435,6 +3435,14 @@ final class Template {
         $headers_test = @get_headers($url_test, 1);
         if ($headers_test === FALSE) {
           report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+          if (!$this->blank(DOI_BROKEN_ALIASES)) { // Already marked as broken
+            foreach (DOI_BROKEN_ALIASES as $alias) {
+               if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
+                   $this->forget($alias);
+               }
+            }
+            $this->add_if_new('doi-broken-date', date("Y-m-d")); // Update day to today
+          }
           return FALSE;
         }
         foreach (DOI_BROKEN_ALIASES as $alias) {
