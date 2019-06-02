@@ -6,11 +6,11 @@ function html_echo($text, $alternate_text='') {
 
 function user_notice($symbol, $class, $text) {
   global $FLUSHING_OKAY;
-  if (!getenv('TRAVIS')) {
+
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
-  }
-  if (in_array($class, array('phase', 'subitem', 'warning')) && $FLUSHING_OKAY) ob_flush();
+
+  ob_flush();
 }
 
 function report_phase($text)  { user_notice("\n>", "phase", $text); }
@@ -25,12 +25,11 @@ function report_inline($text) { if (!getenv('TRAVIS')) echo " $text"; }
 function report_error($text) { report_warning($text); trigger_error($text, E_USER_ERROR); } // call report_warning to give users a message before we die
 function report_minor_error($text) {  // For things we want to error on TRAVIS, but continue on Wikipedia
   report_warning($text);
-  if (getenv('TRAVIS')) trigger_error($text, E_USER_ERROR);
 }
 
 
 function quietly($function = 'report_info', $text) {
-  if (defined('VERBOSE') || HTML_OUTPUT ) {
+  if (defined('VERBOSE') || HTML_OUTPUT || TRUE) {
     $function($text);
   }
 }
