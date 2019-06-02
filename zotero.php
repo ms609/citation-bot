@@ -384,6 +384,10 @@ function expand_by_zotero(&$template, $url = NULL) {
         if (isset($result->university)) $template->add_if_new('publisher' , $result->university);
         if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) $template->add_if_new('type' , $result->thesisType); // Prefer type since it exists in cite journal too
         break;
+        
+      case 'videoRecording':
+        // Nothing special that we know of yet
+        break;
 
       default:
         report_minor_error("Unhandled itemType: " . $result->itemType . " for $url"); // see https://www.mediawiki.org/wiki/Citoid/itemTypes
