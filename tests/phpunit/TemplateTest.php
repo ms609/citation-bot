@@ -249,7 +249,7 @@ final class TemplateTest extends testBaseClass {
   public function testBadAuthor2() {
       $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST}}';
       $expanded = $this->process_citation($text);
-      $this->assertEquals('Infectious Diseases Society of America', $expanded->get('author1'));
+      $this->assertEquals('American Thoracic Society', $expanded->get('author1'));
   }
  
   public function testPmidIsZero() {
@@ -436,6 +436,13 @@ final class TemplateTest extends testBaseClass {
     }
   }
 
+  public function testPublisherCoversion() {
+    $text = '{{cite web|publisher=New york TiMES}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('publisher'));
+    $this->assertEquals('New york TiMES', $expanded->get('work'));
+  }
+ 
   public function testRemoveWikilinks() {
     $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil]]}}");
     $this->assertEquals('Pure Evil', $expanded->get('author1'));

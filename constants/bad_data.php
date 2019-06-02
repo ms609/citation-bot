@@ -7,7 +7,14 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder for arabic language transliteration");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors");
-const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign');
+const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
+                                'national', 'endowment', ' for the ', 'humanities', 'committee',
+                                'society', ' of america', 'association', ' at the ', 'board of ',
+                                'corporation', 'incorporated', 'editorial');
+const BAD_PUBLISHERS = array('London');
+
+const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'new york times',
+                                   'the new york times'); // LOWER CASE!
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
@@ -44,13 +51,16 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'worldscientific.com', 'iospress.com', 'iospress.nl', 'pnas.org', 'journals.ametsoc.org',
                                 'pubs.geoscienceworld.org', 'pubs.rsc.org', 'journals.uchicago.edu',
                                 'annualreviews.org', 'aip.scitation.org', 'psyche.entclub.org', 'thelancet.com',
-                                'amjbot.org',
+                                'amjbot.org', 'gsapubs.org', 'jwildlifedis.org', 'msptm.org', 'nrcresearchpress.',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
                                 'proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
                                 //  Below are sites that are simply DOI resolvers, like dx.doi.org
                                 'doi.library.ubc.ca');
+
+const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
+                                  '.serialssolutions.com', '.ebscohost.com'); // Drop these if there is a valid DOI
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport');
 

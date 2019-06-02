@@ -486,6 +486,12 @@ final class Template {
         }
         return FALSE;
         
+      case 'issn_force': // When dropping URL, force adding it
+        if ($this->blank('issn') && preg_match('~^\d{4}-\d{3}[\dxX]$~', $value)) {
+          return $this->add('issn', $value);
+        }
+        return FALSE;
+        
       case 'periodical': case 'journal': case 'newspaper':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
@@ -499,7 +505,7 @@ final class Template {
           if ($this->has('work')) {
             if (str_equivalent($this->get('work'), $value)) {
               $this->rename('work', $param_name);
-              $this->forget('issn');
+              if (!$this->blank(['pmc', 'doi', 'pmid'])) $this->forget('issn');
               return TRUE;
             } else {
               return FALSE;  // Cannot have both work and journal
@@ -508,7 +514,7 @@ final class Template {
           if ($this->has('via')) {
             if (str_equivalent($this->get('via'), $value)) {
               $this->rename('via', $param_name);
-              $this->forget('issn');
+              if (!$this->blank(['pmc', 'doi', 'pmid'])) $this->forget('issn');
               return TRUE;
             }
           }
@@ -546,7 +552,10 @@ final class Template {
              }
              return TRUE;
           } else {   
-             return $this->add($param_name, $value);
+             $my_return = $this->add($param_name, $value);
+             // Avoid running twice
+             $this->tidy_parameter('publisher');
+             return $my_return;
           }
         }
         return FALSE;
@@ -578,7 +587,8 @@ final class Template {
           if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
             return FALSE;
           }
-          if ($this->has('article') && $this->wikiname() === 'cite encyclopedia') return FALSE; // Probably the same thing
+          if ($this->has('article') && 
+                 ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary')) return FALSE; // Probably the same thing
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
@@ -810,6 +820,7 @@ final class Template {
       
       case 'publisher':
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
+        if (in_array($value, BAD_PUBLISHERS)) return FALSE;
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE; 
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
@@ -1110,7 +1121,16 @@ final class Template {
           }
           return $this->add_if_new('pmc', $match[1]);
         }
-      } elseif(preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/abstract/med/(\d+)~i", $url, $match)) {
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+        if ($this->blank('pmid')) {
+          quietly('report_modification', "Converting Europe URL to PMID parameter");
+          if (is_null($url_sent)) {
+            $this->forget($url_type);
+          }
+          return $this->add_if_new('pmid', $match[1]);
+        }
+      } elseif (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
@@ -1243,6 +1263,19 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite book');  // Better template choice
           return $this->add_if_new('oclc', $match[1]); 
+      } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{3}[\dxX])$~i", $url, $match)) {
+          quietly('report_modification', "Converting URL to ISSN parameter");
+          if (is_null($url_sent)) {
+             $this->forget($url_type);
+          }
+          return $this->add_if_new('issn_force', $match[1] . '-' . $match[2]); 
+      } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match)  &&
+                (stripos($this->parsed_text(), 'library') === FALSE)) { // Sometimes it is web cite to Library of Congress
+          quietly('report_modification', "Converting URL to LCCN parameter");
+          if (is_null($url_sent)) {
+             $this->forget($url_type);
+          }
+          return $this->add_if_new('lccn', $match[1]); 
       }
     }
     return FALSE ;
@@ -1895,7 +1928,7 @@ final class Template {
         } else {
           return FALSE;
         }
-        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return TRUE; //is currently blacklisted due to copyright concerns
+        if ((@$USER_WILL_COMMIT !== 'yes') && (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE)) return TRUE; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
@@ -2687,6 +2720,8 @@ final class Template {
   public function wikiname() {
     $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
     if ($name === 'cite work') $name = 'cite book'; // Treat the same since alias
+    if ($name === 'cite newspaper') $name = 'cite news'; // Treat the same since alias
+    if ($name === 'cite website') $name = 'cite web'; // Treat the same since alias
     return $name ;
   }
   
@@ -2883,6 +2918,7 @@ final class Template {
           
         case 'isbn':
           if ($this->lacks('isbn')) return;
+          $this->set('isbn', preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
           if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
             $this->change_name_to('cite book');
@@ -3004,6 +3040,11 @@ final class Template {
           }
           if (strtolower($this->get('newspaper')) === $publisher) {
             $this->forget($param);
+          }
+          if ($this->blank(WORK_ALIASES)) {
+            if (in_array(str_replace(array('[', ']', '"', "'"), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+               $this->rename($param, 'work'); // Don't think about which work it is
+            }
           }
           return;
           
@@ -3129,13 +3170,15 @@ final class Template {
           return;
           
         case 'via':   // Should just remove all 'via' with no url, but do not want to make people angry
-          if ($this->has('via') && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) {
+          if ($this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) { // Include blank via
             if (stripos($this->get('via'), 'PubMed') !== FALSE && ($this->has('pmc') || $this->has('pmid'))) {
               $this->forget('via');
             } elseif (stripos($this->get('via'), 'JSTOR') !== FALSE && $this->has('jstor')) {
               $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
-              if ((stripos($this->get('via'), 'Project MUSE') !== FALSE) ||
+              if (
+                  ($this->blank('via')) ||
+                  (stripos($this->get('via'), 'Project MUSE') !== FALSE) ||
                   (stripos($this->get('via'), 'Wiley') !== FALSE) ||
                   (stripos($this->get('via'), 'springer') !== FALSE) ||
                   (stripos($this->get('via'), 'elsevier') !== FALSE)
@@ -3157,7 +3200,7 @@ final class Template {
               $this->forget('volume');
             }
           }
-          $this->volume_issue_demix($this->get('volume'), $param);
+          $this->volume_issue_demix($this->get($param), $param);
           return;
           
         case 'year':
@@ -3323,6 +3366,7 @@ final class Template {
         }
       }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
+      $this->tidy_parameter('via');
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
@@ -3402,6 +3446,14 @@ final class Template {
         $headers_test = @get_headers($url_test, 1);
         if ($headers_test === FALSE) {
           report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+          if (!$this->blank(DOI_BROKEN_ALIASES)) { // Already marked as broken
+            foreach (DOI_BROKEN_ALIASES as $alias) {
+               if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
+                   $this->forget($alias);
+               }
+            }
+            $this->add_if_new('doi-broken-date', date("Y-m-d")); // Update day to today
+          }
           return FALSE;
         }
         foreach (DOI_BROKEN_ALIASES as $alias) {
@@ -3864,7 +3916,7 @@ final class Template {
   protected function volume_issue_demix($data, $param) {
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-              preg_match("~^(?:vol. |Volume |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(?:vol\. |Volume |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
@@ -3884,6 +3936,14 @@ final class Template {
               $this->set('issue', $possible_issue);
             }
          }
+     } elseif ($param === 'volume') {
+       if (preg_match("~^(?:vol\.|volume|vol)\s+(\d+)$~i", $data, $matches)) {
+         $this->set('volume', $matches[1]);
+       }
+     } elseif ($param === 'issue' || $param === 'number') {
+       if (preg_match("~^(?:iss\.|iss|issue|num|num\.|no|no\.)\s+(\d+)$~i", $data, $matches)) {
+         $this->set($param, $matches[1]);
+       }
      }
   }
                          
