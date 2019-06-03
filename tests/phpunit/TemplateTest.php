@@ -331,7 +331,7 @@ final class TemplateTest extends testBaseClass {
       
     $text = "{{Cite book | asin=0226845494 |isbn=0226845494}}";
     $expanded = $this->process_citation($text);
-    $this->assertEquals('978-0226845494', $expanded->get('isbn'));
+    $this->assertEquals('0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
   }
   
@@ -346,7 +346,7 @@ final class TemplateTest extends testBaseClass {
   public function testTemplateRenamingURLConvert() {
     $text='{{cite journal |url=http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf |title=Terrestrialization (Precambrian–Devonian) |last=Selden |first=Paul A. |year=2005 |encyclopedia=[[Encyclopedia of Life Sciences]] |publisher=[[John Wiley & Sons, Ltd.]] |doi=10.1038/npg.els.0004145 |format=DUDE}}';
     $expanded = $this->process_citation($text);
-    $this->assertEquals('978-0470016176', $expanded->get('isbn'));
+    $this->assertEquals('0470016175', $expanded->get('isbn'));
     $this->assertEquals('cite book', $expanded->wikiname());
     $this->assertEquals('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $expanded->get('chapter-url'));
     $this->assertNull($expanded->get('url'));
@@ -1096,28 +1096,28 @@ ER -  }}';
        $this->assertEquals('10.1038/ntheses.01928', $prepared->get('doi'));  
   }
    
-  public function testConvertingISBN10intoISBN13() { // URLS present just to speed up tests
-    $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
+  public function testConvertingISBN10intoISBN13() { // URLS present just to speed up tests.  Fake years to trick date check
+    $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('978-0-9749009-0-2', $prepared->get('isbn'));  // Convert with dashes
     
-    $text = "{{cite book|isbn=978-0-9749009-0-2|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
+    $text = "{{cite book|isbn=978-0-9749009-0-2|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('978-0-9749009-0-2', $prepared->get('isbn'));  // Unchanged with dashes
     
-    $text = "{{cite book|isbn=9780974900902|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
+    $text = "{{cite book|isbn=9780974900902|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('9780974900902', $prepared->get('isbn'));   // Unchanged without dashes
     
-    $text = "{{cite book|isbn=0974900907|url=https://books.google.com/books?id=to0yXzq_EkQC}}";
+    $text = "{{cite book|isbn=0974900907|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('978-0974900902', $prepared->get('isbn'));   // Convert without dashes
     
-    $text = "{{cite book|isbn=1-84309-164-X|url=https://books.google.com/books?id=GvjwAQAACAAJ}}";
+    $text = "{{cite book|isbn=1-84309-164-X|url=https://books.google.com/books?id=GvjwAQAACAAJ|year=2019}}";
     $prepared = $this->prepare_citation($text);  
     $this->assertEquals('978-1-84309-164-6', $prepared->get('isbn'));  // Convert with dashes and a big X
     
-    $text = "{{cite book|isbn=184309164x|url=https://books.google.com/books?id=GvjwAQAACAAJ}}";
+    $text = "{{cite book|isbn=184309164x|url=https://books.google.com/books?id=GvjwAQAACAAJ|year=2019}}";
     $prepared = $this->prepare_citation($text);
     $this->assertEquals('978-1843091646', $prepared->get('isbn'));  // Convert without dashes and a tiny x
     
