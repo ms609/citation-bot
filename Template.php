@@ -989,11 +989,8 @@ final class Template {
         }
         return $this->add_if_new('doi', urldecode($match[1])); // Will expand from DOI when added
     }
-    
+    if (stripos($url, 'oxforddnb.com') !== FALSE) return FALSE; // generally bad, and not helpful
     if ($doi = extract_doi($url)[1]) {
-      if (stripos($url, 'oxforddnb.com') !== false) {
-         if (!doi_active($doi)) return FALSE; // generally bad, and not helpful
-      }
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
