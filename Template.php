@@ -806,11 +806,11 @@ final class Template {
             return FALSE;
           } elseif (preg_match("~^\d~", $value) && substr($value, 0, 3) !== '630') { // 630 ones are not ISBNs
             $possible_isbn = sanitize_string($value);
-            $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn);
+            $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, TRUE);
             if ($possible_isbn === $possible_isbn13) {
               return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
             } else {
-              return $this->add('isbn', $possible_isbn13);
+              return $this->add('isbn', $this->isbn10Toisbn13($possible_isbn));
             }
           } else {  // NOT ISBN
             return $this->add($param_name, sanitize_string($value));
@@ -3865,11 +3865,12 @@ final class Template {
     return (bool) count($this->modifications('modifications'));
   }
   
-  protected function isbn10Toisbn13($isbn10) {
+  protected function isbn10Toisbn13($isbn10, $ignore_year = FALSE) {
     $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
     $isbn10 = str_replace(array('—', '?', '–', '-', '?'), '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
     if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
     if (substr($isbn10, -1) === "-" || substr($isbn10, 0, 1) === "-") return $isbn10;  // Ends or starts with a dash
+    if ((intval($this->year()) < 2007) && !$ignore_year) return $isbn10; // Older books does not have ISBN-13, see [[WP:ISBN]]
     $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
     if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
     $isbn13 = '978' . substr($isbn13, 0, -1);  // Convert without check digit - do not need and might be X
