@@ -1928,7 +1928,7 @@ final class Template {
         } else {
           return FALSE;
         }
-        if ((@$USER_WILL_COMMIT !== 'yes') && (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE)) return TRUE; //is currently blacklisted due to copyright concerns
+        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return TRUE; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
