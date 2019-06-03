@@ -1,12 +1,12 @@
 <?php
   
 function html_echo($text, $alternate_text='') {
-  if (!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
+  echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
 function user_notice($symbol, $class, $text) {
   global $FLUSHING_OKAY;
-  if (!getenv('TRAVIS')) {
+  if (TRUE) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
   }
