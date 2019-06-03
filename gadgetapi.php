@@ -4,7 +4,6 @@
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
 $FLUSHING_OKAY = FALSE;
-$USER_WILL_COMMIT = 'yes';
 
 $SLOW_MODE = FALSE;
 if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
