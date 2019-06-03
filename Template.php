@@ -1284,9 +1284,13 @@ final class Template {
 
   protected function get_doi_from_text() {
     if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match))
+      if (stripos($this->parsed_text(), 'oxforddnb.com') !== FALSE) return; // generally bad, and not helpful
       // Search the entire citation text for anything in a DOI format.
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
-      $this->add_if_new('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
+      $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0])
+      if ($doi = extract_doi($doi)[1]) {
+        if (doi_active($doi)) $this->add_if_new('doi', $doi);
+      }
   }
 
   public function get_doi_from_crossref() {
