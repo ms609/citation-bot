@@ -305,7 +305,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
     $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
-    $this->assertEquals('978-0226845494', $expanded->get('isbn'));
+    $this->assertEquals('0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
     $this->assertNull($expanded->get('publisher'));
     $this->assertNull($expanded->get('url'));
@@ -313,7 +313,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite web | chapter-url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
     $expanded = $this->prepare_citation($text);
     $this->assertEquals('cite book', $expanded->wikiname());
-    $this->assertEquals('978-0226845494', $expanded->get('isbn'));
+    $this->assertEquals('0226845494', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
     $this->assertNull($expanded->get('publisher'));
     $this->assertNull($expanded->get('chapter-url'));
