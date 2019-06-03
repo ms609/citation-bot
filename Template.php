@@ -991,7 +991,7 @@ final class Template {
     }
     
     if ($doi = extract_doi($url)[1]) {
-      if (stripos($url, 'oxforddnb.com') !== false) 
+      if (stripos($url, 'oxforddnb.com') !== false) {
          if (!doi_active($doi)) return FALSE; // generally bad, and not helpful
       }
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
