@@ -87,7 +87,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' PloS One ', ' PLoS One ', ' PLOS One ', ' Pnas ', ' Published In: ' , ' Rna ', ' S.a.p.i.en.s ',
           ' SRP Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', 
-          ' Tellus a ', ' The Embo Journal ', ' Time Out London ', ' Tot de ', 'U.s. ', ' U.S.a. ', ' U.s.a ', ' Uhealth ', ' UHealth ', ' V Astronomicheskii Zhurna ',
+          ' Tellus a ', ' The Embo Journal ', ' Time Out London ', ' Tot de ', ' U.s. ', ' U.S.a. ', ' U.s.a ', ' Uhealth ', ' UHealth ', ' V Astronomicheskii Zhurna ',
           ' Z/journal ', ' Z/Journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
           ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys '
           /* The above will be automatically updated to alphabetical order */ 
