@@ -27,7 +27,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Its ', ' Jama ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mit ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
           ' Nor ', ' Nrc ', ' Ny ', ' Nyc ', ' Nyt ', ' Nz ', ' Och ', ' Oecd ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
           ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Ps: ', ' R&d ', ' Rna ', ' S&p ', ' Sae ', ' Ssrn ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
-          ' Um ', ' Und ', ' Up ', ' U.s. ', ' U.s.a. ', ' U.S.a. ', ' Usa ', ' Van ', ' Von ', ' Voor ', ' When ', ' With ', ' Within ', ' Woor ', 
+          ' Um ', ' Und ', ' Up ', ' U.s. ', ' U.S.a. ', ' U.s.a. ', ' Usa ', ' Van ', ' Von ', ' Voor ', ' When ', ' With ', ' Within ', ' Woor ', 
           ' Y ', ' Zu ', ' Zum ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
