@@ -2689,6 +2689,7 @@ final class Template {
   }
 
   public function change_name_to($new_name, $rename_cite_book = TRUE) {
+    if (strpos($this->get('doi'), '10.1093') !== FALSE) return;
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
