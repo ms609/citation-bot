@@ -326,11 +326,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   } else {
     if (isset($result->title))      $template->add_if_new('title'  , $result->title);
     if (isset($result->itemType) && ($result->itemType === 'book' || $result->itemType === 'bookSection')) {
-       if (isset($result->publisher)) {
-         $pos_pub = $result->publisher;
-         if (preg_match('~^\[+(.+)\]+$~', $pos_pub, $match) $pos_pub = $match[1];
-         $template->add_if_new('publisher', $pos_pub);
-       }
+       if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher));
     }
   }
 
