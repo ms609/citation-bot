@@ -820,10 +820,10 @@ final class Template {
       
       case 'publisher':
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
-        if (in_array($value, BAD_PUBLISHERS)) return FALSE;
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE;
+        if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem
+        if (in_array(strtolower($value), BAD_PUBLISHERS)) return FALSE;
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
-        if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; usually zotero problem  
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
