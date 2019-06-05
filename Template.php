@@ -2492,7 +2492,7 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if (!trim($dat) && !$param_recycled) {
+      if (!trim($dat, " \t\0\x0B") && !$param_recycled) { // do not delete blank parameters with line feed
         unset($this->param[$param_key]);
       }
     }
