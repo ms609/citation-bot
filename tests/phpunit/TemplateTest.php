@@ -156,7 +156,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
     $this->assertEquals('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
-    $this->assertEquals('10.1093/oxfordhb/9780199552238.001.0001', $expanded->get('doi'));
+    $this->assertEquals('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get('doi'));
  }
  
  public function testCrazyDoubleDOI() {
@@ -1759,7 +1759,9 @@ ER -  }}';
   public function testDoiValidation() {
     $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertEquals('10.1093/acref/9780199204632.001.0001', $prepared->get('doi'));
+    $prepared->assertNull($prepared->get('doi'));
+    $expanded = $this->expand_citation($text);
+    $this->assertNull($expanded->get('doi'));
   }
     
   public function testVolumeIssueDemixing() {
