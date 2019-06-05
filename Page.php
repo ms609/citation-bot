@@ -194,7 +194,6 @@ class Page {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
        $all_templates[$i]->date_style = $this->date_style;
     }
-        echo __LINE__ . $all_templates[0]->parsed_text() . "\n";
     $our_templates = array();
     $our_templates_slight = array();
     report_phase('Remedial work to prepare citations');
@@ -221,7 +220,6 @@ class Page {
         }
       }
     }
-        echo __LINE__ . $all_templates[0]->parsed_text() . "\n";
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
