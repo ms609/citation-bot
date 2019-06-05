@@ -2503,7 +2503,7 @@ final class Template {
         }
       }
                   echo __LINE__ . ' ' . $this->parsed_text() . "\n";
-      if (!trim($dat) && !$param_recycled) {
+      if (!trim($dat, " \t\0\x0B") && !$param_recycled) { // Leave in Line feeds
         unset($this->param[$param_key]);
       }
                   echo __LINE__ . ' ' . $this->parsed_text() . "\n";
