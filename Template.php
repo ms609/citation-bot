@@ -121,14 +121,23 @@ final class Template {
 
   public function prepare() {
     if ($this->should_be_processed()) {
+      echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->get_inline_doi_from_title();
+            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->use_unnamed_params();
+            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->get_identifiers_from_url();
+            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->id_to_param();
+      echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->correct_param_spelling();
+            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->get_doi_from_text();
+            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->fix_rogue_etal();
+            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->tidy();
+            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       
       switch ($this->wikiname()) {
         case "cite arxiv":
