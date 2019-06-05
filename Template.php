@@ -993,10 +993,11 @@ final class Template {
     }
     if (stripos($url, 'oxforddnb.com') !== FALSE) return FALSE; // generally bad, and not helpful
     if ($doi = extract_doi($url)[1]) {
+      if (!check_10_1093_doi($doi)) return FALSE;
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
-        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && check_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
         }
@@ -1008,7 +1009,7 @@ final class Template {
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
-            if (mb_strpos(strtolower($url), ".pdf") === FALSE && check_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+            if (mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
               report_forget("Recognized DOI in URL; dropping URL");
               $this->forget($url_type);
             } else {
