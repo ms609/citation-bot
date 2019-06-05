@@ -121,23 +121,22 @@ final class Template {
 
   public function prepare() {
     if ($this->should_be_processed()) {
-      echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->get_inline_doi_from_title();
             echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->use_unnamed_params();
             echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $this->get_identifiers_from_url();
-            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
+
       $this->id_to_param();
-      echo __LINE__ . ' ' . $this->parsed_text() . "\n";
+
       $this->correct_param_spelling();
-            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
+
       $this->get_doi_from_text();
-            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
+
       $this->fix_rogue_etal();
-            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
+
       $this->tidy();
-            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
+
       
       switch ($this->wikiname()) {
         case "cite arxiv":
@@ -2209,12 +2208,12 @@ final class Template {
 
   protected function use_unnamed_params() {
     if (empty($this->param)) return;
-    
+                echo __LINE__ . ' ' . $this->parsed_text() . "\n";
     $this->parameter_names_to_lowercase();
     $param_occurrences = array();
     $duplicated_parameters = array();
     $duplicate_identical = array();
-    
+                echo __LINE__ . ' ' . $this->parsed_text() . "\n";
     foreach ($this->param as $pointer => $par) {
       if ($par->param && isset($param_occurrences[$par->param])) {
         $duplicate_pos = $param_occurrences[$par->param];
@@ -2228,7 +2227,7 @@ final class Template {
       }
       $param_occurrences[$par->param] = $pointer;
     }
-    
+                echo __LINE__ . ' ' . $this->parsed_text() . "\n";
     $n_dup_params = count($duplicated_parameters);
     
     for ($i = 0; $i < $n_dup_params; $i++) {
@@ -2242,7 +2241,7 @@ final class Template {
           echoable($this->param[$duplicated_parameters[$i]]->param));
       }
     }
-    
+                echo __LINE__ . ' ' . $this->parsed_text() . "\n";
     foreach ($this->param as $param_key => $p) {
       if (!empty($p->param)) {
         if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
@@ -2310,24 +2309,24 @@ final class Template {
           }
         }
       }
-
+            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) { // RIS formatted data:
         $this->expand_by_RIS($dat, TRUE);
       }
-      
+               echo __LINE__ . ' ' . $this->parsed_text() . "\n";   
       $doi = extract_doi($dat);
       if (!is_null($doi)) {
         $this->add_if_new('doi', $doi[1]); 
         $this->change_name_to('cite journal');
         $dat = str_replace($doi[0], '', $dat);
       }
-      
+                 echo __LINE__ . ' ' . $this->parsed_text() . "\n"; 
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tentative matches
         report_add("Found URL floating in template; setting url");
         $this->set('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
-      
+                  echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
         foreach ($match[0] as $i => $oMatch) {
           switch (strtolower($match[1][$i])) {
@@ -2358,7 +2357,7 @@ final class Template {
           }
         }
       }
-      
+                  echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       // Match vol(iss):pp
       if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) {
         $this->add_if_new('volume', $match[1]);
@@ -2368,14 +2367,14 @@ final class Template {
         $this->add_if_new('pages' , $match[3]);
         $dat = trim(str_replace($match[0], '', $dat));
       }
-
+            echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       $shortest = -1;
       $parameter_list = PARAMETER_LIST;
       $test_dat = '';
       $shortish = -1;
       $comp = '';
       $closest = NULL;
-      
+                  echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
@@ -2417,6 +2416,7 @@ final class Template {
           $comp = $parameter;
         }
       }
+                  echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       // Deal with # values
       if(preg_match('~\d+~', $dat, $match)) {
         $closest = str_replace('#', $match[0], $closest);
@@ -2495,15 +2495,18 @@ final class Template {
           break;
         }
       }
+                  echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
         if ($this->blank(['year', 'date'])) {
           $this->set('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
+                  echo __LINE__ . ' ' . $this->parsed_text() . "\n";
       if (!trim($dat) && !$param_recycled) {
         unset($this->param[$param_key]);
       }
+                  echo __LINE__ . ' ' . $this->parsed_text() . "\n";
     }
   
   }
