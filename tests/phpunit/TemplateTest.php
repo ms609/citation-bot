@@ -1759,8 +1759,8 @@ ER -  }}';
   public function testDoiValidation() {
     $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013}}';
     $prepared = $this->prepare_citation($text);
-    $prepared->assertNull($prepared->get('doi'));
-    $expanded = $this->expand_citation($text);
+    $this->assertNull($prepared->get('doi'));
+    $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi'));
   }
     
