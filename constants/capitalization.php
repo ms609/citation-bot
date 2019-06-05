@@ -50,7 +50,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' J Gerontol A Biol Sci Med Sci ',
           ' J SIAM ', ' J. SIAM ', ' JABS : Journal of Applied Biological Sciences ', 
           ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.I.E.E. ',
-          ' Journal of the IEST ', ' Jpn ', ' Jpn. ', ' Ltd ', ' Latina/o ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
+          ' Journal of the IEST ', ' Jpn ', ' Jpn. ', ' Latina/o ', ' Ltd ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
           ' Meddelelser om Grønland ', ' Meddelelser om Grønland, ', ' MERIP ', ' Methods in Molecular Biology ',
           ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
           ' n.paradoxa ', ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
