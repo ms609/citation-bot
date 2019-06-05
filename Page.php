@@ -190,10 +190,12 @@ class Page {
 
     // TEMPLATES
     $all_templates = $this->extract_object('Template');
+        echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
        $all_templates[$i]->date_style = $this->date_style;
     }
+        echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
     $our_templates = array();
     $our_templates_slight = array();
     report_phase('Remedial work to prepare citations');
@@ -220,7 +222,7 @@ class Page {
         }
       }
     }
-    
+        echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
@@ -229,9 +231,10 @@ class Page {
     $this->expand_templates_from_identifier('bibcode', $our_templates);
     $this->expand_templates_from_identifier('jstor',   $our_templates);
     $this->expand_templates_from_identifier('doi',     $our_templates);
+        echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
     expand_arxiv_templates($our_templates);
     $this->expand_templates_from_identifier('url',     $our_templates);
-    
+    echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
@@ -249,7 +252,8 @@ class Page {
     }
     $this->expand_templates_from_identifier('doi',     $our_templates);
     drop_urls_that_match_dois($our_templates);
-    
+        echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
+    echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
     $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
     for ($i = 0; $i < count($all_templates); $i++) {
@@ -258,7 +262,7 @@ class Page {
         $this_template->use_issn();
       }
     }
-    
+        echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
@@ -280,6 +284,7 @@ class Page {
         }
       }
     }
+        echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
     for ($i = 0; $i < count($our_templates_slight); $i++) {
       $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
@@ -294,6 +299,7 @@ class Page {
         }
       }
     }
+        echo __LINE__ . $this->our_templates[0]->parsed_text() . "\n";
     $this->replace_object($all_templates);
 
     $this->replace_object($preformated);
