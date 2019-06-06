@@ -857,6 +857,10 @@ final class Template {
          $forename = '';
          $author = trim(match[1]);
       }
+      if (trim($author) == '') {
+         $author = trim($forename);
+         $forename = '';
+      }
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
       $name_as_publisher = trim($forename . ' ' . $author);
