@@ -326,7 +326,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   } else {
     if (isset($result->title))      $template->add_if_new('title'  , $result->title);
     if (isset($result->itemType) && ($result->itemType === 'book' || $result->itemType === 'bookSection')) {
-       if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher); 
+       if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher);
     }
   }
 
@@ -382,7 +382,13 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'thesis':
         $template->change_name_to('cite thesis');
         if (isset($result->university)) $template->add_if_new('publisher' , $result->university);
-        if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) $template->add_if_new('type' , $result->thesisType); // Prefer type since it exists in cite journal too
+        if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree']) && strtolower($result->thesisType) !== 'text') {
+          $template->add_if_new('type' , $result->thesisType); // Prefer type since it exists in cite journal too
+        }
+        break;
+        
+      case 'videoRecording':
+        // Nothing special that we know of yet
         break;
 
       default:

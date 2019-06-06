@@ -587,7 +587,8 @@ final class Template {
           if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
             return FALSE;
           }
-          if ($this->has('article') && $this->wikiname() === 'cite encyclopedia') return FALSE; // Probably the same thing
+          if ($this->has('article') && 
+                 ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary')) return FALSE; // Probably the same thing
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
@@ -805,11 +806,11 @@ final class Template {
             return FALSE;
           } elseif (preg_match("~^\d~", $value) && substr($value, 0, 3) !== '630') { // 630 ones are not ISBNs
             $possible_isbn = sanitize_string($value);
-            $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn);
+            $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, TRUE);
             if ($possible_isbn === $possible_isbn13) {
               return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
             } else {
-              return $this->add('isbn', $possible_isbn13);
+              return $this->add('isbn', $this->isbn10Toisbn13($possible_isbn));
             }
           } else {  // NOT ISBN
             return $this->add($param_name, sanitize_string($value));
@@ -819,8 +820,11 @@ final class Template {
       
       case 'publisher':
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
-        if (in_array($value, BAD_PUBLISHERS)) return FALSE;
-        if (stripos($value, '[s.n.]') !== FALSE) return FALSE; 
+        if (stripos($value, '[s.n.]') !== FALSE) return FALSE;
+        if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem of [data]
+        if (preg_match('~^(.+), \d{4}$~', $value, $match)) $value = $match[1]; // remove years from zotero 
+        if (in_array(strtolower($value), BAD_PUBLISHERS)) return FALSE;
+        if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
@@ -830,9 +834,9 @@ final class Template {
         return FALSE;
 
       case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'type': case 'titlelink': 
-      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx':
-      case (boolean) preg_match('~author\d{1,}-link~', $param_name):
-        if ($this->blank($param_name)) {
+      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
+      case (boolean) preg_match('~author(?:\d{1,}|)-link~', $param_name):
+      if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
@@ -987,12 +991,13 @@ final class Template {
         }
         return $this->add_if_new('doi', urldecode($match[1])); // Will expand from DOI when added
     }
-    
+    if (stripos($url, 'oxforddnb.com') !== FALSE) return FALSE; // generally bad, and not helpful
     if ($doi = extract_doi($url)[1]) {
+      if (!check_10_1093_doi($doi)) return FALSE;
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
-        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && check_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+        if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
         }
@@ -1004,7 +1009,7 @@ final class Template {
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
-            if (mb_strpos(strtolower($url), ".pdf") === FALSE && check_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+            if (mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
               report_forget("Recognized DOI in URL; dropping URL");
               $this->forget($url_type);
             } else {
@@ -1281,10 +1286,16 @@ final class Template {
   }
 
   protected function get_doi_from_text() {
-    if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match))
+    if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
+      if (stripos($this->rawtext, 'oxforddnb.com') !== FALSE) return; // generally bad, and not helpful
+      if (stripos($this->rawtext, '10.1093') !== FALSE) return; // generally bad, and not helpful
       // Search the entire citation text for anything in a DOI format.
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
-      $this->add_if_new('doi', preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]));
+      $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
+      $doi = extract_doi($doi)[1];
+      if ($this->has('quote') && strpos($this->get('quote'), $doi) !== FALSE) return;
+      if (doi_active($doi)) $this->add_if_new('doi', $doi);
+    }
   }
 
   public function get_doi_from_crossref() {
@@ -1927,11 +1938,14 @@ final class Template {
         } else {
           return FALSE;
         }
-        if ((@$USER_WILL_COMMIT !== 'yes') && (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE)) return TRUE; //is currently blacklisted due to copyright concerns
+        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return TRUE; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
         }
+        preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
+        $host_name = @$match[1];
+        if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return FALSE; // Its the publisher
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
         if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return TRUE;
@@ -2480,7 +2494,7 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if (!trim($dat) && !$param_recycled) {
+      if (!trim($dat, " \t\0\x0B") && !$param_recycled) { // do not delete blank parameters with line feed
         unset($this->param[$param_key]);
       }
     }
@@ -2680,6 +2694,7 @@ final class Template {
   }
 
   public function change_name_to($new_name, $rename_cite_book = TRUE) {
+    if (strpos($this->get('doi'), '10.1093') !== FALSE) return;
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
@@ -3435,6 +3450,14 @@ final class Template {
         $headers_test = @get_headers($url_test, 1);
         if ($headers_test === FALSE) {
           report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+          if (!$this->blank(DOI_BROKEN_ALIASES)) { // Already marked as broken
+            foreach (DOI_BROKEN_ALIASES as $alias) {
+               if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
+                   $this->forget($alias);
+               }
+            }
+            $this->add_if_new('doi-broken-date', date("Y-m-d")); // Update day to today
+          }
           return FALSE;
         }
         foreach (DOI_BROKEN_ALIASES as $alias) {
@@ -3852,11 +3875,12 @@ final class Template {
     return (bool) count($this->modifications('modifications'));
   }
   
-  protected function isbn10Toisbn13($isbn10) {
+  protected function isbn10Toisbn13($isbn10, $ignore_year = FALSE) {
     $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
     $isbn10 = str_replace(array('—', '?', '–', '-', '?'), '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
     if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
     if (substr($isbn10, -1) === "-" || substr($isbn10, 0, 1) === "-") return $isbn10;  // Ends or starts with a dash
+    if ((intval($this->year()) < 2007) && !$ignore_year) return $isbn10; // Older books does not have ISBN-13, see [[WP:ISBN]]
     $isbn13 = str_replace('-', '', $isbn10);  // Remove dashes to do math
     if (strlen($isbn13) !== 10) return $isbn10;  // Might be an ISBN 13 already, or rubbish
     $isbn13 = '978' . substr($isbn13, 0, -1);  // Convert without check digit - do not need and might be X
