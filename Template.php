@@ -804,7 +804,7 @@ final class Template {
           if($this->has('isbn')) { // Already have ISBN
             quietly('report_inaction', "Not adding ASIN: redundant to existing ISBN.");
             return FALSE;
-          } elseif (preg_match("~^\d~", $value) && substr($value, 0, 3) !== '630') { // 630 ones are not ISBNs
+          } elseif (preg_match("~^\d~", $value) && substr($value, 0, 2) !== '63') { // 630 & 631 ones are not ISBNs, so block all of 63*
             $possible_isbn = sanitize_string($value);
             $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, TRUE);
             if ($possible_isbn === $possible_isbn13) {
