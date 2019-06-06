@@ -2771,7 +2771,7 @@ final class Template {
     }
     // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
     if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-      if (($matches[1] !== $matches[3]) || ($param !== 'title')) {
+      if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter')) {
         $this->set($param, $matches[2]);
       }
     }
