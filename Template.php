@@ -852,10 +852,10 @@ final class Template {
 
   public function validate_and_add($author_param, $author, $forename = '', $check_against = '') {
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
-      while(preg_match('~^(.*)\s[\S]+@~', $forename . $author, $match) || // Remove emails 
-            preg_match('~^(.*)\s+@~', $forename . $author, $match)) { // Remove twitter handles 
+      while(preg_match('~^(.*)\s[\S]+@~', $forename . ' ' . $author, $match) || // Remove emails 
+            preg_match('~^(.*)\s+@~', $forename . ' ' . $author, $match)) { // Remove twitter handles 
          $forename = '';
-         $author = match[1];
+         $author = trim(match[1]);
       }
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
