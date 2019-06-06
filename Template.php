@@ -852,11 +852,17 @@ final class Template {
 
   public function validate_and_add($author_param, $author, $forename = '', $check_against = '') {
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+      if (preg_match('~^(.*)\s[\S]+@~', $forename . $author, $match)) { // Remove everything after and including email
+         $forename = '';
+         $author = match[1];
+      }
+      if (preg_match('~^(.*)\s+@~', $forename . $author, $match)) {
+         $forename = '';
+         $author = match[1]; // Remove everything after and including twitter handle
+      }
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
       $name_as_publisher = trim($forename . ' ' . $author);
-      // var_dump($name_as_publisher);
-      // var_dump($check_against);
       if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE
           || stripos($check_against, $name_as_publisher) !== FALSE) {
         $this->add_if_new('publisher' , $name_as_publisher);
