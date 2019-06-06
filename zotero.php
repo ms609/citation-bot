@@ -348,8 +348,8 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->series))           $template->add_if_new('series' , $result->series);
   $i = 0;
   while (isset($result->author[$i])) {
-      if (isset($result->author[$i][0])) $template->add_if_new('first' . ($i+1), $result->author[$i][0]);
-      if (isset($result->author[$i][1])) $template->add_if_new('last'  . ($i+1), $result->author[$i][1]);
+      $template->validate_and_add('author' . ($i+1), @$result->author[$i][1], @$result->author[$i][0],
+                                      isset($result->rights) ? $result->rights : '');
       $i++;
   }
   
