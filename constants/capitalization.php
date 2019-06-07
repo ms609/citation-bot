@@ -1,6 +1,6 @@
 <?php
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' AAP ', ' AAUP ', ' ABC ', ' AC ', ' ACM ', ' AI ', ' AIAA ', ' AJHG ', ' al ', ' an ',
+          ' AAP ', ' AAUP ', ' ABC ', ' AC ', ' ACM ', ' AGU ', ' AI ', ' AIAA ', ' AJHG ', ' al ', ' an ',
           ' and ', ' and then ', ' as ', ' at ', ' at ',
           ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' bei ',  ' BJPsych ', ' BMC ', ' BMJ ', ' but ', ' by ',
           ' CBC ', ' CNS ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
@@ -16,7 +16,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' Aap ', ' Aaup ', ' Abc ', ' Ac ', ' Acm ', ' Ai ', ' Aiaa ', ' Ajhg ', ' Al ', ' An ', ' And ',
+          ' Aap ', ' Aaup ', ' Abc ', ' Ac ', ' Acm ', ' Agu ', ' Ai ', ' Aiaa ', ' Ajhg ', ' Al ', ' An ', ' And ',
           ' and Then ', ' As ', ' At ', ' At ',
           ' Aus ', ' Av ', ' Bba ', ' Bbc ', ' Be ', ' Bei ', ' Bjpsych ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
           ' Cbc ', ' Cns ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
