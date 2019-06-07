@@ -10,7 +10,8 @@ class ZoteroTest extends testBaseClass {
       
   public function testZoteroExpansionPII() {
     $text = '{{cite web|url=http://www.nzherald.co.nz/business/news/article.cfm?c_id=3&objectid=11433122}}';
-    $expanded = $this->expand_via_zotero($text);
+    $expanded = $this->prepare_citation($text);
+    $expanded->validate_and_add('author1', "isaac.davison@nzherald.co.nz @isaac_davison", "Isaac Davison Social Issues Reporter, NZ Herald", "");
     $this->assertNull($expanded->parsed_text());
   }
 }
