@@ -121,8 +121,9 @@ function format_author($author){
   if ($author == "") {
       return FALSE;
   }
-
+echo __LINE__ . $author . "\n";
   $auth = explode(",", $author);
+  print_r($auth);
   if (isset($auth[1])) {
     /* Possibilities:
     Smith, A. B.
@@ -186,6 +187,7 @@ function format_author($author){
       $fore = implode(" ", $i);
     }
   }
+  echo __LINE__ "  " . $fore . "   " . $surname  . "\n";
   // Special cases when code cannot fully determine things, or if the name is only Smith
   if (trim($surname) == '') { // get this with A. B. C.
     $full_name = format_forename($fore);
