@@ -854,11 +854,11 @@ final class Template {
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
             preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
-         $author = trim(match[1]);
+         $author = trim($match[1]);
       }
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $forename, $match) || // Remove emails 
             preg_match('~^(.*)\s+@~', ' ' . $forename, $match)) { // Remove twitter handles
-         $forename = trim(match[1]);
+         $forename = trim($match[1]);
       }
       if (trim($author) == '') {
          $author = trim($forename);
