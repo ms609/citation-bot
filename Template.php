@@ -851,6 +851,11 @@ final class Template {
   }
 
   public function validate_and_add($author_param, $author, $forename = '', $check_against = '') {
+    echo "AUTHOR " . $author . "\n";
+    echo "FORNAME " . $forename . "\n";
+    echo "CHECK " . $check_against . "\n";
+    echo "PARAM " . $author_param  . "\n";
+    echo "\n";
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
             preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
@@ -864,6 +869,10 @@ final class Template {
          $author = trim($forename);
          $forename = '';
       }
+    echo "AUTHOR " . $author . "\n";
+    echo "FORNAME " . $forename . "\n";
+    echo "\n";
+
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
       $name_as_publisher = trim($forename . ' ' . $author);
@@ -871,6 +880,7 @@ final class Template {
           || stripos($check_against, $name_as_publisher) !== FALSE) {
         $this->add_if_new('publisher' , $name_as_publisher);
       } else {
+        echo "FORMAT " . format_author($author . ($forename ? ", $forename" : '')) . "\n";
         $this->add_if_new($author_param, format_author($author . ($forename ? ", $forename" : '')));
       }
     }
