@@ -1143,6 +1143,7 @@ final class Template {
             $this->forget($url_type);
           }
           return $this->add_if_new('pmid', $match[1]);
+        }
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d+)(?:|/.*)$~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         quietly('report_modification', "Converting Canadian URL to PMC parameter");
