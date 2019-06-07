@@ -345,7 +345,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->volume) 
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
-  if ( isset($result->series))           $template->add_if_new('series' , $result->series);
+  if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , $result->series);
   $i = 0;
   while (isset($result->author[$i])) {
       $template->validate_and_add('author' . ($i+1), @$result->author[$i][1], @$result->author[$i][0],
