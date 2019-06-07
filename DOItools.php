@@ -187,7 +187,7 @@ echo __LINE__ . $author . "\n";
       $fore = implode(" ", $i);
     }
   }
-  echo __LINE__ "  " . $fore . "   " . $surname  . "\n";
+  echo __LINE__  . "  " . $fore . "   " . $surname  . "\n";
   // Special cases when code cannot fully determine things, or if the name is only Smith
   if (trim($surname) == '') { // get this with A. B. C.
     $full_name = format_forename($fore);
