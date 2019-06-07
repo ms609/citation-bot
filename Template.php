@@ -537,7 +537,7 @@ final class Template {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
           }
-          if ($param_name === 'newspaper' && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)
+          if (($param_name === 'newspaper' || $param_name === 'journal') && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)
                   && $this->blank('website')) { // Website is an alias for newspaper/work/journal, and did not check above
              $this->rename('publisher', $param_name);
              return TRUE;
