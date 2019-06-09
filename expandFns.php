@@ -242,6 +242,7 @@ function title_capitalization($in, $caps_after_punctuation) {
     $matches_in = $matches_in[0];
     $matches_out = $matches_out[0];
     Do something here with arrays like  this:  Loop over elements and compare offset, if match then copy
+      Also take into account padded spaces
 Array
         (
             [0] => Array
