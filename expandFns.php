@@ -235,11 +235,32 @@ function title_capitalization($in, $caps_after_punctuation) {
   if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
   
   $in = trim($in);
-  $its_in = preg_match_all('~ its ~iu', ' ' . $in . ' ', PREG_OFFSET_CAPTURE);
+  $its_in = preg_match_all('~ its ~iu', ' ' . $in . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
-  $its_out = preg_match_all('~ its ~iu', ' ' . $new_case . ' ', PREG_OFFSET_CAPTURE);
-  if ($its_in !== $its_out) {
-    Do something here 
+  $its_out = preg_match_all('~ its ~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
+  if ($its_in === $its_out && $its_in != 0) {
+    $matches_in = $matches_in[0];
+    $matches_out = $matches_out[0];
+    Do something here with arrays like  this:  Loop over elements and compare offset, if match then copy
+Array
+        (
+            [0] => Array
+                (
+                    [0] =>  its 
+                    [1] => 5
+                )
+
+            [1] => Array
+                (
+                    [0] =>  ITS 
+                    [1] => 14
+                )
+
+        )
+
+)
+
+
   }
   return $new_case;
 }
