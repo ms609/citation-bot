@@ -1,6 +1,6 @@
 <?php
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' AAP ', ' AAUP ', ' ABC ', ' AC ', ' ACM ', ' AI ', ' AIAA ', ' AJHG ', ' al ', ' an ',
+          ' AAP ', ' AAUP ', ' ABC ', ' AC ', ' ACM ', ' AGU ', ' AI ', ' AIAA ', ' AJHG ', ' al ', ' an ',
           ' and ', ' and then ', ' as ', ' at ', ' at ',
           ' aus ', ' av ', ' BBA ', ' BBC ', ' be ', ' bei ',  ' BJPsych ', ' BMC ', ' BMJ ', ' but ', ' by ',
           ' CBC ', ' CNS ', ' d\'un ', ' d\'une ', ' da ', ' dans ', 
@@ -16,7 +16,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
           ' El Dorado ', ' Las Vegas ', ' Los Angeles ', ' N Y ', ' U S A ');
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          ' Aap ', ' Aaup ', ' Abc ', ' Ac ', ' Acm ', ' Ai ', ' Aiaa ', ' Ajhg ', ' Al ', ' An ', ' And ',
+          ' Aap ', ' Aaup ', ' Abc ', ' Ac ', ' Acm ', ' Agu ', ' Ai ', ' Aiaa ', ' Ajhg ', ' Al ', ' An ', ' And ',
           ' and Then ', ' As ', ' At ', ' At ',
           ' Aus ', ' Av ', ' Bba ', ' Bbc ', ' Be ', ' Bei ', ' Bjpsych ', ' Bmc ', ' Bmj ', ' But ', ' By ', 
           ' Cbc ', ' Cns ', ' D\'un ', ' D\'une ', ' Da ', ' Dans ', 
@@ -35,7 +35,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' AAPOS ', ' Angew Chem Int Ed ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', 
+          ' AAPOS ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', 
           ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ", ' Dtsch ', ' Dtsch. ',
           ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
@@ -53,7 +53,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' Journal of the IEST ', ' Jpn ', ' Jpn. ', ' Latina/o ', ' Ltd ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
           ' Meddelelser om Grønland ', ' Meddelelser om Grønland, ', ' MERIP ', ' Methods in Molecular Biology ',
           ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
-          ' n.paradoxa ', ' NASA Tech Briefs ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ', 
+          ' n.paradoxa ', ' NASA Tech Briefs ', ' Notes of the AAS ', ' Ny Forskning i Grammatik ', ' Ocean Science Journal : OSJ ',
           ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PhytoKeys ', ' PLOS Biology ', 
           ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PLOS ONE ',' PLOS ONE ',' PLOS ONE ', ' PNAS ', ' Published in: ', ' RNA ', ' S.A.P.I.EN.S ',
@@ -64,7 +64,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Aapos ', ' Angew Chem Int ed ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme MTD ',
+          ' Aapos ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme MTD ',
           ' B/GCVS ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', " Dell'Accademia ", ' DTSCH ', ' DTSCH. ',
           ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
@@ -82,7 +82,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Journal of the Iest ', ' JPN ', ' JPN. ', ' Latina/O ', ' LTD ', ' Mabs ', ' MAbs ', ' Mbio ', ' MBio ',
           ' Meddelelser Om Grønland ', ' Meddelelser Om Grønland, ', ' Merip ',  ' Methods in Molecular Biology (Clifton, N.j.) ',
           ' Mhealth ', ' MHealth ', ' Molecular and Cellular Biology ', ' Msphere ', ' MSphere ', ' Msystems ', ' MSystems ', 
-          ' N.Paradoxa ', ' Nasa Tech Briefs ', ' NY Forskning I Grammatik ', ' Ocean Science Journal : Osj ', 
+          ' N.Paradoxa ', ' Nasa Tech Briefs ', ' Notes of the Aas ', ' NY Forskning I Grammatik ', ' Ocean Science Journal : Osj ',
           ' Paj: A Journal of Performance and Art ', ' Palaios ', ' Peerj ', ' Phytokeys ', ' Plos Biology ', 
           ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' PloS One ', ' PLoS One ', ' PLOS One ', ' Pnas ', ' Published In: ' , ' Rna ', ' S.a.p.i.en.s ',

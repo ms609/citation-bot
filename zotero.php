@@ -345,11 +345,11 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->volume) 
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
-  if ( isset($result->series))           $template->add_if_new('series' , $result->series);
+  if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , $result->series);
   $i = 0;
   while (isset($result->author[$i])) {
-      if (isset($result->author[$i][0])) $template->add_if_new('first' . ($i+1), $result->author[$i][0]);
-      if (isset($result->author[$i][1])) $template->add_if_new('last'  . ($i+1), $result->author[$i][1]);
+      $template->validate_and_add('author' . ($i+1), @$result->author[$i][1], @$result->author[$i][0],
+                                      isset($result->rights) ? $result->rights : '');
       $i++;
   }
   
@@ -382,7 +382,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'thesis':
         $template->change_name_to('cite thesis');
         if (isset($result->university)) $template->add_if_new('publisher' , $result->university);
-        if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree']) && strtolower($result->thesisType) !== 'text') {
+        if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) {
           $template->add_if_new('type' , $result->thesisType); // Prefer type since it exists in cite journal too
         }
         break;

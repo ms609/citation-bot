@@ -537,7 +537,7 @@ final class Template {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
           }
-          if ($param_name === 'newspaper' && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)
+          if (($param_name === 'newspaper' || $param_name === 'journal') && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)
                   && $this->blank('website')) { // Website is an alias for newspaper/work/journal, and did not check above
              $this->rename('publisher', $param_name);
              return TRUE;
@@ -804,7 +804,7 @@ final class Template {
           if($this->has('isbn')) { // Already have ISBN
             quietly('report_inaction', "Not adding ASIN: redundant to existing ISBN.");
             return FALSE;
-          } elseif (preg_match("~^\d~", $value) && substr($value, 0, 3) !== '630') { // 630 ones are not ISBNs
+          } elseif (preg_match("~^\d~", $value) && substr($value, 0, 2) !== '63') { // 630 & 631 ones are not ISBNs, so block all of 63*
             $possible_isbn = sanitize_string($value);
             $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, TRUE);
             if ($possible_isbn === $possible_isbn13) {
@@ -824,6 +824,7 @@ final class Template {
         if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem of [data]
         if (preg_match('~^(.+), \d{4}$~', $value, $match)) $value = $match[1]; // remove years from zotero 
         if (in_array(strtolower($value), BAD_PUBLISHERS)) return FALSE;
+        if (strpos(strtolower($value), 'london') === 0) return FALSE; // Common from archive.org
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
@@ -833,7 +834,14 @@ final class Template {
         }
         return FALSE;
 
-      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'type': case 'titlelink': 
+      case 'type':
+        if ($this->blank($param_name) &&
+            !in_array(strtolower($value), ['text', 'data set'])) {  
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
+         
+      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': 
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
       case (boolean) preg_match('~author(?:\d{1,}|)-link~', $param_name):
       if ($this->blank($param_name)) {
@@ -852,11 +860,21 @@ final class Template {
 
   public function validate_and_add($author_param, $author, $forename = '', $check_against = '') {
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+      while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
+            preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
+         $author = trim($match[1]);
+      }
+      while(preg_match('~^(.*)\s[\S]+@~', ' ' . $forename, $match) || // Remove emails 
+            preg_match('~^(.*)\s+@~', ' ' . $forename, $match)) { // Remove twitter handles
+         $forename = trim($match[1]);
+      }
+      if (trim($author) == '') {
+         $author = trim($forename);
+         $forename = '';
+      }
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
       $name_as_publisher = trim($forename . ' ' . $author);
-      // var_dump($name_as_publisher);
-      // var_dump($check_against);
       if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE
           || stripos($check_against, $name_as_publisher) !== FALSE) {
         $this->add_if_new('publisher' , $name_as_publisher);
@@ -1134,6 +1152,13 @@ final class Template {
           }
           return $this->add_if_new('pmid', $match[1]);
         }
+      } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d+)(?:|/.*)$~i", $url, $match)) {
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+        quietly('report_modification', "Converting Canadian URL to PMC parameter");
+        if (is_null($url_sent)) {
+          $this->forget($url_type);  // Always do this conversion, since website is gone!
+        }
+        return $this->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
@@ -1914,7 +1939,7 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
-    $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
+    $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
       $oa = @json_decode($json);
@@ -2008,7 +2033,7 @@ final class Template {
           $headers_test = @get_headers($this->get('url'), 1);
           if($headers_test ===FALSE) {
             $this->forget('url');
-            report_warning("Open access URL was was unreachable from oiDOI API for doi: " . echoable($doi));
+            report_warning("Open access URL was was unreachable from Unpaywall API for doi: " . echoable($doi));
             return FALSE;
           }
           $response_code = intval(substr($headers_test[0], 9, 3)); 
@@ -2021,7 +2046,7 @@ final class Template {
         return TRUE;
       }
     } else {
-       report_warning("Could not retrieve open access details from oiDOI API for doi: " . echoable($doi));
+       report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
        return FALSE;
     }
   }
@@ -2765,7 +2790,7 @@ final class Template {
     }
     // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
     if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-      if (($matches[1] !== $matches[3]) || ($param !== 'title')) {
+      if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter')) {
         $this->set($param, $matches[2]);
       }
     }
@@ -3371,6 +3396,7 @@ final class Template {
       }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
       $this->tidy_parameter('via');
+      $this->tidy_parameter('publisher');
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
@@ -3877,6 +3903,9 @@ final class Template {
   
   protected function isbn10Toisbn13($isbn10, $ignore_year = FALSE) {
     $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
+    if (preg_match("~^[0-9Xx ]+$~", $isbn10) === 1) { // Uses spaces
+      $isbn10 = str_replace(' ', '-', $isbn10);
+    }
     $isbn10 = str_replace(array('—', '?', '–', '-', '?'), '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
     if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
     if (substr($isbn10, -1) === "-" || substr($isbn10, 0, 1) === "-") return $isbn10;  // Ends or starts with a dash

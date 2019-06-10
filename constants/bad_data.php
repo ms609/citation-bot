@@ -11,7 +11,8 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'national', 'endowment', ' for the ', 'humanities', 'committee',
                                 'society', ' of america', 'association', ' at the ', 'board of ',
                                 'corporation', 'incorporated', 'editorial');
-const BAD_PUBLISHERS = array('london', 'edinburgi', 'no publisher', 'no publisher given', 'no publisher specified', 'unknown' );
+const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given', 'no publisher specified',
+                             'unknown', 'publisher not identified', '[edinburgh]', '[london]');
 
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'new york times',
                                    'the new york times'); // LOWER CASE!
@@ -22,7 +23,7 @@ const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company'
                            'museum', "press", "publishers", "publishing", 'science'];
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints", 
                          "ssrn electronic journal", "dissertations available from proquest",
-                         "ebscohost login",  "library login");
+                         "ebscohost login",  "library login", "google groups");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 

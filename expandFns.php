@@ -10,7 +10,7 @@ function sanitize_doi($doi) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   $extension = substr($doi, strrpos($doi, '/'));
-  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary'))) {
+  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', ';jsessionid'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   // And now for 10.1093 URLs
@@ -233,13 +233,31 @@ function title_capitalization($in, $caps_after_punctuation) {
   
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
   if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
-  
+
+  // Trust existing "ITS", "its", ... 
+  $its_in = preg_match_all('~ its(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
+  $new_case = trim($new_case);
+  $its_out = preg_match_all('~ its(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
+  if ($its_in === $its_out && $its_in != 0) {
+    $matches_in = $matches_in[0];
+    $matches_out = $matches_out[0];
+    foreach ($matches_in as $key => $value) {
+      if ($matches_in[$key][0] != $matches_out[$key][0]  &&
+          $matches_in[$key][1] == $matches_out[$key][1]) {
+        $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
+      }
+    }
+  }
   return $new_case;
 }
 
 function mb_ucfirst($string)
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+}
+  
+function mb_substr_replace($string, $replacement, $start, $length) {
+    return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
 }
 
 /**
@@ -326,6 +344,7 @@ function tidy_date($string) {
       return $matches[3];// do not know. just give year
     }
   }
+  if (preg_match('~^(\d{4}-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) return tidy_date($matches[1]); // Remove time zone stuff from standard date format
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
     if ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
