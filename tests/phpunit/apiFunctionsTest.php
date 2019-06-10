@@ -81,13 +81,13 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefDataCiteEarthquake() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/GFZ.GEOFON.gfz2009kciu');
-    $this->assertEquals('{{Cite journal|year = 2009|author1 = Geofon Operator|title = GEOFON event gfz2009kciu (NW Balkan Region)|type = Data Set|publisher = Deutsches GeoForschungsZentrum GFZ}}', $expanded->parsed_text());
+    $this->assertEquals('{{Cite journal|year = 2009|author1 = Geofon Operator|title = GEOFON event gfz2009kciu (NW Balkan Region|publisher = Deutsches GeoForschungsZentrum GFZ}}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefDataCiteMappedVisualization() {
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.667386');
-     $this->assertEquals('{{Cite book|year = 2008|last1 = Kraus|first1 = Stefan|title = Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula)|last2 = del Valle|first2 = Rodolfo|type = Data Set|publisher = PANGAEA - Data Publisher for Earth & Environmental Science|chapter = Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet)}}', $expanded->parsed_text());
+     $this->assertEquals('{{Cite book|year = 2008|last1 = Kraus|first1 = Stefan|title = Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula)|last2 = del Valle|first2 = Rodolf|publisher = PANGAEA - Data Publisher for Earth & Environmental Science|chapter = Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet)}}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefDataCitevideo() {
