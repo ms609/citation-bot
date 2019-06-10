@@ -233,9 +233,8 @@ function title_capitalization($in, $caps_after_punctuation) {
   
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
   if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
-  
-  $in = trim($in);
-  $its_in = preg_match_all('~ its ~iu', ' ' . $in . ' ', $matches_in, PREG_OFFSET_CAPTURE);
+
+  $its_in = preg_match_all('~ its ~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
   $its_out = preg_match_all('~ its ~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
   if ($its_in === $its_out && $its_in != 0) {
