@@ -2046,7 +2046,7 @@ final class Template {
         return TRUE;
       }
     } else {
-       report_warning("Could not retrieve open access details from oiDOI API for doi: " . echoable($doi));
+       report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
        return FALSE;
     }
   }
