@@ -36,6 +36,11 @@ final class expandFnsTest extends testBaseClass {
     $this->assertEquals("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica",
                         title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE));
   }
+  
+  public function testITS() {
+    $this->assertEquals(Keep Case of its Its and ITS",
+                        title_capitalization(title_case("Keep case of its Its and ITS"), TRUE));
+  }
     
   public function testExtractDoi() {
     $this->assertEquals('10.1111/j.1475-4983.2012.01203.x', 
