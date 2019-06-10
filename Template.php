@@ -1943,7 +1943,7 @@ final class Template {
         }
         if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)') {
           // false positives are too common
-          report_warning("Unpaywall found an OA match on a repository via OAI-PMH" . echoable($doi));
+          report_warning("Unpaywall found an OA match on a repository via OAI-PMH for DOI: " . echoable($doi));
         }  
         // sometimes url_for_landing_page = null, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
         if ($best_location->url_for_landing_page != null) {
