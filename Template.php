@@ -1939,7 +1939,7 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
-    $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
+    $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
       $oa = @json_decode($json);
@@ -2033,7 +2033,7 @@ final class Template {
           $headers_test = @get_headers($this->get('url'), 1);
           if($headers_test ===FALSE) {
             $this->forget('url');
-            report_warning("Open access URL was was unreachable from oiDOI API for doi: " . echoable($doi));
+            report_warning("Open access URL was was unreachable from Unpaywall API for doi: " . echoable($doi));
             return FALSE;
           }
           $response_code = intval(substr($headers_test[0], 9, 3)); 
@@ -2046,7 +2046,7 @@ final class Template {
         return TRUE;
       }
     } else {
-       report_warning("Could not retrieve open access details from oiDOI API for doi: " . echoable($doi));
+       report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
        return FALSE;
     }
   }
