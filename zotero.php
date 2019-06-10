@@ -382,7 +382,9 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'thesis':
         $template->change_name_to('cite thesis');
         if (isset($result->university)) $template->add_if_new('publisher' , $result->university);
-        if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree']) && strtolower($result->thesisType) !== 'text') {
+        if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree']) &&
+            strtolower($result->thesisType) !== 'text' &&
+            strtolower($result->thesisType) !== 'data set') {
           $template->add_if_new('type' , $result->thesisType); // Prefer type since it exists in cite journal too
         }
         break;
