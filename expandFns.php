@@ -246,6 +246,7 @@ function title_capitalization($in, $caps_after_punctuation) {
           $matches_in[$key][1] == $matches_out[$key][1]) {
         $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
       }
+    }
   }
   return $new_case;
 }
