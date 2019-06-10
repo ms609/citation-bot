@@ -2746,7 +2746,10 @@ final class Template {
       // all open-access versions of conference papers point to the paper itself
       // not to the whole proceedings
       // so we use chapter-url so that the template is well rendered afterwards
-      if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
+      if ($this->blank(['chapter-url','chapterurl']) &&
+          $this->has('chapter') &&
+          strpos($this->get('chapter'), '[') === FALSE &&
+          $this->blank('trans-chapter')) {
         $this->rename('url', 'chapter-url');
         $this->rename('format', 'chapter-format');
         $this->rename('url-access', 'chapter-url-access');
@@ -3159,8 +3162,11 @@ final class Template {
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
           }
-          if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
-            $this->rename($param, 'chapter-url');
+          if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) &&
+              $this->has('chapter') && $this->wikiname() === 'cite book' &&
+              strpos($this->get('chapter'), '[') === FALSE &&
+              $this->blank('trans-chapter')) {
+            $this->rename('url', 'chapter-url');
             $this->rename('format', 'chapter-format');
             $this->rename('url-access', 'chapter-url-access');
             $param = 'chapter-url';
