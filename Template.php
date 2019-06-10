@@ -824,6 +824,7 @@ final class Template {
         if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem of [data]
         if (preg_match('~^(.+), \d{4}$~', $value, $match)) $value = $match[1]; // remove years from zotero 
         if (in_array(strtolower($value), BAD_PUBLISHERS)) return FALSE;
+        if (strpos(strtolower($value), 'london') === 0) return FALSE; // Common from archive.org
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
@@ -833,7 +834,14 @@ final class Template {
         }
         return FALSE;
 
-      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'type': case 'titlelink': 
+      case 'type':
+        if ($this->blank($param_name) &&
+            !in_array(strtolower($value), ['text', 'data set'])) {  
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
+         
+      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': 
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
       case (boolean) preg_match('~author(?:\d{1,}|)-link~', $param_name):
       if ($this->blank($param_name)) {
@@ -1931,7 +1939,7 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
-    $url = "https://api.oadoi.org/v2/$doi?email=" . CROSSREFUSERNAME;
+    $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
       $oa = @json_decode($json);
@@ -2025,7 +2033,7 @@ final class Template {
           $headers_test = @get_headers($this->get('url'), 1);
           if($headers_test ===FALSE) {
             $this->forget('url');
-            report_warning("Open access URL was was unreachable from oiDOI API for doi: " . echoable($doi));
+            report_warning("Open access URL was was unreachable from Unpaywall API for doi: " . echoable($doi));
             return FALSE;
           }
           $response_code = intval(substr($headers_test[0], 9, 3)); 
@@ -2038,7 +2046,7 @@ final class Template {
         return TRUE;
       }
     } else {
-       report_warning("Could not retrieve open access details from oiDOI API for doi: " . echoable($doi));
+       report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
        return FALSE;
     }
   }
@@ -3895,6 +3903,9 @@ final class Template {
   
   protected function isbn10Toisbn13($isbn10, $ignore_year = FALSE) {
     $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
+    if (preg_match("~^[0-9Xx ]+$~", $isbn10) === 1) { // Uses spaces
+      $isbn10 = str_replace(' ', '-', $isbn10);
+    }
     $isbn10 = str_replace(array('—', '?', '–', '-', '?'), '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
     if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1)  return $isbn10;  // Contains invalid characters
     if (substr($isbn10, -1) === "-" || substr($isbn10, 0, 1) === "-") return $isbn10;  // Ends or starts with a dash
