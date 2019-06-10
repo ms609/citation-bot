@@ -834,7 +834,12 @@ final class Template {
         }
         return FALSE;
 
-      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'type': case 'titlelink': 
+      case 'type ':
+
+
+       return. FALSE;
+         
+      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': 
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
       case (boolean) preg_match('~author(?:\d{1,}|)-link~', $param_name):
       if ($this->blank($param_name)) {
