@@ -233,13 +233,31 @@ function title_capitalization($in, $caps_after_punctuation) {
   
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
   if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
-  
+
+  // Trust existing "ITS", "its", ... 
+  $its_in = preg_match_all('~ its(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
+  $new_case = trim($new_case);
+  $its_out = preg_match_all('~ its(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
+  if ($its_in === $its_out && $its_in != 0) {
+    $matches_in = $matches_in[0];
+    $matches_out = $matches_out[0];
+    foreach ($matches_in as $key => $value) {
+      if ($matches_in[$key][0] != $matches_out[$key][0]  &&
+          $matches_in[$key][1] == $matches_out[$key][1]) {
+        $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
+      }
+    }
+  }
   return $new_case;
 }
 
 function mb_ucfirst($string)
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+}
+  
+function mb_substr_replace($string, $replacement, $start, $length) {
+    return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
 }
 
 /**
