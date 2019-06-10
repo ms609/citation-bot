@@ -824,6 +824,7 @@ final class Template {
         if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem of [data]
         if (preg_match('~^(.+), \d{4}$~', $value, $match)) $value = $match[1]; // remove years from zotero 
         if (in_array(strtolower($value), BAD_PUBLISHERS)) return FALSE;
+        if (strpos(strtolower($value), 'london') === 0) return FALSE; // Common from archive.org
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
@@ -833,7 +834,14 @@ final class Template {
         }
         return FALSE;
 
-      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'type': case 'titlelink': 
+      case 'type':
+        if ($this->blank($param_name) &&
+            !in_array(strtolower($value), ['text', 'data set'])) {  
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
+         
+      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': 
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
       case (boolean) preg_match('~author(?:\d{1,}|)-link~', $param_name):
       if ($this->blank($param_name)) {
