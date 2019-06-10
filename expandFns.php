@@ -241,27 +241,11 @@ function title_capitalization($in, $caps_after_punctuation) {
   if ($its_in === $its_out && $its_in != 0) {
     $matches_in = $matches_in[0];
     $matches_out = $matches_out[0];
-    Do something here with arrays like  this:  Loop over elements and compare offset, if match then copy
-      Also take into account padded spaces
-Array
-        (
-            [0] => Array
-                (
-                    [0] =>  its 
-                    [1] => 5
-                )
-
-            [1] => Array
-                (
-                    [0] =>  ITS 
-                    [1] => 14
-                )
-
-        )
-
-)
-
-
+    foreach ($matches_in as $key => $value) {
+      if ($matches_in[$key][0] != $matches_out[$key][0]  &&
+          $matches_in[$key][1] == $matches_out[$key][1]) {
+        $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
+      }
   }
   return $new_case;
 }
@@ -269,6 +253,10 @@ Array
 function mb_ucfirst($string)
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+}
+  
+function mb_substr_replace($string, $replacement, $start, $length) {
+    return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
 }
 
 /**
