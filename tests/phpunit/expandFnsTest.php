@@ -38,8 +38,12 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function testITS() {
-    $this->assertEquals(Keep Case of its Its and ITS",
+    $this->assertEquals("Thits Itsez a String That Should Not Have Anything Messed up",
+                        title_capitalization(title_case("Thits itsez a string that should not have anything messed up"), TRUE));
+    $this->assertEquals("Keep Case of its Its and ITS",
                         title_capitalization(title_case("Keep case of its Its and ITS"), TRUE));
+    $this->assertEquals("ITS Keep Case of its Its and ITS",
+                        title_capitalization(title_case("ITS Keep case of its Its and ITS"), TRUE));
   }
     
   public function testExtractDoi() {
