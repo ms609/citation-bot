@@ -1949,7 +1949,7 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        if (@$oa->journal_name == "Cochrane Database of Systematic Reviews" && @$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' && ) {
+        if (@$oa->journal_name == "Cochrane Database of Systematic Reviews" && @$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' ) {
           // false positives are too common https://github.com/Impactstory/oadoi/issues/121
           report_warning("Ignored a blacklisted OA match on a repository via OAI-PMH for DOI: " . echoable($doi));
           return FALSE;
