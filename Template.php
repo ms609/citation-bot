@@ -1949,9 +1949,9 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)') {
-          // false positives are too common
-          report_warning("Unpaywall found an OA match on a repository via OAI-PMH for DOI: " . echoable($doi));
+        if (@$oa->journal_name == "Cochrane Database of Systematic Reviews" && @$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' && ) {
+          // false positives are too common https://github.com/Impactstory/oadoi/issues/121
+          report_warning("Ignored a blacklisted OA match on a repository via OAI-PMH for DOI: " . echoable($doi));
         }  
         // sometimes url_for_landing_page = null, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
         if ($best_location->url_for_landing_page != null) {
