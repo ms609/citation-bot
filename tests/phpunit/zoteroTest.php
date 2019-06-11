@@ -16,10 +16,9 @@ class ZoteroTest extends testBaseClass {
 //  }
       
   public function testZoteroExpansionPII() {
-    $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
+    $text = '{{cite book |year=1844 |title=The Acts of the Parliaments of Scotland  |hdl=2027/mdp.39015035897480 |publisher=}}';
     $expanded = $this->expand_via_zotero($text);
-    $this->assertEquals('10.1016/j.laa.2012.05.036', $expanded->get('doi'));
-    $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
+    $this->assertNull($expanded->parsed_text());
   }
 
   
