@@ -827,11 +827,11 @@ final class Template {
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE;
         if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem of [data]
         if (preg_match('~^(.+), \d{4}$~', $value, $match)) $value = $match[1]; // remove years from zotero 
-        if (in_array(strtolower($value), BAD_PUBLISHERS)) return FALSE;
         if (strpos(strtolower($value), 'london') === 0) return FALSE; // Common from archive.org
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
+        if (in_array(strtolower($value), BAD_PUBLISHERS)) return FALSE;  
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
