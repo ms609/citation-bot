@@ -2750,7 +2750,8 @@ final class Template {
       if ($this->blank(['chapter-url','chapterurl']) &&
           $this->has('chapter') &&
           strpos($this->get('chapter'), '[') === FALSE &&
-          $this->blank('trans-chapter')) {
+          $this->blank('trans-chapter') &&
+          (!stripos($this->get('url'), 'google.com') || strpos($this->get('url'), 'pg='))) { // Do not move books without page numbers
         $this->rename('url', 'chapter-url');
         $this->rename('format', 'chapter-format');
         $this->rename('url-access', 'chapter-url-access');
@@ -3166,7 +3167,8 @@ final class Template {
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) &&
               $this->has('chapter') && $this->wikiname() === 'cite book' &&
               strpos($this->get('chapter'), '[') === FALSE &&
-              $this->blank('trans-chapter')) {
+              $this->blank('trans-chapter') &&
+              (!stripos($this->get('url'), 'google.com') || strpos($this->get('url'), 'pg='))) { // Do not move books without page numbers
             $this->rename('url', 'chapter-url');
             $this->rename('format', 'chapter-format');
             $this->rename('url-access', 'chapter-url-access');
