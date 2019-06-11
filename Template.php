@@ -264,6 +264,7 @@ final class Template {
    */
   public function add_if_new($param_name, $value, $api = NULL) {
     $value = trim($value);
+    echo "\n VAL".$value."VAL   PARAM".$param_name."PARAM\n";
     if ($value == '') {
       return FALSE;
     }
