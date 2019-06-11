@@ -17,7 +17,7 @@ class ZoteroTest extends testBaseClass {
       
   public function testZoteroExpansionPII() {
     $text = '{{cite book |year=1844 |title=The Acts of the Parliaments of Scotland  |hdl=2027/mdp.39015035897480 |publisher=}}';
-    $expanded = $this->expand_via_zotero($text);
+    $expanded = $this->process_citation($text);
     $this->assertNull($expanded->parsed_text());
   }
 
