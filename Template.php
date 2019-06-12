@@ -831,7 +831,7 @@ final class Template {
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
-        if (in_array(trim(strtolower($value), " \,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;  
+        if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;  
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
