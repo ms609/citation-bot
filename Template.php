@@ -833,10 +833,11 @@ final class Template {
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE;
         if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem of [data]
         if (preg_match('~^(.+), \d{4}$~', $value, $match)) $value = $match[1]; // remove years from zotero 
-        if (strpos(strtolower($value), 'london') === 0) return FALSE; // Common from archive.org
-        if (strpos(strtolower($value), 'edinburgh') === 0) return FALSE; // Common from archive.org
+        if (strpos(strtolower($value), 'london') !== FALSE) return FALSE; // Common from archive.org
+        if (strpos(strtolower($value), 'edinburg') !== FALSE) return FALSE; // Common from archive.org
         if (strpos(strtolower($value), 'privately printed') !== FALSE) return FALSE; // Common from archive.org 
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
+        if (strpos(strtolower($value), 'impressum') !== FALSE) return FALSE; // Common from archive.org
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
         if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;  
