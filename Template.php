@@ -608,6 +608,11 @@ final class Template {
       
       case 'volume':
         if ($this->blank($param_name)) {
+          if ($value == '1') { // dubious
+            if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
+            if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
+            if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
+          }
           $temp_string = strtolower($this->get('journal')) ;
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
@@ -622,7 +627,12 @@ final class Template {
         return FALSE;      
       
       case 'issue':
-        if ($this->blank(ISSUE_ALIASES)) {        
+        if ($this->blank(ISSUE_ALIASES)) {
+          if ($value == '1') { // dubious
+            if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
+            if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
+            if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
+          }     
           return $this->add($param_name, $value);
         } 
         return FALSE;
@@ -823,11 +833,14 @@ final class Template {
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE;
         if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem of [data]
         if (preg_match('~^(.+), \d{4}$~', $value, $match)) $value = $match[1]; // remove years from zotero 
-        if (in_array(strtolower($value), BAD_PUBLISHERS)) return FALSE;
-        if (strpos(strtolower($value), 'london') === 0) return FALSE; // Common from archive.org
+        if (strpos(strtolower($value), 'london') !== FALSE) return FALSE; // Common from archive.org
+        if (strpos(strtolower($value), 'edinburg') !== FALSE) return FALSE; // Common from archive.org
+        if (strpos(strtolower($value), 'privately printed') !== FALSE) return FALSE; // Common from archive.org 
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
+        if (strpos(strtolower($value), 'impressum') !== FALSE) return FALSE; // Common from archive.org
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
+        if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;  
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
@@ -1949,8 +1962,9 @@ final class Template {
           // The best location is already linked to by the doi link
           return TRUE;
         }
-        if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)') {
-          // false positives are too common
+        if (@$oa->journal_name == "Cochrane Database of Systematic Reviews" && @$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' ) {
+          // false positives are too common https://github.com/Impactstory/oadoi/issues/121
+          report_warning("Ignored a blacklisted OA match on a repository via OAI-PMH for DOI: " . echoable($doi));
           return FALSE;
         }  
         // sometimes url_for_landing_page = null, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
@@ -2746,7 +2760,11 @@ final class Template {
       // all open-access versions of conference papers point to the paper itself
       // not to the whole proceedings
       // so we use chapter-url so that the template is well rendered afterwards
-      if ($this->blank(['chapter-url','chapterurl']) && $this->has('chapter')) {
+      if ($this->blank(['chapter-url','chapterurl']) &&
+          $this->has('chapter') &&
+          strpos($this->get('chapter'), '[') === FALSE &&
+          $this->blank('trans-chapter') &&
+          (!stripos($this->get('url'), 'google.com') || strpos($this->get('url'), 'pg='))) { // Do not move books without page numbers
         $this->rename('url', 'chapter-url');
         $this->rename('format', 'chapter-format');
         $this->rename('url-access', 'chapter-url-access');
@@ -3159,8 +3177,12 @@ final class Template {
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
           }
-          if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) && $this->has('chapter') && $this->wikiname() === 'cite book') {
-            $this->rename($param, 'chapter-url');
+          if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) &&
+              $this->has('chapter') && $this->wikiname() === 'cite book' &&
+              strpos($this->get('chapter'), '[') === FALSE &&
+              $this->blank('trans-chapter') &&
+              (!stripos($this->get('url'), 'google.com') || strpos($this->get('url'), 'pg='))) { // Do not move books without page numbers
+            $this->rename('url', 'chapter-url');
             $this->rename('format', 'chapter-format');
             $this->rename('url-access', 'chapter-url-access');
             $param = 'chapter-url';
@@ -3204,12 +3226,17 @@ final class Template {
               $this->forget('via');
             } elseif (stripos($this->get('via'), 'JSTOR') !== FALSE && $this->has('jstor')) {
               $this->forget('via');
+            } elseif (stripos($this->get('via'), 'google books') !== FALSE && $this->has('isbn')) {
+              $this->forget('via');
+            } elseif (stripos($this->get('via'), 'questia') !== FALSE && $this->has('isbn')) {
+              $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
               if (
                   ($this->blank('via')) ||
                   (stripos($this->get('via'), 'Project MUSE') !== FALSE) ||
                   (stripos($this->get('via'), 'Wiley') !== FALSE) ||
                   (stripos($this->get('via'), 'springer') !== FALSE) ||
+                  (stripos($this->get('via'), 'questia') !== FALSE) ||
                   (stripos($this->get('via'), 'elsevier') !== FALSE)
               ) { 
                 $this->forget('via');
@@ -3948,6 +3975,10 @@ final class Template {
   }
   
   protected function volume_issue_demix($data, $param) {
+     // Misuse seems to be popular in cite book, and we would need to move volume to title
+     if (!in_array($this->wikiname(), ['citation', 'cite journal'])) return;
+     if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
+     
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol\. |Volume |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
