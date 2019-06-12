@@ -3970,7 +3970,7 @@ final class Template {
   protected function volume_issue_demix($data, $param) {
      // Misuse seems to be popular in cite book, and we would need to move volume to title
      if (!in_array($this->wikiname(), ['citation', 'cite journal'])) return;
-     if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn'))) return;
+     if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
      
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
