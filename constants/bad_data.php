@@ -11,8 +11,8 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'national', 'endowment', ' for the ', 'humanities', 'committee',
                                 'society', ' of america', 'association', ' at the ', 'board of ',
                                 'corporation', 'incorporated', 'editorial');
-const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given', 'no publisher specified',
-                             'unknown', 'publisher not identified', '[edinburgh]', '[london]');
+const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
+                             'no publisher specified', 'unknown', 'publisher not identified');
 
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'new york times',
                                    'the new york times'); // LOWER CASE!
