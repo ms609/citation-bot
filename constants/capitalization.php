@@ -102,4 +102,5 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' Bulletin des ', ' Bulletin du ', ' Cahiers ', ' canaria ', ' Carnets ', ' Comptes rendus ', ' Fachberichte ', ' Historia ',
            ' Jahrbuch ', ' Journal du ', ' Journal de ', ' Journal des ', ' Journal für ', ' Mitteilungen ',
            ' Monatshefte ', ' Monatsschrift ', ' Mémoires ', ' Notizblatt ', ' Recueil ', ' Revista ', ' Revue ', ' Travaux ',
-           ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ', ' Mélanges ', " l'École ", ' Française ');
+           ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ', ' Mélanges ', " l'École ", ' Française ', ' Estestvoznaniya ',
+           ' Voprosy ', ' Istorii ', ' Tekhniki ', ' Matematika ', ' Shkole ');
