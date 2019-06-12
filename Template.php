@@ -611,6 +611,7 @@ final class Template {
           if ($value == '1') { // dubious
             if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
+            if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }
           $temp_string = strtolower($this->get('journal')) ;
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
@@ -626,7 +627,12 @@ final class Template {
         return FALSE;      
       
       case 'issue':
-        if ($this->blank(ISSUE_ALIASES)) {        
+        if ($this->blank(ISSUE_ALIASES)) {
+          if ($value == '1') { // dubious
+            if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
+            if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
+            if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
+          }     
           return $this->add($param_name, $value);
         } 
         return FALSE;
