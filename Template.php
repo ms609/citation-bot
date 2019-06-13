@@ -1744,10 +1744,12 @@ final class Template {
     
     try {
       $ch = curl_init();
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . 
+      (getenv('TRAVIS') ? getenv('PHP_ADSABSQAKEY') : getenv('PHP_ADSABSAPIKEY'))));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
-      $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/query"
+      $adsabs_url = "https://" . (getenv('TRAVIS') ? 'qa' : 'api')
+                  . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
