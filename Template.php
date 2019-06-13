@@ -26,7 +26,7 @@ final class Template {
   protected $example_param;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
-            $used_by_api, $doi_valid = FALSE,
+            $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE;
             $mod_dashes;
 
   public function parse_text($text) {
@@ -81,6 +81,11 @@ final class Template {
       // Save author params for special handling
       if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS) && $p->val) {
         $this->initial_author_params[$p->param] = $p->val;
+      }
+      
+      // Save editor information for special handling
+      if (in_array($p->param, EDITOR1_ALIASES) && $p->val) {
+        $this->had_initial_editor = TRUE;
       }
     }
   }
