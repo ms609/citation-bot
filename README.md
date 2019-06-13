@@ -21,7 +21,7 @@ This is more properly a bot-gadget-tool combination. The parts are:
   All activity takes place on Tool Labs.
 * Citation expander (:en:Mediawiki:Gadget-citations.js) + gadgetapi.php. This
   is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
-* [Generic template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://tools.wmflabs.org/citations/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
+* [Generate template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://tools.wmflabs.org/citations/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
 Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot .
 
@@ -62,22 +62,27 @@ Also beware the difference between `else if` and `elseif`.
 
 ## Deployment
 
-The bot requires php >= 5.6, whereas the WMFlabs servers by default (as of 2018) run 5.5.9.
-To access php5.6, one must run the bot as a webservice:
+The bot requires PHP >= 5.6.
+
+To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
+
+    chmod o-rwx env.php
+
+ To run the bot as a webservice from WMF Tool Forge:
 
     become citations[-dev]
     webservice stop
-    webservice --backend=kubernetes php5.6 start
+    webservice --backend=kubernetes start
 
 Or for testing in the shell:
 
-    webservice --backend=kubernetes php5.6 shell
+    webservice --backend=kubernetes shell
 
 Before entering the k8s shell, it may be necessary to install phpunit 
 (as wget is not available in the k8s shell):
 
     wget https://phar.phpunit.de/phpunit-5.phar
-    webservice --backend=kubernetes php5.6 shell
+    webservice --backend=kubernetes shell
     php phpunit-5.phar --bootstrap setup.php tests/phpunit/TemplateTest.php
 
 

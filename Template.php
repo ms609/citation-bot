@@ -26,7 +26,7 @@ final class Template {
   protected $example_param;
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
-            $used_by_api, $doi_valid = FALSE,
+            $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
             $mod_dashes;
 
   public function parse_text($text) {
@@ -81,6 +81,11 @@ final class Template {
       // Save author params for special handling
       if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS) && $p->val) {
         $this->initial_author_params[$p->param] = $p->val;
+      }
+      
+      // Save editor information for special handling
+      if (in_array($p->param, EDITOR1_ALIASES) && $p->val) {
+        $this->had_initial_editor = TRUE;
       }
     }
   }
@@ -871,7 +876,8 @@ final class Template {
     }
   }
 
-  public function validate_and_add($author_param, $author, $forename = '', $check_against = '') {
+  public function validate_and_add($author_param, $author, $forename, $check_against, $add_even_if_existing) {
+    if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
             preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
@@ -2197,7 +2203,7 @@ final class Template {
     $i = 0;
     if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        $this->validate_and_add('author' . ++$i, str_replace("___", ":", $author));
+        $this->validate_and_add('author' . ++$i, str_replace("___", ":", $author), '', '', TRUE);
       }
     }
     
