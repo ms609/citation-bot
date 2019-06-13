@@ -877,7 +877,7 @@ final class Template {
   }
 
   public function validate_and_add($author_param, $author, $forename, $check_against, $add_even_if_existing) {
-    if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return FALSE; // Zotero does not know difference betwee editors and authors often
+    if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
             preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
