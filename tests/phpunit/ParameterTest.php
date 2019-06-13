@@ -15,82 +15,82 @@ final class ParameterTest extends testBaseClass {
     $text = "last1 = [[:en:Bigwig# # # CITATION_BOT_PLACEHOLDER_PIPE # # #SomeoneFamous]]\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, 'last1');
-    $this->assertEquals($parameter->eq, ' = ');
-    $this->assertEquals($parameter->val, '[[:en:Bigwig|SomeoneFamous]]');
-    $this->assertEquals($parameter->post, "\n");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, 'last1');
+    $this->assertSame($parameter->eq, ' = ');
+    $this->assertSame($parameter->val, '[[:en:Bigwig|SomeoneFamous]]');
+    $this->assertSame($parameter->post, "\n");
   }
   public function testParameterWithNoParamName() {
     $text = " = no param name";
     $parameter = $this->parameter_parse_text_helper($text);
-    $this->assertEquals(' = ', $parameter->eq);
+    $this->assertSame(' = ', $parameter->eq);
   }
 
   public function testBlankValueWithSpacesLeadingSpaceTrailingNewline() {
     $text = " first1 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, ' ');
-    $this->assertEquals($parameter->param, 'first1');
-    $this->assertEquals($parameter->eq, ' = ');
-    $this->assertEquals($parameter->val, '');
-    $this->assertEquals($parameter->post, "\n");
+    $this->assertSame($parameter->pre, ' ');
+    $this->assertSame($parameter->param, 'first1');
+    $this->assertSame($parameter->eq, ' = ');
+    $this->assertSame($parameter->val, '');
+    $this->assertSame($parameter->post, "\n");
   }
 
   public function testBlankValueWithSpacesAndTrailingNewline() {
     $text = "first2 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, 'first2');
-    $this->assertEquals($parameter->eq, ' = ');
-    $this->assertEquals($parameter->val, '');
-    $this->assertEquals($parameter->post, "\n");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, 'first2');
+    $this->assertSame($parameter->eq, ' = ');
+    $this->assertSame($parameter->val, '');
+    $this->assertSame($parameter->post, "\n");
   }
 
   public function testBlankValueWithPreEqSpaceAndTrailingNewline() {
     $text = "first3 =\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, 'first3');
-    $this->assertEquals($parameter->eq, ' =');
-    $this->assertEquals($parameter->val, '');
-    $this->assertEquals($parameter->post, "\n");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, 'first3');
+    $this->assertSame($parameter->eq, ' =');
+    $this->assertSame($parameter->val, '');
+    $this->assertSame($parameter->post, "\n");
   }
 
   public function testBlankValueWithPostEqSpaceAndTrailingNewline() {
     $text = "first4= \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, 'first4');
-    $this->assertEquals($parameter->eq, '= ');
-    $this->assertEquals($parameter->val, '');
-    $this->assertEquals($parameter->post, "\n");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, 'first4');
+    $this->assertSame($parameter->eq, '= ');
+    $this->assertSame($parameter->val, '');
+    $this->assertSame($parameter->post, "\n");
   }
 
   public function testBlankValueNoSpacesTrailingNewline() {
     $text = "first5=\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, 'first5');
-    $this->assertEquals($parameter->eq, '=');
-    $this->assertEquals($parameter->val, '');
-    $this->assertEquals($parameter->post, "\n");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, 'first5');
+    $this->assertSame($parameter->eq, '=');
+    $this->assertSame($parameter->val, '');
+    $this->assertSame($parameter->post, "\n");
   }
 
   public function testBlankValueNoEquals() {
     $text = "first6 \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, '');
-    $this->assertEquals($parameter->eq, '');
-    $this->assertEquals($parameter->val, 'first6');
-    $this->assertEquals($parameter->post, " \n");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, NULL);
+    $this->assertSame($parameter->eq, NULL);
+    $this->assertSame($parameter->val, 'first6');
+    $this->assertSame($parameter->post, " \n");
   }
 
   // This test may not work, depending on your test environment.
@@ -99,55 +99,55 @@ final class ParameterTest extends testBaseClass {
     $text = " first7 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, ' first7 ');  //These are non-breaking spaces
-    $this->assertEquals($parameter->eq, '=');
-    $this->assertEquals($parameter->val, ' ');  //This is a non-breaking space
-    $this->assertEquals($parameter->post, "\n");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, ' first7 ');  //These are non-breaking spaces
+    $this->assertSame($parameter->eq, '=');
+    $this->assertSame($parameter->val, ' ');  //This is a non-breaking space
+    $this->assertSame($parameter->post, "\n");
   }
 
   public function testMultilinevalueTrailingNewline() {
     $text = "param=multiline\nvalue\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, "param");
-    $this->assertEquals($parameter->eq, '=');
-    $this->assertEquals($parameter->val, "multiline\nvalue");
-    $this->assertEquals($parameter->post, "\n");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, "param");
+    $this->assertSame($parameter->eq, '=');
+    $this->assertSame($parameter->val, "multiline\nvalue");
+    $this->assertSame($parameter->post, "\n");
   }
 
   public function testMultilineParamTrailingNewline() {
     $text = "multiline\nparam=\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, "multiline\nparam");
-    $this->assertEquals($parameter->eq, '=');
-    $this->assertEquals($parameter->val, '');
-    $this->assertEquals($parameter->post, "\n");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, "multiline\nparam");
+    $this->assertSame($parameter->eq, '=');
+    $this->assertSame($parameter->val, '');
+    $this->assertSame($parameter->post, "\n");
   }
 
   public function testHasProtectedCommentInValue() {
     $text = "archivedate= 24 April 2008 # # # Citation bot : comment placeholder 0 # # #";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, 'archivedate');
-    $this->assertEquals($parameter->eq, '= ');
-    $this->assertEquals($parameter->val, "24 April 2008 # # # Citation bot : comment placeholder 0 # # #");
-    $this->assertEquals($parameter->post, "");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, 'archivedate');
+    $this->assertSame($parameter->eq, '= ');
+    $this->assertSame($parameter->val, "24 April 2008 # # # Citation bot : comment placeholder 0 # # #");
+    $this->assertSame($parameter->post, "");
   }
   
   public function testHasUnreplacedCommentInValue() {
     $text = "archivedate= 9 August 2006 <!--DASHBot-->";
     $parameter = $this->parameter_parse_text_helper($text);
 
-    $this->assertEquals($parameter->pre, '');
-    $this->assertEquals($parameter->param, 'archivedate');
-    $this->assertEquals($parameter->eq, '= ');
-    $this->assertEquals($parameter->val, "9 August 2006 <!--DASHBot-->");
-    $this->assertEquals($parameter->post, "");
+    $this->assertSame($parameter->pre, '');
+    $this->assertSame($parameter->param, 'archivedate');
+    $this->assertSame($parameter->eq, '= ');
+    $this->assertSame($parameter->val, "9 August 2006 <!--DASHBot-->");
+    $this->assertSame($parameter->post, "");
   }
     
   public function testWhiteList() {
@@ -202,7 +202,7 @@ final class ParameterTest extends testBaseClass {
          }
          $we_failed = TRUE;
       }
-      $this->assertEquals(FALSE, $we_failed);
+      $this->assertSame(FALSE, $we_failed);
   }
 }
 

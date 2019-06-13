@@ -608,6 +608,11 @@ final class Template {
       
       case 'volume':
         if ($this->blank($param_name)) {
+          if ($value == '1') { // dubious
+            if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
+            if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
+            if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
+          }
           $temp_string = strtolower($this->get('journal')) ;
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
@@ -622,7 +627,12 @@ final class Template {
         return FALSE;      
       
       case 'issue':
-        if ($this->blank(ISSUE_ALIASES)) {        
+        if ($this->blank(ISSUE_ALIASES)) {
+          if ($value == '1') { // dubious
+            if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
+            if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
+            if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
+          }     
           return $this->add($param_name, $value);
         } 
         return FALSE;
@@ -823,11 +833,14 @@ final class Template {
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE;
         if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem of [data]
         if (preg_match('~^(.+), \d{4}$~', $value, $match)) $value = $match[1]; // remove years from zotero 
-        if (in_array(strtolower($value), BAD_PUBLISHERS)) return FALSE;
-        if (strpos(strtolower($value), 'london') === 0) return FALSE; // Common from archive.org
+        if (strpos(strtolower($value), 'london') !== FALSE) return FALSE; // Common from archive.org
+        if (strpos(strtolower($value), 'edinburg') !== FALSE) return FALSE; // Common from archive.org
+        if (strpos(strtolower($value), 'privately printed') !== FALSE) return FALSE; // Common from archive.org 
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
+        if (strpos(strtolower($value), 'impressum') !== FALSE) return FALSE; // Common from archive.org
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
+        if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;  
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
@@ -1544,38 +1557,37 @@ final class Template {
     }
   
     report_action("Checking AdsAbs database");
-    if ($bibcode = $this->has('bibcode')) {
-      $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
-    } elseif ($this->has('doi') 
-              && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
-      $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
-      if ($result->numFound == 0) { // there's a slew of citations, mostly in mathematics, that never get anything but an arxiv bibcode
-        if ($this->has('eprint')) {
-          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
-        } elseif ($this->has('arxiv')) {
-          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
-        }
-      }
-    } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
-      if ($this->has('eprint')) {
-        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
-      } elseif ($this->has('arxiv')) {
-        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
-      } else {
-        $result = (object) array("numFound" => 0);
-      }
-      if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
-        $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
-        if ($result->numFound == 0) return FALSE;
-        $record = $result->docs[0];
-        if (titles_are_dissimilar($record->title[0], $this->get('title'))) {
-          report_info("Similar title not found in database");
-          return FALSE;
-        }
+    $identifiers = array_filter(array(
+      ($bibcode = $this->has('bibcode')) ? $this->get("bibcode") : NULL,
+      ($this->has('doi') 
+       && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) ?  
+        $doi[0] : NULL,
+      ($this->has('eprint')) ? $this->get('eprint') :
+        (($this->has('arxiv')) ? $this->get('arxiv') : NULL)
+    ));
+    
+    $result = empty($identifiers) ? 
+      (object) array("numFound" => 0) :
+      $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
+    
+    if ($result->numFound > 1) {
+      # TODO: Work out what behaviour is desired in this situation, and implement it.
+      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
+      . "... I don't know which to use. Trying other citation data.");
+    }
+    
+    if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+      $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
+      if ($result->numFound == 0) return FALSE;
+      $record = $result->docs[0];
+      if (titles_are_dissimilar($record->title[0], $this->get('title'))) {
+        report_info("Similar title not found in database");
+        return FALSE;
       }
     } else {
       $result = (object) array("numFound" => 0);
     }
+    
     if ($result->numFound != 1 && $this->has('journal')) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
@@ -1734,7 +1746,8 @@ final class Template {
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
-      $adsabs_url = "https://api.adsabs.harvard.edu/v1/search/query"
+      $adsabs_url = "https://" . (getenv('TRAVIS') ? 'qa' : 'api')
+                  . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
@@ -3145,7 +3158,7 @@ final class Template {
      
         case 'chapter-url':
         case 'chapterurl':
-          if ($this->blank(['url', 'chapter'])) {
+          if ($this->blank('url') && $this->blank(CHAPTER_ALIASES)) {
             $this->rename($param, 'url');
             $param = 'url'; // passes down to next area
           }
@@ -3964,7 +3977,7 @@ final class Template {
   protected function volume_issue_demix($data, $param) {
      // Misuse seems to be popular in cite book, and we would need to move volume to title
      if (!in_array($this->wikiname(), ['citation', 'cite journal'])) return;
-     if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn'))) return;
+     if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
      
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||

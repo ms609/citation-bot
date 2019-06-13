@@ -35,7 +35,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' AAPOS ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', 
+          ' (online ed.) ', ' AAPOS ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASME AES ', ' ASME MTD ', 
           ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ", ' Dtsch ', ' Dtsch. ',
           ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
@@ -66,7 +66,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' Aapos ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme MTD ',
+          ' (online Ed.) ', ' Aapos ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ', ' Asme Aes ', ' Asme MTD ',
           ' B/GCVS ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', " Dell'Accademia ", ' DTSCH ', ' DTSCH. ',
           ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
@@ -102,4 +102,5 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' Bulletin des ', ' Bulletin du ', ' Cahiers ', ' canaria ', ' Carnets ', ' Comptes rendus ', ' Fachberichte ', ' Historia ',
            ' Jahrbuch ', ' Journal du ', ' Journal de ', ' Journal des ', ' Journal für ', ' Mitteilungen ',
            ' Monatshefte ', ' Monatsschrift ', ' Mémoires ', ' Notizblatt ', ' Recueil ', ' Revista ', ' Revue ', ' Travaux ',
-           ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ', ' Mélanges ', " l'École ", ' Française ');
+           ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ', ' Mélanges ', " l'École ", ' Française ', ' Estestvoznaniya ',
+           ' Voprosy ', ' Istorii ', ' Tekhniki ', ' Matematika ', ' Shkole ');
