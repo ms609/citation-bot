@@ -3164,7 +3164,7 @@ final class Template {
      
         case 'chapter-url':
         case 'chapterurl':
-          if ($this->blank(['url', 'chapter'])) {
+          if ($this->blank('url') && $this->blank(CHAPTER_ALIASES)) {
             $this->rename($param, 'url');
             $param = 'url'; // passes down to next area
           }
