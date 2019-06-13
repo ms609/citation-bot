@@ -87,8 +87,8 @@ final class ParameterTest extends testBaseClass {
     $parameter = $this->parameter_parse_text_helper($text);
 
     $this->assertSame($parameter->pre, '');
-    $this->assertSame($parameter->param, '');
-    $this->assertSame($parameter->eq, '');
+    $this->assertSame($parameter->param, NULL);
+    $this->assertSame($parameter->eq, NULL);
     $this->assertSame($parameter->val, 'first6');
     $this->assertSame($parameter->post, " \n");
   }
