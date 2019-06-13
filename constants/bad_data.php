@@ -1,7 +1,7 @@
 <?php
 // Some data we get from outside sources is bad or at least mis-defined
 // Use lower case for all of these, and then compare to a lower cased version
-const HAS_NO_VOLUME = array("zookeys");  // Some journals have issues only, no volume numbers
+const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel");  // Some journals have issues only, no volume numbers
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
@@ -11,7 +11,8 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'national', 'endowment', ' for the ', 'humanities', 'committee',
                                 'society', ' of america', 'association', ' at the ', 'board of ',
                                 'corporation', 'incorporated', 'editorial');
-const BAD_PUBLISHERS = array('London');
+const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
+                             'no publisher specified', 'unknown', 'publisher not identified');
 
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'new york times',
                                    'the new york times'); // LOWER CASE!
@@ -22,7 +23,7 @@ const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company'
                            'museum', "press", "publishers", "publishing", 'science'];
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints", 
                          "ssrn electronic journal", "dissertations available from proquest",
-                         "ebscohost login",  "library login");
+                         "ebscohost login",  "library login", "google groups");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -52,6 +53,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'pubs.geoscienceworld.org', 'pubs.rsc.org', 'journals.uchicago.edu',
                                 'annualreviews.org', 'aip.scitation.org', 'psyche.entclub.org', 'thelancet.com',
                                 'amjbot.org', 'gsapubs.org', 'jwildlifedis.org', 'msptm.org', 'nrcresearchpress.',
+                                'fundacionmenteclara.org.ar',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
@@ -66,7 +68,7 @@ const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
-                              'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'www.webcitation.org',
+                              'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
                               'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
