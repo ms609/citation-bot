@@ -217,7 +217,7 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials',
 const TITLE_LINK_ALIASES = ['title-link', 'titlelink'];
 const ARXIV_ALIASES = ['arxiv', 'eprint'];
 const COAUTHOR_ALIASES = ['coauthor', 'coauthors'];
-const CHAPTER_ALIASES = ['chapter', 'contribution', 'article'];
+const CHAPTER_ALIASES = ['chapter', 'contribution', 'article', 'entry', 'section'];
 const DISPLAY_AUTHORS = ['display-authors', 'displayauthors'];
 const DISPLAY_EDITORS = ['display-editors', 'displayeditors'];
 const DOI_BROKEN_ALIASES = ['doi-broken', 'doi_brokendate', 'doi-broken-date', 'doi_inactivedate', 'doi-inactive-date'];
@@ -227,7 +227,7 @@ const EDITOR1_ALIASES = ["editor1", "editor", "editor-last", "editor1-last"];
 const ISSUE_ALIASES = ['issue', 'number'];
 const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
 const TIME_ALIASES = ['date', 'year'];
-const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'contribution']; 
+const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia']; 
 
 const ALL_ALIASES = [TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
               DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, AUTHOR1_ALIASES,
