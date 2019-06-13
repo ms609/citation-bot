@@ -29,8 +29,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function prepare_citation($text) {
-    $this->assertEquals('{{', mb_substr($text, 0, 2));
-    $this->assertEquals('}}', mb_substr($text, -2));
+    $this->assertSame('{{', mb_substr($text, 0, 2));
+    $this->assertSameassertSame('}}', mb_substr($text, -2));
     $template = new Template();
     $template->parse_text($text);
     $template->prepare();
