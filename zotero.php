@@ -349,7 +349,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   $i = 0;
   while (isset($result->author[$i])) {
       $template->validate_and_add('author' . ($i+1), @$result->author[$i][1], @$result->author[$i][0],
-                                      isset($result->rights) ? $result->rights : '');
+                                      isset($result->rights) ? $result->rights : '', FALSE);
       $i++;
   }
   
@@ -417,7 +417,7 @@ function expand_by_zotero(&$template, $url = NULL) {
               report_minor_error("Unrecognized creator type: " . $creatorType);
           }
           $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
-                                      isset($result->rights) ? $result->rights : '');
+                                      isset($result->rights) ? $result->rights : '', FALSE);
         }
         $i++;
       }
