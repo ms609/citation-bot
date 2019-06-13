@@ -1570,6 +1570,12 @@ final class Template {
       (object) array("numFound" => 0) :
       $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
     
+    if ($result->numFound > 1) {
+      # TODO: Work out what behaviour is desired in this situation, and implement it.
+      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
+      . "... I don't know which to use. Trying other citation data.");
+    }
+    
     if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
       $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
       if ($result->numFound == 0) return FALSE;
