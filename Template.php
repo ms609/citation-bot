@@ -1563,38 +1563,37 @@ final class Template {
     }
   
     report_action("Checking AdsAbs database");
-    if ($bibcode = $this->has('bibcode')) {
-      $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
-    } elseif ($this->has('doi') 
-              && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
-      $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
-      if ($result->numFound == 0) { // there's a slew of citations, mostly in mathematics, that never get anything but an arxiv bibcode
-        if ($this->has('eprint')) {
-          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
-        } elseif ($this->has('arxiv')) {
-          $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
-        }
-      }
-    } elseif ($this->has('title') || $this->has('eprint') || $this->has('arxiv')) {
-      if ($this->has('eprint')) {
-        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
-      } elseif ($this->has('arxiv')) {
-        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
-      } else {
-        $result = (object) array("numFound" => 0);
-      }
-      if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
-        $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
-        if ($result->numFound == 0) return FALSE;
-        $record = $result->docs[0];
-        if (titles_are_dissimilar($record->title[0], $this->get('title'))) {
-          report_info("Similar title not found in database");
-          return FALSE;
-        }
+    $identifiers = array_filter(array(
+      ($bibcode = $this->has('bibcode')) ? $this->get("bibcode") : NULL,
+      ($this->has('doi') 
+       && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) ?  
+        $doi[0] : NULL,
+      ($this->has('eprint')) ? $this->get('eprint') :
+        (($this->has('arxiv')) ? $this->get('arxiv') : NULL)
+    ));
+    
+    $result = empty($identifiers) ? 
+      (object) array("numFound" => 0) :
+      $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
+    
+    if ($result->numFound > 1) {
+      # TODO: Work out what behaviour is desired in this situation, and implement it.
+      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
+      . "... I don't know which to use. Trying other citation data.");
+    }
+    
+    if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+      $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
+      if ($result->numFound == 0) return FALSE;
+      $record = $result->docs[0];
+      if (titles_are_dissimilar($record->title[0], $this->get('title'))) {
+        report_info("Similar title not found in database");
+        return FALSE;
       }
     } else {
       $result = (object) array("numFound" => 0);
     }
+    
     if ($result->numFound != 1 && $this->has('journal')) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
