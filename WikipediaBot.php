@@ -387,7 +387,7 @@ class WikipediaBot {
   
   static public function is_valid_user($user) {
     if (!$user) return FALSE;
-    $response = @file_get_contents('https://en.wikipedia.org/w/api.php?action=query&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)) . '&usprop=blockinfo&format=json', FALSE);
+    $response = @file_get_contents('https://en.wikipedia.org/w/api.php?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
     if ($response == FALSE) return FALSE;
     if (strpos($response, '"invalid"') !== FALSE) return FALSE;
     if (strpos($response, '"blocked"') !== FALSE) return FALSE;
