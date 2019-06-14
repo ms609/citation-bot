@@ -41,7 +41,6 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
 if (!isset($ON)) $ON = isset($argv[2]);
 
 foreach (explode('|', $pages) as $title) {
-  if ($user == NULL) sleep(10);
 
   if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
