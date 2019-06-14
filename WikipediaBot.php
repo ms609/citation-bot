@@ -387,10 +387,13 @@ class WikipediaBot {
   
   static public function is_valid_user($user) {
     if (!$user) return FALSE;
-    $headers_test = @get_headers('https://en.wikipedia.org/wiki/User:' . urlencode(str_replace(" ", "_", $user)), 1);
-    if ($headers_test === FALSE) return FALSE;
-    if (strpos((string) $headers_test[0], '404')) return FALSE;  // Even non-existent pages for valid users do exist.  They redirect, but do exist
-    if (strpos((string) $headers_test[0], '301')) return FALSE;  // This user used to exist, but changed names
+    $response = @file_get_contents('https://en.wikipedia.org/w/api.php?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
+    if ($response == FALSE) return FALSE;
+    $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
+    if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
+    if (strpos($response, '"blockid"') !== FALSE) return FALSE; // Valid but blocked
+    if (strpos($response, '"missing"') !== FALSE) return FALSE; // No such account
+    if (strpos($response, '"userid"')  === FALSE) return FALSE; // Double check, should actually never return FALSE here
     return TRUE;
   }
 
