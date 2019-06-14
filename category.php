@@ -55,6 +55,7 @@ if (WikipediaBot::is_valid_user($user)) {
   echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits\n\n";
   $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
   $user = NULL;
+  sleep(10);
 }
 
 if ($category) {
