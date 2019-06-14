@@ -416,7 +416,7 @@ function expand_by_zotero(&$template, $url = NULL) {
             default:
               report_minor_error("Unrecognized creator type: " . $creatorType);
           }
-         if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName) $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
+         if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
                                       isset($result->rights) ? $result->rights : '', FALSE);
         }
         $i++;
