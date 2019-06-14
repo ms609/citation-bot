@@ -389,6 +389,7 @@ class WikipediaBot {
     if (!$user) return FALSE;
     $response = @file_get_contents('https://en.wikipedia.org/w/api.php?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
     if ($response == FALSE) return FALSE;
+    echo "\n" . $response . "\n";
     if (strpos($response, '"invalid"') !== FALSE) return FALSE;
     if (strpos($response, '"blocked"') !== FALSE) return FALSE;
     if (strpos($response, '"missing"') !== FALSE) return FALSE;
