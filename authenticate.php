@@ -3,6 +3,8 @@
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT");
 
+include_once('setup.php');
+
 // To use the oauthclient library, run:
 // composer require mediawiki/oauthclient
 use MediaWiki\OAuthClient\Consumer;
@@ -11,10 +13,6 @@ use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
-
-ob_start();
-include_once('env.php');  // This outputs stuff
-ob_end_clean();
 
 if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET')) {
   echo("Citation Bot's authorization tokens not configured");
@@ -75,6 +73,10 @@ if (isset($_GET['oauth_verifier'])) {
 
 // Nothing found.  Needs an access grant from scratch
 try {
+      $proto = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+      $host = $_SERVER['HTTP_HOST'];
+      $path = $_SERVER['REQUEST_URI'];
+      $client->setCallback( $proto . '://' . $host . $path );
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
       $_SESSION['request_secret'] = $token->secret;
