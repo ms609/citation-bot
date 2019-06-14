@@ -108,5 +108,11 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertSame(TRUE, $result);
       $result = WikipediaBot::is_valid_user('Not_a_valid_user_at_Dec_2017'); 
       $this->assertSame(FALSE, $result);
+      $result = WikipediaBot::is_valid_user('178.16.5.186'); // IP address with talk page
+      $this->assertSame(FALSE, $result);
+      $result = WikipediaBot::is_valid_user('2602:306:bc8a:21e0:f0d4:b9dc:c050:2b2c'); // IP6 address with talk page
+      $this->assertSame(FALSE, $result);
+      $result = WikipediaBot::is_valid_user('RickK'); // BLOCKED
+      $this->assertSame(FALSE, $result);
     }
 }
