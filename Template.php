@@ -3024,13 +3024,17 @@ final class Template {
              $this->set($param, title_capitalization($periodical, TRUE));
           } else {
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
-              $linked_text = $matches[1];
-              $human_text  = $matches[1];
-              // Now what?
+              $periodical  = '[[' . title_capitalization($matches[1], TRUE)) . ']]';
+              this->set($param, $periodical);
             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
               $linked_text = $matches[1];
               $human_text  = $matches[2];
-              // Now what?
+              if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
+                $human_text = $matches[1];
+              }
+              $linked_text = title_capitalization($linked_text, TRUE)); // We assume that human text is some kind of abreviations that we really don't wan to mess with
+              $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
+              this->set($param, $periodical);
             }
           }
           return;
