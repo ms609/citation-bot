@@ -348,7 +348,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , $result->series);
   $i = 0;
   while (isset($result->author[$i])) {
-      $template->validate_and_add('author' . ($i+1), @$result->author[$i][1], @$result->author[$i][0],
+      if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) $template->validate_and_add('author' . ($i+1), @$result->author[$i][1], @$result->author[$i][0],
                                       isset($result->rights) ? $result->rights : '', FALSE);
       $i++;
   }
@@ -416,7 +416,7 @@ function expand_by_zotero(&$template, $url = NULL) {
             default:
               report_minor_error("Unrecognized creator type: " . $creatorType);
           }
-          $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
+         if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
                                       isset($result->rights) ? $result->rights : '', FALSE);
         }
         $i++;
