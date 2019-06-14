@@ -10,7 +10,7 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
 class WikipediaBot {
   
-  protected $consumer, $token, $ch, $userEditToken;
+  protected $consumer, $ch, $userEditToken;
   
   function __construct() {
     // setup.php must already be run at this point
