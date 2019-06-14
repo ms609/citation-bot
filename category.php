@@ -47,7 +47,16 @@ if (HTML_OUTPUT) {
 <?php
 }
 
-$edit_summary_end = " | [[Category:$category]].";
+$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
+if (WikipediaBot::is_valid_user($user)) {
+  echo " Activated by $user.\n\n";
+  $edit_summary_end = " | [[User:$user|$user]]; [[Category:$category]].";
+} else {
+  echo " Anonymous user.  Add &user=MyUserName to URL to sign the bot's edits\n\n";
+  $edit_summary_end = " | [[WP:UCB|User-activated]]; [[Category:$category]].";
+  $user = NULL;
+  sleep(10);
+}
 
 if ($category) {
   $attempts = 0;
