@@ -389,11 +389,11 @@ class WikipediaBot {
     if (!$user) return FALSE;
     $response = @file_get_contents('https://en.wikipedia.org/w/api.php?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
     if ($response == FALSE) return FALSE;
-    $response = str_replace(array("\r", "\n"), '', $response);
-    if (strpos($response, '"invalid"') !== FALSE) return FALSE;
-    if (strpos($response, '"blocked"') !== FALSE) return FALSE;
-    if (strpos($response, '"missing"') !== FALSE) return FALSE;
-    if (strpos($response, '"userid"')  === FALSE) return FALSE;
+    $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
+    if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
+    if (strpos($response, '"blockid"') !== FALSE) return FALSE; // Valid but blocked
+    if (strpos($response, '"missing"') !== FALSE) return FALSE; // No such account
+    if (strpos($response, '"userid"')  === FALSE) return FALSE; // Double check, should actually never return FALSE here
     return TRUE;
   }
 
