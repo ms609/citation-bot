@@ -1,6 +1,6 @@
 <?php
 @session_start();
-define("HTML_OUTPUT", !isset($π));
+define("HTML_OUTPUT", !isset($argv));
 
 require_once("setup.php");
 $api = new WikipediaBot();
