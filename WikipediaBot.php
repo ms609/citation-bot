@@ -20,7 +20,7 @@ class WikipediaBot {
     $conf->setConsumer($this->consumer);
     $this->client = new Client($conf);
     // Hard coded token and secret.
-    if ( getenv('PHP_OAUTH_ACCESS_TOKEN') && getenv('PHP_OAUTH_ACCESS_SECRET') ) {
+    if (getenv('TRAVIS') && getenv('PHP_OAUTH_ACCESS_TOKEN') && getenv('PHP_OAUTH_ACCESS_SECRET') ) {
       $this->token = new Token( getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET') );
     } else {
       $this->authenticate_user();
