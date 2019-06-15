@@ -424,9 +424,12 @@ class WikipediaBot {
      catch (Exception $e) { ; } // PHP 5
     }
     @session_destroy();
-    @header("Location: authenticate.php");
-      sleep(3);
-      echo('Valid user Token not found, go to <a href="authenticate.php">authenticate.php</a>');
+
+    $return = urlencode($_SERVER['REQUEST_URI']);
+
+    @header("Location: authenticate.php?return=$return");
+    sleep(3);
+    echo('Valid user Token not found, go to <a href="authenticate.php">authenticate.php</a>');
     exit(0);
   }
 

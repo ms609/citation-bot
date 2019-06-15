@@ -54,6 +54,11 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         $_SESSION['access_secret'] = $accessToken->secret;
         setcookie(session_name(),session_id(),time()+(365*24*3600)); // We choose a one year duration
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
+        if (isset($_GET['return'])) {
+           $return = $_GET['return'];
+           header("Location: $return");
+           exit(0);
+        }
         echo "Authorization Success.  Future requests should just work now.";
         exit(0);
    }
