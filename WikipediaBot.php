@@ -223,6 +223,11 @@ class WikipediaBot {
         report_warning(echoable('Attempt to write page returned error: ' .  $result->edit->result));
         return FALSE;
       }
+    } elseif ($result == FALSE) {
+         report_error("Total failure to write.  Please copy this output and " .
+                    "<a href='https://github.com/ms609/citation-bot/issues/new'>" .
+                    "report a bug.</a>");
+      return FALSE;
     } else {
       report_error("Unhandled write error.  Please copy this output and " .
                     "<a href='https://github.com/ms609/citation-bot/issues/new'>" .
