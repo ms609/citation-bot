@@ -224,6 +224,7 @@ class WikipediaBot {
         return FALSE;
       }
     } else {
+      print_r($result);
       report_error("Unhandled write error.  Please copy this output and " .
                     "<a href='https://github.com/ms609/citation-bot/issues/new'>" .
                     "report a bug.</a>");
