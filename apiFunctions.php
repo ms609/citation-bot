@@ -4,7 +4,7 @@ function query_pmc_api  ($pmcs, $templates)  { return entrez_api($pmcs,  $templa
   
 function entrez_api($ids, $templates, $db) {
   if (!count($ids)) return FALSE;
-  $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=$db&id=" 
+  $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=$db&id=" 
                . implode(',', $ids);
   report_action("Using $db API to retrieve publication details: ");
   
