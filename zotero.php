@@ -443,7 +443,7 @@ function expand_by_zotero(&$template, $url = NULL) {
 function url_simplify($url) {
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
-  $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/', '?via%3Dihub'], ['/', '/', '/', '/', '/', '/', '/', ''], $url);
+  $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/'], ['/', '/', '/', '/', '/', '/', '/'], $url);
   $url = strtok($url, '?#');
   $url = str_ireplace('https', 'http', $url);
   return $url;
