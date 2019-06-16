@@ -9,6 +9,7 @@ function entrez_api($ids, $templates, $db) {
   report_action("Using $db API to retrieve publication details: ");
   
   $xml = @simplexml_load_file($url);
+  print_r($xml);
   if ($xml === FALSE) {
     report_warning("Error in PubMed search: No response from Entrez server");
     return;
