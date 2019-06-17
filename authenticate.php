@@ -91,10 +91,10 @@ try {
       echo "Go to this URL to <a href='$authUrl'>authorize citation bot</a>";
       exit(0);
 }
-catch (Throwable $e) { ; } // PHP 7
-catch (Exception $e) { ; } // PHP 5
-@session_destroy();
-echo("Error authenticating.  Resetting.  Please try again.");
-exit(1);
+catch (Exception $e) {
+   @session_destroy();
+   echo("Error authenticating.  Resetting.  Please try again. Details: " . $e->getMessage());
+   exit(1);
+}
 
 
