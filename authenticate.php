@@ -78,7 +78,10 @@ if (isset($_GET['oauth_verifier'])) {
 
 // Nothing found.  Needs an access grant from scratch
 try {
-      $proto = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+      $proto = (
+         (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+         (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+      ) ? "https" : "http";
       $host = $_SERVER['HTTP_HOST'];
       $path = $_SERVER['REQUEST_URI'];
       $client->setCallback( $proto . '://' . $host . $path );
