@@ -26,6 +26,9 @@ class WikipediaBot {
     if (getenv('TRAVIS')) {
       $this->token = $this->bot_token;
     } else {
+      if (!$this->is_valid_user('Citation_bot')) {
+         exit('Bot is currently blocked from editing due to some type of bug.  Gadget API is still usable.  Verify edits carefully');
+      }
       $this->authenticate_user();
     }
   }
@@ -423,7 +426,8 @@ class WikipediaBot {
       $ident = $this->client->identify( $this->token );
       if (!$this->is_valid_user($ident->username)) {
         @session_destroy();
-        exit('User is either invalid or blocked on en.wikipedia.org');
+        sleep(4);
+        exit('User is either invalid or blocked on en.wikipedia.org'); // Stop right here to avoid overloading the bot with bogus requests
       }
       return;
      }
