@@ -10,7 +10,7 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
 class WikipediaBot {
   
-  protected $consumer, $client, $token, $ch, $bot_token;
+  protected $consumer, $client, $token, $ch, $bot_token, $the_user;
   
   function __construct() {
     // setup.php must already be run at this point
@@ -37,6 +37,10 @@ class WikipediaBot {
   public function username() {
     $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
     return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : FALSE;
+  }
+  
+  public function get_the_user() {
+    return $this->the_user; // Might or might not match the above
   }
   
   private function ret_okay($response) {
@@ -410,7 +414,7 @@ class WikipediaBot {
 
   private function edit_token() {
     return json_decode( $this->client->makeOAuthCall(
-      $this->token,
+      $this->bot_token, // Change to $this->token to edit using UserID
      'https://en.wikipedia.org/w/api.php?action=query&meta=tokens&format=json'
      ) )->query->tokens->csrftoken;
   }
@@ -425,6 +429,7 @@ class WikipediaBot {
         @session_destroy();
         exit('User is either invalid or blocked on en.wikipedia.org');
       }
+      $this->the_user = $ident->username;
       return;
      }
      catch (Throwable $e) { ; } // PHP 7

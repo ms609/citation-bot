@@ -47,7 +47,7 @@ if (HTML_OUTPUT) {
 <?php
 }
 
-$edit_summary_end = " | [[Category:$category]].";
+$edit_summary_end = "| Activated by [[User:$api->get_the_user()]] | [[Category:$category]].";
 
 if ($category) {
   $attempts = 0;
