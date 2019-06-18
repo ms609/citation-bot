@@ -27,6 +27,7 @@ class WikipediaBot {
       $this->token = $this->bot_token;
     } else {
       $this->authenticate_user();
+      $this->token = $this->bot_token; // Got a username, now do actual work with BOT tokens
     }
   }
   
@@ -414,7 +415,7 @@ class WikipediaBot {
 
   private function edit_token() {
     return json_decode( $this->client->makeOAuthCall(
-      $this->bot_token, // Change to $this->token to edit using UserID
+      $this->token,
      'https://en.wikipedia.org/w/api.php?action=query&meta=tokens&format=json'
      ) )->query->tokens->csrftoken;
   }
