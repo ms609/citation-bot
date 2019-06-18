@@ -3330,6 +3330,12 @@ final class Template {
           if ($this->wikiname() !== 'citation') {
             if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
             if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
+            if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', $this->get($param)) {
+              unset($this->param[$this->get_param_key('postscript')]);
+              report_forget("Dropping postscript that is only a comment');
+              // Misleading -- comments of "NONE" etc mean nothing!
+              // Cannot call forget, since it will not remove items with comments in it
+            }
           }
           return;
           
