@@ -15,7 +15,7 @@ function entrez_api($ids, $templates, $db) {
        $the_error = @file_get_contents($url);		
        echo "\n\n ERROR: $the_error \n\n";
        echo "\n\n URL: $url \n\n";
-       $the_error = @file_get_contents("https://www.myip.com/");	
+       $the_error = @file_get_contents("https://www.whatismypublicip.com/");	
        echo "\n\n IP: $the_error \n\n";
      }
     return;
