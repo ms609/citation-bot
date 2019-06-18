@@ -10,7 +10,7 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
 class WikipediaBot {
   
-  protected $consumer, $client, $token, $ch, $userEditToken;
+  protected $consumer, $client, $token, $ch, $bot_token;
   
   function __construct() {
     // setup.php must already be run at this point
@@ -20,8 +20,11 @@ class WikipediaBot {
     $conf->setConsumer($this->consumer);
     $this->client = new Client($conf);
     // Hard coded token and secret.
-    if (getenv('TRAVIS') && getenv('PHP_OAUTH_ACCESS_TOKEN') && getenv('PHP_OAUTH_ACCESS_SECRET') ) {
-      $this->token = new Token( getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET') );
+    if (getenv('PHP_OAUTH_ACCESS_TOKEN') && getenv('PHP_OAUTH_ACCESS_SECRET') ) {
+      $this->bot_token = new Token( getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET') );
+    }
+    if (getenv('TRAVIS')) {
+      $this->token = $this->bot_token;
     } else {
       $this->authenticate_user();
     }
@@ -417,7 +420,11 @@ class WikipediaBot {
      try {
       $this->token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
       // Validate the credentials.
-      $this->client->identify( $this->token );
+      $ident = $this->client->identify( $this->token );
+      if (!$this->is_valid_user($ident->username)) {
+        @session_destroy();
+        exit('User is either invalid or blocked on en.wikipedia.org')
+      }
       return;
      }
      catch (Throwable $e) { ; } // PHP 7
