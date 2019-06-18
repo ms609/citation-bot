@@ -423,7 +423,7 @@ class WikipediaBot {
       $ident = $this->client->identify( $this->token );
       if (!$this->is_valid_user($ident->username)) {
         @session_destroy();
-        exit('User is either invalid or blocked on en.wikipedia.org')
+        exit('User is either invalid or blocked on en.wikipedia.org');
       }
       return;
      }
