@@ -11,13 +11,6 @@ function entrez_api($ids, $templates, $db) {
   $xml = @simplexml_load_file($url);
   if ($xml === FALSE) {
     report_warning("Error in PubMed search: No response from Entrez server");
-    if (strpos($url, '43446') !== FALSE) { // Debugging		
-       $the_error = @file_get_contents($url);		
-       echo "\n\n ERROR: $the_error \n\n";
-       echo "\n\n URL: $url \n\n";
-       $the_error = @file_get_contents("https://www.myip.com/");	
-       echo "\n\n IP: $the_error \n\n";
-     }
     return;
   }
   
