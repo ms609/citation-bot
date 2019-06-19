@@ -2805,6 +2805,7 @@ final class Template {
        // Cannot call forget, since it will not remove items with comments in it
        unset($this->param[$this->get_param_key('postscript')]);
        report_forget('Dropping postscript that is only a comment');
+       return;
     }
     
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
