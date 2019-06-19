@@ -11,15 +11,12 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
 class WikipediaBot {
   
-  protected $consumer, $client, $token, $ch, $the_user;
+  protected $consumer, $token, $ch, $the_user;
   
   function __construct() {
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
-    $conf = new ClientConfig('https://en.wikipedia.org/w/index.php?title=Special:OAuth');
-    $conf->setConsumer($this->consumer);
-    $this->client = new Client($conf);
     // Hard coded token and secret.
     $this->token = new Token( getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET') );
     if (!getenv('TRAVIS')) {
@@ -414,7 +411,10 @@ class WikipediaBot {
      try {
       $user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
       // Validate the credentials.
-      $ident = $this->client->identify( $user_token );
+      $conf = new ClientConfig('https://en.wikipedia.org/w/index.php?title=Special:OAuth');
+      $conf->setConsumer($this->consumer);
+      $client = new Client($conf);
+      $ident = $client->identify( $user_token );
       if (!$this->is_valid_user($ident->username)) {
         @session_destroy();
         exit('User is either invalid or blocked on en.wikipedia.org');
