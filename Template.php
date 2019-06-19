@@ -2798,6 +2798,15 @@ final class Template {
     // case necessarily continues from the previous (without a return).
     
     if (!$param) return FALSE;
+    
+    if ($param === 'postscript' && $this->wikiname() !== 'citation' &&
+       preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', $this->get('postscript'))) {
+       // Misleading -- comments of "NONE" etc mean nothing!
+       // Cannot call forget, since it will not remove items with comments in it
+       unset($this->param[$this->get_param_key('postscript')]);
+       report_forget('Dropping postscript that is only a comment');
+    }
+    
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
@@ -3330,12 +3339,6 @@ final class Template {
           if ($this->wikiname() !== 'citation') {
             if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
             if ($this->blank($param)) $this->forget($param);  // Misleading -- blank means period!!!!
-            if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', $this->get($param))) {
-              unset($this->param[$this->get_param_key('postscript')]);
-              report_forget('Dropping postscript that is only a comment');
-              // Misleading -- comments of "NONE" etc mean nothing!
-              // Cannot call forget, since it will not remove items with comments in it
-            }
           }
           return;
           
