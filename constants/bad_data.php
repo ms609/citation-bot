@@ -10,7 +10,7 @@ const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship in
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee',
                                 'society', ' of america', 'association', ' at the ', 'board of ',
-                                'corporation', 'incorporated', 'editorial');
+                                'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified');
 
