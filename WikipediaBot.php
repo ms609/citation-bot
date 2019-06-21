@@ -14,13 +14,13 @@ class WikipediaBot {
   
   function __construct() {
     // setup.php must already be run at this point
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN_BOT')) report_error("PHP_OAUTH_CONSUMER_TOKEN_BOT not set");
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
-    if (!getenv('TRAVIS')) {
+    if (defined("HTML_OUTPUT")) { // Do this for any of the public APIs
+      if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
       $this->authenticate_user();
     }
-    $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
-    // Hard coded token and secret.
+    $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN_BOT'), getenv('PHP_OAUTH_CONSUMER_SECRET_BOT'));
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
   }
   
