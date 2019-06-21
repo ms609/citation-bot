@@ -14,14 +14,14 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET')) {
+if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
   echo("Citation Bot's authorization tokens not configured");
   exit(1);
 }
 
 try {
   $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
-  $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET')));
+  $conf->setConsumer(new Consumer(getenv('PHP_WP_OAUTH_CONSUMER'), getenv('PHP_WP_OAUTH_SECRET')));
   $client = new Client($conf);
   unset($conf);
 }
