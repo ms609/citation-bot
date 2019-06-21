@@ -3,7 +3,7 @@
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT");
 
-include_once('setup.php');
+require_once('setup.php');
 
 // To use the oauthclient library, run:
 // composer require mediawiki/oauthclient
