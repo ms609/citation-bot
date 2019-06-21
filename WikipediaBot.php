@@ -404,7 +404,7 @@ class WikipediaBot {
       $user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
       // Validate the credentials.
       $conf = new ClientConfig('https://en.wikipedia.org/w/index.php?title=Special:OAuth');
-      $conf->setConsumer(new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET')));
+      $conf->setConsumer(new Consumer(getenv('PHP_WP_OAUTH_CONSUMER'), getenv('PHP_WP_OAUTH_SECRET')));
       $client = new Client($conf);
       $ident = $client->identify( $user_token );
       if (!$this->is_valid_user($ident->username)) {
