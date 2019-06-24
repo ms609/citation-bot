@@ -16,9 +16,6 @@ use MediaWiki\OAuthClient\Client;
 
 if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
   echo("Citation Bot's authorization tokens not configured");
-  foreach ($_ENV as $key=>$item){ // Do not print $item -- DANGEROUS
-    echo "$key\n";
-  }
   exit(1);
 }
 
