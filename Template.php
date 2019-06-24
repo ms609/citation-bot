@@ -3110,6 +3110,10 @@ final class Template {
                $this->rename($param, 'work'); // Don't think about which work it is
             }
           }
+          if (!$this->blank(['eprint', 'arxiv']) &&
+              strtolower($publisher) == 'arxiv') {
+              $this->forget($param);
+          }
           return;
           
         case 'quotes':
