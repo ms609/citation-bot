@@ -524,7 +524,7 @@ final class Template {
             }
           }
           $this->forget('class');
-          
+          if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal'); 
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
              if ($this->has('publisher') && str_equivalent($this->get('publisher'), $value)) return FALSE;
              if($this->blank('work')) {
@@ -736,6 +736,7 @@ final class Template {
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
+            if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
             $this->add('doi', $match[0]);          
             return TRUE;
           } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
@@ -2949,6 +2950,7 @@ final class Template {
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
+          if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           return;
           
         case 'edition': 
@@ -3040,6 +3042,7 @@ final class Template {
              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
              $this->set($param, title_capitalization($periodical, TRUE));
           }
+          if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           return;
         
         case 'jstor':
