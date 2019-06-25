@@ -502,6 +502,7 @@ final class Template {
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
         if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE; // Messed up already or in database
+        if (!$this->blank(['agency','publisher']) && in_array(strtolower($value), DUBIOUS_JOURNALS) === TRUE) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
         if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
@@ -1666,7 +1667,12 @@ final class Template {
         }
       }
       
-      if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      if ($this->blank('bibcode')) {
+        $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'citation_bot_placeholder') === FALSE) {
+        report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
+        $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
+      }
       $this->add_if_new('title', (string) $record->title[0]); // add_if_new will format the title text and check for unknown
       $i = 0;
       if (isset($record->author)) {
