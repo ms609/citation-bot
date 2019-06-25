@@ -524,7 +524,7 @@ final class Template {
             }
           }
           $this->forget('class');
-          
+          if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal'); 
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
              if ($this->has('publisher') && str_equivalent($this->get('publisher'), $value)) return FALSE;
              if($this->blank('work')) {
@@ -588,6 +588,7 @@ final class Template {
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')
                                       || ($this->get($param_name) === "{title}")
+                                      || ($this->get($param_name) === 'ScienceDirect')
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
           if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
             return FALSE;
@@ -735,6 +736,7 @@ final class Template {
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
+            if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
             $this->add('doi', $match[0]);          
             return TRUE;
           } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
@@ -1324,6 +1326,12 @@ final class Template {
              $this->forget($url_type);
           }
           return $this->add_if_new('lccn', $match[1]); 
+      } elseif (preg_match("~^https?://openlibrary\.org/books/OL/(\d{4,}[WM])(?:|/.*)$~i", $url, $match)) { // We do W "work" and M "edition", but not A, which is author
+          quietly('report_modification', "Converting URL to OL parameter");
+          if (is_null($url_sent)) {
+             $this->forget($url_type);
+          }
+          return $this->add_if_new('ol', $match[1]); 
       }
     }
     return FALSE ;
@@ -1426,7 +1434,7 @@ final class Template {
     if ($results[1] == 1) {
       // Double check title if no DOI and no Journal were used
       if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
-        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=pubmed&id=" . $results[0];
+        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
           report_warning("Unable to do PMID search");
@@ -1524,7 +1532,7 @@ final class Template {
       }
     }
     $query = substr($query, 5); // Chop off initial " AND "
-    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=DOIbot&email=martins+pubmed@gmail.com&term=$query";
+    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
     $xml = @simplexml_load_file($url);
     if ($xml === FALSE) {
       report_warning("Unable to do PMID search");
@@ -2797,6 +2805,16 @@ final class Template {
     // case necessarily continues from the previous (without a return).
     
     if (!$param) return FALSE;
+    
+    if ($param === 'postscript' && $this->wikiname() !== 'citation' &&
+       preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', $this->get('postscript'))) {
+       // Misleading -- comments of "NONE" etc mean nothing!
+       // Cannot call forget, since it will not remove items with comments in it
+       unset($this->param[$this->get_param_key('postscript')]);
+       report_forget('Dropping postscript that is only a comment');
+       return;
+    }
+    
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
@@ -2932,6 +2950,7 @@ final class Template {
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
+          if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           return;
           
         case 'edition': 
@@ -3037,6 +3056,7 @@ final class Template {
               this->set($param, $periodical);
             }
           }
+          if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           return;
         
         case 'jstor':
@@ -3112,6 +3132,10 @@ final class Template {
             if (in_array(str_replace(array('[', ']', '"', "'"), '', $publisher), PUBLISHERS_ARE_WORKS)) {
                $this->rename($param, 'work'); // Don't think about which work it is
             }
+          }
+          if (!$this->blank(['eprint', 'arxiv']) &&
+              strtolower($publisher) == 'arxiv') {
+              $this->forget($param);
           }
           return;
           
@@ -4001,7 +4025,7 @@ final class Template {
      
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-              preg_match("~^(?:vol\. |Volume |)(\d+),\s*(?:no\.|number|issue)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(?:vol\. |Volume |)(\d+),\s*(?:no\.|number|issue|Iss.)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
