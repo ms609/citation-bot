@@ -1789,7 +1789,7 @@ final class Template {
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
       $decoded = @json_decode($body);
-      
+      print_r($decoded);
       if (is_object($decoded) && isset($decoded->error)) {
         if (is_object($decoded) && isset($decoded->error)) {
           throw new Exception(
