@@ -2084,7 +2084,15 @@ final class Template {
   }
   
   public function expand_by_google_books() {
-    $url = $this->get('url');
+    foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
+      if (stripos($this->get('url'), 'books.google') !== FALSE) {
+         if (expand_by_google_books_inner($this->get($url_type), $url_type)) return TRUE;
+      }
+    }
+    return expand_by_google_books_inner(NULL, NULL);
+  }
+  
+  protected function expand_by_google_books_inner($url, $url_type) {
     if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) { // No Google URL yet.
       $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
@@ -2113,8 +2121,6 @@ final class Template {
             $google_results = $google_results[0];
             $gid = substr($google_results, 26, -4);
             $url = 'https://books.google.com/books?id=' . $gid;
-            // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.
-            // And blank url does not mean not linked in title, etc.
             $google_books_worked = TRUE;
           }
         }
@@ -2181,7 +2187,7 @@ final class Template {
         }
       }
       if ($removed_redundant > 1) { // http:// is counted as 1 parameter
-        $this->set('url', $url . $hash);
+        $this->set($url_type, $url . $hash);
       }
       $this->google_book_details($gid[1]);
       return TRUE;
