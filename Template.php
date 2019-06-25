@@ -1666,7 +1666,12 @@ final class Template {
         }
       }
       
-      if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      if ($this->blank('bibcode')) {
+        $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'citation_bot_placeholder') === FALSE) {
+        report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
+        $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
+      }
       $this->add_if_new('title', (string) $record->title[0]); // add_if_new will format the title text and check for unknown
       $i = 0;
       if (isset($record->author)) {
