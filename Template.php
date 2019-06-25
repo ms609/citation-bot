@@ -502,7 +502,7 @@ final class Template {
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
         if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE; // Messed up already or in database
-        if (!$this->blank(['agency','publisher']) && in_array(strtolower($value), ['FDA']) === TRUE) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
+        if (!$this->blank(['agency','publisher']) && in_array(strtolower($value), ['fda']) === TRUE) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
         if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
@@ -4102,3 +4102,4 @@ final class Template {
     return FALSE;
   }
 }
+f
