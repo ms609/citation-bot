@@ -2091,10 +2091,10 @@ final class Template {
   public function expand_by_google_books() {
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
       if (stripos($this->get('url'), 'books.google') !== FALSE) {
-         if (expand_by_google_books_inner($this->get($url_type), $url_type)) return TRUE;
+         if ($this->expand_by_google_books_inner($this->get($url_type), $url_type)) return TRUE;
       }
     }
-    return expand_by_google_books_inner(NULL, NULL);
+    return $this->expand_by_google_books_inner(NULL, NULL);
   }
   
   protected function expand_by_google_books_inner($url, $url_type) {
