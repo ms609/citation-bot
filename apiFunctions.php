@@ -176,7 +176,7 @@ function adsabs_api($ids, $templates, $identifier) {
   }
   if (count($ids) < 5) {
     foreach ($templates as $template) {
-      $template->expand_by_adsabs();
+      if ($template->has('bibcode')) $template->expand_by_adsabs();
     }
     return TRUE;
   }
@@ -240,7 +240,7 @@ function adsabs_api($ids, $templates, $identifier) {
         report_warning("AdsAbs daily search limit exceeded. Big queries stopped until " . date('r', $rate_limit[2][2]) . "\n");
         sleep(1);
         foreach ($templates as $template) {
-           $template->expand_by_adsabs();
+          if ($template->has('bibcode')) $template->expand_by_adsabs(););
         }
         return TRUE;
       }
@@ -271,7 +271,7 @@ function adsabs_api($ids, $templates, $identifier) {
     @curl_close($ch); // Some code paths have it closed, others do not
     foreach ($templates as $template) {
         sleep(1);
-        $template->expand_by_adsabs();
+        if ($template->has('bibcode')) $template->expand_by_adsabs();
     }
     return TRUE;
   }
@@ -279,7 +279,7 @@ function adsabs_api($ids, $templates, $identifier) {
   foreach ($response->docs as $record) {
     if (!in_array($record->bibcode, $ids)) {  // Remapped bibcodes cause corrupt big queries
       foreach ($templates as $template) {
-        $template->expand_by_adsabs();
+        if ($template->has('bibcode')) $template->expand_by_adsabs();
       }
       return;
     }
