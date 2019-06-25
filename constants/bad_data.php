@@ -11,7 +11,7 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'national', 'endowment', ' for the ', 'humanities', 'committee',
                                 'society', ' of america', 'association', ' at the ', 'board of ',
                                 'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department',
-                                'dept of ', 'college');
+                                'dept of ', 'college', 'center for', 'office of');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified');
 
