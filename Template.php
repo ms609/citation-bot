@@ -881,7 +881,7 @@ final class Template {
 
   public function validate_and_add($author_param, $author, $forename, $check_against, $add_even_if_existing) {
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
-    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author . ' ' . $forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
             preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
          $author = trim($match[1]);
@@ -1667,7 +1667,12 @@ final class Template {
         }
       }
       
-      if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      if ($this->blank('bibcode')) {
+        $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'citation_bot_placeholder') === FALSE) {
+        report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
+        $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
+      }
       $this->add_if_new('title', (string) $record->title[0]); // add_if_new will format the title text and check for unknown
       $i = 0;
       if (isset($record->author)) {
