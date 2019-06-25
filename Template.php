@@ -3276,14 +3276,10 @@ final class Template {
             } elseif (stripos($this->get('via'), 'questia') !== FALSE && $this->has('isbn')) {
               $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
-              if (
-                  ($this->blank('via')) ||
-                  (stripos($this->get('via'), 'Project MUSE') !== FALSE) ||
-                  (stripos($this->get('via'), 'Wiley') !== FALSE) ||
-                  (stripos($this->get('via'), 'springer') !== FALSE) ||
-                  (stripos($this->get('via'), 'questia') !== FALSE) ||
-                  (stripos($this->get('via'), 'elsevier') !== FALSE)
-              ) { 
+              $via = trim(strtolower($this->get('via')));
+              if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier',
+                                  'wiley interscience', 'interscience', 'sciencedirect', 'science direct'])) 
+              { 
                 $this->forget('via');
               }
             } 
