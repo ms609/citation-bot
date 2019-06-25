@@ -165,12 +165,6 @@ function arxiv_api($ids, $templates) {
 
 function adsabs_api($ids, $templates, $identifier) {
   if (count($ids) == 0) return FALSE;
-  if (count($ids) < 5) {
-    foreach ($templates as $template) {
-      $template->expand_by_adsabs();
-    }
-    return TRUE;
-  }
   
   foreach ($ids as $key => $bibcode) {
     if (strpos($bibcode, 'book') !== false) {
@@ -179,6 +173,12 @@ function adsabs_api($ids, $templates, $identifier) {
         strpos($bibcode, '&') !== false) {
         unset($ids[$key]);
     }
+  }
+  if (count($ids) < 5) {
+    foreach ($templates as $template) {
+      if ($template->has('bibcode')) $template->expand_by_adsabs();
+    }
+    return TRUE;
   }
   foreach ($templates as $template) {
     if ((strpos($template->get('bibcode'), '&') !== false) || (strpos($template->get('bibcode'), 'book') !== false)) {
@@ -238,8 +238,9 @@ function adsabs_api($ids, $templates, $identifier) {
              // "; reset at " . date('r', $rate_limit[2][2]);
       } else {
         report_warning("AdsAbs daily search limit exceeded. Big queries stopped until " . date('r', $rate_limit[2][2]) . "\n");
+        sleep(1);
         foreach ($templates as $template) {
-           $template->expand_by_adsabs();
+           if ($template->has('bibcode')) $template->expand_by_adsabs();
         }
         return TRUE;
       }
@@ -268,13 +269,17 @@ function adsabs_api($ids, $templates, $identifier) {
                     $e->getCode(), $e->getMessage()));
     }
     @curl_close($ch); // Some code paths have it closed, others do not
-    return FALSE;
+    foreach ($templates as $template) {
+        sleep(1);
+        if ($template->has('bibcode')) $template->expand_by_adsabs();
+    }
+    return TRUE;
   }
   
   foreach ($response->docs as $record) {
     if (!in_array($record->bibcode, $ids)) {  // Remapped bibcodes cause corrupt big queries
       foreach ($templates as $template) {
-        $template->expand_by_adsabs();
+        if ($template->has('bibcode')) $template->expand_by_adsabs();
       }
       return;
     }
