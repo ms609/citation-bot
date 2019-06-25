@@ -240,7 +240,7 @@ function adsabs_api($ids, $templates, $identifier) {
         report_warning("AdsAbs daily search limit exceeded. Big queries stopped until " . date('r', $rate_limit[2][2]) . "\n");
         sleep(1);
         foreach ($templates as $template) {
-          if ($template->has('bibcode')) $template->expand_by_adsabs(););
+           if ($template->has('bibcode')) $template->expand_by_adsabs();
         }
         return TRUE;
       }
