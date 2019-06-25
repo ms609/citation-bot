@@ -12,7 +12,7 @@ function entrez_api($ids, $templates, $db) {
   if ($xml === FALSE) {
     report_warning("Error in PubMed search: No response from Entrez server");
     // echo @file_get_contents("https://ifconfig.me/ip");
-    return;
+    return FALSE;
   }
   
   foreach (array_keys($ids) as $i) {
@@ -87,6 +87,7 @@ function entrez_api($ids, $templates, $db) {
       }
     }
   }
+  return TRUE;
 }
 
 function query_bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
@@ -281,7 +282,7 @@ function adsabs_api($ids, $templates, $identifier) {
       foreach ($templates as $template) {
         if ($template->has('bibcode')) $template->expand_by_adsabs();
       }
-      return;
+      return TRUE;
     }
   }
 
@@ -343,12 +344,14 @@ function adsabs_api($ids, $templates, $identifier) {
   if (sizeof($unmatched_ids)) {
     report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));
   }
+  return TRUE;
 }
 
 function query_doi_api($ids, $templates) {
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
+  return TRUE;
 }
 
 function expand_by_doi($template, $force = FALSE) {
@@ -450,6 +453,7 @@ function expand_by_doi($template, $force = FALSE) {
       expand_doi_with_dx($template, $doi);
     }
   }
+  return TRUE;
 }
 
 function query_crossref($doi) {
@@ -488,16 +492,16 @@ function expand_doi_with_dx($template, $doi) {
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      // Examples of DOI usage   https://www.doi.org/demos.html
-     if (stripos('10.2307', $doi) === 0) return; // jstor API is better
+     if (stripos('10.2307', $doi) === 0) return FALSE; // jstor API is better
      $try_to_add_it = function($name, $data) use($template) {
-       if (is_null($data)) return;
+       if (is_null($data)) return FALSE;
        while (is_array($data)) {
-         if (empty($data)) return;
-         if (!isset($data['0'])) return;
-         if (isset($data['1'])) return; // How dow we choose?
+         if (empty($data)) return FALSE;
+         if (!isset($data['0'])) return FALSE;
+         if (isset($data['1'])) return FALSE; // How dow we choose?
          $data = $data['0'];  // Going down deeper
        }
-       if ($data == '') return;
+       if ($data == '') return FALSE;
        $template->add_if_new($name, $data);
      };
      if (!$doi) return FALSE;
