@@ -881,7 +881,7 @@ final class Template {
 
   public function validate_and_add($author_param, $author, $forename, $check_against, $add_even_if_existing) {
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
-    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author . ' ' . $forename)) {
+    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author) && author_is_human($forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
             preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
          $author = trim($match[1]);
@@ -2089,7 +2089,15 @@ final class Template {
   }
   
   public function expand_by_google_books() {
-    $url = $this->get('url');
+    foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
+      if (stripos($this->get('url'), 'books.google') !== FALSE) {
+         if ($this->expand_by_google_books_inner($this->get($url_type), $url_type)) return TRUE;
+      }
+    }
+    return $this->expand_by_google_books_inner(NULL, NULL);
+  }
+  
+  protected function expand_by_google_books_inner($url, $url_type) {
     if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) { // No Google URL yet.
       $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
@@ -2118,8 +2126,6 @@ final class Template {
             $google_results = $google_results[0];
             $gid = substr($google_results, 26, -4);
             $url = 'https://books.google.com/books?id=' . $gid;
-            // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.
-            // And blank url does not mean not linked in title, etc.
             $google_books_worked = TRUE;
           }
         }
@@ -2186,7 +2192,7 @@ final class Template {
         }
       }
       if ($removed_redundant > 1) { // http:// is counted as 1 parameter
-        $this->set('url', $url . $hash);
+        $this->set($url_type, $url . $hash);
       }
       $this->google_book_details($gid[1]);
       return TRUE;
@@ -3270,14 +3276,10 @@ final class Template {
             } elseif (stripos($this->get('via'), 'questia') !== FALSE && $this->has('isbn')) {
               $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
-              if (
-                  ($this->blank('via')) ||
-                  (stripos($this->get('via'), 'Project MUSE') !== FALSE) ||
-                  (stripos($this->get('via'), 'Wiley') !== FALSE) ||
-                  (stripos($this->get('via'), 'springer') !== FALSE) ||
-                  (stripos($this->get('via'), 'questia') !== FALSE) ||
-                  (stripos($this->get('via'), 'elsevier') !== FALSE)
-              ) { 
+              $via = trim(strtolower($this->get('via')));
+              if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier',
+                                  'wiley interscience', 'interscience', 'sciencedirect', 'science direct'])) 
+              { 
                 $this->forget('via');
               }
             } 
