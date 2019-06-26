@@ -1576,7 +1576,7 @@ final class Template {
   
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
-      $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get("bibcode") . '"'));
     } elseif ($this->blank(['eprint', 'arxiv']) && $this->has('doi') 
               && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
@@ -1597,9 +1597,6 @@ final class Template {
         $result = $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
       }
     }
- 
-
-    print_r($result);
  
     if ($result->numFound > 1) {
       # TODO: Work out what behaviour is desired in this situation, and implement it.
@@ -1768,7 +1765,6 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs($options) {  
-    echo "\n\n Coming in query_adsabs with " . $options . "\n\n";
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
@@ -1780,7 +1776,7 @@ final class Template {
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
-      $adsabs_url = "https://" . 'api'
+      $adsabs_url = "https://" . 'qa'
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
@@ -1806,8 +1802,6 @@ final class Template {
       curl_close($ch);
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
-   echo "\n header was : " . $header . "\n";
-         echo "\n body was : " . $body . "\n";
       $decoded = @json_decode($body);
       
       print_r($decoded);
