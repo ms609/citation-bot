@@ -50,7 +50,7 @@ function extract_doi($text) {
         $text, $match)) {
     $doi = $match[1];
     if (preg_match(
-          "~^(.*?)(/abstract|/e?pdf|/full|</span>|[\s\|\"\?]|</).*+$~",
+          "~^(.*?)(/abstract|/e?pdf|/full|/figure|</span>|[\s\|\"\?]|</).*+$~",
           $doi, $new_match)
         ) {
       $doi = $new_match[1];
@@ -190,7 +190,7 @@ function title_capitalization($in, $caps_after_punctuation) {
     $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalise after punctuation */,
       function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
-    $new_case = preg_replace_callback("~/[a-z]~u" /* Capitalise after slash without space */,
+    $new_case = preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalise after slash unless part of ending html tag */,
       function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles

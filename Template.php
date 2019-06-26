@@ -502,6 +502,7 @@ final class Template {
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
         if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE; // Messed up already or in database
+        if (!$this->blank(['agency','publisher']) && in_array(strtolower($value), DUBIOUS_JOURNALS) === TRUE) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
         if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
@@ -880,7 +881,7 @@ final class Template {
 
   public function validate_and_add($author_param, $author, $forename, $check_against, $add_even_if_existing) {
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
-    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE) {
+    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author) && author_is_human($forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
             preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
          $author = trim($match[1]);
@@ -1562,6 +1563,9 @@ final class Template {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
+    if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
+      return FALSE; // Don't waste a query
+    }
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
       return $this->expand_book_adsabs();
     }
@@ -1571,19 +1575,29 @@ final class Template {
     }
   
     report_action("Checking AdsAbs database");
-    $identifiers = array_filter(array(
-      ($bibcode = $this->has('bibcode')) ? $this->get("bibcode") : NULL,
-      ($this->has('doi') 
-       && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) ?  
-        $doi[0] : NULL,
-      ($this->has('eprint')) ? $this->get('eprint') :
-        (($this->has('arxiv')) ? $this->get('arxiv') : NULL)
-    ));
-    
-    $result = empty($identifiers) ? 
-      (object) array("numFound" => 0) :
-      $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
-    
+    if ($this->has('bibcode')) {
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get("bibcode") . '"'));
+    } elseif ($this->blank(['eprint', 'arxiv']) && $this->has('doi') 
+              && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $doi[0] . '"'));
+    } elseif ($this->blank('doi') && $this->has('eprint')) {
+        $result = $this->query_adsabs("identifier:" . urlencode('"' .$this->get('eprint') . '"'));
+    } elseif ($this->blank('doi') && $this->has('arxiv')) {
+        $result = $this->query_adsabs("identifier:" . urlencode('"' .$this->get('arxiv') . '"'));
+    } else {
+      $identifiers = array();
+      if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+        $identifiers[] = $doi[0];
+      }
+      if ($this->has('eprint')) $identifiers[] = $this->get('eprint');
+      if ($this->has('arxiv')) $identifiers[] = $this->get('arxiv');
+      if (empty($identifiers)) {
+        $result = (object) array("numFound" => 0);
+      } else {
+        $result = $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
+      }
+    }
+ 
     if ($result->numFound > 1) {
       # TODO: Work out what behaviour is desired in this situation, and implement it.
       report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
@@ -1598,8 +1612,6 @@ final class Template {
         report_info("Similar title not found in database");
         return FALSE;
       }
-    } else {
-      $result = (object) array("numFound" => 0);
     }
     
     if ($result->numFound != 1 && $this->has('journal')) {
@@ -1663,7 +1675,12 @@ final class Template {
         }
       }
       
-      if ($this->blank('bibcode')) $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      if ($this->blank('bibcode')) {
+        $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'citation_bot_placeholder') === FALSE) {
+        report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
+        $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
+      }
       $this->add_if_new('title', (string) $record->title[0]); // add_if_new will format the title text and check for unknown
       $i = 0;
       if (isset($record->author)) {
@@ -2080,7 +2097,15 @@ final class Template {
   }
   
   public function expand_by_google_books() {
-    $url = $this->get('url');
+    foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
+      if (stripos($this->get('url'), 'books.google') !== FALSE) {
+         if ($this->expand_by_google_books_inner($this->get($url_type), $url_type)) return TRUE;
+      }
+    }
+    return $this->expand_by_google_books_inner(NULL, NULL);
+  }
+  
+  protected function expand_by_google_books_inner($url, $url_type) {
     if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) { // No Google URL yet.
       $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
@@ -2109,8 +2134,6 @@ final class Template {
             $google_results = $google_results[0];
             $gid = substr($google_results, 26, -4);
             $url = 'https://books.google.com/books?id=' . $gid;
-            // if ($this->blank('url')) $this->add('url', $url); // This pissed off a lot of people.
-            // And blank url does not mean not linked in title, etc.
             $google_books_worked = TRUE;
           }
         }
@@ -2177,7 +2200,7 @@ final class Template {
         }
       }
       if ($removed_redundant > 1) { // http:// is counted as 1 parameter
-        $this->set('url', $url . $hash);
+        $this->set($url_type, $url . $hash);
       }
       $this->google_book_details($gid[1]);
       return TRUE;
@@ -2872,6 +2895,10 @@ final class Template {
               $this->set($param, $matches[2]);
             }
           }
+          if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
+            $this->rename('author', 'agency');
+            return;
+          }
           // No return here
         case 'authors':
           if (!$pmatch[2]) {
@@ -3275,14 +3302,10 @@ final class Template {
             } elseif (stripos($this->get('via'), 'questia') !== FALSE && $this->has('isbn')) {
               $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
-              if (
-                  ($this->blank('via')) ||
-                  (stripos($this->get('via'), 'Project MUSE') !== FALSE) ||
-                  (stripos($this->get('via'), 'Wiley') !== FALSE) ||
-                  (stripos($this->get('via'), 'springer') !== FALSE) ||
-                  (stripos($this->get('via'), 'questia') !== FALSE) ||
-                  (stripos($this->get('via'), 'elsevier') !== FALSE)
-              ) { 
+              $via = trim(strtolower($this->get('via')));
+              if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier',
+                                  'wiley interscience', 'interscience', 'sciencedirect', 'science direct'])) 
+              { 
                 $this->forget('via');
               }
             } 
@@ -4025,7 +4048,7 @@ final class Template {
      
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-              preg_match("~^(?:vol\. |Volume |)(\d+),\s*(?:no\.|number|issue|Iss.)\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(?:vol\. |Volume |vol |)(\d+),\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
