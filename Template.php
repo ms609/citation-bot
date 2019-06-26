@@ -1575,19 +1575,29 @@ final class Template {
     }
   
     report_action("Checking AdsAbs database");
-    $identifiers = array_filter(array(
-      ($bibcode = $this->has('bibcode')) ? $this->get("bibcode") : NULL,
-      ($this->has('doi') 
-       && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) ?  
-        $doi[0] : NULL,
-      ($this->has('eprint')) ? $this->get('eprint') :
-        (($this->has('arxiv')) ? $this->get('arxiv') : NULL)
-    ));
-    
-    $result = empty($identifiers) ? 
-      (object) array("numFound" => 0) :
-      $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
-    
+    if ($this->has('bibcode')) {
+      $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+    } elseif ($this->blank(['eprint', 'arxiv']) && $this->has('doi') 
+              && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+      $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
+    } elseif ($this->blank('doi') && $this->has('eprint')) {
+        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
+    } elseif ($this->blank('doi') && $this->has('arxiv')) {
+        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
+    } else { // Does this work???
+      $identifiers = array();
+      if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+        $identifiers[] = $doi[0];
+      }
+      if ($this->has('eprint')) $identifiers[] = $this->get('eprint');
+      if ($this->has('arxiv')) $identifiers[] = $this->get('arxiv');
+      if (empty($identifiers)) {
+        $result = (object) array("numFound" => 0);
+      } else {
+        $result = $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
+      }
+    }
+ 
     if ($result->numFound > 1) {
       # TODO: Work out what behaviour is desired in this situation, and implement it.
       report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
