@@ -1598,6 +1598,9 @@ final class Template {
       }
     }
  
+    echo "XXX\n";
+    print_r($result);
+    echo "XXX\n";   
     if ($result->numFound > 1) {
       # TODO: Work out what behaviour is desired in this situation, and implement it.
       report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
@@ -1766,7 +1769,6 @@ final class Template {
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs($options) {  
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false')) return (object) array('numFound' => 0);
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
       return (object) array('numFound' => 0);
