@@ -27,7 +27,7 @@ const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company'
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints", 
                          "ssrn electronic journal", "dissertations available from proquest",
                          "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
-                         "wordpress › error");
+                         "wordpress › error", "ssrn temporarily unavailable");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -47,7 +47,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
                                  'Subscribe to read', 'Wiley Online Library', 'pagina is niet gevonden',
                                  'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended',
-                                 'Error 404', 'EZProxy', 'EBSCOhost Login', '404 - Not Found'];
+                                 'Error 404', 'EZProxy', 'EBSCOhost Login', '404 - Not Found',
+                                 'SSRN Temporarily Unavailable'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
