@@ -1598,9 +1598,9 @@ final class Template {
       }
     }
  
-    echo "XXX\n";
+
     print_r($result);
-    echo "XXX\n";   
+ 
     if ($result->numFound > 1) {
       # TODO: Work out what behaviour is desired in this situation, and implement it.
       report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
@@ -1768,6 +1768,7 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs($options) {  
+    echo "\n\n Coming in query_adsabs with " . $options . "\n\n";
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
@@ -1794,6 +1795,7 @@ final class Template {
         }
       }
       if ($return === FALSE) {
+        echo "\n return was false\n";
         $exception = curl_error($ch);
         $number = curl_errno($ch);
         curl_close($ch);
@@ -1804,8 +1806,11 @@ final class Template {
       curl_close($ch);
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
+   echo "\n header was : " . $header . "\n";
+         echo "\n body was : " . $body . "\n";
       $decoded = @json_decode($body);
       
+      print_r($decoded);
       if (is_object($decoded) && isset($decoded->error)) {
         if (is_object($decoded) && isset($decoded->error)) {
           throw new Exception(
