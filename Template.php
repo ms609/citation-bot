@@ -1584,7 +1584,7 @@ final class Template {
         $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
     } elseif ($this->blank('doi') && $this->has('arxiv')) {
         $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
-    } else { // Does this work???
+    } else {
       $identifiers = array();
       if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
         $identifiers[] = $doi[0];
@@ -1612,8 +1612,6 @@ final class Template {
         report_info("Similar title not found in database");
         return FALSE;
       }
-    } else {
-      $result = (object) array("numFound" => 0);
     }
     
     if ($result->numFound != 1 && $this->has('journal')) {
