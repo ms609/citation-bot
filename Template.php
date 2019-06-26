@@ -1576,14 +1576,14 @@ final class Template {
   
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
-      $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get("bibcode") . '"'));
     } elseif ($this->blank(['eprint', 'arxiv']) && $this->has('doi') 
               && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
-      $result = $this->query_adsabs("doi:" . urlencode('"' . $doi[0] . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $doi[0] . '"'));
     } elseif ($this->blank('doi') && $this->has('eprint')) {
-        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('eprint') . '"'));
+        $result = $this->query_adsabs("identifier:" . urlencode('"' .$this->get('eprint') . '"'));
     } elseif ($this->blank('doi') && $this->has('arxiv')) {
-        $result = $this->query_adsabs("arXiv:" . urlencode('"' .$this->get('arxiv') . '"'));
+        $result = $this->query_adsabs("identifier:" . urlencode('"' .$this->get('arxiv') . '"'));
     } else {
       $identifiers = array();
       if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
