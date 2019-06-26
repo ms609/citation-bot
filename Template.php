@@ -2895,6 +2895,10 @@ final class Template {
               $this->set($param, $matches[2]);
             }
           }
+          if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
+            $this->rename('author', 'agency');
+            return;
+          }
           // No return here
         case 'authors':
           if (!$pmatch[2]) {
