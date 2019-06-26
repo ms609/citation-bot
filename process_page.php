@@ -30,14 +30,8 @@ if (HTML_OUTPUT) {?>
 <pre id="botOutput">
 <?php
 }
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-if (WikipediaBot::is_valid_user($user)) {
-  echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
-  $edit_summary_end = " | [[User:$user|$user]]";
-} else {
-  $edit_summary_end = " | [[WP:UCB|User-activated]].";
-  $user = NULL;
-}
+
+$edit_summary_end = "| Activated by [[User:" . $api->get_the_user() . "]] ";
 
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
@@ -47,7 +41,6 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
 if (!isset($ON)) $ON = isset($argv[2]);
 
 foreach (explode('|', $pages) as $title) {
-
 
   if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
@@ -80,7 +73,6 @@ foreach (explode('|', $pages) as $title) {
   ?>
   <form method="post" action="process_page.php">
     <input type="hidden" name="page" value="<?php echo $title;?>" />
-    <input type="hidden" name="user" value="<?php echo $user;?>" />
     <input type="hidden" name="edit" value="on" />
     <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>" />
     <input type="submit" value="Submit edits" />

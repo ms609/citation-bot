@@ -1,20 +1,26 @@
 <?php
+// This library did the edits as the users in https://github.com/ms609/citation-bot/blob/439dc557d1c56c9a71b30a9c51e37234ff710dad/WikipediaBot.php
 // To use the oauthclient library, run:
 // composer require mediawiki/oauthclient
+use MediaWiki\OAuthClient\Client;
+use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
-
 class WikipediaBot {
   
-  protected $consumer, $token, $ch;
+  protected $consumer, $token, $ch, $the_user;
   
   function __construct() {
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
+    if (!getenv('TRAVIS')) {
+      $this->authenticate_user();
+    }
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
+    // Hard coded token and secret.
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
   }
   
@@ -25,6 +31,10 @@ class WikipediaBot {
   public function username() {
     $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
     return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : FALSE;
+  }
+  
+  public function get_the_user() {
+    return $this->the_user; // Might or might not match the above
   }
   
   private function ret_okay($response) {
@@ -262,7 +272,6 @@ class WikipediaBot {
     $titles = $this->what_transcludes_2($template, $namespace);
     return $titles["title"];
   }
-
   protected function what_transcludes_2($template, $namespace = 99) {
     
     $vars = Array (
@@ -290,7 +299,6 @@ class WikipediaBot {
     set_time_limit(120);
     return $list;
   }
-
   public function get_last_revision($page) {
     $res = $this->fetch(Array(
         "action" => "query",
@@ -304,7 +312,6 @@ class WikipediaBot {
     $page = reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? $page->revisions[0]->revid : FALSE);
   }
-
   public function get_prefix_index($prefix, $namespace = 0, $start = "") {
     $page_titles = [];
     # $page_ids = [];
@@ -333,7 +340,6 @@ class WikipediaBot {
     set_time_limit(120);
     return $page_titles;
   }
-
   public function get_namespace($page) {
     $res = $this->fetch([
         "action" => "query",
@@ -346,7 +352,6 @@ class WikipediaBot {
     }
     return (int) reset($res->query->pages)->ns;
   }
-
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.
   public function is_redirect($page) {
     $res = $this->fetch(Array(
@@ -362,7 +367,6 @@ class WikipediaBot {
     $res = reset($res->query->pages);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
-
   public function redirect_target($page) {
     $res = $this->fetch(Array(
         "action" => "query",
@@ -375,23 +379,49 @@ class WikipediaBot {
     }
     return $res->query->redirects[0]->to;
   }
-
   public function namespace_id($name) {
     $lc_name = strtolower($name);
     return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : NULL;
   }
-
   public function namespace_name($id) {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
   
   static public function is_valid_user($user) {
     if (!$user) return FALSE;
-    $headers_test = @get_headers('https://en.wikipedia.org/wiki/User:' . urlencode(str_replace(" ", "_", $user)), 1);
-    if ($headers_test === FALSE) return FALSE;
-    if (strpos((string) $headers_test[0], '404')) return FALSE;  // Even non-existent pages for valid users do exist.  They redirect, but do exist
-    if (strpos((string) $headers_test[0], '301')) return FALSE;  // This user used to exist, but changed names
+    $response = @file_get_contents('https://en.wikipedia.org/w/api.php?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
+    if ($response == FALSE) return FALSE;
+    $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
+    if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
+    if (strpos($response, '"blockid"') !== FALSE) return FALSE; // Valid but blocked
+    if (strpos($response, '"missing"') !== FALSE) return FALSE; // No such account
+    if (strpos($response, '"userid"')  === FALSE) return FALSE; // Double check, should actually never return FALSE here
     return TRUE;
   }
-
+  private function authenticate_user() {
+    if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
+     try {
+      $user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
+      // Validate the credentials.
+      $conf = new ClientConfig('https://en.wikipedia.org/w/index.php?title=Special:OAuth');
+      $conf->setConsumer(new Consumer(getenv('PHP_WP_OAUTH_CONSUMER'), getenv('PHP_WP_OAUTH_SECRET')));
+      $client = new Client($conf);
+      $ident = $client->identify( $user_token );
+      if (!$this->is_valid_user($ident->username)) {
+        @session_destroy();
+        exit('User is either invalid or blocked on en.wikipedia.org');
+      }
+      $this->the_user = $ident->username;
+      return;
+     }
+     catch (Throwable $e) { ; } // PHP 7
+     catch (Exception $e) { ; } // PHP 5
+    }
+    @session_destroy();
+    $return = urlencode($_SERVER['REQUEST_URI']);
+    @header("Location: authenticate.php?return=$return");
+    sleep(3);
+    echo('Valid user Token not found, go to <a href="authenticate.php">authenticate.php</a>');
+    exit(0);
+  }
 }

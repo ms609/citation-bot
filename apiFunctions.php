@@ -4,14 +4,15 @@ function query_pmc_api  ($pmcs, $templates)  { return entrez_api($pmcs,  $templa
   
 function entrez_api($ids, $templates, $db) {
   if (!count($ids)) return FALSE;
-  $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=DOIbot&email=martins@gmail.com&db=$db&id=" 
+  $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=$db&id=" 
                . implode(',', $ids);
   report_action("Using $db API to retrieve publication details: ");
   
   $xml = @simplexml_load_file($url);
   if ($xml === FALSE) {
     report_warning("Error in PubMed search: No response from Entrez server");
-    return;
+    // echo @file_get_contents("https://ifconfig.me/ip");
+    return FALSE;
   }
   
   foreach (array_keys($ids) as $i) {
@@ -86,6 +87,7 @@ function entrez_api($ids, $templates, $db) {
       }
     }
   }
+  return TRUE;
 }
 
 function query_bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
@@ -164,12 +166,6 @@ function arxiv_api($ids, $templates) {
 
 function adsabs_api($ids, $templates, $identifier) {
   if (count($ids) == 0) return FALSE;
-  if (count($ids) < 5) {
-    foreach ($templates as $template) {
-      $template->expand_by_adsabs();
-    }
-    return TRUE;
-  }
   
   foreach ($ids as $key => $bibcode) {
     if (strpos($bibcode, 'book') !== false) {
@@ -178,6 +174,12 @@ function adsabs_api($ids, $templates, $identifier) {
         strpos($bibcode, '&') !== false) {
         unset($ids[$key]);
     }
+  }
+  if (count($ids) < 5) {
+    foreach ($templates as $template) {
+      if ($template->has('bibcode')) $template->expand_by_adsabs();
+    }
+    return TRUE;
   }
   foreach ($templates as $template) {
     if ((strpos($template->get('bibcode'), '&') !== false) || (strpos($template->get('bibcode'), 'book') !== false)) {
@@ -237,8 +239,9 @@ function adsabs_api($ids, $templates, $identifier) {
              // "; reset at " . date('r', $rate_limit[2][2]);
       } else {
         report_warning("AdsAbs daily search limit exceeded. Big queries stopped until " . date('r', $rate_limit[2][2]) . "\n");
+        sleep(1);
         foreach ($templates as $template) {
-           $template->expand_by_adsabs();
+           if ($template->has('bibcode')) $template->expand_by_adsabs();
         }
         return TRUE;
       }
@@ -267,15 +270,19 @@ function adsabs_api($ids, $templates, $identifier) {
                     $e->getCode(), $e->getMessage()));
     }
     @curl_close($ch); // Some code paths have it closed, others do not
-    return FALSE;
+    foreach ($templates as $template) {
+        sleep(1);
+        if ($template->has('bibcode')) $template->expand_by_adsabs();
+    }
+    return TRUE;
   }
   
   foreach ($response->docs as $record) {
     if (!in_array($record->bibcode, $ids)) {  // Remapped bibcodes cause corrupt big queries
       foreach ($templates as $template) {
-        $template->expand_by_adsabs();
+        if ($template->has('bibcode')) $template->expand_by_adsabs();
       }
-      return;
+      return TRUE;
     }
   }
 
@@ -337,12 +344,14 @@ function adsabs_api($ids, $templates, $identifier) {
   if (sizeof($unmatched_ids)) {
     report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));
   }
+  return TRUE;
 }
 
 function query_doi_api($ids, $templates) {
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
+  return TRUE;
 }
 
 function expand_by_doi($template, $force = FALSE) {
@@ -444,6 +453,7 @@ function expand_by_doi($template, $force = FALSE) {
       expand_doi_with_dx($template, $doi);
     }
   }
+  return TRUE;
 }
 
 function query_crossref($doi) {
@@ -482,16 +492,16 @@ function expand_doi_with_dx($template, $doi) {
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      // Examples of DOI usage   https://www.doi.org/demos.html
-     if (stripos('10.2307', $doi) === 0) return; // jstor API is better
+     if (stripos('10.2307', $doi) === 0) return FALSE; // jstor API is better
      $try_to_add_it = function($name, $data) use($template) {
-       if (is_null($data)) return;
+       if (is_null($data)) return FALSE;
        while (is_array($data)) {
-         if (empty($data)) return;
-         if (!isset($data['0'])) return;
-         if (isset($data['1'])) return; // How dow we choose?
+         if (empty($data)) return FALSE;
+         if (!isset($data['0'])) return FALSE;
+         if (isset($data['1'])) return FALSE; // How dow we choose?
          $data = $data['0'];  // Going down deeper
        }
-       if ($data == '') return;
+       if ($data == '') return FALSE;
        $template->add_if_new($name, $data);
      };
      if (!$doi) return FALSE;

@@ -11,7 +11,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     public function testLoggedInUser() {
      $this->requires_secrets(function() {
       $api = new WikipediaBot();
-      $this->assertEquals("Citation bot test", $api->username());
+      $this->assertSame("Citation bot test", $api->username());
      });
     }
       
@@ -19,7 +19,7 @@ require_once __DIR__ . '/../testBaseClass.php';
      $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $this->assertTrue(count($api->category_members('GA-Class cricket articles')) > 10);
-      $this->assertEquals(0, count($api->category_members('A category we expect to be empty')));
+      $this->assertSame(0, count($api->category_members('A category we expect to be empty')));
      });
     }
     
@@ -34,7 +34,7 @@ require_once __DIR__ . '/../testBaseClass.php';
      $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $namespace = $api->get_namespace('Template:Cite journal');
-      $this->assertEquals($api->namespace_id('Template'), $namespace);
+      $this->assertSame($api->namespace_id('Template'), $namespace);
       $results = $api->get_prefix_index('Cite jo', $namespace); // too many results if we just use 'Cite'
       $this->assertTrue(array_search('Template:Cite journal', $results) !== FALSE);
       $results = $api->get_prefix_index("If we retrieve anything here, it's an error", $namespace);
@@ -45,10 +45,10 @@ require_once __DIR__ . '/../testBaseClass.php';
     public function testRedirects() {
      $this->requires_secrets(function() {
       $api = new WikipediaBot();
-      $this->assertEquals(-1, $api->is_redirect('NoSuchPage:ThereCan-tBe'));
-      $this->assertEquals( 0, $api->is_redirect('User:Citation_bot'));
-      $this->assertEquals( 1, $api->is_redirect('WP:UCB'));
-      $this->assertEquals('User:Citation bot/use', $api->redirect_target('WP:UCB'));
+      $this->assertSame(-1, $api->is_redirect('NoSuchPage:ThereCan-tBe'));
+      $this->assertSame( 0, $api->is_redirect('User:Citation_bot'));
+      $this->assertSame( 1, $api->is_redirect('WP:UCB'));
+      $this->assertSame('User:Citation bot/use', $api->redirect_target('WP:UCB'));
      });
     }
     
@@ -70,8 +70,8 @@ require_once __DIR__ . '/../testBaseClass.php';
       foreach ($namespaces->query->namespaces as $ns) {
         $ns_name = isset($ns->canonical)? $ns->canonical : '';
         $ns_id = (string) $ns->id;
-        $this->assertEquals($ns_id, $api->namespace_id($ns_name));
-        $this->assertEquals($ns_name, $api->namespace_name($ns_id));
+        $this->assertSame($ns_id, $api->namespace_id($ns_name));
+        $this->assertSame($ns_name, $api->namespace_name($ns_id));
       }
       
       /*
@@ -97,16 +97,30 @@ require_once __DIR__ . '/../testBaseClass.php';
     public function testGetLastRevision() {
      $this->requires_secrets(function() {
       $api = new WikipediaBot();
-      $this->assertEquals(805321380, 1 * $api->get_last_revision('User:Blocked testing account/readtest'));
+      $this->assertSame(805321380, 1 * $api->get_last_revision('User:Blocked testing account/readtest'));
      });
     }
    
     public function testIsValidUser() {
       $result = WikipediaBot::is_valid_user('Smith609');
-      $this->assertEquals(TRUE, $result);
+      $this->assertSame(TRUE, $result);
       $result = WikipediaBot::is_valid_user('Stanlha'); // Random user who exists but does not have page as of Nov 2017
-      $this->assertEquals(TRUE, $result);
+      $this->assertSame(TRUE, $result);
+    }
+    public function testIsINValidUser() {
       $result = WikipediaBot::is_valid_user('Not_a_valid_user_at_Dec_2017'); 
-      $this->assertEquals(FALSE, $result);
+      $this->assertSame(FALSE, $result);
+    }
+    public function testIsIPUser() {
+      $result = WikipediaBot::is_valid_user('178.16.5.186'); // IP address with talk page
+      $this->assertSame(FALSE, $result);
+    }
+    public function testIsIP6User() {
+      $result = WikipediaBot::is_valid_user('2602:306:bc8a:21e0:f0d4:b9dc:c050:2b2c'); // IP6 address with talk page
+      $this->assertSame(FALSE, $result);
+    }
+    public function testIsBlockedUser() {
+      $result = WikipediaBot::is_valid_user('RickK'); // BLOCKED
+      $this->assertSame(FALSE, $result);
     }
 }

@@ -190,7 +190,7 @@ function title_capitalization($in, $caps_after_punctuation) {
     $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalise after punctuation */,
       function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
-    $new_case = preg_replace_callback("~/[a-z]~u" /* Capitalise after slash without space */,
+    $new_case = preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalise after slash unless part of ending html tag */,
       function ($matches) {return mb_strtoupper($matches[0]);},
       $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles
@@ -328,7 +328,7 @@ function tidy_date($string) {
   if (strpos($string, '0001-11-30') !== FALSE) return '';
   if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
   if (preg_match('~^\d{4} \d{4}\-\d{4}$~', $string)) return ''; // si.edu
-  if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
+  if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes 
     if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
       if (strlen($matches[1]) === 1) $matches[1] = '0' . $matches[1];
       return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
@@ -359,6 +359,7 @@ function tidy_date($string) {
     $day = date('d', $time);
     $year = intval(date('Y', $time));
     if ($year < -2000 || $year > date("Y") + 10) return ''; // We got an invalid year
+    if ($year < 3 && $year > -3) return '';
     if ($day == '01') { // Probably just got month and year
       $string = date('F Y', $time);
     } else {
@@ -440,6 +441,8 @@ function str_remove_irrelevant_bits($str) {
   $str = trim($str);
   $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  ),
                       array('Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and '), $str);
+  $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>'), '', $str);
+
   return $str;
 }
 
