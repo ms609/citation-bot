@@ -1882,5 +1882,24 @@ ER -  }}';
     $this->assertSame('3798', $template->get('issue'));
     $this->assertSame('2', $template->get('volume'));
   }
-    
+  
+  public funciton testHandles() {
+    $template = new Template();
+    $template->parse_text('{{Cite journal|url=http://hdl.handle.net/10125/20269}}');
+    $template->tidy_parameter('url');
+    $this->assertSame('10125/20269', $template->get('hdl'));
+    $this->assertNull($template->get('url'));
+   
+    $template = new Template();
+    $template->parse_text('{{Cite journal|url=https://hdl.handle.net/handle/10125/20269}}');
+    $template->tidy_parameter('url');
+    $this->assertSame('10125/20269', $template->get('hdl'));
+    $this->assertNull($template->get('url'));
+
+    $template = new Template();
+    $template->parse_text('{{Cite journal|url=http://digitallibrary.amnh.org/dataset.xhtml?persistentId=hdl:10125/20269;jsessionid=EE3BA49390611FCE0AAAEBB819E777BC?sequence=1}}');
+    $template->tidy_parameter('url');
+    $this->assertSame('10125/20269', $template->get('hdl'));
+    $this->assertNull($template->get('url'));
+  }
 }
