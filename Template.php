@@ -3233,6 +3233,37 @@ final class Template {
               $this->set($param, $this->simplify_google_search($this->get($param)));
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
+          } elseif (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
+              // Use dots, not \. since it might match dot or dash
+              if (preg_match("~^https://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $this->get($param), $matches)) {
+                 report_info("Remove proxy from IEEE URL");
+                 $this->set($param, 'https://ieeexplore.ieee.org/document/' . $matches[1]);
+              } elseif (preg_match("~^https://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.oxfordhandbooks.com/view/' . $matches[1]);
+                 report_info("Remove proxy from Oxford Handbooks URL");
+              } elseif (preg_match("~^https://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
+                 report_info("Remove proxy from Oxford Art URL");
+              } elseif (preg_match("~^https://search.proquest.com.+proxy.+/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
+                 report_info("Remove proxy from ProQuest URL");
+              }
+          }
+          if (stripos($this->get($param), 'search.proquest.com') !== FALSE) {
+            $changed = FALSE;
+            if (preg_match("~^https?://search.proquest.com/.+/docview/(.+)$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // Remove specific search engine
+            }
+            if (preg_match("~^https?://search.proquest.com/docview/(.+)/fulltext/.*$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
+            }
+            if (preg_match("~^https?://search.proquest.com/docview/(.+)\?accountid=.*$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
+            }
+            if ($changed) report_info("Normalized ProQuest URL");
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) &&
               $this->has('chapter') && $this->wikiname() === 'cite book' &&
