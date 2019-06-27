@@ -54,6 +54,7 @@ function drop_urls_that_match_dois($templates) {
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
+    echo "\n\n" .$doi."\n".$url."\n\n";
     if ($doi &&
         $url &&
         !$template->profoundly_incomplete() &&
@@ -75,6 +76,7 @@ function drop_urls_that_match_dois($templates) {
             if ( preg_match('~^https?://.+/pii/?(S\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
                  $redirectedUrl_doi = $matches[1] ;  // Grab PII numbers
             }
+    echo "\n" .$redirectedUrl_doi."\n".$url_short."\n\n";
             if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                 stripos($redirectedUrl_doi, $url_short) !== FALSE) {
                report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
@@ -84,6 +86,7 @@ function drop_urls_that_match_dois($templates) {
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
                   $redirectedUrl_url = url_simplify($redirectedUrl_url);
+                     echo "\n" .$redirectedUrl_url."\n\n";
                   if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
                       stripos($redirectedUrl_doi, $redirectedUrl_url) !== FALSE) {
                     report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
