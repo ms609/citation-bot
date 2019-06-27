@@ -19,7 +19,9 @@ const REGEXP_IS_URL = '~^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.
 // This list is going to grow and grow based upon user requests
 // ALWAYS verify that they registered the examples you are given
 // http://oasis.postech.ac.kr/handle/2014.oak/9965 is not registered for example
-// The code changes the dots to \.
+// But, the code verifies each and every hdl, before the conversion is done, so even bad hosts should be fine
+
+// The code changes the dots to \. in this list
 const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.es', 'fieldresearch.msf.org',
                             'dspace.lib.cranfield.ac.uk', 'dspace.lboro.ac.uk', 'scholarship.rice.edu',
                             'deepblue.lib.umich.edu', 'arrow.latrobe.edu.au', 'kb.osu.edu', 'scholarworks.csun.edu',
