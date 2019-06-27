@@ -1264,6 +1264,13 @@ final class Template {
               }
             }
             if ($handle) {
+              // Trim off session stuff
+              while (preg_match('~^(.+)(?:;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=)~', $handle, $matches)) {
+                $handle = $mathes[1];
+              }
+              if (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
+                $handle = $mathes[1];
+              }
               $url_test = "https://hdl.handle.net/" . urlencode($handle);
               $headers_test = @get_headers($url_test, 1);  // verify that data is registered
               if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
