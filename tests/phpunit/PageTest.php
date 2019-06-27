@@ -10,7 +10,7 @@ final class PageTest extends testBaseClass {
 
  
   public function testEmptyPage() {
-      $page = $this->process_page('{{cite journal | url=https://www.sciencedirect.com/science/article/pii/004019519400203L| title=Source parameters of the Anjar earthquake of July 21, 1956, India, and its seismotectonic implications for the Kutch rift basin | author=Chung W.-Y. & Gao H. | journal=Tectonophysics | year=1995 | volume=242 | issue=3–4 | pages=281–292 | doi=10.1016/0040-1951(94)00203-L | bibcode=1995Tectp.242..281C }}
+      $page = $this->process_page('{{cite journal |doi=10.1086/305561 |url=http://iopscience.iop.org/0004-637X/498/2/640 }}
 ');
       $this->assertNull($page->parsed_text());
   }
