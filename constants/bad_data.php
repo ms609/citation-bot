@@ -27,7 +27,8 @@ const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company'
 const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints", 
                          "ssrn electronic journal", "dissertations available from proquest",
                          "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
-                         "wordpress › error", "ssrn temporarily unavailable");
+                         "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
+                         "shibboleth authentication request", "nookmarkable url intermediate page");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
