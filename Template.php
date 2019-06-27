@@ -3235,16 +3235,16 @@ final class Template {
               $this->set($param, $matches[1]);
           } elseif (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
               // Use dots, not \. since it might match dot or dash
-              if (preg_match("~^https://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $this->get($param), $matches)) {
+              if (preg_match("~^https?://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $this->get($param), $matches)) {
                  report_info("Remove proxy from IEEE URL");
                  $this->set($param, 'https://ieeexplore.ieee.org/document/' . $matches[1]);
-              } elseif (preg_match("~^https://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
+              } elseif (preg_match("~^https?://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.oxfordhandbooks.com/view/' . $matches[1]);
                  report_info("Remove proxy from Oxford Handbooks URL");
-              } elseif (preg_match("~^https://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
+              } elseif (preg_match("~^https?://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
                  report_info("Remove proxy from Oxford Art URL");
-              } elseif (preg_match("~^https://search.proquest.com.+proxy.+/docview/(.+)$~", $this->get($param), $matches)) {
+              } elseif (preg_match("~^https?://search.proquest.com.+proxy.+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
                  report_info("Remove proxy from ProQuest URL");
               }
