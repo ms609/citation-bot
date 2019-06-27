@@ -78,7 +78,7 @@ function drop_urls_that_match_dois($templates) {
               echo "\ncookie\n";
               break;
             }
-            if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break{
+            if (stripos($redirectedUrl_doi, 'denied') !== FALSE) {
               echo "\denied\n";
               break;
             }
