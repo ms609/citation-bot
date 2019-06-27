@@ -19,6 +19,7 @@ const REGEXP_IS_URL = '~^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.
 // This list is going to grow and grow based upon user requests
 // ALWAYS verify that they registered the examples you are given
 // http://oasis.postech.ac.kr/handle/2014.oak/9965 is not registered for example
+// The code changes the dots to \.
 const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.es', 'fieldresearch.msf.org',
                             'dspace.lib.cranfield.ac.uk', 'dspace.lboro.ac.uk', 'scholarship.rice.edu',
                             'deepblue.lib.umich.edu', 'arrow.latrobe.edu.au', 'kb.osu.edu', 'scholarworks.csun.edu',
@@ -28,9 +29,10 @@ const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.e
                             'lume.ufrgs.br', 'digitallibrary.amnh.org'
                            );
 // Order here could matter
+// YOU MUST escape the RegEx
 const HANDLES_PATHS = array('/dspace/bitstream/handle/', '/msf/handle/', '/vital/access/HandleResolver/',
-                            '/handle/', '/dspace-jspui/handle/', '/dataset.xhtml?persistentId=hdl:',
+                            '/handle/', '/dspace-jspui/handle/', '/dataset.xhtml\?persistentId=hdl:',
                             '/dspace/handle/', '/handle2/', '/xmlui/handle/', '/iris/handle/',
                             '/repository/bitstream/handle/', '/repository/handle/', 
-                            '/tools/dspace/load/?file=/repository/bitstream/handle/',
+                            '/tools/dspace/load/\?file=/repository/bitstream/handle/',
                             '/xmlui/bitstream/handle/');
