@@ -3244,7 +3244,7 @@ final class Template {
               } elseif (preg_match("~^https?://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
                  report_info("Remove proxy from Oxford Art URL");
-              } elseif (preg_match("~^https?://search.proquest.com.+proxy.+/docview/(.+)$~", $this->get($param), $matches)) {
+              } elseif (preg_match("~^(?:http.+/login\?url=|)https?://search.proquest.com.+proxy.+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
                  report_info("Remove proxy from ProQuest URL");
               }
