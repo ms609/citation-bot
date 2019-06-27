@@ -72,7 +72,7 @@ function drop_urls_that_match_dois($templates) {
        } else {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
-            echo "\n got a url " . $redirectedUrl_doi "\n";
+            echo "\n got a url " . $redirectedUrl_doi . "\n";
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE){
               echo "\ncookie\n";
