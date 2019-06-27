@@ -55,6 +55,9 @@ function drop_urls_that_match_dois($templates) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
     echo "\n\n" .$doi."\n".$url."\n\n";
+    if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) echo "\n ISSN only \n";
+    if ($template->profoundly_incomplete()) echo "\n incomp \n";
+    if ($doi && $url) echo "\n got both\n";
     if ($doi &&
         $url &&
         !$template->profoundly_incomplete() &&
@@ -62,15 +65,23 @@ function drop_urls_that_match_dois($templates) {
         (strpos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
+      echo "\n Trying\n";
        if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; dropping URL");
           $template->forget('url');
        } else {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
+            echo "\n got a url " . $redirectedUrl_doi "\n";
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-            if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
-            if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
+            if (stripos($redirectedUrl_doi, 'cookie') !== FALSE){
+              echo "\ncookie\n";
+              break;
+            }
+            if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break{
+              echo "\denied\n";
+              break;
+            }
             $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
             $url_short         = url_simplify($url);
             if ( preg_match('~^https?://.+/pii/?(S\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
