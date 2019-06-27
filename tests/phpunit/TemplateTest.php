@@ -1883,7 +1883,7 @@ ER -  }}';
     $this->assertSame('2', $template->get('volume'));
   }
   
-  public funciton testHandles() {
+  public function testHandles() {
     $template = new Template();
     $template->parse_text('{{Cite journal|url=http://hdl.handle.net/10125/20269}}');
     $template->tidy_parameter('url');
