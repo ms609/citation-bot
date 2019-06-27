@@ -1248,9 +1248,6 @@ final class Template {
           }
         }
       } elseif (stripos($url, 'handle') !== FALSE) {
-          // This list is going to grow and grow based upon user requests
-          // ALWAYS verify that they registered the examples you are given
-          // http://oasis.postech.ac.kr/handle/2014.oak/9965 is not registered for example
           $handle1 = FALSE;
           foreach (HANDLES_HOSTS as $hosts) {
             if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
