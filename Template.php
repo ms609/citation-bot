@@ -3356,8 +3356,9 @@ final class Template {
               $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
               $via = trim(strtolower($this->get('via')));
-              if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier',
-                                  'wiley interscience', 'interscience', 'sciencedirect', 'science direct'])) 
+              if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
+                                  'wiley interscience', 'interscience', 'sciencedirect', 'science direct', 'ebscohost',
+                                  'proquest', 'google scholar', 'google', 'bing', 'yahoo'])) 
               { 
                 $this->forget('via');
               }
