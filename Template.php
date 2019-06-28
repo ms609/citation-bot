@@ -3104,6 +3104,23 @@ final class Template {
           if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { ;
              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
              $this->set($param, title_capitalization($periodical, TRUE));
+          } else {
+            if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
+              // Not ready to do capitalization yet, untested, so leave in but commented out
+              // if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical);
+              // $periodical  = '[[' . title_capitalization($matches[1], TRUE)) . ']]';
+              // this->set($param, $periodical);
+            } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
+              $linked_text = $matches[1];
+              $human_text  = $matches[2];
+              if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
+                $human_text = $matches[1];
+              }
+              // if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical);
+              // $linked_text = title_capitalization($linked_text, TRUE)); // We assume that human text is some kind of abreviations that we really don't wan to mess with
+              $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
+              $this->set($param, $periodical);
+            }
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           return;
