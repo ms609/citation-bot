@@ -3307,15 +3307,19 @@ final class Template {
               if (preg_match("~^https?://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $this->get($param), $matches)) {
                  report_info("Remove proxy from IEEE URL");
                  $this->set($param, 'https://ieeexplore.ieee.org/document/' . $matches[1]);
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via'));
               } elseif (preg_match("~^https?://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.oxfordhandbooks.com/view/' . $matches[1]);
                  report_info("Remove proxy from Oxford Handbooks URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via'));
               } elseif (preg_match("~^https?://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
                  report_info("Remove proxy from Oxford Art URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via'));
               } elseif (preg_match("~^(?:http.+/login\?url=|)https?://search.proquest.com.+proxy.+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
                  report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via'));
               }
           }
           if (stripos($this->get($param), 'search.proquest.com') !== FALSE) {
@@ -3324,7 +3328,7 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // Remove specific search engine
             }
-            if (preg_match("~^https?://search.proquest.com/docview/(.+)/fulltext/.*$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search.proquest.com/docview/(.+)/fulltext.*$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
