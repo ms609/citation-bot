@@ -1248,6 +1248,11 @@ final class Template {
           }
         }
       } elseif (stripos($url, 'handle') !== FALSE) {
+          // Special case of hdl.handle.net/123/456
+          if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
+            $url = 'https://hdl.handle.net/handle/' . $matches[1];
+          }
+          // Hostname
           $handle1 = FALSE;
           foreach (HANDLES_HOSTS as $hosts) {
             if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
@@ -1255,42 +1260,47 @@ final class Template {
               break;
             }
           }
-          if ($handle1) {
-            $handle = FALSE;
-            foreach (HANDLES_PATHS as $handle_path) {
-              if (preg_match('~^' . $handle_path . '(/.+)$~', $handle, $matches)) {
-                $handle = $matches[1];
-                break;
-              }
-            }
-            if ($handle) {
-              // Trim off session stuff
-              while (preg_match('~^(.+)(?:;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=)~', $handle, $matches)) {
-                $handle = $mathes[1];
-              }
-              if (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
-                $handle = $mathes[1];
-              }
-              $url_test = "https://hdl.handle.net/" . urlencode($handle);
-              $headers_test = @get_headers($url_test, 1);  // verify that data is registered
-              if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
-               return FALSE; // does not resolve.
-              }
-              quietly('report_modification', "Converting URL to HDL parameter");
-              if (is_null($url_sent)) {
-                 $this->forget($url_type);
-              }
-              if ($this->wikiname() === 'cite web') {
-                if ($this->has('journal')) {
-                  $this->change_name_to('cite journal');
-                } else {
-                  $this->change_name_to('cite document');
-                }
-              }
-              return $this->add_if_new('hdl', $handle);
+          if (!$handle1) return FALSE;
+          // file path
+          $handle = FALSE;
+          foreach (HANDLES_PATHS as $handle_path) {
+            if (preg_match('~^' . $handle_path . '(.+)$~', $handle1, $matches)) {
+              $handle = $matches[1];
+              break;
             }
           }
-          return FALSE;
+          if (!$handle) return FALSE;
+          // Trim off session stuff
+          while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=)~',
+                                $handle, $matches)) {
+            $handle = $matches[1];
+          }
+          while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
+            $handle = $mathes[1];
+          }
+          while (preg_match('~^/(.+)$~', $handle, $matches)) { // Leading slash
+            $handle = $mathes[1];
+          }
+          // Safety check
+          if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
+          // Verify that it works as a hdl
+          $url_test = "https://hdl.handle.net/" . urlencode($handle);
+          $headers_test = @get_headers($url_test, 1);  // verify that data is registered
+          if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
+             return FALSE; // does not resolve.
+          }
+          quietly('report_modification', "Converting URL to HDL parameter");
+          if (is_null($url_sent)) {
+             $this->forget($url_type);
+          }
+          if ($this->wikiname() === 'cite web') {
+            if ($this->has('journal')) {
+              $this->change_name_to('cite journal');
+            } else {
+              $this->change_name_to('cite document');
+            }
+          }
+          return $this->add_if_new('hdl', $handle);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
