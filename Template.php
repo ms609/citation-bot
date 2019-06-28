@@ -2913,8 +2913,9 @@ final class Template {
 
           
         case 'agency':
-          if ($this->get('agency') == 'United States Food and Drug Administration' &&
-              $this->get('publisher') == 'United States Department of Health and Human Services') {
+          if (in_array($this->get('agency'), ['United States Food and Drug Administration', 'Surgeon General of the United States'])
+               &&
+              in_array($this->get('publisher'), ['United States Department of Health and Human Services', ''])) {
             $this->forget('publisher');
             $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages.
           }
