@@ -1248,6 +1248,7 @@ final class Template {
           }
         }
       } elseif (stripos($url, 'handle') !== FALSE) {
+          echo "\n looking at " . $url . "\n";
           // Special case of hdl.handle.net/123/456
           if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
             $url = 'https://hdl.handle.net/handle/' . $matches[1];
@@ -1260,6 +1261,7 @@ final class Template {
               break;
             }
           }
+                  echo "\n handle1 is " . $handle1 . "\n";
           if (!$handle1) return FALSE;
           // file path
           $handle = FALSE;
@@ -1269,6 +1271,7 @@ final class Template {
               break;
             }
           }
+                          echo "\n handle is " . $handle . "\n";
           if (!$handle) return FALSE;
           // Trim off session stuff
           while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=)~',
@@ -1281,13 +1284,16 @@ final class Template {
           while (preg_match('~^/(.+)$~', $handle, $matches)) { // Leading slash
             $handle = $mathes[1];
           }
+          echo "\n after clean up is " . $handle . "\n";
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
           // Verify that it works as a hdl
+                  echo "\n after safety check is " . $handle . "\n";
           $url_test = "https://hdl.handle.net/" . urlencode($handle);
           $headers_test = @get_headers($url_test, 1);  // verify that data is registered
           if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
-             return FALSE; // does not resolve.
+                       echo "\n  test failed \n"; 
+            return FALSE; // does not resolve.
           }
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
