@@ -1882,5 +1882,40 @@ ER -  }}';
     $this->assertSame('3798', $template->get('issue'));
     $this->assertSame('2', $template->get('volume'));
   }
-    
+  
+  public function testHandles1() {
+    $template = new Template();
+    $template->parse_text('{{Cite journal|url=http://hdl.handle.net/10125/20269}}');
+    $template->get_identifiers_from_url();
+    $this->assertSame('10125/20269', $template->get('hdl'));
+    $this->assertNull($template->get('url'));
+  }
+  public function testHandles2() {
+    $template = new Template();
+    $template->parse_text('{{Cite journal|url=https://hdl.handle.net/handle/10125/20269}}');
+    $template->get_identifiers_from_url();
+    $this->assertSame('10125/20269', $template->get('hdl'));
+    $this->assertNull($template->get('url'));
+  }
+  public function testHandles3() {
+    $template = new Template();
+    $template->parse_text('{{Cite journal|url=http://digitallibrary.amnh.org/dataset.xhtml?persistentId=hdl:10125/20269;jsessionid=EE3BA49390611FCE0AAAEBB819E777BC?sequence=1}}');
+    $template->get_identifiers_from_url();
+    $this->assertSame('10125/20269', $template->get('hdl'));
+    $this->assertNull($template->get('url'));
+  }
+ 
+  public function testAuthorToLast() {
+    $text = '{{Cite journal|author1=Last|first1=First}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('Last', $template->get('last1'));
+    $this->assertSame('First', $template->get('first1'));
+    $this->assertNull($template->get('author1'));
+   
+    $text = '{{Cite journal|author1=Last|first2=First}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('Last', $template->get('author1'));
+    $this->assertSame('First', $template->get('first2'));
+    $this->assertNull($template->get('last1'));
+  }
 }

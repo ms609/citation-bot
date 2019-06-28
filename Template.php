@@ -1247,11 +1247,47 @@ final class Template {
             }
           }
         }
-      } elseif (preg_match(REGEXP_HANDLES, $url, $match)) {
-          $url_test = "https://hdl.handle.net/" . urlencode($match[1]);
+      } elseif (stripos($url, 'handle') !== FALSE || stripos($url, 'persistentId=hdl:') !== FALSE) {
+          // Special case of hdl.handle.net/123/456
+          if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
+            $url = 'https://hdl.handle.net/handle/' . $matches[1];
+          }
+          // Hostname
+          $handle1 = FALSE;
+          foreach (HANDLES_HOSTS as $hosts) {
+            if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
+              $handle1 = $matches[1];
+              break;
+            }
+          }
+          if (!$handle1) return FALSE;
+          // file path
+          $handle = FALSE;
+          foreach (HANDLES_PATHS as $handle_path) {
+            if (preg_match('~^' . $handle_path . '(.+)$~', $handle1, $matches)) {
+              $handle = $matches[1];
+              break;
+            }
+          }
+          if (!$handle) return FALSE;
+          // Trim off session stuff
+          while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=)~',
+                                $handle, $matches)) {
+            $handle = $matches[1];
+          }
+          while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
+            $handle = $mathes[1];
+          }
+          while (preg_match('~^/(.+)$~', $handle, $matches)) { // Leading slash
+            $handle = $mathes[1];
+          }
+          // Safety check
+          if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
+          // Verify that it works as a hdl
+          $url_test = "https://hdl.handle.net/" . urlencode($handle);
           $headers_test = @get_headers($url_test, 1);  // verify that data is registered
           if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
-               return FALSE; // does not resolve.
+             return FALSE; // does not resolve.
           }
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
@@ -1264,7 +1300,7 @@ final class Template {
               $this->change_name_to('cite document');
             }
           }
-          return $this->add_if_new('hdl', $match[1]);
+          return $this->add_if_new('hdl', $handle);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
@@ -2899,6 +2935,10 @@ final class Template {
             $this->rename('author', 'agency');
             return;
           }
+          // Convert authorX to lastX, if firstX is set
+          if (isset($pmatch[2]) && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
+            $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
+          }
           // No return here
         case 'authors':
           if (!$pmatch[2]) {
@@ -3068,6 +3108,24 @@ final class Template {
           if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { ;
              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
              $this->set($param, title_capitalization($periodical, TRUE));
+          } else {
+            if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
+              // $periodical = $matches[1];
+              // if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical);
+              // $periodical  = '[[' . title_capitalization($periodical, TRUE)) . ']]';
+              // this->set($param, $periodical);
+            } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
+              $linked_text = $matches[1];
+              $human_text  = $matches[2];
+              if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
+                $human_text = $matches[1];
+              }
+              // if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ') $linked_text = ucwords($linked_text);
+              // $linked_text = title_capitalization($linked_text, TRUE));
+              // We assume that human text is some kind of abreviations that we really don't wan to mess with
+              $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
+              $this->set($param, $periodical);
+            }
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           return;
@@ -3233,6 +3291,37 @@ final class Template {
               $this->set($param, $this->simplify_google_search($this->get($param)));
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
+          } elseif (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
+              // Use dots, not \. since it might match dot or dash
+              if (preg_match("~^https?://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $this->get($param), $matches)) {
+                 report_info("Remove proxy from IEEE URL");
+                 $this->set($param, 'https://ieeexplore.ieee.org/document/' . $matches[1]);
+              } elseif (preg_match("~^https?://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.oxfordhandbooks.com/view/' . $matches[1]);
+                 report_info("Remove proxy from Oxford Handbooks URL");
+              } elseif (preg_match("~^https?://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
+                 report_info("Remove proxy from Oxford Art URL");
+              } elseif (preg_match("~^(?:http.+/login\?url=|)https?://search.proquest.com.+proxy.+/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
+                 report_info("Remove proxy from ProQuest URL");
+              }
+          }
+          if (stripos($this->get($param), 'search.proquest.com') !== FALSE) {
+            $changed = FALSE;
+            if (preg_match("~^https?://search.proquest.com/.+/docview/(.+)$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // Remove specific search engine
+            }
+            if (preg_match("~^https?://search.proquest.com/docview/(.+)/fulltext/.*$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
+            }
+            if (preg_match("~^https?://search.proquest.com/docview/(.+)\?accountid=.*$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
+            }
+            if ($changed) report_info("Normalized ProQuest URL");
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) &&
               $this->has('chapter') && $this->wikiname() === 'cite book' &&
@@ -3289,8 +3378,9 @@ final class Template {
               $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
               $via = trim(strtolower($this->get('via')));
-              if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier',
-                                  'wiley interscience', 'interscience', 'sciencedirect', 'science direct'])) 
+              if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
+                                  'wiley interscience', 'interscience', 'sciencedirect', 'science direct', 'ebscohost',
+                                  'proquest', 'google scholar', 'google', 'bing', 'yahoo'])) 
               { 
                 $this->forget('via');
               }
