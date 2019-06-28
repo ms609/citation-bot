@@ -3392,6 +3392,8 @@ final class Template {
               $this->forget('via');
             } elseif (stripos($this->get('via'), 'questia') !== FALSE && $this->has('isbn')) {
               $this->forget('via');
+            } elseif (stripos($this->get('via'), 'library') !== FALSE) {
+              $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
               $via = trim(strtolower($this->get('via')));
               if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
