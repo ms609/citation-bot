@@ -3266,7 +3266,7 @@ final class Template {
           $this->set($param, $title);
           if ($title && str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           if ($title && str_equivalent($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
-          if (preg_match('~^(.+)(?:\{\{!\}\} Request PDF$~i', trim($this->get($param)), $match)) {
+          if (preg_match('~^(.+)\{\{!\}\} Request PDF$~i', trim($this->get($param)), $match)) {
                  $this->set($param, trim($match[1]));
           } elseif (!$this->blank(['isbn', 'doi', 'pmc', 'pmid']) && preg_match('~^(.+) \(PDF\)$~i', trim($this->get($param)), $match)) {
                  $this->set($param, trim($match[1])); // Books/journals probably don't end in (PDF)
