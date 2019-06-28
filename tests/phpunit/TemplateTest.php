@@ -1904,4 +1904,18 @@ ER -  }}';
     $this->assertSame('10125/20269', $template->get('hdl'));
     $this->assertNull($template->get('url'));
   }
+ 
+  public function testAuthorToLast() {
+    $text = '{{Cite journal|author1=Last|first1=First}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('Last', $template->get('last1'));
+    $this->assertSame('First', $template->get('first1'));
+    $this->assertNull($template->get('author1'));
+   
+    $text = '{{Cite journal|author1=Last|first2=First}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('Last', $template->get('author1'));
+    $this->assertSame('First', $template->get('first2'));
+    $this->assertNull($template->get('last1'));
+  }
 }
