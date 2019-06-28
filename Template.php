@@ -2913,7 +2913,9 @@ final class Template {
 
           
         case 'agency':
-          if (in_array($this->get('agency'), ['United States Food and Drug Administration', 'Surgeon General of the United States'])
+          if (in_array($this->get('agency'), ['United States Food and Drug Administration',
+                                              'Surgeon General of the United States',
+                                              'California Department of Public Health'])
                &&
               in_array($this->get('publisher'), ['United States Department of Health and Human Services', ''])) {
             $this->forget('publisher');
