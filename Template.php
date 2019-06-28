@@ -3110,9 +3110,9 @@ final class Template {
              $this->set($param, title_capitalization($periodical, TRUE));
           } else {
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
-              // Not ready to do capitalization yet, untested, so leave in but commented out
+              // $periodical = $matches[1];
               // if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical);
-              // $periodical  = '[[' . title_capitalization($matches[1], TRUE)) . ']]';
+              // $periodical  = '[[' . title_capitalization($periodical, TRUE)) . ']]';
               // this->set($param, $periodical);
             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
               $linked_text = $matches[1];
@@ -3120,8 +3120,9 @@ final class Template {
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
                 $human_text = $matches[1];
               }
-              // if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical);
-              // $linked_text = title_capitalization($linked_text, TRUE)); // We assume that human text is some kind of abreviations that we really don't wan to mess with
+              // if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ') $linked_text = ucwords($linked_text);
+              // $linked_text = title_capitalization($linked_text, TRUE));
+              // We assume that human text is some kind of abreviations that we really don't wan to mess with
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
             }
