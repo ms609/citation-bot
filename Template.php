@@ -2911,6 +2911,15 @@ final class Template {
           }
           return;
 
+          
+        case 'agency':
+          if ($this->get('agency') == 'United States Food and Drug Administration' &&
+              $this->get('publisher') == 'United States Department of Health and Human Services') {
+            $this->forget('publisher');
+            $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages.
+          }
+          return;
+          
         case 'arxiv':
           if ($this->has($param) && $this->wikiname() == 'cite web') {
             $this->change_name_to('cite arxiv');
