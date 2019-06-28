@@ -1264,7 +1264,7 @@ final class Template {
           // file path
           $handle = FALSE;
           foreach (HANDLES_PATHS as $handle_path) {
-            if (preg_match('~^' . $handle_path . '(/.+)$~', $handle1, $matches)) {
+            if (preg_match('~^' . $handle_path . '(.+)$~', $handle1, $matches)) {
               $handle = $matches[1];
               break;
             }
