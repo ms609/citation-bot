@@ -2935,6 +2935,10 @@ final class Template {
             $this->rename('author', 'agency');
             return;
           }
+          // Convert authorX to lastX, if firstX is set
+          if (isset($pmatch[2]) && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
+            $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
+          }
           // No return here
         case 'authors':
           if (!$pmatch[2]) {
