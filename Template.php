@@ -3484,7 +3484,7 @@ final class Template {
           } else {
             $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
           }
-          if (preg_match('~^p\.p\. *(\d+[–-]\d+)$~' , $value, $matches) {
+          if (preg_match('~^p\.p\. *(\d+[–-]\d+)$~' , $value, $matches)) {
             $this->set($param, $matches[1]);
           }
           return;
