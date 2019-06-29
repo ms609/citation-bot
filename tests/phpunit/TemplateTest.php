@@ -1796,6 +1796,16 @@ ER -  }}';
     $this->assertSame('222', $prepared->get('number'));
     $this->assertSame('12.33', $prepared->get('volume'));
 
+    $text = '{{cite journal|volume = Volume 12.33}}'; // Volume goes away first, then demixed
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('33', $prepared->get('issue'));
+    $this->assertSame('12', $prepared->get('volume'));
+  }
+ 
+  public function testCleanUpPages() {
+    $text = '{{cite journal|pages=p.p. 20-23}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('20–23', $prepared->get('pages')); // Drop p.p. and upgraded dashes
   }
  
   public function testSpaces() {
