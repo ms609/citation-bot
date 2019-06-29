@@ -2916,9 +2916,10 @@ final class Template {
                                               'Surgeon General of the United States',
                                               'California Department of Public Health'])
                &&
-              in_array($this->get('publisher'), ['United States Department of Health and Human Services', ''])) {
+              in_array($this->get('publisher'), 
+                ['United States Department of Health and Human Services', 'California Tobacco Control Program', ''])) {
             $this->forget('publisher');
-            $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages.
+            $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
           }
           return;
           
