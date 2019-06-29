@@ -3420,8 +3420,8 @@ final class Template {
               $this->forget('volume');
             }
           }
-          if (preg_match('~^(?:Vol\.?|Vol:|volume ) *(\d+)$~i', $value, $matches)) {
-            $value = $matches[1];
+          if (preg_match('~^(?:Vol\.?|Vol:|volume ) *(\d+)$~i', $this->get($param), $matches)) {
+            $this->set($param, $matches[1]);
           }
           $this->volume_issue_demix($this->get($param), $param);
           return;
