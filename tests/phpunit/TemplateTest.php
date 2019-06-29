@@ -1802,7 +1802,7 @@ ER -  }}';
   }
  
   public function testCleanUpPages() {
-    $text = '{{cite journal|pages=p.p. 20-23}';
+    $text = '{{cite journal|pages=p.p. 20-23}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('20–23', $prepared->get('pages')); // Drop p.p. and upgraded dashes
   }
