@@ -587,9 +587,8 @@ final class Template {
       
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
-        if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')
-                                      || ($this->get($param_name) === "{title}")
-                                      || ($this->get($param_name) === 'ScienceDirect')
+        if ($this->blank($param_name) || in_array($this->get($param_name),
+                                           ['Archived copy', "{title}", 'ScienceDirect', "Google Books"])
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
           if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
             return FALSE;
