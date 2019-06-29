@@ -3460,6 +3460,9 @@ final class Template {
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
           }
+          if (preg_match('~^p\.p\. *(\d+[–-]\d+)$~' , $value, $matches)) {
+            $this->set($param, $matches[1]);
+          }
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && can_safely_modify_dashes($value)) {
             $this->mod_dashes = TRUE;
@@ -3483,9 +3486,6 @@ final class Template {
             $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
           } else {
             $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
-          }
-          if (preg_match('~^p\.p\. *(\d+[–-]\d+)$~' , $value, $matches)) {
-            $this->set($param, $matches[1]);
           }
           return;
           
