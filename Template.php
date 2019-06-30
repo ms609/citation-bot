@@ -3358,7 +3358,7 @@ final class Template {
             }
           }
           if (stripos($this->get($param), 'proquest') !== FALSE) {
-            if (preg_match("~^(?:http.+/login\?url=|)https?://search.proquest.com.+/docview/(.+)$~", $this->get($param), $matches)) {
+            if (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com.+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
@@ -3374,6 +3374,10 @@ final class Template {
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
             if (preg_match("~^https?://search.proquest.com/docview/(.+)\?accountid=.*$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
+            }
+            if (preg_match("~^https?://search.proquest.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
