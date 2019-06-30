@@ -22,7 +22,7 @@ if (isset($_REQUEST["slow"])) {
   <link rel="stylesheet" type="text/css" href="css/results.css" />
   </head>
   <body>
-    <pre>
+    <pre id="botOutput">
 <?php
 
 $page = str_replace(' ', '_', trim($_REQUEST['page']));
