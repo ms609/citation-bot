@@ -3460,7 +3460,7 @@ final class Template {
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
           }
-          if (preg_match('~^p\.p\. *(\d+[–-]\d+)$~' , $value, $matches)) {
+          if (preg_match('~^p\.p\. *(\d+[–-]\d+)$~u' , $value, $matches)) {
             $this->set($param, $matches[1]);
           }
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
