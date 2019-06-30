@@ -3471,6 +3471,11 @@ final class Template {
         case 'issue':
         case 'number':
           $value = trim($this->get($param));
+          if ($param === 'issue' || $param === 'number') {
+            if (preg_match('~^(?:iss\.|iss|issue|num|num\.|no|no\.)\s+(\d+)$~i$~i', $value, $matches)) {
+              $value = trim($matches[1]);
+            }
+          }
           // Remove leading zeroes
           if ($this->get('journal') != 'Insecta Mundi') {
             $value = preg_replace('~^0+~', '', $value);
@@ -4176,12 +4181,6 @@ final class Template {
   protected function volume_issue_demix($data, $param) {
      if (!in_array($param, ['volume','issue','number'])) return;
      $data = trim($data);
-     if ($param === 'issue' || $param === 'number') {
-       if (preg_match('~^(?:iss\.|iss|issue|num|num\.|no|no\.)\s+(\d+)$~i$~i', $data, $matches)) {
-         $data = trim($matches[1]);
-         $this->set($param, $data);
-       }
-     }
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol\. |Volume |vol |)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches)
