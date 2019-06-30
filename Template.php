@@ -3305,7 +3305,9 @@ final class Template {
               $this->set($param, $this->simplify_google_search($this->get($param)));
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
-          } elseif (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
+          }
+          // Proxy stuff
+          if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
               // Use dots, not \. since it might match dot or dash
               if (preg_match("~^https?://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $this->get($param), $matches)) {
                  report_info("Remove proxy from IEEE URL");
@@ -3319,14 +3321,29 @@ final class Template {
                  $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
                  report_info("Remove proxy from Oxford Art URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-              } elseif (preg_match("~^(?:http.+/login\?url=|)https?://search.proquest.com.+proxy.+/docview/(.+)$~", $this->get($param), $matches)) {
+              }
+          }
+          if (stripos($this->get($param), 'galegroup') !== FALSE) {
+            if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://go.galegroup.com' . urldecode($matches[1]));
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            }
+            if (preg_match("~^(https?://go\.galegroup\.com/.*)&u=[^&]*(&.*|)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://go.galegroup.com' . $matches[1] . $matches[2]);
+                 report_info("Remove University ID from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            }
+          }
+          if (stripos($this->get($param), 'proquest') !== FALSE) {
+            if (preg_match("~^(?:http.+/login\?url=|)https?://search.proquest.com.+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
-              }
-          }
-          if (stripos($this->get($param), 'search.proquest.com') !== FALSE) {
+            }
             $changed = FALSE;
             if (preg_match("~^https?://search.proquest.com/.+/docview/(.+)$~", $this->get($param), $matches)) {
                  $changed = TRUE;
