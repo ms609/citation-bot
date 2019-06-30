@@ -3329,9 +3329,19 @@ final class Template {
                  report_info("Remove proxy from Gale URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^(?:http.+url=|)https?://go\.galegroup\.com/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://go.galegroup.com/' . $matches[1]);
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
             }
             if (preg_match("~^(https?://go\.galegroup\.com/.*)&u=[^&]*(&.*|)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://go.galegroup.com' . $matches[1] . $matches[2]);
+                 $this->set($param, $matches[1] . $matches[2]);
+                 report_info("Remove University ID from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^(https?://go\.galegroup\.com/.*)\?u=[^&]*&(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1] . '?' . $matches[2]);
                  report_info("Remove University ID from Gale URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
