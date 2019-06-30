@@ -3461,9 +3461,6 @@ final class Template {
               $this->forget('volume');
             }
           }
-          if (preg_match('~^(?:Vol\.?|Vol:|volume ) *(\d+)$~i', $this->get($param), $matches)) {
-            $this->set($param, $matches[1]);
-          }
           $this->volume_issue_demix($this->get($param), $param);
           return;
           
@@ -3479,7 +3476,7 @@ final class Template {
         case 'number':
           $value = trim($this->get($param));
           if ($param === 'issue' || $param === 'number') {
-            if (preg_match('~^(?:No\.?|No:|Number |Issue ) *(\d+)$~i', $value, $matches)) {
+            if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.)\s*(\d+)$~i', $value, $matches)) {
               $value = $matches[1];
             }
           }
@@ -4186,13 +4183,10 @@ final class Template {
   }
   
   protected function volume_issue_demix($data, $param) {
-     // Misuse seems to be popular in cite book, and we would need to move volume to title
-     if (!in_array($this->wikiname(), ['citation', 'cite journal'])) return;
-     if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
-     
+     if (!in_array($param, ['volume','issue','number'])) return;
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-              preg_match("~^(?:vol\. |Volume |vol |)(\d+),\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(?:vol\. |Volume |vol |)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
@@ -4212,13 +4206,14 @@ final class Template {
               $this->set('issue', $possible_issue);
             }
          }
-     } elseif ($param === 'volume') {
-       if (preg_match("~^(?:vol\.|volume|vol)\s+(\d+)$~i", $data, $matches)) {
-         $this->set('volume', $matches[1]);
-       }
-     } elseif ($param === 'issue' || $param === 'number') {
-       if (preg_match("~^(?:iss\.|iss|issue|num|num\.|no|no\.)\s+(\d+)$~i", $data, $matches)) {
-         $this->set($param, $matches[1]);
+     }
+// volume misuse seems to be popular in cite book, and we would need to move volume to title
+     if (!in_array($this->wikiname(), ['citation', 'cite journal'])) return;
+     if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
+     if ($param === 'volume') {
+       if (preg_match("~^(?:vol\.|volume|vol|vol:)\s+(\d+)$~i", $data, $matches)) {
+         $data = $matches[1];
+         $this->set('volume', $data);
        }
      }
   }
