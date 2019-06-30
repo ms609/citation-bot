@@ -3477,7 +3477,7 @@ final class Template {
           $value = trim($this->get($param));
           if ($param === 'issue' || $param === 'number') {
             if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.)\s*(\d+)$~i', $value, $matches)) {
-              $value = trim($matches[1]);
+              $value = $matches[1];
             }
           }
           // Remove leading zeroes
