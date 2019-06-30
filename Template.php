@@ -4174,6 +4174,7 @@ final class Template {
   }
   
   protected function volume_issue_demix($data, $param) {
+     if (!in_array($param, ['volume','issue','number'])) return;
      $data = trim($data);
      if ($param === 'issue' || $param === 'number') {
        if (preg_match('~^(?:iss\.|iss|issue|num|num\.|no|no\.)\s+(\d+)$~i$~i', $data, $matches)) {
