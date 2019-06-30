@@ -1799,6 +1799,10 @@ ER -  }}';
     $text = '{{cite journal|volume = Volume 12}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('volume'));
+   
+    $text = '{{cite book|volume = Volume 12}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('Volume 12', $prepared->get('volume'));
   }
  
   public function testCleanUpPages() {
