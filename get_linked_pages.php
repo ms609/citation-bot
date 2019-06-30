@@ -22,16 +22,18 @@ if ($array === FALSE) {
   exit(' Error interpreting page list</pre></body></html>');
 }
 $links = $array['parse']['links'];
-
-echo "\n";
+$the_list = [];
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {  // normal and draft articles only
         $linked_page = str_replace(' ', '_', $link['*']);
         if(!in_array($linked_page, AVOIDED_LINKS) && stripos($linked_page, 'disambiguation') === FALSE) {
-            echo $linked_page . "|";
+            $the_list[] = $linked_page;
         }
     }
 }
+
+echo "\n";
+echo implode('|', $the_list);
 echo  "\n";
 echo "</pre></body></html>\n";
 exit(0);
