@@ -3420,6 +3420,9 @@ final class Template {
               $this->forget('volume');
             }
           }
+          if (preg_match('~^(?:Vol\.?|Vol:|volume ) *(\d+)$~i', $this->get($param), $matches)) {
+            $this->set($param, $matches[1]);
+          }
           $this->volume_issue_demix($this->get($param), $param);
           return;
           
@@ -3435,7 +3438,7 @@ final class Template {
         case 'number':
           $value = trim($this->get($param));
           if ($param === 'issue' || $param === 'number') {
-            if (preg_match('~^No\.? *(\d+)$~i', $value, $matches)) {
+            if (preg_match('~^(?:No\.?|No:|Number |Issue ) *(\d+)$~i', $value, $matches)) {
               $value = $matches[1];
             }
           }
@@ -3456,6 +3459,9 @@ final class Template {
           if (strpos($value, "[//")  === 0) { // We can fix them, if they are the very first item
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
+          }
+          if (preg_match('~^p\.p\. *(\d+[–-]\d+)$~u' , $value, $matches)) {
+            $this->set($param, $matches[1]);
           }
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && can_safely_modify_dashes($value)) {
