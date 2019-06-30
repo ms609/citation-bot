@@ -3472,7 +3472,7 @@ final class Template {
         case 'number':
           $value = trim($this->get($param));
           if ($param === 'issue' || $param === 'number') {
-            if (preg_match('~^(?:iss\.|iss|issue|num|num\.|no|no\.)\s+(\d+)$~i$~i', $value, $matches)) {
+            if (preg_match('~^(?:iss\.|iss|issue|num|num\.|no|no:|no\.)\s*(\d+)$~i$~i', $value, $matches)) {
               $value = trim($matches[1]);
             }
           }
