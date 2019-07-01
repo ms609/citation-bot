@@ -4209,7 +4209,7 @@ final class Template {
      }
 // volume misuse seems to be popular in cite book, and we would need to move volume to title
      // Obvious books
-     if ($this->wikiname() === 'cite book')) return;
+     if ($this->wikiname() === 'cite book') return;
      if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
      // Might not be a journal
      if (!in_array($this->wikiname(), ['citation', 'cite journal']) &&
