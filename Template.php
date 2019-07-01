@@ -1647,6 +1647,22 @@ final class Template {
         report_info("Similar title not found in database");
         return FALSE;
       }
+      if ($this->has('url') &&
+          $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) && // Not much here to imply journal
+          mb_strtolower($record->title[0]) !=  mb_strtolower($this->get('title'))) {
+          report_info("Exact title match not found in database"); // Probably not a journal, trust zotero more
+          return FALSE;
+      }
+      if ($this->has('journal') && isset($record->pub)) {
+        $journal_string = explode(",", (string) $record->pub);
+        $journal_start = mb_strtolower($journal_string[0]);
+        if (preg_match("~\bthesis\b~ui", $journal_start) || substr($journal_start, 0, 6) == "eprint") {
+          // Not journal
+        } elseif (titles_are_dissimilar($journal_string[0], $this->get('journal'))) {
+           report_info("Similar title and journal not found in database");
+           return FALSE;
+        }          
+      }
     }
     
     if ($result->numFound != 1 && $this->has('journal')) {
