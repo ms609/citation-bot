@@ -615,7 +615,7 @@ final class Template {
       case 'volume':
         if ($this->blank($param_name)) {
           if ($value == '1') { // dubious
-            if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
+            if (!check_10_1093_doi($this->get('doi')) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }
@@ -635,7 +635,7 @@ final class Template {
       case 'issue':
         if ($this->blank(ISSUE_ALIASES)) {
           if ($value == '1') { // dubious
-            if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
+            if (!check_10_1093_doi($this->get('doi')) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }     
