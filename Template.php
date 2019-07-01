@@ -2920,7 +2920,7 @@ final class Template {
 
         case 'accessdate':
         case 'access-date':
-          if ($this->has($pmatch[1]) && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
+          if ($this->has($pmatch[1]) && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']))
           {
             $this->forget($pmatch[1]);
           }
