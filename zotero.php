@@ -364,7 +364,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         break;
       case 'journalArticle':
       case 'report':  // ssrn uses this
-        if($template->wikiname() == 'cite web')
+        if($template->wikiname() == 'cite web' && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url)
           $template->change_name_to('cite journal');
         break;
       case 'magazineArticle':

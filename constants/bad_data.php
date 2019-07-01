@@ -28,7 +28,8 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "ssrn electronic journal", "dissertations available from proquest",
                          "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
                          "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
-                         "shibboleth authentication request", "nookmarkable url intermediate page");
+                         "shibboleth authentication request", "nookmarkable url intermediate page",
+                         "google books");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -93,7 +94,8 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    'aljazeera.com/', 'vox.com/', 'reuters.com/', 'dailynews.com/', 
                                    'newsweek.com/', 'monitor.com/', 'observer.com/', '.pbs.org/', '.bbm.ca/', '/bbm.ca/',
                                    'mediaincanada.com/', 'cbspressexpress.com/', 'deadline.com/', 'zap2it.com/',
-                                   'yourentertainmentnow.com/', 'shows.ctv.ca/' ,'toronto.com/'); 
+                                   'yourentertainmentnow.com/', 'shows.ctv.ca/' ,'toronto.com/', 'fda.gov/',
+                                   'surgeongeneral.gov/'); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 

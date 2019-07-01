@@ -587,9 +587,8 @@ final class Template {
       
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
-        if ($this->blank($param_name) || ($this->get($param_name) === 'Archived copy')
-                                      || ($this->get($param_name) === "{title}")
-                                      || ($this->get($param_name) === 'ScienceDirect')
+        if ($this->blank($param_name) || in_array($this->get($param_name),
+                                           ['Archived copy', "{title}", 'ScienceDirect', "Google Books"])
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
           if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
             return FALSE;
@@ -616,7 +615,7 @@ final class Template {
       case 'volume':
         if ($this->blank($param_name)) {
           if ($value == '1') { // dubious
-            if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
+            if (!check_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }
@@ -636,7 +635,7 @@ final class Template {
       case 'issue':
         if ($this->blank(ISSUE_ALIASES)) {
           if ($value == '1') { // dubious
-            if (strpos($this->get('doi'), '10.1093/ref') === 0) return FALSE;
+            if (!check_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }     
@@ -1647,6 +1646,13 @@ final class Template {
       if (titles_are_dissimilar($record->title[0], $this->get('title'))) {
         report_info("Similar title not found in database");
         return FALSE;
+      }
+      // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
+      if (!$this->blank(['doi','pmc','pmid','eprint','arxiv','url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']) &&
+          $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
+          mb_strtolower($record->title[0]) !=  mb_strtolower($this->get('title'))) {
+          report_info("Exact title match not found in database"); // Probably not a journal, trust zotero more
+          return FALSE;
       }
     }
     
@@ -2905,12 +2911,25 @@ final class Template {
 
         case 'accessdate':
         case 'access-date':
-          if ($this->has($pmatch[1]) && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
+          if ($this->has($pmatch[1]) && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']))
           {
             $this->forget($pmatch[1]);
           }
           return;
 
+          
+        case 'agency':
+          if (in_array($this->get('agency'), ['United States Food and Drug Administration',
+                                              'Surgeon General of the United States',
+                                              'California Department of Public Health'])
+               &&
+              in_array($this->get('publisher'), 
+                ['United States Department of Health and Human Services', 'California Tobacco Control Program', ''])) {
+            $this->forget('publisher');
+            $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
+          }
+          return;
+          
         case 'arxiv':
           if ($this->has($param) && $this->wikiname() == 'cite web') {
             $this->change_name_to('cite arxiv');
@@ -3268,6 +3287,8 @@ final class Template {
           if ($title && str_equivalent($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
           if (preg_match('~^(.+)\{\{!\}\} Request PDF$~i', trim($this->get($param)), $match)) {
                  $this->set($param, trim($match[1]));
+          } elseif (!$this->blank(['isbn', 'doi', 'pmc', 'pmid']) && preg_match('~^(.+) \(PDF\)$~i', trim($this->get($param)), $match)) {
+                 $this->set($param, trim($match[1])); // Books/journals probably don't end in (PDF)
           }
           return;
      
@@ -3291,33 +3312,79 @@ final class Template {
               $this->set($param, $this->simplify_google_search($this->get($param)));
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
-          } elseif (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
+          }
+          // Proxy stuff
+          if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
               // Use dots, not \. since it might match dot or dash
               if (preg_match("~^https?://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $this->get($param), $matches)) {
                  report_info("Remove proxy from IEEE URL");
                  $this->set($param, 'https://ieeexplore.ieee.org/document/' . $matches[1]);
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               } elseif (preg_match("~^https?://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.oxfordhandbooks.com/view/' . $matches[1]);
                  report_info("Remove proxy from Oxford Handbooks URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               } elseif (preg_match("~^https?://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
                  report_info("Remove proxy from Oxford Art URL");
-              } elseif (preg_match("~^(?:http.+/login\?url=|)https?://search.proquest.com.+proxy.+/docview/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
-                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               }
           }
-          if (stripos($this->get($param), 'search.proquest.com') !== FALSE) {
+          if (stripos($this->get($param), 'galegroup') !== FALSE) {
+            if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://go.galegroup.com' . urldecode($matches[1]));
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^http.+url=https?://go\.galegroup\.com/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://go.galegroup.com/' . $matches[1]);
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^(?:http.+url=|)https?://(link.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://link.galegroup.com' . urldecode($matches[1]));
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^http.+url=https?://link\.galegroup\.com/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://link.galegroup.com/' . $matches[1]);
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            }
+            if (preg_match("~^(https?://(?:go|link)\.galegroup\.com/.*)&u=[^&]*(&.*|)$~", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1] . $matches[2]);
+                 report_info("Remove University ID from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^(https?://(?:go|link)\.galegroup\.com/.*)\?u=[^&]*&(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1] . '?' . $matches[2]);
+                 report_info("Remove University ID from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            }
+          }
+          if (stripos($this->get($param), 'proquest') !== FALSE) {
+            if (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com.+/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
+                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
+            }
             $changed = FALSE;
             if (preg_match("~^https?://search.proquest.com/.+/docview/(.+)$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // Remove specific search engine
             }
-            if (preg_match("~^https?://search.proquest.com/docview/(.+)/fulltext/.*$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search.proquest.com/docview/(.+)/fulltext.*$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
             if (preg_match("~^https?://search.proquest.com/docview/(.+)\?accountid=.*$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
+            }
+            if (preg_match("~^https?://search.proquest.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
@@ -3376,6 +3443,8 @@ final class Template {
               $this->forget('via');
             } elseif (stripos($this->get('via'), 'questia') !== FALSE && $this->has('isbn')) {
               $this->forget('via');
+            } elseif (stripos($this->get('via'), 'library') !== FALSE) {
+              $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
               $via = trim(strtolower($this->get('via')));
               if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
@@ -3414,7 +3483,7 @@ final class Template {
         case 'number':
           $value = trim($this->get($param));
           if ($param === 'issue' || $param === 'number') {
-            if (preg_match('~^No\.? *(\d+)$~i', $value, $matches)) {
+            if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.)\s*(\d+)$~i', $value, $matches)) {
               $value = $matches[1];
             }
           }
@@ -3435,6 +3504,9 @@ final class Template {
           if (strpos($value, "[//")  === 0) { // We can fix them, if they are the very first item
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
+          }
+          if (preg_match('~^p\.p\. *(\d+[–-]\d+)$~u' , $value, $matches)) {
+            $this->set($param, $matches[1]);
           }
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && can_safely_modify_dashes($value)) {
@@ -4118,13 +4190,10 @@ final class Template {
   }
   
   protected function volume_issue_demix($data, $param) {
-     // Misuse seems to be popular in cite book, and we would need to move volume to title
-     if (!in_array($this->wikiname(), ['citation', 'cite journal'])) return;
-     if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
-     
+     if (!in_array($param, ['volume','issue','number'])) return;
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-              preg_match("~^(?:vol\. |Volume |vol |)(\d+),\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(?:vol\. |Volume |vol |)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
@@ -4144,13 +4213,20 @@ final class Template {
               $this->set('issue', $possible_issue);
             }
          }
-     } elseif ($param === 'volume') {
-       if (preg_match("~^(?:vol\.|volume|vol)\s+(\d+)$~i", $data, $matches)) {
-         $this->set('volume', $matches[1]);
-       }
-     } elseif ($param === 'issue' || $param === 'number') {
-       if (preg_match("~^(?:iss\.|iss|issue|num|num\.|no|no\.)\s+(\d+)$~i", $data, $matches)) {
-         $this->set($param, $matches[1]);
+     }
+// volume misuse seems to be popular in cite book, and we would need to move volume to title
+     // Obvious books
+     if ($this->wikiname() === 'cite book') return;
+     if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
+     // Might not be a journal
+     if (!in_array($this->wikiname(), ['citation', 'cite journal']) &&
+         $this->get_without_comments_and_placeholders('issue') == '' &&
+         $this->get_without_comments_and_placeholders('number') == '' &&
+         $this->get_without_comments_and_placeholders('journal') == '') return;
+     if ($param === 'volume') {
+       if (preg_match("~^(?:vol\.|volume|vol|vol:)\s+(\d+)$~i", $data, $matches)) {
+         $data = $matches[1];
+         $this->set('volume', $data);
        }
      }
   }

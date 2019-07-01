@@ -1,65 +1,59 @@
 <?php
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
-define("HTML_OUTPUT", !isset($argv));
+define("HTML_OUTPUT");
 require_once('setup.php');
+require_once('constants/bad_data.php');
+
 $api = new WikipediaBot();
-if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
-$argument["cat"] = NULL;
-foreach ($argv as $arg) {
-  if (substr($arg, 0, 2) == "--") {
-    $argument[substr($arg, 2)] = 1;
-    unset($oArg);
-  } elseif (substr($arg, 0, 1) == "-") {
-    $oArg = substr($arg, 1);
-  } else {
-    if (!isset($oArg)) report_error('Unexpected text: ' . $arg);
-    switch ($oArg) {
-      case "P": case "A": case "T":
-        $argument["pages"][] = $arg;
-        break;
-      default:
-      $argument[$oArg][] = $arg;
-    }
-  }
-}
 
 $SLOW_MODE = FALSE;
-if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
+if (isset($_REQUEST["slow"])) {
   $SLOW_MODE = TRUE;
 }
 
-$category = trim($argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"]);
-if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
-
-if (HTML_OUTPUT) {
 ?>
 <!DOCTYPE html>
 <html>
   <body>
   <head>
-  <title>Citation bot: Category mode</title>
+  <title>Citation bot: Linked page mode</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" type="text/css" href="css/results.css" />
   </head>
   <body>
     <pre id="botOutput">
 <?php
+
+$page = str_replace(' ', '_', trim($_REQUEST['page']));
+if ($page == '') report_error('Nothing requested');
+if (strlen($page) >256) report_error('Possible invalid page');
+$edit_summary_end = "| Activated by [[User:" . $api->get_the_user() . "]] | All pages linked from [[$page]].";
+
+$url = 'https://en.wikipedia.org/w/api.php?action=parse&prop=links&format=json&page=' . $page;
+$json = @file_get_contents($url);
+if ($json === FALSE) {
+  report_error(' Error getting page list');
+}    
+$array = @json_decode($json, true);
+if ($array === FALSE) {
+  report_error(' Error interpreting page list');
+}
+$links = $array['parse']['links'];
+$pages_in_category = [];
+foreach($links as $link) {
+    if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {  // normal and draft articles only
+        $linked_page = str_replace(' ', '_', $link['*']);
+        if(!in_array($linked_page, AVOIDED_LINKS) && stripos($linked_page, 'disambiguation') === FALSE) {
+            $pages_in_category[] = $linked_page;
+        }
+    }
 }
 
-$edit_summary_end = "| Activated by [[User:" . $api->get_the_user() . "]] | [[Category:$category]].";
 
-if ($category) {
   $attempts = 0;
-  $pages_in_category = $api->category_members($category);
-  if (!is_array($pages_in_category) || empty($pages_in_category)) {
-    echo('Category appears to be empty');
-    html_echo(' </pre></body></html>', "\n");
-    exit(0);
-  }
   shuffle($pages_in_category);
   $page = new Page();
-  #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
@@ -81,9 +75,7 @@ if ($category) {
       echo "\n\n    # # # ";
     }
   }
-  echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
-} else {
-  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
-}
+  echo ("\n Done all " . count($pages_in_category) . " pages linked from $page \n");
+
 html_echo(' # # #</pre></body></html>', "\n");
 exit(0);
