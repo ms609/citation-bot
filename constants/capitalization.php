@@ -104,4 +104,6 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' Monatshefte ', ' Monatsschrift ', ' Mémoires ', ' Notizblatt ', ' Recueil ', ' Revista ', ' Revue ', ' Travaux ',
            ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ', ' Mélanges ', " l'École ", ' Française ', ' Estestvoznaniya ',
            ' Voprosy ', ' Istorii ', ' Tekhniki ', ' Matematika ', ' Shkole ', ' Ruch ', ' Prawniczy ',
-           ' Ekonomiczny ', ' Socjologiczny ');
+           ' Ekonomiczny ', ' Socjologiczny ', ' Rivista ', ' degli ', ' studi ', ' orientali ', ' met den ',
+           ' Textes ', ' pour nos ', ' élèves ', ' Lettre ', ' Zeitschrift ', ' für ', ' Physik ', ' Phonetik ',
+           ' allgemeine ', ' Sprachwissenschaft ', ' Maître ', ' Phonétique ');

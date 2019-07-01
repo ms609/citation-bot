@@ -1647,6 +1647,13 @@ final class Template {
         report_info("Similar title not found in database");
         return FALSE;
       }
+      // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
+      if (!$this->blank(['doi','pmc','pmid','eprint','arxiv','url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']) &&
+          $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
+          mb_strtolower($record->title[0]) !=  mb_strtolower($this->get('title'))) {
+          report_info("Exact title match not found in database"); // Probably not a journal, trust zotero more
+          return FALSE;
+      }
     }
     
     if ($result->numFound != 1 && $this->has('journal')) {
@@ -2904,7 +2911,7 @@ final class Template {
 
         case 'accessdate':
         case 'access-date':
-          if ($this->has($pmatch[1]) && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl']))
+          if ($this->has($pmatch[1]) && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']))
           {
             $this->forget($pmatch[1]);
           }
