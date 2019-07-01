@@ -4208,8 +4208,14 @@ final class Template {
          }
      }
 // volume misuse seems to be popular in cite book, and we would need to move volume to title
-     if (!in_array($this->wikiname(), ['citation', 'cite journal'])) return;
+     // Obvious books
+     if ($this->wikiname() === 'cite book') return;
      if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
+     // Might not be a journal
+     if (!in_array($this->wikiname(), ['citation', 'cite journal']) &&
+         $this->get_without_comments_and_placeholders('issue') == '' &&
+         $this->get_without_comments_and_placeholders('number') == '' &&
+         $this->get_without_comments_and_placeholders('journal') == '') return;
      if ($param === 'volume') {
        if (preg_match("~^(?:vol\.|volume|vol|vol:)\s+(\d+)$~i", $data, $matches)) {
          $data = $matches[1];
