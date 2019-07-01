@@ -500,6 +500,7 @@ final class Template {
       case 'periodical': case 'journal': case 'newspaper':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
+        if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
         if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE; // Messed up already or in database
         if (!$this->blank(['agency','publisher']) && in_array(strtolower($value), DUBIOUS_JOURNALS) === TRUE) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
