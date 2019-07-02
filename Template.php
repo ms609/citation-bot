@@ -4223,7 +4223,8 @@ final class Template {
      if (!in_array($this->wikiname(), ['citation', 'cite journal', 'cite web', 'cite magazine']) &&
          $this->get_without_comments_and_placeholders('issue') == '' &&
          $this->get_without_comments_and_placeholders('number') == '' &&
-         $this->get_without_comments_and_placeholders('journal') == '') return;
+         $this->get_without_comments_and_placeholders('journal') == '' &&
+         $this->get_without_comments_and_placeholders('magazine') == '') return;
      if ($param === 'volume') {
        if (preg_match("~^(?:vol\.|volume\s+|vol\s+|vol:)\s*([\dLXVI+)$~i", $data, $matches)) {
          $data = $matches[1];
