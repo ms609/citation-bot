@@ -4220,12 +4220,13 @@ final class Template {
      if ($this->wikiname() === 'cite book') return;
      if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
      // Might not be a journal
-     if (!in_array($this->wikiname(), ['citation', 'cite journal']) &&
+     if (!in_array($this->wikiname(), ['citation', 'cite journal', 'cite web', 'cite magazine']) &&
          $this->get_without_comments_and_placeholders('issue') == '' &&
          $this->get_without_comments_and_placeholders('number') == '' &&
-         $this->get_without_comments_and_placeholders('journal') == '') return;
+         $this->get_without_comments_and_placeholders('journal') == '' &&
+         $this->get_without_comments_and_placeholders('magazine') == '') return;
      if ($param === 'volume') {
-       if (preg_match("~^(?:vol\.|volume|vol|vol:)\s+(\d+)$~i", $data, $matches)) {
+       if (preg_match("~^(?:vol\.|volume\s+|vol\s+|vol:)\s*([\dLXVI]+)$~i", $data, $matches)) {
          $data = $matches[1];
          $this->set('volume', $data);
        }
