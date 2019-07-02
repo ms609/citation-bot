@@ -4226,7 +4226,7 @@ final class Template {
          $this->get_without_comments_and_placeholders('journal') == '' &&
          $this->get_without_comments_and_placeholders('magazine') == '') return;
      if ($param === 'volume') {
-       if (preg_match("~^(?:vol\.|volume\s+|vol\s+|vol:)\s*([\dLXVI+)$~i", $data, $matches)) {
+       if (preg_match("~^(?:vol\.|volume\s+|vol\s+|vol:)\s*([\dLXVI]+)$~i", $data, $matches)) {
          $data = $matches[1];
          $this->set('volume', $data);
        }
