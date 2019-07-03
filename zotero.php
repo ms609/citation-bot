@@ -46,13 +46,15 @@ function drop_urls_that_match_dois($templates) {
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-  curl_setopt($ch, CURLOPT_MAXREDIRS, 20); // No infinite loops for us, 20 for Elsivier and Springer websites
+  curl_setopt($ch, CURLOPT_MAXREDIRS, 50); // No infinite loops for us, 20 for Elsivier and Springer websites
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, FALSE);
   curl_setopt($ch, CURLOPT_COOKIEFILE, "");
   curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+  curl_setopt($ch, CURLOPT_REFERER, 'https://en.wikipedi.org');
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
