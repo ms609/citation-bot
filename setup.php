@@ -5,7 +5,7 @@
  * particularly Template and Page.
 */
 
-ini_set("user_agent", "Mozilla/5.0; Citation_bot; citations@tools.wmflabs.org");
+ini_set("user_agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Citation_bot; citations@tools.wmflabs.org");
 include_once("./vendor/autoload.php");
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
