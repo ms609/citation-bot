@@ -45,6 +45,14 @@ function drop_urls_that_match_dois($templates) {
   echo "\n in drop_urls_that_match_dois \n";
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
+  // same headers from Firefox version 2.0.0.6 
+  $header[0] = "Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"; 
+  $header[] = "Cache-Control: max-age=0"; 
+  $header[] = "Connection: keep-alive"; 
+  $header[] = "Keep-Alive: 300"; 
+  $header[] = "Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7"; 
+  $header[] = "Accept-Language: en-us,en;q=0.5"; 
+  $header[] = "Pragma: ";
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
   curl_setopt($ch, CURLOPT_MAXREDIRS, 20); // No infinite loops for us, 20 for Elsivier and Springer websites
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
@@ -52,6 +60,8 @@ function drop_urls_that_match_dois($templates) {
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch, CURLOPT_COOKIEFILE, "");
   curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+  curl_setopt($ch, CURLOPT_REFERER, 'https://en.wikipedia.org');
+  // curl_setopt($ch, CURLOPT_HTTPHEADER, $header); 
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
