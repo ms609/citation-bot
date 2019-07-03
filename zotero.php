@@ -51,6 +51,7 @@ function drop_urls_that_match_dois($templates) {
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch, CURLOPT_COOKIEFILE, "");
   curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+  curl_setopt($ch, CURLOPT_REFERER, 'https://en.wikipedia.org/wiki/User:Citation_bot');
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
