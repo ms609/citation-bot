@@ -1617,6 +1617,7 @@ ER -  }}';
   }
  
   public function testBadBibcodeARXIVPages() {
+   $this->requires_secrets(function() {
     $text = '{{cite journal|bibcode=2017arXiv171102260L}}'; // Some bibcodes have pages set to arXiv:1711.02260
     $expanded = $this->process_citation($text);
     $pages = (string) $expanded->get('pages');
@@ -1629,6 +1630,7 @@ ER -  }}';
     $pages = (string) $expanded->get('pages');
     $this->assertSame(FALSE, stripos($pages, 'astro'));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+   };
   }
     
   public function testCitationTemplateWithoutJournal() {
