@@ -54,6 +54,7 @@ function drop_urls_that_match_dois($templates) {
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     $url = $template->get('url');
+    echo "\n" . $url . "     " . $doi . "     " . __LINE__ . "\n";
     if ($doi &&
         $url &&
         !$template->profoundly_incomplete() &&
@@ -68,13 +69,17 @@ function drop_urls_that_match_dois($templates) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+                echo "\n" . $redirectedUrl_doi . "     " . __LINE__ . "\n";
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
             $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
+                echo "\n" . $redirectedUrl_doi . "     " . __LINE__ . "\n";
             $url_short         = url_simplify($url);
+                echo "\n" . $url_short . "     " . __LINE__ . "\n";
             if ( preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
                  $redirectedUrl_doi = $matches[1] ;  // Grab PII numbers
             }
+                echo "\n" . $redirectedUrl_doi . "     " . __LINE__ . "\n";
             if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                 stripos($redirectedUrl_doi, $url_short) !== FALSE) {
                report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
@@ -83,7 +88,9 @@ function drop_urls_that_match_dois($templates) {
                curl_setopt($ch, CURLOPT_URL, $url);
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+                echo "\n" . $redirectedUrl_url . "     " . __LINE__ . "\n";
                   $redirectedUrl_url = url_simplify($redirectedUrl_url);
+                echo "\n" . $redirectedUrl_url . "     " . __LINE__ . "\n";
                   if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
                       stripos($redirectedUrl_doi, $redirectedUrl_url) !== FALSE) {
                     report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
