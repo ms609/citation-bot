@@ -761,8 +761,11 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       } elseif (preg_match("~^([a-zA-ZÀ-ÿ \.\:]+), (\d{4}) ([a-zA-ZÀ-ÿ])+$~", $journal_data, $matches)) {  
          // not enough to reliably go on
       // ICALP 2013, Part I, LNCS 7965, 2013, pp 497-503
-       } elseif (preg_match("~^ICALP .*$~", $journal_data, $matches)) {  
+      } elseif (preg_match("~^ICALP .*$~", $journal_data, $matches)) {  
           // not wanting to figure this out
+      // T. Giesa, D.I. Spivak, M.J. Buehler. BioNanoScience: Volume 1, Issue 4 (2011), Page 153-161
+      } elseif (preg_match("~^[\S\s]+\: Volume (\d+), Issue (\d+) \((\d+)\), Page ([0-9\-]+)$)$~", $journal_data, $matches)) {
+          // not wanting to figure this out reliably
       // Future formats -- print diagnostic message
       } else {
         report_minor_error("Unexpected data found in parse_plain_text_reference. " . $journal_data );
