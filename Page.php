@@ -194,12 +194,15 @@ class Page {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
        $all_templates[$i]->date_style = $this->date_style;
     }
+    echo "\n found this many templates " . $i . "\n";
     $our_templates = array();
     $our_templates_slight = array();
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
+      echo "\n the type is :" . $this_template->wikiname() . ":\n";
       if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
+        echo "\n found one to process\n";
         array_push($our_templates, $this_template);
         $this_template->prepare();
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
@@ -257,6 +260,7 @@ class Page {
       $this_template->get_open_access_url();
     }
     $this->expand_templates_from_identifier('doi',     $our_templates);
+    echo "\n calling drop_urls_that_match_dois\n";
     drop_urls_that_match_dois($our_templates);
     
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
