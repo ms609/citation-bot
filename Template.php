@@ -616,7 +616,7 @@ final class Template {
       case 'volume':
         if ($this->blank($param_name)) {
           if ($value == '1') { // dubious
-            if (!check_10_1093_doi($this->get('doi'))) return FALSE;
+            if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }
@@ -636,7 +636,7 @@ final class Template {
       case 'issue':
         if ($this->blank(ISSUE_ALIASES)) {
           if ($value == '1') { // dubious
-            if (!check_10_1093_doi($this->get('doi'))) return FALSE;
+            if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }     
@@ -1033,7 +1033,7 @@ final class Template {
     }
     if (stripos($url, 'oxforddnb.com') !== FALSE) return FALSE; // generally bad, and not helpful
     if ($doi = extract_doi($url)[1]) {
-      if (!check_10_1093_doi($doi)) return FALSE;
+      if (bad_10_1093_doi($doi)) return FALSE;
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
@@ -1070,7 +1070,7 @@ final class Template {
     } elseif ($this->has('doi')) { // Did not find a doi, perhaps we were wrong
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (mb_stripos($url, $this->get('doi')) !== FALSE) { // DOIs are case-insensitive
-        if (doi_active($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && check_10_1093_doi($this->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
+        if (doi_active($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && good_10_1093_doi($this->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
         }
@@ -2813,7 +2813,8 @@ final class Template {
   }
 
   public function change_name_to($new_name, $rename_cite_book = TRUE) {
-    if (strpos($this->get('doi'), '10.1093') !== FALSE) return;
+    if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
+    if (bad_10_1093_doi($this->get('doi')) return;
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
