@@ -1630,7 +1630,7 @@ ER -  }}';
     $pages = (string) $expanded->get('pages');
     $this->assertSame(FALSE, stripos($pages, 'astro'));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
-   };
+   });
   }
     
   public function testCitationTemplateWithoutJournal() {
