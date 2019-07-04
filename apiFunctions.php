@@ -767,11 +767,10 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       } elseif (preg_match("~^[\S\s]+\: Volume (\d+), Issue (\d+) \((\d+)\), Page ([0-9\-]+)$~i", $journal_data, $matches)) {
           // not wanting to figure this out reliably
       // New J. Phys. 11, 063043 (2009)
-      } elseif (preg_match("~^[\S\s]+ (\d+), (\d+) \((\d{4})\)$~i", $journal_data, $matches)) {
-          // not wanting to figure this out reliably 
+      // give up 
       // Future formats -- print diagnostic message
       } else {
-        report_minor_error("Unexpected data found in parse_plain_text_reference. " . $journal_data );
+        // report_minor_error("Unexpected data found in parse_plain_text_reference. " . $journal_data );
       }
       if ($arxiv_journal && $arxiv_year && (intval($arxiv_year) > 1900) && (intval($arxiv_year) < (1+intval(date("Y"))))) { // if no journal then doomed.  If bad date then doomed.
         if ($arxiv_year) {
