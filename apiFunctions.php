@@ -766,6 +766,9 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       // T. Giesa, D.I. Spivak, M.J. Buehler. BioNanoScience: Volume 1, Issue 4 (2011), Page 153-161
       } elseif (preg_match("~^[\S\s]+\: Volume (\d+), Issue (\d+) \((\d+)\), Page ([0-9\-]+)$~i", $journal_data, $matches)) {
           // not wanting to figure this out reliably
+      // New J. Phys. 11, 063043 (2009)
+      } elseif (preg_match("~^[\S\s]+ (\d+), (\d+) \((\d{4})\)$~i", $journal_data, $matches)) {
+          // not wanting to figure this out reliably 
       // Future formats -- print diagnostic message
       } else {
         report_minor_error("Unexpected data found in parse_plain_text_reference. " . $journal_data );
