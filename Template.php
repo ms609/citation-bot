@@ -2903,7 +2903,14 @@ final class Template {
         $this->set($param, $matches[2]);
       }
     }
-        
+
+    while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
+        $this->set($param, trim($matches[1]));
+    }
+    while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
+        $this->set($param, trim($matches[1]));
+    }
+ 
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
