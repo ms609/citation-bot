@@ -374,7 +374,7 @@ function expand_by_doi($template, $force = FALSE) {
       if ($template->has('title') && trim(@$crossRef->article_title)) { // Verify title of DOI matches existing data somewhat
         $bad_data = TRUE;
         $new = $crossRef->article_title;
-        if (preg_match('~^(.................+)\.\s+([IVX]+)\.\s.+$~', $new, $matches)) {
+        if (preg_match('~^(.................+)\.\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
            $new = $matches[1];
            $new_roman = $matches[2];
         } else {
@@ -383,7 +383,7 @@ function expand_by_doi($template, $force = FALSE) {
         foreach (['chapter', 'title', 'series'] as $possible) {
           if ($template->has($possible)) {
             $old = $template->get($possible);
-            if (preg_match('~^(.................+)\.\s+([IVX]+)\.\s.+$~', $old, $matches)) {
+            if (preg_match('~^(.................+)\.\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
                $old = $matches[1];
                $old_roman = $matches[2];
             } else {
