@@ -2905,12 +2905,12 @@ final class Template {
       }
 
       // Non-breaking spaces at ends
-      $this->set($param, trim($this->get($param), " \t\n\r\0\x0B" . chr(0xC2).chr(0xA0)));
+      $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
       while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
-          $this->set($param, trim($matches[1], " \t\n\r\0\x0B" . chr(0xC2).chr(0xA0)));
+          $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
       }
       while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
-          $this->set($param, trim($matches[1], " \t\n\r\0\x0B" . chr(0xC2).chr(0xA0)));
+          $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
       }
     }
  
