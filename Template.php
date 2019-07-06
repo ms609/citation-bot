@@ -500,6 +500,7 @@ final class Template {
       case 'periodical': case 'journal': case 'newspaper':
       
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
+        if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
         if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE; // Messed up already or in database
         if (!$this->blank(['agency','publisher']) && in_array(strtolower($value), DUBIOUS_JOURNALS) === TRUE) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
@@ -615,7 +616,7 @@ final class Template {
       case 'volume':
         if ($this->blank($param_name)) {
           if ($value == '1') { // dubious
-            if (!check_10_1093_doi($this->get('doi'))) return FALSE;
+            if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }
@@ -635,7 +636,7 @@ final class Template {
       case 'issue':
         if ($this->blank(ISSUE_ALIASES)) {
           if ($value == '1') { // dubious
-            if (!check_10_1093_doi($this->get('doi'))) return FALSE;
+            if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }     
@@ -1032,7 +1033,7 @@ final class Template {
     }
     if (stripos($url, 'oxforddnb.com') !== FALSE) return FALSE; // generally bad, and not helpful
     if ($doi = extract_doi($url)[1]) {
-      if (!check_10_1093_doi($doi)) return FALSE;
+      if (bad_10_1093_doi($doi)) return FALSE;
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
@@ -1069,7 +1070,7 @@ final class Template {
     } elseif ($this->has('doi')) { // Did not find a doi, perhaps we were wrong
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (mb_stripos($url, $this->get('doi')) !== FALSE) { // DOIs are case-insensitive
-        if (doi_active($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && check_10_1093_doi($this->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
+        if (doi_active($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && good_10_1093_doi($this->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
           report_forget("Recognized existing DOI in URL; dropping URL");
           $this->forget($url_type);
         }
@@ -2812,7 +2813,8 @@ final class Template {
   }
 
   public function change_name_to($new_name, $rename_cite_book = TRUE) {
-    if (strpos($this->get('doi'), '10.1093') !== FALSE) return;
+    if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
+    if (bad_10_1093_doi($this->get('doi'))) return;
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
@@ -2894,14 +2896,24 @@ final class Template {
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
         $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
       }
-    }
-    // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
-    if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-      if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter')) {
-        $this->set($param, $matches[2]);
+      
+      // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
+      if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
+        if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter')) {
+          $this->set($param, $matches[2]);
+        }
+      }
+
+      // Non-breaking spaces at ends
+      $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
+      while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
+          $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
+      }
+      while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
+          $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
       }
     }
-        
+ 
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
@@ -4219,12 +4231,13 @@ final class Template {
      if ($this->wikiname() === 'cite book') return;
      if ($this->wikiname() === 'citation' && ($this->has('chapter') || $this->has('isbn') || strpos($this->rawtext, 'archive.org') !== FALSE)) return;
      // Might not be a journal
-     if (!in_array($this->wikiname(), ['citation', 'cite journal']) &&
+     if (!in_array($this->wikiname(), ['citation', 'cite journal', 'cite web', 'cite magazine']) &&
          $this->get_without_comments_and_placeholders('issue') == '' &&
          $this->get_without_comments_and_placeholders('number') == '' &&
-         $this->get_without_comments_and_placeholders('journal') == '') return;
+         $this->get_without_comments_and_placeholders('journal') == '' &&
+         $this->get_without_comments_and_placeholders('magazine') == '') return;
      if ($param === 'volume') {
-       if (preg_match("~^(?:vol\.|volume|vol|vol:)\s+(\d+)$~i", $data, $matches)) {
+       if (preg_match("~^(?:vol\.|volume\s+|vol\s+|vol:)\s*([\dLXVI]+)$~i", $data, $matches)) {
          $data = $matches[1];
          $this->set('volume', $data);
        }

@@ -40,10 +40,24 @@ if (HTML_OUTPUT) {
   <head>
   <title>Citation bot: Category mode</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta content="Smith609" name="author">
+  <meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
+  <link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
+  <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
   <link rel="stylesheet" type="text/css" href="css/results.css" />
   </head>
-  <body>
-    <pre id="botOutput">
+<body>
+  <header>
+    <p>Follow <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a>&rsquo;s progress below.</p>
+    <p>
+      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |
+      <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent contributions">Bot&rsquo;s&nbsp;recent&nbsp;edits</a> |
+      <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank">Report&nbsp;bugs</a> |
+      <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository">Source&nbsp;code</a>
+    </p>
+  </header>
+
+  <pre id="botOutput">
 <?php
 }
 

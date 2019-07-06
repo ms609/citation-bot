@@ -16,7 +16,13 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());
   }
-  
+
+  public function testNoGoonUTF8() {
+    $text = "{{cite news |date=びっくり１位　白鴎|title=阪神びっくり１位　白鴎大・大山、鉄人魂の持ち主だ|journal=鉄人魂}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame($text, $expanded->parsed_text());
+  }
+
   public function testCleanUpTemplates() {
     $text = "{{Citeweb}}";
     $expanded = $this->process_citation($text);
@@ -1617,6 +1623,7 @@ ER -  }}';
   }
  
   public function testBadBibcodeARXIVPages() {
+   $this->requires_secrets(function() {
     $text = '{{cite journal|bibcode=2017arXiv171102260L}}'; // Some bibcodes have pages set to arXiv:1711.02260
     $expanded = $this->process_citation($text);
     $pages = (string) $expanded->get('pages');
@@ -1629,6 +1636,7 @@ ER -  }}';
     $pages = (string) $expanded->get('pages');
     $this->assertSame(FALSE, stripos($pages, 'astro'));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+   });
   }
     
   public function testCitationTemplateWithoutJournal() {
