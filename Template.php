@@ -2896,14 +2896,24 @@ final class Template {
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
         $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
       }
-    }
-    // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
-    if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-      if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter')) {
-        $this->set($param, $matches[2]);
+      
+      // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
+      if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
+        if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter')) {
+          $this->set($param, $matches[2]);
+        }
+      }
+
+      // Non-breaking spaces at ends
+      $this->set($param, trim($this->get($param), " \t\n\r\0\x0B" . chr(0xC2).chr(0xA0)));
+      while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
+          $this->set($param, trim($matches[1], " \t\n\r\0\x0B" . chr(0xC2).chr(0xA0)));
+      }
+      while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
+          $this->set($param, trim($matches[1], " \t\n\r\0\x0B" . chr(0xC2).chr(0xA0)));
       }
     }
-        
+ 
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");
       return FALSE;
