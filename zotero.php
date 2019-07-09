@@ -142,12 +142,18 @@ function expand_by_zotero(&$template, $url = NULL) {
   $access_date = FALSE;
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
+     if ($this->has('url')) {
+       $url = $template->get('url');
+     } elseif ($template->has('chapter-url')) {
+       $url = $template->get('chapter-url');
+     } elseif ($template->has('chapterurl')) {
+       $url = $template->get('chapterurl');
+     } else {
+       report_info("Aborting Zotero expansion: No URL found");
+       return FALSE;
+     }
   }
-  if (is_null($url)) $url = $template->get('url');
-  if (!$url) {
-    report_info("Aborting Zotero expansion: No URL found");
-    return FALSE;
-  }
+
   if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
   
   if(stristr($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
