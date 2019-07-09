@@ -5,12 +5,19 @@ function html_echo($text, $alternate_text='') {
 }
 
 function user_notice($symbol, $class, $text) {
+  static $last_time = microtime(TRUE);
   global $FLUSHING_OKAY;
   if (!getenv('TRAVIS')) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
   }
-  if (in_array($class, array('phase', 'subitem', 'warning')) && $FLUSHING_OKAY) ob_flush();
+  if ($FLUSHING_OKAY) {
+     $now = microtime(TRUE);
+     if (in_array($class, array('phase', 'subitem', 'warning')) || 10 < ($now - $last_time)) {
+       $last_time = $now;
+       ob_flush();
+     }
+  }
 }
 
 function report_phase($text)  { user_notice("\n>", "phase", $text); }
