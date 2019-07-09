@@ -142,7 +142,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   $access_date = FALSE;
   if (is_null($url)) {
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
-     if ($this->has('url')) {
+     if ($template->has('url')) {
        $url = $template->get('url');
      } elseif ($template->has('chapter-url')) {
        $url = $template->get('chapter-url');
