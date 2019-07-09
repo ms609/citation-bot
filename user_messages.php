@@ -5,7 +5,7 @@ function html_echo($text, $alternate_text='') {
 }
 
 function user_notice($symbol, $class, $text) {
-  static $last_time = microtime(TRUE);
+  static $last_time = 0;
   global $FLUSHING_OKAY;
   if (!getenv('TRAVIS')) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
