@@ -1363,7 +1363,7 @@ final class Template {
              $this->forget($url_type);
           }
           return $this->add_if_new('lccn', $match[1]); 
-      } elseif (preg_match("~^https?://openlibrary\.org/books/OL/(\d{4,}[WM])(?:|/.*)$~i", $url, $match)) { // We do W "work" and M "edition", but not A, which is author
+      } elseif (preg_match("~^https?://openlibrary\.org/books/OL/?(\d{4,}[WM])(?:|/.*)$~i", $url, $match)) { // We do W "work" and M "edition", but not A, which is author
           quietly('report_modification', "Converting URL to OL parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
