@@ -83,7 +83,8 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "books\.google\.",         // We have special google books code
                                  "google\.com/search",      // Google search results
                                  "jstor\.org/stable/",      // We have special jstor code
-                                 "ned\.ipac\.caltech\.edu");// Gives no real title
+                                 "ned\.ipac\.caltech\.edu", // Gives no real title
+                                 "pep\-web\.org");          // Does not parse very well at all
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nbcnews.com/', 'abcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'bbc.com/', 'bbc.co.uk/', 'apnews.com/',
                                    '.ap.org/', 'nytimes.com/', 'theguardian.com/', 'washingtonpost.com/',
