@@ -208,8 +208,10 @@ class Page {
         $this_template->tidy();
         if (!$this_template->blank('journal')) {
            $journal = trim($this_template->get('journal'));
-           if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $journal . ' ') == ' ' . $journal . ' ') $journal = ucwords($journal); // Found NO foreign words/phrase
-           $this_template->set('journal', title_capitalization($journal, TRUE));
+           if ((strlen($journal) - mb_strlen($journal)) < 9 ) { // eight or fewer UTF-8 stuff
+             if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $journal . ' ') == ' ' . $journal . ' ') $journal = ucwords($journal); // Found NO foreign words/phrase
+             $this_template->set('journal', title_capitalization($journal, TRUE));
+           }
         }
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
         array_push($our_templates_slight, $this_template);
