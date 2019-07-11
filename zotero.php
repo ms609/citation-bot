@@ -5,13 +5,26 @@ const ZOTERO_SKIPS = 100;
 function query_url_api($ids, $templates) {
   global $SLOW_MODE;
   global $zotero_failures_count;
+  global $ch_zotero;
   if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
+  
+  $ch_zotero = curl_init('https://tools.wmflabs.org/translation-server/web');
+  curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt($ch_zotero, CURLOPT_USERAGENT, "Citation_bot");  
+  curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
+  curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);   
+  if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
+    curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
+  } else {
+    curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10); 
+  }
+
   report_action("Using Zotero translation server to retrieve details from URLs.");
   foreach ($templates as $template) {
-    if ($template->has('url')) {
-      expand_by_zotero($template);
-    }
+     expand_by_zotero($template);
   }
   report_action("Using Zotero translation server to retrieve details from identifiers.");
   foreach ($templates as $template) {
@@ -39,6 +52,7 @@ function query_url_api($ids, $templates) {
          }
        }
   }
+  curl_close($ch_zotero);
 }
 
 function drop_urls_that_match_dois($templates) {
@@ -101,26 +115,14 @@ function drop_urls_that_match_dois($templates) {
 
 function zotero_request($url) {
   global $zotero_failures_count;
+  global $ch_zotero;
+
+  curl_setopt($ch_zotero, CURLOPT_POSTFIELDS, $url);  
   
-  $ch = curl_init('https://tools.wmflabs.org/translation-server/web');
-  
-  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch, CURLOPT_USERAGENT, "Citation_bot");  
-  curl_setopt($ch, CURLOPT_POSTFIELDS, $url);  
-  curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);   
-  if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 45);
-  } else {
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10); 
-  }
-  
-  $zotero_response = curl_exec($ch);
+  $zotero_response = curl_exec($ch_zotero);
   if ($zotero_response === FALSE) {
-    report_warning(curl_error($ch) . "   For URL: " . $url);
-    if (strpos(curl_error($ch), 'timed out after') !== FALSE) {
+    report_warning(curl_error($ch_zotero) . "   For URL: " . $url);
+    if (strpos(curl_error($ch_zotero), 'timed out after') !== FALSE) {
       $zotero_failures_count = $zotero_failures_count + 1;
       if ($zotero_failures_count > ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
@@ -128,7 +130,6 @@ function zotero_request($url) {
       }
     }
   }
-  curl_close($ch);
   return $zotero_response;
 }
   
