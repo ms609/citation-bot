@@ -144,6 +144,12 @@ class Page {
                       substr_count($this->text, '{{Citation');
     $ref_count = substr_count($this->text, '<ref') + substr_count($this->text, '<Ref');
     // PLAIN URLS Converted to Templates
+    // Ones like <ref>https://www.nytimes.com/{{full|date=April 2016}}</ref> and deadlink
+    $this->text = preg_replace_callback(
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{(?:full|deadlink)\|date=[a-zA-Z0-9 ]+}})(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      function($matches) {return $matches[1] . '{{Cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
+                      $this->text
+                      );
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
@@ -160,7 +166,8 @@ class Page {
                         return $matches[0];
                       },
                       $this->text
-                      ); 
+                      );
+    
      // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{olcn}} Converted to templates
      $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,7}|pmc\|\d{4,7}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
