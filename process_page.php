@@ -58,7 +58,7 @@ foreach (explode('|', $pages) as $title) {
       }
       if ($attempts < 3 ) {
         html_echo(
-          " <small><a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&diff=prev&oldid="
+          "\n <small><a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&diff=prev&oldid="
           . urlencode($api->get_last_revision($title)) . ">diff</a> | "
           . "<a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&action=history>history</a></small></i>\n\n"
           , ".");
