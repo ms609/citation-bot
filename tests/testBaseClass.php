@@ -57,8 +57,21 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function expand_via_zotero($text) {
+    global $ch_zotero;
     $expanded = $this->prepare_citation($text);
+    
+    $ch_zotero = curl_init('https://tools.wmflabs.org/translation-server/web');
+    curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch_zotero, CURLOPT_USERAGENT, "Citation_bot");  
+    curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
+    curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);   
+    curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
+
     expand_by_zotero($expanded);
+    
+    curl_close($ch_zotero);
+    
     $expanded->tidy();
     return $expanded;
   }
