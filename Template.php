@@ -3135,10 +3135,12 @@ final class Template {
               $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
               $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $this->get($param)));
           }
-          $periodical = $this->get($param);
-          if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") { ;
-             if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
-             $this->set($param, title_capitalization($periodical, TRUE));
+          $periodical = trim($this->get($param));
+          if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") {  
+            if ((strlen($periodical) - mb_strlen($periodical)) < 9 ) { // eight or fewer UTF-8 stuff
+               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
+               $this->set($param, title_capitalization($periodical, TRUE));
+            }
           } else {
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
               // $periodical = $matches[1];
