@@ -78,7 +78,7 @@ foreach($links as $link) {
       // echo "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
-        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $api->get_last_revision($page_title) . ">diff</a>" .
         " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
       } else {

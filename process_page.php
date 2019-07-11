@@ -46,8 +46,8 @@ foreach (explode('|', $pages) as $title) {
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
      continue;
   }
-
-  report_phase("Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.");
+  // $page->expand_text will take care of this notice if we are in HTML mode.
+  html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
   $my_page = new Page();
   $attempts = 0;
   if ($my_page->get_text_from($title, $api)) {
@@ -58,7 +58,7 @@ foreach (explode('|', $pages) as $title) {
       }
       if ($attempts < 3 ) {
         html_echo(
-          " <small><a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&diff=prev&oldid="
+          "\n <small><a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&diff=prev&oldid="
           . urlencode($api->get_last_revision($title)) . ">diff</a> | "
           . "<a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&action=history>history</a></small></i>\n\n"
           , ".");
