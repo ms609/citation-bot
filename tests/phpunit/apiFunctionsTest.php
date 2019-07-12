@@ -61,15 +61,12 @@ final class apiFunctionsTest extends testBaseClass {
     }
   // See https://www.doi.org/demos.html  NOT ALL EXPAND AT THIS TIME
   public function testExpansion_doi_not_from_crossrefBook() {
-return;
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
      $this->assertSame('{{Cite book|year = 1996|isbn = 9780511983658|last1 = Luo|first1 = Zhi-Quan|title = Mathematical Programs with Equilibrium Constraints|last2 = Pang|first2 = Jong-Shi|last3 = Ralph|first3 = Daniel|location = Cambridge|publisher = Cambridge University Press}}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefBookChapter() {
-      
-return;
      $expanded = $this->process_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
      $this->assertSame('{{Cite book|year = 2003|isbn = 0471975141|title = Internetworking LANs and WANs|chapter = Network Concepts|location = Chichester, UK|publisher = John Wiley & Sons}}', $expanded->parsed_text());
