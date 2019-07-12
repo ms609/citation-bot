@@ -51,7 +51,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Subscribe to read', 'Wiley Online Library', 'pagina is niet gevonden',
                                  'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended',
                                  'Error 404', 'EZProxy', 'EBSCOhost Login', '404 - Not Found',
-                                 'Temporarily Unavailable', ' has expired', 'not longer available', 'This is due to newswire licensing terms'];
+                                 'Temporarily Unavailable', ' has expired', 'not longer available',
+                                 'Article expired', 'This is due to newswire licensing terms'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
