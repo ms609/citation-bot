@@ -184,11 +184,11 @@ class WikipediaBot {
     
     if ((!is_null($lastRevId) && $myPage->lastrevid != $lastRevId)
      || (!is_null($startedEditing) && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-      report_error("Possible edit conflict detected. Aborting.");
+      report_minor_error("Possible edit conflict detected. Aborting.");
       return FALSE;
     }
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
-      report_error("\n ! Placeholder left escaped in text. Aborting.");
+      report_minor_error("\n ! Placeholder left escaped in text. Aborting.");
       return FALSE;
     }
     
