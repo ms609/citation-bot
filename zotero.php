@@ -79,7 +79,6 @@ function drop_urls_that_match_dois($templates) {
           report_forget("Existing proxy URL resulting from equivalent DOI; dropping URL");
           $template->forget('url');
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
-         ) {
           report_forget("Existing OVID URL resulting from equivalent DOI; dropping URL");
           $template->forget('url'); 
        } else {
