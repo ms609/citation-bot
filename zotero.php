@@ -78,6 +78,10 @@ function drop_urls_that_match_dois($templates) {
        if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; dropping URL");
           $template->forget('url');
+       } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
+         ) {
+          report_forget("Existing OVID URL resulting from equivalent DOI; dropping URL");
+          $template->forget('url'); 
        } else {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
