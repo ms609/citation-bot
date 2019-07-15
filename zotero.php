@@ -231,7 +231,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
   if (isset($result->title))     $test_data .= $result->title;
   foreach (BAD_ZOTERO_TITLES as $bad_title ) {
-      if (stripos($test_data, $bad_title) !== FALSE) {
+      if (mb_stripos($test_data, $bad_title) !== FALSE) {
         report_info("Received invalid title data for URL ". $url . ": $test_data");
         return FALSE;
       }
