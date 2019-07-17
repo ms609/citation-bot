@@ -6,6 +6,7 @@ function query_url_api($ids, $templates) {
   global $SLOW_MODE;
   global $zotero_failures_count;
   global $ch_zotero;
+  global $FLUSHING_OKAY;
   if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
   
@@ -22,11 +23,16 @@ function query_url_api($ids, $templates) {
     curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10); 
   }
 
+  if ($FLUSHING_OKAY) ob_flush();
   report_action("Using Zotero translation server to retrieve details from URLs.");
+  if ($FLUSHING_OKAY) $std_output = ob_get_contents();
   foreach ($templates as $template) {
      expand_by_zotero($template);
   }
+  if ($FLUSHING_OKAY && $std_output == ob_get_contents()) ob_clean();
+  if ($FLUSHING_OKAY) ob_flush();
   report_action("Using Zotero translation server to retrieve details from identifiers.");
+  if ($FLUSHING_OKAY) $std_output = ob_get_contents();
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
@@ -52,6 +58,7 @@ function query_url_api($ids, $templates) {
          }
        }
   }
+  if ($FLUSHING_OKAY && $std_output == ob_get_contents()) ob_clean();
   curl_close($ch_zotero);
 }
 
