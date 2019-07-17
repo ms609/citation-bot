@@ -454,6 +454,9 @@ function url_simplify($url) {
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/'], ['/', '/', '/', '/', '/', '/', '/'], $url);
+  if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
+    $url = 'https://ieeexplore.ieee.org/document/5671934' . $matches[1];
+  }
   $url = strtok($url, '?#');
   $url = str_ireplace('https', 'http', $url);
   return $url;
