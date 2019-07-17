@@ -80,10 +80,7 @@ function drop_urls_that_match_dois($templates) {
           $template->forget('url');
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
           report_forget("Existing OVID URL resulting from equivalent DOI; dropping URL");
-          $template->forget('url');
-       } elseif (strpos($doi, '10.1109') === 0 && preg_match('~ieeexplore.ieee.org.*/document/(\d+)~', $url)) { // don’t escape dots to include proxies urls
-          report_forget("Existing IEEE URL resulting from equivalent DOI; dropping URL");
-          $template->forget('url');
+          $template->forget('url'); 
        } else {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
@@ -457,6 +454,9 @@ function url_simplify($url) {
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/'], ['/', '/', '/', '/', '/', '/', '/'], $url);
+  if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
+    $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
+  }
   $url = strtok($url, '?#');
   $url = str_ireplace('https', 'http', $url);
   return $url;
