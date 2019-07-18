@@ -377,6 +377,9 @@ class Page {
       ? "Formatted [[WP:ENDASH|dashes]]. "
       : ""
     );
+    if ($this->modifications["names"]) {
+      $auto_summary .= ' Some additions/deletions were actually parameter name changes.';
+    }
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
@@ -477,6 +480,7 @@ class Page {
     $this->modifications['deletions'] = array();
     $this->modifications['modifications'] = array();
     $this->modifications['dashes'] = FALSE;
+    $this->modifications['names'] = FALSE;
   }
 }
 
