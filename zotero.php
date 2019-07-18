@@ -163,7 +163,6 @@ function expand_by_zotero(&$template, $url = NULL) {
      } elseif ($template->has('chapterurl')) {
        $url = $template->get('chapterurl');
      } else {
-       report_info("Aborting Zotero expansion: No URL found");
        return FALSE;
      }
   }
