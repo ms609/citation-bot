@@ -3390,6 +3390,13 @@ final class Template {
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
+            } elseif (preg_match('~^https?://(.*)proquest.umi.com(.*)/(pqd.+)$~', $this->get($param), $matches)) {
+               if ($matches[1] || $matches[2]) {
+                 $this->set($param, 'http://proquest.umi.com/' . $matches[3]);
+                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
+               }
             }
             $changed = FALSE;
             if (preg_match("~^https?://search.proquest.com/.+/docview/(.+)$~", $this->get($param), $matches)) {
@@ -3400,7 +3407,7 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
-            if (preg_match("~^https?://search.proquest.com/docview/(.+)\?accountid=.*$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search.proquest.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
