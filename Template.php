@@ -3407,7 +3407,7 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
-            if (preg_match("~^https?://search.proquest.com/docview/(.+)\?accountid=.*$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search.proquest.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
