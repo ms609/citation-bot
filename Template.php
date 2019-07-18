@@ -3415,6 +3415,14 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
+            if (preg_match("~^https?://proquest.umi.com/pqdweb.+did=(\d+)(?:|[^\d].*)$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'http://proquest.umi.com/pqdweb?did=' . $matches[1]); // User specific information
+            }
+            if (preg_match("~^https?://proquest.umi.com/pqdlink.+did=(\d+)(?:|[^\d].*)$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'http://proquest.umi.com/pqdlink?did=' . $matches[1]); // User specific information
+            }      
             if ($changed) report_info("Normalized ProQuest URL");
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) &&
