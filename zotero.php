@@ -1,12 +1,12 @@
 <?php 
 const ZOTERO_GIVE_UP = 5;
 const ZOTERO_SKIPS = 100;
-$zotero_announced;
 
 function query_url_api($ids, $templates) {
   global $SLOW_MODE;
   global $zotero_failures_count;
   global $ch_zotero;
+  global $zotero_announced;
   if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
   
@@ -155,6 +155,7 @@ function zotero_request($url) {
   
 function expand_by_zotero(&$template, $url = NULL) {
   global $zotero_failures_count;
+  global $zotero_announced;
   if ($zotero_failures_count > ZOTERO_GIVE_UP) {
     $zotero_failures_count = $zotero_failures_count - 1;
     if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // Reset
