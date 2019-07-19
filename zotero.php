@@ -6,7 +6,7 @@ function query_url_api($ids, $templates) {
   global $SLOW_MODE;
   global $zotero_failures_count;
   global $ch_zotero;
-  global $FLUSHING_OKAY;
+  global $zotero_announced;
   if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
   
@@ -23,16 +23,11 @@ function query_url_api($ids, $templates) {
     curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10); 
   }
 
-  if ($FLUSHING_OKAY) ob_flush();
-  report_action("Using Zotero translation server to retrieve details from URLs.");
-  if ($FLUSHING_OKAY) $std_output = ob_get_contents();
+  $zotero_announced = 1;
   foreach ($templates as $template) {
      expand_by_zotero($template);
   }
-  if ($FLUSHING_OKAY && strcmp(trim($std_output), trim(ob_get_contents())) === 0) ob_clean();
-  if ($FLUSHING_OKAY) ob_flush();
-  report_action("Using Zotero translation server to retrieve details from identifiers.");
-  if ($FLUSHING_OKAY) $std_output = ob_get_contents();
+  $zotero_announced = 2;
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
@@ -58,7 +53,6 @@ function query_url_api($ids, $templates) {
          }
        }
   }
-  if ($FLUSHING_OKAY && strcmp(trim($std_output), trim(ob_get_contents())) === 0) ob_clean();
   curl_close($ch_zotero);
 }
 
@@ -161,6 +155,7 @@ function zotero_request($url) {
   
 function expand_by_zotero(&$template, $url = NULL) {
   global $zotero_failures_count;
+  global $zotero_announced;
   if ($zotero_failures_count > ZOTERO_GIVE_UP) {
     $zotero_failures_count = $zotero_failures_count - 1;
     if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // Reset
@@ -191,6 +186,13 @@ function expand_by_zotero(&$template, $url = NULL) {
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
+  if ($zotero_announced === 1) {
+    report_action("Using Zotero translation server to retrieve details from URLs.");
+    $zotero_announced = 0;
+  } elseif ($zotero_announced === 2) {
+    report_action("Using Zotero translation server to retrieve details from identifiers.");
+    $zotero_announced = 0;
+  }
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
   switch (trim($zotero_response)) {
