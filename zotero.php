@@ -189,8 +189,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ($zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
     $zotero_announced = 0;
-  }
-  if ($zotero_announced === 2) {
+  } elseif ($zotero_announced === 2) {
     report_action("Using Zotero translation server to retrieve details from identifiers.");
     $zotero_announced = 0;
   }
