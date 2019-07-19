@@ -3330,7 +3330,7 @@ final class Template {
 
         case 'archivedate':
           if ($this->has('archivedate') && $this->get('archive-date') === $this->get('archivedate')) {
-            $this-forget('archivedate');
+            $this->forget('archivedate');
           }
           return;
 
