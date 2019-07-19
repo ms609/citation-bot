@@ -3328,6 +3328,12 @@ final class Template {
           }
           return;
 
+        case 'archivedate':
+          if ($this->has('archivedate') && $this->get('archive-date') === $this->get('archivedate')) {
+            $this-forget('archivedate');
+          }
+          return;
+
         case 'archive-url':
         case 'archiveurl':
           if ($this->blank(['archive-date', 'archivedate'])) {
