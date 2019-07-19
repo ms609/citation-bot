@@ -29,7 +29,7 @@ function query_url_api($ids, $templates) {
   foreach ($templates as $template) {
      expand_by_zotero($template);
   }
-  if ($FLUSHING_OKAY && strcmp(trim($std_output), trim(ob_get_contents()) === 0) ob_clean();
+  if ($FLUSHING_OKAY && strcmp(trim($std_output), trim(ob_get_contents())) === 0) ob_clean();
   if ($FLUSHING_OKAY) ob_flush();
   report_action("Using Zotero translation server to retrieve details from identifiers.");
   if ($FLUSHING_OKAY) $std_output = ob_get_contents();
@@ -58,7 +58,7 @@ function query_url_api($ids, $templates) {
          }
        }
   }
-  if ($FLUSHING_OKAY && strcmp(trim($std_output), trim(ob_get_contents()) === 0) ob_clean();
+  if ($FLUSHING_OKAY && strcmp(trim($std_output), trim(ob_get_contents())) === 0) ob_clean();
   curl_close($ch_zotero);
 }
 
