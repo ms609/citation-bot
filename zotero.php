@@ -203,6 +203,9 @@ function expand_by_zotero(&$template, $url = NULL) {
     case 'Remote page not found':
       report_info("Remote page not found for URL ". $url);
       return FALSE;
+    case 'No items returned from any translator':
+      report_info("Remote page not interpretable for URL ". $url);
+      return FALSE;
   }
   
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
