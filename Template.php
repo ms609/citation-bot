@@ -3373,6 +3373,15 @@ final class Template {
                  $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
                  report_info("Remove proxy from Oxford Art URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+              } elseif (preg_match("~^https?://(?:www.|)sciencedirect.com[^/]+/(\S+)$~i", $this->get($param), $matches)) {
+                 report_info("Remove proxy from ScienceDirect URL");
+                 $this->set($param, 'https://www.sciencedirect.com/' . $matches[1]);
+                 if ($this->has('via') { 
+                   if (stripos($this->get('via'), 'library') !== FALSE ||
+                       stripos($this->get('via'), 'direct') === FALSE) {
+                     $this->forget('via');
+                   }
+                 } 
               }
           }
           if (stripos($this->get($param), 'galegroup') !== FALSE) {
