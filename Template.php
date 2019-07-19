@@ -447,6 +447,18 @@ final class Template {
           report_warning(" Please fix manually.");
         }
         return FALSE;
+        
+      case 'archive-date':
+        $time = strtotime($value);
+        if ($time) { // should come in cleaned up
+            if ($this->date_style === DATES_MDY) {
+               $value = date('F j, Y', $time);
+            } elseif ($this->date_style === DATES_DMY) {
+               $value = date('j F Y', $time);
+            }
+            return $this->add($param_name, $value);
+        }
+        return FALSE;
       
       ### DATE AND YEAR ###
       
@@ -3311,7 +3323,16 @@ final class Template {
                  $this->set($param, trim($match[1])); // Books/journals probably don't end in (PDF)
           }
           return;
-     
+
+        case 'archive-url':
+        case 'archiveurl':
+          if ($this->blank(['archive-date', 'archive-date'])) {
+            if (preg_match('~^https?://web\.archive\.org/web/(\d{4})(\d{2})(\d{2})\d{6}/http~', $this->get($param), $matches)) {
+              $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
+            }
+          }
+          return;
+ 
         case 'chapter-url':
         case 'chapterurl':
           if ($this->blank('url') && $this->blank(CHAPTER_ALIASES)) {
