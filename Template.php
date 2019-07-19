@@ -512,7 +512,7 @@ final class Template {
         return FALSE;
         
       case 'periodical': case 'journal': case 'newspaper':
-      
+        if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
         if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
@@ -591,6 +591,7 @@ final class Template {
         return FALSE;
 
       case 'chapter': case 'contribution':
+        if (!$this->blank(['booktitle', 'book-title']) && $this->has('title')) return FALSE;
         if ($this->blank(CHAPTER_ALIASES)) {
           return $this->add($param_name, wikify_external_text($value));
         }
