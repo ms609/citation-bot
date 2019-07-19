@@ -62,6 +62,7 @@ if (HTML_OUTPUT) {
 }
 
 $edit_summary_end = "| Activated by [[User:" . $api->get_the_user() . "]] | [[Category:$category]].";
+$final_edit_overview = "";
 
 if ($category) {
   $attempts = 0;
@@ -83,19 +84,27 @@ if ($category) {
       // Parsed text can be viewed by diff link; don't clutter page. 
       // echo "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
+        $last_rev = $api->get_last_revision($page_title);
         html_echo(
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . $api->get_last_revision($page_title) . ">diff</a>" .
+        . $last_rev . ">diff</a>" .
         " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
+        $final_edit_overview =.
+          "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . $last_rev . ">diff</a>" .
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a> ] echoable($page_title)";
       } else {
          report_warning("Write failed.");
+         $final_edit_overview =. "\n Write failed.      echoable($page_title)";
       }
     } else {
       report_phase($page->parsed_text() ? 'No changes required.' : 'Blank page');
       echo "\n\n    # # # ";
+      $final_edit_overview =. "\n No changes needed. echoable($page_title)";
     }
   }
   echo ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
+  html_echo($final_edit_overview, '');
 } else {
   echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
