@@ -69,7 +69,7 @@ require_once __DIR__ . '/../testBaseClass.php';
       
       foreach ($namespaces->query->namespaces as $ns) {
         $ns_name = isset($ns->canonical)? $ns->canonical : '';
-        $ns_id = (string) $ns->id;
+        $ns_id = $ns->id;
         $this->assertSame($ns_id, $api->namespace_id($ns_name));
         $this->assertSame($ns_name, $api->namespace_name($ns_id));
       }
