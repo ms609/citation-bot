@@ -2251,7 +2251,7 @@ final class Template {
         }
       }
       if ($removed_redundant > 1) { // http:// is counted as 1 parameter
-        report_forget(echoable($removed_parts)) 
+        report_forget(echoable($removed_parts));
         $this->set($url_type, $url . $hash);
       }
       $this->google_book_details($gid[1]);
