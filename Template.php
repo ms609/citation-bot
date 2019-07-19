@@ -448,7 +448,9 @@ final class Template {
         }
         return FALSE;
         
+      case 'archivedate';
       case 'archive-date':
+        if (!$this->blank(['archive-date', 'archivedate'])) return FALSE;
         $time = strtotime($value);
         if ($time) { // should come in cleaned up
             if ($this->date_style === DATES_MDY) {
@@ -3328,7 +3330,7 @@ final class Template {
 
         case 'archive-url':
         case 'archiveurl':
-          if ($this->blank(['archive-date', 'archive-date'])) {
+          if ($this->blank(['archive-date', 'archivedate'])) {
             if (preg_match('~^https?://web\.archive\.org/web/(\d{4})(\d{2})(\d{2})\d{6}/http~', $this->get($param), $matches)) {
               $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
             }
