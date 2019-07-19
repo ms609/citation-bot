@@ -2237,6 +2237,7 @@ final class Template {
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $removed_redundant = 0;
       $hash = '';
+      $removed_parts ='';
       
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
@@ -2257,11 +2258,12 @@ final class Template {
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
           default:
-            if ($removed_redundant !== 0) report_forget(echoable($part)); // http://blah-blah is first parameter and it is not actually dropped
+            if ($removed_redundant !== 0) $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
             $removed_redundant++;
         }
       }
       if ($removed_redundant > 1) { // http:// is counted as 1 parameter
+        report_forget(echoable($removed_parts));
         $this->set($url_type, $url . $hash);
       }
       $this->google_book_details($gid[1]);
