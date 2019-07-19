@@ -3382,7 +3382,7 @@ final class Template {
               } elseif (preg_match("~^https?://(?:www.|)sciencedirect.com[^/]+/(\S+)$~i", $this->get($param), $matches)) {
                  report_info("Remove proxy from ScienceDirect URL");
                  $this->set($param, 'https://www.sciencedirect.com/' . $matches[1]);
-                 if ($this->has('via') { 
+                 if ($this->has('via')) { 
                    if (stripos($this->get('via'), 'library') !== FALSE ||
                        stripos($this->get('via'), 'direct') === FALSE) {
                      $this->forget('via');
