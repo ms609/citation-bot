@@ -1939,4 +1939,10 @@ ER -  }}';
     $this->assertSame('First', $template->get('first2'));
     $this->assertNull($template->get('last1'));
   }
+ 
+  public function testAddArchiveDate() {
+    $text = '{{Cite web|archive-url=https://web.archive.org/web/20190521084631/https://johncarlosbaez.wordpress.com/2018/09/20/patterns-that-eventually-fail/|archive-date=}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('2019-05-21', $template->get('archive-date'));
+  }
 }
