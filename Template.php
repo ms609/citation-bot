@@ -27,7 +27,7 @@ final class Template {
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
             $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
-            $mod_dashes;
+            $mod_dashes, $mod_names;
 
   public function parse_text($text) {
     $this->initial_author_params = NULL; // Will be populated later if there are any
@@ -3959,6 +3959,7 @@ final class Template {
           $p->val = $new_value;
         }
         report_modification("Renamed \"$old_param\" -> \"$new_param\"");
+        $this->mod_names = TRUE;
         $this->tidy_parameter($new_param);
       }
     }
@@ -4170,6 +4171,7 @@ final class Template {
       }
     }
     $ret['dashes'] = $this->mod_dashes;
+    $ret['names'] = $this->mod_names;
     if (in_array($type, array_keys($ret))) return $ret[$type];
     return $ret;
   }
