@@ -3478,6 +3478,7 @@ final class Template {
                     if (preg_match("~^https?://search\.proquest\.com/docview/\d{4,}$~", $redirectedUrl, $matches)) {
                        $changed = TRUE;
                        $this->set($param, $matches[0]);
+                       if (stripos($this->get('id'), 'Proquest Document ID') !== FALSE) $this->forget('id');
                     }
                  }
                  curl_close($ch);
