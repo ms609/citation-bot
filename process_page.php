@@ -58,9 +58,10 @@ foreach (explode('|', $pages) as $page_title) {
         ++$attempts;
       }
       if ($attempts < 3 ) {
+        $last_rev = urlencode($api->get_last_revision($page_title));
         html_echo(
           "\n <small><a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
-          . urlencode($api->get_last_revision($page_title)) . ">diff</a> | "
+          . $last_rev . ">diff</a> | "
           . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a></small></i>\n\n"
           , ".");
         $final_edit_overview .=
