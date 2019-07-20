@@ -56,7 +56,7 @@ function extract_doi($text) {
       $doi = $new_match[1];
     }
     $doi_candidate = sanitize_doi($doi);
-    while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_active($doi_candidate)) {
+    while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_works($doi_candidate)) {
       $last_delimiter = 0;
       foreach (array('/', '.', '#', '?') as $delimiter) {
         $delimiter_position = strrpos($doi_candidate, $delimiter);
@@ -64,7 +64,7 @@ function extract_doi($text) {
       }
       $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
     }
-    if (doi_active($doi_candidate)) $doi = $doi_candidate;
+    if (doi_works($doi_candidate)) $doi = $doi_candidate;
     return array($match[0], sanitize_doi($doi));
   }
   return NULL;
