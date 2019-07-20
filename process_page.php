@@ -32,6 +32,7 @@ if (HTML_OUTPUT) {?>
 }
 
 $edit_summary_end = "| Activated by [[User:" . $api->get_the_user() . "]] ";
+$final_edit_overview = "";
 
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
        ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
@@ -40,9 +41,9 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
 }
 if (!isset($ON)) $ON = isset($argv[2]);
 
-foreach (explode('|', $pages) as $title) {
+foreach (explode('|', $pages) as $page_title) {
 
-  if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
+  if (trim($page_title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
      continue;
   }
@@ -50,7 +51,7 @@ foreach (explode('|', $pages) as $title) {
   html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
   $my_page = new Page();
   $attempts = 0;
-  if ($my_page->get_text_from($title, $api)) {
+  if ($my_page->get_text_from($page_title, $api)) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
       while (!$my_page->write($api, $edit_summary_end) && $attempts < 2) {
@@ -58,21 +59,26 @@ foreach (explode('|', $pages) as $title) {
       }
       if ($attempts < 3 ) {
         html_echo(
-          "\n <small><a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&diff=prev&oldid="
-          . urlencode($api->get_last_revision($title)) . ">diff</a> | "
-          . "<a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&action=history>history</a></small></i>\n\n"
+          "\n <small><a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+          . urlencode($api->get_last_revision($page_title)) . ">diff</a> | "
+          . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a></small></i>\n\n"
           , ".");
+        $final_edit_overview .=
+          "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+          . $last_rev . ">diff</a>" .
+          " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a> ] " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
       } else {
         echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());
+        $final_edit_overview .= "\n Write failed.      " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
       }
     } elseif (!$ON && HTML_OUTPUT) {
-      echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
+      echo "\n # Proposed code for " . echoable($page_title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
       safely_echo($my_page->parsed_text());
       echo "</pre>";
       ob_flush();
   ?>
   <form method="post" action="process_page.php">
-    <input type="hidden" name="page" value="<?php echo $title;?>" />
+    <input type="hidden" name="page" value="<?php echo $page_title;?>" />
     <input type="hidden" name="edit" value="on" />
     <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>" />
     <input type="submit" value="Submit edits" />
@@ -80,10 +86,15 @@ foreach (explode('|', $pages) as $title) {
   <?php
     } else {
       report_phase($my_page->parsed_text() ? 'No changes required.' : 'Blank page');
+      $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
   } else {
-    echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
+    echo "\n Page      '" . htmlspecialchars($page_title) . "' not found.";
   }
+}
+if (strpos($pages, '|') !== FALSE) {
+  $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
+  html_echo($final_edit_overview, '');
 }
 ob_end_flush();
 ?>
