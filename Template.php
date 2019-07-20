@@ -1315,7 +1315,7 @@ final class Template {
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches) && // Might be padded with stuff,
+          if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
             && stripos($headers_test['Location'], $handle) === FALSE
             && stripos($headers_test['Location'], $matches[1]) !== FALSE) {
               $handle = $matches[1];
