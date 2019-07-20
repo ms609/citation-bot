@@ -630,7 +630,7 @@ function doi_works($doi) {
   if (doi_active($doi)) return TRUE; // CrossRef first
   $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1);
   if ($headers_test === FALSE) return FALSE; // most likely.....
-  if ($empty($headers_test['Location'])) return FALSE; // leads nowhere
+  if (empty($headers_test['Location'])) return FALSE; // leads nowhere
   return TRUE; // Lead somewhere
 }
 
