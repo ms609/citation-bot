@@ -626,6 +626,14 @@ function doi_active($doi) {
   return $cache[$doi];
 }
 
+function doi_works($doi) {
+  if (doi_active($doi)) return TRUE; // CrossRef first
+  $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1);
+  if ($headers_test === FALSE) return FALSE; // most likely.....
+  if ($empty($headers_test['Location'])) return FALSE; // leads nowhere
+  return TRUE; // Lead somewhere
+}
+
 function is_doi_active($doi) {
   $response = @get_headers("https://api.crossref.org/works/" . urlencode($doi))[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
