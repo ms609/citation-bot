@@ -354,11 +354,13 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (isset($result->bookTitle)) {
     $result->bookTitle = preg_replace('~\s*\(pdf\)$~i', '', $result->bookTitle);
     $result->bookTitle = preg_replace('~^\(pdf\)\s*~i', '', $result->bookTitle);
+    $result->bookTitle = preg_replace('~ \- ProQuest.?~i', '', $result->bookTitle);
   }
   if (isset($result->title)) {
     $result->title = preg_replace('~\s*\(pdf\)$~i', '', $result->title);
     $result->title = preg_replace('~^\(pdf\)\s*~i', '', $result->title);
-  }
+    $result->title = preg_replace('~ \- ProQuest.?~i', '', $result->title);
+   }
   
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', $result->bookTitle);

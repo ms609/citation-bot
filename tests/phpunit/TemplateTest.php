@@ -213,7 +213,7 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testChangeNothing1() {
-     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->}}';
+     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->|pmid=<!-- -->}}';
      $expanded = $this->process_page($text);
      $this->assertSame($text, $expanded->parsed_text());
   }

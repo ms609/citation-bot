@@ -3456,11 +3456,11 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
-            if (preg_match("~^https?://proquest\.umi.\com/pqdweb.+did=(\d+)(?:|[^\d].*)$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://proquest\.umi.\com/pqdweb.+did=(\d+)(?:|[^\d].*)$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'http://proquest.umi.com/pqdweb?did=' . $matches[1]); // User specific information
             }
-            if (preg_match("~^https?://proquest\.umi\.com/pqdlink.+did=(\d+)(?:|[^\d].*)$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://proquest\.umi\.com/pqdlink.+did=(\d+)(?:|[^\d].*)$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'http://proquest.umi.com/pqdlink?did=' . $matches[1]); // User specific information
             }
@@ -3475,7 +3475,7 @@ final class Template {
                  curl_setopt($ch, CURLOPT_URL, $matches[0]);
                  if (@curl_exec($ch)) {
                     $redirectedUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-                    if (preg_match("~^https?://search\.proquest\.com/docview/\d{4,}$~", $this->get($param), $matches)) {
+                    if (preg_match("~^https?://search\.proquest\.com/docview/\d{4,}$~", $redirectedUrl, $matches)) {
                        $changed = TRUE;
                        $this->set($param, $matches[0]);
                     }
