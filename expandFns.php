@@ -1,7 +1,7 @@
 <?php
 
 function sanitize_doi($doi) {
-  if (substr($doi, -1) === '.')) {
+  if (substr($doi, -1) === '.') {
     $try_doi = substr($doi, 0, -1);
     if (doi_works($try_doi)) { // If it works without dot, then remove it
       $doi = $try_doi;
