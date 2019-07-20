@@ -84,7 +84,7 @@ if ($category) {
       // Parsed text can be viewed by diff link; don't clutter page. 
       // echo "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
-        $last_rev = $api->get_last_revision($page_title);
+        $last_rev = urlencode($api->get_last_revision($page_title));
         html_echo(
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $last_rev . ">diff</a>" .
