@@ -4019,7 +4019,7 @@ final class Template {
           $p->val = $new_value;
         }
         if (strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_year') === FALSE &&
-            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === FALSE)) {
+            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === FALSE) {
           report_modification("Renamed \"$old_param\" -> \"$new_param\"");
           $this->mod_names = TRUE;
         }
