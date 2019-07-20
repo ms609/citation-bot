@@ -1,6 +1,15 @@
 <?php
 
 function sanitize_doi($doi) {
+  if (substr($doi, -1) === '.') {
+    $try_doi = substr($doi, 0, -1);
+    if (doi_works($try_doi)) { // If it works without dot, then remove it
+      $doi = $try_doi;
+    } elseif (doi_works($try_doi . '.x')) { // Missing the very common ending .x
+      $doi = $try_doi . '.x';
+    } elseif (!doi_works($doi)) { // It does not work, so just remove it to remove wikipedia error.  It's messed up
+      $doi = $try_doi; 
+  }
   $doi = preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
   $doi = preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
