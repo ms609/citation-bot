@@ -93,7 +93,10 @@ function drop_urls_that_match_dois($templates) {
           report_forget("Existing proxy URL resulting from equivalent DOI; dropping URL");
           $template->forget($url_kind);
        } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
-          report_forget("Existing Invalid ScienceDitect URL when DOI is present");
+          report_forget("Existing Invalid ScienceDirect URL when DOI is present; dropping URL");
+          $template->forget($url_kind);
+       } elseif (preg_match('~www.sciencedirect.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
+          report_forget("Existing Invalid ScienceDirect URL when DOI is present; dropping URL");
           $template->forget($url_kind);
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
           report_forget("Existing OVID URL resulting from equivalent DOI; dropping URL");
