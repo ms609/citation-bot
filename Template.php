@@ -3444,26 +3444,44 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // Remove specific search engine
             }
-            if (preg_match("~^https?://search.proquest.com/docview/(.+)/fulltext.*$~i", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/fulltext.*$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
-            if (preg_match("~^https?://search.proquest.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
-            if (preg_match("~^https?://search.proquest.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
-            if (preg_match("~^https?://proquest.umi.com/pqdweb.+did=(\d+)(?:|[^\d].*)$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://proquest\.umi.\com/pqdweb.+did=(\d+)(?:|[^\d].*)$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'http://proquest.umi.com/pqdweb?did=' . $matches[1]); // User specific information
             }
-            if (preg_match("~^https?://proquest.umi.com/pqdlink.+did=(\d+)(?:|[^\d].*)$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://proquest\.umi\.com/pqdlink.+did=(\d+)(?:|[^\d].*)$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'http://proquest.umi.com/pqdlink?did=' . $matches[1]); // User specific information
-            }      
+            }
+            if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
+                 $ch = curl_init();
+                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+                 curl_setopt($ch, CURLOPT_MAXREDIRS, 20);
+                 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
+                 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+                 curl_setopt($ch, CURLOPT_COOKIEFILE, "");
+                 curl_setopt($ch, CURLOPT_URL, $matches[0]);
+                 if (@curl_exec($ch)) {
+                    $redirectedUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+                    if (preg_match("~^https?://search\.proquest\.com/docview/\d{4,}$~", $this->get($param), $matches)) {
+                       $changed = TRUE;
+                       $this->set($param, $matches[0]);
+                    }
+                 }
+                 curl_close($ch);
+            }
             if ($changed) report_info("Normalized ProQuest URL");
           }
           if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) &&
