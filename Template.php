@@ -3488,6 +3488,10 @@ final class Template {
                        $changed = TRUE;
                        $this->set($param, $matches[0]);
                        if (stripos($this->get('id'), 'Proquest Document ID') !== FALSE) $this->forget('id');
+                    } elseif (preg_match("~^https?://search\.proquest\.com/openurl/handler/.+$~", $redirectedUrl, $matches)) {
+                       $changed = TRUE;
+                       $this->set($param, $matches[0]);
+                       if (stripos($this->get('id'), 'Proquest Document ID') !== FALSE) $this->forget('id');
                     }
                  }
                  curl_close($ch);
