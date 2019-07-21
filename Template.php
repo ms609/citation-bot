@@ -3461,13 +3461,16 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
-            if (preg_match("~^https?://proquest\.umi.\com/pqdweb.+did=(\d+)(?:|[^\d].*)$~i", $this->get($param), $matches)) {
+            if (preg_match("~^https?://proquest\.umi\.com/pqdweb.+did=(\d+)(?:|[^\d].*)$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'http://proquest.umi.com/pqdweb?did=' . $matches[1]); // User specific information
             }
             if (preg_match("~^https?://proquest\.umi\.com/pqdlink.+did=(\d+)(?:|[^\d].*)$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'http://proquest.umi.com/pqdlink?did=' . $matches[1]); // User specific information
+            }
+            if (strcmp('http://proquest.umi.com/', $this->get($param)) === 0) {
+                 $this->forget($param);
             }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
                  $ch = curl_init();
