@@ -3491,9 +3491,9 @@ final class Template {
                  curl_setopt($ch, CURLOPT_URL, $matches[0]);
                  if (@curl_exec($ch)) {
                     $redirectedUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-                    if (preg_match("~^https?://search\.proquest\.com/docview/\d{4,}(?:|/abstract.*|/fulltext.*)$~", $redirectedUrl, $matches)) {
+                    if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*)$~", $redirectedUrl, $matches)) {
                        $changed = TRUE;
-                       $this->set($param, $matches[0]);
+                       $this->set($param, $matches[1]);
                        if (stripos($this->get('id'), 'Proquest Document ID') !== FALSE) $this->forget('id');
                     } elseif (preg_match("~^https?://search\.proquest\.com(?:|/)$~", $redirectedUrl)) {
                        $changed = TRUE;
