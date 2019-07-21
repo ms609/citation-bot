@@ -1,4 +1,4 @@
-qe<?php
+<?php
 /*
  * Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
