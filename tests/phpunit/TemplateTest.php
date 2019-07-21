@@ -1624,13 +1624,6 @@ ER -  }}';
  
   public function testBadBibcodeARXIVPages() {
    $this->requires_secrets(function() {
-    $text = '{{cite journal|bibcode=2017arXiv171102260L}}'; // Some bibcodes have pages set to arXiv:1711.02260
-    $expanded = $this->process_citation($text);
-    $pages = (string) $expanded->get('pages');
-    $volume = (string) $expanded->get('volume');
-    $this->assertSame(FALSE, stripos($pages, 'arxiv'));
-    $this->assertSame(FALSE, stripos('1711', $volume));
-    $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
     $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
     $expanded = $this->process_citation($text);
     $pages = (string) $expanded->get('pages');
