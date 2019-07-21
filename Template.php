@@ -3497,7 +3497,7 @@ final class Template {
                        if (stripos($this->get('id'), 'Proquest Document ID') !== FALSE) $this->forget('id');
                     } elseif (preg_match("~^https?://search\.proquest\.com(?:|/)$~", $redirectedUrl)) {
                        $changed = TRUE;
-                       $this->report_forget('Proquest.umi.com URL does not work.  Forgetting');
+                       report_forget('Proquest.umi.com URL does not work.  Forgetting');
                        $this->forget($param);
                     }  elseif (preg_match("~^https?://search\.proquest\.com/openurl/handler/.+$~", $redirectedUrl, $matches)) {
                        $changed = TRUE;
