@@ -3143,7 +3143,7 @@ final class Template {
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           // No break here: Continue on from journal into periodical
         case 'periodical':
-          $periodical = $this->get($param);
+          $periodical = trim($this->get($param));
           if (mb_substr($periodical, -1) === "," ) {
             $periodical = mb_substr($periodical, 0, -1);
             $this->set($param, $periodical);  // Remove comma
