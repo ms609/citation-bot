@@ -189,8 +189,8 @@ final class PageTest extends testBaseClass {
   }
  
   public function testBadPage() {  // Use this when debugging pages that crash the bot
-    $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
-    if ($bad_page !== "") {
+    $bad_page = "Kerygmachela"; //  Replace with something like "Vietnam_War" when debugging
+    if ($bad_page !== "https://search.proquest.com/openurl/handler/AN$28119438503$29+OR+AN$28119440604$29") {
       $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=' . $bad_page . '&action=raw');
       $page = new TestPage();
       $page->parse_text($text);
