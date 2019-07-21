@@ -3469,7 +3469,8 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'http://proquest.umi.com/pqdlink?did=' . $matches[1]); // User specific information
             }
-            if (strcmp('http://proquest.umi.com/', $this->get($param)) === 0) {
+            if (strcmp('http://proquest.umi.com/', $this->get($param)) === 0
+             || strcmp('http://proquest.umi.com',  $this->get($param)) === 0) {
                  $this->forget($param);
             }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
