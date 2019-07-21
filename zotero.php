@@ -211,6 +211,9 @@ function expand_by_zotero(&$template, $url = NULL) {
     case 'No items returned from any translator':
       report_info("Remote page not interpretable for URL ". $url);
       return FALSE;
+    case 'An error occurred during translation. Please check translation with the Zotero client.':
+      report_info("An error occurred during translation for URL ". $url);
+      return FALSE;
   }
   
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
