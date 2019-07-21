@@ -3393,7 +3393,22 @@ final class Template {
                        stripos($this->get('via'), 'direct') === FALSE) {
                      $this->forget('via');
                    }
-                 } 
+                 }
+                // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
+              } elseif (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
+                 report_info("Remove proxy from " . $matches[1] . " URL");
+                 $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
+                 if ($this->has('via')) { 
+                     $this->forget('via');
+                 }
+              // Generic proxy code www-host-com.proxy-stuff/dsfasfdsfasdfds
+              } elseif (preg_match("~^https?://www\-([^\./\-]+)\-com[\.\-][^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
+                 $matches[1] = 'www.' . $matches[1] . '.com';
+                 report_info("Remove proxy from " . $matches[1] . " URL");
+                 $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
+                 if ($this->has('via')) { 
+                     $this->forget('via');
+                 }
               }
           }
           if (stripos($this->get($param), 'galegroup') !== FALSE) {
