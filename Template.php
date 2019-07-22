@@ -3646,10 +3646,12 @@ final class Template {
               $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
             }
           }
-          if (strpos($this->get($param), '&') === FALSE) {
-            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
-          } else {
-            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
+          if (stripos($this->get($param), 'etc') === FALSE) {
+            if (strpos($this->get($param), '&') === FALSE) {
+              $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+            } else {
+              $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
+            }
           }
           return;
           
