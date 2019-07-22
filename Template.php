@@ -666,8 +666,10 @@ final class Template {
         $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
         $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
         $en_dash_X = ['X', 'X', 'X', 'X', 'X'];
-        if (  mb_stripos($all_page_values, 'see ')  !== FALSE   // Someone is pointing to a specific part
-           || mb_stripos($all_page_values, 'table') !== FALSE // Someone is pointing to a specific table
+        if (  mb_stripos($all_page_values, 'see ')  !== FALSE      // Someone is pointing to a specific part
+           || mb_stripos($all_page_values, 'table') !== FALSE
+           || mb_stripos($all_page_values, 'footnote') !== FALSE
+           || mb_stripos($all_page_values, 'endnote') !== FALSE
            || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
            return FALSE;  
         }
