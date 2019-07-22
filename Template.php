@@ -3653,7 +3653,7 @@ final class Template {
           } else {
             $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
           }
-          if (mb_substr($this->get($param), -4) === ' etc')) {
+          if (mb_substr($this->get($param), -4) === ' etc') {
             $this->set($param, $this->get($param) . '.');
           }
           return;
