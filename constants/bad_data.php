@@ -56,7 +56,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Article expired', 'This is due to newswire licensing terms',
                                  'OpenId transaction in progress', 'Download Limit Exceeded',
                                  'Url（アドレス）が変わりました', '404エラ', 'お探しのページは見つかりませんでした',
-                                 'privacy settings', 'cookie settings'];
+                                 'privacy settings', 'cookie settings', 'WebCite query'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',

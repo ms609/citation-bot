@@ -112,4 +112,5 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' Textes ', ' pour nos ', ' élèves ', ' Lettre ', ' Zeitschrift ', ' für ', ' Physik ', ' Phonetik ',
            ' allgemeine ', ' Sprachwissenschaft ', ' Maître ', ' Phonétique ', ' Arqueología ', ' Códices ',
            ' prehispánicos ', ' coloniales ', ' tempranos ', ' Catálogo ',
-           ' Ekolist ', ' revija ', ' okolju ', ' geographica ', ' Slovenica ');
+           ' Ekolist ', ' revija ', ' okolju ', ' geographica ', ' Slovenica ', ' Glasnik ',
+           ' Muzejskega ', ' Društva ', ' Slovenijo ');
