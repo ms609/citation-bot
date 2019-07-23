@@ -1670,6 +1670,7 @@ final class Template {
     }
     
     if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+      Put some code here about wikiname to avoid queries
       $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
       if ($result->numFound == 0) return FALSE;
       $record = $result->docs[0];
