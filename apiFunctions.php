@@ -189,7 +189,19 @@ function adsabs_api($ids, $templates, $identifier) {
     }
   }
   if (count($ids) == 0) return TRUE; // None left after removing books and & symbol
-
+  // Do not do big query if all templates are complete
+  $NONE_IS_INCOMPLETE = TRUE;
+  foreach ($templates as $template) {
+    if ($template->has('bibcode'))
+      && (strpos($template->get('bibcode'), '&') === false)
+      && (strpos($template->get('bibcode'), 'book') === false)
+      && $templates->incomplete()) {
+      $NONE_IS_INCOMPLETE = FALSE;
+      break;
+    }
+  }
+  if ($NONE_IS_INCOMPLETE) return FALSE;
+  
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   $adsabs_url = "https://" . (getenv('TRAVIS') ? 'qa' : 'api')
               . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
