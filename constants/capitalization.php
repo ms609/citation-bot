@@ -78,7 +78,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Efsa ', ' Ejournal ', ' EJournal ', ' ELife ', ' Elife ', ' Els ', ' ELS ', ' Embo J ', 
           ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', ' ENeuro ',
           ' Engrxiv ', ' Eplasty ', ' EPlasty ',
-          ' Eprint ', ' EPrint ', ' Eprints ',' EPrints ', ' Escholarship ', ' Evolo ', ' EVolo ', , ' EWeek ', ' Eweek ',
+          ' Eprint ', ' EPrint ', ' Eprints ',' EPrints ', ' Escholarship ', ' Evolo ', ' EVolo ', ' EWeek ', ' Eweek ',
           ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Für Anorganische und Allgemeine ', ' Hannaharendt.net ',
           ' History of Science; an Annual Review of Literature ', ' Hoaj Biology ', ' Hprints ', 
           ' Iconference ', ' Ifac-Papersonline ', ' Ijournal ', ' IJournal ', ' Im Gesundheitswesen ', ' Iphone ', ' Isrn Genetics ',
