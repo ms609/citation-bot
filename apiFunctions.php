@@ -192,7 +192,7 @@ function adsabs_api($ids, $templates, $identifier) {
   // Do not do big query if all templates are complete
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
-    if ($template->has('bibcode'))
+    if ($template->has('bibcode')
       && (strpos($template->get('bibcode'), '&') === false)
       && (strpos($template->get('bibcode'), 'book') === false)
       && $template->incomplete()) {
