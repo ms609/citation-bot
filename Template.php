@@ -1917,16 +1917,15 @@ final class Template {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         report_warning(sprintf("API Error in query_adsabs: %s",
                       $e->getMessage()));
-      } else if (strpos($e->getMessage(), 'HTTP') === 0) {
+      } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
         report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
+      } elseif ($e->getCode() == 999 && $e->getMessage() == 'Too many requests') {
+          $ADSABS_GIVE_UP = TRUE;
+          report_warning('Giving up on AdsAbs for a while.  Too many requests.');
       } else {
         report_warning(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
-        if ($e->getCode() == 999 && $e->getMessage() == 'Too many requests') {
-          $ADSABS_GIVE_UP = TRUE;
-          report_warning('Giving up on AdsAbs');
-        }
       }
       return (object) array('numFound' => 0);
     }
