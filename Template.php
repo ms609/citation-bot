@@ -1840,7 +1840,7 @@ final class Template {
     static $ADSABS_GIVE_UP = FALSE;
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false')) return (object) array('numFound' => 0);
-    if ($ADSABS_GIVE_UP === TRUE) return (object) array('numFound' => 0);
+    if ($ADSABS_GIVE_UP) return (object) array('numFound' => 0);
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
       return (object) array('numFound' => 0);
