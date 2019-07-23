@@ -3478,7 +3478,7 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // Remove specific search engine
             }
-            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext).*$~i", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview).*$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
@@ -3505,7 +3505,7 @@ final class Template {
                  curl_setopt($ch, CURLOPT_URL, $matches[0]);
                  if (@curl_exec($ch)) {
                     $redirectedUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-                    if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*)$~", $redirectedUrl, $matches)) {
+                    if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches)) {
                        $changed = TRUE;
                        $this->set($param, $matches[1]);
                        if (stripos($this->get('id'), 'Proquest Document ID') !== FALSE) $this->forget('id');
