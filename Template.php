@@ -3357,7 +3357,7 @@ final class Template {
         case 'archive-url':
         case 'archiveurl':
           if ($this->blank(['archive-date', 'archivedate'])) {
-            if (preg_match('~^https?://web\.archive\.org/web/(\d{4})(\d{2})(\d{2})\d{6}/http~', $this->get($param), $matches)) {
+            if (preg_match('~^https?://(?:web\.archive\.org/web/|archive\.today/|archive\.fo/)(\d{4})(\d{2})(\d{2})\d{6}/http~', $this->get($param), $matches)) {
               $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
             }
           }
