@@ -1836,9 +1836,11 @@ final class Template {
   // $options should be a series of field names, colons (optionally urlencoded), and
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
-  protected function query_adsabs($options) {  
+  protected function query_adsabs($options) {
+    static $ADSABS_GIVE_UP = FALSE;
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false')) return (object) array('numFound' => 0);
+    if ($ADSABS_GIVE_UP) return (object) array('numFound' => 0);
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
       return (object) array('numFound' => 0);
@@ -1915,9 +1917,12 @@ final class Template {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         report_warning(sprintf("API Error in query_adsabs: %s",
                       $e->getMessage()));
-      } else if (strpos($e->getMessage(), 'HTTP') === 0) {
+      } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
         report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
+      } elseif ($e->getCode() == 999 && $e->getMessage() == 'Too many requests') {
+          $ADSABS_GIVE_UP = TRUE;
+          report_warning('Giving up on AdsAbs for a while.  Too many requests.');
       } else {
         report_warning(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
