@@ -165,6 +165,8 @@ function arxiv_api($ids, $templates) {
 }
 
 function adsabs_api($ids, $templates, $identifier) {
+  global $ADSABS_GIVE_UP;
+  if (@$ADSABS_GIVE_UP) return FALSE;
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
@@ -262,17 +264,22 @@ function adsabs_api($ids, $templates, $identifier) {
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
       report_warning(sprintf("API Error in query_adsabs: %s",
                     $e->getMessage()));
-    } else if (strpos($e->getMessage(), 'HTTP') === 0) {
+    } elseof (strpos($e->getMessage(), 'HTTP') === 0) {
       report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
+    } elseif (trim($e->getMessage()) == 'Too many requests') {
+        $ADSABS_GIVE_UP = TRUE;
+        report_warning('Giving up on AdsAbs for a while.  Too many requests.');
     } else {
       report_warning(sprintf("Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
     }
     @curl_close($ch); // Some code paths have it closed, others do not
-    foreach ($templates as $template) {
+    if (!@$ADSABS_GIVE_UP) {
+      foreach ($templates as $template) {
         sleep(1);
         if ($template->has('bibcode')) $template->expand_by_adsabs();
+      }
     }
     return TRUE;
   }
