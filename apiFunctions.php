@@ -165,6 +165,8 @@ function arxiv_api($ids, $templates) {
 }
 
 function adsabs_api($ids, $templates, $identifier) {
+  global $ADSABS_GIVE_UP;
+  if (@$ADSABS_GIVE_UP) return FALSE;
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
@@ -187,7 +189,19 @@ function adsabs_api($ids, $templates, $identifier) {
     }
   }
   if (count($ids) == 0) return TRUE; // None left after removing books and & symbol
-
+  // Do not do big query if all templates are complete
+  $NONE_IS_INCOMPLETE = TRUE;
+  foreach ($templates as $template) {
+    if ($template->has('bibcode')
+      && (strpos($template->get('bibcode'), '&') === false)
+      && (strpos($template->get('bibcode'), 'book') === false)
+      && $template->incomplete()) {
+      $NONE_IS_INCOMPLETE = FALSE;
+      break;
+    }
+  }
+  if ($NONE_IS_INCOMPLETE) return FALSE;
+  
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   $adsabs_url = "https://" . (getenv('TRAVIS') ? 'qa' : 'api')
               . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
@@ -262,17 +276,22 @@ function adsabs_api($ids, $templates, $identifier) {
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
       report_warning(sprintf("API Error in query_adsabs: %s",
                     $e->getMessage()));
-    } else if (strpos($e->getMessage(), 'HTTP') === 0) {
+    } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
       report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
+    } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
+        $ADSABS_GIVE_UP = TRUE;
+        report_warning('Giving up on AdsAbs for a while.  Too many requests.');
     } else {
       report_warning(sprintf("Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
     }
     @curl_close($ch); // Some code paths have it closed, others do not
-    foreach ($templates as $template) {
+    if (!@$ADSABS_GIVE_UP) {
+      foreach ($templates as $template) {
         sleep(1);
         if ($template->has('bibcode')) $template->expand_by_adsabs();
+      }
     }
     return TRUE;
   }
