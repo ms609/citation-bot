@@ -195,7 +195,7 @@ function adsabs_api($ids, $templates, $identifier) {
     if ($template->has('bibcode'))
       && (strpos($template->get('bibcode'), '&') === false)
       && (strpos($template->get('bibcode'), 'book') === false)
-      && $templates->incomplete()) {
+      && $template->incomplete()) {
       $NONE_IS_INCOMPLETE = FALSE;
       break;
     }
