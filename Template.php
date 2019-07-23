@@ -1920,7 +1920,7 @@ final class Template {
       } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
         report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
-      } elseif (strpos($e->getMessage()), 'Too many requests') !== FALSE) {
+      } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
           $ADSABS_GIVE_UP = TRUE;
           report_warning('Giving up on AdsAbs for a while.  Too many requests.');
       } else {
