@@ -264,7 +264,7 @@ function adsabs_api($ids, $templates, $identifier) {
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
       report_warning(sprintf("API Error in query_adsabs: %s",
                     $e->getMessage()));
-    } elseof (strpos($e->getMessage(), 'HTTP') === 0) {
+    } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
       report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
     } elseif (trim($e->getMessage()) == 'Too many requests') {
