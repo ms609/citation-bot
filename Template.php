@@ -1671,7 +1671,7 @@ final class Template {
     
     if ($result->numFound == 0) {
       // Avoid blowing through our quota
-      if (!in_arrary($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) return FALSE;
+      if (!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) return FALSE;
       if ($this->wikiname() == 'cite book' && $this->has('isbn')) return FALSE;
       if ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) return FALSE;
     }
