@@ -249,11 +249,12 @@ class Page {
                     if (substr_count(strtoupper($matches[2]), 'HTTP') !== 1) return $matches[0]; // more than one url
                     curl_setopt($ch, CURLOPT_URL, $matches[2]);
                     if (@curl_exec($ch)) {
-                    $redirectedUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-                    if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches_proquest)) {
+                      $redirectedUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+                      if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches_proquest)) {
                        return $matches[1] . $matches_proquest[1] . $matches[3];
+                      }
                     }
-                        return $matches[0]  ;},
+                    return $matches[0]  ;},
                       $this->text
                       );
      }
