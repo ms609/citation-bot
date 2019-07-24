@@ -354,7 +354,14 @@ function tidy_date($string) {
       return $matches[3];// do not know. just give year
     }
   }
-  if (preg_match('~^(\d{4}-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) return tidy_date($matches[1]); // Remove time zone stuff from standard date format
+  if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
+     if ($matches[1] == $matches[3]) {
+       return date('d F', strtotime($matches[1].$matches[2])) . ' – ' . date('d F Y', strtotime($matches[3].$matches[4]));
+     } else {
+       return date('d F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('d F Y', strtotime($matches[3].$matches[4])); 
+     }
+  }
+  if (preg_match('~^(\d{4}\-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) return tidy_date($matches[1]); // Remove time zone stuff from standard date format
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
     if ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
