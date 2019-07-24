@@ -25,6 +25,9 @@ class Page {
  */
   public function get_text_from($title, $api) {   
     global $is_a_man_with_no_plan;
+    $is_a_man_with_no_plan = FALSE;
+    if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
+
     $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
@@ -65,9 +68,6 @@ class Page {
       report_warning("Page is a redirect.");
       return FALSE;
     }
-    
-    $is_a_man_with_no_plan = FALSE;
-    if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
 
     if ($this->text) {
       return TRUE;
