@@ -198,13 +198,15 @@ class Page {
                       $this->text
                       );
      }
-    } // AMANWITHNOPLAN
     // TEMPLATES
     $all_templates = $this->extract_object('Template');
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
        $all_templates[$i]->date_style = $this->date_style;
     }
+   } else {// AMANWITHNOPLAN
+      $all_templates = array();
+   }
     $our_templates = array();
     $our_templates_slight = array();
     if (!@$is_a_man_with_no_plan) {
