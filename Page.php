@@ -23,7 +23,11 @@ class Page {
  * cannot be tested on Travis
  * @codeCoverageIgnore
  */
-  public function get_text_from($title, $api) {    
+  public function get_text_from($title, $api) {   
+    global $is_a_man_with_no_plan;
+    $is_a_man_with_no_plan = FALSE;
+    if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
+
     $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
@@ -117,6 +121,7 @@ class Page {
   }
   
   public function expand_text() {
+    global $is_a_man_with_no_plan;
     date_default_timezone_set('UTC');
     $this->announce_page();
     $this->construct_modifications_array();
@@ -202,6 +207,7 @@ class Page {
     }
     $our_templates = array();
     $our_templates_slight = array();
+    if (!@$is_a_man_with_no_plan) {
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
@@ -228,7 +234,67 @@ class Page {
         $this_template->tidy();
       }
     }
-    
+    } // AMANWITHNOPLAN
+    if (@$is_a_man_with_no_plan) {
+     $ch = curl_init();
+     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+     curl_setopt($ch, CURLOPT_MAXREDIRS, 20);
+     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
+     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+     curl_setopt($ch, CURLOPT_COOKIEFILE, "");
+     $this->text = preg_replace_callback( // UMI.COM
+                      "~([\[ ])(https?://proquest\.umi\.com/[^ \]]+)([ \]])~",
+                      function($matches) {
+                    if (substr_count(strtoupper($matches[2]), 'HTTP') !== 1) return $matches[0]; // more than one url
+                    curl_setopt($ch, CURLOPT_URL, $matches[2]);
+                    if (@curl_exec($ch)) {
+                      $redirectedUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+                      if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches_proquest)) {
+                       return $matches[1] . $matches_proquest[1] . $matches[3];
+                      }
+                    }
+                    return $matches[0]  ;},
+                      $this->text
+                      );
+     curl_close($ch);
+
+     $this->text = preg_replace_callback( // Proxy
+                      "~([\[ ])(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com.+/docview/([^ \]]+)([ \]])~",
+                      function($matches) {
+                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
+                      $this->text
+                      );
+   
+     $this->text = preg_replace_callback( // Specific search engine
+                      "~([\[ ])https?://search\.proquest\.com/(?:[^ \]]+)/docview/([^ \]]+)([ \]])~",
+                      function($matches) {
+                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
+                      $this->text
+                      );
+
+     $this->text = preg_replace_callback( // Account ID
+                      "~([\[ ])https?://search\.proquest\.com/docview/([^ \]]+)\?accountid=\d{2,}([ \]])~",
+                      function($matches) {
+                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
+                      $this->text
+                      );
+
+     $this->text = preg_replace_callback( // Trailing numbers
+                      "~([\[ ])https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+([ \]])~",
+                      function($matches) {
+                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
+                      $this->text
+                      );
+
+     $this->text = preg_replace_callback( // Trailing text
+                      "~([\[ ])https?://search\.proquest\.com/docview/([0-9]+)/(?:abstract|fulltext|preview)[^ \]]+([ \]])~",
+                      function($matches) {
+                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
+                      $this->text
+                      );
+
+    } else {  // AMANWITHNOPLAN
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
@@ -288,6 +354,7 @@ class Page {
         }
       }
     }
+    } // AMANWITHNOPLAN
     for ($i = 0; $i < count($our_templates_slight); $i++) {
       $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
