@@ -206,6 +206,8 @@ class Page {
     }
     $our_templates = array();
     $our_templates_slight = array();
+    global $is_a_man_with_no_plan;
+    if (!@$is_a_man_with_no_plan) {
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
@@ -232,7 +234,7 @@ class Page {
         $this_template->tidy();
       }
     }
-    
+    } AMANWITHNOPLAN
     global $is_a_man_with_no_plan;
     if (@$is_a_man_with_no_plan) {
      $ch = curl_init();
@@ -290,9 +292,7 @@ class Page {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
-     }                                    
-     https?://search\.proquest\.com/docview/(.+)                                    
-               https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+                          
+     }                                                           
      curl_close($ch);
     } else {
     // BATCH API CALLS
