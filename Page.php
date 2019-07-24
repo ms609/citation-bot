@@ -142,7 +142,7 @@ class Page {
       $this->text = $this->start_text; // undo it
       return FALSE;
     }
-
+    if (!@$is_a_man_with_no_plan) {
     $citation_count = substr_count($this->text, '{{cite ') +
                       substr_count($this->text, '{{Cite ') +
                       substr_count($this->text, '{{citation') +
@@ -198,7 +198,7 @@ class Page {
                       $this->text
                       );
      }
-
+    } // AMANWITHNOPLAN
     // TEMPLATES
     $all_templates = $this->extract_object('Template');
     for ($i = 0; $i < count($all_templates); $i++) {
@@ -244,7 +244,7 @@ class Page {
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_COOKIEFILE, "");
      $this->text = preg_replace_callback( // UMI.COM
-                      "~([\[ ]>)(https?://proquest\.umi\.com/[^ <>\]]+)([ \]<])~",
+                      "~([\[ >])(https?://proquest\.umi\.com/[^ <>\]]+)([ \]<])~",
                       function($matches) {
                     if (substr_count(strtoupper($matches[2]), 'HTTP') !== 1) return $matches[0]; // more than one url
                     curl_setopt($ch, CURLOPT_URL, $matches[2]);
@@ -260,35 +260,35 @@ class Page {
      curl_close($ch);
 
      $this->text = preg_replace_callback( // Proxy
-                      "~([\[ ]>)(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com.+/docview/([^ <>\]]+)([ <\]])~",
+                      "~([\[ >])(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com.+/docview/([^ <>\]]+)([ <\]])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
    
      $this->text = preg_replace_callback( // Specific search engine
-                      "~([\[ ]>)https?://search\.proquest\.com/(?:[^ \]]+)/docview/([^ \]<>]+)([ \]<])~",
+                      "~([\[ >])https?://search\.proquest\.com/(?:[^ \]]+)/docview/([^ \]<>]+)([ \]<])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
 
      $this->text = preg_replace_callback( // Account ID
-                      "~([\[ ]>)https?://search\.proquest\.com/docview/([^ \]]+)\?accountid=\d{2,}([ \]<])~",
+                      "~([\[ >])https?://search\.proquest\.com/docview/([^ \]]+)\?accountid=\d{2,}([ \]<])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
 
      $this->text = preg_replace_callback( // Trailing numbers
-                      "~([\[ ]>)https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+([ \]<])~",
+                      "~([\[ >])https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+([ \]<])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
 
      $this->text = preg_replace_callback( // Trailing text
-                      "~([\[ ]>)https?://search\.proquest\.com/docview/([0-9]+)/(?:abstract|fulltext|preview)[^ \]<>]+([ \]<])~",
+                      "~([\[ >])https?://search\.proquest\.com/docview/([0-9]+)/(?:abstract|fulltext|preview)[^ \]<>]+([ \]<])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
