@@ -294,7 +294,7 @@ class Page {
                       );
      }                                                           
      curl_close($ch);
-    } else {
+    } else {  // AMANWITHNOPLAN
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
