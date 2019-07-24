@@ -262,8 +262,9 @@ class Page {
      curl_close($ch);
 
      $this->text = preg_replace_callback( // Proxy
-                      "~([\[ >])(?:https?://[^\s<>\[\]\|]+/login\?url=|)https?://(?:0\-|)search.proquest.com.+/docview/([^\s<>\]]+)([ <\]])~",
+                      "~([\[ >])(?:https?://[^\s<>\[\]\|]+/login\?url=|)https?://(?:0\-|)search.proquest.com/docview/([^\s<>\]]+)([ <\]])~",
                       function($matches) {
+                        return $matches[0]; // Not working yet
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
