@@ -2335,6 +2335,7 @@ final class Template {
           }
         }
     }
+   $google_date = tidy_date($google_date);
     $this->add_if_new('date', $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     // foreach ($xml->dc___format as $format) {
