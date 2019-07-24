@@ -269,9 +269,10 @@ class Page {
                       );
    
      $this->text = preg_replace_callback( // Specific search engine
-                      "~([\[ >])https?://search\.proquest\.com/(?:[^\s\]\[<>/]+)/docview/([^\s\[\]<>]+)([ \]<])~",
+                      "~([\[ >])https?://search\.proquest\.com/([^\s\]\[<>/]+)/docview/([^\s\[\]<>]+)([ \]<])~",
                       function($matches) {
-                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
+                        if ( $matches[2] == 'dissertations' ) return $matches[0];
+                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[3] . $matches[4] ;},
                       $this->text
                       );
 
