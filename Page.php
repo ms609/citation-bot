@@ -257,43 +257,43 @@ class Page {
                     return $matches[0]  ;},
                       $this->text
                       );
-     }
+     curl_close($ch);
+
      $this->text = preg_replace_callback( // Proxy
                       "~([\[ ])(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com.+/docview/([^ \]]+)([ \]])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
-     }      
+   
      $this->text = preg_replace_callback( // Specific search engine
                       "~([\[ ])https?://search\.proquest\.com/(?:[^ \]]+)/docview/([^ \]]+)([ \]])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
-     } 
+
      $this->text = preg_replace_callback( // Account ID
                       "~([\[ ])https?://search\.proquest\.com/docview/([^ \]]+)\?accountid=\d{2,}([ \]])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
-     }
+
      $this->text = preg_replace_callback( // Trailing numbers
                       "~([\[ ])https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+([ \]])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
-     }
+
      $this->text = preg_replace_callback( // Trailing text
                       "~([\[ ])https?://search\.proquest\.com/docview/([0-9]+)/(?:abstract|fulltext|preview)[^ \]]+([ \]])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
-     }                                                           
-     curl_close($ch);
+
     } else {  // AMANWITHNOPLAN
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
