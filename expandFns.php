@@ -317,9 +317,9 @@ function tidy_date($string) {
   // Google sends ranges
   if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
      if ($matches[1] == $matches[3]) {
-       return date('d F', strtotime($matches[1].$matches[2])) . ' – ' . date('d F Y', strtotime($matches[3].$matches[4]));
+       return date('j F', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
      } else {
-       return date('d F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('d F Y', strtotime($matches[3].$matches[4])); 
+       return date('j F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4])); 
      }
   }
   // Huge amout of character cleaning

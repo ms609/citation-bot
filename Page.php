@@ -267,14 +267,14 @@ class Page {
                       );
    
      $this->text = preg_replace_callback( // Specific search engine
-                      "~([\[ >])https?://search\.proquest\.com/(?:[^ \]]+)/docview/([^ \]<>]+)([ \]<])~",
+                      "~([\[ >])https?://search\.proquest\.com/(?:[^ \]\[<>]+)/docview/([^ \[\]<>]+)([ \]<])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
                       );
 
      $this->text = preg_replace_callback( // Account ID
-                      "~([\[ >])https?://search\.proquest\.com/docview/([^ \]]+)\?accountid=\d{2,}([ \]<])~",
+                      "~([\[ >])https?://search\.proquest\.com/docview/([^ <>\[\]]+)\?accountid=\d{2,}([ \]<])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
@@ -288,7 +288,7 @@ class Page {
                       );
 
      $this->text = preg_replace_callback( // Trailing text
-                      "~([\[ >])https?://search\.proquest\.com/docview/([0-9]+)/(?:abstract|fulltext|preview)[^ \]<>]+([ \]<])~",
+                      "~([\[ >])https?://search\.proquest\.com/docview/([0-9]+)/(?:abstract|fulltext|preview)[^ \[\]<>]+([ \]<])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
                       $this->text
