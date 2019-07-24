@@ -64,6 +64,10 @@ class Page {
       report_warning("Page is a redirect.");
       return FALSE;
     }
+    
+    global $is_a_man_with_no_plan;
+    $is_a_man_with_no_plan = FALSE;
+    if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
 
     if ($this->text) {
       return TRUE;
@@ -229,6 +233,32 @@ class Page {
       }
     }
     
+    global $is_a_man_with_no_plan;
+    if (@$is_a_man_with_no_plan) {
+     $ch = curl_init();
+     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+     curl_setopt($ch, CURLOPT_MAXREDIRS, 20);
+     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
+     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+     curl_setopt($ch, CURLOPT_COOKIEFILE, "");
+     $this->text = preg_replace_callback(
+                      "~([\[ ])(https?://proquest\.umi\.com/[^ ])~",
+                      function($matches) {
+                        if (substr_count(strtoupper($matches[1]), 'HTTP') !== 1) return $matches[0]; // more than one url
+                        
+                    curl_setopt($ch, CURLOPT_URL, $matches[2]);
+                    if (@curl_exec($ch)) {
+                    $redirectedUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+                    if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches_proquest)) {
+                       return $matches[1] . $matches_proquest[1];
+                    }
+                        return $matches[0]  )  ;},
+                      $this->text
+                      );
+     }                 
+     curl_close($ch);
+    } else {
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
@@ -266,7 +296,7 @@ class Page {
         $this_template->use_issn();
       }
     }
-    
+    } // AMANWITHNOPLAN
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
