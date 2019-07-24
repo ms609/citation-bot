@@ -252,7 +252,7 @@ class Page {
                     if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches_proquest)) {
                        return $matches[1] . $matches_proquest[1] . $matches[3];
                     }
-                        return $matches[0]  )  ;},
+                        return $matches[0]  ;},
                       $this->text
                       );
      }                 
@@ -295,7 +295,6 @@ class Page {
         $this_template->use_issn();
       }
     }
-    } // AMANWITHNOPLAN
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
@@ -317,6 +316,7 @@ class Page {
         }
       }
     }
+    } // AMANWITHNOPLAN
     for ($i = 0; $i < count($our_templates_slight); $i++) {
       $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
