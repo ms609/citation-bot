@@ -23,7 +23,8 @@ class Page {
  * cannot be tested on Travis
  * @codeCoverageIgnore
  */
-  public function get_text_from($title, $api) {    
+  public function get_text_from($title, $api) {   
+    global $is_a_man_with_no_plan;
     $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
@@ -65,7 +66,6 @@ class Page {
       return FALSE;
     }
     
-    global $is_a_man_with_no_plan;
     $is_a_man_with_no_plan = FALSE;
     if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
 
@@ -121,6 +121,7 @@ class Page {
   }
   
   public function expand_text() {
+    global $is_a_man_with_no_plan;
     date_default_timezone_set('UTC');
     $this->announce_page();
     $this->construct_modifications_array();
@@ -206,7 +207,6 @@ class Page {
     }
     $our_templates = array();
     $our_templates_slight = array();
-    global $is_a_man_with_no_plan;
     if (!@$is_a_man_with_no_plan) {
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
@@ -234,8 +234,7 @@ class Page {
         $this_template->tidy();
       }
     }
-    } AMANWITHNOPLAN
-    global $is_a_man_with_no_plan;
+    } // AMANWITHNOPLAN
     if (@$is_a_man_with_no_plan) {
      $ch = curl_init();
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
