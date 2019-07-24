@@ -242,7 +242,7 @@ class Page {
      curl_setopt($ch, CURLOPT_TIMEOUT, 15);
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_COOKIEFILE, "");
-     $this->text = preg_replace_callback( . // UMI.COM
+     $this->text = preg_replace_callback( // UMI.COM
                       "~([\[ ])(https?://proquest\.umi\.com/[^ \]]+)([ \]])~",
                       function($matches) {
                     if (substr_count(strtoupper($matches[2]), 'HTTP') !== 1) return $matches[0]; // more than one url
@@ -256,7 +256,7 @@ class Page {
                       $this->text
                       );
      }
-     $this->text = preg_replace_callback( . // Proxy
+     $this->text = preg_replace_callback( // Proxy
                       "~([\[ ])(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com.+/docview/([^ \]]+)([ \]])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
