@@ -295,6 +295,7 @@ class Page {
         $this_template->use_issn();
       }
     }
+   
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
