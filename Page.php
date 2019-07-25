@@ -132,7 +132,9 @@ class Page {
 
     // COMMENTS AND NOWIKI ETC. //
     $comments    = $this->extract_object('Comment');
+        if (!@$is_a_man_with_no_plan) {
     $nowiki      = $this->extract_object('Nowiki');
+        }
     $chemistry   = $this->extract_object('Chemistry');
     $mathematics = $this->extract_object('Mathematics');
     $musicality  = $this->extract_object('Musicscores');
@@ -283,6 +285,20 @@ class Page {
                       $this->text
                       );
 
+     $this->text = preg_replace_callback( // Account ID
+                      "~([\[ >])https?://search\.proquest\.com/docview/([^\s<>\[\]]+)\?accountid=\d{2,}(\.[ \]<])~",
+                      function($matches) {
+                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
+                      $this->text
+                      );
+      
+     $this->text = preg_replace_callback( // Account ID
+                      "~([\[ >])https?://search\.proquest\.com/docview/([^\s<>\[\]]+)\?accountid=\d{2,}(\[permanent dead link\])~",
+                      function($matches) {
+                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
+                      $this->text
+                      );
+      
      $this->text = preg_replace_callback( // Trailing numbers
                       "~([\[ >])https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+([ \]<])~",
                       function($matches) {
