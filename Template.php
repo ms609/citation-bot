@@ -1352,8 +1352,8 @@ final class Template {
           }
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           return $this->add_if_new('mr', $match[1]);
-      } elseif (preg_match("~^https?://papers\.ssrn\.com/sol3/papers\.cfm\?abstract_id=([0-9]+)~i", $url, $match)) {
-          quietly('report_modification', "Converting URL to SSRN parameter");
+      } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|abstract=)([0-9]+)~i", $url, $match)) {
+          quietly('report_modification', "Converting URL to https://papers.ssrn.com/abstract=1655502 parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
