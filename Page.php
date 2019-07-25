@@ -247,13 +247,14 @@ class Page {
      curl_setopt($ch, CURLOPT_TIMEOUT, 15);
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_COOKIEFILE, "");
+     curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE);
+     curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);
      $this->text = preg_replace_callback( // UMI.COM
                       "~([\[ >])(http://proquest\.umi\.com/[^\s<>\]]+)([ \]<])~",
                       function($matches) {
                     curl_setopt($ch, CURLOPT_URL, $matches[2]);
                         report_info('trying ' . $matches[2]);
-                    $curl_out = @curl_exec($ch);
-                    if ($curl_out) {
+                    if (@curl_exec($ch)) {
                       $redirectedUrl = @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
                       report_info('got ' . $redirectedUrl);
                       if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/.*)$~", $redirectedUrl, $matches_proquest)) {
@@ -263,8 +264,6 @@ class Page {
                       if($errno = curl_errno($ch)) {
                          $error_message = curl_strerror($errno);
                          report_info( "cURL error ({$errno}):\n {$error_message}");
-                      } else {
-                         report_intfo("got instead " . substr($curl_out,0, 2048) );
                       }
                     }
                     return $matches[0]  ;},
