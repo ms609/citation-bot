@@ -240,6 +240,9 @@ class Page {
     }
     } // AMANWITHNOPLAN
     if (@$is_a_man_with_no_plan) {
+     $this->text = preg_replace_callback( // UMI.COM
+                      "~([\[ >])(http://proquest\.umi\.com/[^\s<>\]]+)([ \]<])~",
+                      function($matches) {
      $ch = curl_init();
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      curl_setopt($ch, CURLOPT_MAXREDIRS, 20);
@@ -249,14 +252,9 @@ class Page {
      curl_setopt($ch, CURLOPT_COOKIEFILE, "");
      curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE);
      curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);
-     $this->text = preg_replace_callback( // UMI.COM
-                      "~([\[ >])(http://proquest\.umi\.com/[^\s<>\]]+)([ \]<])~",
-                      function($matches) {
                     curl_setopt($ch, CURLOPT_URL, $matches[2]);
-                        report_info('trying ' . $matches[2]);
                     if (@curl_exec($ch)) {
                       $redirectedUrl = @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-                      report_info('got ' . $redirectedUrl);
                       if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/.*)$~", $redirectedUrl, $matches_proquest)) {
                        return $matches[1] . $matches_proquest[1] . $matches[3];
                       }
@@ -266,10 +264,10 @@ class Page {
                          report_info( "cURL error ({$errno}):\n {$error_message}");
                       }
                     }
+                             curl_close($ch);
                     return $matches[0]  ;},
                       $this->text
                       );
-     curl_close($ch);
     } else {  // AMANWITHNOPLAN
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
