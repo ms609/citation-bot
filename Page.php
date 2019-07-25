@@ -132,9 +132,7 @@ class Page {
 
     // COMMENTS AND NOWIKI ETC. //
     $comments    = $this->extract_object('Comment');
-        if (!@$is_a_man_with_no_plan) {
     $nowiki      = $this->extract_object('Nowiki');
-        }
     $chemistry   = $this->extract_object('Chemistry');
     $mathematics = $this->extract_object('Mathematics');
     $musicality  = $this->extract_object('Musicscores');
@@ -144,7 +142,6 @@ class Page {
       $this->text = $this->start_text; // undo it
       return FALSE;
     }
-    if (!@$is_a_man_with_no_plan) {
     $citation_count = substr_count($this->text, '{{cite ') +
                       substr_count($this->text, '{{Cite ') +
                       substr_count($this->text, '{{citation') +
@@ -206,12 +203,8 @@ class Page {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
        $all_templates[$i]->date_style = $this->date_style;
     }
-   } else {// AMANWITHNOPLAN
-      $all_templates = array();
-   }
     $our_templates = array();
     $our_templates_slight = array();
-    if (!@$is_a_man_with_no_plan) {
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
@@ -238,37 +231,6 @@ class Page {
         $this_template->tidy();
       }
     }
-    } // AMANWITHNOPLAN
-    if (@$is_a_man_with_no_plan) {
-     $this->text = preg_replace_callback( // UMI.COM
-                      "~([\[ >])(http://proquest\.umi\.com/[^\s<>\]]+)([ \]<])~",
-                      function($matches) {
-     $ch = curl_init();
-     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-     curl_setopt($ch, CURLOPT_MAXREDIRS, 20);
-     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
-     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-     curl_setopt($ch, CURLOPT_COOKIEFILE, "");
-     curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE);
-     curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);
-                    curl_setopt($ch, CURLOPT_URL, $matches[2]);
-                    if (@curl_exec($ch)) {
-                      $redirectedUrl = @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-                      if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/.*)$~", $redirectedUrl, $matches_proquest)) {
-                       return $matches[1] . $matches_proquest[1] . $matches[3];
-                      }
-                    } else {
-                      if($errno = curl_errno($ch)) {
-                         $error_message = curl_strerror($errno);
-                         report_info( "cURL error ({$errno}):\n {$error_message}");
-                      }
-                    }
-                             curl_close($ch);
-                    return $matches[0]  ;},
-                      $this->text
-                      );
-    } else {  // AMANWITHNOPLAN
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
@@ -328,7 +290,6 @@ class Page {
         }
       }
     }
-    } // AMANWITHNOPLAN
     for ($i = 0; $i < count($our_templates_slight); $i++) {
       $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
