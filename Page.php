@@ -293,6 +293,13 @@ class Page {
                       );
       
      $this->text = preg_replace_callback( // Account ID
+                      "~([\[ >])https?://search\.proquest\.com/docview/([^\s<>\[\]]+)\?accountid=\d{2,}#([ \]<])~",
+                      function($matches) {
+                        return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
+                      $this->text
+                      );
+      
+     $this->text = preg_replace_callback( // Account ID
                       "~([\[ >])https?://search\.proquest\.com/docview/([^\s<>\[\]]+)\?accountid=\d{2,}(\[permanent dead link\])~",
                       function($matches) {
                         return $matches[1] . 'https://search.proquest.com/docview/'. $matches[2] . $matches[3] ;},
