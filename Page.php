@@ -243,7 +243,7 @@ class Page {
      $ch = curl_init();
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      curl_setopt($ch, CURLOPT_MAXREDIRS, 20);
-     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
+     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
      curl_setopt($ch, CURLOPT_TIMEOUT, 15);
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_COOKIEFILE, "");
@@ -252,8 +252,9 @@ class Page {
                       function($matches) {
                     curl_setopt($ch, CURLOPT_URL, $matches[2]);
                         report_info('trying ' . $matches[2]);
-                    if (@curl_exec($ch)) {
-                      $redirectedUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+                    $curl_out = @curl_exec($ch);
+                    if ($curl_out) {
+                      $redirectedUrl = @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
                       report_info('got ' . $redirectedUrl);
                       if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/.*)$~", $redirectedUrl, $matches_proquest)) {
                        return $matches[1] . $matches_proquest[1] . $matches[3];
@@ -262,6 +263,8 @@ class Page {
                       if($errno = curl_errno($ch)) {
                          $error_message = curl_strerror($errno);
                          report_info( "cURL error ({$errno}):\n {$error_message}");
+                      } else {
+                         report_intfo("got instead " . substr($curl_out,0, 2048) );
                       }
                     }
                     return $matches[0]  ;},
