@@ -630,6 +630,7 @@ final class Template {
       
       case 'volume':
         if ($this->blank($param_name)) {
+          if ($value == '0') return FALSE;
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
@@ -650,6 +651,7 @@ final class Template {
       
       case 'issue':
         if ($this->blank(ISSUE_ALIASES)) {
+          if ($value == '0') return FALSE;
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
