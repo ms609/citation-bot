@@ -3484,7 +3484,7 @@ final class Template {
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[2]); // Remove specific search engine
               }
             }
-            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview).*$~i", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
