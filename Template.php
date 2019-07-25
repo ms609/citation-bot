@@ -3476,9 +3476,11 @@ final class Template {
                }
             }
             $changed = FALSE;
-            if (preg_match("~^https?://search.proquest.com/.+/docview/(.+)$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://search.proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
+              if ($matches[1] != 'dissertations') {
                  $changed = TRUE;
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // Remove specific search engine
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[2]); // Remove specific search engine
+              }
             }
             if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview).*$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
