@@ -258,6 +258,11 @@ class Page {
                       if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/.*)$~", $redirectedUrl, $matches_proquest)) {
                        return $matches[1] . $matches_proquest[1] . $matches[3];
                       }
+                    } else {
+                      if($errno = curl_errno($ch)) {
+                         $error_message = curl_strerror($errno);
+                         report_info( "cURL error ({$errno}):\n {$error_message}");
+                      }
                     }
                     return $matches[0]  ;},
                       $this->text
