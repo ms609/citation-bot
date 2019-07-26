@@ -3469,6 +3469,11 @@ final class Template {
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^http.+/login\?url=https?://search\.proquest\.com/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
+                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
             } elseif (preg_match('~^https?://(.*)proquest.umi.com(.*)/(pqd.+)$~', $this->get($param), $matches)) {
                if ($matches[1] || $matches[2]) {
                  $this->set($param, 'http://proquest.umi.com/' . $matches[3]);
