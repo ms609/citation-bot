@@ -31,7 +31,8 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "shibboleth authentication request", "nookmarkable url intermediate page",
                          "google books", "rte.ie", "loading",
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
-                         "openid transaction in progress", 'download limit exceeded', 'privacy settings');
+                         "openid transaction in progress", 'download limit exceeded', 'privacy settings',
+                         "untitled-1", "untitled-2");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -56,7 +57,9 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Article expired', 'This is due to newswire licensing terms',
                                  'OpenId transaction in progress', 'Download Limit Exceeded',
                                  'Url（アドレス）が変わりました', '404エラ', 'お探しのページは見つかりませんでした',
-                                 'privacy settings', 'cookie settings', 'WebCite query'];
+                                 'privacy settings', 'cookie settings', 'WebCite query',
+                                 'Untitled-1', 'Untitled-2', 'Untitled-3', 'Untitled-4', 'Untitled-5',
+                                 'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
