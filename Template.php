@@ -3482,7 +3482,6 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
                }
             }
-            
             $changed = FALSE;
             if (preg_match("~^https?://search.proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
               if ($matches[1] != 'dissertations') {
