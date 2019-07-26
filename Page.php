@@ -232,6 +232,7 @@ class Page {
       }
     }
     // BATCH API CALLS
+if (!@$is_a_man_with_no_plan) {
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
     $this->expand_templates_from_identifier('pmid',    $our_templates);
@@ -268,7 +269,7 @@ class Page {
         $this_template->use_issn();
       }
     }
-    
+}  
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
