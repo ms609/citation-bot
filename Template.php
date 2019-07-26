@@ -3053,6 +3053,7 @@ final class Template {
             return;
 
         case 'bibcode':
+          if ($this->blank($param)) return;
           $bibcode_journal = substr($this->get($param), 4);
           foreach (NON_JOURNAL_BIBCODES as $exception) {
             if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
@@ -3097,11 +3098,13 @@ final class Template {
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           return;
           
-        case 'edition': 
+        case 'edition':
+          if ($this->blank($param)) return;
           $this->set($param, preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
           return; // Don't want 'Edition ed.'
         
         case 'eprint':
+          if ($this->blank($param)) return;
           if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
           return;
           
@@ -3210,6 +3213,7 @@ final class Template {
           return;
         
         case 'jstor':
+          if ($this->blank($param)) return;
           if (substr($this->get($param), 0, 8) ===  '10.2307/') {
             $this->set($param, substr($this->get($param), 8));
           }
@@ -3217,6 +3221,7 @@ final class Template {
           return;
         
         case 'magazine':
+          if ($this->blank($param)) return;
           // Remember, we don't process cite magazine.
           if ($this->wikiname() == 'cite journal' && !$this->has('journal')) {
             $this->rename('magazine', 'journal');
@@ -3224,6 +3229,7 @@ final class Template {
           return;
         
         case 'orig-year': case 'origyear':
+          if ($this->blank($param)) return;
           if ($this->blank(['year', 'date'])) { // Will not show unless one of these is set, so convert
             if (preg_match('~^\d\d\d\d$~', $this->get($param))) { // Only if a year, might contain text like "originally was...."
               $this->rename($param, 'year');
@@ -3237,10 +3243,12 @@ final class Template {
           }
           // No break; continue from pmc to pmid:
         case 'pmid':
+          if ($this->blank($param)) return;
           $this->change_name_to('cite journal', FALSE);
           return;
           
         case 'publisher':
+          if ($this->blank($param)) return;
           $publisher = strtolower($this->get($param));
           if (substr($publisher, 0, 2) == '[[' &&
               substr($publisher,   -2) == ']]' &&
@@ -3300,6 +3308,7 @@ final class Template {
           return;
           
         case 'title':
+          if ($this->blank($param)) return;
           $title = $this->get($param);
           $title = straighten_quotes($title);
           if ((   mb_substr($title, 0, 1) === '"'
@@ -3369,11 +3378,13 @@ final class Template {
  
         case 'chapter-url':
         case 'chapterurl':
+          if ($this->blank($param)) return;
           if ($this->blank('url') && $this->blank(CHAPTER_ALIASES)) {
             $this->rename($param, 'url');
             $param = 'url'; // passes down to next area
           }
         case 'url':
+          if ($this->blank($param)) return;
           if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
               if (preg_match('~^\(PDF\)(.+)$~i', trim($this->get('title')), $match)) {
@@ -3601,6 +3612,7 @@ final class Template {
           }
           return;
         case 'volume':
+          if ($this->blank($param)) return;
           $temp_string = strtolower($this->get('journal')) ;
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
@@ -3616,6 +3628,7 @@ final class Template {
           return;
           
         case 'year':
+          if ($this->blank($param)) return;
           if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
              if ($this->blank('date')) $this->rename('year', 'date');
              $this->forget('year');
@@ -3625,6 +3638,7 @@ final class Template {
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
         case 'number':
+          if ($this->blank($param)) return;
           $value = trim($this->get($param));
           if ($param === 'issue' || $param === 'number') {
             if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.)\s*(\d+)$~i', $value, $matches)) {
