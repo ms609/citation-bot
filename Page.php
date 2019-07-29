@@ -272,7 +272,7 @@ if (!@$is_a_man_with_no_plan) {
 } else {
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
-      if ($this_template->wikiname() == 'Infobox scientist' &&
+      if ($this_template->wikiname() == 'infobox scientist' &&
           $this_template->has('thesis_url') &&
           preg_match('~(https?://search.proquest.com/docview/\d{4,})/.*~', $this_template->get('thesis_url'), $matches)) {
         $this_template->set('thesis_url', $matches[1]);
