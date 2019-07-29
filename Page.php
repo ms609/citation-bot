@@ -232,7 +232,6 @@ class Page {
       }
     }
     // BATCH API CALLS
-if (!@$is_a_man_with_no_plan) {
     report_phase('Consult APIs to expand templates');
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
     $this->expand_templates_from_identifier('pmid',    $our_templates);
@@ -269,17 +268,7 @@ if (!@$is_a_man_with_no_plan) {
         $this_template->use_issn();
       }
     }
-} else {
-    for ($i = 0; $i < count($all_templates); $i++) {
-      $this_template = $all_templates[$i];
-      if ($this_template->wikiname() == 'infobox scientist' &&
-          $this_template->has('thesis_url') &&
-          preg_match('~(https?://search.proquest.com/docview/\d{4,})/.*~', $this_template->get('thesis_url'), $matches)) {
-        $this_template->set('thesis_url', $matches[1]);
-      }
-    }
-  
-}
+
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
