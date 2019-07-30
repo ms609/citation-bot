@@ -4076,8 +4076,16 @@ final class Template {
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
     if ($old_param == $new_param) return FALSE;
-    if ($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
     if (!isset($this->param)) return FALSE;
+    $have_nothing = TRUE;
+    foreach ($this->param as $p) {
+      if ($p->param == $old_param) {
+        $have_nothing = FALSE;
+        break;
+      }
+    }
+    if ($have_nothing) return FALSE;
+    if ($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
