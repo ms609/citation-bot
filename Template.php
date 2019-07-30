@@ -4379,6 +4379,9 @@ final class Template {
               $this->set('issue', $possible_issue);
             }
          }
+     } elseif (preg_match('~^\((\d+)\)$~', $data, $matches) {
+       $this->set($param, $matches[1]);
+       return;
      }
 // volume misuse seems to be popular in cite book, and we would need to move volume to title
      // Obvious books
