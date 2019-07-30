@@ -4211,6 +4211,7 @@ final class Template {
     $this->forgetter($par, TRUE);
   }
   private function forgetter($par, $echo_forgetting) { // Do not call this function directly
+debug_print_backtrace();
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
       $this->forgetter('accessdate', $echo_forgetting);
