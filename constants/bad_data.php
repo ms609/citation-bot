@@ -78,7 +78,8 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'doi.library.ubc.ca');
 
 const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
-                                  '.serialssolutions.com', '.ebscohost.com'); // Drop these if there is a valid DOI
+                                  '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
+                                  'doi.library.ubc.ca'); // Drop these if there is a valid DOI
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport');
 
@@ -93,7 +94,8 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "google\.com/search",      // Google search results
                                  "jstor\.org/stable/",      // We have special jstor code
                                  "ned\.ipac\.caltech\.edu", // Gives no real title
-                                 "pep\-web\.org");          // Does not parse very well at all
+                                 "pep\-web\.org",           // Does not parse very well at all
+                                 "ezproxy");                // Junk
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nbcnews.com/', 'abcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'bbc.com/', 'bbc.co.uk/', 'apnews.com/',
                                    '.ap.org/', 'nytimes.com/', 'theguardian.com/', 'washingtonpost.com/',

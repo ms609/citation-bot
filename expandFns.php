@@ -290,7 +290,7 @@ function throttle ($min_interval) {
 
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
-  if (trim($str) == 'Science (New York, N.Y.)') return 'Science';
+  if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
   $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
   if ($math_templates_present) {
     $replacement = [];
