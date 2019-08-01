@@ -35,7 +35,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' (online ed.) ', ' AAPOS ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ',
+          ' (online ed.) ', ' AAPOS ', ' AAPS ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ',
           ' ASAIO ', ' ASME AES ', ' ASME MTD ', 
           ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ",
@@ -59,7 +59,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PhytoKeys ', ' PLOS Biology ', 
           ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PLOS ONE ',' PLOS ONE ',' PLOS ONE ', ' PNAS ', ' Published in: ', ' RNA ', ' S.A.P.I.EN.S ',
-          ' Scr. ', ' Srp Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', 
+          ' Scr. ', ' Srp Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', ' Série A ', 
           ' Tellus A ', ' The EMBO Journal ', ' Time Out London ', ' tot de ',
           ' Transactions and archaeological record of the Cardiganshire Antiquarian Society ',
           ' U.S. ', ' U.S.A. ', ' U.S.A. ', ' uHealth ', ' uHealth ', ' v Astronomicheskii Zhurna ',
@@ -68,7 +68,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' (online Ed.) ', ' Aapos ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ',
+          ' (online Ed.) ', ' Aapos ', ' Aaps ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ',
           ' Asaio ', ' Asme Aes ', ' Asme MTD ',
           ' B/GCVS ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', " Dell'Accademia ",
@@ -92,7 +92,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Paj: A Journal of Performance and Art ', ' Palaios ', ' Peerj ', ' Phytokeys ', ' Plos Biology ', 
           ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' PloS One ', ' PLoS One ', ' PLOS One ', ' Pnas ', ' Published In: ' , ' Rna ', ' S.a.p.i.en.s ',
-          ' SCR. ', ' SRP Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', 
+          ' SCR. ', ' SRP Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', ' Série a ', 
           ' Tellus a ', ' The Embo Journal ', ' Time Out London ', ' Tot de ',
           ' Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ',
           ' U.s. ', ' U.S.a. ', ' U.s.a ', ' Uhealth ', ' UHealth ', ' V Astronomicheskii Zhurna ',
@@ -113,4 +113,4 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' allgemeine ', ' Sprachwissenschaft ', ' Maître ', ' Phonétique ', ' Arqueología ', ' Códices ',
            ' prehispánicos ', ' coloniales ', ' tempranos ', ' Catálogo ',
            ' Ekolist ', ' revija ', ' okolju ', ' geographica ', ' Slovenica ', ' Glasnik ',
-           ' Muzejskega ', ' Društva ', ' Slovenijo ');
+           ' Muzejskega ', ' Društva ', ' Slovenijo ', ' razgledi ');
