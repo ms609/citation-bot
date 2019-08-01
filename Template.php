@@ -4410,6 +4410,8 @@ final class Template {
   }
                          
   protected function simplify_google_search($url) {
+      if (stripos($url, 'q=') === FALSE) return $url;  // Not a search
+      if (preg_match('~^https?://.*google.com/search/', $url)) return $url; // Not a search if the slash is there
       $hash = '';
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
