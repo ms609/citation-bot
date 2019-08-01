@@ -1169,15 +1169,13 @@ final class Template {
         @curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        if ($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
-           if (is_null($url_sent) && stripos($url, ".pdf") === FALSE) {
-             if ($this->blank('pmc')) quietly('report_modification', "Converting URL to PMC parameter");
-             $this->forget($url_type);
-           }
-           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
-           return $this->add_if_new('pmc', $match[1]);
+        if ($httpCode == 404) return FALSE; // Some PMCs do NOT resolve
+        if (is_null($url_sent) && stripos($url, ".pdf") === FALSE) {
+           if ($this->blank('pmc')) quietly('report_modification', "Converting URL to PMC parameter");
+           $this->forget($url_type);
         }
-        return FALSE;
+        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+        return $this->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles/pmc(\d+)~i", $url, $match)  ||
                 preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d+)~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
