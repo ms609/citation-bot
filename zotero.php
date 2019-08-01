@@ -308,6 +308,14 @@ function expand_by_zotero(&$template, $url = NULL) {
       $result->extra = str_replace(trim($matches[0]), '', $result->extra);
       $result->extra = trim($result->extra);
     }
+    if (preg_match('~\sPMID: (\d+)\s+PMCID: PMC(\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
+      $result->extra = trim($result->extra);
+      $template->add_if_new('pmid', $matches[1]);
+      $template->add_if_new('pmc',  $matches[2]);
+      entrez_api(array($matches[1]), array($template), 'pubmed');
+      }
+    }
     if (preg_match('~\sPMID: (\d+), (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
       $result->extra = str_replace(trim($matches[0]), '', $result->extra);
       $result->extra = trim($result->extra);
