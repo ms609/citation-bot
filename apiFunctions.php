@@ -625,6 +625,14 @@ function expand_doi_with_dx($template, $doi) {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'thesis') {
+       $template->change_name_to('cite thesis');
+       $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
+       if (stripos(@$json['URL'], 'hdl.handle.net')) {
+           $template->get_identifiers_from_url($json['URL']);
+       }
      } else {
        if (getenv('TRAVIS')) {
          print_r($json);
