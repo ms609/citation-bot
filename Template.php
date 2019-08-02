@@ -1160,7 +1160,7 @@ final class Template {
           $this->forget($url_type);
         }
         
-      } (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"	      } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)~i", $url, $match) ||
+    } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)~i", $url, $match) ||
                       . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/(?:PMC)?(\d+)~i", $url, $match)) {
         if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . "/";
