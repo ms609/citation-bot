@@ -7,10 +7,11 @@ function html_echo($text, $alternate_text='') {
 function user_notice($symbol, $class, $text) {
   static $last_time = 0;
   global $FLUSHING_OKAY;
-  if (!getenv('TRAVIS')) {
+  if (TRUE || !getenv('TRAVIS')) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
   }
+  ob_flush();
   if ($FLUSHING_OKAY) {
      $now = microtime(TRUE);
      if (in_array($class, array('phase', 'subitem', 'warning')) || 10 < ($now - $last_time)) {
@@ -28,7 +29,7 @@ function report_warning($text) { user_notice("  !", "warning", $text); }
 function report_modification($text) { user_notice("  ~", "changed", $text); }
 function report_add($text) { user_notice("  +", "added", $text); }
 function report_forget($text) { user_notice("  -", "removed", $text); }
-function report_inline($text) { if (!getenv('TRAVIS')) echo " $text"; }
+function report_inline($text) { if (TRUE || !getenv('TRAVIS')) echo " $text"; }
 function report_error($text) { report_warning($text); trigger_error($text, E_USER_ERROR); } // call report_warning to give users a message before we die
 function report_minor_error($text) {  // For things we want to error on TRAVIS, but continue on Wikipedia
   report_warning($text);
@@ -37,7 +38,7 @@ function report_minor_error($text) {  // For things we want to error on TRAVIS, 
 
 
 function quietly($function = 'report_info', $text) {
-  if (defined('VERBOSE') || HTML_OUTPUT ) {
+  if (TRUE || defined('VERBOSE') || HTML_OUTPUT ) {
     $function($text);
   }
 }
