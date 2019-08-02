@@ -1185,20 +1185,22 @@ final class Template {
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles/pmc(\d+)~i", $url, $match)  ||
                 preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d+)~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
-        if ($this->blank('pmc')) quietly('report_modification', "Converting Europe URL to PMC parameter");
+        if ($this->blank('pmc')) {
+          quietly('report_modification', "Converting Europe URL to PMC parameter");
+        }
         if (is_null($url_sent) && stripos($url, ".pdf") === FALSE) {
           $this->forget($url_type);
         }
-        return $this->add_if_new('pmc', $match[1])
+        return $this->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/abstract/med/(\d+)~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmid')) {
           quietly('report_modification', "Converting Europe URL to PMID parameter");
-          if (is_null($url_sent)) {
-            $this->forget($url_type);
-          }
-          return $this->add_if_new('pmid', $match[1]);
         }
+        if (is_null($url_sent)) {
+            $this->forget($url_type);
+        }
+        return $this->add_if_new('pmid', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d+)(?:|/.*)$~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         quietly('report_modification', "Converting Canadian URL to PMC parameter");
