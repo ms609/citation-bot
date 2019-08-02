@@ -1161,7 +1161,7 @@ final class Template {
         }
         
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~i", $url, $match)) {
+                      . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/(?:PMC)?(\d+)~i", $url, $match)) {
         if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
@@ -1187,20 +1187,20 @@ final class Template {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting Europe URL to PMC parameter");
-          if (is_null($url_sent)) {
-            $this->forget($url_type);
-          }
-          return $this->add_if_new('pmc', $match[1]);
         }
+        if (is_null($url_sent) && stripos($url, ".pdf") === FALSE) {
+          $this->forget($url_type);
+        }
+        return $this->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/abstract/med/(\d+)~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmid')) {
           quietly('report_modification', "Converting Europe URL to PMID parameter");
-          if (is_null($url_sent)) {
-            $this->forget($url_type);
-          }
-          return $this->add_if_new('pmid', $match[1]);
         }
+        if (is_null($url_sent)) {
+            $this->forget($url_type);
+        }
+        return $this->add_if_new('pmid', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d+)(?:|/.*)$~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         quietly('report_modification', "Converting Canadian URL to PMC parameter");
