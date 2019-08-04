@@ -20,7 +20,7 @@ function query_url_api($ids, $templates) {
     curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
   } else {
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 1);
-    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10); 
+    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 5); 
   }
 
   $zotero_announced = 1;
