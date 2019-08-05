@@ -108,8 +108,14 @@ function wikify_external_text($title) {
   $angleBraces = array("<", ">");
   $title = str_ireplace($htmlBraces, $angleBraces, $title);
 
-  $originalTags = array('<title>', '</title>', 'From the Cover: ');
-  $wikiTags = array('','','');
+  $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
+  $wikiTags = array('','','','');
+  $title = str_ireplace($originalTags, $wikiTags, $title);
+  $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ');
+  $title = str_ireplace($originalTags, $wikiTags, $title);
+  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
 
   $title_orig = '';
