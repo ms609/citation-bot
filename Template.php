@@ -733,10 +733,18 @@ final class Template {
       
       case 'url': 
         // look for identifiers in URL - might be better to add a PMC parameter, say
-        if (!$this->get_identifiers_from_url($value) && $this->blank(array_merge([$param_name], TITLE_LINK_ALIASES))) {
-          return $this->add($param_name, sanitize_string($value));
+        if ($this->get_identifiers_from_url($value)) return FALSE;
+        if (!$this->blank(array_merge([$param_name], TITLE_LINK_ALIASES))) return FALSE;
+        $value = sanitize_string($value);
+        foreach (['url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
+                  'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
+                  'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
+                  'transcripturl'] as $exisiting)  {
+          if (strcasecmp($value, $this->get($exisiting)) === 0) {
+            return FALSE;
+          }
         }
-        return FALSE;
+        return $this->add($param_name, $value);
         
       case 'title-link':
         if ($this->blank(array_merge(TITLE_LINK_ALIASES, ['url']))) {
@@ -3763,8 +3771,8 @@ final class Template {
              $this->has('periodical') ||
              $this->has('website')) {
               $this->forget('work'); // Delete if we have alias
-         } elseif ($this->wikiname() === 'cite web' && !$this->blank(['url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl'])) {
-            $this->rename('work', 'website');
+         } elseif ($this->wikiname() === 'cite web') {
+            $this->forget('work'); // The likelihood of this being a good thing to add is very low
          } elseif ($this->wikiname() === 'cite journal') {
             $this->rename('work', 'journal');
          } elseif ($this->wikiname() === 'cite magazine') {
