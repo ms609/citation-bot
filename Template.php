@@ -740,7 +740,7 @@ final class Template {
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
                   'transcripturl'] as $exisiting)  {
-          if (strcasecmp($value, $this->get($exisiting))) {
+          if (strcasecmp($value, $this->get($exisiting)) === 0) {
             return FALSE;
           }
         }
