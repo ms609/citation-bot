@@ -115,7 +115,7 @@ function wikify_external_text($title) {
   $wikiTags = array('. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
   $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>');
-  $wikiTags = array(' ',' ',' ',' ',' ',' ');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
 
   $title_orig = '';
