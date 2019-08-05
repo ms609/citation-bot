@@ -20,12 +20,27 @@ function query_url_api($ids, $templates) {
     curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
   } else {
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 1);
-    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10); 
+    $url_count = 0;
+    foreach ($templates as $template) {
+     if (!$template->blank(['url', 'chapter-url', 'chapterurl'])) {
+       $url_count = $url_count + 1;
+     }
+    }
+    if ($url_count < 5) {
+      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 15);
+    } elseif ($url_count < 25) {
+      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10);
+    } else {
+      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 5);
+    }
   }
 
   $zotero_announced = 1;
   foreach ($templates as $template) {
      expand_by_zotero($template);
+  }
+  if (!getenv('TRAVIS')) { // These are pretty reliable, unlike random urls
+      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10);
   }
   $zotero_announced = 2;
   foreach ($templates as $template) {
