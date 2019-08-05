@@ -88,7 +88,7 @@ Before entering the k8s shell, it may be necessary to install phpunit
 
 ## Dependency services
 
-The bot accesses an instance of the Zotero translation server.
+The bot accesses an instance of the Zotero translation server.  The source code for this server is https://github.com/ms609/translation-server
 
 This can be updated by maintainers logging on to Toolforge, then entering the commands 
 
