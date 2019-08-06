@@ -185,7 +185,7 @@ final class Template {
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_title')) {
               if ($this->has('title')) {
-                $this->forget'CITATION_BOT_PLACEHOLDER_title');
+                $this->forget('CITATION_BOT_PLACEHOLDER_title');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
               }
@@ -3458,7 +3458,8 @@ final class Template {
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
           } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
-                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))) {
+                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
+                 || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
               $this->forget($param);
               return;
           }
