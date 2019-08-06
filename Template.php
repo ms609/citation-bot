@@ -154,6 +154,46 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
+      // Clean up bad data
+      if (!$this->blank(['pmc', 'pmid', 'doi'])) { // Have some good data
+        if ($this->has('title')) {
+          $the_title = $this->get('title');
+          $bad_data = FALSE;
+          if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
+              mb_strtoupper($the_title) == $the_title && strpos($the_title, 'CITATION') === FALSE) {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // ALL UPPER CASE
+              $bad_data = TRUE;
+          } elseif (strcasecmp($the_title, $this->get('journal')) === 0 &&
+                    stripos($the_title, 'CITATION') === FALSE ) { // Journal === Title
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $bad_data = TRUE;
+          }
+          if ($bad_data) {
+            if ($this->has('doi')) {
+              expand_by_doi($this);
+            } elseif ($this->has('pmid')) {
+              query_pmid_api(array($this->get('pmid')), array($this));
+            } elseif ($this->has('pmc')) {
+              query_pmc_api(array($this->get('pmc')), array($this));
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
+              if ($this->has('journal')) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_journal');
+              } else {
+                $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
+              }
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_title')) {
+              if ($this->has('title')) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_title');
+              } else {
+                $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
+              }
+            }
+          }
+        }
+      }
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
@@ -3419,7 +3459,8 @@ final class Template {
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
           } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
-                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))) {
+                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
+                 || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
               $this->forget($param);
               return;
           }
@@ -4117,7 +4158,9 @@ final class Template {
           $p->val = $new_value;
         }
         if (strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_year') === FALSE &&
-            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === FALSE) {
+            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === FALSE &&
+            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_title') === FALSE &&
+            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_journal') === FALSE) {
           report_modification("Renamed \"$old_param\" -> \"$new_param\"");
           $this->mod_names = TRUE;
         }
