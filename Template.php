@@ -1142,7 +1142,7 @@ final class Template {
         return FALSE; # Plants database, not journal
       } elseif (preg_match("~^(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match) ||
                 preg_match("~^https?://(?:www\.)?jstor\.org\S+proxy\S+(?:stable|discovery)/(\d{5,}|[jJ]\.[a-zA-Z]+)$~", $url, $match) ||
-                preg_match("~^https?://(?:www\.)?jstor\.org\S+proxy\S+(?:stable|discovery)/((?:10\.7591/|)(?:j|histirel)\.[a-zA-Z0-9\.]+))$~", $url, $match)) {
+                preg_match("~^https?://(?:www\.)?jstor\.org\S+proxy\S+(?:stable|discovery)/((?:10\.7591/|)(?:j|histirel)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget($url_type);
         }
