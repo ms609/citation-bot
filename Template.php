@@ -3257,7 +3257,7 @@ final class Template {
           
         case 'publisher':
           if ($this->wikiname() == 'cite journal' && $this->has('journal') && $this->has('title') && $this->blank($param)) {
-            $this->forget($param));  // Not good to encourage adding this
+            $this->forget($param);  // Not good to encourage adding this
             return;
           }
           if ($this->blank($param)) return;
