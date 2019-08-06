@@ -3449,7 +3449,7 @@ final class Template {
               if (preg_match('~^\(PDF\)(.+)$~i', trim($this->get('title')), $match)) {
                  $this->set('title', trim($match[1]));
               }
-          } elseif (preg_match("~^https?://(?:s3.amazonaws.com/|)(?:www\.|)academia\.edu/(?:documents/|)([0-9]+)/*~i", $this->get($param), $matches)) {
+          } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/(?:documents/|)([0-9]+)/*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.academia.edu/' . $matches[1]);
           } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
               $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
@@ -3457,7 +3457,8 @@ final class Template {
               $this->set($param, $this->simplify_google_search($this->get($param)));
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
-          } elseif (preg_match("~^https?://watermark.silverchair.com/~", $this->get($param))) {
+          } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
+                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))) {
               $this->forget($param);
               return;
           }
