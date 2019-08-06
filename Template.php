@@ -155,7 +155,7 @@ final class Template {
           }
       }
       // Clean up bad data
-      if (!$this->blank(['pmc', 'pmid', 'doi']) { // Have some good data
+      if (!$this->blank(['pmc', 'pmid', 'doi'])) { // Have some good data
         if ($this->has('title')) {
           $the_title = $this->get('title');
           $bad_data = FALSE;
