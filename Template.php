@@ -160,10 +160,11 @@ final class Template {
           $the_title = $this->get('title');
           $bad_data = FALSE;
           if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
-              mb_strtoupper($the_title) == $the_title) {
+              mb_strtoupper($the_title) == $the_title && strpos($the_title, 'CITATION') === FALSE) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // ALL UPPER CASE
               $bad_data = TRUE;
-          } elseif (strcasecmp($the_title, $this->get('journal')) === 0) { // Journal === Title
+          } elseif (strcasecmp($the_title, $this->get('journal')) === 0 &&
+                    stripos($the_title, 'CITATION') === FALSE ) { // Journal === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $bad_data = TRUE;
