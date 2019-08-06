@@ -3256,8 +3256,19 @@ final class Template {
           return;
           
         case 'publisher':
+          if ($this->wikiname() == 'cite journal' && $this->has('journal') && $this->has('title') && $this->blank($param)) {
+            $this->forget($param);  // Not good to encourage adding this
+            return;
+          }
           if ($this->blank($param)) return;
           $publisher = strtolower($this->get($param));
+          if ($this->wikiname() == 'cite journal' && $this->has('journal') && $this->has('title')
+              && !$this->blank(['pmc', 'pmid'])
+              && (strpos($publisher, 'national center for biotechnology information') !== FALSE ||
+                  strpos($publisher, 'u.s. national library of medicine') !== FALSE)) {
+              $this->forget($param);
+              return;
+          }
           if (substr($publisher, 0, 2) == '[[' &&
               substr($publisher,   -2) == ']]' &&
               mb_substr_count($publisher, '[[') === 1 && 
