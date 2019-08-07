@@ -47,6 +47,6 @@ require_once("expandFns.php");
 require_once("zotero.php");
 
 mb_internal_encoding('UTF-8'); // Avoid ??s
-ini_set("memory_limit", "256M");
+ini_set("memory_limit", "128M");
 
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
