@@ -141,7 +141,7 @@ class ZoteroTest extends testBaseClass {
 
   public function testMR() {
      $text = "{{cite journal | mr = 22222 }}"; // Ones with DOIs we can expand
-     $expanded = $this->expand_via_zotero($text);
+     $expanded = $this->process_citation($text);
      $this->assertSame('10.2307/1969132', $expanded->get('doi'));
   }
 }
