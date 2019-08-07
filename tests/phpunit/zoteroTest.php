@@ -138,4 +138,10 @@ class ZoteroTest extends testBaseClass {
      $expanded = $this->process_citation($text);
      $this->assertNull($expanded->get('url'));
   }
+
+  public function testMR() {
+     $text = "{{cite journal | mr = 22222 }}"; // Ones with DOIs we can expand
+     $expanded = $this->expand_via_zotero($text);
+     $this->asserSame('10.2307/1969132', $expanded->get('doi'));
+  }
 }
