@@ -1456,6 +1456,12 @@ final class Template {
              $this->forget($url_type);
           }
           return $this->add_if_new('ol', $match[1]); 
+      } elseif (preg_match("~^https?://search\.proquest\.com/document/(\d{4,})$~i, $url, $match) && $this->blank('id')) {
+          quietly('report_modification', 'Converting URL to ProQuest parameter');
+          if (is_null($url_sent)) {
+             $this->forget($url_type);
+          }
+          return $this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}'); 
       }
     }
     return FALSE ;
