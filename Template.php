@@ -801,6 +801,9 @@ final class Template {
         return FALSE;
         
       case 'doi':
+        if ($value == '10.5284/1000184') return FALSE; // This is a DOI for an entire database, not anything within it
+        if ($value == '10.1267/science.040579197') return FALSE; // PMID test doi
+        if (substr($value, 0, 8) == '10.5555/') return FALSE ; // Test DOI prefix.  NEVER will work
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (preg_match(REGEXP_DOI, $value, $match)) {
@@ -1178,7 +1181,7 @@ final class Template {
         }
         curl_close($ch);
       }
-      if (stripos($url, "plants.jstor.org")) {
+      if (stripos($url, 'plants.jstor.org')) {
         return FALSE; # Plants database, not journal
       } elseif (preg_match("~^(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match) ||
                 preg_match("~^https?://(?:www\.)?jstor\.org\S+proxy\S+(?:stable|discovery)/(\d{5,}|[jJ]\.[a-zA-Z]+)$~", $url, $match) ||
@@ -3134,9 +3137,27 @@ final class Template {
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
-          if ($doi == "10.1267/science.040579197") {
+          if ($doi == '10.1267/science.040579197') {
             // This is a bogus DOI from the PMID example file
             $this->forget('doi'); 
+            return;
+          }
+          if ($doi == '10.5284/1000184') {
+            // This is a DOI for an entire database, not anything within it
+            $this->forget('doi'); 
+            return;
+          }
+          if (substr($doi, 0, 8) == '10.5555/') { // Test DOI prefix.  NEVER will work
+            $this->forget('doi'); 
+            if ($this->blank('url')) {
+              $url_test = 'https://plants.jstor.org/stable/' . $doi;
+              $ch = curl_init($test_url);
+              curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
+              @curl_exec($ch);
+              $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+              curl_close($ch);
+              if ($httpCode == 200) $this->add_if_new('url', $url_test);
+            }
             return;
           }
           $this->set($param, sanitize_doi($doi));
