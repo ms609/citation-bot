@@ -155,7 +155,7 @@ final class Template {
           }
       }
       // Clean up bad data
-      if (!$this->blank(['pmc', 'pmid', 'doi'])) { // Have some good data
+      if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
         if ($this->has('title')) {
           $the_title = $this->get('title');
           $bad_data = FALSE;
@@ -167,6 +167,9 @@ final class Template {
                     stripos($the_title, 'CITATION') === FALSE ) { // Journal === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $bad_data = TRUE;
+          } elseif (substr($the_title, -9, 9) == ' on JSTOR') {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
               $bad_data = TRUE;
           }
           if ($bad_data) {
