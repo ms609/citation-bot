@@ -171,6 +171,9 @@ final class Template {
           } elseif (substr($the_title, -9, 9) == ' on JSTOR') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
               $bad_data = TRUE;
+          } elseif (substr($the_title, -20, 20) == 'IEEE Xplore Document') {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
+              $bad_data = TRUE;
           }
           if ($bad_data) {
             if ($this->has('doi')) {
