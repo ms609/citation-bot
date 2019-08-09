@@ -284,7 +284,8 @@ final class Template {
           return (!(
              ($this->has('journal') || $this->has('periodical') || $this->has('work') ||
               $this->has('website') || $this->has('publisher') || $this->has('newspaper') ||
-              $this->has('magazine')|| $this->has('encyclopedia') || $this->has('contribution'))
+              $this->has('magazine')|| $this->has('encyclopedia') || $this->has('encyclopaedia') ||
+              $this->has('contribution'))
           &&  $this->has("title")
           &&  $has_date
     ));
@@ -564,7 +565,7 @@ final class Template {
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
         if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE; // Messed up already or in database
         if (!$this->blank(['agency','publisher']) && in_array(strtolower($value), DUBIOUS_JOURNALS) === TRUE) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
-        if ($this->blank(["journal", "periodical", "encyclopedia", "newspaper", "magazine", "contribution"])) {
+        if ($this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
           if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
           $value = wikify_external_text(title_case($value));
@@ -652,11 +653,11 @@ final class Template {
         if ($this->blank($param_name) || in_array($this->get($param_name),
                                            ['Archived copy', "{title}", 'ScienceDirect', "Google Books"])
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
-          if (str_equivalent($this->get('encyclopedia'), sanitize_string($value))) {
+          if (str_equivalent($this->get('encyclopedia') . $this->get('encyclopaedia'), sanitize_string($value))) {
             return FALSE;
           }
           if ($this->has('article') && 
-                 ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary')) return FALSE; // Probably the same thing
+                 ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary' || $this->wikiname() === 'cite encyclopaedia')) return FALSE; // Probably the same thing
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
@@ -3447,6 +3448,7 @@ final class Template {
           $this->set($param, $title);
           if ($title && str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           if ($title && str_equivalent($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
+          if ($title && str_equivalent($this->get($param), $this->get('encyclopaedia'))) $this->forget('$param');
           if (preg_match('~^(.+)\{\{!\}\} Request PDF$~i', trim($this->get($param)), $match)) {
                  $this->set($param, trim($match[1]));
           } elseif (!$this->blank(['isbn', 'doi', 'pmc', 'pmid']) && preg_match('~^(.+) \(PDF\)$~i', trim($this->get($param)), $match)) {
