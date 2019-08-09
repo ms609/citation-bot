@@ -4338,10 +4338,10 @@ final class Template {
       if ($this->blank(['chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) {
         $this->forgetter('archive-url', $echo_forgetting);
         $this->forgetter('archiveurl', $echo_forgetting);
+        $this->forgetter('archive-date', $echo_forgetting);
+        $this->forgetter('archivedate', $echo_forgetting);
+        $this->forgetter('dead-url', $echo_forgetting);
       }
-      $this->forgetter('archive-date', $echo_forgetting);
-      $this->forgetter('archivedate', $echo_forgetting);
-      $this->forgetter('dead-url', $echo_forgetting);
       $this->forgetter('format', $echo_forgetting);
       $this->forgetter('registration', $echo_forgetting);
       $this->forgetter('subscription', $echo_forgetting);
@@ -4366,6 +4366,13 @@ final class Template {
     }
     if ($par == 'chapter-url' || $par == 'chapterurl') {
        $this->forgetter('chapter-format', $echo_forgetting);
+       if ($this->blank(['url', 'contribution-url', 'contributionurl'])) {
+        $this->forgetter('archive-url', $echo_forgetting);
+        $this->forgetter('archiveurl', $echo_forgetting);
+        $this->forgetter('archive-date', $echo_forgetting);
+        $this->forgetter('archivedate', $echo_forgetting);
+        $this->forgetter('dead-url', $echo_forgetting);
+       }
     }
    }  // even if blank try to remove
     if ($par == 'doi') {
