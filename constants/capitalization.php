@@ -7,7 +7,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' das ', ' DC ', ' de ', ' dei ', ' del ', ' della ', ' delle ', ' dem ', ' den ', ' der ', 
           ' des ', ' di ', ' die ', ' DNA ', ' do ', ' du ', ' e ', ' ed ', ' ein ', 
           ' eine ', ' einen ', ' el ', ' else ', ' EMBO ', ' en ', ' et ', ' FASEB ', ' FDA ', ' FEBS ', 
-          ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' IEEE ', ' IEEE/ACM ', ' if ', ' ILR ', ' in ', ' into ', ' is ', 
+          ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' IEEE ', ' if ', ' ILR ', ' in ', ' into ', ' is ', 
           ' its ', ' JAMA ', ' JAMA: ', ' la ', ' las ', ' le ', ' les ', ' los ', ' mit ',  ' MNRAS ', ' mot ', ' NASA ', ' NEJM ', ' non ',
           ' nor ', ' NRC ', ' NY ', ' NYC ', ' NYT ', ' NZ ', ' och ', ' OECD ', ' of ', ' off ', ' on ', ' og ', ' or ', 
           ' over ', ' PCR ', ' per ', ' PNAS ', ' PS: ', ' R&D ', ' RNA ', ' S&P ', ' SAE ',  ' SSRN ', ' TCI: ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
@@ -23,7 +23,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Das ', ' Dc ', ' De ', ' Dei ', ' Del ', ' Della ', ' Delle ', ' Dem ', ' Den ', ' Der ', 
           ' Des ', ' Di ', ' Die ', ' Dna ', ' Do ', ' Du ', ' E ', ' Ed ', ' Ein ', 
           ' Eine ', ' Einen ', ' El ', ' Else ', ' Embo ', ' En ', ' Et ', ' Faseb ', ' Fda ', ' Febs ', 
-          ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' Ieee ', ' IEEE/Acm ', ' If ', ' Ilr ', ' In ', ' Into ', ' Is ', 
+          ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' Ieee ', ' If ', ' Ilr ', ' In ', ' Into ', ' Is ', 
           ' Its ', ' Jama ', ' Jama: ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mit ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
           ' Nor ', ' Nrc ', ' Ny ', ' Nyc ', ' Nyt ', ' Nz ', ' Och ', ' Oecd ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
           ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Ps: ', ' R&d ', ' Rna ', ' S&p ', ' Sae ', ' Ssrn ', ' Tci: ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
@@ -36,7 +36,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' (online ed.) ', ' AAPOS ', ' AAPS ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ',
-          ' ASAIO ', ' ASME AES ', ' ASME MTD ', 
+          ' ASAIO ', ' ASME AES ', ' ASME MTD ', ' IEEE/ACM ', ' IEEE/ACM ',
           ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ",
           ' Drug Des Devel Ther ', ' Dtsch ', ' Dtsch. ',
@@ -69,7 +69,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' (online Ed.) ', ' Aapos ', ' Aaps ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ',
-          ' Asaio ', ' Asme Aes ', ' Asme MTD ',
+          ' Asaio ', ' Asme Aes ', ' Asme MTD ', ' Ieee/Acm ', ' IEEE/Acm ',
           ' B/GCVS ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', " Dell'Accademia ",
           ' Drug des Devel Ther ', ' DTSCH ', ' DTSCH. ',
