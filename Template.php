@@ -3184,6 +3184,10 @@ final class Template {
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           return;
           
+        case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
+          if ($this->blank('doi')) $this->forget($param);
+          return;
+          
         case 'edition':
           if ($this->blank($param)) return;
           $this->set($param, preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
@@ -4361,6 +4365,11 @@ final class Template {
        $this->forgetter('chapter-format', $echo_forgetting);
     }
    }  // even if blank try to remove
+    if ($par = 'doi') {
+      foreach (DOI_BROKEN_ALIASES as $broke) {
+        $this->forgetter($broke, FALSE);
+      }
+    }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
       if ($echo_forgetting && $this->has($par) && stripos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
