@@ -4368,7 +4368,7 @@ final class Template {
        $this->forgetter('chapter-format', $echo_forgetting);
     }
    }  // even if blank try to remove
-    if ($par = 'doi') {
+    if ($par == 'doi') {
       foreach (DOI_BROKEN_ALIASES as $broke) {
         $this->forgetter($broke, FALSE);
       }
