@@ -438,7 +438,9 @@ function expand_by_zotero(&$template, $url = NULL) {
       case 'bookSection':
         // Too much bad data to risk switching journal to book or vice versa.
         // also reject 'review' 
-        if ($template->wikiname() === 'cite web' && stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE) 
+        if ($template->wikiname() === 'cite web' &&
+            stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE &&
+            stripos($url, 'archive.org') === FALSE) 
           $template->change_name_to('cite book');
         break;
       case 'journalArticle':
