@@ -18,6 +18,8 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     if (!getenv('TRAVIS')) {
       $this->authenticate_user();
+    } else {
+      $this->the_user = 'Citation_bot';
     }
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     // Hard coded token and secret.
