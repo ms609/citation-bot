@@ -36,7 +36,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' (online ed.) ', ' AAPOS ', ' AAPS ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ',
-          ' ASAIO ', ' ASME AES ', ' ASME MTD ', 
+          ' ASAIO ', ' ASME AES ', ' ASME MTD ',
           ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ",
           ' Drug Des Devel Ther ', ' Dtsch ', ' Dtsch. ',
@@ -48,7 +48,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' ePrint ', ' ePrint ', ' ePrints ', ' ePrints ', ' eScholarship ', ' eVolo ', ' eVolo ', ' eWeek ', ' eWeek ',
           ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', ' für anorganische und allgemeine ', ' HannahArendt.net ',
           ' History of Science; An Annual Review of Literature ', ' HOAJ biology ', ' hprints ', 
-          ' iConference ', ' IFAC-PapersOnLine ', ' iJournal ', ' iJournal ', ' im Gesundheitswesen ', ' iPhone ', ' ISRN Genetics ',
+          ' iConference ', ' IEEE/ACM ', ' IEEE/ACM ', ' IFAC-PapersOnLine ', ' iJournal ', ' iJournal ', ' im Gesundheitswesen ', ' iPhone ', ' ISRN Genetics ',
           ' J Gerontol A Biol Sci Med Sci ',
           ' J SIAM ', ' J. SIAM ', ' JABS : Journal of Applied Biological Sciences ', 
           ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.I.E.E. ',
@@ -81,7 +81,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Eprint ', ' EPrint ', ' Eprints ',' EPrints ', ' Escholarship ', ' Evolo ', ' EVolo ', ' EWeek ', ' Eweek ',
           ' Faseb J ', ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Für Anorganische und Allgemeine ', ' Hannaharendt.net ',
           ' History of Science; an Annual Review of Literature ', ' Hoaj Biology ', ' Hprints ', 
-          ' Iconference ', ' Ifac-Papersonline ', ' Ijournal ', ' IJournal ', ' Im Gesundheitswesen ', ' Iphone ', ' Isrn Genetics ',
+          ' Iconference ', ' Ieee/Acm ', ' IEEE/Acm ', ' Ifac-Papersonline ', ' Ijournal ', ' IJournal ', ' Im Gesundheitswesen ', ' Iphone ', ' Isrn Genetics ',
           ' J Gerontol a Biol Sci Med Sci ',
           ' J Siam ', ' J. Siam ', ' Jabs : Journal of Applied Biological Sciences ', 
           ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.i.i.e ', 
