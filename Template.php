@@ -943,11 +943,17 @@ final class Template {
       case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': 
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
       case (boolean) preg_match('~author(?:\d{1,}|)-link~', $param_name):
-      if ($this->blank($param_name)) {
+        if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
 
+      case 'id':
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, $value); // Do NOT Sanitize.  It includes templates often
+        }
+        return FALSE;  
+        
       default:  // We want to make sure we understand what we are adding
         if (getenv('TRAVIS')) report_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
         if ($this->blank($param_name)) {
@@ -1460,12 +1466,12 @@ final class Template {
              $this->forget($url_type);
           }
           return $this->add_if_new('ol', $match[1]); 
-      } elseif (preg_match("~^https?://search\.proquest\.com/document/(\d{4,})$~i", $url, $match) && $this->blank('id')) {
+      } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->blank('id') && $this->has('title')) {
           quietly('report_modification', 'Converting URL to ProQuest parameter');
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          return $this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}'); 
+          return $this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}');
       }
     }
     return FALSE ;
