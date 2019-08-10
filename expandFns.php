@@ -281,6 +281,8 @@ function mb_substr_replace($string, $replacement, $start, $length) {
  * @codeCoverageIgnore
  */
 function throttle ($min_interval) {
+  global $is_a_man_with_no_plan;
+  if (@is_a_man_with_no_plan) return;
   static $last_write_time = 0;
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < $min_interval) {
