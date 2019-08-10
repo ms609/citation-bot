@@ -343,6 +343,10 @@ function expand_by_zotero(&$template, $url = NULL) {
         $template->add_if_new('pmid', $matches[1]);
       }
     }
+    if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
+      $result->extra = trim($result->extra);
+    }
     if ($result->extra !== '') {
       report_minor_error("Unhandled extra data: " . $result->extra);
     }
