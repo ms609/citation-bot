@@ -414,6 +414,8 @@ class Page {
       }
       if ($preg_ok === FALSE) {
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.
+echo "\n\n " . $regexp . "\n\n\n";
+echo $text . "\n\n";
         report_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
       }
     }
