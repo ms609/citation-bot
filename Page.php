@@ -142,6 +142,7 @@ class Page {
       $this->text = $this->start_text; // undo it
       return FALSE;
     }
+if (!$is_a_man_with_no_plan) {
     $citation_count = substr_count($this->text, '{{cite ') +
                       substr_count($this->text, '{{Cite ') +
                       substr_count($this->text, '{{citation') +
@@ -198,6 +199,7 @@ class Page {
                       );
      }
     // TEMPLATES
+} // $is_a_man_with_no_plan
     $all_templates = $this->extract_object('Template');
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
@@ -205,6 +207,22 @@ class Page {
     }
     $our_templates = array();
     $our_templates_slight = array();
+if ($is_a_man_with_no_plan) {
+    for ($i = 0; $i < count($all_templates); $i++) {
+      $this_template = $all_templates[$i];
+      if (strpos($this_template->wikiname(), 'cite ') === 0 || ($this_template->wikiname() === 'citation')) {
+        if (!$this_template->blank(['access_date','accessdate']) &&
+            $this_template->blank(['url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
+                  'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
+                  'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
+                  'transcripturl'])) {
+           array_push($our_templates, $this_template);
+           $this_template->forget('access_date');
+           $this_template->forget('accessdate');
+        }
+      }
+    }
+} else { // $is_a_man_with_no_plan
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
@@ -290,6 +308,7 @@ class Page {
         }
       }
     }
+} // $is_a_man_with_no_plan
     for ($i = 0; $i < count($our_templates_slight); $i++) {
       $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
