@@ -474,6 +474,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         break;
         
       case 'videoRecording':
+      case 'film':
         // Nothing special that we know of yet
         break;
 
