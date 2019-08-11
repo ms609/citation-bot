@@ -72,7 +72,7 @@ final class Template {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          global $page_error;
          $page_error = TRUE;
-         report_warning'reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
+         report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
          return;
       }
     }
