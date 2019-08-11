@@ -139,6 +139,10 @@ class Page {
     $mathematics = $this->extract_object('Mathematics');
     $musicality  = $this->extract_object('Musicscores');
     $preformated = $this->extract_object('Preformated');
+    if ($page_error) {
+      $this->text = $this->start_text; // undo it
+      return FALSE;
+    }
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       $this->text = $this->start_text; // undo it
@@ -201,6 +205,10 @@ class Page {
      }
     // TEMPLATES
     $all_templates = $this->extract_object('Template');
+    if ($page_error) {
+      $this->text = $this->start_text; // undo it
+      return FALSE;
+    }
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
        $all_templates[$i]->date_style = $this->date_style;
