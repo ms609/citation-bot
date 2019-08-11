@@ -128,7 +128,7 @@ class Page {
     $this->announce_page();
     $this->construct_modifications_array();
     if (!$this->text) {
-      report_warning("No text retrieved.\n");
+      report_minor_error("No text retrieved.\n");
       return FALSE;
     }
 
@@ -426,7 +426,7 @@ class Page {
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
         global $page_error;
         $page_error = TRUE;
-        report_warning('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
+        report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
       }
     }
     $this->text = $text;
