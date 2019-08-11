@@ -122,6 +122,8 @@ class Page {
   
   public function expand_text() {
     global $is_a_man_with_no_plan;
+    global $page_error;
+    $page_error = FALSE;
     date_default_timezone_set('UTC');
     $this->announce_page();
     $this->construct_modifications_array();
@@ -414,7 +416,8 @@ class Page {
       }
       if ($preg_ok === FALSE) {
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.
-        report_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
+        global $page_error = TRUE;
+        report_warning('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
       }
     }
     $this->text = $text;
