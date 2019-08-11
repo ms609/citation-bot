@@ -128,7 +128,7 @@ class Page {
     $this->announce_page();
     $this->construct_modifications_array();
     if (!$this->text) {
-      report_minor_error("No text retrieved.\n");
+      report_warning("No text retrieved.\n");
       return FALSE;
     }
 
