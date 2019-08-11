@@ -156,11 +156,11 @@ final class Template {
       }
       // Clean up bad data
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
-        if ($this->has('title')) {
+        if ($this->has('title') && stripos($this->get('title'), 'CITATION_BOT') === FALSE) {
           $the_title = $this->get('title');
           $bad_data = FALSE;
           if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
-              mb_strtoupper($the_title) == $the_title && strpos($the_title, 'CITATION') === FALSE) {
+              mb_strtoupper($the_title) == $the_title) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // ALL UPPER CASE
               $bad_data = TRUE;
           } elseif (strcasecmp($the_title, $this->get('journal')) === 0 &&
@@ -173,6 +173,9 @@ final class Template {
               $bad_data = TRUE;
           } elseif (substr($the_title, -20, 20) == 'IEEE Xplore Document') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
+              $bad_data = TRUE;
+          } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
           }
           if ($bad_data) {
