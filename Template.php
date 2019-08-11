@@ -1,4 +1,4 @@
-epo<?php
+<?php
 /*
  * Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
@@ -73,6 +73,7 @@ final class Template {
          global $page_error;
          $page_error = TRUE;
          report_warning'reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
+         return;
       }
     }
 
