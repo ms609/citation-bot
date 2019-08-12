@@ -429,7 +429,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', $result->volume);
   if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
   if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , $result->series);
-  if ((isset($result->author[0]) && !isset($result->author[1]) &&
+  if ( isset($result->author[0]) && !isset($result->author[1]) &&
       !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
     unset($result->author[0]); // Do not add a single non-human author
   }
