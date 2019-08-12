@@ -162,7 +162,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
     $this->assertSame('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
-    // TURN BACK ON WHEN WORKING AGAIN $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get('doi'));
+    $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get('doi'));
  }
  
  public function testCrazyDoubleDOI() {
