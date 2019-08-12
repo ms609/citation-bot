@@ -2136,7 +2136,7 @@ final class Template {
        if (preg_match("~[\d\-]{9,}[\dXx]~", $ris_issn)) {
           $this->add_if_new('isbn', $ris_issn);
        } elseif (preg_match("~\d{4}\-?\d{3}[\dXx]~", $ris_issn)) {
-          if ($this->blank('journal') $this->add_if_new('issn', $ris_issn);
+          if ($this->blank('journal')) $this->add_if_new('issn', $ris_issn);
        }
     }
     if ($ris_publisher) {
