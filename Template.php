@@ -2034,7 +2034,7 @@ final class Template {
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
       if (trim($ris_part[0]) == "TY") {
-        if (in_arry(trim($ris_part[1]), ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'])) {
+        if (in_array(trim($ris_part[1]), ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'])) {
           $ris_book = TRUE; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
         }
       }
