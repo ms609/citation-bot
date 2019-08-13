@@ -1,6 +1,6 @@
 <!DOCTYPE html><html><body><pre>
 <?php
-if (FALSE) {
+if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxFO97cFX8ioiJZpZ96S')) {
   echo shell_exec ("webservice restart 2>&1");
 }
 ?>
