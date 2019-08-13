@@ -3752,7 +3752,12 @@ final class Template {
               { 
                 $this->forget('via');
               }
-            } 
+            }            
+          }
+          foreach (array_merge( array('publisher'), WORK_ALIASES) as $others) {
+            if ($this->has($others) && str_equivalent($this->get($others), $this->get('via'))) {
+              $this->forget('via');
+            }
           }
           return;
         case 'volume':
