@@ -2021,6 +2021,7 @@ final class Template {
     $ris_review    = FALSE;
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
+    $ris_book      = FALSE;
     // Convert &#x__; to characters
     $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     $ris_authors = 0;
@@ -2031,10 +2032,23 @@ final class Template {
     
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
+      if (trim($ris_part[0]) == "TY") {
+        if (in_array(trim($ris_part[1]), ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'])) {
+          $ris_book = TRUE; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
+        }
+      }
+    }
+    
+    foreach ($ris as $ris_line) {
+      $ris_part = explode(" - ", $ris_line . " ");
       switch (trim($ris_part[0])) {
         case "T1":
         case "TI":
-          $ris_parameter = "title";
+          if ($ris_book) {
+             $ris_parameter = "chapter";
+          } else {
+             $ris_parameter = "title";
+          }
           break;
         case "AU":
           $ris_authors++;
@@ -2063,8 +2077,15 @@ final class Template {
           break;
         case "JO":
         case "JF":
-        case "T2":
           $ris_parameter = "journal";
+          break;
+        case "T2":
+        case "BT":
+          if ($ris_book) {
+             $ris_parameter = "title";
+          } else {
+             $ris_parameter = "journal";
+          }
           break;
         case "VL":
           $ris_parameter = "volume";
@@ -2111,9 +2132,17 @@ final class Template {
          $this->add_if_new('pages', $start_page);
       }
     }
-    if ($this->blank('journal')) { // doing at end avoids adding if we have journal title
-      if ($ris_issn) $this->add_if_new('issn', $ris_issn);
-      if ($ris_publisher) $this->add_if_new('publisher', $ris_publisher);
+    if ($ris_issn) {
+       if (preg_match("~[\d\-]{9,}[\dXx]~", $ris_issn)) {
+          $this->add_if_new('isbn', $ris_issn);
+       } elseif (preg_match("~\d{4}\-?\d{3}[\dXx]~", $ris_issn)) {
+          if ($this->blank('journal')) $this->add_if_new('issn', $ris_issn);
+       }
+    }
+    if ($ris_publisher) {
+      if ($ris_book || $this->blank('journal')) {
+        $this->add_if_new('publisher', $ris_publisher);
+      }
     }
   }
  
@@ -2517,10 +2546,10 @@ final class Template {
             case "U": $endnote_parameter = "url";        break;
             case "V": $endnote_parameter = "volume";     break;
             case "@": // ISSN / ISBN
-              if (preg_match("~@\s*[\d\-]{10,}~", $endnote_line)) {
+              if (preg_match("~@\s*[\d\-]{9,}[\dxX]~", $endnote_line)) {
                 $endnote_parameter = "isbn";
                 break;
-              } elseif (preg_match("~@\s*\d{4}\-?\d{4}~", $endnote_line)) {
+              } elseif (preg_match("~@\s*\d{4}\-?\d{3}[\dxX]~", $endnote_line)) {
                 $endnote_parameter = "issn";
                 break;
               } else {
@@ -3723,7 +3752,12 @@ final class Template {
               { 
                 $this->forget('via');
               }
-            } 
+            }            
+          }
+          foreach (array_merge( array('publisher'), WORK_ALIASES) as $others) {
+            if ($this->has($others) && str_equivalent($this->get($others), $this->get('via'))) {
+              $this->forget('via');
+            }
           }
           return;
         case 'volume':
