@@ -242,6 +242,18 @@ final class TemplateTest extends testBaseClass {
      $this->assertSame('M. M.', $expanded->get('first3'));
      $this->assertNull($expanded->get('via'));
   }
+ 
+  public function testLoseViaDup() {
+     $text = '{{citation|work=Some Journal|via=Some Journal}}';
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('via'));
+     $text = '{{citation|publisher=Some Journal|via=Some Journal}}';
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('via'));
+     $text = '{{citation|newspaper=Some Journal|via=Some Journal}}';
+     $expanded = $this->process_citation($text);
+     $this->assertNull($expanded->get('via'));
+  }
     
   public function testJustBrackets() {
      $text = '{{cite book|title=[[W|12px|alt=W]]}}';

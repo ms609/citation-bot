@@ -3751,12 +3751,15 @@ final class Template {
                                   'proquest', 'google scholar', 'google', 'bing', 'yahoo'])) 
               { 
                 $this->forget('via');
+                return;
               }
             }            
           }
+          if ($this->blank('via')) return;
           foreach (array_merge( array('publisher'), WORK_ALIASES) as $others) {
             if ($this->has($others) && str_equivalent($this->get($others), $this->get('via'))) {
               $this->forget('via');
+              return;
             }
           }
           return;
