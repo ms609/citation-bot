@@ -2043,12 +2043,14 @@ final class Template {
       $ris_part = explode(" - ", $ris_line . " ");
       switch (trim($ris_part[0])) {
         case "T1":
-        case "TI":
           if ($ris_book) {
              $ris_parameter = "chapter";
           } else {
              $ris_parameter = "title";
           }
+          break;
+        case "TI":
+          $ris_parameter = "title";
           break;
         case "AU":
           $ris_authors++;
