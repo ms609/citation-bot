@@ -3964,7 +3964,8 @@ final class Template {
           $this->change_name_to('cite book');
       }
     }
-    if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') && strpos($this->get('doi'), '10.2307') === 0) {
+    if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
+        (strpos($this->get('doi'), '10.2307') === 0 ||  $this->get('doi') == $this->get('jstor'))) {
       $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
     }
