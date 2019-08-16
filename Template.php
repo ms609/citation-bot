@@ -4582,7 +4582,7 @@ final class Template {
          $this->set($param, $data);
        }
      }
-     if (!$this->blank(['doi', 'jstor', 'pmid', 'pmc']) { // Have some data to fix it up with
+     if (!$this->blank(['doi', 'jstor', 'pmid', 'pmc'])) { // Have some data to fix it up with
        if ($param === 'issue' || $param === 'number') {
          if (preg_match("~^(?:vol\.|volume\s+|vol\s+|vol:)\s*([\dLXVI]+)$~i", $data, $matches)) {
            $data = $matches[1];
