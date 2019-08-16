@@ -4576,6 +4576,34 @@ final class Template {
          $this->set('volume', $data);
        }
      }
+     if ($param === 'issue' || $param === 'number') {
+       if (preg_match("~^(?:num\.|number\s+|num\s+|num:|number:|iss\.|issue\s+|iss\s+|iss:|issue:)\s*([\dLXVI]+)$~i", $data, $matches)) {
+         $data = $matches[1];
+         $this->set($param, $data);
+       }
+     }
+     if (!$this->blank(['doi', 'jstor', 'pmid', 'pmc']) { // Have some data to fix it up with
+       if ($param === 'issue' || $param === 'number') {
+         if (preg_match("~^(?:vol\.|volume\s+|vol\s+|vol:)\s*([\dLXVI]+)$~i", $data, $matches)) {
+           $data = $matches[1];
+           if ($this->blank('volume')) {
+             $this->rename($param, 'volume', $data);
+           } elseif (stripos($this->get('volume'), $data) !== FALSE) {
+             $this->forget($param); // Duplicate data
+           }
+         }
+       }
+       if ($param === 'volume') {
+         if (preg_match("~^(?:num\.|number\s+|num\s+|num:|number:|iss\.|issue\s+|iss\s+|iss:|issue:)\s*([\dLXVI]+)$~i", $data, $matches)) {
+           $data = $matches[1];
+           if ($this->blank(['issue', 'number'])) {
+             $this->rename($param, 'issue', $data);
+           } elseif (stripos($this->get('issue') . $this->get('number'), $data) !== FALSE) {
+             $this->forget($param); // Duplicate data
+           }
+         }
+       }
+     }
   }
                          
   protected function simplify_google_search($url) {
