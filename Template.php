@@ -856,7 +856,7 @@ final class Template {
               stripos($dat, 'No RIS data found for') === FALSE) &&
               stripos($dat, 'Block Reference') === FALSE &&
               stripos($dat, 'A problem occurred trying to deliver RIS data') === FALSE &&
-              substr_count($dat, ' - ') > 4) { // It is actually a working JSTOR
+              substr_count($dat, ' - ') > 3) { // It is actually a working JSTOR
             $this->rename('doi', 'jstor');
             foreach (DOI_BROKEN_ALIASES as $dead) {
               $this->quietly_forget($dead); // In case it was already set
