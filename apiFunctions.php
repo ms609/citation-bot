@@ -674,6 +674,21 @@ function query_jstor_api($ids, $templates) {
 }
 
 function expand_by_jstor($template) {
+     if ($template->blank('jstor') && !$template->blank(DOI_BROKEN_ALIASES)) {
+          if ($this->blank('jstor') && !doi_works($this->get('doi'))) {
+              $url_test = 'https://www.jstor.org/stable/' . $this->get('doi');
+              $ch = curl_init($test_url);
+              curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
+              @curl_exec($ch);
+              $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+              curl_close($ch);
+              if ($httpCode == 200) {
+                $this->add_if_new('jstor',  $this->get('doi'));
+                $this->foreget('doi');
+              }
+          }
+  
+  
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
      $jstor = trim($template->get('jstor'));
