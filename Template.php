@@ -850,7 +850,7 @@ final class Template {
         
       case 'doi-broken-date':
         if ($this->blank('jstor')) {
-          $doi = $this->get('doi')
+          $doi = $this->get('doi');
           $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $doi);
           if ($dat !== FALSE &&
               stripos($dat, 'No RIS data found for') === FALSE) &&
