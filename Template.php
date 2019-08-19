@@ -853,7 +853,7 @@ final class Template {
           $doi = $this->get('doi');
           $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $doi);
           if ($dat !== FALSE &&
-              stripos($dat, 'No RIS data found for') === FALSE) &&
+              stripos($dat, 'No RIS data found for') === FALSE &&
               stripos($dat, 'Block Reference') === FALSE &&
               stripos($dat, 'A problem occurred trying to deliver RIS data') === FALSE &&
               substr_count($dat, ' - ') > 3) { // It is actually a working JSTOR
