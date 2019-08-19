@@ -701,6 +701,10 @@ function expand_by_jstor($template) {
     report_info("JSTOR API blocked bot for ".  jstor_link($jstor));
     return FALSE;
   }
+  if (stripos($dat, 'A problem occurred trying to deliver RIS data')  !== FALSE) {
+    report_info("JSTOR API had a problem for ".  jstor_link($jstor));
+    return FALSE;
+  }
   $has_a_url = $template->has('url');
   $template->expand_by_RIS($dat, FALSE);
   if ($template->has('url') && !$has_a_url) { // we added http://www.jstor.org/stable/12345, so remove quietly
