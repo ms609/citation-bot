@@ -850,15 +850,17 @@ final class Template {
         
       case 'doi-broken-date':
         if ($this->blank('jstor')) {
-          $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $this->get('doi');
-  if ($dat === FALSE && stripos($dat, 'No RIS data found for') !== FALSE) {
-    report_info("JSTOR API found nothing for ".  jstor_link($jstor));
-    return FALSE;
-  }
-  if (stripos($dat, 'Block Reference') !== FALSE) {
-    report_info("JSTOR API blocked bot for ".  jstor_link($jstor));
-    return FALSE;
-  }
+          $doi = $this->get('doi')
+          $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $doi);
+          if ($dat !== FALSE &&
+              stripos($dat, 'No RIS data found for') === FALSE) &&
+              stripos($dat, 'Block Reference') === FALSE &&
+              substr_count($dat, ' - ') > 4) { // It is actually a working JSTOR
+            $this->rename('doi', 'jstor');
+            foreach (DOI_BROKEN_ALIASES as $dead) {
+              $this->quietly_forget($dead); // In case it was already set
+            }
+          }
         }
         if ($this->blank(DOI_BROKEN_ALIASES)) {
           return $this->add($param_name, $value);
