@@ -4064,7 +4064,7 @@ final class Template {
           }
         }
         if(empty($headers_test['Location'])) {
-           if ($this->blank(DOI_BROKEN_ALIASES)) $this->set('doi-broken-date', date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
+           $this->add_if_new('doi-broken-date', date("Y-m-d"));  // dx.doi.org might work, even if CrossRef fails
            report_inline("Broken doi: " . echoable($doi));
            return FALSE;
         } else {
