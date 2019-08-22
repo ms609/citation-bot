@@ -128,8 +128,7 @@ class WikipediaBot {
           set_time_limit(45);
           $data = curl_exec($this->ch);
           if ( !$data ) {
-            report_warning("Curl error: " . echoable(curl_error($this->ch)));
-            exit(0);
+            report_error("Curl error: " . echoable(curl_error($this->ch)));
           }
           $ret = @json_decode($data);
           set_time_limit(120);    
@@ -140,8 +139,7 @@ class WikipediaBot {
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
           
-        report_warning("Unrecognized method."); // @codecov ignore - will only be hit if error in our code
-        return FALSE;
+        report_error("Unrecognized method in Fetch."); // @codecov ignore - will only be hit if error in our code
       }
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
@@ -161,7 +159,6 @@ class WikipediaBot {
     
     if (!$response) {
       report_error("Write request failed");
-      return FALSE;
     }
     if (isset($response->warnings)) {
       if (isset($response->warnings->prop)) {
@@ -173,14 +170,12 @@ class WikipediaBot {
     }
     if (!isset($response->batchcomplete)) {
       report_error("Write request triggered no response from server");
-      return FALSE;
     }
     
     $myPage = reset($response->query->pages); // reset gives first element in list
     
     if (!isset($myPage->lastrevid)) {
       report_error("Page seems not to exist. Aborting.");
-      return FALSE;
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
@@ -217,11 +212,9 @@ class WikipediaBot {
                     echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
                     echoable($result->error->info)));
-      return FALSE;
     } elseif (isset($result->edit)) {
       if (isset($result->edit->captcha)) {
         report_error("Write error: We encountered a captcha, so can't be properly logged in.");
-        return FALSE;
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
@@ -411,7 +404,7 @@ class WikipediaBot {
       $ident = $client->identify( $user_token );
       if (!$this->is_valid_user($ident->username)) {
         @session_destroy();
-        exit('User is either invalid or blocked on en.wikipedia.org');
+        report_error('User is either invalid or blocked on en.wikipedia.org');
       }
       $this->the_user = $ident->username;
       return;
@@ -423,7 +416,6 @@ class WikipediaBot {
     $return = urlencode($_SERVER['REQUEST_URI']);
     @header("Location: authenticate.php?return=$return");
     sleep(3);
-    echo('Valid user Token not found, go to <a href="authenticate.php">authenticate.php</a>');
-    exit(0);
+    report_error('Valid user Token not found, go to <a href="authenticate.php">authenticate.php</a>');
   }
 }
