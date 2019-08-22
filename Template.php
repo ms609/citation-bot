@@ -4406,9 +4406,6 @@ final class Template {
       if ($this->blank(['chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) {
         $this->forgetter('archive-url', $echo_forgetting);
         $this->forgetter('archiveurl', $echo_forgetting);
-        $this->forgetter('archive-date', $echo_forgetting);
-        $this->forgetter('archivedate', $echo_forgetting);
-        $this->forgetter('dead-url', $echo_forgetting);
       }
       $this->forgetter('format', $echo_forgetting);
       $this->forgetter('registration', $echo_forgetting);
@@ -4437,9 +4434,6 @@ final class Template {
        if ($this->blank(['url', 'contribution-url', 'contributionurl'])) {
         $this->forgetter('archive-url', $echo_forgetting);
         $this->forgetter('archiveurl', $echo_forgetting);
-        $this->forgetter('archive-date', $echo_forgetting);
-        $this->forgetter('archivedate', $echo_forgetting);
-        $this->forgetter('dead-url', $echo_forgetting);
        }
     }
    }  // even if blank try to remove
@@ -4447,6 +4441,16 @@ final class Template {
       foreach (DOI_BROKEN_ALIASES as $broke) {
         $this->forgetter($broke, FALSE);
       }
+    }
+    if ($par == 'archive-url' && $this->blank('archiveurl')) {
+        $this->forgetter('archive-date', FALSE);
+        $this->forgetter('archivedate', FALSE);
+        $this->forgetter('dead-url', FALSE);
+    }
+    if ($par == 'archiveurl' && $this->blank('archive-url')) {
+        $this->forgetter('archive-date', FALSE);
+        $this->forgetter('archivedate', FALSE);
+        $this->forgetter('dead-url', FALSE);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
