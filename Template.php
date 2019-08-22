@@ -3529,6 +3529,10 @@ final class Template {
               $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
             }
           }
+          if (preg_match('~^https?://(?:web\.archive\.org/web/|archive\.today/|archive\.\S\S/)/save/~', $this->get($param))) {
+              $this->forget($param); // Forget "save it now" archives.  They are rubbish
+              return;
+          }
           if (stripos($this->get($param), 'archive') === FALSE) {
             if ($this->get($param) == $this->get('url')) {
               $this->forget($param);  // The archive url is the real one
