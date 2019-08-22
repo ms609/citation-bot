@@ -3529,8 +3529,10 @@ final class Template {
               $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
             }
           }
-          if (stripos($this->get($param), 'archive')) === FALSE && $this->get($param) == $this->get('url')) {
-            $this->forget($param);  // The archive url is the real one
+          if (stripos($this->get($param), 'archive') === FALSE) {
+            if ($this->get($param) == $this->get('url')) {
+              $this->forget($param);  // The archive url is the real one
+            }
           }
           return;
  
