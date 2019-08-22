@@ -52,7 +52,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
                                  'Subscribe to read', 'Wiley Online Library', 'pagina is niet gevonden',
                                  'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended',
-                                 'Error 404', 'EZProxy', 'EBSCOhost Login', '404 - Not Found',
+                                 'Error 404', 'EZProxy', 'EBSCOhost Login', '404 - Not Found', '404!',
                                  'Temporarily Unavailable', ' has expired', 'not longer available',
                                  'Article expired', 'This is due to newswire licensing terms',
                                  'OpenId transaction in progress', 'Download Limit Exceeded',
