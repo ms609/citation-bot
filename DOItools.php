@@ -310,8 +310,8 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         $dbTitle = preg_replace('~^The ~iu', '', $dbTitle);
         // Trailing "a review"
-        $inTitle = preg_replace('~(?:\: | |\:|)a review$~iu', '', $inTitle);
-        $dbTitle = preg_replace('~(?:\: | |\:|)a review$~iu', '', $dbTitle);
+        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', $inTitle);
+        $dbTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', $dbTitle);
         // greek  TODO expand list
         $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $inTitle);
         $dbTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $dbTitle);
