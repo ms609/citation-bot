@@ -294,7 +294,8 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         // Reduce punctuation
         $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $inTitle)));
         $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $dbTitle)));
-        $inTitle = str_replace(array("'", '"'), "", $inTitle); // Drop normal quotes
+        // Drop normal quotes
+        $inTitle = str_replace(array("'", '"'), "", $inTitle);
         $dbTitle = str_replace(array("'", '"'), "", $dbTitle);
         // Strip trailing periods
         $inTitle = trim(rtrim($inTitle, '.'));
@@ -308,6 +309,12 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         // Strip leading the
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         $dbTitle = preg_replace('~^The ~iu', '', $dbTitle);
+        // Trailing "a review"
+        $inTitle = preg_replace('~(?:\: | |\:|)a review$~iu', '', $inTitle);
+        $dbTitle = preg_replace('~(?:\: | |\:|)a review$~iu', '', $dbTitle);
+        // greek  TODO expand list
+        $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $inTitle);
+        $dbTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $dbTitle);
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
