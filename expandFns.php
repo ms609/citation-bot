@@ -214,6 +214,12 @@ function title_capitalization($in, $caps_after_punctuation) {
   }
   
   $new_case = preg_replace_callback(
+    "~ \([a-z]~u" /* uppercase after parenthesis */, 
+    function($matches) {return mb_strtoupper($matches[0]);},
+    trim($new_case)
+  );
+  
+  $new_case = preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
     function($matches) {return mb_strtolower($matches[0]);},
     trim($new_case)
