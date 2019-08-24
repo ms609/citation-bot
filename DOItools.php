@@ -305,8 +305,8 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         $dbTitle = preg_replace('~^The ~iu', '', $dbTitle);
         // Reduce punctuation
-        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–"), "", mb_strtolower((string) $inTitle)));
-        $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–"), "", mb_strtolower((string) $dbTitle)));
+        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–", "â€™", "â€", " "), "", mb_strtolower((string) $inTitle)));
+        $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–", "â€™", "â€", " "), "", mb_strtolower((string) $dbTitle)));
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         $dbTitle = str_replace(array("'", '"'), "", $dbTitle);
