@@ -392,6 +392,8 @@ function expand_by_doi($template, $force = FALSE) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
       if ($template->has('title') && trim(@$crossRef->article_title)) { // Verify title of DOI matches existing data somewhat
         $bad_data = TRUE;
+        echo "\n EXISTING : " . $template->get('title') . "\n";
+        echo "\n NEW article_title : " . $crossRef->article_title. "\n";
         $new = $crossRef->article_title;
         if (preg_match('~^(.................+)\.\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
            $new = $matches[1];
@@ -422,6 +424,7 @@ function expand_by_doi($template, $force = FALSE) {
           }
         }
         if (isset($crossRef->series_title)) {
+                  echo "\n NEW series_title : " . $crossRef->series_title. "\n";
           foreach (['chapter', 'title'] as $possible) { // Series === series could easily be false possitive
             if ($template->has($possible) && titles_are_similar($template->get($possible), $crossRef->series_title)) {
                 $bad_data = FALSE;
