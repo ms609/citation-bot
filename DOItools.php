@@ -291,27 +291,27 @@ function titles_are_similar($title1, $title2) {
 }
 
 function titles_are_dissimilar($inTitle, $dbTitle) {
+        // Trailing "a review"
+        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        $dbTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($dbTitle));
+        // Strip trailing Online
+        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
+        $dbTitle = preg_replace('~ Online$~iu', '', $dbTitle);
+        // Strip trailing (Third Edition)
+        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        $dbTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $dbTitle);
+        // Strip leading the
+        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
+        $dbTitle = preg_replace('~^The ~iu', '', $dbTitle);
         // Reduce punctuation
-        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $inTitle)));
-        $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—"), "", mb_strtolower((string) $dbTitle)));
+        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–"), "", mb_strtolower((string) $inTitle)));
+        $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–"), "", mb_strtolower((string) $dbTitle)));
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         $dbTitle = str_replace(array("'", '"'), "", $dbTitle);
         // Strip trailing periods
         $inTitle = trim(rtrim($inTitle, '.'));
         $dbTitle = trim(rtrim($dbTitle, '.'));
-        // Strip trailing (Third Edition)
-        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
-        $dbTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $dbTitle);
-        // Strip trailing Online
-        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
-        $dbTitle = preg_replace('~ Online$~iu', '', $dbTitle);
-        // Strip leading the
-        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
-        $dbTitle = preg_replace('~^The ~iu', '', $dbTitle);
-        // Trailing "a review"
-        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', $inTitle);
-        $dbTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', $dbTitle);
         // greek  TODO expand list
         $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $inTitle);
         $dbTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $dbTitle);
