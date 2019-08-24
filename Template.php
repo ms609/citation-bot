@@ -1144,8 +1144,8 @@ final class Template {
        if ($matches[1] == $this->get('jstor')) {
          if (is_null($url_sent)) {
            $this->forget($url_type);
-           return FALSE;
          }
+         return FALSE;
        } elseif ($this->blank('jstor')) {
           $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $matches[1];
           if ($dat !== FALSE &&
