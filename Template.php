@@ -1147,7 +1147,7 @@ final class Template {
          }
          return FALSE;
        } elseif ($this->blank('jstor')) {
-          $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $matches[1];
+          $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $matches[1]);
           if ($dat !== FALSE &&
               stripos($dat, 'No RIS data found for') === FALSE &&
               stripos($dat, 'Block Reference') === FALSE &&
