@@ -1096,7 +1096,7 @@ final class Template {
     // IEEE
     if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-       if (!is_null($url_sent)) {
+       if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
        } 
     }
@@ -1104,13 +1104,13 @@ final class Template {
     // We do this since not all jstor urls are recognized below
     if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#page_scan_tab_contents$~", $url, $matches)) {
        $url = $matches[1];
-       if (!is_null($url_sent)) {
+       if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
        }     
     }
     if (preg_match("~^(https?://\S*jstor.org\S*)\?refreqid=~", $url, $matches)) {
        $url = $matches[1];
-       if (!is_null($url_sent)) {
+       if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
        }     
     }
@@ -1119,7 +1119,7 @@ final class Template {
     // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
     if (preg_match('~^(https?://(?:0-www.|www.|)jstor.org)(?:\S*proxy\S*/|/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
        $url = $matches[1] . '/stable/' . $matches[2] ; // that is default.  This also means we get jstor not doi
-       if (!is_null($url_sent)) {
+       if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one.  Will probably call forget on it below
        }
     }
@@ -1128,14 +1128,14 @@ final class Template {
     // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
     if (preg_match('~^https?://(?:0-www.|www.|)jstor.org\.[^/]+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
-       if (!is_null($url_sent)) {
+       if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
        }
     }
     // https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10 and such
     if (preg_match('~^https?://(?:0-www.|www.|)jstor-org[-\.]\S+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
-       if (!is_null($url_sent)) {
+       if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
        }
     }
