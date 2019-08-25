@@ -1140,6 +1140,25 @@ final class Template {
        }
     }
     
+    if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/pdf/(.+)\.pdf$~i', $url, $matches)) {
+       if ($matches[1] == $this->get('jstor')) {
+         if (is_null($url_sent)) {
+           $this->forget($url_type);
+         }
+         return FALSE;
+       } elseif ($this->blank('jstor')) {
+          $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $matches[1]);
+          if ($dat !== FALSE &&
+              stripos($dat, 'No RIS data found for') === FALSE &&
+              stripos($dat, 'Block Reference') === FALSE &&
+              stripos($dat, 'A problem occurred trying to deliver RIS data') === FALSE &&
+              substr_count($dat, '-') > 3) { // It is actually a working JSTOR.  Not sure if all PDF links are done right
+            if (is_null($url_sent)) $this->forget($url_type);
+            return $this->add_if_new('jstor', $matches[1]);
+          }
+        }
+    }
+    
     if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
