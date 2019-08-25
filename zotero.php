@@ -453,7 +453,7 @@ function expand_by_zotero(&$template, $url = NULL) {
         // also reject 'review' 
         if ($template->wikiname() === 'cite web' &&
             stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE &&
-            stripos($url, 'archive.org') === FALSE) 
+            stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url)) 
           $template->change_name_to('cite book');
         break;
       case 'journalArticle':
