@@ -294,7 +294,6 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         echo "\n" . $dbTitle . "\n";
         echo "\n" . base64_encode($dbTitle) . "\n";
         // ONLY to new data
-        $dbTitle = mb_convert_encoding($dbTitle, "HTML-ENTITIES", 'UTF-8');
         $dbTitle = html_entity_decode($dbTitle);
         $dbTitle = mb_convert_encoding($dbTitle, "HTML-ENTITIES", 'UTF-8');
         // Trailing "a review"
@@ -310,8 +309,8 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         $dbTitle = preg_replace('~^The ~iu', '', $dbTitle);
         // Reduce punctuation
-        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–", "â€™", "â€”", "â€“"), "", mb_strtolower((string) $inTitle)));
-        $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–", "â€™", "â€”", "â€“"), "", mb_strtolower((string) $dbTitle)));
+        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–", "â€™", "â€”", "â€“", "&#8208;"), "", mb_strtolower((string) $inTitle)));
+        $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–", "â€™", "â€”", "â€“", "&#8208;"), "", mb_strtolower((string) $dbTitle)));
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         $dbTitle = str_replace(array("'", '"'), "", $dbTitle);
