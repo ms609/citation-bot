@@ -291,6 +291,8 @@ function titles_are_similar($title1, $title2) {
 }
 
 function titles_are_dissimilar($inTitle, $dbTitle) {
+        echo "\n" . $dbTitle . "\n";
+        echo "\n" . base64_encode($dbTitle) . "\n";
         $dbTitle = mb_convert_encoding($dbTitle, "HTML-ENTITIES", 'UTF-8'); // ONLY to new data
         // Trailing "a review"
         $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
@@ -316,6 +318,8 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         // greek  TODO expand list
         $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $inTitle);
         $dbTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $dbTitle);
+        echo "\n" . $dbTitle . "\n";
+        echo "\n" . base64_encode($dbTitle) . "\n";
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
