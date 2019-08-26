@@ -3,7 +3,7 @@ dist: trusty
 branches:
   except: release
 
-language: HOSER
+language: php
     
 matrix:
   include:
