@@ -322,7 +322,7 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         echo "\n" . base64_encode($dbTitle) . "\n";
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
-                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
+                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98) 
               : levenshtein($inTitle, $dbTitle) > 3
         );
 }
