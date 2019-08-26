@@ -293,8 +293,8 @@ function titles_are_similar($title1, $title2) {
 function titles_are_dissimilar($inTitle, $dbTitle) {
         echo "\n" . $dbTitle . "\n";
         echo "\n" . base64_encode($dbTitle) . "\n";
-        $dbTitle = mb_convert_encoding($dbTitle, "HTML-ENTITIES", 'UTF-8'); // ONLY to new data
         $dbTitle = html_entity_decode($dbTitle); // ONLY to new data
+        $dbTitle = mb_convert_encoding($dbTitle, "HTML-ENTITIES", 'UTF-8'); // ONLY to new data
         // Trailing "a review"
         $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
         $dbTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($dbTitle));
