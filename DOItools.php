@@ -294,7 +294,6 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         echo "\n" . $dbTitle . "\n";
         echo "\n" . base64_encode($dbTitle) . "\n";
         // ONLY to new data
-        $dbTitle = html_entity_decode($dbTitle);
         $dbTitle = mb_convert_encoding($dbTitle, "HTML-ENTITIES", 'UTF-8');
         $dbTitle = html_entity_decode($dbTitle);
         $dbTitle = mb_convert_encoding($dbTitle, "HTML-ENTITIES", 'UTF-8');
