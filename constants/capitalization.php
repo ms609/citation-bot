@@ -117,14 +117,6 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' allgemeine ', ' Sprachwissenschaft ', ' Maître ', ' Phonétique ', ' Arqueología ', ' Códices ',
            ' prehispánicos ', ' coloniales ', ' tempranos ', ' Catálogo ',
            ' Ekolist ', ' revija ', ' okolju ', ' geographica ', ' Slovenica ', ' Glasnik ',
-           ' Muzejskega ', ' Društva ', ' Slovenijo ', ' razgledi ');
-
-Istorija Mokslo darbai
-
-amžius
-
-humanitarica universitatis Saulensis
-
-oftalmologija  dienos
-
-Lietuvos muziejų rinkiniai 
+           ' Muzejskega ', ' Društva ', ' Slovenijo ', ' razgledi ', ' Istorija ', ' Mokslo ', ' darbai ',
+           ' amžius ', ' humanitarica ', ' universitatis ', ' Saulensis ', ' oftalmologija ', ' dienos ',
+           ' Lietuvos ', ' muziejų ', ' rinkiniai ');
