@@ -168,4 +168,4 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
                             'Request_for_Comments', 'Social_Science_Research_Network', 'Zentralblatt_MATH',
                             'Open_Library', 'ArXiv', 'OCLC', 'Cf.');
 
-const JOURNAL_IS_BOOK_SERIES = array('Methods of Molecular Biology' , 'Methods Mol Biol');
+const JOURNAL_IS_BOOK_SERIES = array('methods of molecular miology' , 'methods mol biol');
