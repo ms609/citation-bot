@@ -3383,7 +3383,7 @@ final class Template {
             if ($this->blank('series')) {
               $this->rename($param, 'series');
             } elseif (in_array(strtolower($this->get('series')), JOURNAL_IS_BOOK_SERIES) ||
-                     str_equivalent($this->get($param), $this->get('series')) {
+                     str_equivalent($this->get($param), $this->get('series'))) {
               $this->forget($param);
             }
           }
@@ -3497,7 +3497,7 @@ final class Template {
             $this->change_name_to('cite book');
             if ($this->has('journal')) {
               if (in_array(strtolower($this->get('journal')), JOURNAL_IS_BOOK_SERIES) ||
-                     str_equivalent($this->get('series'), $this->get('journal)) {
+                     str_equivalent($this->get('series'), $this->get('journal))) {
                 $this->forget('journal');
               }
             }
