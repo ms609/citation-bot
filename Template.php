@@ -3497,7 +3497,7 @@ final class Template {
             $this->change_name_to('cite book');
             if ($this->has('journal')) {
               if (in_array(strtolower($this->get('journal')), JOURNAL_IS_BOOK_SERIES) ||
-                     str_equivalent($this->get('series'), $this->get('journal))) {
+                     str_equivalent($this->get('series'), $this->get('journal'))) {
                 $this->forget('journal');
               }
             }
