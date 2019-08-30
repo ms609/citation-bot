@@ -4123,12 +4123,12 @@ final class Template {
           }
         }
         if(empty($headers_test['Location'])) {
-          if ($this->blank('doi-broken-date')) {
-            $this->add_if_new('doi-broken-date', date("Y-m-d"));
-          } elseif (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)) {
-            report_inline("DOI still broken: " . echoable($doi));
-            $this->set('doi-broken-date', date("Y-m-d")); // Update date to today
-          }
+           if ($this->blank('doi-broken-date')) {
+             $this->add_if_new('doi-broken-date', date("Y-m-d"));
+           } elseif (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)) {
+             report_inline("DOI still broken: " . echoable($doi));
+             $this->set('doi-broken-date', date("Y-m-d")); // Update date to today
+           }
            return FALSE;
         } else {
            foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias); // Blow them away even if commented
