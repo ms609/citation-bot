@@ -1015,11 +1015,8 @@ final class Template {
   
   public function mark_inactive_doi($doi = NULL) {
     // Only call if doi_broken.
-    // Before we mark the doi inactive, we'll additionally check that dx.doi.org fails to resolve.
     if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
-    $url_test = "https://dx.doi.org/" . urlencode($doi);
-    $headers_test = @get_headers($url_test, 1);
-    if ($headers_test !== FALSE && empty($headers_test['Location'])) {
+    if (doi_works($doi) === FALSE) { // NULL which would cast to FALSE means we don't know, so use ===
       $this->add_if_new('doi-broken-date', date('Y-m-d'));  
     }
   }
@@ -1196,7 +1193,7 @@ final class Template {
             }
           }
         } else {
-          // Even if the DOI is broken, still drop URL if URL was dx.doi.org URL
+          // Even if the DOI is broken, still drop URL if URL was doi.org URL
           if (is_null($url_sent) && strpos(strtolower($url), "doi.org/") !== FALSE) {
             report_forget("Recognized doi.org URL; dropping URL");
             $this->forget($url_type);
@@ -4099,12 +4096,15 @@ final class Template {
       }
     } else {
       report_info("Checking that DOI " . echoable($doi) . " is operational...");
-      if (doi_active($this->get_without_comments_and_placeholders('doi')) === FALSE) {
+      if (doi_works($this->get_without_comments_and_placeholders('doi')) !== TRUE) {
         report_inline("It's not; checking for user input error...");
         // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
         // if present, with new "doi-broken-date"
-        $url_test = "https://dx.doi.org/" . urlencode($doi);
-        $headers_test = @get_headers($url_test, 1);
+        if (doi_works($this->get_without_comments_and_placeholders('doi')) === NULL) {
+          $headers_test = FALSE; // Faking a header call
+        } else {
+          $headers_test = [];
+        }
         if ($headers_test === FALSE) {
           report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
           if (!$this->blank(DOI_BROKEN_ALIASES)) { // Already marked as broken
