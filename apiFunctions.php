@@ -654,11 +654,11 @@ function doi_active($doi) {
 }
 
 function doi_works($doi) {
-  if (doi_active($doi)) return TRUE; // CrossRef first
-  $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1);
-  if ($headers_test === FALSE) return FALSE; // most likely.....
-  if (empty($headers_test['Location'])) return FALSE; // leads nowhere
-  return TRUE; // Lead somewhere
+  static $cache = [];
+  if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
+    $cache[$doi] = is_doi_works($doi);
+  }
+  return $cache[$doi];
 }
 
 function is_doi_active($doi) {
@@ -667,6 +667,14 @@ function is_doi_active($doi) {
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");
   return NULL;
+}
+
+function is_doi_works($doi) {
+  if (doi_active($doi)) return TRUE; // CrossRef first
+  $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1);
+  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
+  if (empty($headers_test['Location'])) return FALSE; // leads nowhere
+  return TRUE; // Lead somewhere
 }
 
 function query_jstor_api($ids, $templates) {
