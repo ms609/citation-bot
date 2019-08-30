@@ -662,6 +662,9 @@ final class Template {
           if (str_equivalent($this->get('encyclopedia') . $this->get('encyclopaedia'), sanitize_string($value))) {
             return FALSE;
           }
+          if (str_equivalent($this->get('dictionary'), sanitize_string($value))) {
+            return FALSE;
+          }
           if ($this->has('article') && 
                  ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary' || $this->wikiname() === 'cite encyclopaedia')) return FALSE; // Probably the same thing
           if ($this->blank('script-title')) {
