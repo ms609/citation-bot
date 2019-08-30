@@ -1015,11 +1015,8 @@ final class Template {
   
   public function mark_inactive_doi($doi = NULL) {
     // Only call if doi_broken.
-    // Before we mark the doi inactive, we'll additionally check that dx.doi.org fails to resolve.
     if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
-    $url_test = "https://dx.doi.org/" . urlencode($doi);
-    $headers_test = @get_headers($url_test, 1);
-    if ($headers_test !== FALSE && empty($headers_test['Location'])) {
+    if (doi_works($doi) === FALSE) { // NULL which would cast to FALSE means we don't know, so use ===
       $this->add_if_new('doi-broken-date', date('Y-m-d'));  
     }
   }
@@ -1196,7 +1193,7 @@ final class Template {
             }
           }
         } else {
-          // Even if the DOI is broken, still drop URL if URL was dx.doi.org URL
+          // Even if the DOI is broken, still drop URL if URL was doi.org URL
           if (is_null($url_sent) && strpos(strtolower($url), "doi.org/") !== FALSE) {
             report_forget("Recognized doi.org URL; dropping URL");
             $this->forget($url_type);
@@ -4099,42 +4096,24 @@ final class Template {
       }
     } else {
       report_info("Checking that DOI " . echoable($doi) . " is operational...");
-      if (doi_active($this->get_without_comments_and_placeholders('doi')) === FALSE) {
-        report_inline("It's not; checking for user input error...");
-        // Replace old "doi_inactivedate" and/or other broken/inactive-date parameters,
-        // if present, with new "doi-broken-date"
-        $url_test = "https://dx.doi.org/" . urlencode($doi);
-        $headers_test = @get_headers($url_test, 1);
-        if ($headers_test === FALSE) {
-          report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
-          if (!$this->blank(DOI_BROKEN_ALIASES)) { // Already marked as broken
-            foreach (DOI_BROKEN_ALIASES as $alias) {
-               if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
-                   $this->forget($alias);
-               }
-            }
-            $this->add_if_new('doi-broken-date', date("Y-m-d")); // Update day to today
-          }
-          return FALSE;
-        }
+      $doi_status = doi_works($this->get_without_comments_and_placeholders('doi'));
+      if ($doi_status === NULL) {
+        report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+        return FALSE;
+      } elseif ($doi_status === FALSE) {
+        report_inline("It's not...");
         foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
           if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
-               $this->forget($alias);
+             $this->forget($alias);
           }
         }
-        if(empty($headers_test['Location'])) {
-           if ($this->blank('doi-broken-date')) {
-             $this->add_if_new('doi-broken-date', date("Y-m-d"));
-           } elseif (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE &&
-                     $this->blank(array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']))) {
-             report_inline("DOI still broken: " . echoable($doi));
-             $this->set('doi-broken-date', date("Y-m-d")); // Update date to today
-           }
-           return FALSE;
-        } else {
-           foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias); // Blow them away even if commented
-           return TRUE;
-        }
+        if ($this->blank('doi-broken-date')) {
+           $this->add_if_new('doi-broken-date', date("Y-m-d"));
+        } elseif (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE &&
+                  $this->blank(array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']))) {
+           $this->set('doi-broken-date', date("Y-m-d")); // Update date to today
+        } // Otherwise there is a comment left somewhere
+        return FALSE;
       } else {
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         $this->doi_valid = TRUE;
