@@ -4085,41 +4085,52 @@ final class Template {
     if (isset($trial) && !in_array($doi, $trial) && preg_match("~^10\.\d{4,6}/.~", trim($doi))) {
       array_unshift($trial, $doi); // doi:10.1126/science.10.1126/SCIENCE.291.5501.24 is valid, not the subparts
     }
-    if (isset($trial)) foreach ($trial as $try) {
+    if (isset($trial)) {
+     foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
       if (doi_active($try)) {
         $this->set('doi', $try);
         $this->doi_valid = TRUE;
-        $doi = $try;
-        break;
-      }
-    } else {
-      report_info("Checking that DOI " . echoable($doi) . " is operational...");
-      $doi_status = doi_works($this->get_without_comments_and_placeholders('doi'));
-      if ($doi_status === NULL) {
-        report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
-        return FALSE;
-      } elseif ($doi_status === FALSE) {
-        report_inline("It's not...");
-        foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
-          if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
-             $this->forget($alias);
-          }
-        }
-        if ($this->blank('doi-broken-date')) {
-           $this->add_if_new('doi-broken-date', date("Y-m-d"));
-        } elseif (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE &&
-                  $this->blank(array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']))) {
-           $this->set('doi-broken-date', date("Y-m-d")); // Update date to today
-        } // Otherwise there is a comment left somewhere
-        return FALSE;
-      } else {
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
-        $this->doi_valid = TRUE;
-        report_inline('DOI ok.');
         return TRUE;
       }
+     }
+     foreach ($trial as $try) {
+      // Check that it begins with 10.
+      if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
+      if (doi_works($try)) {
+        $this->set('doi', $try);
+        $this->doi_valid = TRUE;
+        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+        return TRUE;
+      }
+     }
+    }
+    report_info("Checking that DOI " . echoable($doi) . " is operational...");
+    $doi_status = doi_works($doi);
+    if ($doi_status === NULL) {
+      report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+      return FALSE;
+    } elseif ($doi_status === FALSE) {
+      report_inline("It's not...");
+      foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
+        if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
+           $this->forget($alias);
+        }
+      }
+      if ($this->blank('doi-broken-date')) {
+         $this->add_if_new('doi-broken-date', date("Y-m-d"));
+      } elseif (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE &&
+                $this->blank(array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']))) {
+         $this->set('doi-broken-date', date("Y-m-d")); // Update date to today
+      } // Otherwise there is a comment left somewhere
+      return FALSE;
+    } else {
+      foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+      $this->doi_valid = TRUE;
+      report_inline('DOI ok.');
+      return TRUE;
     }
   }
 
