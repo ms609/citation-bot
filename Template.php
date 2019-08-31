@@ -4096,7 +4096,7 @@ final class Template {
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         if ($doi == $try) {
            report_inline('DOI ok.');
-        } else () {
+        } else {
            report_info("Modified DOI:  " . echoable($doi) . " is operational...");
         }
         return TRUE;
@@ -4111,7 +4111,7 @@ final class Template {
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         if ($doi == $try) {
            report_inline('DOI ok.');
-        } else () {
+        } else {
            report_info("Modified DOI:  " . echoable($doi) . " is operational...");
         }
         return TRUE;
