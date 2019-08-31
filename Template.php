@@ -4091,6 +4091,7 @@ final class Template {
       if (doi_active($try)) {
         $this->set('doi', $try);
         $this->doi_valid = TRUE;
+        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         return TRUE;
       }
     }
@@ -4100,6 +4101,7 @@ final class Template {
       if (doi_works($try)) {
         $this->set('doi', $try);
         $this->doi_valid = TRUE;
+        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         return TRUE;
       }
     }
@@ -4116,7 +4118,7 @@ final class Template {
         }
       }
       if ($this->blank('doi-broken-date')) {
-       $this->add_if_new('doi-broken-date', date("Y-m-d"));
+         $this->add_if_new('doi-broken-date', date("Y-m-d"));
       } elseif (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE &&
                 $this->blank(array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']))) {
          $this->set('doi-broken-date', date("Y-m-d")); // Update date to today
