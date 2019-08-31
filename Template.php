@@ -4085,7 +4085,8 @@ final class Template {
     if (isset($trial) && !in_array($doi, $trial) && preg_match("~^10\.\d{4,6}/.~", trim($doi))) {
       array_unshift($trial, $doi); // doi:10.1126/science.10.1126/SCIENCE.291.5501.24 is valid, not the subparts
     }
-    if (isset($trial)) foreach ($trial as $try) {
+    if (isset($trial)) {
+     foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
       if (doi_active($try)) {
@@ -4094,8 +4095,8 @@ final class Template {
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         return TRUE;
       }
-    }
-    if (isset($trial)) foreach ($trial as $try) {
+     }
+     foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
       if (doi_works($try)) {
@@ -4104,9 +4105,10 @@ final class Template {
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         return TRUE;
       }
+     }
     }
     report_info("Checking that DOI " . echoable($doi) . " is operational...");
-    $doi_status = doi_works($this->get_without_comments_and_placeholders('doi'));
+    $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
       report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
       return FALSE;
