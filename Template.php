@@ -3091,6 +3091,12 @@ final class Template {
         $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
       }
       
+      // Remove final semi-colon from a few items
+      if (in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p'])
+          && strpos($this->get($param), '&') === FALSE) {
+        $this->set($param, preg_replace('~;$~u', '', $this->get($param)));
+      }
+      
       // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
       if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
         if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter')) {
