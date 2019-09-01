@@ -4128,7 +4128,7 @@ final class Template {
     }
     $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
-      report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+      report_warning("DOI status unknown.  doi.org failed to respond to: " . echoable($doi));
       return FALSE;
     } elseif ($doi_status === FALSE) {
       report_inline("It's not...");
