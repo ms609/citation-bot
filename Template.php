@@ -4069,7 +4069,8 @@ final class Template {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     if ($this->doi_valid) return TRUE;
-    
+    report_info("Checking that DOI " . echoable($doi) . " is operational...");
+
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
       case ".":
@@ -4101,6 +4102,11 @@ final class Template {
         $this->set('doi', $try);
         $this->doi_valid = TRUE;
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+        if ($doi == $try) {
+           report_inline('DOI ok.');
+        } else {
+           report_info("Modified DOI:  " . echoable($doi) . " is operational...");
+        }
         return TRUE;
       }
      }
@@ -4111,11 +4117,15 @@ final class Template {
         $this->set('doi', $try);
         $this->doi_valid = TRUE;
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+        if ($doi == $try) {
+           report_inline('DOI ok.');
+        } else {
+           report_info("Modified DOI:  " . echoable($doi) . " is operational...");
+        }
         return TRUE;
       }
      }
     }
-    report_info("Checking that DOI " . echoable($doi) . " is operational...");
     $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
       report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
