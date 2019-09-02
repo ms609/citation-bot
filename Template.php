@@ -63,6 +63,8 @@ final class Template {
     if ($trim_name === 'Citejournal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
     if ($trim_name === 'citeweb') $this->name = $spacing[1] . 'cite web' . $spacing[2];
     if ($trim_name === 'Citeweb') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'citenews') $this->name = $spacing[1] . 'cite news' . $spacing[2];
+    if ($trim_name === 'Citenews') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
     if ($trim_name === 'citepaper') $this->name = $spacing[1] . 'cite paper' . $spacing[2];
     if ($trim_name === 'Citepaper') $this->name = $spacing[1] . 'Cite paper' . $spacing[2];
     if ($trim_name === 'citation journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
