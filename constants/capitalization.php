@@ -37,7 +37,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' (online ed.) ', ' AAPOS ', ' AAPS ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ',
           ' ASAIO ', ' ASME AES ', ' ASME MTD ',
-          ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
+          ' B/gcvs ', ' B/gcvs ', ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ",
           ' Drug Des Devel Ther ', ' Dtsch ', ' Dtsch. ',
           ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ',
@@ -72,7 +72,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' (online Ed.) ', ' Aapos ', ' Aaps ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ',
           ' Asaio ', ' Asme Aes ', ' Asme MTD ',
-          ' B/GCVS ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
+          ' b/gcvs ', ' B/Gcvs ', ' B/GCVS ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', " Dell'Accademia ",
           ' Drug des Devel Ther ', ' DTSCH ', ' DTSCH. ',
           ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
