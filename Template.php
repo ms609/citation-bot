@@ -63,6 +63,8 @@ final class Template {
     if ($trim_name === 'Citejournal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
     if ($trim_name === 'citeweb') $this->name = $spacing[1] . 'cite web' . $spacing[2];
     if ($trim_name === 'Citeweb') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'citenews') $this->name = $spacing[1] . 'cite news' . $spacing[2];
+    if ($trim_name === 'Citenews') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
     if ($trim_name === 'citepaper') $this->name = $spacing[1] . 'cite paper' . $spacing[2];
     if ($trim_name === 'Citepaper') $this->name = $spacing[1] . 'Cite paper' . $spacing[2];
     if ($trim_name === 'citation journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
@@ -3087,6 +3089,14 @@ final class Template {
         $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
         $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
+        $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
+        $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
+      }
+      
+      // Remove final semi-colon from a few items
+      if (in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p'])
+          && strpos($this->get($param), '&') === FALSE) {
+        $this->set($param, preg_replace('~;$~u', '', $this->get($param)));
       }
       
       // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
@@ -4061,7 +4071,8 @@ final class Template {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     if ($this->doi_valid) return TRUE;
-    
+    report_info("Checking that DOI " . echoable($doi) . " is operational...");
+
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
       case ".":
@@ -4093,6 +4104,11 @@ final class Template {
         $this->set('doi', $try);
         $this->doi_valid = TRUE;
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+        if ($doi == $try) {
+           report_inline('DOI ok.');
+        } else {
+           report_info("Modified DOI:  " . echoable($doi) . " is operational...");
+        }
         return TRUE;
       }
      }
@@ -4103,14 +4119,18 @@ final class Template {
         $this->set('doi', $try);
         $this->doi_valid = TRUE;
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+        if ($doi == $try) {
+           report_inline('DOI ok.');
+        } else {
+           report_info("Modified DOI:  " . echoable($doi) . " is operational...");
+        }
         return TRUE;
       }
      }
     }
-    report_info("Checking that DOI " . echoable($doi) . " is operational...");
     $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
-      report_warning("DOI status unknown.  dx.doi.org failed to respond at all to: " . echoable($doi));
+      report_warning("DOI status unknown.  doi.org failed to respond to: " . echoable($doi));
       return FALSE;
     } elseif ($doi_status === FALSE) {
       report_inline("It's not...");
@@ -4459,6 +4479,7 @@ final class Template {
       $this->forgetter('via', $echo_forgetting);
       $this->forgetter('website', $echo_forgetting);
       $this->forgetter('deadurl', $echo_forgetting);
+      $this->forgetter('url-status', $echo_forgetting);
       if ($this->has('work') && stripos($this->get('work'), 'www.') === 0) {
          $this->forgetter('work', $echo_forgetting);
       }

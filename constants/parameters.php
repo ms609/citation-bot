@@ -3,7 +3,7 @@ const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite 
                              'cite encyclopaedia', 'cite encyclopedia', 'cite journal', 'cite web', 'cite work',
                              'cite paper', 'cite', 'citebook', 'citejournal', 'citeweb', 'citepaper', 'citation journal',
                              'cite publication', 'cite citeseerx', 'cite website', 'cite dictionary');
-const TEMPLATES_WE_SLIGHTLY_PROCESS = array('cite news', 'cite newspaper', 'cite conference', 'cite article');
+const TEMPLATES_WE_SLIGHTLY_PROCESS = array('cite news', 'cite newspaper', 'cite conference', 'cite article', 'citenews');
 const TEMPLATES_WE_BARELY_PROCESS = array('cite thesis', 'cite press release');
 const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite article', 'cite paper', 'cite website');
 
@@ -259,7 +259,7 @@ const PARAMETER_LIST = array(
 'citation_bot_placeholder_bare_url', 'citeseerx', 'city', 'class', 'coauthor', 
 'coauthors', 'cointerviewers', 'collaboration', 'conference', 'conference-format', 
 'conference-url', 'conferenceurl', 'contribution', 'contribution-format', 
-'contribution-url', 'contributionurl', 'contributor', 'contributor#', 'contributor#-first', 
+'contribution-url', 'contribution-url-access', 'contributionurl', 'contributor', 'contributor#', 'contributor#-first', 
 'contributor#-given', 'contributor#-last', 'contributor#-link', 'contributor#-mask', 
 'contributor#-surname', 'contributor-first', 'contributor-first#', 'contributor-given', 
 'contributor-given#', 'contributor-last', 'contributor-last#', 'contributor-link', 
@@ -295,7 +295,7 @@ const PARAMETER_LIST = array(
 'last-author-amp', 'lastauthoramp', 'lay-date', 'lay-format', 'lay-source', 
 'lay-summary', 'lay-url', 'laydate', 'laysource', 'laysummary', 'layurl', 
 'lccn', 'location', 'magazine', 'mailing-list', 'mailinglist', 'map', 'map-format', 
-'map-url', 'mapurl', 'medium', 'message-id', 'minutes', 'mode', 'month', 'mr', 
+'map-url', 'map-url-access', 'mapurl', 'medium', 'message-id', 'minutes', 'mode', 'month', 'mr', 
 'name-list-format', 'name-separator', 'network', 'newsgroup', 'newspaper', 
 'no-cat', 'no-pp', 'no-tracking', 'nocat', 'nopp', 'notestitle', 'notracking', 
 'number', 'oclc', 'ol', 'ol-access', 'orig-year', 'origyear', 'osti', 'osti-access', 
@@ -303,7 +303,9 @@ const PARAMETER_LIST = array(
 'place', 'pmc', 'pmid', 'postscript', 'pp', 'pp-prefix', 'pridate', 'program', 
 'pubdate', 'publication-date', 'publication-number', 'publication-place', 
 'publicationdate', 'publicationplace', 'publisher', 'publisherid', 'quotation', 
-'quote', 'ref', 'registration', 'rfc', 'scale', 'script-chapter', 'script-title', 
+'quote', 'ref', 'registration', 'rfc', 'scale', 'script-article', 'script-chapter',
+'script-contribution', 'script-entry', 'script-journal', 'script-magazine', 'script-newspaper',
+'script-periodical', 'script-section', 'script-title', 'script-website', 'script-work',
 'season', 'section', 'section-format', 'section-url', 'section-url-access', 
 'sections', 'sectionurl', 'separator', 'series', 'series-link', 'series-no', 
 'series-number', 'series-separator', 'serieslink', 'seriesno', 'seriesnumber', 
@@ -311,12 +313,16 @@ const PARAMETER_LIST = array(
 'subject#-link', 'subject#link', 'subject-link', 'subject-link#', 'subjectlink', 
 'subjectlink#', 'subscription', 'surname', 'surname#', 'template-doc-demo', 
 'time', 'time-caption', 'timecaption', 'title', 'title-link', 'titlelink', 
-'titleyear', 'trans-chapter', 'trans-map', 'trans-title', 'trans_chapter', 
+'titleyear', 'trans-article', 'trans-chapter', 'trans-contribution', 'trans-entry',
+'trans-journal', 'trans-magazine', 'trans-map', 'trans-newspaper', 'trans-periodical',
+'trans-section', 'trans-title', 'trans-website', 'trans-work', 'trans_chapter', 
 'trans_title', 'transcript', 'transcript-format', 'transcript-url', 'transcripturl', 
 'translator', 'translator#', 'translator#-first', 'translator#-given', 
 'translator#-last', 'translator#-link', 'translator#-mask', 'translator#-surname', 
 'translator-first', 'translator-first#', 'translator-given', 'translator-given#', 
 'translator-last', 'translator-last#', 'translator-link', 'translator-link#', 
 'translator-mask', 'translator-mask#', 'translator-surname', 'translator-surname#', 
-'type', 'url', 'url-access', 'vauthors', 'veditors', 'version', 'via', 'volume',
+'type', 'url', 'url-access', 'url-status', 'vauthors', 'veditors', 'version', 'via', 'volume',
 'website', 'work', 'year', 'zbl');
+
+ 
