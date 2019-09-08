@@ -2422,7 +2422,7 @@ final class Template {
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
-          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq":
+          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
             $url .= "&" . $part;
           // TODO: vq takes precedence over dq > q.  Only use one of the above.
           case "id":
