@@ -3586,8 +3586,23 @@ final class Template {
               $this->forget($param); // Forget "save it now" archives.  They are rubbish
               return;
           }
-          if (preg_match('~^(https?://(?:www\.|)webcitation\.org/[^\?]+)\?url=~', $this->get($param), $matches)) {
-              $this->set($param, $matches[1]); // The url part is actually NOT binding or checked
+          if (preg_match('~^(https?://(?:www\.|)webcitation\.org/)([0-9a-zA-Z){9})\?url=~', $this->get($param), $matches)) {
+              $this->set($param, $matches[1] . $matches[2]); // The url part is actually NOT binding or checked
+              if ($this->blank(['archive-date', 'archivedate'])) {
+function to10($num) {
+  $b=62;
+  $base='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  $limit = strlen($num);
+  $res=strpos($base,$num[0]);
+  for($i=1;$i<$limit;$i++) {
+    $res = $b * $res + strpos($base,$num[$i]);
+  }
+  return $res;
+}
+$cite="6klgx4ZPE";
+
+echo date("Y-M-d", 1474743866939576/1000000);
+              }
               return;
           }
           if (stripos($this->get($param), 'archive') === FALSE) {
