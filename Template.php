@@ -3595,7 +3595,7 @@ final class Template {
                  for($i=0;$i<9;$i++) {
                     $time = (62 * $time) + strpos($base62,$num62[$i]);
                  }
-                 $this->add_if_new('archive-date', date("Y-m-d", (int) $time/1000000);
+                 $this->add_if_new('archive-date', date("Y-m-d", (int) $time/1000000));
               }
               return;
           }
