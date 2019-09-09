@@ -1950,4 +1950,10 @@ ER -  }}';
     $template = $this->prepare_citation($text);
     $this->assertSame('2019-05-21', $template->get('archive-date'));
   }
+ 
+  public function testAddWebCiteDate() {
+    $text = '{{Cite web|archive-url=https://www.webcitation.org/6klgx4ZPE}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('2016-09-24', $template->get('archive-date'));
+  }
 }

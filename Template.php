@@ -3586,8 +3586,17 @@ final class Template {
               $this->forget($param); // Forget "save it now" archives.  They are rubbish
               return;
           }
-          if (preg_match('~^(https?://(?:www\.|)webcitation\.org/[^\?]+)\?url=~', $this->get($param), $matches)) {
-            //  $this->set($param, $matches[1]); // The url part is actually NOT binding or checked
+          if (preg_match('~^(https?://(?:www\.|)webcitation\.org/)([0-9a-zA-Z]{9})(?:|\?url=.*)$~', $this->get($param), $matches)) {
+              // $this->set($param, $matches[1] . $matches[2]); // The url part is actually NOT binding, but other wikipedia bots check it
+              if ($this->blank(['archive-date', 'archivedate'])) {
+                 $base62='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+                 $num62 = str_split($matches[2]);
+                 $time = 0;
+                 for($i=0;$i<9;$i++) {
+                    $time = (62 * $time) + strpos($base62,$num62[$i]);
+                 }
+                 $this->add_if_new('archive-date', date("Y-m-d", (int) $time/1000000));
+              }
               return;
           }
           if (stripos($this->get($param), 'archive') === FALSE) {
