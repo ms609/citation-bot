@@ -3590,7 +3590,7 @@ final class Template {
               // $this->set($param, $matches[1] . $matches[2]); // The url part is actually NOT binding, but other wikipedia bots check it
               if ($this->blank(['archive-date', 'archivedate'])) {
                  $base62='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                 $num62 = $matches[2];
+                 $num62 = str_split($matches[2]);
                  $time = 0;
                  for($i=0;$i<9;$i++) {
                     $time = (62 * $time) + strpos($base62,$num62[$i]);
