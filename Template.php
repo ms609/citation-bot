@@ -3589,7 +3589,7 @@ final class Template {
           if (preg_match('~^(https?://(?:www\.|)webcitation\.org/)([0-9a-zA-Z){9})(?:|\?url=)$~', $this->get($param), $matches)) {
               // $this->set($param, $matches[1] . $matches[2]); // The url part is actually NOT binding, but other wikipedia bots check it
               if ($this->blank(['archive-date', 'archivedate'])) {
-                 $base62='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                 $base62='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
                  $num62 = str_split($matches[2]);
                  $time = 0;
                  for($i=0;$i<9;$i++) {
