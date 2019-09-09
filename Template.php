@@ -3586,10 +3586,10 @@ final class Template {
               $this->forget($param); // Forget "save it now" archives.  They are rubbish
               return;
           }
-          if (preg_match('~^(https?://(?:www\.|)webcitation\.org/[^\?]+)\?url=~', $this->get($param), $matches)) {
-              $this->set($param, $matches[1]); // The url part is actually NOT binding or checked
-              return;
-          }
+    //      if (preg_match('~^(https?://(?:www\.|)webcitation\.org/[^\?]+)\?url=~', $this->get($param), $matches)) {
+    //          $this->set($param, $matches[1]); // The url part is actually NOT binding or checked
+    //          return;
+    //      }
           if (stripos($this->get($param), 'archive') === FALSE) {
             if ($this->get($param) == $this->get('url')) {
               $this->forget($param);  // The archive url is the real one
