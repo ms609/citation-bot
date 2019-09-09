@@ -3587,7 +3587,7 @@ final class Template {
               return;
           }
           if (preg_match('~^(https?://(?:www\.|)webcitation\.org/[^\?]+)\?url=~', $this->get($param), $matches)) {
-              $this->set($param, $matches[1]); // The url part is actually NOT binding or checked
+            //  $this->set($param, $matches[1]); // The url part is actually NOT binding or checked
               return;
           }
           if (stripos($this->get($param), 'archive') === FALSE) {
