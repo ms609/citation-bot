@@ -58,7 +58,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
           ' n.paradoxa ', ' NASA Tech Briefs ', ' Notes of the AAS ', ' Ny Forskning i Grammatik ',
           ' Nyt Tidsskrift ', ' Ocean Science Journal : Osj ',
-          ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PhytoKeys ', ' Pis\'ma V Astronomicheskii ', ' PLOS Biology ', 
+          ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PhytoKeys ', ' Pis\'ma v Astronomicheskii ', ' PLOS Biology ', 
           ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PLOS ONE ',' PLOS ONE ',' PLOS ONE ', ' PNAS ', ' Published in: ', ' RNA ', ' S.A.P.I.EN.S ',
           ' Scr. ', ' Srp Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', ' Série A ', 
