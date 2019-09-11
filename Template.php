@@ -659,7 +659,7 @@ final class Template {
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name) || in_array($this->get($param_name),
-                                           ['Archived copy', "{title}", 'ScienceDirect', "Google Books"])
+                                           ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", "none"])
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
           if (str_equivalent($this->get('encyclopedia') . $this->get('encyclopaedia'), sanitize_string($value))) {
             return FALSE;
@@ -1848,7 +1848,8 @@ final class Template {
         }
       }
       
-      if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) ) { // Verify the title matches.  We get some strange mis-matches {
+      if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) 
+         && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", "none"])) { // Verify the title matches.  We get some strange mis-matches {
         report_info("Similar title not found in database");
         return FALSE;
       }
