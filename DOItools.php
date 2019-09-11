@@ -291,35 +291,40 @@ function titles_are_similar($title1, $title2) {
 }
 
 function titles_are_dissimilar($inTitle, $dbTitle) {
-        $dbTitle = html_entity_decode($dbTitle); // ONLY to new data
-        $dbTitle = mb_convert_encoding($dbTitle, "HTML-ENTITIES", 'UTF-8'); // ONLY to new data
-        // Trailing "a review"
-        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
-        $dbTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($dbTitle));
-        // Strip trailing Online
-        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
-        $dbTitle = preg_replace('~ Online$~iu', '', $dbTitle);
-        // Strip trailing (Third Edition)
-        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
-        $dbTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $dbTitle);
-        // Strip leading the
-        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
-        $dbTitle = preg_replace('~^The ~iu', '', $dbTitle);
-        // Reduce punctuation
-        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–", "â€™", "â€”", "â€“", "&#8208;"), "", mb_strtolower((string) $inTitle)));
-        $dbTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–", "â€™", "â€”", "â€“", "&#8208;"), "", mb_strtolower((string) $dbTitle)));
-        // Drop normal quotes
-        $inTitle = str_replace(array("'", '"'), "", $inTitle);
-        $dbTitle = str_replace(array("'", '"'), "", $dbTitle);
-        // Strip trailing periods
-        $inTitle = trim(rtrim($inTitle, '.'));
-        $dbTitle = trim(rtrim($dbTitle, '.'));
-        // greek  TODO expand list
-        $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $inTitle);
-        $dbTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $dbTitle);
+        // always decode new data
+        $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
+        // old data both decoded and not
+        $inTitle2 = titles_simple($inTitle);
+        $inTitle = titles_simple(mb_convert_encoding(html_entity_decode($inTitle), "HTML-ENTITIES", 'UTF-8'));
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
               : levenshtein($inTitle, $dbTitle) > 3
+        )
+        &&  
+        ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
+              ? (strlen($inTitle2) != strlen($dbTitle)
+                || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
+              : levenshtein($inTitle2, $dbTitle) > 3
         );
+}
+
+function titles_simple($inTitle) {
+        // Trailing "a review"
+        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        // Strip trailing Online
+        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
+        // Strip trailing (Third Edition)
+        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        // Strip leading the
+        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
+        // Reduce punctuation
+        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "-", "—", "–", "â€™", "â€”", "â€“", "&#8208;"), "", mb_strtolower((string) $inTitle)));
+        // Drop normal quotes
+        $inTitle = str_replace(array("'", '"'), "", $inTitle);
+        // Strip trailing periods
+        $inTitle = trim(rtrim($inTitle, '.'));
+        // greek  TODO expand list
+        $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $inTitle);
+        return $inTitle;
 }
