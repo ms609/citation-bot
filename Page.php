@@ -434,7 +434,12 @@ class Page {
         $objects[] = $obj;
       }
      }
-     if ($preg_ok === FALSE) {
+     if (isset($class::REGEXP_HAS_ONE)) {
+       $regexp = $class::REGEXP_HAS_ONE;
+     } else {
+       $regexp = '~.~';
+     }
+     if ($preg_ok === FALSE && preg_match($regexp, $text) !== 0) { // Sometimes there is nothing left
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
         global $page_error;
         $page_error = TRUE;
