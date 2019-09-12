@@ -438,6 +438,8 @@ class Page {
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
         global $page_error;
         $page_error = TRUE;
+        global $is_a_man_with_no_plan;
+        if ($is_a_man_with_no_plan) echo "<p>\n\n" . $text . "\n\n<p>";
         report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
      }
     }
