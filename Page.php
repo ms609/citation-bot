@@ -424,8 +424,8 @@ class Page {
       }
       if ($preg_ok === FALSE) break; // No point trying more complex Regex yet
     }
-    if ($preg_ok === FALSE) { // Something went wrong.  Try again (three times total!!!), starting over from the simplest regex.  This assumes that at least one of the final regex's actaully worked
-     foreach ($regexp_in as array_merge($regexp, $regexp)) {
+    if ($preg_ok === FALSE) { // Something went wrong.  Try again (five times total!!!), starting over from the simplest regex.  This assumes that at least one of the final regex's actaully worked
+     foreach ($regexp_in as array_merge($regexp, $regexp, $regexp, $regexp)) {
       $preg_ok = TRUE;
       while ($preg_ok = preg_match($regexp, $text, $match)) {
         $obj = new $class();
