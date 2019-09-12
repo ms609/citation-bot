@@ -422,7 +422,20 @@ class Page {
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
         $objects[] = $obj;
       }
-      if ($preg_ok === FALSE) {
+      if ($preg_ok === FALSE) break; // No point trying more complex Regex yet
+    }
+    if ($preg_ok === FALSE) { // Something went wrong.  Try again (three times total!!!), starting over from the simplest regex.  This assumes that at least one of the final regex's actaully worked
+     foreach ($regexp_in as array_merge($regexp, $regexp)) {
+      $preg_ok = TRUE;
+      while ($preg_ok = preg_match($regexp, $text, $match)) {
+        $obj = new $class();
+        $obj->parse_text($match[0]);
+        $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
+        $text = implode(sprintf($placeholder_text, $i++), $exploded);
+        $objects[] = $obj;
+      }
+     }
+     if ($preg_ok === FALSE) {
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
         global $page_error;
         $page_error = TRUE;
