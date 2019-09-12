@@ -422,10 +422,9 @@ class Page {
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
         $objects[] = $obj;
       }
-      if ($preg_ok === FALSE) break; // No point trying more complex Regex yet
     }
     if ($preg_ok === FALSE) { // Something went wrong.  Try again (five times total!!!), starting over from the simplest regex.  This assumes that at least one of the final regex's actaully worked
-     foreach ($regexp_in as array_merge($regexp, $regexp, $regexp, $regexp)) {
+     foreach (array_merge($regexp, $regexp, $regexp, $regexp) as $regexp) {
       $preg_ok = TRUE;
       while ($preg_ok = preg_match($regexp, $text, $match)) {
         $obj = new $class();
@@ -440,7 +439,7 @@ class Page {
         global $page_error;
         $page_error = TRUE;
         report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
-      }
+     }
     }
     $this->text = $text;
     return $objects;
