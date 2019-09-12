@@ -435,11 +435,18 @@ class Page {
       }
      }
      if (isset($class::REGEXP_HAS_ONE)) {
-       $regexp = $class::REGEXP_HAS_ONE;
+       $ret = preg_match($class::REGEXP_HAS_ONE, $text);
+       if ($ret === FALSE) {
+         $could_be_bad = TRUE;  // Even simple RegEx died
+       } elseif ($ret === 1) {
+         $could_be_bad = TRUE;  // Looks like there is one
+       } elseif ($ret === 0) {
+         $could_be_bad = FALSE; // There is not one
+       }
      } else {
-       $regexp = '~.~';
+       $could_be_bad =TRUE;
      }
-     if ($preg_ok === FALSE && preg_match($regexp, $text) !== 0) { // Sometimes there is nothing left
+     if ($preg_ok === FALSE && $could_be_bad) {
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
         global $page_error;
         $page_error = TRUE;
