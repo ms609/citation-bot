@@ -434,7 +434,7 @@ class Page {
         $objects[] = $obj;
       }
      }
-     if (isset($class::REGEXP_HAS_ONE)) {
+     if ($class::REGEXP_HAS_ONE !== NULL) {
        $ret = preg_match($class::REGEXP_HAS_ONE, $text);
        if ($ret === FALSE) {
          $could_be_bad = TRUE;  // Even simple RegEx died
