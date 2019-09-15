@@ -869,8 +869,32 @@ final class Template {
             return TRUE;
           }
         }
+        // Forget any others that are blank
+        foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
+          if ($this->blank($alias)) {
+             $this->forget($alias);
+          }
+        }
+        // Swich any that are set to doi-broken-date
+        if ($this->blank('doi-broken-date')) {
+          foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
+            $this->rename($alias, 'doi-broken-date');
+          }
+        } else {
+          foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
+            $this->forget($alias);
+          }
+        }
         if ($this->blank(DOI_BROKEN_ALIASES)) {
           return $this->add($param_name, $value);
+        }
+        if (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) { // Might have <!-- Not broken --> to block bot
+           return FALSE;
+        }
+        $existing = strtotime($this->get('doi-broken-date'));
+        $the_new  = strtotime($value);
+        if (($existing === FALSE) || ($existing + 2592000 < $the_new) || (2592000 + $the_new < $existing)) { // A month difference
+           return $this->add($param_name, $value);
         }
         return FALSE;
       
@@ -4147,17 +4171,7 @@ final class Template {
       return FALSE;
     } elseif ($doi_status === FALSE) {
       report_inline("It's not...");
-      foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
-        if (mb_stripos($this->get($alias), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) { // Might have <!-- Not broken --> to block bot
-           $this->forget($alias);
-        }
-      }
-      if ($this->blank('doi-broken-date')) {
-         $this->add_if_new('doi-broken-date', date("Y-m-d"));
-      } elseif (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE &&
-                $this->blank(array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']))) {
-         $this->set('doi-broken-date', date("Y-m-d")); // Update date to today
-      } // Otherwise there is a comment left somewhere
+      $this->add_if_new('doi-broken-date', date("Y-m-d"));
       return FALSE;
     } else {
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
