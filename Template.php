@@ -4107,7 +4107,7 @@ final class Template {
         $alias = $p->param;
         if ($this->blank($alias)) {
           if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
-            if ($this->blank(AUTHOR_PARAMETERS[$matches[1]]) {
+            if ($this->blank(AUTHOR_PARAMETERS[$matches[1]])) {
               $this->forget($alias);
             }
           }
