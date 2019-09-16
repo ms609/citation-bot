@@ -4102,6 +4102,18 @@ final class Template {
         }
       }
     }
+    if ($this->param) { // Forget author-link and such that have no such author
+      foreach ($this->param as $p) {
+        $alias = $p->param;
+        if ($this->blank($alias)) {
+          if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
+            if ($this->blank(AUTHOR_PARAMETERS[$matches[1]]) {
+              $this->forget($alias);
+            }
+          }
+        }
+      }
+    }
   }
   
   public function verify_doi() {
