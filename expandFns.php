@@ -496,7 +496,11 @@ function check_doi_for_jstor($doi, &$template) {
   curl_close($ch);
   if ($httpCode == 200 &&
       stripos($ris, $doi) !== FALSE &&
-      strpos($ris, 'Provider') !== FALSE) {
+      strpos($ris, 'Provider') !== FALSE &&
+      stripos($dat, 'No RIS data found for') === FALSE &&
+      stripos($dat, 'Block Reference') === FALSE &&
+      stripos($dat, 'A problem occurred trying to deliver RIS data') === FALSE &&
+      substr_count($dat, '-') > 3) { // It is actually a working JSTOR
       $template->add_if_new('jstor', $doi);
   } elseif ($pos = strpos($doi, '?')) {
       $doi = substr($doi, 0, $pos);
