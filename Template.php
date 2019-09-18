@@ -1816,9 +1816,12 @@ final class Template {
     }
               echo "point 24\n";
     if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+                    echo "point 24.1\n";
       $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
+                    echo "point 24.2\n";
       if ($result->numFound == 0) return FALSE;
       $record = $result->docs[0];
+                    echo "point 24.3\n";
       if (titles_are_dissimilar($this->get('title'), $record->title[0])) {
         report_info("Similar title not found in database");
         return FALSE;
@@ -1833,7 +1836,7 @@ final class Template {
       }
                 echo "point 26\n";
     }
-    
+                  echo "point 26.1\n";
     if ($result->numFound != 1 && $this->has('journal')) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
