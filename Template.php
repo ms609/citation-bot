@@ -3658,7 +3658,7 @@ final class Template {
                  $this->forget($param);
                  return;
              }
-             if (get_identifiers_from_url($this->get($param))) {
+             if ($this->get_identifiers_from_url($this->get($param))) {
                if (!extract_doi($this->get($param))[1]) { // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
                  $this->forget($param);
                  return;
