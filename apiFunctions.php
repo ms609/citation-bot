@@ -225,6 +225,7 @@ function adsabs_api($ids, $templates, $identifier) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
     $return = curl_exec($ch);
     if ($return === FALSE) {
+      echo "ERROR 1\n";
       $error = curl_error($ch);
       $errno = curl_errno($ch);
       curl_close($ch);
@@ -233,25 +234,31 @@ function adsabs_api($ids, $templates, $identifier) {
     $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
     curl_close($ch);
+          echo "point 2\n";
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
+          echo "point 3\n";
     $decoded = @json_decode($body);
+          echo "point4\n";
     if (is_object($decoded) && isset($decoded->error)) {
       throw new Exception(
       ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
       . "\n - URL was:  " . $adsabs_url,
       (isset($decoded->error->code) ? $decoded->error->code : 999));
     }
+              echo "point 5\n";
     if ($http_response != 200) {
       throw new Exception(strtok($header, "\n"), $http_response);
     }
-    
+              echo "point 6\n";
     if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
+                echo "point 7\n";
       if ($rate_limit[2][2]) {
         report_info("AdsAbs 'big-query' request " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
              ":\n       ");
              // "; reset at " . date('r', $rate_limit[2][2]);
       } else {
+                  echo "point 8\n";
         report_warning("AdsAbs daily search limit exceeded. Big queries stopped until " . date('r', $rate_limit[2][2]) . "\n");
         sleep(1);
         foreach ($templates as $template) {
@@ -265,14 +272,16 @@ function adsabs_api($ids, $templates, $identifier) {
     if (!is_object($decoded)) {
       throw new Exception("Could not decode API response:\n" . $body, 5000);
     }
-    
+              echo "point 9\n";
     if (isset($decoded->response)) {
       $response = $decoded->response;
     } else {
       if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // "". to force string
       throw new Exception("Could not decode AdsAbs response", 5000);
     }
+              echo "point 10\n";
   } catch (Exception $e) {
+              echo "point 11\n";
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
       report_warning(sprintf("API Error in query_adsabs: %s",
                     $e->getMessage()));
@@ -286,13 +295,8 @@ function adsabs_api($ids, $templates, $identifier) {
       report_warning(sprintf("Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
     }
+              echo "point 12\n";
     @curl_close($ch); // Some code paths have it closed, others do not
-    if (!@$ADSABS_GIVE_UP) {
-      foreach ($templates as $template) {
-        sleep(1);
-        if ($template->has('bibcode')) $template->expand_by_adsabs();
-      }
-    }
     return TRUE;
   }
   
