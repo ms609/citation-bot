@@ -4110,6 +4110,7 @@ final class Template {
   }
   
   public function verify_doi() {
+    global $is_a_man_with_no_plan;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     if ($this->doi_valid) return TRUE;
@@ -4124,6 +4125,7 @@ final class Template {
         // Or is this extra punctuation copied in?
         $trial[] = substr($doi, 0, -1);
     }
+    if ($is_a_man_with_no_plan) echo "0\n";
     if (substr($doi, 0, 3) != "10.") {
       $trial[] = $doi;
     }
@@ -4131,14 +4133,18 @@ final class Template {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
+    if ($is_a_man_with_no_plan) echo "1\n";
     $replacements = array (      "&lt;" => "<",      "&gt;" => ">",    );
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
+    if ($is_a_man_with_no_plan) echo "2\n";
     if (isset($trial) && !in_array($doi, $trial) && preg_match("~^10\.\d{4,6}/.~", trim($doi))) {
       array_unshift($trial, $doi); // doi:10.1126/science.10.1126/SCIENCE.291.5501.24 is valid, not the subparts
     }
+    if ($is_a_man_with_no_plan) echo "3\n";
     if (isset($trial)) {
+     if ($is_a_man_with_no_plan) print_r($trial);
      foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
@@ -4149,11 +4155,12 @@ final class Template {
         if ($doi == $try) {
            report_inline('DOI ok.');
         } else {
-           report_info("Modified DOI:  " . echoable($doi) . " is operational...");
+           report_info("Modified DOI:  " . echoable($try) . " is operational...");
         }
         return TRUE;
       }
      }
+     if ($is_a_man_with_no_plan) echo "4\n";
      foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
@@ -4164,19 +4171,24 @@ final class Template {
         if ($doi == $try) {
            report_inline('DOI ok.');
         } else {
-           report_info("Modified DOI:  " . echoable($doi) . " is operational...");
+           report_info("Modified DOI:  " . echoable($try) . " is operational...");
         }
         return TRUE;
       }
      }
     }
+    if ($is_a_man_with_no_plan) echo "5\n";
     $doi_status = doi_works($doi);
+    if ($is_a_man_with_no_plan) echo "6\n";
     if ($doi_status === NULL) {
       report_warning("DOI status unknown.  doi.org failed to respond to: " . echoable($doi));
       return FALSE;
     } elseif ($doi_status === FALSE) {
+      if ($is_a_man_with_no_plan) echo "7\n";
       report_inline("It's not...");
+      if ($is_a_man_with_no_plan) echo "8\n";
       $this->add_if_new('doi-broken-date', date("Y-m-d"));
+      if ($is_a_man_with_no_plan) echo "9\n";
       return FALSE;
     } else {
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
