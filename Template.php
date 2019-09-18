@@ -3119,7 +3119,8 @@ final class Template {
       }
       
       // Remove final semi-colon from a few items
-      if (in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p'])
+      if ((in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume']) ||
+           in_array($param, FLATTENED_AUTHOR_PARAMETERS))
           && strpos($this->get($param), '&') === FALSE) {
         $this->set($param, preg_replace('~;$~u', '', $this->get($param)));
       }
