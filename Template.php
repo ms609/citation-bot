@@ -3627,7 +3627,42 @@ final class Template {
           if (stripos($this->get($param), 'archive') === FALSE) {
             if ($this->get($param) == $this->get('url')) {
               $this->forget($param);  // The archive url is the real one
+              return;
             }
+          }
+          // Clean up a bunch on non-archive URLs
+          if (stripos($this->get($param), 'archive') === FALSE &&
+              stripos($this->get($param), 'webcitation') === FALSE &&
+              stripos($this->get($param), 'perma.') === FALSE &&
+              stripos($this->get($param), 'wayback') === FALSE &&
+              stripos($this->get($param), 'webharvest') === FALSE &&
+              stripos($this->get($param), 'freezepage') === FALSE &&
+              stripos($this->get($param), 'petabox.bibalex.org') === FALSE) {
+             if (get_identifiers_from_url($this->get($param)) {
+               if (!extract_doi($this->get($param))[1]) { // If it gives a doi, then might want to keep it anyway since many archives have doi
+                 $this->forget($param);
+                 return;
+               }
+             }
+             if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
+                 if (preg_match('~^\(PDF\)(.+)$~i', trim($this->get('title')), $match)) {
+                   $this->set('title', trim($match[1]));
+                 }
+             } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/(?:documents/|)([0-9]+)/*~i", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.academia.edu/' . $matches[1]);
+             } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
+                 $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
+             } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
+                 $this->set($param, $this->simplify_google_search($this->get($param)));
+             } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1]);
+             } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
+                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
+                 || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
+                 $this->forget($param);
+                 return;
+             }
           }
           return;
  
