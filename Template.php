@@ -2025,7 +2025,12 @@ final class Template {
       $decoded = @json_decode($body);
       
       if (is_object($decoded) && isset($decoded->error)) {
-        if (is_object($decoded) && isset($decoded->error)) {
+        if (isset($decoded->error->trace)) {
+          throw new Exception(
+          "ADSABS website returned a stack trace"
+          . "\n - URL was:  " . $adsabs_url,
+          (isset($decoded->error->code) ? $decoded->error->code : 999));
+        } else {
           throw new Exception(
           ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
           . "\n - URL was:  " . $adsabs_url,
