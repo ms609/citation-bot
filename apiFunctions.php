@@ -287,12 +287,6 @@ function adsabs_api($ids, $templates, $identifier) {
                     $e->getCode(), $e->getMessage()));
     }
     @curl_close($ch); // Some code paths have it closed, others do not
-    if (!@$ADSABS_GIVE_UP) {
-      foreach ($templates as $template) {
-        sleep(1);
-        if ($template->has('bibcode')) $template->expand_by_adsabs();
-      }
-    }
     return TRUE;
   }
   
