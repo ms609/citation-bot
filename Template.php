@@ -2047,8 +2047,12 @@ final class Template {
           echo "XXX 12\n";
       $body = substr($return, $header_length);
           echo "XXX 13\n";
+      echo "\n" . $body . "\n\n";
+                echo "XXX 13.1\n";
       $decoded = @json_decode($body);
           echo "XXX 14\n";
+            print_r($decoded);
+               echo "XXX 14.1\n"; 
       
       if (is_object($decoded) && isset($decoded->error)) {
         if (is_object($decoded) && isset($decoded->error)) {
