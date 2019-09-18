@@ -241,10 +241,17 @@ function adsabs_api($ids, $templates, $identifier) {
     $decoded = @json_decode($body);
           echo "point4\n";
     if (is_object($decoded) && isset($decoded->error)) {
-      throw new Exception(
-      ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
-      . "\n - URL was:  " . $adsabs_url,
-      (isset($decoded->error->code) ? $decoded->error->code : 999));
+      if (isset($decoded->error->trace)) {
+        throw new Exception(
+        "ADSABS website returned a stack trace"
+        . "\n - URL was:  " . $adsabs_url,
+        (isset($decoded->error->code) ? $decoded->error->code : 999));
+      } else {
+         throw new Exception(
+        ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
+        . "\n - URL was:  " . $adsabs_url,
+        (isset($decoded->error->code) ? $decoded->error->code : 999));
+      }
     }
               echo "point 5\n";
     if ($http_response != 200) {
