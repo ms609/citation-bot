@@ -247,6 +247,7 @@ function adsabs_api($ids, $templates, $identifier) {
         ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
         . "\n - URL was:  " . $adsabs_url,
         (isset($decoded->error->code) ? $decoded->error->code : 999));
+      }
     }
     if ($http_response != 200) {
       throw new Exception(strtok($header, "\n"), $http_response);
