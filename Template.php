@@ -3639,12 +3639,6 @@ final class Template {
               stripos($this->get($param), 'webharvest') === FALSE &&
               stripos($this->get($param), 'freezepage') === FALSE &&
               stripos($this->get($param), 'petabox.bibalex.org') === FALSE) {
-             if (get_identifiers_from_url($this->get($param)) {
-               if (!extract_doi($this->get($param))[1]) { // If it gives a doi, then might want to keep it anyway since many archives have doi
-                 $this->forget($param);
-                 return;
-               }
-             }
              if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
                  if (preg_match('~^\(PDF\)(.+)$~i', trim($this->get('title')), $match)) {
@@ -3663,6 +3657,12 @@ final class Template {
                  || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
                  $this->forget($param);
                  return;
+             }
+             if (get_identifiers_from_url($this->get($param))) {
+               if (!extract_doi($this->get($param))[1]) { // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
+                 $this->forget($param);
+                 return;
+               }
              }
           }
           return;
