@@ -856,7 +856,7 @@ final class Template {
         
       case 'doi-broken-date':
         if ($this->blank('jstor')) {
-          check_doi_for_jstor($template->get('doi'), $this);
+          check_doi_for_jstor($this->get('doi'), $this);
           if ($this->has('jstor')) {
             $this->quietly_forget('doi');
             return TRUE;
