@@ -1762,6 +1762,7 @@ final class Template {
   public function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
+              echo "point 21\n";
     if (!$SLOW_MODE && $this->lacks('bibcode')) {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
@@ -1776,7 +1777,7 @@ final class Template {
       report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode')));
       return FALSE;
     }
-  
+            echo "point 21\n";
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get("bibcode") . '"'));
@@ -1800,20 +1801,20 @@ final class Template {
         $result = $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
       }
     }
- 
+           echo "point 22\n";
     if ($result->numFound > 1) {
       # TODO: Work out what behaviour is desired in this situation, and implement it.
       report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
       . "... I don't know which to use. Trying other citation data.");
     }
-    
+              echo "point 23\n";
     if ($result->numFound == 0) {
       // Avoid blowing through our quota
       if (!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) return FALSE;
       if ($this->wikiname() == 'cite book' && $this->has('isbn')) return FALSE;
       if ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) return FALSE;
     }
-    
+              echo "point 24\n";
     if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
       $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
       if ($result->numFound == 0) return FALSE;
@@ -1822,6 +1823,7 @@ final class Template {
         report_info("Similar title not found in database");
         return FALSE;
       }
+                echo "point 25\n";
       // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
       if (!$this->blank(['doi','pmc','pmid','eprint','arxiv','url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']) &&
           $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
@@ -1829,11 +1831,13 @@ final class Template {
           report_info("Exact title match not found in database"); // Probably not a journal, trust zotero more
           return FALSE;
       }
+                echo "point 26\n";
     }
     
     if ($result->numFound != 1 && $this->has('journal')) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
+                echo "point 27\n";
       $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
         . ($this->year() ? ("&year:" . urlencode($this->year())) : '')
         . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
@@ -1842,6 +1846,7 @@ final class Template {
       );
       if ($result->numFound == 0) return FALSE;
       if (!isset($result->docs[0]->pub)) return FALSE;
+                echo "point 28\n";
       $journal_string = explode(",", (string) $result->docs[0]->pub);
       $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
       if (strlen($journal_string[0]) 
@@ -1855,6 +1860,7 @@ final class Template {
         return FALSE;
       }
     }
+              echo "point 29\n";
     if ($result->numFound == 1) {
       $record = $result->docs[0];
       if (isset($record->year) && $this->year()) {
@@ -1865,7 +1871,7 @@ final class Template {
           return FALSE;  // require exact match if we have doi
         }
       }
-      
+                echo "point 30\n";
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) 
          && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", "none"])) { // Verify the title matches.  We get some strange mis-matches {
         report_info("Similar title not found in database");
@@ -1876,7 +1882,7 @@ final class Template {
          $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
          return $this->expand_book_adsabs();
       }
-      
+                echo "point 31\n";
       if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
         $book_count = 0;
         if($this->has('publisher')) $book_count += 1;
@@ -1892,7 +1898,7 @@ final class Template {
           return FALSE;
         }
       }
-      
+                echo "point 32\n";
       if ($this->blank('bibcode')) {
         $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
       } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'citation_bot_placeholder') === FALSE) {
@@ -1906,6 +1912,7 @@ final class Template {
         $this->add_if_new('author' . ++$i, $author);
        }
       }
+                echo "point 33\n";
       if (isset($record->pub)) {
         $journal_string = explode(",", (string) $record->pub);
         $journal_start = mb_strtolower($journal_string[0]);
@@ -1922,6 +1929,7 @@ final class Template {
           $this->add_if_new('journal', $journal_string[0]);
         }          
       }
+                echo "point 34\n";
       if (isset($record->page)) {
          if ((stripos(implode('–', $record->page), 'arxiv') !== FALSE) || (stripos(implode('–', $record->page), '/') !== FALSE)) {  // Bad data
           unset($record->page);
@@ -1954,12 +1962,14 @@ final class Template {
       }
       return TRUE;
     } else {
+      
       report_inline('no record retrieved.');
       return FALSE;
     }
   }
   
   protected function expand_book_adsabs() {
+              echo "point 40\n";
     $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
     if ($result->numFound == 1) {
       $record = $result->docs[0];
