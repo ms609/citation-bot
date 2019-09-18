@@ -1997,24 +1997,30 @@ final class Template {
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs($options) {
     global $ADSABS_GIVE_UP;
+    echo "XXX 1\n";
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     // if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false')) return (object) array('numFound' => 0);
     if (@$ADSABS_GIVE_UP) return (object) array('numFound' => 0);
+        echo "XXX 2\n";
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
       return (object) array('numFound' => 0);
     }
-    
+        echo "XXX 3\n";
     try {
+          echo "XXX 4\n";
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
+          echo "XXX 5\n";
       $adsabs_url = "https://" . (getenv('TRAVIS') ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
+          echo "XXX 6\n";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
+          echo "XXX 7\n";
       $return = curl_exec($ch);
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
         sleep(4);
@@ -2024,18 +2030,25 @@ final class Template {
            $return = curl_exec($ch);
         }
       }
+          echo "XXX 8\n";
       if ($return === FALSE) {
         $exception = curl_error($ch);
         $number = curl_errno($ch);
         curl_close($ch);
+            echo "XXX 9\n";
         throw new Exception($exception, $number);
       }
+          echo "XXX 10\n";
       $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
       curl_close($ch);
+          echo "XXX 11\n";
       $header = substr($return, 0, $header_length);
+          echo "XXX 12\n";
       $body = substr($return, $header_length);
+          echo "XXX 13\n";
       $decoded = @json_decode($body);
+          echo "XXX 14\n";
       
       if (is_object($decoded) && isset($decoded->error)) {
         if (is_object($decoded) && isset($decoded->error)) {
@@ -2045,34 +2058,40 @@ final class Template {
           (isset($decoded->error->code) ? $decoded->error->code : 999));
         }
       }
+          echo "XXX 15\n";
       if ($http_response != 200) {
         throw new Exception(strtok($header, "\n"), $http_response);
       }
-      
+          echo "XXX 16\n";
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
+            echo "XXX 17\n";
         if ($rate_limit[2][2]) {
           report_info("AdsAbs search " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
                ":\n       " . str_replace("&", "\n       ", urldecode($options)));
                // "; reset at " . date('r', $rate_limit[2][2]);
         } else {
+              echo "XXX 18\n";
           report_warning("AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n");
           return (object) array('numFound' => 0);
         }
       } else {
+            echo "XXX 19\n";
         throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);
       }
       if (!is_object($decoded)) {
         throw new Exception("Could not decode API response:\n" . $body, 5000);
       }
-      
+          echo "XXX 20\n";
       if (isset($decoded->response)) {
         $response = $decoded->response;
       } else {
         if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // "". to force string
         throw new Exception("Could not decode AdsAbs response", 5000);
       }
+        echo "XXX 21\n";
       return $response;
     } catch (Exception $e) {
+        echo "XXX 22\n";
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         report_warning(sprintf("API Error in query_adsabs: %s",
                       $e->getMessage()));
@@ -2086,8 +2105,10 @@ final class Template {
         report_warning(sprintf("Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
       }
+        echo "XXX 23\n";
       return (object) array('numFound' => 0);
     }
+      echo "XXX 24\n";
   }
   
   public function expand_by_RIS(&$dat, $add_url) { // Pass by pointer to wipe this data when called from use_unnamed_params()
