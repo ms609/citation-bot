@@ -3396,18 +3396,22 @@ final class Template {
             }
           } else {
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
-              // $periodical = $matches[1];
-              // if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical);
-              // $periodical  = '[[' . title_capitalization($periodical, TRUE)) . ']]';
-              // this->set($param, $periodical);
+              $periodical = $matches[1];
+              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') {
+                $periodical = ucwords($periodical);
+                $periodical  = '[[' . title_capitalization($periodical, TRUE)) . ']]';
+                this->set($param, $periodical);
+              }
             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
               $linked_text = $matches[1];
               $human_text  = $matches[2];
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
                 $human_text = $matches[1];
               }
-              // if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ') $linked_text = ucwords($linked_text);
-              // $linked_text = title_capitalization($linked_text, TRUE));
+              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ') {
+                $linked_text = ucwords($linked_text);
+                $linked_text = title_capitalization($linked_text, TRUE));
+              }
               // We assume that human text is some kind of abreviations that we really don't wan to mess with
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
