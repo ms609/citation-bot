@@ -3399,7 +3399,7 @@ final class Template {
               $periodical = $matches[1];
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') {
                 $periodical  = '[[' . title_capitalization(ucwords($periodical), TRUE) . ']]';
-                this->set($param, $periodical);
+                $this->set($param, $periodical);
               }
             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
               $linked_text = $matches[1];
