@@ -70,7 +70,7 @@ final class Template {
     if ($trim_name === 'Citepaper') $this->name = $spacing[1] . 'Cite paper' . $spacing[2];
     if ($trim_name === 'citation journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
     if ($trim_name === 'Citation journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-    
+   
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          global $page_error;
@@ -3397,7 +3397,8 @@ final class Template {
           } else {
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
               $periodical = $matches[1];
-              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') {
+              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
+                  str_replace(['(', ')'], '', $periodical) == $periodical) {
                 $periodical  = '[[' . title_capitalization(ucwords($periodical), TRUE) . ']]';
                 $this->set($param, $periodical);
               }
@@ -3407,7 +3408,8 @@ final class Template {
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
                 $human_text = $matches[1];
               }
-              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ') {
+              if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ' &&
+                str_replace(['(', ')'], '', $linked_text ) == $linked_text) {
                 $linked_text = title_capitalization(ucwords($linked_text), TRUE);
               }
               // We assume that human text is some kind of abreviations that we really don't wan to mess with
