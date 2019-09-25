@@ -1113,6 +1113,13 @@ final class Template {
         $this->set($url_type, $url); // Save it
       }
     }
+    // Abstract only websites
+    if (preg_match('~orbit.dtu.dk/en/publications~', $url)) { // This file path only
+       if (is_null($url_sent) && !$this->blank(['doi', 'pmid', 'pmc'])) {
+         $this->forget($url_type); // Remove it
+       }
+       return FALSE;
+    }
     // IEEE
     if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
@@ -2278,6 +2285,7 @@ final class Template {
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
         if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return TRUE;
+        if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return TRUE; // Abstract only
         // Check if best location is already linked -- avoid double links
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~", $oa_url, $match)) {
