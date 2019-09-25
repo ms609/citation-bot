@@ -230,6 +230,14 @@ function title_capitalization($in, $caps_after_punctuation) {
     function($matches) {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
     ' ' . $new_case
   );
+  
+  /** Italian dell'xxx words **/
+  $new_case = preg_replace_callback(
+    "~(\s)(Dell)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
+    function($matches) {return $matches[1] . 'dell' . $matches[3];},
+    $new_case
+  );
+  
   $new_case = mb_ucfirst(trim($new_case));
 
   // Solitary 'a' should be lowercase
