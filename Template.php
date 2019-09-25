@@ -3875,6 +3875,13 @@ final class Template {
             // case 'cite web': $work_becomes = 'website'; break;  this change should correct, but way too much crap gets put in work that does not belong there.  Secondly this make no change to the what the user sees
             default: $work_becomes = 'work';
           }
+          if ($this->has('url') && str_replace(ENCYCLOPEDIA_WEB, '', $this->get('url')) != $this->get('url')) {
+            $work_becomes = 'encyclopedia';
+          }
+          if ($this->has('work') && str_ireplace(['encyclopedia', 'encyclopædia', 'encyclopaedia'], '', $this->get('work')) != $this->get('work')) {
+            $work_becomes = 'encyclopedia';
+          }
+
           if ($this->get($param) !== NULL && $this->blank($work_becomes)) {
             $this->rename('work', $work_becomes);
           }
