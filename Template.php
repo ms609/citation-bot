@@ -978,7 +978,8 @@ final class Template {
 
       case 'type':
         if ($this->blank($param_name) &&
-            !in_array(strtolower($value), ['text', 'data set'])) {  
+            !in_array(strtolower($value), ['text', 'data set']) &&
+            strlen($value) === mb_strlen($value)) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
