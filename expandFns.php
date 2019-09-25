@@ -233,8 +233,8 @@ function title_capitalization($in, $caps_after_punctuation) {
   
   /** Italian dell'xxx words **/
   $new_case = preg_replace_callback(
-    "~\s(Dell)[\'\x{00B4}][a-zA-ZÀ-ÿ]{3}~u",
-    function($matches) {return 'dell';},
+    "~(\s)(Dell)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
+    function($matches) {return $matches[1] . 'dell' . $matches[3];},
     $new_case
   );
   
