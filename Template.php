@@ -568,6 +568,7 @@ final class Template {
         return FALSE;
         
       case 'periodical': case 'journal': case 'newspaper':
+        if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
         if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
