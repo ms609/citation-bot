@@ -327,5 +327,6 @@ function titles_simple($inTitle) {
         $inTitle = trim(rtrim($inTitle, '.'));
         // greek  TODO expand list
         $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $inTitle);
+        $inTitle = str_remove_irrelevant_bits($inTitle);
         return $inTitle;
 }
