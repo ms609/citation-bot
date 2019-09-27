@@ -485,6 +485,7 @@ function str_remove_irrelevant_bits($str) {
   return $str;
 }
 
+// See also titles_are_similar()
 function str_equivalent($str1, $str2) {
   return 0 === strcasecmp(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
 }
