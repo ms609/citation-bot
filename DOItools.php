@@ -286,6 +286,7 @@ function can_safely_modify_dashes($value) {
        && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
 }
 
+// See also str_equivalent()
 function titles_are_similar($title1, $title2) {
   return !titles_are_dissimilar($title1, $title2);
 }
