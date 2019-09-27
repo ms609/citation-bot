@@ -250,8 +250,13 @@ class WikipediaBot {
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
-          // We probably only want to visit pages in the main namespace.  Remove any talk: etc at the start of the page name.
-          $list[] = str_replace(array('_talk:', ' talk:'), ':', (string) $page->title); 
+          // We probably only want to visit pages in the main namespace
+          if (stripos($page->title, 'talk:') === FALSE &&
+              stripos($page->title, 'Template:') === FALSE &&
+              stripos($page->title, 'Special:') === FALSE &&
+              stripos($page->title, 'Wikipedia:') === FALSE) {
+            $list[] = $page->title;
+          }
         }
       } else {
         report_error('Error reading API for category ' . echoable($cat) . "\n\n");
