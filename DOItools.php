@@ -286,6 +286,7 @@ function can_safely_modify_dashes($value) {
        && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
 }
 
+// See also str_equivalent()
 function titles_are_similar($title1, $title2) {
   return !titles_are_dissimilar($title1, $title2);
 }
@@ -326,5 +327,6 @@ function titles_simple($inTitle) {
         $inTitle = trim(rtrim($inTitle, '.'));
         // greek  TODO expand list
         $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $inTitle);
+        $inTitle = str_remove_irrelevant_bits($inTitle);
         return $inTitle;
 }
