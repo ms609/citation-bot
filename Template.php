@@ -3202,6 +3202,13 @@ final class Template {
           }
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
             $this->rename('author', 'agency');
+            if (@$pmatch[2] == '1' || @$pmatch[2] == '') {
+              $this->forget('author-link');
+              $this->forget('authorlink');
+              $this->forget('author-link1');
+              $this->forget('authorlink1');
+              $this->forget('author1-link);
+            }
             return;
           }
           // Convert authorX to lastX, if firstX is set
