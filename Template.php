@@ -3207,7 +3207,7 @@ final class Template {
               $this->forget('authorlink');
               $this->forget('author-link1');
               $this->forget('authorlink1');
-              $this->forget('author1-link);
+              $this->forget('author1-link');
             }
             return;
           }
