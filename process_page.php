@@ -42,6 +42,12 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
       $edit_summary_end = $edit_summary_end . "| via #UCB_automated_tools ";
    } else if ($_REQUEST["edit"] == 'toolbar') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_toolbar ";
+   } else if ($_REQUEST["edit"] == 'webform') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_webform ";
+   } else if ($_REQUEST["edit"] == 'Headbomb') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_Headbomb ";
+   } else if ($_REQUEST["edit"] == 'Smith609') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_Smith609 ";
    }
 }
 if (!isset($ON)) $ON = isset($argv[2]);
@@ -85,7 +91,7 @@ foreach (explode('|', $pages) as $page_title) {
   ?>
   <form method="post" action="process_page.php">
     <input type="hidden" name="page" value="<?php echo $page_title;?>" />
-    <input type="hidden" name="edit" value="on" />
+    <input type="hidden" name="edit" value="webform" />
     <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>" />
     <input type="submit" value="Submit edits" />
   </form>
