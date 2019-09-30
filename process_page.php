@@ -39,9 +39,9 @@ $pages = (isset($argv) && isset($argv[1])) // argv set on command line
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
   $ON = TRUE;
    if ($_REQUEST["edit"] == 'automated_tools') {
-      $final_edit_overview = $final_edit_overview . " | via automated_tools";
+      $edit_summary_end = $edit_summary_end . "| via #UCB_automated_tools ";
    } else if ($_REQUEST["edit"] == 'toolbar') {
-      $final_edit_overview = $final_edit_overview . " | via toolbar";
+      $edit_summary_end = $edit_summary_end . "| via #UCB_toolbar ";
    }
 }
 if (!isset($ON)) $ON = isset($argv[2]);
