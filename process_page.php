@@ -44,6 +44,10 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
       $edit_summary_end = $edit_summary_end . "| via #UCB_toolbar ";
    } else if ($_REQUEST["edit"] == 'webform') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_webform ";
+   } else if ($_REQUEST["edit"] == 'Headbomb') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_Headbomb ";
+   } else if ($_REQUEST["edit"] == 'Smith609') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_Smith609 ";
    }
 }
 if (!isset($ON)) $ON = isset($argv[2]);
