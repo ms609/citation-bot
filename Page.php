@@ -27,7 +27,6 @@ class Page {
     global $is_a_man_with_no_plan;
     $is_a_man_with_no_plan = FALSE;
     if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
-    if ($is_a_man_with_no_plan) phpinfo();
 
     $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
