@@ -40,14 +40,16 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
   $ON = TRUE;
    if ($_REQUEST["edit"] == 'automated_tools') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_automated_tools ";
-   } else if ($_REQUEST["edit"] == 'toolbar') {
+   } elseif ($_REQUEST["edit"] == 'toolbar') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_toolbar ";
-   } else if ($_REQUEST["edit"] == 'webform') {
+   } elseif ($_REQUEST["edit"] == 'webform') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_webform ";
-   } else if ($_REQUEST["edit"] == 'Headbomb') {
+   } elseif ($_REQUEST["edit"] == 'Headbomb') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_Headbomb ";
-   } else if ($_REQUEST["edit"] == 'Smith609') {
+   } elseif ($_REQUEST["edit"] == 'Smith609') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_Smith609 ";
+   } else {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_Other";
    }
 }
 if (!isset($ON)) $ON = isset($argv[2]);
