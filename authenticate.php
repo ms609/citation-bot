@@ -1,4 +1,5 @@
 <?php
+@session_set_cookie_params(365*24*3600);
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT");
@@ -52,7 +53,6 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
-        setcookie(session_name(),session_id(),time()+(7*24*3600)); // one week 
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
         if (isset($_GET['return'])) {
            $return = $_GET['return'];
