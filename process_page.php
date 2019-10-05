@@ -1,4 +1,5 @@
 <?php
+require_once('set_session.php');
 @session_start();
 define("HTML_OUTPUT", !isset($argv));
 
