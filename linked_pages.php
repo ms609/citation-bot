@@ -1,4 +1,5 @@
 <?php
+require_once('set_session.php');
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT");
