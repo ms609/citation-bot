@@ -1,5 +1,4 @@
 <?php
-@session_set_cookie_params(365*24*3600);
 @session_start();
 define("HTML_OUTPUT", !isset($argv));
 
