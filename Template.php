@@ -1187,6 +1187,12 @@ final class Template {
           }
         }
     }
+    if ($this->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . $this->get('jstor') . '(?:|\.pdf)$~i', $url)) {
+       if (is_null($url_sent)) {
+         $this->forget($url_type);
+       }
+       return FALSE;
+    }
     
     if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
