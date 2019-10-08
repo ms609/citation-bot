@@ -1,5 +1,6 @@
 <?php
 @session_start();
+@setcookie(session_name(),session_id(),time()+(365*24*3600)); // set time length on web browser
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT");
 
@@ -53,7 +54,6 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
-        setcookie(session_name(),session_id(),time()+(365*24*3600)); // set time length on web browser
         if (isset($_GET['return'])) {
            $return = $_GET['return'];
            header("Location: $return");
