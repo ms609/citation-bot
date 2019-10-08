@@ -191,6 +191,8 @@ final class Template {
               query_pmid_api(array($this->get('pmid')), array($this));
             } elseif ($this->has('pmc')) {
               query_pmc_api(array($this->get('pmc')), array($this));
+            } elseif ($this->has('jstor')) {
+              expand_by_jstor($this);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal')) {
