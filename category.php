@@ -72,6 +72,11 @@ if ($category) {
     html_echo(' </pre></body></html>', "\n");
     exit(0);
   }
+  if (count($pages_in_category) > 10000) {
+    echo('Category is huge.  Cancelling run. Pick a smaller category.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    html_echo(' </pre></body></html>', "\n");
+    exit(0);
+  }
   shuffle($pages_in_category);
   $page = new Page();
   #$pages_in_category = array('User:DOI bot/Zandbox');
