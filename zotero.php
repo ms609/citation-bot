@@ -253,7 +253,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
     return FALSE;
-  } else if (!is_array($zotero_data)) {
+  } elseif (!is_array($zotero_data)) {
     if (is_object($zotero_data)) {
       $zotero_data = (array) $zotero_data;
     } else {
