@@ -66,9 +66,9 @@ function entrez_api($ids, $templates, $db) {
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
               case "pubmed": case "pmid":
-                  preg_match("~\d+~", (string) $subItem, $match);
-                  $this_template->add_if_new("pmid", $match[0], 'entrez');
-                  break; ### TODO PLACEHOLDER YOU ARE HERE CONTINUATION POINT ###
+                preg_match("~\d+~", (string) $subItem, $match);
+                $this_template->add_if_new("pmid", $match[0], 'entrez');
+                break;
               case "pmc":
                 preg_match("~\d+~", (string) $subItem, $match);
                 $this_template->add_if_new('pmc', $match[0], 'entrez');

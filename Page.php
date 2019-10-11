@@ -257,7 +257,7 @@ class Page {
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
       $this_template->get_doi_from_crossref();
-      $this_template->find_pmid();  // #TODO Could probably batch this
+      $this_template->find_pmid();
       if ($this_template->blank('bibcode')) {
         $no_arxiv = $this_template->blank('arxiv');
         $this_template->expand_by_adsabs(); // Try to get a bibcode

@@ -525,7 +525,6 @@ final class Template {
       case "date":
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
-          // TODO does this still match the current usage practice?
           $param_name = "year";
         } elseif ($this->date_style) {
           $time = strtotime($value);
@@ -1827,7 +1826,6 @@ final class Template {
     }
  
     if ($result->numFound > 1) {
-      # TODO: Work out what behaviour is desired in this situation, and implement it.
       report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
       . "... I don't know which to use. Trying other citation data.");
     }
