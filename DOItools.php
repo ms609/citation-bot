@@ -325,8 +325,14 @@ function titles_simple($inTitle) {
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         // Strip trailing periods
         $inTitle = trim(rtrim($inTitle, '.'));
-        // greek  TODO expand list
-        $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'Δ'), array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'Delta'), $inTitle);
+        // greek
+        $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν',
+                                     'ξ', 'π', 'ρ'. 'σ', 'ς', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω'),
+                               array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta',
+                                     'iota', 'kapa', 'lamda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'sigma',
+                                     'tau',  'upsilon', 'phi', 'chi', 'psi', 'omega'), $inTitle);
+        $inTitle = str_replace(array('Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π', 'Σ', 'Φ', 'Ψ', 'Ω'),
+                               array('Gamma', 'Delta', 'Theta', 'Lambda', 'Xi', 'Pi', 'Sigma', 'Phi', 'Psi', 'Omega'), $inTitle);
         $inTitle = str_remove_irrelevant_bits($inTitle);
         return $inTitle;
 }
