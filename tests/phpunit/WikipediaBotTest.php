@@ -11,6 +11,8 @@ require_once __DIR__ . '/../testBaseClass.php';
       
     public function testCategoryMembers() {
       $api = new WikipediaBot();
+      print_r($api->category_members('GA-Class cricket articles'));
+      print_r($api->category_members('A category we expect to be empty'));
       $this->assertTrue(count($api->category_members('GA-Class cricket articles')) > 10);
       $this->assertSame(0, count($api->category_members('A category we expect to be empty')));
     }
