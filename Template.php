@@ -121,12 +121,9 @@ final class Template {
           $text);
     }
     $params = explode('|', $text);
-
-    // TODO: this naming is confusing, distinguish between $text above and
-    //       $text in the loop (derived from $text above via $params)
-    foreach ($params as $i => $text) {
+    foreach ($params as $i => $text_found) {
       $this->param[$i] = new Parameter();
-      $this->param[$i]->parse_text($text);
+      $this->param[$i]->parse_text($text_found);
     }
   }
 
@@ -2472,7 +2469,7 @@ final class Template {
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
             $url .= "&" . $part;
-          // TODO: vq takes precedence over dq > q.  Only use one of the above.
+          // TODO: vq takes precedence over dq > q.  Only use one of the above.  But what is the total order priority, and which ones can be skipped?
           case "id":
             break; // Don't "remove redundant"
           case "as": case "useragent": case "as_brr": case "source":  case "hl":
