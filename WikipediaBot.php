@@ -65,6 +65,7 @@ class WikipediaBot {
       $this->ch = curl_init();
     }
     return curl_setopt_array($this->ch, [
+        CURLOPT_FAILONERROR => TRUE, // This is a little paranoid, but we don't have trouble yet, and should deal with i
         CURLOPT_FOLLOWLOCATION => TRUE,
         CURLOPT_MAXREDIRS => 5,
         CURLOPT_HEADER => FALSE, // Don't include header in output
