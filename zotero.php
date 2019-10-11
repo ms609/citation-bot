@@ -127,7 +127,7 @@ function drop_urls_that_match_dois($templates) {
           report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
           $template->forget($url_kind);
        } elseif (str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
-          report_forget("Existing BMJ URL resulting from equivalent PMID and DOI; dropping URL");
+          report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
           $template->forget($url_kind);
        } else {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
