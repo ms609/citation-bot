@@ -1195,6 +1195,14 @@ final class Template {
        }
        return FALSE;
     }
+    if (preg_match('~^https?://(?:www\.|)archive\.org/detail/jstor\-(\d{5,})$~i', $url, $matches)) {
+       $this->add_if_new('jstor', $matches[1]);
+       if (is_null($url_sent)) {
+         $this->forget($url_type);
+       }
+       return FALSE;
+    }
+    https://archive.org//jstor-40194201
     
     if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
