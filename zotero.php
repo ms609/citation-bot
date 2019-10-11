@@ -121,8 +121,14 @@ function drop_urls_that_match_dois($templates) {
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; dropping URL");
           $template->forget($url_kind);
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
-          report_forget("Existing OVID URL resulting from equivalent DOI; dropping URL");
-          $template->forget($url_kind); 
+          report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
+          $template->forget($url_kind);
+       } elseif (str_ireplace('iopscience.iop.org','', $url) !== $url) {
+          report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
+          $template->forget($url_kind);
+       } elseif (str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
+          report_forget("Existing BMJ URL resulting from equivalent PMID and DOI; dropping URL");
+          $template->forget($url_kind);
        } else {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
