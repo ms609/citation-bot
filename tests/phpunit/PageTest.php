@@ -29,4 +29,5 @@ final class PageTest extends testBaseClass {
       
       $page->get_text_from($writeTestPage, $api);
       $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5); 
+  }
 }
