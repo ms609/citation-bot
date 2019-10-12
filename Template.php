@@ -2469,7 +2469,13 @@ final class Template {
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
             $url .= "&" . $part;
-          // TODO: vq takes precedence over dq > q.  Only use one of the above.  But what is the total order priority, and which ones can be skipped?
+            break;
+          case "text":
+            $url .= "&dq=" . $part_start[1];
+            break;
+          case "keywords":
+            $url .= "&q=" . $part_start[1];
+            break;
           case "id":
             break; // Don't "remove redundant"
           case "as": case "useragent": case "as_brr": case "source":  case "hl":
