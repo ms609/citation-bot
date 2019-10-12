@@ -982,7 +982,7 @@ final class Template {
             strpos($value, 'purl.org') === FALSE &&
             strpos($value, 'dcmitype') === FALSE &&
             strpos($value, 'http') === FALSE
-           )
+           ) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
