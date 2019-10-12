@@ -978,7 +978,11 @@ final class Template {
       case 'type':
         if ($this->blank($param_name) &&
             !in_array(strtolower($value), ['text', 'data set']) &&
-            strlen($value) === mb_strlen($value)) {
+            strlen($value) === mb_strlen($value) &&
+            strpos($value, 'purl.org') === FALSE &&
+            strpos($value, 'dcmitype') === FALSE &&
+            strpos($value, 'http') === FALSE
+           ) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
