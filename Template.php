@@ -4797,6 +4797,9 @@ final class Template {
        if (preg_match("~^(?:vol\.|volume\s+|vol\s+|vol:)\s*([\dLXVI]+)$~i", $data, $matches)) {
          $data = $matches[1];
          $this->set('volume', $data);
+       } elseif (preg_match("~^v\.\s+(\d+)$~i", $data, $matches)) {
+         $data = $matches[1];
+         $this->set('volume', $data);
        }
      }
      if ($param === 'issue' || $param === 'number') {
