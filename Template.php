@@ -3158,7 +3158,7 @@ final class Template {
       
       // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
       if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-        if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter')) {
+        if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter' && $param !== 'publisher')) {
           $this->set($param, $matches[2]);
         }
       }
@@ -4154,6 +4154,14 @@ final class Template {
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
       $this->tidy_parameter('via');
       $this->tidy_parameter('publisher');
+      if ($this->has('publisher') && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get('publisher'), $matches)) {
+        if ($this->blank(WORK_ALIASES)) {
+          $this->rename('publisher', 'work', $matches[2]);
+          $this-tidy_parameter('work');
+        } else {
+          $this->set('publisher', $matches[2]);
+        }
+      }
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
