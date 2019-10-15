@@ -4157,9 +4157,10 @@ final class Template {
       if ($this->has('publisher') && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get('publisher'), $matches)) {
         if ($this->blank(WORK_ALIASES)) {
           $this->rename('publisher', 'work', $matches[2]);
-          $this-tidy_parameter('work');
+          $this->tidy_parameter('work');
         } else {
           $this->set('publisher', $matches[2]);
+          $this->tidy_parameter('publisher');
         }
       }
     }
