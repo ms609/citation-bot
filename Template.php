@@ -3440,7 +3440,8 @@ final class Template {
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
                   $new_periodical != $periodical &&
-                  isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect($periodical) !== 0) {
+                  isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', ($periodical)) !== 0 &&
+                  $last_WikipediaBot->is_redirect(str_replace(' ', '_', ($new_periodical)) === 0) {
                 $periodical  = '[[' . $new_periodical . ']]';
                 $this->set($param, $periodical);
               }
@@ -3454,7 +3455,8 @@ final class Template {
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ' &&
                 str_replace(['(', ')'], '', $linked_text ) == $linked_text &&
                 $new_linked_text != $linked_text &&
-                isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect($linked_text) !== 0) {
+                isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', $linked_text)) !== 0 &&
+                $last_WikipediaBot->is_redirect(str_replace(' ', '_', ($new_linked_text)) === 0) {
                 $linked_text = $new_linked_text;
               }
               // We assume that human text is some kind of abreviations that we really don't wan to mess with
