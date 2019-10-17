@@ -3456,7 +3456,7 @@ final class Template {
                 str_replace(['(', ')'], '', $linked_text ) == $linked_text &&
                 $new_linked_text != $linked_text &&
                 isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', $linked_text)) !== 0 &&
-                $last_WikipediaBot->is_redirect(str_replace(' ', '_', ($new_linked_text)) === 0) {
+                $last_WikipediaBot->is_redirect(str_replace(' ', '_', $new_linked_text)) === 0) {
                 $linked_text = $new_linked_text;
               }
               // We assume that human text is some kind of abreviations that we really don't wan to mess with
