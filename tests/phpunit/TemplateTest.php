@@ -1245,7 +1245,6 @@ ER -  }}';
     $this->assertNull($expanded->get('volume'));
     $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[Zookeys]]}}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('[[Zookeys]]', $expanded->get('journal'));  // This is wrong capitalization, but because of [[ ]], we leave alone during test suite, since we have no $api
     $this->assertSame('445', $expanded->get('issue'));
     $this->assertNull($expanded->get('volume'));
     $text = "{{cite journal|last1=Bharti|first1=H.|last2=Guénard|first2=B.|last3=Bharti|first3=M.|last4=Economo|first4=E.P.|title=An updated checklist of the ants of India with their specific distributions in Indian states (Hymenoptera, Formicidae)|journal=ZooKeys|date=2016|volume=551|pages=1–83|doi=10.3897/zookeys.551.6767|pmid=26877665|pmc=4741291}}";
@@ -1253,7 +1252,15 @@ ER -  }}';
     $this->assertSame('551', $expanded->get('issue'));
     $this->assertNull($expanded->get('volume'));
   }
-  
+
+  public function testZooKeys2() {
+     $this->requires_secrets(function() {
+      $api = new WikipediaBot();
+      $text = '{{Cite journal|journal=[[Zookeys]]}}';
+      $this->assertSame('[[ZooKeys]]', $expanded->get('journal'));
+     });
+  }
+ 
   public function testTitleItalics(){
     $text = '{{cite journal|doi=10.1111/pala.12168}}';
     $expanded = $this->process_citation($text);

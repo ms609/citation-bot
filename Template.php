@@ -3440,10 +3440,17 @@ final class Template {
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
                   $new_periodical != $periodical &&
-                  isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', $periodical)) !== 0 &&
-                  $last_WikipediaBot->is_redirect(str_replace(' ', '_', $new_periodical)) === 0) {
-                $periodical  = '[[' . $new_periodical . ']]';
-                $this->set($param, $periodical);
+                  isset($last_WikipediaBot)) {
+                 $now = $last_WikipediaBot->is_redirect($periodical);
+                 if ($now === -1) { // Dead link
+                   if ($last_WikipediaBot->is_redirect($new_periodical) !== -1) {
+                     $this->set($param, '[[' . $new_periodical . ']]');
+                   }
+                 } elseif ($now === 1) { // Redirect
+                   if ($last_WikipediaBot->is_redirect($new_periodical) === 0) {
+                     $this->set($param, '[[' . $new_periodical . ']]');
+                   }
+                 }
               }
             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
               $linked_text = $matches[1];
@@ -3455,9 +3462,17 @@ final class Template {
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ' &&
                 str_replace(['(', ')'], '', $linked_text ) == $linked_text &&
                 $new_linked_text != $linked_text &&
-                isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', $linked_text)) !== 0 &&
-                $last_WikipediaBot->is_redirect(str_replace(' ', '_', $new_linked_text)) === 0) {
-                $linked_text = $new_linked_text;
+                isset($last_WikipediaBot)) {
+                  $now = $last_WikipediaBot->is_redirect($linked_text);
+                  if ($now === -1) {
+                    if ($last_WikipediaBot->is_redirect($new_linked_text) !== -1) {
+                      $linked_text = $new_linked_text; // Dead to something
+                    }
+                  } elseif ($now === 1) {
+                    if ($last_WikipediaBot->is_redirect($new_linked_text) === 0) {
+                      $linked_text = $new_linked_text; // Redirect to actual page
+                    }
+                  }
               }
               // We assume that human text is some kind of abreviations that we really don't wan to mess with
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
