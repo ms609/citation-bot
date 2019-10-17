@@ -15,8 +15,8 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertSame(-1, $api->is_redirect('NoSuchPage:ThereCan-tBe'));
       $this->assertSame( 0, $api->is_redirect('User:Citation_bot'));
       $this->assertSame( 1, $api->is_redirect('WP:UCB'));
-      $this->assertSame( 0, $api->is_redirect('The_Journal_of_Physical_Chemistry_A');
-      $this->assertSame( 0, $api->is_redirect('The Journal of Physical Chemistry A');
+      $this->assertSame( 0, $api->is_redirect('The_Journal_of_Physical_Chemistry_A'));
+      $this->assertSame( 0, $api->is_redirect('The Journal of Physical Chemistry A'));
       $this->assertSame('User:Citation bot/use', $api->redirect_target('WP:UCB'));
      });
     }
