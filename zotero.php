@@ -195,6 +195,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   $access_date = FALSE;
   $url_kind = NULL;
   if (is_null($url)) {
+     if (in_array((string) $template->get('url-status'),  ['usurped', 'unfit', 'dead'])) return FALSE;
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'))); 
      if ($template->has('url')) {
        $url = $template->get('url');
