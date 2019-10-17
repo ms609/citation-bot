@@ -3440,7 +3440,7 @@ final class Template {
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
                   $new_periodical != $periodical &&
-                  isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', ($periodical)) !== 0 &&
+                  isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', $periodical)) !== 0 &&
                   $last_WikipediaBot->is_redirect(str_replace(' ', '_', $new_periodical)) === 0) {
                 $periodical  = '[[' . $new_periodical . ']]';
                 $this->set($param, $periodical);
