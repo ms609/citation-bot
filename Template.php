@@ -3441,7 +3441,7 @@ final class Template {
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
                   $new_periodical != $periodical &&
                   isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', ($periodical)) !== 0 &&
-                  $last_WikipediaBot->is_redirect(str_replace(' ', '_', ($new_periodical)) === 0) {
+                  $last_WikipediaBot->is_redirect(str_replace(' ', '_', $new_periodical)) === 0) {
                 $periodical  = '[[' . $new_periodical . ']]';
                 $this->set($param, $periodical);
               }
