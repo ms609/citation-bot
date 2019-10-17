@@ -3433,11 +3433,16 @@ final class Template {
                $this->set($param, title_capitalization($periodical, TRUE));
             }
           } else {
+            global $last_WikipediaBot;  // TODO -- less evil
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
               $periodical = $matches[1];
+              $new_periodical = title_capitalization(ucwords($periodical), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
-                  str_replace(['(', ')'], '', $periodical) == $periodical) {
-                $periodical  = '[[' . title_capitalization(ucwords($periodical), TRUE) . ']]';
+                  str_replace(['(', ')'], '', $periodical) == $periodical &&
+                  $new_periodical != $periodical &&
+                  isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', $periodical)) !== 0 &&
+                  $last_WikipediaBot->is_redirect(str_replace(' ', '_', $new_periodical)) === 0) {
+                $periodical  = '[[' . $new_periodical . ']]';
                 $this->set($param, $periodical);
               }
             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
@@ -3446,9 +3451,13 @@ final class Template {
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
                 $human_text = $matches[1];
               }
+              $new_linked_text = title_capitalization(ucwords($linked_text), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ' &&
-                str_replace(['(', ')'], '', $linked_text ) == $linked_text) {
-                $linked_text = title_capitalization(ucwords($linked_text), TRUE);
+                str_replace(['(', ')'], '', $linked_text ) == $linked_text &&
+                $new_linked_text != $linked_text &&
+                isset($last_WikipediaBot) && $last_WikipediaBot->is_redirect(str_replace(' ', '_', $linked_text)) !== 0 &&
+                $last_WikipediaBot->is_redirect(str_replace(' ', '_', $new_linked_text)) === 0) {
+                $linked_text = $new_linked_text;
               }
               // We assume that human text is some kind of abreviations that we really don't wan to mess with
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';

@@ -24,6 +24,8 @@ class WikipediaBot {
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     // Hard coded token and secret.
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
+    global $last_WikipediaBot;
+    $last_WikipediaBot = $this;  // For semi-static access to API from within template();  TODO -- be less evil
   }
   
   function __destruct() {
