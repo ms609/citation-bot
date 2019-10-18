@@ -120,6 +120,9 @@ function drop_urls_that_match_dois($templates) {
        } elseif (preg_match('~www.sciencedirect.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; dropping URL");
           $template->forget($url_kind);
+       } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
+          report_forget("Existing Invalid Springer Link URL when DOI is present; dropping URL");
+          $template->forget($url_kind);
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
           report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
           $template->forget($url_kind);
