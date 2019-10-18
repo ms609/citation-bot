@@ -114,22 +114,22 @@ function drop_urls_that_match_dois($templates) {
        if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; dropping URL");
           $template->forget($url_kind);
-       } elseif (preg_match('~www\.sciencedirect\.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
+       } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; dropping URL");
           $template->forget($url_kind);
-       } elseif (preg_match('~www\.sciencedirect\.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
+       } elseif (preg_match('~www.sciencedirect.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; dropping URL");
           $template->forget($url_kind);
-       } elseif (preg_match('~www\.springerlink\.com/content~i', $url)) { // Dead website
+       } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
           report_forget("Existing Invalid Springer Link URL when DOI is present; dropping URL");
           $template->forget($url_kind);
-       } elseif (str_ireplace('insights\.ovid\.com/pubmed','', $url) !== $url && $template->has('pmid')) {
+       } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
           report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
           $template->forget($url_kind);
-       } elseif (str_ireplace('iopscience\.iop\.org','', $url) !== $url) {
+       } elseif (str_ireplace('iopscience.iop.org','', $url) !== $url) {
           report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
           $template->forget($url_kind);
-       } elseif (str_ireplace('bmj\.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
+       } elseif (str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
           report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
           $template->forget($url_kind);
        } else {
