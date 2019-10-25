@@ -77,7 +77,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Drug des Devel Ther ', ' DTSCH ', ' DTSCH. ',
           ' E-journal ', ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', 
           ' E-print ', ' E-Print ', ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ',
-          ' ECrypt ', ' Ecrypt ', ' Efsa', ' EGEMs ', ' Egems ',
+          ' ECrypt ', ' Ecrypt ', ' Efsa ', ' EGEMs ', ' Egems ',
           ' Ejournal ', ' EJournal ', ' ELife ', ' Elife ', ' Els ', ' ELS ', ' Embo J ', 
           ' Embo J. ', ' Embo Journal ', ' Embo Rep ', ' Embo Rep. ', ' Embo Reports ', ' Eneuro ', ' ENeuro ',
           ' Engrxiv ', ' Eplasty ', ' EPlasty ',
