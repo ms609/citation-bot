@@ -4209,6 +4209,9 @@ final class Template {
             // Remove blank stuff that will most likely never get filled in
             $this->forget('isbn');
             $this->forget('chapter');
+            foreach (['location', 'place', 'publisher', 'publication-place', 'publicationplace'] as $to_drop) {
+              if ($this->blank($to_drop)) $this->forget($to_drop);
+            }
           } else {
             report_warning('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn'));
