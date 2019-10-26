@@ -518,7 +518,7 @@ function query_crossref($doi) {
     if ($xml) {
       $result = $xml->query_result->body->query;
       if ($result["status"] == "resolved") {
-        print_f($result);
+        print_r($result);
         echo "\n\n\n";
         return $result;
       } else {
