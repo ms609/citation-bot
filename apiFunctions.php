@@ -504,6 +504,7 @@ function query_crossref($doi) {
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = @file_get_contents($url);
+    echo "\n\n\n" . $raw_xml . "\n\n\n";
     if (!$raw_xml) {
       sleep(1);
       continue;
@@ -517,6 +518,8 @@ function query_crossref($doi) {
     if ($xml) {
       $result = $xml->query_result->body->query;
       if ($result["status"] == "resolved") {
+        print_f($result);
+        echo "\n\n\n";
         return $result;
       } else {
         return FALSE;
