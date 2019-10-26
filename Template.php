@@ -180,6 +180,9 @@ final class Template {
           } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
+          } elseif ($the_title == 'Accept Terms and Conditions on JSTOR') {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $bad_data = TRUE;
           }
           if ($bad_data) {
             if ($this->has('doi')) {
@@ -1171,7 +1174,8 @@ final class Template {
        }
     }
     
-    if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/pdf/(.+)\.pdf$~i', $url, $matches)) {
+    if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/pdf/(.+)\.pdf$~i', $url, $matches) ||
+        preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~', $url, $matches)) {
        if ($matches[1] == $this->get('jstor')) {
          if (is_null($url_sent)) {
            $this->forget($url_type);
@@ -4721,9 +4725,13 @@ final class Template {
     $old['template type'] = trim($this->initial_name);
     $new['template type'] = trim($this->name);
 
+    // Do not call ISSN to issn "Added issn, deleted ISSN"
+    $old = array_change_key_case($old, CASE_LOWER);
+    $new = array_change_key_case($new, CASE_LOWER);
+    
     if ($new) {
       if ($old) {
-        $ret['modifications'] = array_keys(array_diff_assoc ($new, $old));
+        $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
         $ret['additions'] = array_diff(array_keys($new), array_keys($old));
         $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
         $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
