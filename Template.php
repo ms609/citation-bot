@@ -4722,8 +4722,8 @@ final class Template {
     $new['template type'] = trim($this->name);
 
     // Do not call ISSN to issn "Added issn, deleted ISSN"
-    $old = array_change_key_case($old, CASE_LOWER));
-    $new = array_change_key_case($new, CASE_LOWER));
+    $old = array_change_key_case($old, CASE_LOWER);
+    $new = array_change_key_case($new, CASE_LOWER);
     
     if ($new) {
       if ($old) {
