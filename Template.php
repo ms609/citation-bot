@@ -180,6 +180,9 @@ final class Template {
           } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
+          } elseif ($the_title == 'Accept Terms and Conditions on JSTOR') {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $bad_data = TRUE;
           }
           if ($bad_data) {
             if ($this->has('doi')) {
