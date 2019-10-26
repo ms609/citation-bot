@@ -321,8 +321,8 @@ function sanitize_string($str) {
     }
     $str = str_replace($replacement, $placeholder, $str);
   }
-  $dirty = array ('[', ']', '|', '{', '}');
-  $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;');
+  $dirty = array ('[', ']', '|', '{', '}', " what�s ");
+  $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;', , " what's ");
   $str = trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
   if ($math_templates_present) {
     $str = str_replace($placeholder, $replacement, $str);
