@@ -2321,7 +2321,16 @@ final class Template {
         }
         if ($this->has('hdl') ) {
           if (stripos($oa_url, $this->get('hdl')) !== FALSE) return TRUE;
-          if (preg_match(REGEXP_HANDLES, $oa_url)) return TRUE;
+          if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return TRUE;
+          foreach (HANDLES_HOSTS as $hosts) {
+            if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
+              $handle1 = $matches[1];
+              foreach (HANDLES_PATHS as $handle_path) {
+                if (preg_match('~^' . $handle_path . '(.+)$~', $handle1)) return TRUE;
+              }
+              break;
+            }
+          }
         }
         if (strpos($oa_url, 'citeseerx.ist.psu.edu') !== false) {
           if ($this->has('citeseerx') ) {
