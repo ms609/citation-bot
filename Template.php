@@ -2321,6 +2321,7 @@ final class Template {
         }
         if ($this->has('hdl') ) {
           if (stripos($oa_url, $this->get('hdl')) !== FALSE) return TRUE;
+          if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return TRUE;
           foreach (HANDLES_HOSTS as $hosts) {
             if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
               $handle1 = $matches[1];
