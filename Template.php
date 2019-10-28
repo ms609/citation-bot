@@ -2132,28 +2132,15 @@ final class Template {
       }
     }
     if ($ris_book) {
-    foreach ($ris as $ris_line) {
+     $has_T2 = FALSE;
+     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
       switch (trim($ris_part[0])) {
-        case "T1":
-          if ($ris_book) {
-             $ris_parameter = "chapter";
-          } else {
-             $ris_parameter = "title";
-          }
-          break;
-        case "TI":
-          $ris_parameter = "title";
-          break;
         case "T2":
-        case "BT":
-          if ($ris_book) {
-             $ris_parameter = "title";
-          } else {
-             $ris_parameter = "journal";
-          }
+          $has_T2 = TRUE;
           break;
       }
+     }
     }
 
     foreach ($ris as $ris_line) {
@@ -2168,6 +2155,7 @@ final class Template {
           break;
         case "TI":
           $ris_parameter = "title";
+          if ($ris_book && $has_T2) $ris_parameter = "chapter";
           break;
         case "AU":
           $ris_authors++;
