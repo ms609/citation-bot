@@ -14,7 +14,7 @@ final class apiFunctionsTest extends testBaseClass {
 
   public function testUrlReferences() {
        $page = $this->process_page("<ref>http://doi.org/10.1007/s12668-011-0022-5< / ref>");
-       $this-->assertSame('huh', $page->parsed_text());
+       $this->assertSame('huh', $page->parsed_text());
   }
 
     
