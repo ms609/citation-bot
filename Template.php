@@ -2131,7 +2131,18 @@ final class Template {
         }
       }
     }
-    
+    if ($ris_book) {
+     $has_T2 = FALSE;
+     foreach ($ris as $ris_line) {
+      $ris_part = explode(" - ", $ris_line . " ");
+      switch (trim($ris_part[0])) {
+        case "T2":
+          $has_T2 = TRUE;
+          break;
+      }
+     }
+    }
+
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
       switch (trim($ris_part[0])) {
@@ -2144,6 +2155,7 @@ final class Template {
           break;
         case "TI":
           $ris_parameter = "title";
+          if ($ris_book && $has_T2) $ris_parameter = "chapter";
           break;
         case "AU":
           $ris_authors++;
