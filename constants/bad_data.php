@@ -60,7 +60,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Url（アドレス）が変わりました', '404エラ', 'お探しのページは見つかりませんでした',
                                  'privacy settings', 'cookie settings', 'WebCite query',
                                  'Untitled-1', 'Untitled-2', 'Untitled-3', 'Untitled-4', 'Untitled-5',
-                                 'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9'];
+                                 'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9', 'Are you a robot'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
