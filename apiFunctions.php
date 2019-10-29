@@ -107,6 +107,9 @@ function expand_arxiv_templates ($templates) {
     if ($eprint) {
       array_push($ids, $eprint);
       array_push($arxiv_templates, $this_template);
+    } elseif ($this_template->has('doi')) {
+      array_push($ids, $eprint);
+      array_push($arxiv_templates, $this_template);
     }
   }
   return arxiv_api($ids, $arxiv_templates);
@@ -138,7 +141,13 @@ function arxiv_api($ids, $templates) {
   $this_template = current($templates); // advance at end of foreach loop
   foreach ($xml->entry as $entry) {
     $i = 0;
-    report_info("Found match for arXiv " . $ids[$i]);
+    report_info("Found match for arXiv search" . $ids[$i]);
+    if ($this_template->blank(['arxiv', 'eprint'})) {
+       print_r($entry);
+       $this_template->add_if_new("arxiv", (string) $entry->eprint, 'arxiv')
+       $this_template = next($templates);
+       break;
+    }
     if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
       expand_by_doi($this_template);
     }
