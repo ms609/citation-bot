@@ -17,5 +17,14 @@ final class apiFunctionsTest extends testBaseClass {
        $this->assertSame('huh', $page->parsed_text());
   }
 
-    
+   public function testUrlReferences2() {
+       $page = $this->process_page("{{cite web|url=http://doi.org/10.1007/s12668-011-0022-5}}");
+       $this->assertSame('huh', $page->parsed_text());
+  }  
+
+ public function testUrlReferences3() {
+       $page = $this->process_page("{{cite web|doi=10.1007/s12668-011-0022-5}}");
+       $this->assertSame('huh', $page->parsed_text());
+  }
+
 }
