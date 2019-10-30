@@ -1206,8 +1206,7 @@ final class Template {
        }
        return FALSE;
     }
-    https://archive.org//jstor-40194201
-    
+
     if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
         quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
@@ -3785,6 +3784,11 @@ final class Template {
                  || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
               $this->forget($param);
               return;
+          } elseif (preg_match("~^https?://(?:www\.|)bloomberg\.com/tosv2\.html\?vid=&uuid=(?:.+)&url=([a-zA-Z0-9=]+)$~", $this->get($param), $matches)) {
+             if (base64_decode($matches[1])) { 
+               quietly('report_modification', "Decoding Bloomberg URL.");
+               $this->set($param, 'https://www.bloomberg.com' .  base64_decode($matches[1]));
+             }
           }
           // Proxy stuff
           if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
