@@ -404,9 +404,10 @@ class Page {
         report_info("Trying to write again after waiting");
         return $api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
-              $this->lastrevid, $this->read_at)
+              $this->lastrevid, $this->read_at);
+      } else {
+        return FALSE;
       }
-      return FALSE;
     } else {
       report_warning("Can't write to " . htmlspecialchars($this->title) . 
         " - prohibited by {{bots}} template.");
