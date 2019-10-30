@@ -19,7 +19,7 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
                                    'the star', 'washington post', 'the washington post', 'the tribune'); // LOWER CASE!
 
-const DUBIOUS_JOURNALS = array('fda'); // Things we add, but only if publisher and agency are both blank
+const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire'); // Things we add, but only if publisher and agency are both blank
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
