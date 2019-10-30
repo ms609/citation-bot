@@ -65,9 +65,6 @@ class ZoteroTest extends testBaseClass {
     $date = $expanded->get('date');
     $date = str_replace('2011-05-10', '', $date); // Sometimes we get no date
     $this->assertSame('', $date);
-    $text = "{{cite web | url = http://www.avru.org/compendium/biogs/A000060b.htm }}";
-    $expanded = $this->expand_via_zotero($text);
-    $this->assertSame('2018-06-05', $expanded->get('date'));
   }
 
   public function testZoteroExpansion_citeseerx() {
