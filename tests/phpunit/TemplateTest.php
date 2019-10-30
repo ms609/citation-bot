@@ -1254,9 +1254,10 @@ ER -  }}';
   }
 
   public function testZooKeys2() {
-     $this->requires_secrets(function() {
+     $this->requires_secrets(function() { // this only works if we can query wikipedia and see if page exists
       $api = new WikipediaBot();
       $text = '{{Cite journal|journal=[[Zookeys]]}}';
+      $expanded = $this->process_citation($text);
       $this->assertSame('[[ZooKeys]]', $expanded->get('journal'));
      });
   }
