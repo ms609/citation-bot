@@ -548,7 +548,10 @@ final class Template {
           ) {
           if ($param_name != 'date') $this->forget('date'); // Delete any "in press" dates.
           if ($param_name != 'year') $this->forget('year'); // We only unset the other one so that parameters stay in order as much as possible
-          return $this->add($param_name, $value);
+          if ($this->add($param_name, $value)) {
+            $this->tidy_parameter('isbn');  // We just added a date, we now know if 2007 or later
+            return TRUE;
+          }
         }
         return FALSE;
       
