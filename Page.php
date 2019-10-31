@@ -394,9 +394,20 @@ class Page {
   public function write($api, $edit_summary_end = NULL) {
     if ($this->allow_bots()) {
       throttle(10);
-      return $api->write_page($this->title, $this->text,
+      if ($api->write_page($this->title, $this->text,
+              $this->edit_summary() . $edit_summary_end,
+              $this->lastrevid, $this->read_at)) {
+        return TRUE;
+      } elseif (!getenv('TRAVIS')) {
+        throttle(10);
+        sleep(10);  // could be database being locked
+        report_info("Trying to write again after waiting");
+        return $api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at);
+      } else {
+        return FALSE;
+      }
     } else {
       report_warning("Can't write to " . htmlspecialchars($this->title) . 
         " - prohibited by {{bots}} template.");
