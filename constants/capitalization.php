@@ -119,4 +119,6 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' Ekolist ', ' revija ', ' okolju ', ' geographica ', ' Slovenica ', ' Glasnik ',
            ' Muzejskega ', ' Društva ', ' Slovenijo ', ' razgledi ', ' Istorija ', ' Mokslo ', ' darbai ',
            ' amžius ', ' humanitarica ', ' universitatis ', ' Saulensis ', ' oftalmologija ', ' dienos ',
-           ' Lietuvos ', ' muziejų ', ' rinkiniai ', ' Traduction ', ' Terminologie ', ' Rédaction ');
+           ' Lietuvos ', ' muziejų ', ' rinkiniai ', ' Traduction ', ' Terminologie ', ' Rédaction ',
+           ' Etudes ', ' irlandaises  ', ' Studia ', ' humaniora ', ' Estonica ');
+ 
