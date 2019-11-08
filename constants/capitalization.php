@@ -107,10 +107,13 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
 
 const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' Archiv ', ' Archives de ',
            ' Archives du  ', ' Archives des ', ' Beiträge ', ' Berichten ', ' Blätter ', ' Bulletin de ',
-           ' Bulletin des ', ' Bulletin du ', ' Cahiers ', ' canaria ', ' Carnets ', ' Comptes rendus ', ' Fachberichte ', ' Historia ',
+           ' Bulletin des ', ' Bulletin du ', ' Cahiers ', ' canaria ', ' Carnets ', ' Comptes rendus ',
+           ' Fachberichte ', ' Historia ',
            ' Jahrbuch ', ' Journal du ', ' Journal de ', ' Journal des ', ' Journal für ', ' Mitteilungen ',
-           ' Monatshefte ', ' Monatsschrift ', ' Mémoires ', ' Notizblatt ', ' Recueil ', ' Revista ', ' Revue ', ' Travaux ',
-           ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ', ' Mélanges ', " l'École ", ' Française ', ' Estestvoznaniya ',
+           ' Monatshefte ', ' Monatsschrift ', ' Mémoires ', ' Notizblatt ', ' Recueil ', ' Revista ',
+           ' Revue ', ' Travaux ',
+           ' Studien ', ' Wochenblatt ', ' Wochenschrift ', ' Études ', ' Mélanges ', " l'École ",
+           ' Française ', ' Estestvoznaniya ',
            ' Voprosy ', ' Istorii ', ' Tekhniki ', ' Matematika ', ' Shkole ', ' Ruch ', ' Prawniczy ',
            ' Ekonomiczny ', ' Socjologiczny ', ' Rivista ', ' degli ', ' studi ', ' orientali ', ' met den ',
            ' Textes ', ' pour nos ', ' élèves ', ' Lettre ', ' Zeitschrift ', ' für ', ' Physik ', ' Phonetik ',
@@ -119,4 +122,6 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' Ekolist ', ' revija ', ' okolju ', ' geographica ', ' Slovenica ', ' Glasnik ',
            ' Muzejskega ', ' Društva ', ' Slovenijo ', ' razgledi ', ' Istorija ', ' Mokslo ', ' darbai ',
            ' amžius ', ' humanitarica ', ' universitatis ', ' Saulensis ', ' oftalmologija ', ' dienos ',
-           ' Lietuvos ', ' muziejų ', ' rinkiniai ', ' Traduction ', ' Terminologie ', ' Rédaction ');
+           ' Lietuvos ', ' muziejų ', ' rinkiniai ', ' Traduction ', ' Terminologie ', ' Rédaction ',
+           ' Etudes ', ' irlandaises  ', ' Studia ', ' humaniora ', ' Estonica ');
+ 
