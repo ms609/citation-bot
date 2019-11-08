@@ -185,7 +185,7 @@ final class Template {
               $bad_data = TRUE;
           }
           if ($bad_data) {
-            if ($this->has('doi')) {
+            if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
             } elseif ($this->has('pmid')) {
               query_pmid_api(array($this->get('pmid')), array($this));
