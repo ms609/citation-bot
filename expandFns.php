@@ -20,7 +20,7 @@ function sanitize_doi($doi) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   $extension = substr($doi, strrpos($doi, '/'));
-  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', ';jsessionid'))) {
+  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', ';jsessionid', '#page_scan_tab_contents'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   // And now for 10.1093 URLs
