@@ -19,8 +19,16 @@ function sanitize_doi($doi) {
   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
+  $extension = substr($doi, strrpos($doi, '#'));
+  if (in_array(strtolower($extension), array('#page_scan_tab_contents'))) {
+      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  }
+  $extension = substr($doi, strrpos($doi, ';'));
+  if (in_array(strtolower($extension), array(';jsessionid'))) {
+      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  }
   $extension = substr($doi, strrpos($doi, '/'));
-  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', ';jsessionid', '#page_scan_tab_contents'))) {
+  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   // And now for 10.1093 URLs
