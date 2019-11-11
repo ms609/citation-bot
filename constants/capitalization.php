@@ -47,7 +47,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', ' eNeuro ', 
           ' engrXiv ', ' ePlasty ',' ePlasty ',
           ' ePrint ', ' ePrint ', ' ePrints ', ' ePrints ', ' ePub ', ' ePub ', ' ePub) ', ' eScholarship ', ' eVolo ', ' eVolo ', ' eWeek ', ' eWeek ',
-          ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', ' Föreningen i Stockholm  ',
+          ' FASEB J ', ' FASEB J. ', ' FEBS J ', ' FEBS J. ', ' FEBS Journal ', ' Föreningen i Stockholm ',
           ' für anorganische und allgemeine ', ' HannahArendt.net ',
           ' History of Science; An Annual Review of Literature ', ' HOAJ biology ', ' hprints ', 
           ' iConference ', ' IEEE/ACM ', ' IEEE/ACM ', ' IFAC-PapersOnLine ', ' iJournal ', ' iJournal ', ' im Gesundheitswesen ', ' iPhone ', ' ISME ', ' ISRN Genetics ',
