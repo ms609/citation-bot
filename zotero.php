@@ -64,7 +64,7 @@ function query_url_api($ids, $templates) {
     //     if (preg_match('~<a class="link" target="_blank" href="/leavingmsn\?url=https://doi\.org/(10\.[^\s"]+)">Article</a>~i', $mr_data, $matches)) {
     //       $template->add_if_new('doi', $matches[1]);
     //       expand_by_doi($template, TRUE);
-         }
+    //     }
        }
        if ($template->has('osti'))      expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
        if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
