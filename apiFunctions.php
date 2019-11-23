@@ -93,6 +93,23 @@ function entrez_api($ids, $templates, $db) {
 function query_bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
 
 function expand_arxiv_templates ($templates) {
+  $returns = FALSE;
+  foreach ($templates as $this_template) {
+    if ($this_template->wikiname() == 'cite arxiv') {
+      $arxiv_param = 'eprint';
+      $this_template->rename('arxiv', 'eprint');
+    } else {
+      $arxiv_param = 'arxiv';
+      $this_template->rename('eprint', 'arxiv');
+    }
+    $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
+    if ($eprint) {
+      if (arxiv_api(array($eprint), array($this_template))) {
+         $returns = TRUE;
+      }
+    }
+  }
+  return $returns;  // TODO -- fix this and use multi API 
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
