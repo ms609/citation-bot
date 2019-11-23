@@ -93,6 +93,7 @@ function entrez_api($ids, $templates, $db) {
 function query_bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
 
 function expand_arxiv_templates ($templates) {
+  return FALSE;  // TODO -- fix this 
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
