@@ -3206,6 +3206,7 @@ final class Template {
       while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
       }
+      $this->set($param, preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
     }
  
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
