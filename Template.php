@@ -2156,7 +2156,7 @@ final class Template {
       switch (trim($ris_part[0])) {
         case "T1":
           if ($ris_fullbook) {
-            $ris_parameter = FALSE;
+            $ris_parameter = FALSE; // Sub-title of main title most likely
           } elseif ($ris_book) {
              $ris_parameter = "chapter";
           } else {
