@@ -2119,6 +2119,7 @@ final class Template {
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
     $ris_book      = FALSE;
+    $ris_fullbook  = FALSE;
     // Convert &#x__; to characters
     $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     $ris_authors = 0;
@@ -2132,6 +2133,9 @@ final class Template {
       if (trim($ris_part[0]) == "TY") {
         if (in_array(trim($ris_part[1]), ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'])) {
           $ris_book = TRUE; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
+        }
+        if (in_array(trim($ris_part[1]), ['BOOK', 'EBOOK'])) {
+          $ris_fullbook = TRUE;
         }
       }
     }
@@ -2151,7 +2155,9 @@ final class Template {
       $ris_part = explode(" - ", $ris_line . " ");
       switch (trim($ris_part[0])) {
         case "T1":
-          if ($ris_book) {
+          if ($ris_fullbook) {
+            $ris_parameter = FALSE;
+          } elseif ($ris_book) {
              $ris_parameter = "chapter";
           } else {
              $ris_parameter = "title";
