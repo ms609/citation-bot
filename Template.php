@@ -2134,7 +2134,7 @@ final class Template {
         if (in_array(trim($ris_part[1]), ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'])) {
           $ris_book = TRUE; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
         }
-        if (in_array(trim($ris_part[1]), ['BOOK', 'EBOOK'])) {
+        if (in_array(trim($ris_part[1]), ['BOOK', 'EBOOK', 'EDBOOK'])) {
           $ris_fullbook = TRUE;
         }
       }
