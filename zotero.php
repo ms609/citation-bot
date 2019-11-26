@@ -110,6 +110,7 @@ function drop_urls_that_match_dois($templates) {
         !$template->profoundly_incomplete() &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
         (strpos('10.1093/', $doi) === FALSE) &&
+        (strpos('iucnredlist', $url) === FALSE) && // Not sure if these idiots reuse DOIs for new evaluations.  DOI=current while URL=locked in time.
         $template->blank(DOI_BROKEN_ALIASES))
     {
        if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
