@@ -1225,7 +1225,7 @@ final class Template {
       if (bad_10_1093_doi($doi)) return FALSE;
       $old_jstor = (string) $this->get('jstor');
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
-      if (is_null($url_sent) && $old_jstor != $this->get('jstor') && stripos('pdf', $url) === FALSE) {
+      if (is_null($url_sent) && $old_jstor !== (string) $this->get('jstor') && stripos('pdf', $url) === FALSE) {
          $this->forget($url_type);
       }
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
