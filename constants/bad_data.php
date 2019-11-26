@@ -174,4 +174,4 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
 const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods mol biol',
                                      'methods in molecular biology (clifton, n.j.)',
                                      'advances in pharmacology (san diego, calif.)',
-                                     'advances in pharmacology');
+                                     'advances in pharmacology', 'inorganic syntheses');
