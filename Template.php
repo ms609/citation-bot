@@ -1225,7 +1225,11 @@ final class Template {
     if (stripos($url, 'oxforddnb.com') !== FALSE) return FALSE; // generally bad, and not helpful
     if ($doi = extract_doi($url)[1]) {
       if (bad_10_1093_doi($doi)) return FALSE;
+      $old_jstor = (string) $this->get('jstor');
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
+      if (is_null($url_sent) && $old_jstor !== (string) $this->get('jstor') && stripos('pdf', $url) === FALSE) {
+         $this->forget($url_type);
+      }
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_active($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
