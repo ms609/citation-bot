@@ -296,7 +296,6 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testArxivExpansion() {
-    return; // TODO turn back on
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
           . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
           . '{{Cite arxiv |eprint=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
