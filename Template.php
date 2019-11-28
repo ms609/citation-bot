@@ -715,15 +715,17 @@ final class Template {
         return FALSE;      
       
       case 'issue':
+        if ($value == '0') return FALSE;
         if ($this->blank(ISSUE_ALIASES)) {
-          if ($value == '0') return FALSE;
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }     
           return $this->add($param_name, $value);
-        } 
+        } elseif ($this->get('issue') . $this->get('number') == '1' && $value != '1' && $this->blank('volume')) {
+          return $this->set($param_name, $value);  // Updating bad data
+        }
         return FALSE;
       
       case "page": case "pages":
