@@ -111,7 +111,7 @@ const AUTHOR_PARAMETERS = array(
     99 => array('surname99', 'forename99', 'initials99', 'first99', 'last99', 'author99', 'author99-last', 'author-last99', 'author99-first', 'author-first99'),
 );
 
-const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials', 
+const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials', 'others',
     'first', 'last', 'author', 'authors', 'vauthors', 'author-last', 'author-first', 
     'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1' , 'author1-last',  'author-last1',  'author1-first',  'author-first1',
     'surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'author2-last',  'author-last2',  'author2-first',  'author-first2', 'coauthors', 'coauthor',
