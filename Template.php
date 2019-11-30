@@ -4742,7 +4742,7 @@ final class Template {
       unset($this->param[$pos]);
     }
     if (strpos($par, 'url') !== FALSE && $this->wikiname() === 'cite web' &&
-        $this->blank(['url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'section-url' 'sectionurl' . 'transcript-url', 'transcripturl' ])) {
+        $this->blank(['url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'section-url', 'sectionurl' . 'transcript-url', 'transcripturl' ])) {
        if ($this->has('journal')) {
          $this->change_name_to('cite journal');
        } elseif ($this->has('newspaper')) {
