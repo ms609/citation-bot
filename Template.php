@@ -3558,6 +3558,10 @@ final class Template {
           }
           return;
         
+        case 'others':
+          if ($this->blank($param)) $this->forget($param);
+          return;
+
         case 'pmc':
           if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
              $this->set($param, $matches[1]);
