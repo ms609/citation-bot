@@ -130,6 +130,12 @@ function drop_urls_that_match_dois($templates) {
        } elseif (str_ireplace('iopscience.iop.org','', $url) !== $url) {
           report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
           $template->forget($url_kind);
+       } elseif (str_ireplace('journals.lww.com','', $url) !== $url) {
+          report_forget("Existing Outdated LWW URL resulting from equivalent DOI; dropping URL");
+          $template->forget($url_kind);
+       } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
+          report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; dropping URL");
+          $template->forget($url_kind);
        } elseif (str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
           report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
           $template->forget($url_kind);
