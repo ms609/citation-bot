@@ -356,10 +356,16 @@ class WikipediaBot {
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.  -2 on failure
   static public function is_redirect($page, $api = NULL) {
-    if ($api === NULL) {
+    if ($api === NULL) {  // You can pass in FALSE to force lower code
         global $last_WikipediaBot;
-        $api = @$last_WikipediaBot;
-        if ($api == NULL) return -2; // Just treat everything as valid.  TODO -- use wget or curl or something
+        if (@$last_WikipediaBot) {
+           $api = $last_WikipediaBot;
+        } else {
+           $api = FALSE;
+        }  
+    }
+    if ($api == FALSE) {
+      return -2; // Just treat everything as valid.  TODO -- use wget or curl or something
     }
     $res = $api->fetch(Array(
         "action" => "query",
