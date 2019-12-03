@@ -46,7 +46,7 @@ require_once __DIR__ . '/../testBaseClass.php';
      $this->requires_secrets(function() {
       $api = new WikipediaBot();
       $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe', $api));
-      $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot', $api);
+      $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot', $api));
       $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB', $api));
       $this->assertSame('User:Citation bot/use', $api->redirect_target('WP:UCB'));
      });
