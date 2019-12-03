@@ -354,9 +354,14 @@ class WikipediaBot {
     }
     return (int) reset($res->query->pages)->ns;
   }
-  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.
+  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.  -2 on failure
   static public function is_redirect($page, $api = NULL) {
-    $res = $this->fetch(Array(
+    if ($api === NULL) {
+        global $last_WikipediaBot;
+        $api = @$last_WikipediaBot;
+        if ($api == NULL) return -2; // Just treat everything as valid.  TODO -- use wget or curl or something
+    }
+    $res = $api->fetch(Array(
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
