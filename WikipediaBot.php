@@ -355,7 +355,7 @@ class WikipediaBot {
     return (int) reset($res->query->pages)->ns;
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.
-  public function is_redirect($page) {
+  static public function is_redirect($page, $api = NULL) {
     $res = $this->fetch(Array(
         "action" => "query",
         "prop" => "info",
