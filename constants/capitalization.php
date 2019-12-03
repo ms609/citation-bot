@@ -65,10 +65,10 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' Scr. ', ' Srp Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', ' Série A ', 
           ' Tellus A ', ' The De Paulia ', ' The EMBO Journal ', ' Time Off Magazine ', ' Time Out London ', ' tot de ',
           ' Transactions and archaeological record of the Cardiganshire Antiquarian Society ',
-          ' U.S. ', ' U.S.A. ', ' U.S.A. ', ' uHealth ', ' uHealth ', ' v Astronomicheskii Zhurna ',
+          ' U.S. ', ' U.S.A. ', ' U.S.A. ', ' uHealth ', ' uHealth ', ' USGS ', ' v Astronomicheskii Zhurna ', ' WRIR ',
           ' z/Journal ', ' z/Journal ', ' Zeitschrift für Geologische Wissenschaften ', ' Zeitschrift für Physik A Hadrons and Nuclei ', 
           ' Zeitschrift für Physik A: Hadrons and Nuclei ', ' ZooKeys '
-          /* The above will be automatically updated to alphabetical order */ 
+          /* The above will be automatically updated to alphabetical order */
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           ' (online Ed.) ', ' Aapos ', ' Aaps ', ' Acs ', ' Algebra I Analiz ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ',
@@ -101,7 +101,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' SCR. ', ' SRP Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', ' Série a ', 
           ' Tellus a ', ' The de Paulia ', ' The Embo Journal ', ' Time off Magazine ', ' Time Out London ', ' Tot de ',
           ' Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ',
-          ' U.s. ', ' U.S.a. ', ' U.s.a ', ' Uhealth ', ' UHealth ', ' V Astronomicheskii Zhurna ',
+          ' U.s. ', ' U.S.a. ', ' U.s.a ', ' Uhealth ', ' UHealth ', ' Usgs ', ' V Astronomicheskii Zhurna ', ' Wrir ',
           ' Z/journal ', ' Z/Journal ', ' Zeitschrift Für Geologische Wissenschaften ', ' Zeitschrift für Physik a Hadrons and Nuclei ', 
           ' Zeitschrift Für Physik a: Hadrons And Nuclei ', ' Zookeys '
           /* The above will be automatically updated to alphabetical order */ 
