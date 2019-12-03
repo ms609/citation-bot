@@ -355,13 +355,15 @@ class WikipediaBot {
     return (int) reset($res->query->pages)->ns;
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.  -2 on failure
-  static public function is_redirect($page, $api = FALSE) {
-    if ($api === FALSE) {  // You can pass in NULL to force lower code
+  static public function is_redirect($page, $api = NULL) {
+    if ($api === FALSE) { // Special TRAVIS code
+        $api = NULL;
+    } elseif ($api === NULL) { // Nother passed in
         global $last_WikipediaBot;
         $api = @$last_WikipediaBot;
     }
     if ($api == NULL) {
-      return -2; // Just treat everything as valid.  TODO -- use wget or curl or something
+        return -2; // No API found, TODO use curl or something
     }
     $res = $api->fetch(Array(
         "action" => "query",
