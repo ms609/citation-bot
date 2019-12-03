@@ -47,8 +47,12 @@ require_once __DIR__ . '/../testBaseClass.php';
       $api = new WikipediaBot();
       $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe', $api));
       $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot', $api));
-      $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB', $api));
+      $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB')); // Test use of static API global at same time
       $this->assertSame('User:Citation bot/use', $api->redirect_target('WP:UCB'));
+      // Now force non-API code for use with Gadget API
+      $this->assertSame(-2, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe', FALSE));
+      $this->assertSame(-2, WikipediaBot::is_redirect('User:Citation_bot', FALSE));
+      $this->assertSame(-2, WikipediaBot::is_redirect('WP:UCB', FALSE));
      });
     }
     
