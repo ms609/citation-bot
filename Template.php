@@ -3475,21 +3475,19 @@ final class Template {
                $this->set($param, title_capitalization($periodical, TRUE));
             }
           } else {
-            global $last_WikipediaBot;  // TODO -- less evil
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
               $periodical = $matches[1];
               $new_periodical = title_capitalization(ucwords($periodical), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
-                  $new_periodical != $periodical &&
-                  isset($last_WikipediaBot)) {
-                 $now = $last_WikipediaBot->is_redirect($periodical);
+                  $new_periodical != $periodical) {
+                 $now = WikipediaBot::is_redirect($periodical);
                  if ($now === -1) { // Dead link
-                   if ($last_WikipediaBot->is_redirect($new_periodical) !== -1) {
+                   if (WikipediaBot::is_redirect($new_periodical) !== -1) {
                      $this->set($param, '[[' . $new_periodical . ']]');
                    }
                  } elseif ($now === 1) { // Redirect
-                   if ($last_WikipediaBot->is_redirect($new_periodical) === 0) {
+                   if (WikipediaBot::is_redirect($new_periodical) === 0) {
                      $this->set($param, '[[' . $new_periodical . ']]');
                    }
                  }
@@ -3503,15 +3501,14 @@ final class Template {
               $new_linked_text = title_capitalization(ucwords($linked_text), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ' &&
                 str_replace(['(', ')'], '', $linked_text ) == $linked_text &&
-                $new_linked_text != $linked_text &&
-                isset($last_WikipediaBot)) {
-                  $now = $last_WikipediaBot->is_redirect($linked_text);
+                $new_linked_text != $linked_text) {
+                  $now = WikipediaBot::is_redirect($linked_text);
                   if ($now === -1) {
-                    if ($last_WikipediaBot->is_redirect($new_linked_text) !== -1) {
+                    if (WikipediaBot::is_redirect($new_linked_text) !== -1) {
                       $linked_text = $new_linked_text; // Dead to something
                     }
                   } elseif ($now === 1) {
-                    if ($last_WikipediaBot->is_redirect($new_linked_text) === 0) {
+                    if (WikipediaBot::is_redirect($new_linked_text) === 0) {
                       $linked_text = $new_linked_text; // Redirect to actual page
                     }
                   }
