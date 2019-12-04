@@ -1141,6 +1141,11 @@ final class Template {
          $this->set($url_type, $url); // Update URL with cleaner one
        } 
     }
+    if (preg_match('~^https://ieeexplore\.ieee\.org/document/0+(\d+)$~', $url, $matches)) {
+       $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Trimming leading zeroes
+    }
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
     // We do this since not all jstor urls are recognized below
     if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
