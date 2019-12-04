@@ -25,7 +25,7 @@ class WikipediaBot {
     // Hard coded token and secret.
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
     global $last_WikipediaBot;
-    $last_WikipediaBot = $this;  // For semi-static access to API from within template();  TODO -- be less evil
+    $last_WikipediaBot = $this;
   }
   
   function __destruct() {
@@ -354,9 +354,18 @@ class WikipediaBot {
     }
     return (int) reset($res->query->pages)->ns;
   }
-  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.
-  public function is_redirect($page) {
-    $res = $this->fetch(Array(
+  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.  -2 on failure
+  static public function is_redirect($page, $api = NULL) {
+    if ($api === FALSE) { // Special TRAVIS code
+        $api = NULL;
+    } elseif ($api === NULL) { // Nother passed in
+        global $last_WikipediaBot;
+        $api = @$last_WikipediaBot;
+    }
+    if ($api == NULL) {
+        return -2; // No API found, TODO use curl or something
+    }
+    $res = $api->fetch(Array(
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
