@@ -45,13 +45,20 @@ require_once __DIR__ . '/../testBaseClass.php';
     public function testRedirects() {
      $this->requires_secrets(function() {
       $api = new WikipediaBot();
-      $this->assertSame(-1, $api->is_redirect('NoSuchPage:ThereCan-tBe'));
-      $this->assertSame( 0, $api->is_redirect('User:Citation_bot'));
-      $this->assertSame( 1, $api->is_redirect('WP:UCB'));
+      $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe', $api));
+      $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot', $api));
+      $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB')); // Test use of static API global at same time
       $this->assertSame('User:Citation bot/use', $api->redirect_target('WP:UCB'));
      });
     }
-    
+   
+    public function testRedirects2() {
+      // Now force non-API code for use with Gadget API
+      $this->assertSame(-2, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe', FALSE));
+      $this->assertSame(-2, WikipediaBot::is_redirect('User:Citation_bot', FALSE));
+      $this->assertSame(-2, WikipediaBot::is_redirect('WP:UCB', FALSE));
+    }
+
     public function testNamespaces() {
      $this->requires_secrets(function() {
       $api = new WikipediaBot();
