@@ -1145,6 +1145,7 @@ final class Template {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
        if (is_null($url_sent)) {
          $this->set($url_type, $url); // Trimming leading zeroes
+       }
     }
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
     // We do this since not all jstor urls are recognized below
