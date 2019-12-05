@@ -3524,11 +3524,11 @@ final class Template {
             }
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
-          if (in_array(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get($param))), JOURNAL_IS_BOOK_SERIES)) {
+          if ($this->is_book_series($param)) {
             $this->change_name_to('cite book');
             if ($this->blank('series')) {
               $this->rename($param, 'series');
-            } elseif (in_array(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get('series'))), JOURNAL_IS_BOOK_SERIES) ||
+            } elseif ($this->is_book_series('series') ||
                      str_equivalent($this->get($param), $this->get('series'))) {
               $this->forget($param);
             }
@@ -3643,10 +3643,10 @@ final class Template {
 
         case 'series':
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
-          if (in_array(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get('series'))), JOURNAL_IS_BOOK_SERIES)) {
+          if ($this->is_book_series('series') ) {
             $this->change_name_to('cite book');
             if ($this->has('journal')) {
-              if (in_array(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get('journal'))), JOURNAL_IS_BOOK_SERIES) ||
+              if ($this->is_book_series('journal')  ||
                      str_equivalent($this->get('series'), $this->get('journal'))) {
                 $this->forget('journal');
               }
@@ -5002,5 +5002,10 @@ final class Template {
       report_error('unexpected title from ISSN ' . $matches[1]);
     }
     return FALSE;
+  }
+    
+  private function is_book_series($param) {
+    $simple = trim(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get($param))));
+    return in_array($simple, JOURNAL_IS_BOOK_SERIES);
   }
 }
