@@ -3643,10 +3643,10 @@ final class Template {
 
         case 'series':
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
-          if ($this->is_book_series('series') ) {
+          if ($this->is_book_series('series')) {
             $this->change_name_to('cite book');
             if ($this->has('journal')) {
-              if ($this->is_book_series('journal')  ||
+              if ($this->is_book_series('journal') ||
                      str_equivalent($this->get('series'), $this->get('journal'))) {
                 $this->forget('journal');
               }
