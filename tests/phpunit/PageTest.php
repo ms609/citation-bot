@@ -190,7 +190,7 @@ final class PageTest extends testBaseClass {
  
   public function testBadPage() {  // Use this when debugging pages that crash the bot
     $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
-    if ($bad_page !== "") {
+    if ($bad_page !== "McDonnell_Douglas_F-15E_Strike_Eagle") {
       $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=' . $bad_page . '&action=raw');
       $page = new TestPage();
       $page->parse_text($text);
