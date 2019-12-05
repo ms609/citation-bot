@@ -3524,11 +3524,11 @@ final class Template {
             }
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
-          if (in_array(strtolower($this->get($param)), JOURNAL_IS_BOOK_SERIES)) {
+          if (in_array(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get($param))), JOURNAL_IS_BOOK_SERIES)) {
             $this->change_name_to('cite book');
             if ($this->blank('series')) {
               $this->rename($param, 'series');
-            } elseif (in_array(strtolower($this->get('series')), JOURNAL_IS_BOOK_SERIES) ||
+            } elseif (in_array(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get('series'))), JOURNAL_IS_BOOK_SERIES) ||
                      str_equivalent($this->get($param), $this->get('series'))) {
               $this->forget($param);
             }
@@ -3643,10 +3643,10 @@ final class Template {
 
         case 'series':
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
-          if (in_array(strtolower($this->get('series')), JOURNAL_IS_BOOK_SERIES)) {
+          if (in_array(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get('series'))), JOURNAL_IS_BOOK_SERIES)) {
             $this->change_name_to('cite book');
             if ($this->has('journal')) {
-              if (in_array(strtolower($this->get('journal')), JOURNAL_IS_BOOK_SERIES) ||
+              if (in_array(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get('journal'))), JOURNAL_IS_BOOK_SERIES) ||
                      str_equivalent($this->get('series'), $this->get('journal'))) {
                 $this->forget('journal');
               }
