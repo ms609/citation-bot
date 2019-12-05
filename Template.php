@@ -4069,6 +4069,10 @@ final class Template {
              $this->forget('year');
              return;
           }
+          if (preg_match("~^(\d{4})\.$~", $this->get($param), $matches)) {
+             $this->set($param, $matches[1]); // trailing period
+             return;
+          }
           if ($this->get($param) === 'n.d.') return; // Special no-date code that citation template recognize.
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
         case 'issue':
