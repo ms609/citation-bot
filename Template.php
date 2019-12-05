@@ -3678,7 +3678,7 @@ final class Template {
           } elseif (strpos($title, '{{!}}') === FALSE) { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
                $title = str_replace(array("[[", "]]"), "", $title);
-               if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as titleif (strpos($the_author, '{{!}}') === FALSE) if a large part of title text
+               if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title is a large part of title text
                  $this->add_if_new('title-link', $matches[1]);
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches)) {
