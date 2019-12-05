@@ -3259,7 +3259,8 @@ final class Template {
           if (substr($the_author, 0, 2) == '[[' &&
               substr($the_author,   -2) == ']]' &&
               mb_substr_count($the_author, '[[') === 1 && 
-              mb_substr_count($the_author, ']]') === 1) {  // Has a normal wikilink
+              mb_substr_count($the_author, ']]') === 1 &&
+              strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
             if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
               $this->add_if_new($param . '-link', $matches[1]);
               $this->set($param, $matches[1]);
@@ -3679,7 +3680,7 @@ final class Template {
              $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);   // Convert [[Y|X]] wikilinks into X
              $title = preg_replace("~\[\[~", "", $title); // Remove any extra [[ or ]] that should not be there
              $title = preg_replace("~\]\]~", "", $title);
-          } else { // Convert a single link to a title-link
+          } elseif (strpos($title, '{{!}}') === FALSE) { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
                $title = str_replace(array("[[", "]]"), "", $title);
                if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
