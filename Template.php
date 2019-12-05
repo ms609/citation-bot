@@ -1141,6 +1141,12 @@ final class Template {
          $this->set($url_type, $url); // Update URL with cleaner one
        } 
     }
+    if (preg_match('~^https://ieeexplore\.ieee\.org/document/0+(\d+)$~', $url, $matches)) {
+       $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Trimming leading zeroes
+       }
+    }
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
     // We do this since not all jstor urls are recognized below
     if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
@@ -3254,7 +3260,8 @@ final class Template {
           if (substr($the_author, 0, 2) == '[[' &&
               substr($the_author,   -2) == ']]' &&
               mb_substr_count($the_author, '[[') === 1 && 
-              mb_substr_count($the_author, ']]') === 1) {  // Has a normal wikilink
+              mb_substr_count($the_author, ']]') === 1 &&
+              strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
             if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
               $this->add_if_new($param . '-link', $matches[1]);
               $this->set($param, $matches[1]);
@@ -3519,11 +3526,11 @@ final class Template {
             }
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
-          if (in_array(strtolower($this->get($param)), JOURNAL_IS_BOOK_SERIES)) {
+          if ($this->is_book_series($param)) {
             $this->change_name_to('cite book');
             if ($this->blank('series')) {
               $this->rename($param, 'series');
-            } elseif (in_array(strtolower($this->get('series')), JOURNAL_IS_BOOK_SERIES) ||
+            } elseif ($this->is_book_series('series') ||
                      str_equivalent($this->get($param), $this->get('series'))) {
               $this->forget($param);
             }
@@ -3638,10 +3645,10 @@ final class Template {
 
         case 'series':
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
-          if (in_array(strtolower($this->get('series')), JOURNAL_IS_BOOK_SERIES)) {
+          if ($this->is_book_series('series')) {
             $this->change_name_to('cite book');
             if ($this->has('journal')) {
-              if (in_array(strtolower($this->get('journal')), JOURNAL_IS_BOOK_SERIES) ||
+              if ($this->is_book_series('journal') ||
                      str_equivalent($this->get('series'), $this->get('journal'))) {
                 $this->forget('journal');
               }
@@ -3674,7 +3681,7 @@ final class Template {
              $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);   // Convert [[Y|X]] wikilinks into X
              $title = preg_replace("~\[\[~", "", $title); // Remove any extra [[ or ]] that should not be there
              $title = preg_replace("~\]\]~", "", $title);
-          } else { // Convert a single link to a title-link
+          } elseif (strpos($title, '{{!}}') === FALSE) { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
                $title = str_replace(array("[[", "]]"), "", $title);
                if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
@@ -4062,6 +4069,10 @@ final class Template {
           if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
              if ($this->blank('date')) $this->rename('year', 'date');
              $this->forget('year');
+             return;
+          }
+          if (preg_match("~^(\d{4})\.$~", $this->get($param), $matches)) {
+             $this->set($param, $matches[1]); // trailing period
              return;
           }
           if ($this->get($param) === 'n.d.') return; // Special no-date code that citation template recognize.
@@ -4993,5 +5004,10 @@ final class Template {
       report_error('unexpected title from ISSN ' . $matches[1]);
     }
     return FALSE;
+  }
+    
+  private function is_book_series($param) {
+    $simple = trim(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get($param))));
+    return in_array($simple, JOURNAL_IS_BOOK_SERIES);
   }
 }
