@@ -4697,11 +4697,11 @@ final class Template {
   private function forgetter($par, $echo_forgetting) { // Do not call this function directly
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
-      $this->forgetter('accessdate', $echo_forgetting);
-      $this->forgetter('access-date', $echo_forgetting);
       if ($this->blank(['chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) {
         $this->forgetter('archive-url', $echo_forgetting);
         $this->forgetter('archiveurl', $echo_forgetting);
+        $this->forgetter('accessdate', $echo_forgetting);
+        $this->forgetter('access-date', $echo_forgetting);
       }
       $this->forgetter('format', $echo_forgetting);
       $this->forgetter('registration', $echo_forgetting);
@@ -4728,7 +4728,10 @@ final class Template {
     }
     if ($par == 'chapter-url' || $par == 'chapterurl') {
        $this->forgetter('chapter-format', $echo_forgetting);
+       $this->forgetter('chapter-url-access', $echo_forgetting);
        if ($this->blank(['url', 'contribution-url', 'contributionurl'])) {
+        $this->forgetter('accessdate', $echo_forgetting);
+        $this->forgetter('access-date', $echo_forgetting);
         $this->forgetter('archive-url', $echo_forgetting);
         $this->forgetter('archiveurl', $echo_forgetting);
        }
