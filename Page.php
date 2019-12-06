@@ -204,6 +204,7 @@ class Page {
                       );
      }
     // TEMPLATES
+    $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
     if ($page_error) {
       $this->text = $this->start_text; // undo it
@@ -316,6 +317,7 @@ class Page {
     }
     $this->replace_object($all_templates);
 
+    $this->replace_object($singlebrack);
     $this->replace_object($preformated);
     $this->replace_object($musicality);
     $this->replace_object($mathematics);
