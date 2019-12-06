@@ -289,10 +289,11 @@ function expand_by_zotero(&$template, $url = NULL) {
   
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
   // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
-  $bad_count = mb_substr_count($result->title, '�');
+  // We also get a lot of % and $ if the encoding was something like iso-2022-jp and converted wrong
+  $bad_count = mb_substr_count($result->title, '�') + mb_substr_count($result->title, '$') + mb_substr_count($result->title, '%');
   $total_count = mb_strlen($result->title);
   if (isset($result->bookTitle)) {
-    $bad_count += mb_substr_count($result->bookTitle, '�');
+    $bad_count += mb_substr_count($result->bookTitle, '�') + mb_substr_count($result->bookTitle, '$') + mb_substr_count($result->bookTitle, '%');
     $total_count += mb_strlen($result->bookTitle);
   }
   if (($bad_count > 5) || ($total_count > 1 && (($bad_count/$total_count) > 0.1))) {
