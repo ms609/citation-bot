@@ -1411,7 +1411,9 @@ final class Template {
       . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
       . "entrez/query\.fcgi\S+db=pubmed\S+|"
       . "pmc/articles/pmid/)"
-      . ".*?=?(\d+)~i", $url, $match)) {
+      . ".*?=?(\d+)~i", $url, $match)||
+          preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(\d{4,})(?:|/|-.+)$~", $url, $match)
+        ) {
         if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?/pubmed/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
@@ -4695,11 +4697,11 @@ final class Template {
   private function forgetter($par, $echo_forgetting) { // Do not call this function directly
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
-      $this->forgetter('accessdate', $echo_forgetting);
-      $this->forgetter('access-date', $echo_forgetting);
       if ($this->blank(['chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) {
         $this->forgetter('archive-url', $echo_forgetting);
         $this->forgetter('archiveurl', $echo_forgetting);
+        $this->forgetter('accessdate', $echo_forgetting);
+        $this->forgetter('access-date', $echo_forgetting);
       }
       $this->forgetter('format', $echo_forgetting);
       $this->forgetter('registration', $echo_forgetting);
@@ -4726,7 +4728,10 @@ final class Template {
     }
     if ($par == 'chapter-url' || $par == 'chapterurl') {
        $this->forgetter('chapter-format', $echo_forgetting);
+       $this->forgetter('chapter-url-access', $echo_forgetting);
        if ($this->blank(['url', 'contribution-url', 'contributionurl'])) {
+        $this->forgetter('accessdate', $echo_forgetting);
+        $this->forgetter('access-date', $echo_forgetting);
         $this->forgetter('archive-url', $echo_forgetting);
         $this->forgetter('archiveurl', $echo_forgetting);
        }
@@ -4880,6 +4885,9 @@ final class Template {
          ) {
          $possible_volume=$matches[1];
          $possible_issue=$matches[2];
+         if (preg_match("~^\d{4}.\d{4}$~", $possible_issue)) return; // Range of years
+         if ($possible_issue === $this->get('year')) return;
+         if ($possible_issue === $this->get('date')) return;
          if ($param == 'volume') {
             if ($this->blank(ISSUE_ALIASES)) {
               $this->add_if_new('issue', $possible_issue);
