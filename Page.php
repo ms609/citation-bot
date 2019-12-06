@@ -139,7 +139,6 @@ class Page {
     $mathematics = $this->extract_object('Mathematics');
     $musicality  = $this->extract_object('Musicscores');
     $preformated = $this->extract_object('Preformated');
-    $singlebrack = $this->extract_object('SingleBracket');
     if ($page_error) {
       $this->text = $this->start_text; // undo it
       return FALSE;
@@ -205,6 +204,7 @@ class Page {
                       );
      }
     // TEMPLATES
+    $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
     if ($page_error) {
       $this->text = $this->start_text; // undo it
