@@ -60,7 +60,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Url（アドレス）が変わりました', '404エラ', 'お探しのページは見つかりませんでした',
                                  'privacy settings', 'cookie settings', 'WebCite query',
                                  'Untitled-1', 'Untitled-2', 'Untitled-3', 'Untitled-4', 'Untitled-5',
-                                 'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9', 'Are you a robot'];
+                                 'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9', 'Are you a robot',
+                                 'Aanmelden of registreren om te bekijken', 'register to view'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -96,7 +97,8 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "jstor\.org/stable/",      // We have special jstor code
                                  "ned\.ipac\.caltech\.edu", // Gives no real title
                                  "pep\-web\.org",           // Does not parse very well at all
-                                 "ezproxy", "arkive\.org", "bloomberg\.com/tosv2.html");                // Junk
+                                 "ezproxy", "arkive\.org", "bloomberg\.com/tosv2.html",  // Junk
+                                 "facebook\.com");          // login and junk
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nbcnews.com/', 'abcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'bbc.com/', 'bbc.co.uk/', 'apnews.com/',
                                    '.ap.org/', 'nytimes.com/', 'theguardian.com/', 'washingtonpost.com/',
