@@ -4886,8 +4886,8 @@ final class Template {
          $possible_volume=$matches[1];
          $possible_issue=$matches[2];
          if (preg_match("~^\d{4}.\d{4}$~", $possible_issue)) return; // Range of years
-         if ($possible_issue === $input->get('year')) return;
-         if ($possible_issue === $input->get('date')) return;
+         if ($possible_issue === $this->get('year')) return;
+         if ($possible_issue === $this->get('date')) return;
          if ($param == 'volume') {
             if ($this->blank(ISSUE_ALIASES)) {
               $this->add_if_new('issue', $possible_issue);
