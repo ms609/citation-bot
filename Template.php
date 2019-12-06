@@ -1412,7 +1412,7 @@ final class Template {
       . "entrez/query\.fcgi\S+db=pubmed\S+|"
       . "pmc/articles/pmid/)"
       . ".*?=?(\d+)~i", $url, $match)||
-          preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(\d{4,})(?:|/|-.+)$", $url, $match)
+          preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(\d{4,})(?:|/|-.+)$~", $url, $match)
         ) {
         if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?/pubmed/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         quietly('report_modification', "Converting URL to PMID parameter");
