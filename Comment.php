@@ -48,7 +48,7 @@ final class Preformated extends WikiThings {
   const REGEXP = '~<pre>.*?</pre>~us';
 }
 
-final class SingleBracket= extends WikiThings {
+final class SingleBracket extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_SINGLE_BRACKET %s # # #';
   const REGEXP = '~(?<!\{)\{[^\{\}]+\}(?!\})~us';
 }
