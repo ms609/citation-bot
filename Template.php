@@ -1405,6 +1405,7 @@ final class Template {
           return $this->add_if_new('arxiv', $arxiv_id[0]);
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
+        
       } elseif (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?" 
       . "(?:pubmed/|" 
       . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
