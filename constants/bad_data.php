@@ -1,7 +1,7 @@
 <?php
 // Some data we get from outside sources is bad or at least mis-defined
 // Use lower case for all of these, and then compare to a lower cased version
-const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel");  // Some journals have issues only, no volume numbers
+const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel", "international astronomical union circular");  // Some journals have issues only, no volume numbers
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
@@ -81,7 +81,8 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
 
 const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
                                   '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
-                                  'doi.library.ubc.ca', 'ingentaconnect.com/content'); // Drop these if there is a valid DOI
+                                  'doi.library.ubc.ca', 'ingentaconnect.com/content', 'sciencedirect.com/science?_ob',
+                                  'informaworld.com/smpp', '.search.serialssolutions.com'); // Drop these if there is a valid DOI
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk');
 
