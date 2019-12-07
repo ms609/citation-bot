@@ -3564,7 +3564,7 @@ final class Template {
           }
           return;
         
-        case 'others':
+        case 'others': case 'day': case 'month':  // Bad idea to have in general
           if ($this->blank($param)) $this->forget($param);
           return;
 
