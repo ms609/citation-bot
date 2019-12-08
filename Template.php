@@ -2706,7 +2706,7 @@ final class Template {
                 $endnote_parameter = FALSE;
               }
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
-              if (extract_doi($endnote_datum)) {
+              if (extract_doi($endnote_datum)[1]) {
                 $endnote_parameter = 'doi';
                 break;
               }
@@ -2729,7 +2729,7 @@ final class Template {
         $this->expand_by_RIS($dat, TRUE);
       }
       
-      $doi = extract_doi($dat);
+      $doi = extract_doi($dat)[1];
       if (!is_null($doi)) {
         $this->add_if_new('doi', $doi[1]); 
         $this->change_name_to('cite journal');
