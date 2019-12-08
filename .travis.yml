@@ -36,4 +36,4 @@ matrix:
         - wget -O- https://tools.wmflabs.org/citations-dev/maintain_files.php
 git:
   depth: 3
-
+  
