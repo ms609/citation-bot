@@ -2729,8 +2729,8 @@ final class Template {
         $this->expand_by_RIS($dat, TRUE);
       }
       
-      $doi = extract_doi($dat)[1];
-      if (!is_null($doi)) {
+      $doi = extract_doi($dat);
+      if ($doi[1] != FALSE) {
         $this->add_if_new('doi', $doi[1]); 
         $this->change_name_to('cite journal');
         $dat = str_replace($doi[0], '', $dat);
