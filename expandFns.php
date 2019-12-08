@@ -85,7 +85,7 @@ function extract_doi($text) {
     if (doi_works($doi_candidate)) $doi = $doi_candidate;
     return array($match[0], sanitize_doi($doi));
   }
-  return NULL;
+  return array(FALSE, FALSE);
 }
 
 function wikify_external_text($title) {
