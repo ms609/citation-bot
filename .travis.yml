@@ -12,7 +12,7 @@ matrix:
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
-      script: phpunit --coverage-clover coverage.xml --bootstrap setup.php tests/phpunit
+      script: phpunit --bootstrap setup.php tests/phpunit
      
     - php: nightly   # Newer version has SSL in php curl
       before_script:  
