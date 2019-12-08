@@ -1745,6 +1745,9 @@ final class Template {
         }
       }
     }
+    $results = [];
+    $results[1] = 0;
+    return $results;
   }
 
   protected function do_pumbed_query($terms, $check_for_errors = FALSE) {
