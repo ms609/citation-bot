@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="exampleFns.php"
+<phpunit bootstrap="setup.php"
          stopOnError="false">
   <testsuites>
     <testsuite name="TestSuite">
@@ -23,6 +23,7 @@
         <file>./generate_template.php</file>
         <file>./linked_pages.php</file>
         <file>./authenticate.php</file>
+        <file>./restart.php</file>
       </exclude>
     </whitelist>
   </filter>
