@@ -23,6 +23,7 @@
         <file>./generate_template.php</file>
         <file>./linked_pages.php</file>
         <file>./authenticate.php</file>
+        <file>./restart.php</file>
       </exclude>
     </whitelist>
   </filter>
