@@ -71,7 +71,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' (online Ed.) ', ' Aapos ', ' Aaps ', ' Acs ', ' Algebra I Analiz ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ',
+          ' (BBA) ', ' (online Ed.) ', ' Aapos ', ' Aaps ', ' Acs ', ' Algebra I Analiz ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ',
           ' Asaio ', ' Asme Aes ', ' Asme MTD ',
           ' b/gcvs ', ' B/Gcvs ', ' B/GCVS ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', " Dell'Accademia ",
@@ -108,7 +108,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
 ); 
 
 const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' Archiv ', ' Archives de ',
-           ' Archives du  ', ' Archives des ', ' Beiträge ', ' Berichten ', ' Blätter ', ' Bulletin de ',
+           ' (Bba) ', ' Archives du  ', ' Archives des ', ' Beiträge ', ' Berichten ', ' Blätter ', ' Bulletin de ',
            ' Bulletin des ', ' Bulletin du ', ' Cahiers ', ' canaria ', ' Carnets ', ' Comptes rendus ',
            ' Fachberichte ', ' Historia ',
            ' Jahrbuch ', ' Journal du ', ' Journal de ', ' Journal des ', ' Journal für ', ' Mitteilungen ',
