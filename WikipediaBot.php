@@ -220,11 +220,12 @@ class WikipediaBot {
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
-          echo "\n <span style='reddish'>Written to <a href='" 
+          report_inline("\n <span style='reddish'>Written to <a href='" 
           . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
-          . echoable($myPage->title) . '</a></span>';
+          . echoable($myPage->title) . '</a></span>');
+        } else {
+          report_inline("\n Written to " . echoable($myPage->title) . ". \n");
         }
-        else echo "\n Written to " . echoable($myPage->title) . ". \n";
         return TRUE;
       } elseif (isset($result->edit->result)) {
         report_warning(echoable('Attempt to write page returned error: ' .  $result->edit->result));
