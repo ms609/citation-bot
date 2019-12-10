@@ -35,7 +35,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' (online ed.) ', ' AAPOS ', ' AAPS ', ' ACS ', ' Algebra i Analiz ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ',
+          ' (BBA) ', ' (online ed.) ', ' AAPOS ', ' AAPS ', ' ACS ', ' Algebra i Analiz ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ',
           ' ASAIO ', ' ASME AES ', ' ASME MTD ',
           ' B/gcvs ', ' B/gcvs ', ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ',
           ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', " dell'Accademia ",
@@ -55,7 +55,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' J SIAM ', ' J. SIAM ', ' JABS : Journal of Applied Biological Sciences ', 
           ' JAMA Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.I.E.E. ',
           ' Journal of the IEST ', ' Jpn ', ' Jpn. ', ' La Trobe ', ' Latina/o ', ' Ltd ', ' mAbs ', ' mAbs ', ' mBio ', ' mBio ',
-          ' Meddelelser om Grønland ', ' Meddelelser om Grønland, ', ' MERIP ', ' Methods in Molecular Biology ',
+          ' Med Sch ', ' Meddelelser om Grønland ', ' Meddelelser om Grønland, ', ' MERIP ', ' Methods in Molecular Biology ',
           ' mHealth ', ' mHealth ', ' Molecular and Cellular Biology ', ' Montana The Magazine of Western History ', ' mSphere ', ' mSphere ', ' mSystems ', ' mSystems ', 
           ' n.paradoxa ', ' NASA Tech Briefs ', ' NDT & E International ', ' NeuroReport ', ' Notes of the AAS ', ' Ny Forskning i Grammatik ',
           ' Nyt Tidsskrift ', ' Ocean Science Journal : Osj ',
@@ -71,7 +71,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' (online Ed.) ', ' Aapos ', ' Aaps ', ' Acs ', ' Algebra I Analiz ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ',
+          ' (Bba) ', ' (online Ed.) ', ' Aapos ', ' Aaps ', ' Acs ', ' Algebra I Analiz ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ',
           ' Asaio ', ' Asme Aes ', ' Asme MTD ',
           ' b/gcvs ', ' B/Gcvs ', ' B/GCVS ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ',
           ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', " Dell'Accademia ",
@@ -91,7 +91,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' J Siam ', ' J. Siam ', ' Jabs : Journal of Applied Biological Sciences ', 
           ' Jama Psychiatry ', ' Journal of Materials Chemistry A ', ' Journal of the A.i.i.e ', 
           ' Journal of the Iest ', ' JPN ', ' JPN. ', ' la Trobe ', ' Latina/O ', ' LTD ', ' Mabs ', ' MAbs ', ' Mbio ', ' MBio ',
-          ' Meddelelser Om Grønland ', ' Meddelelser Om Grønland, ', ' Merip ',  ' Methods in Molecular Biology (Clifton, N.j.) ',
+          ' Med SCH ', ' Meddelelser Om Grønland ', ' Meddelelser Om Grønland, ', ' Merip ',  ' Methods in Molecular Biology (Clifton, N.j.) ',
           ' Mhealth ', ' MHealth ', ' Molecular and Cellular Biology ', ' Montana the Magazine of Western History ', ' Msphere ', ' MSphere ', ' Msystems ', ' MSystems ', 
           ' N.Paradoxa ', ' Nasa Tech Briefs ', ' NDT & e International ', ' Neuroreport ', ' Notes of the Aas ', ' NY Forskning I Grammatik ',
           ' NYT Tidsskrift ', ' Ocean Science Journal : Osj ',

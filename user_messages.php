@@ -42,6 +42,10 @@ function quietly($function = 'report_info', $text) {
   }
 }
 
+/**
+ * used when sending page output to webpage
+ * @codeCoverageIgnore
+ */
 function safely_echo ($string) {
   echo echoable($string);
 }

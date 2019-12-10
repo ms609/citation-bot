@@ -29,6 +29,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We prefer `elseif` to `else if`
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
   * All code must be both valid PHP 5.6 and valid PHP 7.3
+  * All code should be valid PHP 7.4 and valid 8.0
 
 ## Bot output conventions
 The bot reports its activity to users using:
