@@ -109,7 +109,7 @@ function expand_arxiv_templates ($templates) {
       }
     }
   }
-  return $returns;  // TODO -- fix this and use multi API 
+  return $returns;  // TODO -- fix this and use multi API -- SEE failure https://en.wikipedia.org/w/index.php?title=Three-body_problem&diff=925658666&oldid=925544950 what happened??    I suspect arXiv list did not match templates or API is busted?!?
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
