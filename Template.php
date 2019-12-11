@@ -3589,6 +3589,14 @@ final class Template {
             $this->forget($param);  // Not good to encourage adding this
             return;
           }
+          if (stripos($this->get($param), 'proquest') !== FALSE) {
+            $this->forget($param);
+            if ($this->blank('via')) {
+              $this_big_url = $this->get('url') . $this->get('thesis-url') . $this->get('thesisurl') . $this->get('chapter-url') . $this->get('chapterurl');
+              if (stripos($this_big_url, 'proquest') !== FALSE) $this->add('via', 'ProQuest');
+            }
+            return;
+          }
           if ($this->blank($param)) return;
           $publisher = strtolower($this->get($param));
           if ($this->wikiname() == 'cite journal' && $this->has('journal') && $this->has('title')
