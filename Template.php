@@ -3593,7 +3593,7 @@ final class Template {
             $this->forget($param);
             if ($this->blank('via')) {
               $this_big_url = $this->get('url') . $this->get('thesis-url') . $this->get('thesisurl') . $this->get('chapter-url') . $this->get('chapterurl');
-              stripos($this_big_url, 'proquest') !== FALSE) $this->add('via', 'ProQuest');
+              if (stripos($this_big_url, 'proquest') !== FALSE) $this->add('via', 'ProQuest');
             }
             return;
           }
