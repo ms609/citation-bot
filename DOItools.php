@@ -320,7 +320,7 @@ function titles_simple($inTitle) {
         // Strip leading the
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         // Reduce punctuation
-        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "\t", "-", "—", "–", "â€™", "â€”", "â€“", "&#8208;", ":"), "", mb_strtolower((string) $inTitle)));
+        $inTitle = straighten_quotes(str_replace(array(" ", "\n", "\r", "\t", "-", "—", "–", "â€™", "â€”", "â€“", "&#8208;", ":", "&ndash;", "&Mdash;"), "", mb_strtolower((string) $inTitle)));
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         // Strip trailing periods
@@ -332,7 +332,7 @@ function titles_simple($inTitle) {
                                      'iota', 'kapa', 'lamda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'sigma',
                                      'tau',  'upsilon', 'phi', 'chi', 'psi', 'omega'), $inTitle);
         $inTitle = str_replace(array('Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π', 'Σ', 'Φ', 'Ψ', 'Ω'),
-                               array('Gamma', 'Delta', 'Theta', 'Lambda', 'Xi', 'Pi', 'Sigma', 'Phi', 'Psi', 'Omega'), $inTitle);
+                               array('gamma', 'delta', 'theta', 'lambda', 'xi', 'pi', 'sigma', 'phi', 'psi', 'omega'), $inTitle);
         $inTitle = str_remove_irrelevant_bits($inTitle);
         return $inTitle;
 }
