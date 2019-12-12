@@ -297,6 +297,9 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         // old data both decoded and not
         $inTitle2 = titles_simple($inTitle);
         $inTitle = titles_simple(mb_convert_encoding(html_entity_decode($inTitle), "HTML-ENTITIES", 'UTF-8'));
+        echo "\n\n\n" . $inTitle . "\n\n\n";
+        echo "\n\n\n" . $inTitle2 . "\n\n\n";
+        echo "\n\n\n" . $dbTitle . "\n\n\n";
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
