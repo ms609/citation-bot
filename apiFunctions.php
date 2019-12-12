@@ -415,6 +415,7 @@ function expand_by_doi($template, $force = FALSE) {
       if ($template->has('title') && trim(@$crossRef->article_title)) { // Verify title of DOI matches existing data somewhat
         $bad_data = TRUE;
         $new = $crossRef->article_title;
+        echo "\n" . $crossRef->article_title . "\n";
         if (preg_match('~^(.................+)\.\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
            $new = $matches[1];
            $new_roman = $matches[2];
