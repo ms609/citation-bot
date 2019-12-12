@@ -322,7 +322,7 @@ function titles_simple($inTitle) {
         // Reduce punctuation
         $inTitle = straighten_quotes(mb_strtolower((string) $inTitle));
         $inTitle = preg_replace("~(?: |-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
-        $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&Mdash;"), "", $inTitle);
+        $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         // Strip trailing periods
