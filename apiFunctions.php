@@ -94,22 +94,6 @@ function query_bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes,
 
 function expand_arxiv_templates ($templates) {
   $returns = FALSE;
-  foreach ($templates as $this_template) {
-    if ($this_template->wikiname() == 'cite arxiv') {
-      $arxiv_param = 'eprint';
-      $this_template->rename('arxiv', 'eprint');
-    } else {
-      $arxiv_param = 'arxiv';
-      $this_template->rename('eprint', 'arxiv');
-    }
-    $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
-    if ($eprint) {
-      if (arxiv_api(array($eprint), array($this_template))) {
-         $returns = TRUE;
-      }
-    }
-  }
-  return $returns;  // TODO -- fix this and use multi API -- SEE failure https://en.wikipedia.org/w/index.php?title=Three-body_problem&diff=925658666&oldid=925544950 what happened??    I suspect arXiv list did not match templates or API is busted?!?
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
