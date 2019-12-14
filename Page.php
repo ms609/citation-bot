@@ -385,7 +385,7 @@ class Page {
       : ""
     );
     if ($this->modifications["names"]) {
-      $auto_summary .= ' Some additions/deletions were actually parameter name changes.';
+      $auto_summary .= ' Some additions/deletions were actually parameter name changes. ';
     }
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
