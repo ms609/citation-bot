@@ -7,15 +7,6 @@
 require_once __DIR__ . '/../testBaseClass.php';
  
 final class PageTest extends testBaseClass {
-
-    public function testCategoryMembers2() {
-      $api = new WikipediaBot();
-      $this->assertNull($api->category_members('GA-Class cricket articles of Low-importance'));
-    }
-    public function testCategoryMembers() {
-      $api = new WikipediaBot();
-      $this->assertNull($api->category_members('A category we expect to be empty'));
-    }
  
   public function testMultiArxiv() {
       $text='{{cite|arxiv=math/0011268}}{{cite|arxiv=astro-ph/9604016}}{{cite|arxiv=1705.00527}}{{cite|arxiv=1805.07980}}';
