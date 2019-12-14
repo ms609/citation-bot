@@ -19,8 +19,9 @@ final class PageTest extends testBaseClass {
     }
  
   public function testMultiArxiv() {
-      $page = $this->process_page('Arxiv stuff');
-      $this->assertNull($page->parsed_text());
+      $text='{{cite|arxiv=math/0011268}}{{cite|arxiv=astro-ph/9604016}}{{cite|arxiv=1705.00527}}{{cite|arxiv=1805.07980}}';
+      $page = $this->process_page($text);
+      $this->assertSame('HUH', $page->parsed_text());
   }
  
  
