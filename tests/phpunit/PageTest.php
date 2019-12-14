@@ -14,7 +14,7 @@ final class PageTest extends testBaseClass {
     }
     public function testCategoryMembers() {
       $api = new WikipediaBot();
-      $this->assertNull($api->category_members('A category we expect to be empty')));
+      $this->assertNull($api->category_members('A category we expect to be empty'));
     }
  
   public function testMultiArxiv() {
