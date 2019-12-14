@@ -134,7 +134,7 @@ function arxiv_api($ids, $templates) {
       return FALSE;
     }
   }
-  
+  print_r($xml);
   $this_template = current($templates); // advance at end of foreach loop
   foreach ($xml->entry as $entry) {
     $i = 0;
