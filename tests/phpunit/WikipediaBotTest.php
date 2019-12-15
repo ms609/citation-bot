@@ -51,13 +51,6 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertSame('User:Citation bot/use', $api->redirect_target('WP:UCB'));
      });
     }
-   
-    public function testRedirects2() {
-      // Now force non-API code for use with Gadget API
-      $this->assertSame(-2, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe', FALSE));
-      $this->assertSame(-2, WikipediaBot::is_redirect('User:Citation_bot', FALSE));
-      $this->assertSame(-2, WikipediaBot::is_redirect('WP:UCB', FALSE));
-    }
 
     public function testNamespaces() {
      $this->requires_secrets(function() {
