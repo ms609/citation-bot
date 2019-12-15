@@ -11,10 +11,6 @@ if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
 //Set up tool requirements
 require_once('setup.php');
 
-global $using_gadget;
-$using_gadget = 'Yes';  // Do not set a user-name
-new WikipediaBot(); // For redirect detection only
-
 $originalText = $_POST['text'];
 $editSummary = $_POST['summary'];
 
