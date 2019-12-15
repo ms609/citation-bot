@@ -13,14 +13,16 @@ class WikipediaBot {
   protected $consumer, $token, $ch, $the_user;
   private static $last_WikipediaBot = NULL;
 
-  function __construct() {
+  function __construct($no_user = FALSE) {
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
-    if (!getenv('TRAVIS')) {
-      $this->authenticate_user();
-    } else {
+    if ($no_user) {
+      ; // Do not set the username
+    } elseif (getenv('TRAVIS')) {
       $this->the_user = 'Citation_bot';
+    } else {
+      $this->authenticate_user();
     }
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     // Hard coded token and secret.
@@ -358,13 +360,16 @@ class WikipediaBot {
     }
     return (int) reset($res->query->pages)->ns;
   }
-  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.  -2 on failure
+  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect($page, $api = NULL) {
-    if ($api === NULL) { // Nother passed in
+    if (self::$last_WikipediaBot == NULL) {
+       new WikipediaBot(TRUE);
+    }
+    if ($api == NULL) { // Nother passed in
         $api = self::$last_WikipediaBot;
     }
     if ($api == NULL) {
-        return -2; // No API found, TODO use curl or something
+        report_error('No API found in is_redirect()');
     }
     $res = $api->fetch(Array(
         "action" => "query",
