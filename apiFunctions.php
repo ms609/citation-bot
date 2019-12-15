@@ -138,11 +138,10 @@ function arxiv_api($ids, $templates) {
   $this_template = current($templates); // advance at end of foreach loop
   foreach ($xml->entry as $entry) {
     $i = 0;
-    report_info("Found match for arXiv " . $ids[$i]);
     if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
       expand_by_doi($this_template);
     }
-    foreach ($xml->entry->author as $auth) {
+    foreach ($entry->author as $auth) {
       $i++;
       $name = $auth->name;
       if (preg_match("~(.+\.)(.+?)$~", $name, $names) || preg_match('~^\s*(\S+) (\S+)\s*$~', $name, $names)) {
