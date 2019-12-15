@@ -11,7 +11,8 @@ use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 class WikipediaBot {
   
   protected $consumer, $token, $ch, $the_user;
-  
+  private static $last_WikipediaBot = NULL;
+
   function __construct() {
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
@@ -24,8 +25,7 @@ class WikipediaBot {
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     // Hard coded token and secret.
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
-    global $last_WikipediaBot;
-    $last_WikipediaBot = $this;
+    self::last_WikipediaBot = $this;
   }
   
   function __destruct() {
@@ -360,11 +360,8 @@ class WikipediaBot {
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.  -2 on failure
   static public function is_redirect($page, $api = NULL) {
-    if ($api === FALSE) { // Special TRAVIS code
-        $api = NULL;
-    } elseif ($api === NULL) { // Nother passed in
-        global $last_WikipediaBot;
-        $api = @$last_WikipediaBot;
+    if ($api === NULL) { // Nother passed in
+        $api = self::last_WikipediaBot;
     }
     if ($api == NULL) {
         return -2; // No API found, TODO use curl or something
