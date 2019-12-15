@@ -13,12 +13,11 @@ class WikipediaBot {
   protected $consumer, $token, $ch, $the_user;
   private static $last_WikipediaBot = NULL;
 
-  function __construct() {
+  function __construct($no_user = FALSE) {
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
-    global $using_gadget;
-    if (@$using_gadget === 'Yes') {
+    if ($no_user) {
       ; // Do not set the username
     } elseif (getenv('TRAVIS')) {
       $this->the_user = 'Citation_bot';
@@ -363,7 +362,10 @@ class WikipediaBot {
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect($page, $api = NULL) {
-    if ($api === NULL) { // Nother passed in
+    if (self::$last_WikipediaBot == NULL) {
+       new WikipediaBot(TRUE);
+    }
+    if ($api == NULL) { // Nother passed in
         $api = self::$last_WikipediaBot;
     }
     if ($api == NULL) {
