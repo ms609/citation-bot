@@ -25,7 +25,7 @@ class WikipediaBot {
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     // Hard coded token and secret.
     $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
-    self::last_WikipediaBot = $this;
+    self::$last_WikipediaBot = $this;
   }
   
   function __destruct() {
@@ -361,7 +361,7 @@ class WikipediaBot {
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.  -2 on failure
   static public function is_redirect($page, $api = NULL) {
     if ($api === NULL) { // Nother passed in
-        $api = self::last_WikipediaBot;
+        $api = self::$last_WikipediaBot;
     }
     if ($api == NULL) {
         return -2; // No API found, TODO use curl or something
