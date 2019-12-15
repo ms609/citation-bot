@@ -38,6 +38,9 @@ class WikipediaBot {
   }
   
   public function get_the_user() {
+    if (!isset($this->the_user) || @$this->the_user == NULL) {
+      report_error('User Not Set');
+    }
     return $this->the_user; // Might or might not match the above
   }
   
