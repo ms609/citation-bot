@@ -17,10 +17,10 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     global $using_gadget;
-    if (getenv('TRAVIS')) {
-      $this->the_user = 'Citation_bot';
-    } elseif (@$using_gadget === 'Yes') {
+    if (@$using_gadget === 'Yes') {
       ; // Do not set the username
+    } elseif (getenv('TRAVIS')) {
+      $this->the_user = 'Citation_bot';
     } else {
       $this->authenticate_user();
     }
