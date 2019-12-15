@@ -361,16 +361,14 @@ class WikipediaBot {
     }
     return (int) reset($res->query->pages)->ns;
   }
-  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.  -2 on failure
+  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect($page, $api = NULL) {
-    if ($api === FALSE) { // Special TRAVIS code
-        $api = NULL;
-    } elseif ($api === NULL) { // Nother passed in
+    if ($api === NULL) { // Nother passed in
         global $last_WikipediaBot;
         $api = @$last_WikipediaBot;
     }
     if ($api == NULL) {
-        return -2; // No API found, TODO use curl or something
+        report_error('No API found in is_redirect()');
     }
     $res = $api->fetch(Array(
         "action" => "query",
