@@ -16,10 +16,13 @@ class WikipediaBot {
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
-    if (!getenv('TRAVIS')) {
-      $this->authenticate_user();
-    } else {
+    global $using_gadget;
+    if (getenv('TRAVIS')) {
       $this->the_user = 'Citation_bot';
+    } elseif (@$using_gadget === 'Yes') {
+      ; // Do not set the username
+    } else {
+      $this->authenticate_user();
     }
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     // Hard coded token and secret.
@@ -38,6 +41,9 @@ class WikipediaBot {
   }
   
   public function get_the_user() {
+    if (!isset($this->the_user) || @$this->the_user == NULL) {
+      report_error('User Not Set');
+    }
     return $this->the_user; // Might or might not match the above
   }
   
