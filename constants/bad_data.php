@@ -58,7 +58,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Article expired', 'This is due to newswire licensing terms',
                                  'OpenId transaction in progress', 'Download Limit Exceeded',
                                  'Url（アドレス）が変わりました', '404エラ', 'お探しのページは見つかりませんでした',
-                                 'privacy settings', 'cookie settings', 'WebCite query',
+                                 'privacy settings', 'cookie settings', 'WebCite query', 'Ой!',
                                  'Untitled-1', 'Untitled-2', 'Untitled-3', 'Untitled-4', 'Untitled-5',
                                  'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9', 'Are you a robot',
                                  'Aanmelden of registreren om te bekijken', 'register to view', 'being redirected'];
