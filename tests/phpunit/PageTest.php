@@ -24,7 +24,7 @@ final class PageTest extends testBaseClass {
       $this->assertSame('{{cite journal|journal<!-- comment -->=Journal Name}}', $page->parsed_text());
       $page = $this->process_page('{{cite book|url=http://fake.url/|chapter=Chap|title=Title}}');
       $this->assertSame('{{cite book|chapter-url=http://fake.url/|chapter=Chap|title=Title}}', $page->parsed_text());
-      $this->assertSame('Add: chapter-url. Removed or converted URL.  Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].', $page->edit_summary());
+      $this->assertSame('Add: chapter-url. Removed or converted URL. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].', $page->edit_summary());
       $page = $this->process_page('{{cite news|url=http://zbmath.org/?format=complete&q=an:1111.22222}}'); // Very little done to cite news
       $this->assertSame('Add: zbl. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]].', $page->edit_summary());
   }
