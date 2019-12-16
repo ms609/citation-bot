@@ -238,8 +238,8 @@ class WikipediaBot {
       }
     } else {
       if (!getenv('TRAVIS')) report_error("Unhandled write error.  Please copy this output and " .
-                    "<a href='https://github.com/ms609/citation-bot/issues/new'>" .
-                    "report a bug.</a>");
+                    "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
+                    "report a bug.</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
       return FALSE;
     }
   }
