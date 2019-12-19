@@ -10,7 +10,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' FEMS ', ' for ', ' from ', ' för ', ' für ', ' IEEE ', ' if ', ' ILR ', ' in ', ' into ', ' is ', 
           ' its ', ' JAMA ', ' JAMA: ', ' la ', ' las ', ' le ', ' les ', ' los ', ' mit ',  ' MNRAS ', ' mot ', ' NASA ', ' NEJM ', ' non ',
           ' nor ', ' N.Y. ', ' N.Y.) ', ' NRC ', ' NY ', ' NYC ', ' NYT ', ' NZ ', ' och ', ' OECD ', ' of ', ' off ', ' on ', ' og ', ' or ', 
-          ' over ', ' PCR ', ' per ', ' PNAS ', ' PS: ', ' R&D ', ' RNA ', ' RTÉ ', ' S&P ', ' SAE ',  ' SSRN ', ' STDs ', ' TCI: ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
+          ' over ', ' PCR ', ' per ', ' PNAS ', ' PS: ', ' R&D ', ' RNA ', ' RTÉ ', ' S&P ', ' SAE ',  ' SSRN ', ' TCI: ', ' the ', ' then ', ' till ', ' to ', ' UK ', 
           ' um ', ' und ', ' up ', ' USA ', ' van ', ' vir ', ' von ', ' voor ', ' when ', ' with ', ' within ', ' woor ', 
           ' y ', ' zu ', ' zum ', ' zur ', /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they've been decapitalized.
@@ -26,7 +26,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' Fems ', ' For ', ' From ', ' För ', ' Für ', ' Ieee ', ' If ', ' Ilr ', ' In ', ' Into ', ' Is ', 
           ' Its ', ' Jama ', ' Jama: ', ' La ', ' Las ', ' Le ', ' Les ', ' Los ', ' Mit ', ' Mnras ', ' Mot ', ' Nasa ', ' Nejm ', ' Non ',
           ' Nor ', ' N.y. ', ' N.y.) ', ' Nrc ', ' Ny ', ' Nyc ', ' Nyt ', ' Nz ', ' Och ', ' Oecd ', ' Of ', ' Off ', ' On ', ' Og ', ' Or ', 
-          ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Ps: ', ' R&d ', ' Rna ', ' Rté ', ' S&p ', ' Sae ', ' Ssrn ', ' STDS ', ' Tci: ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
+          ' Over ', ' Pcr ', ' Per ', ' Pnas ', ' Ps: ', ' R&d ', ' Rna ', ' Rté ', ' S&p ', ' Sae ', ' Ssrn ', ' Tci: ', ' The ', ' Then ', ' Till ', ' To ', ' Uk ', 
           ' Um ', ' Und ', ' Up ', ' Usa ', ' Van ', ' Vir ', ' Von ', ' Voor ', ' When ', ' With ', ' Within ', ' Woor ', 
           ' Y ', ' Zu ', ' Zum ', ' Zur ', /* The above will be automatically updated to alphabetical order */ 
 
@@ -62,7 +62,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           ' PAJ: A Journal of Performance and Art ', ' PALAIOS ', ' PeerJ ', ' PhytoKeys ', ' Pis\'ma v Astronomicheskii ', ' PLOS Biology ', 
           ' PLOS Medicine ', ' PLOS Neglected Tropical Diseases ', 
           ' PLOS ONE ', ' PLOS ONE ',' PLOS ONE ',' PLOS ONE ', ' PNAS ', ' Published in: ', ' RNA ', ' S.A.P.I.EN.S ',
-          ' Scr. ', ' Srp Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', ' Série A ', 
+          ' Scr. ', ' Srp Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', ' STDs ', ' Série A ', 
           ' Tellus A ', ' The De Paulia ', ' The EMBO Journal ', ' Time Off Magazine ', ' Time Out London ', ' tot de ',
           ' Transactions and archaeological record of the Cardiganshire Antiquarian Society ',
           ' U.S. ', ' U.S.A. ', ' U.S.A. ', ' uHealth ', ' uHealth ', ' USGS ', ' v Astronomicheskii Zhurna ', ' WRIR ',
@@ -98,7 +98,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Paj: A Journal of Performance and Art ', ' Palaios ', ' Peerj ', ' Phytokeys ', ' Pis\'ma V Astronomicheskii ', ' Plos Biology ', 
           ' Plos Medicine ', ' Plos Neglected Tropical Diseases ', 
           ' Plos One ', ' PloS One ', ' PLoS One ', ' PLOS One ', ' Pnas ', ' Published In: ' , ' Rna ', ' S.a.p.i.en.s ',
-          ' SCR. ', ' SRP Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', ' Série a ', 
+          ' SCR. ', ' SRP Arh Celok Lek ', ' Star Trek: The Official Monthly Magazine ', ' STDS ', ' Série a ', 
           ' Tellus a ', ' The de Paulia ', ' The Embo Journal ', ' Time off Magazine ', ' Time Out London ', ' Tot de ',
           ' Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ',
           ' U.s. ', ' U.S.a. ', ' U.s.a ', ' Uhealth ', ' UHealth ', ' Usgs ', ' V Astronomicheskii Zhurna ', ' Wrir ',
