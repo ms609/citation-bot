@@ -3010,16 +3010,23 @@ final class Template {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
   if (!isset($this->param)) return ;
+  $parameter_list = PARAMETER_LIST;
   $parameters_used=array();
   $mistake_corrections = array_values(COMMON_MISTAKES);
   $mistake_keys = array_keys(COMMON_MISTAKES);
   if ($this->param) {
+    foreach ($this->param as $p) { // Convert to all lower case, if needed
+      if (strtolower($p->param) != $p->param &&
+          in_array(strtolower($p->param), $parameter_list) &&
+          !in_array($p->param, $parameter_list) {
+            $p->param = strtolower($p->param);
+      }
+    }
     foreach ($this->param as $p) {
       $parameters_used[] = $p->param;
     }
   }
-  
-  $parameter_list = PARAMETER_LIST;
+
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
 
   $i = 0; // FIXME: this would be better as a proper for loop rather than foreach with counter
