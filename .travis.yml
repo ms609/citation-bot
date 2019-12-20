@@ -13,14 +13,14 @@ matrix:
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit --coverage-clover coverage.xml tests/phpunit
+      script: phpunit --coverage-clover coverage.xml
       after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.6.40  # Newer version has SSL in php curl
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit tests/phpunit
+      script: phpunit
     - stage: deploy-to-master
       name: "Update WMFlabs servers"
       if: branch = master AND type != pull_request
