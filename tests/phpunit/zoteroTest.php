@@ -87,7 +87,6 @@ class ZoteroTest extends testBaseClass {
   public function testZoteroExpansion_ssrn() {
     $text = '{{Cite journal| ssrn=195630 }}';
     $expanded = $this->process_citation($text);
-    return; // TODO
     $this->assertSame('The Pricing of Internet Stocks', $expanded->get('title'));
     $this->assertSame('September 1999', $expanded->get('date'));
   }    
