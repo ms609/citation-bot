@@ -1610,17 +1610,6 @@ ER -  }}';
      $this->assertSame('Explosives engineering', $expanded->get('title'));
      $this->assertNull($expanded->get('url'));
   }
-    
-  public function testJustAnOCLC() {
-    $this->requires_secrets(function() {
-      $text = '{{cite web | url=http://www.worldcat.org/oclc/9334453}}';
-      $expanded = $this->process_citation($text);
-      $this->assertSame('cite book', $expanded->wikiname());
-      $this->assertNull($expanded->get('url'));
-      $this->assertSame('9334453', $expanded->get('oclc'));
-      $this->assertSame('The Shreveport Plan: A Long-range Guide for the Future Development of Metropolitan Shreveport', $expanded->get('title'));
-    });
-  }
 
   public function testJustAnLCCN() {
     $this->requires_secrets(function() {
@@ -1682,12 +1671,6 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertSame('405–554', $expanded->get('pages'));
   }
-    
-  //public function testFindHDL() {
-  //  $text = '{{cite journal | pmid = 14527634 | doi = 10.1016/S1095-6433(02)00368-9 }}';
-  //  $expanded = $this->process_citation($text);
-  //  $this->assertSame('10397/34754', $expanded->get('hdl'));
-  //}
 
   public function testUrlConversions() {
     $text = '{{cite journal | url= https://mathscinet.ams.org/mathscinet-getitem?mr=0012343 }}';
