@@ -94,6 +94,7 @@ final class Template {
         $this->had_initial_editor = TRUE;
       }
     }
+    echo "\n extracted " . $this->name . "\n";
   }
 
   // Re-assemble parsed template into string
