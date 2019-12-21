@@ -62,4 +62,5 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "doi_brokendate"  =>  "doi-broken-date",
   "trans_chapter"   =>  "trans-chapter",
   "trans_title"     =>  "trans-title",
+  "DOI"             =>  "doi",
 );
