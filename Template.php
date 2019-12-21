@@ -4123,6 +4123,7 @@ final class Template {
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
+          echo "\n" . $param . " = " . $value . "\n";
           if (strpos($value, "[//")  === 0) { // We can fix them, if they are the very first item
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
@@ -4131,14 +4132,16 @@ final class Template {
             $value = $matches[1];
             $this->set($param, $value);
           }
+          echo "\n" . $param . " = " . $value . "\n";
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && can_safely_modify_dashes($value)) {
             $this->mod_dashes = TRUE;
-            report_modification("Upgrading to en-dash in " . echoable($param) .
-                  " parameter");
+            echo ("\n Upgrading to en-dash in " . echoable($param) .
+                  " parameter" . "\n");
             $value =  mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
             $this->set($param, $value);
           }
+          echo "\n" . $param . " = " . $value . "\n";
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
               && can_safely_modify_dashes($value)) { 
             $the_dash = mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
