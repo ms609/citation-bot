@@ -163,7 +163,7 @@ class WikipediaBot {
             'meta' => 'tokens',
             'titles' => $page
           ));
-    
+    print_r($response);
     if (!$response) {
       report_error("Write request failed");
     }
