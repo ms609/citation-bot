@@ -106,6 +106,7 @@ final class Template {
         $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
       }
     }
+    echo "\n" . '{{' . $this->name . $this->join_params() . '}}' . "\n";
     return '{{' . $this->name . $this->join_params() . '}}';
   }
 
