@@ -256,6 +256,7 @@ class WikipediaBot {
     do {
       set_time_limit(8);
       $res = $this->fetch($vars, 'POST');
+print_r($res);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
           // We probably only want to visit pages in the main namespace
