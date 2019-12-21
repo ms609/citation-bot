@@ -396,6 +396,8 @@ class Page {
   public function write($api, $edit_summary_end = NULL) {
     if ($this->allow_bots()) {
       throttle(10);
+echo "write\n";
+
       if ($api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at)) {
