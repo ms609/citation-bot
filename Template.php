@@ -4128,7 +4128,8 @@ final class Template {
             $this->set($param, $value);
           }
           if (preg_match('~^p\.p\. *(\d+[–-]\d+)$~u' , $value, $matches)) {
-            $this->set($param, $matches[1]);
+            $value = $matches[1];
+            $this->set($param, $value);
           }
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && can_safely_modify_dashes($value)) {
