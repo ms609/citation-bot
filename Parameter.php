@@ -34,7 +34,7 @@ final class Parameter {
         $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
       }
       $this->post  = $post_eq[3];
-      $this->set_value($post_eq[2]);
+      $this->val   = $post_eq[2];
     } elseif ($pre_eq) {
       $this->pre  = $pre_eq[1];
       $this->val  = $pre_eq[2];
@@ -52,17 +52,7 @@ final class Parameter {
       $this->eq = $match[0] . $this->eq;
       $this->param = str_replace($match[0], '', $this->param);
     }
-  }
 
-  protected function set_value($value) {
-    switch ($this->param) {
-      case 'pages':
-        if (can_safely_modify_dashes($value)) {
-          $value = mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
-        }
-      default:
-        $this->val = $value;
-    }
   }
 
 /*
