@@ -213,7 +213,7 @@ class WikipediaBot {
         'token' => $auth_token,
     );
     $result = $this->fetch($submit_vars, 'POST');
-    
+    print_r($result);
     if (isset($result->error)) {
       report_error("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
