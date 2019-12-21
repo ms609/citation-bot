@@ -212,7 +212,7 @@ class Page {
     }
     for ($i = 0; $i < count($all_templates); $i++) {
       
-      echo "\n $i wikiname is " . $all_templates[$i]->wikiname() . "\n"
+      echo "\n $i wikiname is " . $all_templates[$i]->wikiname() . "\n";
 
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
        $all_templates[$i]->date_style = $this->date_style;
