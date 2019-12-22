@@ -432,37 +432,13 @@ class Page {
         $objects[] = $obj;
       }
     }
-    if ($preg_ok === FALSE) { // Something went wrong.  Try again (five times total!!!), starting over from the simplest regex.  This assumes that at least one of the final regex's actaully worked
-     foreach (array_merge($regexp_in, $regexp_in, $regexp_in, $regexp_in) as $regexp) {
-      $preg_ok = TRUE;
-      while ($preg_ok = preg_match($regexp, $text, $match)) {
-        $obj = new $class();
-        $obj->parse_text($match[0]);
-        $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
-        $text = implode(sprintf($placeholder_text, $i++), $exploded);
-        $objects[] = $obj;
-      }
-     }
-     if ($class::REGEXP_HAS_ONE !== NULL) {
-       $ret = preg_match($class::REGEXP_HAS_ONE, $text);
-       if ($ret === FALSE) {
-         $could_be_bad = TRUE;  // Even simple RegEx died
-       } elseif ($ret === 1) {
-         $could_be_bad = TRUE;  // Looks like there is one
-       } elseif ($ret === 0) {
-         $could_be_bad = FALSE; // There is not one
-       }
-     } else {
-       $could_be_bad =TRUE;
-     }
-     if ($preg_ok === FALSE && $could_be_bad) {
+    if ($preg_ok === FALSE) { // Something went wrong
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
         global $page_error;
         $page_error = TRUE;
         global $is_a_man_with_no_plan;
         if ($is_a_man_with_no_plan) echo "<p>\n\n" . $text . "\n\n<p>";
         report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
-     }
     }
     $this->text = $text;
     return $objects;
