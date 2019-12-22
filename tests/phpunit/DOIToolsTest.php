@@ -193,4 +193,14 @@ final class doiToolsTest extends testBaseClass {
     $this->assertSame('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
     $this->assertSame(['John','Bob','Kim','Billy'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
   }
+  
+  public function test_titles_are_dissimilar_LONG() {
+    $big1 = "asdfgtrewxcvbnjy67rreffdsffdsgfbdfni goreinagoidfhgaodusfhaoleghwc89foxyehoif2faewaeifhajeowhf;oaiwehfa;ociboes;";
+    $big1 = $big1 . $big1 .$big1 .$big1 .$big1 ;
+    $big2 = $big1 . "X"; // stuff...X
+    $big1 = $big1 . "Y"; // stuff...Y
+    $big3 = $big1 . $big1 ; // stuff...Xstuff...X
+    $this->assertTrue(titles_are_similar($big1, $big2));
+    $this->assertTrue(titles_are_dissimilar($big1, $big3));
+  }
 }
