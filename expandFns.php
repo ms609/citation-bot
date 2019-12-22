@@ -20,11 +20,11 @@ function sanitize_doi($doi) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   $extension = substr($doi, strrpos($doi, '#'));
-  if (in_array(strtolower($extension), array('#page_scan_tab_contents'))) {
+  if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   $extension = substr($doi, strrpos($doi, ';'));
-  if (in_array(strtolower($extension), array(';jsessionid'))) {
+  if (strpos(strtolower($extension), ';jsessionid') === 0) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
   $extension = substr($doi, strrpos($doi, '/'));
