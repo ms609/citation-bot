@@ -19,10 +19,6 @@ class Page {
 
   function __construct() { ; }
 
-  /*
- * cannot be tested on Travis
- * @codeCoverageIgnore
- */
   public function get_text_from($title, $api) {   
     global $is_a_man_with_no_plan;
     $is_a_man_with_no_plan = FALSE;
