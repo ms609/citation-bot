@@ -72,6 +72,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('', tidy_date('-0001-11-30T00:00:00+00:00'));
     $this->assertSame('', tidy_date('22/22/2010'));  // That is not valid date code
     $this->assertSame('', tidy_date('The date is 88 but not three')); // Not a date, but has some numbers
+    $this->assertSame('2016-10-03', tidy_date('3 October, 2016')); // evil comma
   }
   
   public function testRemoveComments() {
