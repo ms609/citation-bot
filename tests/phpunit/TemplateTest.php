@@ -200,14 +200,14 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testPlusDOI() {
-    $doi = "10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U";
+    $doi = "10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U#page_scan_tab_contents=342342"; // Also check #page_scan_tab_contents stuff too
     $text = "{{cite journal|doi = $doi }}";
     $expanded = $this->process_citation($text);
-    $this->assertSame($doi, $expanded->get('doi'));
+    $this->assertSame("10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U", $expanded->get('doi'));
   }
  
   public function testNewsdDOI() {
-    $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024}}";
+    $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024;jsessionid=222}}"; // Also check jsesssion removal
     $expanded = $this->process_citation($text);
     $this->assertSame('10.1021/cen-v076n048.p024', $expanded->get('doi'));
   }
