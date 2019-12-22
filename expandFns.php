@@ -39,10 +39,8 @@ function sanitize_doi($doi) {
         preg_match('~^(10\.1093/acprof.+)(?:/acprof.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/acref.+)(?:/acref.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/ref:odnb.+)(?:/odnb.+)$~', $doi, $match) ||
-        preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match)) {
-       $doi = $match[1];
-    }
-    if (preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
+        preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match) ||
+        preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
        $doi = $match[1];
     } 
   }
