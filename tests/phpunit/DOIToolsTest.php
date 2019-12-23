@@ -123,6 +123,12 @@ final class doiToolsTest extends testBaseClass {
      $result=format_author($author);
      $this->assertSame('S. Smithguy X.', $result);
    }
+  
+  public function testFormatAuthor16() {  
+     $author = "abxxxc xyzd. d. dddss."; // Too man dots, special code
+     $result=format_author($author);
+     $this->assertSame('Abxxxc Xyzd D. Dddss', $result);
+   }
 
    public function testJunior() {
        $text = ""; // Empty string should work
