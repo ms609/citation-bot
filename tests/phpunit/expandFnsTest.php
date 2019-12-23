@@ -57,6 +57,13 @@ final class expandFnsTest extends testBaseClass {
                         extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
   }
   
+  public function testSanitizeDoi() {
+    $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x'));
+    $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x.')); // extra dot
+    $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.'));  // Missing x after dot
+    $this->assertSame('143242342342', sanitize_doi('143242342342.')); // Rubbish with trailing dot, just remove it 
+  }
+  
   public function testTidyDate() {
     $this->assertSame('2014', tidy_date('maanantai 14. heinäkuuta 2014'));
     $this->assertSame('2012-04-20', tidy_date('2012年4月20日 星期五'));
@@ -73,6 +80,8 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('', tidy_date('22/22/2010'));  // That is not valid date code
     $this->assertSame('', tidy_date('The date is 88 but not three')); // Not a date, but has some numbers
     $this->assertSame('2016-10-03', tidy_date('3 October, 2016')); // evil comma
+    $this->assertSame('22 October 1999 – 22 September 2000', tidy_date('1999-10-22 - 2000-09-22'));
+    $this->assertSame('22 October – 22 September 1999', tidy_date('1999-10-22 - 1999-09-22'));
   }
   
   public function testRemoveComments() {
