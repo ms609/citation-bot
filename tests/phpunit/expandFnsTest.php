@@ -86,5 +86,12 @@ final class expandFnsTest extends testBaseClass {
   
   public function testRemoveComments() {
     $this->assertSame('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
-  } 
-}    
+  }
+
+  public function testJstorInDo() {
+    $template = $this->prepare_citation('{{cite journal|jstor=}}');
+    $doi = '10.2307/3241423?junk'; // test 10.2307 code and ? code
+    check_doi_for_jstor($doi, $template);
+    $this->assertSame('3241423',$template->get('jstor'));
+  }
+} 
