@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="setup.php"
-         stopOnError="false">
+<phpunit stopOnError="false">
   <testsuites>
     <testsuite name="TestSuite">
       <directory suffix=".php">./tests/phpunit</directory>
