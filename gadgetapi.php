@@ -12,7 +12,7 @@ if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
 require_once('setup.php');
 
 $originalText = $_POST['text'];
-$editSummary = $_POST['summary'];
+$editSummary = (string) $_POST['summary'];
 
 //Expand text from postvars
 $page = new Page();
@@ -25,16 +25,9 @@ if ($newText == "") $newText = $originalText; // Something went very wrong
 if ($newText !== $originalText) {
   if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
   $editSummary .=  str_replace('use this bot', 'use this tool', $page->edit_summary()) . '| via #UCB_Gadget ';
-} elseif (!$editSummary) {
-  $editSummary = "";
 }
 
-if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
-  $debug_text = ob_get_flush();
-} else {
-  $debug_text = '';
-  ob_end_clean();
-}
+$debug_text = ob_get_flush();
 
 $result = array(
   'expandedtext' => $newText,
