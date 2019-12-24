@@ -29,6 +29,10 @@ if ($newText !== $originalText) {
 
 $debug_text = ob_get_flush();
 
+if (!isset($_REQUEST['debug']) || $_REQUEST['debug']!=='1') {		 $debug_text = ob_get_flush();
+   $debug_text = '';
+}
+
 $result = array(
   'expandedtext' => $newText,
   'editsummary' => $editSummary,
