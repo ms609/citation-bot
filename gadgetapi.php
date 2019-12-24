@@ -27,12 +27,11 @@ if ($newText !== $originalText) {
   $editSummary .=  str_replace('use this bot', 'use this tool', $page->edit_summary()) . '| via #UCB_Gadget ';
 }
 
-$debug_text = ob_get_flush();
+ob_end_clean();
 
 $result = array(
   'expandedtext' => $newText,
-  'editsummary' => $editSummary,
-  'debug' => $debug_text,
+  'editsummary' => $editSummary
 );
 
 echo @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
