@@ -20,8 +20,17 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function requires_secrets($function) {
-    if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) {
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) {
       echo 'S'; // Skipping test: Risks exposing secret keys
+      $this->assertNull(NULL); // Make Travis think we tested something
+    } else {
+      $function();
+    }
+  }
+
+  protected function wastes_secrets($function) {
+    if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) {
+      echo 'S'; // Skipping test: uses up a security key up
       $this->assertNull(NULL); // Make Travis think we tested something
     } else {
       $function();
