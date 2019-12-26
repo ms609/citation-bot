@@ -28,8 +28,9 @@ class Page {
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
     if (!isset($details->query)) {
-      report_warning("Error: Could not fetch page.");
-      if (isset($details->error)) report_info($details->error->info);
+      $message = "Error: Could not fetch page.";
+      if (isset($details->error)) $message .= "  " . $details->error->info;
+      report_warning($message);
       return FALSE;
     }
     foreach ($details->query->pages as $p) {
@@ -54,7 +55,8 @@ class Page {
 
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     if ($this->text === FALSE) {
-       report_error('Unable to get anything for ' . $title . ' from ' . WIKI_ROOT); 
+       report_warning('Unable to get anything for ' . $title . ' from ' . WIKI_ROOT);
+       return FALSE;
     }
     $this->start_text = $this->text;
     $this->construct_modifications_array();
