@@ -1,4 +1,7 @@
 <?php
+
+if (mkdir('git_pull.lock', 0700)) {
+
 if (!getenv('GITHUB_PAT') && file_exists('env.php')) {
   require_once('env.php');
 }
@@ -57,6 +60,11 @@ if (getenv('GITHUB_PAT')) {
 
 } else {
   echo "Github PAT not set.\n";
+}
+
+  rmdir('git_pull.lock') ;
+} else {
+  echo 'lock file exists -- aborting ';
 }
 
 ?>
