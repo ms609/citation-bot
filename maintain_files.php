@@ -53,7 +53,7 @@ if (mkdir('git_pull.lock', 0700)) {
 
    git_echo('git add ' . $filename);
    git_echo('git commit -m "Automated file maintenance" ' . $filename . ' || true');
-   git_echo('git push https://ms609-bot:' . getenv('GITHUB_PAT') . '@github.com/ms609/citation-bot.git master');
+   git_echo('git push https://ms609-bot:' . getenv('GITHUB_PAT') . '@github.com/ms609/citation-bot.git HEAD');
    git_echo('git fetch --all');
    git_echo('git reset --hard');
 
