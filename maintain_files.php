@@ -1,30 +1,12 @@
 <?php
 
-if (!getenv('GITHUB_PAT') && file_exists('env.php')) {
-  require_once('env.php');
-}
-if (mkdir('git_pull.lock', 0700)) {
-  if (getenv('GITHUB_PAT')) {
-    function git_echo($cmd) {
-      exec ($cmd, $output, $return_var);
-      echo "\n$ " . str_replace(getenv('GITHUB_PAT'), '[[[GITHUB_PAT]]]', $cmd) 
-         . ": result $return_var\n   "
-         . implode("\n   ", $output) . "\n";
-    }
+$start_alpha = '/* The following will be automatically updated to alphabetical order */';
+$end_alpha = '/* The above will be automatically updated to alphabetical order */';
+$filename = 'constants/capitalization.php';
+$contents = file_get_contents($filename);
 
-    echo "<pre>";
-    $start_alpha = '/* The following will be automatically updated to alphabetical order */';
-    $end_alpha = '/* The above will be automatically updated to alphabetical order */';
-    $filename = 'constants/capitalization.php';
-
-    git_echo('git config --global user.email "martins@gmail.com"');
-    git_echo('git config --global user.name "Martin Smith"');
-    git_echo('git fetch --all');
-    git_echo('git reset --hard');
-
-    $contents = file_get_contents($filename);
-    $sections = explode($start_alpha, $contents);
-    foreach ($sections as &$section) {
+$sections = explode($start_alpha, $contents);
+foreach ($sections as &$section) {
       $alpha_end = stripos($section, $end_alpha);
       if (!$alpha_end) continue;
       $alpha_bit = substr($section, 0, $alpha_end);
@@ -48,22 +30,8 @@ if (mkdir('git_pull.lock', 0700)) {
       }
       if ($alphaed == $new_line) $alphaed = '';
       $section = $alphaed . substr($section, $alpha_end);
-    }
-    file_put_contents($filename, implode($start_alpha, $sections));
-
-   git_echo('git add ' . $filename);
-   git_echo('git commit -m "Automated file maintenance" ' . $filename . ' || true');
-   git_echo('git push https://ms609-bot:' . getenv('GITHUB_PAT') . '@github.com/ms609/citation-bot.git HEAD');
-   git_echo('git fetch --all');
-   git_echo('git reset --hard');
-
-  } else {
-    echo "Github PAT not set.\n";
-  }
-
-  rmdir('git_pull.lock') ;
-} else {
-  echo 'lock file exists -- aborting ';
 }
+    
+echo(implode($start_alpha, $sections));
 
 ?>
