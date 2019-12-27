@@ -81,7 +81,7 @@ final class constantsTest extends testBaseClass {
   public function testAtoZ() {
     $start_alpha = '/* The following will be automatically updated to alphabetical order */';
     $end_alpha = '/* The above will be automatically updated to alphabetical order */';
-    $filename = '../../constants/capitalization.php';
+    $filename = __DIR__ . '/../../constants/capitalization.php';
     $old_contents = file_get_contents($filename);
     $sections = explode($start_alpha, $old_contents);
     foreach ($sections as &$section) {
