@@ -97,8 +97,9 @@ final class constantsTest extends testBaseClass {
       $new_line = "\n          ";
       $alphaed = $new_line;
       $line_length = 10;
+      array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
       foreach ($bits_length as $bit_length) {
-        $bit = next($alpha_bits);
+       $bit = next($alpha_bits);
        $alphaed .= $bit ? ($bit . ', ') : '';
        $line_length += $bit_length + 2;
        if ($line_length > 86) {
