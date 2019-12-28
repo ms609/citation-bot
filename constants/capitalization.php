@@ -39,13 +39,12 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           ' el Dorado ', ' las Vegas ', ' los Angeles ', ' N y ', ' U S a ');
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' (BBA) ', ' (online ed.) ', ' AAPOS ', 
-          ' AAPS ', ' ACS ', ' Algebra i Analiz ', ' Angew Chem Int Ed ', ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ', 
-          ' ASAIO ', ' ASME AES ', ' ASME MTD ', ' B/gcvs ', 
-          ' B/gcvs ', ' B/gcvs ', ' BioEssays ', ' bioRxiv ', ' bioRxiv ', ' BJOG ', 
-          ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', ' Dtsch ', ' Dtsch. ', ' e-Journal ', 
-          ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ', ' e-Print ', ' e-Print ', 
-          ' e-Prints ', ' e-Prints ', ' Early Modern Japan: an Interdisciplinary Journal ', ' eCrypt ', 
+          ' (BBA) ', ' (online ed.) ', ' AAPOS ', ' AAPS ', ' ACS ', ' Algebra i Analiz ', ' Angew Chem Int Ed ', 
+          ' APS Division ', ' Arch Dis Child Fetal Neonatal Ed ', ' ASAIO ', 
+          ' ASME AES ', ' ASME MTD ', ' B/gcvs ', ' B/gcvs ', ' B/gcvs ', ' BioEssays ', ' bioRxiv ', 
+          ' bioRxiv ', ' BJOG ', ' BMJ ', ' CBD Ubiquitin ', ' CFSK-DT ', ' CMAJ ', 
+          ' Dtsch ', ' Dtsch. ', ' e-Journal ', ' e-Journal ', ' e-Neuroforum ', ' e-Neuroforum ', 
+          ' e-Print ', ' e-Print ', ' e-Prints ', ' e-Prints ', ' Early Modern Japan: an Interdisciplinary Journal ', ' eCrypt ', 
           ' eCrypt ', ' EFSA ', ' eGEMs ', ' eGEMs ', ' eJournal ', ' eJournal ', ' eLife ', 
           ' eLife ', ' eLS ', ' eLS ', ' EMBO J ', ' EMBO J. ', ' EMBO Journal ', ' EMBO Rep ', 
           ' EMBO Rep. ', ' EMBO Reports ', ' eNeuro ', ' eNeuro ', ' engrXiv ', ' ePlasty ', 
@@ -76,18 +75,17 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           /* The above will be automatically updated to alphabetical order */
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          ' (Bba) ', ' (online Ed.) ', ' Aapos ', 
-          ' Aaps ', ' Acs ', ' Algebra I Analiz ', ' Angew Chem Int ed ', ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ', 
-          ' Asaio ', ' Asme Aes ', ' Asme MTD ', ' B/Gcvs ', 
-          ' B/GCVS ', ' b/gcvs ', ' Bioessays ', ' Biorxiv ', ' BioRxiv ', ' Bjog ', 
-          ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', ' DTSCH ', ' DTSCH. ', ' E-journal ', 
-          ' E-Journal ', ' E-neuroforum ', ' E-Neuroforum ', ' E-print ', ' E-Print ', 
-          ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ', ' ECrypt ', 
+          ' (Bba) ', ' (online Ed.) ', ' Aapos ', ' Aaps ', ' Acs ', ' Algebra I Analiz ', ' Angew Chem Int ed ', 
+          ' Aps Division ', ' Arch Dis Child Fetal Neonatal ed ', ' Asaio ', 
+          ' Asme Aes ', ' Asme MTD ', ' B/Gcvs ', ' B/GCVS ', ' b/gcvs ', ' Bioessays ', ' BioRxiv ', 
+          ' Biorxiv ', ' Bjog ', ' Bmj ', ' Cbd Ubiquitin ', ' CFSK-Dt ', ' Cmaj ', 
+          ' DTSCH ', ' DTSCH. ', ' E-Journal ', ' E-journal ', ' E-Neuroforum ', ' E-neuroforum ', 
+          ' E-print ', ' E-Print ', ' E-prints ', ' E-Prints ', ' Early Modern Japan: An Interdisciplinary Journal ', ' ECrypt ', 
           ' Ecrypt ', ' Efsa ', ' EGEMs ', ' Egems ', ' Ejournal ', ' EJournal ', ' ELife ', 
-          ' Elife ', ' Els ', ' ELS ', ' Embo J ', ' Embo J. ', ' Embo Journal ', ' Embo Rep ', 
+          ' Elife ', ' ELS ', ' Els ', ' Embo J ', ' Embo J. ', ' Embo Journal ', ' Embo Rep ', 
           ' Embo Rep. ', ' Embo Reports ', ' ENeuro ', ' Eneuro ', ' Engrxiv ', ' Eplasty ', 
-          ' EPlasty ', ' Eprint ', ' EPrint ', ' Eprints ', ' EPrints ', ' Epub ', ' EPub ', 
-          ' EPub) ', ' Escholarship ', ' Evolo ', ' EVolo ', ' EWeek ', ' Eweek ', ' Faseb J ', 
+          ' EPlasty ', ' EPrint ', ' Eprint ', ' Eprints ', ' EPrints ', ' Epub ', ' EPub ', 
+          ' EPub) ', ' Escholarship ', ' EVolo ', ' Evolo ', ' Eweek ', ' EWeek ', ' Faseb J ', 
           ' Faseb J. ', ' Febs J ', ' Febs J. ', ' Febs Journal ', ' Föreningen I Stockholm ', ' Für Anorganische und Allgemeine ', 
           ' Hannaharendt.net ', ' History of Science; an Annual Review of Literature ', ' Hoaj Biology ', 
           ' Hprints ', ' Iconference ', ' Ieee/Acm ', ' IEEE/Acm ', ' Ifac-Papersonline ', ' IJournal ', 
@@ -96,8 +94,8 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           ' Journal of Materials Chemistry A ', ' Journal of the A.i.i.e ', ' Journal of the Iest ', 
           ' JPN ', ' JPN. ', ' la Trobe ', ' Latina/O ', ' LTD ', ' Mabs ', 
           ' MAbs ', ' Mbio ', ' MBio ', ' Med SCH ', ' Meddelelser Om Grønland ', ' Meddelelser Om Grønland, ', 
-          ' Merip ', ' Methods in Molecular Biology (Clifton, N.j.) ', ' Mhealth ', 
-          ' MHealth ', ' Molecular and Cellular Biology ', ' Montana the Magazine of Western History ', ' Msphere ', 
+          ' Merip ', ' Methods in Molecular Biology (Clifton, N.j.) ', ' MHealth ', 
+          ' Mhealth ', ' Molecular and Cellular Biology ', ' Montana the Magazine of Western History ', ' Msphere ', 
           ' MSphere ', ' Msystems ', ' MSystems ', ' N.Paradoxa ', ' Nasa Tech Briefs ', ' Nber ', 
           ' NDT & e International ', ' Neuroreport ', ' Notes of the Aas ', ' NY Forskning I Grammatik ', ' NYT Tidsskrift ', 
           ' Ocean Science Journal : Osj ', ' Paj: A Journal of Performance and Art ', ' Palaios ', 
@@ -131,4 +129,4 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' amžius ', ' humanitarica ', ' universitatis ', ' Saulensis ', ' oftalmologija ', ' dienos ',
            ' Lietuvos ', ' muziejų ', ' rinkiniai ', ' Traduction ', ' Terminologie ', ' Rédaction ',
            ' Etudes ', ' irlandaises  ', ' Studia ', ' humaniora ', ' Estonica ');
- 
+
