@@ -1,8 +1,7 @@
 <?php
 /*
- * setup.php sets up most of the page expansion. 
- * Most of the page expansion depends on everything else, 
- * particularly Template and Page.
+ * setup.php sets up the environment
+ * Most of the page expansion depends on everything else
 */
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
@@ -30,7 +29,7 @@ if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
                                   'Reading authentication tokens from tools.wmflabs.org-dev.'],
                                  ['', ''], ob_get_contents()));
   if ($env_output) {
-    ob_end_flush();  // Something unexpeted, so print it out
+    ob_end_flush();  // Something unexpected, so print it out
   } else {
     ob_end_clean();
   }
@@ -46,7 +45,7 @@ require_once("WikipediaBot.php");
 require_once("expandFns.php");
 require_once("zotero.php");
 
-mb_internal_encoding('UTF-8'); // Avoid ??s
+mb_internal_encoding('UTF-8');
 ini_set("memory_limit", "256M");
 
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
