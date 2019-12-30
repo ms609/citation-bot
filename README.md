@@ -36,7 +36,7 @@ Basic structure of a Citation bot script:
 A quick tour of the main files:
 * `constants.php`: constants defined
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
-* `DOItools.php`: defines text/name functions
+* `DOItools.php`: defines name functions
 * `setup.php`: sets up needed functions, requires most of the other files listed here
 * `expandFns.php`: a variety of functions
 * `apiFunctions.php`: sets up needed functions for expanding pmid/doi/etc
