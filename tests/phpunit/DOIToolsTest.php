@@ -123,7 +123,7 @@ final class doiToolsTest extends testBaseClass {
      $result=format_author($author);
      $this->assertSame('S. Smithguy X.', $result);
    }
-  
+
   public function testFormatAuthor16() {  
      $author = "abxxxc xyzd. d. dddss."; // Too man dots, special code
      $result=format_author($author);
@@ -160,7 +160,7 @@ final class doiToolsTest extends testBaseClass {
        $this->assertSame("Ewing JR", $result[0]);
        $this->assertSame(FALSE, $result[1]);
   }
-  
+
   public function testEditSummary() {  // Not a great test. Mostly just verifies no crashes in code
     $page = new TestPage();
     $text = "{{Cite journal|pmid=9858586}}";
@@ -179,7 +179,7 @@ final class doiToolsTest extends testBaseClass {
     $text = "X‹Y›Z";
     $this->assertSame("X'Y'Z",straighten_quotes($text));
   }
-  
+
   public function testMathInTitle() {
     // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
     // $text_math is the correct final output
@@ -189,7 +189,7 @@ final class doiToolsTest extends testBaseClass {
     $this->assertSame($text_math,wikify_external_text($text_math)); // Should not change
     $this->assertSame($text_math,wikify_external_text($text_mml));  // The most important test: mml converstion to <math>
   }
-  
+
   public function testFormat() { // Random extra code coverage tests
     $this->assertSame('& a. Johnson', format_surname('& A. Johnson'));
     $this->assertSame('Johnson; Smith', format_surname('Johnson; Smith'));
@@ -199,7 +199,7 @@ final class doiToolsTest extends testBaseClass {
     $this->assertSame('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
     $this->assertSame(['John','Bob','Kim','Billy'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
   }
-  
+
   public function test_titles_are_dissimilar_LONG() {
     $big1 = "asdfgtrewxcvbnjy67rreffdsffdsgfbdfni goreinagoidfhgaodusfhaoleghwc89foxyehoif2faewaeifhajeowhf;oaiwehfa;ociboes;";
     $big1 = $big1 . $big1 .$big1 .$big1 .$big1 ;
