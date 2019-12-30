@@ -1,5 +1,5 @@
 <?php
-
+// ============================================= DOI functions ======================================
 function sanitize_doi($doi) {
   if (substr($doi, -1) === '.') {
     $try_doi = substr($doi, 0, -1);
@@ -78,6 +78,7 @@ function extract_doi($text) {
   return array(FALSE, FALSE);
 }
 
+// ============================================= String/Text functions ======================================
 function wikify_external_text($title) {
   $replacement = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
@@ -141,13 +142,136 @@ function wikify_external_text($title) {
   return($title); 
 }
 
-function title_case($text) {
-  return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
-}
-
 function restore_italics ($text) {
   // <em> tags often go missing around species names in CrossRef
   return preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
+}
+
+function sanitize_string($str) {
+  // ought only be applied to newly-found data.
+  if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
+  $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
+  if ($math_templates_present) {
+    $replacement = [];
+    $placeholder = [];
+    for ($i = 0; $i < count($math_hits[0]); $i++) {
+      $replacement[$i] = $math_hits[0][$i];
+      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
+    }
+    $str = str_replace($replacement, $placeholder, $str);
+  }
+  $dirty = array ('[', ']', '|', '{', '}', " what�s ");
+  $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's ");
+  $str = trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
+  if ($math_templates_present) {
+    $str = str_replace($placeholder, $replacement, $str);
+  }
+  return $str;
+}
+
+function truncate_publisher($p){
+  return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
+}
+
+function str_remove_irrelevant_bits($str) {
+  $str = trim($str);
+  $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
+  $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
+  $str = trim($str);
+  $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
+  $str = str_replace(array('.', ',', ';', ':', '   ', '  '), ' ', $str); // punctuation and multiple spaces
+  $str = trim($str);
+  $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'),
+                      array('Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and ', ''), $str);
+  $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>'), '', $str);
+  $str = straighten_quotes($str);
+  $str = trim($str);
+  return $str;
+}
+
+// See also titles_are_similar()
+function str_equivalent($str1, $str2) {
+  return 0 === strcasecmp(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
+}
+
+// See also str_equivalent()
+function titles_are_similar($title1, $title2) {
+  return !titles_are_dissimilar($title1, $title2);
+}
+
+
+function de_wikify($string){
+  return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
+}
+
+function titles_are_dissimilar($inTitle, $dbTitle) {
+        // always decode new data
+        $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
+        // old data both decoded and not
+        $inTitle2 = titles_simple($inTitle);
+        $inTitle = titles_simple(mb_convert_encoding(html_entity_decode($inTitle), "HTML-ENTITIES", 'UTF-8'));
+        return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
+              ? (strlen($inTitle) != strlen($dbTitle)
+                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
+              : levenshtein($inTitle, $dbTitle) > 3
+        )
+        &&  
+        ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
+              ? (strlen($inTitle2) != strlen($dbTitle)
+                || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
+              : levenshtein($inTitle2, $dbTitle) > 3
+        );
+}
+
+function titles_simple($inTitle) {
+        // Trailing "a review"
+        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        // Strip trailing Online
+        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
+        // Strip trailing (Third Edition)
+        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        // Strip leading the
+        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
+        // Reduce punctuation
+        $inTitle = straighten_quotes(mb_strtolower((string) $inTitle));
+        $inTitle = preg_replace("~(?: |-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
+        // Drop normal quotes
+        $inTitle = str_replace(array("'", '"'), "", $inTitle);
+        // Strip trailing periods
+        $inTitle = trim(rtrim($inTitle, '.'));
+        // greek
+        $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν',
+                                     'ξ', 'π', 'ρ'. 'σ', 'ς', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω'),
+                               array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta',
+                                     'iota', 'kapa', 'lamda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'sigma',
+                                     'tau',  'upsilon', 'phi', 'chi', 'psi', 'omega'), $inTitle);
+        $inTitle = str_replace(array('Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π', 'Σ', 'Φ', 'Ψ', 'Ω'),
+                               array('gamma', 'delta', 'theta', 'lambda', 'xi', 'pi', 'sigma', 'phi', 'psi', 'omega'), $inTitle);
+        $inTitle = str_remove_irrelevant_bits($inTitle);
+        return $inTitle;
+}
+
+function straighten_quotes($str) { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
+  $str = preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
+  if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
+     (mb_strpos($str, '\x{2039}') !== FALSE && mb_strpos($str, '\x{203A}') !== FALSE) ||
+     (mb_strpos($str, '‹')        !== FALSE && mb_strpos($str, '›')        !== FALSE)) { // Only replace single angle quotes if some of both
+     $str = preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
+  }	
+  $str = preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
+  if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
+     (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE) ||
+     (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace double angle quotes if some of both
+     $str = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);            // Websites tiles: Jobs » Iowa » Cows » Ames
+  }
+  return $str;
+}
+
+// ============================================= Capitalization functions ======================================
+
+function title_case($text) {
+  return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
 }
 
 /** Returns a properly capitalised title.
@@ -272,6 +396,13 @@ function mb_substr_replace($string, $replacement, $start, $length) {
     return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
 }
 
+function remove_brackets($string) {
+  return str_replace(['(', ')', '{', '}', '[', ']'], '' , $string);
+}
+
+
+// ============================================= Wikipedia functions ======================================
+
 /**
  * Cannot really test in TRAVIS
  * @codeCoverageIgnore
@@ -290,27 +421,7 @@ function throttle ($min_interval) {
   $last_write_time = time();
 }
 
-function sanitize_string($str) {
-  // ought only be applied to newly-found data.
-  if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
-  $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
-  if ($math_templates_present) {
-    $replacement = [];
-    $placeholder = [];
-    for ($i = 0; $i < count($math_hits[0]); $i++) {
-      $replacement[$i] = $math_hits[0][$i];
-      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
-    }
-    $str = str_replace($replacement, $placeholder, $str);
-  }
-  $dirty = array ('[', ']', '|', '{', '}', " what�s ");
-  $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's ");
-  $str = trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
-  if ($math_templates_present) {
-    $str = str_replace($placeholder, $replacement, $str);
-  }
-  return $str;
-}
+// ============================================= Data processing functions ======================================
 
 function tidy_date($string) {
   $string=trim($string);
@@ -404,9 +515,19 @@ function tidy_date($string) {
   return ''; // And we give up
 }
 
-function remove_brackets($string) {
-  return str_replace(['(', ')', '{', '}', '[', ']'], '' , $string);
+function good_10_1093_doi($url) { // We assume dois are bad, unless on good list
+  if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
+  $test = strtolower($match[1]);
+  // March 2019 Good list
+  if (in_array($test, GOOD_10_1093_DOIS)) return TRUE;
+  return FALSE;
 }
+
+function bad_10_1093_doi($url) {
+  return !good_10_1093_doi($url);
+}
+
+// ============================================= Other functions ======================================
 
 function remove_comments($string) {
   // See Comment::PLACEHOLDER_TEXT for syntax
@@ -450,27 +571,6 @@ function equivalent_parameters($par) {
     default: return array($par);
   }
 }
-
-function str_remove_irrelevant_bits($str) {
-  $str = trim($str);
-  $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
-  $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
-  $str = trim($str);
-  $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
-  $str = str_replace(array('.', ',', ';', ':', '   ', '  '), ' ', $str); // punctuation and multiple spaces
-  $str = trim($str);
-  $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'),
-                      array('Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and ', ''), $str);
-  $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>'), '', $str);
-  $str = straighten_quotes($str);
-  $str = trim($str);
-  return $str;
-}
-
-// See also titles_are_similar()
-function str_equivalent($str1, $str2) {
-  return 0 === strcasecmp(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
-}
   
 function check_doi_for_jstor($doi, &$template) {
   if ($template->has('jstor')) return;
@@ -499,87 +599,6 @@ function check_doi_for_jstor($doi, &$template) {
   }      
 }
 
-function good_10_1093_doi($url) { // We assume dois are bad, unless on good list
-  if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
-  $test = strtolower($match[1]);
-  // March 2019 Good list
-  if (in_array($test, GOOD_10_1093_DOIS)) return TRUE;
-  return FALSE;
-}
-
-function bad_10_1093_doi($url) {
-  return !good_10_1093_doi($url);
-}
-
-
-function de_wikify($string){
-  return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
-}
-
-function titles_are_dissimilar($inTitle, $dbTitle) {
-        // always decode new data
-        $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
-        // old data both decoded and not
-        $inTitle2 = titles_simple($inTitle);
-        $inTitle = titles_simple(mb_convert_encoding(html_entity_decode($inTitle), "HTML-ENTITIES", 'UTF-8'));
-        return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-              ? (strlen($inTitle) != strlen($dbTitle)
-                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
-              : levenshtein($inTitle, $dbTitle) > 3
-        )
-        &&  
-        ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
-              ? (strlen($inTitle2) != strlen($dbTitle)
-                || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
-              : levenshtein($inTitle2, $dbTitle) > 3
-        );
-}
-
-function titles_simple($inTitle) {
-        // Trailing "a review"
-        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
-        // Strip trailing Online
-        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
-        // Strip trailing (Third Edition)
-        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
-        // Strip leading the
-        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
-        // Reduce punctuation
-        $inTitle = straighten_quotes(mb_strtolower((string) $inTitle));
-        $inTitle = preg_replace("~(?: |-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
-        $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
-        // Drop normal quotes
-        $inTitle = str_replace(array("'", '"'), "", $inTitle);
-        // Strip trailing periods
-        $inTitle = trim(rtrim($inTitle, '.'));
-        // greek
-        $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν',
-                                     'ξ', 'π', 'ρ'. 'σ', 'ς', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω'),
-                               array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta',
-                                     'iota', 'kapa', 'lamda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'sigma',
-                                     'tau',  'upsilon', 'phi', 'chi', 'psi', 'omega'), $inTitle);
-        $inTitle = str_replace(array('Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π', 'Σ', 'Φ', 'Ψ', 'Ω'),
-                               array('gamma', 'delta', 'theta', 'lambda', 'xi', 'pi', 'sigma', 'phi', 'psi', 'omega'), $inTitle);
-        $inTitle = str_remove_irrelevant_bits($inTitle);
-        return $inTitle;
-}
-
-function straighten_quotes($str) { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
-  $str = preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
-  if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
-     (mb_strpos($str, '\x{2039}') !== FALSE && mb_strpos($str, '\x{203A}') !== FALSE) ||
-     (mb_strpos($str, '‹')        !== FALSE && mb_strpos($str, '›')        !== FALSE)) { // Only replace single angle quotes if some of both
-     $str = preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
-  }	
-  $str = preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
-  if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
-     (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE) ||
-     (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace double angle quotes if some of both
-     $str = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);            // Websites tiles: Jobs » Iowa » Cows » Ames
-  }
-  return $str;
-}
-
 function can_safely_modify_dashes($value) {
    return((stripos($value, "http") === FALSE)
        && (strpos($value, "[//") === FALSE)
@@ -590,11 +609,3 @@ function can_safely_modify_dashes($value) {
        && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
 }
 
-// See also str_equivalent()
-function titles_are_similar($title1, $title2) {
-  return !titles_are_dissimilar($title1, $title2);
-}
-
-function truncate_publisher($p){
-  return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
-}
