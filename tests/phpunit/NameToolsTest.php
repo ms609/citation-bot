@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Tests for DOITools.php.
+ * Tests for NameTools.php.
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
