@@ -20,14 +20,6 @@ function junior_test($name) {
   return array($name, $junior);
 }
 
-function de_wikify($string){
-  return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
-}
-
-function truncate_publisher($p){
-  return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
-}
-
 function format_surname($surname) {
   if ($surname == '-') return '';
   if (preg_match('~^\S\.?$~u', $surname)) return mb_strtoupper($surname); // Just a single initial, with or without period
@@ -260,81 +252,18 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
   }
 }
 
-function straighten_quotes($str) { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
-  $str = preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
-  if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
-     (mb_strpos($str, '\x{2039}') !== FALSE && mb_strpos($str, '\x{203A}') !== FALSE) ||
-     (mb_strpos($str, '‹')        !== FALSE && mb_strpos($str, '›')        !== FALSE)) { // Only replace single angle quotes if some of both
-     $str = preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
-  }	
-  $str = preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
-  if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
-     (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE) ||
-     (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace double angle quotes if some of both
-     $str = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);            // Websites tiles: Jobs » Iowa » Cows » Ames
-  }
-  return $str;
+function under_two_authors($text) {
+  return !(strpos($text, ';') !== FALSE  //if there is a semicolon
+          || substr_count($text, ',') > 1  //if there is more than one comma
+          || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
+          );
 }
 
-function can_safely_modify_dashes($value) {
-   return((stripos($value, "http") === FALSE)
-       && (strpos($value, "[//") === FALSE)
-       && (stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE)
-       && (strpos($value, "(") === FALSE)
-       && (substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') < 3) // This line helps us ignore with 1-5–1-6 stuff
-       && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1) // A-3, A3-5 etc.  Use "." for generic dash
-       && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
-}
-
-// See also str_equivalent()
-function titles_are_similar($title1, $title2) {
-  return !titles_are_dissimilar($title1, $title2);
-}
-
-function titles_are_dissimilar($inTitle, $dbTitle) {
-        // always decode new data
-        $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
-        // old data both decoded and not
-        $inTitle2 = titles_simple($inTitle);
-        $inTitle = titles_simple(mb_convert_encoding(html_entity_decode($inTitle), "HTML-ENTITIES", 'UTF-8'));
-        return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-              ? (strlen($inTitle) != strlen($dbTitle)
-                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
-              : levenshtein($inTitle, $dbTitle) > 3
-        )
-        &&  
-        ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
-              ? (strlen($inTitle2) != strlen($dbTitle)
-                || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
-              : levenshtein($inTitle2, $dbTitle) > 3
-        );
-}
-
-function titles_simple($inTitle) {
-        // Trailing "a review"
-        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
-        // Strip trailing Online
-        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
-        // Strip trailing (Third Edition)
-        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
-        // Strip leading the
-        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
-        // Reduce punctuation
-        $inTitle = straighten_quotes(mb_strtolower((string) $inTitle));
-        $inTitle = preg_replace("~(?: |-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
-        $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
-        // Drop normal quotes
-        $inTitle = str_replace(array("'", '"'), "", $inTitle);
-        // Strip trailing periods
-        $inTitle = trim(rtrim($inTitle, '.'));
-        // greek
-        $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν',
-                                     'ξ', 'π', 'ρ'. 'σ', 'ς', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω'),
-                               array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta',
-                                     'iota', 'kapa', 'lamda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'sigma',
-                                     'tau',  'upsilon', 'phi', 'chi', 'psi', 'omega'), $inTitle);
-        $inTitle = str_replace(array('Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π', 'Σ', 'Φ', 'Ψ', 'Ω'),
-                               array('gamma', 'delta', 'theta', 'lambda', 'xi', 'pi', 'sigma', 'phi', 'psi', 'omega'), $inTitle);
-        $inTitle = str_remove_irrelevant_bits($inTitle);
-        return $inTitle;
+/* split_authors
+ * Assumes that there is more than one author to start with; 
+ * check this using under_two_authors()
+ */
+function split_authors($str) {
+  if (stripos($str, ';')) return explode(';', $str);
+  return explode(',', $str);
 }
