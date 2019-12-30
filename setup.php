@@ -35,7 +35,7 @@ if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
   }
 }
 require_once("constants.php");
-require_once("DOItools.php");
+require_once("NameTools.php");
 require_once("Page.php");
 require_once("Template.php");
 require_once("Parameter.php");
