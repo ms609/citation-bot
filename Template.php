@@ -3556,6 +3556,8 @@ final class Template {
           if ($this->blank($param)) return;
           if (substr($this->get($param), 0, 8) ===  '10.2307/') {
             $this->set($param, substr($this->get($param), 8));
+          } elseif (preg_match('~^https?://www\.jstor\.org/stable/(.*)$~', $this->get($param), $matches)) {
+            $this->set($param, $matches[1]);
           }
           $this->change_name_to('cite journal', FALSE);
           return;
