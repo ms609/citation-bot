@@ -37,6 +37,37 @@ final class PageTest extends testBaseClass {
       $this->assertSame('This page tests bots', $page->parsed_text());
    });
   }
+ 
+  public function testBotReadNonExistant() {
+   $this->requires_secrets(function() {
+      $page = new TestPage();
+      $api = new WikipediaBot();
+      $this->assertSame(FALSE, $page->get_text_from('User:Blocked Testing Account/readtest/NOT_REAL_EVER', $api));
+   });
+  }
+ 
+  public function testBotReadRedirect() {
+   $this->requires_secrets(function() {
+      $page = new TestPage();
+      $api = new WikipediaBot();
+      $this->assertSame(FALSE, $page->get_text_from('Wikipedia:UCB', $api));
+   });
+  }
+
+  public function testBotReadInvalidNamespace() {
+   $this->requires_secrets(function() {
+      $page = new TestPage();
+      $api = new WikipediaBot();
+      $this->assertSame(FALSE, $page->get_text_from('Bogus:UCBdfasdsfasdfd', $api));
+   });
+  }
+ 
+  public function testBotReadInvalidPage() {
+   $this->requires_secrets(function() {
+      $page = new TestPage();
+      $api = new WikipediaBot();
+      $this->assertSame(FALSE, $page->get_text_from('.', $api));
+   });
   
   public function testBotExpandWrite() {
    $this->requires_secrets(function() {
