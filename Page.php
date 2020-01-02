@@ -140,12 +140,12 @@ class Page {
     $musicality  = $this->extract_object('Musicscores');
     $preformated = $this->extract_object('Preformated');
     if ($page_error) {
-      $this->text = $this->start_text; // undo it       // @codeCoverageIgnore
+      $this->text = $this->start_text;                  // @codeCoverageIgnore
       return FALSE;                                     // @codeCoverageIgnore
     }
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
-      $this->text = $this->start_text; // undo it
+      $this->text = $this->start_text;
       return FALSE;
     }
     $citation_count = substr_count($this->text, '{{cite ') +
@@ -207,7 +207,7 @@ class Page {
     $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
     if ($page_error) {
-      $this->text = $this->start_text; // undo it        // @codeCoverageIgnore
+      $this->text = $this->start_text;                   // @codeCoverageIgnore
       return FALSE;                                      // @codeCoverageIgnore
     }
     for ($i = 0; $i < count($all_templates); $i++) {
@@ -401,7 +401,7 @@ class Page {
               $this->lastrevid, $this->read_at)) {
         return TRUE;
       } elseif (!getenv('TRAVIS')) {
-        // @codeCoverageIgnoreBegin
+        // @codeCoverageIgnoreStart
         throttle(10);
         sleep(10);  // could be database being locked
         report_info("Trying to write again after waiting");
@@ -440,11 +440,13 @@ class Page {
     }
     if ($preg_ok === FALSE) { // Something went wrong
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
+        // @codeCoverageIgnoreStart
         global $page_error;
         $page_error = TRUE;
         global $is_a_man_with_no_plan;
         if ($is_a_man_with_no_plan) echo "<p>\n\n" . $text . "\n\n<p>";
         report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
+        // @codeCoverageIgnoreEnd
     }
     $this->text = $text;
     return $objects;
