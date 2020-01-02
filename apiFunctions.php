@@ -10,9 +10,8 @@ function entrez_api($ids, $templates, $db) {
   
   $xml = @simplexml_load_file($url);
   if ($xml === FALSE) {
-    report_warning("Error in PubMed search: No response from Entrez server");
-    // echo @file_get_contents("https://ifconfig.me/ip");
-    return FALSE;
+    report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
+    return FALSE;                                                                // @codeCoverageIgnore
   }
   
   foreach (array_keys($ids) as $i) {
@@ -22,8 +21,8 @@ function entrez_api($ids, $templates, $db) {
     report_info("Found match for $db identifier " . $document->Id);
     $template_key = array_search($document->Id, $ids);
     if ($template_key === FALSE) {
-      report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");
-      continue;
+      report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
+      continue;                                                                                              // @codeCoverageIgnore
     }
     $this_template = $templates[$template_key];
   
@@ -125,8 +124,8 @@ function arxiv_api($ids, $templates) {
       preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response)
     );
   } else {
-    report_warning("No response from arXiv.");
-    return FALSE;
+    report_warning("No response from arXiv.");       // @codeCoverageIgnore
+    return FALSE;                                    // @codeCoverageIgnore
   }
   if ($xml) {
     if ((string)$xml->entry->title === "Error") {
@@ -515,8 +514,8 @@ function query_crossref($doi) {
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = @file_get_contents($url);
     if (!$raw_xml) {
-      sleep(1);
-      continue;
+      sleep(1);               // @codeCoverageIgnore
+      continue;               // @codeCoverageIgnore
       // Keep trying...
     }
     $raw_xml = preg_replace(
@@ -532,12 +531,12 @@ function query_crossref($doi) {
         return FALSE;
       }
     } else {
-      sleep(1);
+      sleep(1);              // @codeCoverageIgnore
       // Keep trying...
     }
   }
-  report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");
-  return FALSE;
+  report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");    // @codeCoverageIgnore
+  return FALSE;                                                                      // @codeCoverageIgnore
 }
 
 function expand_doi_with_dx($template, $doi) {
@@ -550,9 +549,9 @@ function expand_doi_with_dx($template, $doi) {
        if (is_null($data)) return FALSE;
        while (is_array($data)) {
          if (empty($data)) return FALSE;
-         if (!isset($data['0'])) return FALSE;
-         if (isset($data['1'])) return FALSE; // How dow we choose?
-         $data = $data['0'];  // Going down deeper
+         if (!isset($data['0'])) return FALSE;              // @codeCoverageIgnore
+         if (isset($data['1'])) return FALSE;               // @codeCoverageIgnore
+         $data = $data['0'];                                // @codeCoverageIgnore
        }
        if ($data == '') return FALSE;
        $template->add_if_new($name, $data);
@@ -565,11 +564,11 @@ function expand_doi_with_dx($template, $doi) {
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      try {
        $ris = @curl_exec($ch);
-     } catch (Exception $e) {
+     } catch (Exception $e) {                    // @codeCoverageIgnoreBegin
        curl_close($ch);
        $template->mark_inactive_doi($doi);
        return FALSE;
-     }
+     }                                           // @codeCoverageIgnoreEnd
      curl_close($ch);
      if ($ris == FALSE || stripos($ris, 'DOI Not Found') !== FALSE || stripos($ris, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi($doi);
@@ -676,8 +675,8 @@ function is_doi_active($doi) {
   $response = @get_headers("https://api.crossref.org/works/" . urlencode($doi))[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
-  report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");
-  return NULL;
+  report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");  // @codeCoverageIgnore
+  return NULL;                                                                                        // @codeCoverageIgnore
 }
 
 function is_doi_works($doi) {
@@ -709,16 +708,16 @@ function expand_by_jstor($template) {
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
   if ($dat === FALSE) {
-    report_info("JSTOR API returned nothing for ". jstor_link($jstor));
-    return FALSE;
+    report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
+    return FALSE;                                                           // @codeCoverageIgnore
   }
   if (stripos($dat, 'No RIS data found for') !== FALSE) {
-    report_info("JSTOR API found nothing for ".  jstor_link($jstor));
-    return FALSE;
+    report_info("JSTOR API found nothing for ".  jstor_link($jstor));       // @codeCoverageIgnore
+    return FALSE;                                                           // @codeCoverageIgnore
   }
   if (stripos($dat, 'Block Reference') !== FALSE) {
-    report_info("JSTOR API blocked bot for ".  jstor_link($jstor));
-    return FALSE;
+    report_info("JSTOR API blocked bot for ".  jstor_link($jstor));         // @codeCoverageIgnore
+    return FALSE;                                                           // @codeCoverageIgnore
   }
   if (stripos($dat, 'A problem occurred trying to deliver RIS data')  !== FALSE) {
     report_info("JSTOR API had a problem for ".  jstor_link($jstor));
@@ -845,7 +844,7 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       } elseif (preg_match("~^ICALP .*$~", $journal_data, $matches)) {  
           // not wanting to figure this out
       // T. Giesa, D.I. Spivak, M.J. Buehler. BioNanoScience: Volume 1, Issue 4 (2011), Page 153-161
-      } elseif (preg_match("~^[\S\s]+\: Volume (\d+), Issue (\d+) \((\d+)\), Page ([0-9\-]+)$~i", $journal_data, $matches)) {
+      } elseif (preg_match("~^[\S\s]+\: Volume (\d+), Issue (\d+) \((\d+)\), Page ([0-9\-]+)$~i", $journal_data, $matches)) { // @codeCoverageIgnore
           // not wanting to figure this out reliably
       // Future formats -- print diagnostic message
       } else {
