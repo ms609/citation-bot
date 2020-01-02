@@ -56,27 +56,25 @@ function echoable($string) {
 
 function pubmed_link($identifier, $pm) {
   return HTML_OUTPUT 
-       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank">'
-         . strtoupper($identifier) . ' ' . $pm . "</a>"
+       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank">' . strtoupper($identifier) . ' ' . $pm . "</a>"   // @codeCoverageIgnore
        : strtoupper($identifier) . ' ' . $pm;
 }
 
 function bibcode_link($id) {
   return HTML_OUTPUT
-    ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">'
-      . $id . '</a>'
+    ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">' . $id . '</a>'   // @codeCoverageIgnore
     : $id;
 }
 
 function doi_link($doi) {
   return HTML_OUTPUT
-    ? '<a href="https://dx.doi.org/' . urlencode($doi) . '" target="_blank">' . $doi . '</a>'
+    ? '<a href="https://dx.doi.org/' . urlencode($doi) . '" target="_blank">' . $doi . '</a>'      // @codeCoverageIgnore
     : $doi;
 }
 
 function jstor_link($id) {
   return HTML_OUTPUT
-    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . $id . '</a>'
+    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . $id . '</a>'    // @codeCoverageIgnore
     : "JSTOR $id";
 }
 

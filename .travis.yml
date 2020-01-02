@@ -35,5 +35,5 @@ matrix:
         - wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php
 
 git:
-  depth: 3
+  depth: 21
   

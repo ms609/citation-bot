@@ -1552,8 +1552,8 @@ ER -  }}';
     $this->assertSame('AB-2', $prepared->get('pages'));
   }
  
-  public function testBogusPageRanges() {  // At some point this test will age out (perhaps add special TRAVIS code to template.php
-    $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|year = 2018|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
+  public function testBogusPageRanges() {  // Just keep incrementing year when test ages out
+    $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|year = 2020|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('955–971', $expanded->get('pages')); // Converted should use long dashes
     $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|pages = 960}}';

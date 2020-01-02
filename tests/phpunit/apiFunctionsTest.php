@@ -27,6 +27,8 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertNull($templates[6]->get('journal'));
       $this->assertSame('Astronomy and Astrophysics', $templates[7]->get('journal'));
     });
+    $text = "fafa3faewf34af";
+    $this->assertSame($text, bibcode_link($text)); // Mostly just for code coverage, make sure code does not seg fault.
   }
   
   public function testArxivDateUpgradeSeesDate() {

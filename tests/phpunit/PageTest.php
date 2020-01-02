@@ -194,6 +194,24 @@ final class PageTest extends testBaseClass {
       $this->assertTrue((boolean) strpos($page->parsed_text(), '5 December 2016'));
   }
  
+  public function testMagazine() {
+      $text = '{{cite magazine|work=Yup}}';
+      $page = $this->process_page($text);
+      $this->assertTrue((boolean) strpos($page->parsed_text(), 'magazine=Yup'));
+  }
+
+  public function testThesis() {
+      $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+      $expanded = $this->process_citation($text);
+      $this->assertSame('1234', $expanded->get('mr'));
+  }
+ 
+  public function testNobots() {
+      $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{nobots}}';
+      $page = $this->process_page($text);
+      $this->assertSame($text, $page->parsed_text());
+  }
+ 
   public function testBadPage() {  // Use this when debugging pages that crash the bot
     $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
     if ($bad_page !== "") {
