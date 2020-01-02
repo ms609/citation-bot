@@ -28,10 +28,12 @@ class Page {
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
     
     if (!isset($details->query)) {
+      // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
       if (isset($details->error)) $message .= "  " . $details->error->info;
       report_warning($message);
       return FALSE;
+      // @codeCoverageIgnoreEnd
     }
     foreach ($details->query->pages as $p) {
       $my_details = $p;
@@ -55,8 +57,8 @@ class Page {
 
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     if ($this->text === FALSE) {
-       report_warning('Unable to get anything for ' . $title . ' from ' . WIKI_ROOT);
-       return FALSE;
+       report_warning('Unable to get anything for ' . $title . ' from ' . WIKI_ROOT);    // @codeCoverageIgnore
+       return FALSE;                                                                     // @codeCoverageIgnore
     }
     $this->start_text = $this->text;
     $this->construct_modifications_array();
@@ -70,7 +72,7 @@ class Page {
     if ($this->text) {
       return TRUE;
     } else{
-      return FALSE;
+      return FALSE;               // @codeCoverageIgnore
     }
   }
   
@@ -138,8 +140,8 @@ class Page {
     $musicality  = $this->extract_object('Musicscores');
     $preformated = $this->extract_object('Preformated');
     if ($page_error) {
-      $this->text = $this->start_text; // undo it
-      return FALSE;
+      $this->text = $this->start_text; // undo it       // @codeCoverageIgnore
+      return FALSE;                                     // @codeCoverageIgnore
     }
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
@@ -205,8 +207,8 @@ class Page {
     $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
     if ($page_error) {
-      $this->text = $this->start_text; // undo it
-      return FALSE;
+      $this->text = $this->start_text; // undo it        // @codeCoverageIgnore
+      return FALSE;                                      // @codeCoverageIgnore
     }
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
@@ -399,12 +401,14 @@ class Page {
               $this->lastrevid, $this->read_at)) {
         return TRUE;
       } elseif (!getenv('TRAVIS')) {
+        // @codeCoverageIgnoreBegin
         throttle(10);
         sleep(10);  // could be database being locked
         report_info("Trying to write again after waiting");
         return $api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at);
+        // @codeCoverageIgnoreEnd
       } else {
         return FALSE;
       }
