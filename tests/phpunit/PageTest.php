@@ -68,6 +68,7 @@ final class PageTest extends testBaseClass {
       $api = new WikipediaBot();
       $this->assertSame(FALSE, $page->get_text_from('.', $api));
    });
+  }
   
   public function testBotExpandWrite() {
    $this->requires_secrets(function() {
