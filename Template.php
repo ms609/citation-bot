@@ -333,8 +333,8 @@ final class Template {
       return FALSE;
     }
     
-    if (strcasecmp((string) $value, 'null') === 0) {
-      return FALSE; // We hope that name is not actually NULL
+    if (strcasecmp((string) $value, 'null') === 0) { // Hopeully name is not actually null
+      return FALSE; // @codeCoverageIgnore
     }
     
     if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
@@ -1649,11 +1649,9 @@ final class Template {
                             : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
-      }
-      elseif ($result['status'] == 'malformed') {
-        report_warning("Cannot search CrossRef: " . echoable($result->msg));
-      }
-      elseif ($result["status"] == "resolved") {
+      } elseif ($result['status'] == 'malformed') {
+        report_warning("Cannot search CrossRef: " . echoable($result->msg));  // @codeCoverageIgnore
+      } elseif ($result["status"] == "resolved") {
         if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
         report_info(" Successful!");
         return $this->add_if_new('doi', $result->doi);
@@ -1674,9 +1672,8 @@ final class Template {
     
     if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
       report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
-    }
-    elseif ($result['status'] == 'malformed') {
-      report_warning("Cannot search CrossRef: " . echoable($result->msg));
+    }  elseif ($result['status'] == 'malformed') {
+      report_warning("Cannot search CrossRef: " . echoable($result->msg)); // @codeCoverageIgnore
     } elseif ($result["status"]=="resolved") {
       if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
       report_info(" Successful!");
@@ -1803,9 +1800,9 @@ final class Template {
       if (isset($xml->ErrorList->PhraseNotFound)) {
         report_warning("Phrase not found in PMID search with query $query: " . echoable(print_r($xml->ErrorList, TRUE)));  // @codeCoverageIgnore
       } else {
-        report_inline('no results.');
+        report_inline('no results.');  // @codeCoverageIgnore
       }
-      return array(NULL, 0);
+      return array(NULL, 0);  // @codeCoverageIgnore
     }
 
     return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
