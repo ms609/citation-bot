@@ -73,7 +73,7 @@ final class Template {
    
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
-         // @codeCoverageIgnoreBegin
+         // @codeCoverageIgnorStart
          global $page_error;
          $page_error = TRUE;
          report_minor_error('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
@@ -1017,7 +1017,7 @@ final class Template {
         return FALSE;  
         
       default:  // We want to make sure we understand what we are adding
-        // @codeCoverageIgnoreBegin
+        // @codeCoverageIgnoreStart
         if (getenv('TRAVIS')) report_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
