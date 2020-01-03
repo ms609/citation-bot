@@ -153,7 +153,7 @@ class WikipediaBot {
           return ($this->ret_okay($ret)) ? $ret : FALSE;
 
         default:
-          report_error("Unrecognized method in Fetch."); // // @codeCoverageIgnore - will only be hit if error in our code
+          report_error("Unrecognized method in Fetch."); // @codeCoverageIgnore - will only be hit if error in our code
       }
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
