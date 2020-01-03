@@ -55,7 +55,7 @@ class WikipediaBot {
         report_error('Account "' . $this->username() .  '" or this IP is blocked from editing.');  // @codeCoverageIgnore
       } else {
         if (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
-           // @codeCoverageIgnoreBegin
+           // @codeCoverageIgnoreStart
            report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.  Specifically: ' . $response->error->info);
            sleep(5);
            return FALSE;  // Would be best to retry, but we are down in the weeds of the code
@@ -93,7 +93,7 @@ class WikipediaBot {
   
   public function fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
-      // @codeCoverageIgnoreBegin
+      //  @ codeCoverageIgnoreStart
       curl_close($this->ch);
       report_error('Could not initialize CURL resource: ' . echoable(curl_error($this->ch)));
       return FALSE;
@@ -170,7 +170,7 @@ class WikipediaBot {
       report_error("Write request failed");     // @codeCoverageIgnore
     }
     if (isset($response->warnings)) {
-      // @codeCoverageIgnoreBegin
+      // @codeCoverageIgnoreStart
       if (isset($response->warnings->prop)) {
         report_error((string) $response->warnings->prop->{'*'});
       }
@@ -241,7 +241,7 @@ class WikipediaBot {
         return FALSE;
       }
     } else {
-      // @codeCoverageIgnoreBegin
+      // @codeCoverageIgnoreStart
       if (!getenv('TRAVIS')) report_error("Unhandled write error.  Please copy this output and " .
                     "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
                     "report a bug.</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
