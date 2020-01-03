@@ -19,6 +19,7 @@ function query_url_api($ids, $templates) {
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
     curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
   } else {
+    // @codeCoverageIgnoreBegin
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 1);
     $url_count = 0;
     foreach ($templates as $template) {
@@ -33,6 +34,7 @@ function query_url_api($ids, $templates) {
     } else {
       curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 5);
     }
+    // @codeCoverageIgnoreEnd
   }
 
   $zotero_announced = 1;
@@ -40,7 +42,7 @@ function query_url_api($ids, $templates) {
      expand_by_zotero($template);
   }
   if (!getenv('TRAVIS')) { // These are pretty reliable, unlike random urls
-      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10);
+      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
   $zotero_announced = 2;
   foreach ($templates as $template) {
@@ -186,8 +188,8 @@ function zotero_request($url) {
     if (strpos(curl_error($ch_zotero), 'timed out after') !== FALSE) {
       $zotero_failures_count = $zotero_failures_count + 1;
       if ($zotero_failures_count > ZOTERO_GIVE_UP) {
-        report_warning("Giving up on URL expansion for a while");
-        $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
+        report_warning("Giving up on URL expansion for a while");            // @codeCoverageIgnore
+        $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;      // @codeCoverageIgnore
       }
     }
   }
@@ -198,8 +200,8 @@ function expand_by_zotero(&$template, $url = NULL) {
   global $zotero_failures_count;
   global $zotero_announced;
   if ($zotero_failures_count > ZOTERO_GIVE_UP) {
-    $zotero_failures_count = $zotero_failures_count - 1;
-    if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // Reset
+    $zotero_failures_count = $zotero_failures_count - 1;                      // @codeCoverageIgnore
+    if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // @codeCoverageIgnore
   }
   if ($zotero_failures_count > ZOTERO_GIVE_UP) return;
   $access_date = FALSE;
@@ -256,20 +258,20 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
-    report_warning("Bad Gateway error for URL ". $url);
-    return FALSE;
+    report_warning("Bad Gateway error for URL ". $url);        // @codeCoverageIgnore
+    return FALSE;                                              // @codeCoverageIgnore
   }
   
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
-    report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
-    return FALSE;
+    report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");     // @codeCoverageIgnore
+    return FALSE;                                                                     // @codeCoverageIgnore
   } elseif (!is_array($zotero_data)) {
     if (is_object($zotero_data)) {
       $zotero_data = (array) $zotero_data;
     } else {
-      report_warning("JSON did not parse correctly for URL ". $url . ": $zotero_response");
-      return FALSE;
+      report_warning("JSON did not parse correctly for URL ". $url . ": $zotero_response");   // @codeCoverageIgnore
+      return FALSE;                                                                           // @codeCoverageIgnore
     }
   }
   if (!isset($zotero_data[0])) {
@@ -283,8 +285,8 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE;
   }
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
-    report_info("Could not resolve URL ". $url);
-    return FALSE;
+    report_info("Could not resolve URL ". $url);                                   // @codeCoverageIgnore
+    return FALSE;                                                                  // @codeCoverageIgnore
   }
   
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character

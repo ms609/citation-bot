@@ -41,7 +41,7 @@ final class Template {
       'zotero'   => array(),
     );
     if (isset($this->rawtext)) {
-        report_error("Template already initialized; call new Template() before calling Template::parse_text()");
+        report_error("Template already initialized; call new Template() before calling Template::parse_text()"); // @codeCoverageIgnore
     }
     $this->rawtext = $text;
     $pipe_pos = strpos($text, '|');
@@ -73,10 +73,12 @@ final class Template {
    
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
+         // @codeCoverageIgnoreBegin
          global $page_error;
          $page_error = TRUE;
          report_minor_error('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
          return;
+         // @codeCoverageIgnoreEnd
       }
     }
 
@@ -1015,11 +1017,13 @@ final class Template {
         return FALSE;  
         
       default:  // We want to make sure we understand what we are adding
+        // @codeCoverageIgnoreBegin
         if (getenv('TRAVIS')) report_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
+        // @codeCoverageIgnoreEnd
     }
   }
 
@@ -1644,7 +1648,7 @@ final class Template {
            . ($data['issn'] ? ("&issn=" . $data['issn'])
                             : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
-        report_warning("Error loading simpleXML file from CrossRef.");
+        report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
       }
       elseif ($result['status'] == 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));
@@ -1669,7 +1673,7 @@ final class Template {
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
     
     if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
-      report_warning("Error loading simpleXML file from CrossRef.");
+      report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
     }
     elseif ($result['status'] == 'malformed') {
       report_warning("Cannot search CrossRef: " . echoable($result->msg));
@@ -1691,8 +1695,8 @@ final class Template {
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
-          report_warning("Unable to do PMID search");
-          return;
+          report_warning("Unable to do PMID search");   // @codeCoverageIgnore
+          return;                                       // @codeCoverageIgnore
         }
         $Items = $xml->DocSum->Item;
         foreach ($Items as $item) {
@@ -1792,13 +1796,12 @@ final class Template {
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
     $xml = @simplexml_load_file($url);
     if ($xml === FALSE) {
-      report_warning("Unable to do PMID search");
-      return array(NULL, 0);
+      report_warning("Unable to do PMID search");    // @codeCoverageIgnore
+      return array(NULL, 0);                         // @codeCoverageIgnore
     }
     if ($check_for_errors && $xml->ErrorList) {
       if (isset($xml->ErrorList->PhraseNotFound)) {
-        report_warning("Phrase not found in PMID search with query $query: "
-        . echoable(print_r($xml->ErrorList, TRUE)));
+        report_warning("Phrase not found in PMID search with query $query: " . echoable(print_r($xml->ErrorList, TRUE)));  // @codeCoverageIgnore
       } else {
         report_inline('no results.');
       }
@@ -1855,8 +1858,8 @@ final class Template {
     }
  
     if ($result->numFound > 1) {
-      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers) 
-      . "... I don't know which to use. Trying other citation data.");
+      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers)   // @codeCoverageIgnore
+      . "... I don't know which to use. Trying other citation data.");                      // @codeCoverageIgnore
     }
     
     if ($result->numFound == 0) {
@@ -2489,8 +2492,8 @@ final class Template {
         }
         $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
         if ($string === FALSE) {
-            report_warning("Did not receive results from Google API search $url_token");
-            return FALSE;
+            report_warning("Did not receive results from Google API search $url_token");  // @codeCoverageIgnore
+            return FALSE;                                                                 // @codeCoverageIgnore
         }
         $result = @json_decode($string, FALSE);
         if (isset($result)) {
@@ -2502,9 +2505,9 @@ final class Template {
               report_info("No results for Google API search $url_token");
             }
           } elseif (isset($result->error)) {
-            report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));
+            report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));  // @codeCoverageIgnore
           } else {
-            report_warning("Could not parse Google API results for $url_token");
+            report_warning("Could not parse Google API results for $url_token");           // @codeCoverageIgnore
             return FALSE;
           }
         }

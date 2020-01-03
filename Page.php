@@ -399,7 +399,7 @@ class Page {
       if ($api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at)) {
-        return TRUE;
+        return TRUE;          // @codeCoverageIgnore
       } elseif (!getenv('TRAVIS')) {
         // @codeCoverageIgnoreStart
         throttle(10);
@@ -490,8 +490,8 @@ class Page {
       $date_style = DATES_MDY;
     }
     if (preg_match('~\{\{Use dmy dates[^\}\{]*\}\}~iS',$this->text)) {
-      if ($date_style === DATES_MDY) {
-        $date_style = DATES_WHATEVER;  // Found both :-(
+      if ($date_style === DATES_MDY) {     // Found both :-(
+        $date_style = DATES_WHATEVER;      // @codeCoverageIgnore
       } else {
         $date_style = DATES_DMY;
       }

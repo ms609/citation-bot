@@ -22,7 +22,7 @@ class WikipediaBot {
     } elseif (getenv('TRAVIS')) {
       $this->the_user = 'Citation_bot';
     } else {
-      $this->authenticate_user();
+      $this->authenticate_user();  // @codeCoverageIgnore
     }
     $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
     // Hard coded token and secret.
@@ -41,28 +41,29 @@ class WikipediaBot {
   
   public function get_the_user() {
     if (!isset($this->the_user) || @$this->the_user == NULL) {
-      report_error('User Not Set');
+      report_error('User Not Set');         // @codeCoverageIgnore
     }
     return $this->the_user; // Might or might not match the above
   }
   
   private function ret_okay($response) {
     if ($response === CURLE_HTTP_RETURNED_ERROR) {
-      report_error("Curl encountered HTTP response error");
+      report_error("Curl encountered HTTP response error");    // @codeCoverageIgnore
     }
     if (isset($response->error)) {
-      if ($response->error->code == 'blocked') {
-        report_error('Account "' . $this->username() . 
-        '" or this IP is blocked from editing.'); // Yes, Travis CI IPs are blocked, even to logged in users.
+      if ($response->error->code == 'blocked') {        // Travis CI IPs are blocked, even to logged in users.
+        report_error('Account "' . $this->username() .  '" or this IP is blocked from editing.');  // @codeCoverageIgnore
       } else {
         if (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
+           // @codeCoverageIgnoreBegin
            report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.  Specifically: ' . $response->error->info);
            sleep(5);
            return FALSE;  // Would be best to retry, but we are down in the weeds of the code
+          // @codeCoverageIgnoreEnd
         }
         report_error('API call failed: ' . $response->error->info);
       }
-      return FALSE;
+      return FALSE;  // @codeCoverageIgnore
     }
     return TRUE;
   }
@@ -92,13 +93,14 @@ class WikipediaBot {
   
   public function fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
+      // @codeCoverageIgnoreBegin
       curl_close($this->ch);
       report_error('Could not initialize CURL resource: ' . echoable(curl_error($this->ch)));
       return FALSE;
+      // @codeCoverageIgnoreEnd
     }
     $params['format'] = 'json';
-    
-  
+     
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
     $request->signRequest(new HmacSha1(), $this->consumer, $this->token);
     $authenticationHeader = $request->toHeader();
@@ -114,8 +116,8 @@ class WikipediaBot {
           set_time_limit(45);
           $data = curl_exec($this->ch);
           if (!$data) {
-            report_error("Curl error: " . echoable(curl_error($this->ch)));
-            return FALSE;
+            report_error("Curl error: " . echoable(curl_error($this->ch)));         // @codeCoverageIgnore
+            return FALSE;                                                           // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
           set_time_limit(120);
@@ -135,7 +137,7 @@ class WikipediaBot {
           set_time_limit(45);
           $data = curl_exec($this->ch);
           if ( !$data ) {
-            report_error("Curl error: " . echoable(curl_error($this->ch)));
+            report_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
           set_time_limit(120);    
@@ -146,7 +148,7 @@ class WikipediaBot {
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
           
-        report_error("Unrecognized method in Fetch."); // @codecov ignore - will only be hit if error in our code
+        report_error("Unrecognized method in Fetch."); // @codeCoverageIgnore - will only be hit if error in our code
       }
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
@@ -165,35 +167,37 @@ class WikipediaBot {
           ));
     
     if (!$response) {
-      report_error("Write request failed");
+      report_error("Write request failed");     // @codeCoverageIgnore
     }
     if (isset($response->warnings)) {
+      // @codeCoverageIgnoreBegin
       if (isset($response->warnings->prop)) {
         report_error((string) $response->warnings->prop->{'*'});
       }
       if (isset($response->warnings->info)) {
         report_error((string) $response->warnings->info->{'*'});
       }
+      // @codeCoverageIgnoreEnd
     }
     if (!isset($response->batchcomplete)) {
-      report_error("Write request triggered no response from server");
+      report_error("Write request triggered no response from server");   // @codeCoverageIgnore
     }
     
     $myPage = reset($response->query->pages); // reset gives first element in list
     
     if (!isset($myPage->lastrevid)) {
-      report_error("Page seems not to exist. Aborting.");
+      report_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
     if ((!is_null($lastRevId) && $myPage->lastrevid != $lastRevId)
      || (!is_null($startedEditing) && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-      report_minor_error("Possible edit conflict detected. Aborting.");
-      return FALSE;
+      report_minor_error("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
+      return FALSE;                                                          // @codeCoverageIgnore
     }
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
-      report_minor_error("\n ! Placeholder left escaped in text. Aborting.");
-      return FALSE;
+      report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
+      return FALSE;                                                            // @codeCoverageIgnore
     }
     
     // No obvious errors; looks like we're good to go ahead and edit
@@ -237,9 +241,11 @@ class WikipediaBot {
         return FALSE;
       }
     } else {
+      // @codeCoverageIgnoreBegin
       if (!getenv('TRAVIS')) report_error("Unhandled write error.  Please copy this output and " .
                     "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
                     "report a bug.</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
+      // @codeCoverageIgnoreEnd
       return FALSE;
     }
   }
@@ -267,7 +273,7 @@ class WikipediaBot {
           }
         }
       } else {
-        report_error('Error reading API for category ' . echoable($cat) . "\n\n");
+        report_error('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
@@ -295,7 +301,7 @@ class WikipediaBot {
       set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->embeddedin->ei) || $res === FALSE) {
-        report_error('Error reading API for template/namespace: ' . echoable($template) . '/' . echoable(($namespace==99)?"Normal":$namespace));
+        report_error('Error reading API for template/namespace: ' . echoable($template) . '/' . echoable(($namespace==99)?"Normal":$namespace));   // @codeCoverageIgnore
       } else {
         foreach($res->query->embeddedin as $page) {
           $list["title"][] = $page->title;
@@ -314,8 +320,8 @@ class WikipediaBot {
         "titles" => $page,
       ));
     if (!isset($res->query->pages)) {
-        report_error("Failed to get article's last revision");
-        return FALSE;
+        report_error("Failed to get article's last revision");         // @codeCoverageIgnore
+        return FALSE;                                                  // @codeCoverageIgnore
     }
     $page = reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? $page->revisions[0]->revid : FALSE);
@@ -340,8 +346,8 @@ class WikipediaBot {
           # $page_ids[] = $page->pageid;
         }
       } else {
-        report_error('Error reading API with vars ' . http_build_query($vars));
-        if (isset($res->error)) echo $res->error;
+        report_error('Error reading API with vars ' . http_build_query($vars));     // @codeCoverageIgnore
+        if (isset($res->error)) echo $res->error;                                   // @codeCoverageIgnore
       }
       $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
     } while ($vars["apfrom"]);
@@ -355,21 +361,21 @@ class WikipediaBot {
         "titles" => $page,
         ]); 
     if (!isset($res->query->pages)) {
-        report_warning("Failed to get article namespace");
-        return FALSE;
+        report_warning("Failed to get article namespace");       // @codeCoverageIgnore
+        return FALSE;                                            // @codeCoverageIgnore
     }
     return (int) reset($res->query->pages)->ns;
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect($page, $api = NULL) {
     if (self::$last_WikipediaBot == NULL) {
-       new WikipediaBot(TRUE);
+       new WikipediaBot(TRUE);      // @codeCoverageIgnore
     }
     if ($api == NULL) { // Nother passed in
         $api = self::$last_WikipediaBot;
     }
     if ($api == NULL) {
-        report_error('No API found in is_redirect()');
+        report_error('No API found in is_redirect()');   // @codeCoverageIgnore
     }
     $res = $api->fetch(Array(
         "action" => "query",
@@ -378,8 +384,8 @@ class WikipediaBot {
         ), 'POST');
     
     if (!isset($res->query->pages)) {
-        report_warning("Failed to get redirect status");
-        return -1;
+        report_warning("Failed to get redirect status");    // @codeCoverageIgnore
+        return -1;                                          // @codeCoverageIgnore
     }
     $res = reset($res->query->pages);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
@@ -391,8 +397,8 @@ class WikipediaBot {
         "titles" => $page,
         ), 'POST');
     if (!isset($res->query->redirects[0]->to)) {
-        report_warning("Failed to get redirect target");
-        return FALSE;
+        report_warning("Failed to get redirect target");     // @codeCoverageIgnore
+        return FALSE;                                        // @codeCoverageIgnore
     }
     return $res->query->redirects[0]->to;
   }
@@ -415,6 +421,11 @@ class WikipediaBot {
     if (strpos($response, '"userid"')  === FALSE) return FALSE; // Double check, should actually never return FALSE here
     return TRUE;
   }
+  
+/**
+ * Human interaction needed
+ * @codeCoverageIgnore
+ */
   private function authenticate_user() {
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
