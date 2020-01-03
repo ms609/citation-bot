@@ -262,7 +262,7 @@ final class PageTest extends testBaseClass {
    public function testNobots3() {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}';
       $page = $this->process_page($text);
-      $this->assertSame('{{cite thesis|mr = 1234}}', $page->parsed_text());
+      $this->assertSame('{{cite thesis|mr = 1234}}{{bots|allow=Citation Bot}}', $page->parsed_text());
   }
 
   public function testBadPage() {  // Use this when debugging pages that crash the bot
