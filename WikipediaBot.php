@@ -93,7 +93,7 @@ class WikipediaBot {
   
   public function fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
-      //  @ codeCoverageIgnoreStart
+      //  @codeCoverageIgnoreStart
       curl_close($this->ch);
       report_error('Could not initialize CURL resource: ' . echoable(curl_error($this->ch)));
       return FALSE;
