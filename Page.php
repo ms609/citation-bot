@@ -262,8 +262,8 @@ class Page {
       if ($this_template->blank('bibcode')) {
         $no_arxiv = $this_template->blank('arxiv');
         $this_template->expand_by_adsabs(); // Try to get a bibcode
-        if (!$this_template->blank('arxiv') && $no_arxiv) {
-          expand_arxiv_templates([$this_template]); // Added an arXiv.  Stuff to learn and sometimes even find a DOI
+        if (!$this_template->blank('arxiv') && $no_arxiv) {  // Added an arXiv.  Stuff to learn and sometimes even find a DOI -- VERY RARE
+          expand_arxiv_templates([$this_template]);     // @codeCoverageIgnore
         }
       }
       $this_template->get_open_access_url();
@@ -293,7 +293,8 @@ class Page {
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
-          $this->modifications[$key] = $template_mods[$key];
+          $this->modifications[$key] = $template_mods[$key];                     // @codeCoverageIgnore
+          report_minor_error('unexpected modifications key: ' . (string) $key);  // @codeCoverageIgnore
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         } else {
@@ -307,7 +308,8 @@ class Page {
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
-          $this->modifications[$key] = $template_mods[$key];
+          $this->modifications[$key] = $template_mods[$key];                     // @codeCoverageIgnore
+          report_minor_error('unexpected modifications key: ' . (string) $key);  // @codeCoverageIgnore
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         } else {

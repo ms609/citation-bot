@@ -29,6 +29,23 @@ final class PageTest extends testBaseClass {
       $this->assertSame('Add: zbl. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
+  public function testPageChangeSummary2() {
+      $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
+      $this->assertSame('Add: mr. Removed URL that duplicated unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
+      $this->assertSame('Add: mr. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+   
+  public function testPageChangeSummary3() {
+      $page = $this->process_page('{{cite journal|distribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
+      $this->assertSame('Add: contribution-url. Removed parameters. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+ 
+  public function testPageChangeSummary4() {
+      $page = $this->process_page('{{cite journal|accessdate=12 Nov 2000}}');
+      $this->assertSame('Removed accessdate with no specified URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+ 
   public function testBotRead() {
    $this->requires_secrets(function() {
       $page = new TestPage();
@@ -217,6 +234,13 @@ final class PageTest extends testBaseClass {
       $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael}}</ref>', $page->parsed_text());
   }
  
+   public function testUrlReferencesWithText15() {
+      $text = "<ref>[http://doi.acm.org/10.1145/358589.358596 http://doi.acm.org/10.1145/358589.3585964444]</ref>";
+      $text = $text . $text;
+      $page = $this->process_page($text);
+      $this->assertSame($text, $page->parsed_text());
+  }
+ 
   public function testRespectDatesZotero() {
       $text = '{{Use mdy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
       $page = $this->process_page($text);
@@ -245,6 +269,19 @@ final class PageTest extends testBaseClass {
       $this->assertSame(FALSE, $page->write(NULL, NULL));
   }
  
+  public function testNobots2() {
+      $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=not_you}}';
+      $page = $this->process_page($text);
+      $this->assertSame($text, $page->parsed_text());
+      $this->assertSame(FALSE, $page->write(NULL, NULL));
+  }
+ 
+   public function testNobots3() {
+      $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}';
+      $page = $this->process_page($text);
+      $this->assertSame('{{cite thesis|mr = 1234}}{{bots|allow=Citation Bot}}', $page->parsed_text());
+  }
+
   public function testBadPage() {  // Use this when debugging pages that crash the bot
     $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
     if ($bad_page !== "") {
