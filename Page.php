@@ -470,7 +470,7 @@ class Page {
         "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
   }
   
-  public function allow_bots() {
+  protected function allow_bots() {
     // from https://en.wikipedia.org/wiki/Template:Bots
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
