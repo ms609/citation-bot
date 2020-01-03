@@ -29,6 +29,23 @@ final class PageTest extends testBaseClass {
       $this->assertSame('Add: zbl. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
+  public function testPageChangeSummary2() {
+      $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
+      $this->assertSame('Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
+      $this->assertSame('Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+   
+  public function testPageChangeSummary3() {
+      $page = $this->process_page('{{cite journal|distribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
+      $this->assertSame('Removed parameters. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+ 
+  public function testPageChangeSummary4() {
+      $page = $this->process_page('{{cite journal|accessdate=12 Nov 2000}}');
+      $this->assertSame('Removed accessdate with no specified URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+ 
   public function testBotRead() {
    $this->requires_secrets(function() {
       $page = new TestPage();
