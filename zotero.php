@@ -184,14 +184,16 @@ function zotero_request($url) {
   
   $zotero_response = curl_exec($ch_zotero);
   if ($zotero_response === FALSE) {
+    // @codeCoverageIgnoreStart
     report_warning(curl_error($ch_zotero) . "   For URL: " . $url);
     if (strpos(curl_error($ch_zotero), 'timed out after') !== FALSE) {
       $zotero_failures_count = $zotero_failures_count + 1;
       if ($zotero_failures_count > ZOTERO_GIVE_UP) {
-        report_warning("Giving up on URL expansion for a while");            // @codeCoverageIgnore
-        $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;      // @codeCoverageIgnore
+        report_warning("Giving up on URL expansion for a while");
+        $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
       }
     }
+    // @codeCoverageIgnoreEnd
   }
   return $zotero_response;
 }
@@ -241,8 +243,8 @@ function expand_by_zotero(&$template, $url = NULL) {
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
   switch (trim($zotero_response)) {
     case '':
-      report_info("Nothing returned for URL $url");
-      return FALSE;
+      report_info("Nothing returned for URL $url");  // @codeCoverageIgnore
+      return FALSE;                                  // @codeCoverageIgnore
     case 'Internal Server Error':
       report_info("Internal server error with URL $url");
       return FALSE;
@@ -305,11 +307,10 @@ function expand_by_zotero(&$template, $url = NULL) {
   
   report_info("Retrieved info from ". $url);
   // Verify that Zotero translation server did not think that this was a website and not a journal
-  if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {
-    $template->add_if_new('title', substr(trim($result->title), 0, -9)); // Add the title without " on jstor"
-    return FALSE; // Not really "expanded"
+  if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {  // Not really "expanded", just add the title without " on jstor"
+    $template->add_if_new('title', substr(trim($result->title), 0, -9)); // @codeCoverageIgnore
+    return FALSE;  // @codeCoverageIgnore
   }
-  // fwrite(STDERR, print_r($result, TRUE)); // for debug
   
   $test_data = '';
   if (isset($result->bookTitle)) $test_data .= $result->bookTitle . '  ';
@@ -373,7 +374,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       $result->extra = trim($result->extra);
     }
     if ($result->extra !== '') {
-      report_minor_error("Unhandled extra data: " . $result->extra);
+      report_minor_error("Unhandled extra data: " . $result->extra); // @codeCoverageIgnore
     }
   } 
   
