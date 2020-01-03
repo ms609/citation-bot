@@ -19,7 +19,7 @@ function query_url_api($ids, $templates) {
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
     curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
   } else {
-    // @codeCoverageIgnoreBegin
+    // @codeCoverageIgnoreStart
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 1);
     $url_count = 0;
     foreach ($templates as $template) {
