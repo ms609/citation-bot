@@ -293,6 +293,7 @@ class Page {
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
+          $this->modifications[$key] = $template_mods[$key];                     // @codeCoverageIgnore
           report_minor_error('unexpected modifications key: ' . (string) $key);  // @codeCoverageIgnore
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
@@ -307,6 +308,7 @@ class Page {
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
+          $this->modifications[$key] = $template_mods[$key];                     // @codeCoverageIgnore
           report_minor_error('unexpected modifications key: ' . (string) $key);  // @codeCoverageIgnore
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
