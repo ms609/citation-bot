@@ -564,7 +564,7 @@ function expand_doi_with_dx($template, $doi) {
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      try {
        $ris = @curl_exec($ch);
-     } catch (Exception $e) {                    // @codeCoverageIgnoreBegin
+     } catch (Exception $e) {                    // @codeCoverageIgnorStart
        curl_close($ch);
        $template->mark_inactive_doi($doi);
        return FALSE;
