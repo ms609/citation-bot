@@ -54,14 +54,14 @@ class WikipediaBot {
       if ($response->error->code == 'blocked') {        // Travis CI IPs are blocked, even to logged in users.
         report_error('Account "' . $this->username() .  '" or this IP is blocked from editing.');  // @codeCoverageIgnore
       } else {
+        // @codeCoverageIgnoreStart
         if (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
-           // @codeCoverageIgnoreStart
            report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.  Specifically: ' . $response->error->info);
            sleep(5);
            return FALSE;  // Would be best to retry, but we are down in the weeds of the code
-          // @codeCoverageIgnoreEnd
         }
         report_error('API call failed: ' . $response->error->info);
+        // @codeCoverageIgnoreEnd
       }
       return FALSE;  // @codeCoverageIgnore
     }
@@ -93,7 +93,7 @@ class WikipediaBot {
   
   public function fetch($params, $method = 'GET') {
     if (!$this->reset_curl()) {
-      //  @codeCoverageIgnoreStart
+      // @codeCoverageIgnoreStart
       curl_close($this->ch);
       report_error('Could not initialize CURL resource: ' . echoable(curl_error($this->ch)));
       return FALSE;
@@ -122,9 +122,11 @@ class WikipediaBot {
           $ret = @json_decode($data);
           set_time_limit(120);
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
+            // @codeCoverageIgnoreStart
             unset($data);
             unset($ret);
             return $this->fetch($params, $method);
+            // @codeCoverageIgnoreEnd
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
           
@@ -142,13 +144,15 @@ class WikipediaBot {
           $ret = @json_decode($data);
           set_time_limit(120);    
           if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+            // @codeCoverageIgnoreStart
             unset($data);
             unset($ret);
             return $this->fetch($params, $method);
+            // @codeCoverageIgnoreEnd
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
           
-        report_error("Unrecognized method in Fetch."); // @codeCoverageIgnore - will only be hit if error in our code
+        report_error("Unrecognized method in Fetch."); // // @codeCoverageIgnore - will only be hit if error in our code
       }
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
@@ -219,11 +223,14 @@ class WikipediaBot {
     $result = $this->fetch($submit_vars, 'POST');
     
     if (isset($result->error)) {
+      // @codeCoverageIgnoreStart
       report_error("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
                     echoable($result->error->info)));
+      // @codeCoverageIgnoreEnd
     } elseif (isset($result->edit)) {
+      // @codeCoverageIgnoreStart
       if (isset($result->edit->captcha)) {
         report_error("Write error: We encountered a captcha, so can't be properly logged in.");
       } elseif ($result->edit->result == "Success") {
@@ -240,6 +247,7 @@ class WikipediaBot {
         report_warning(echoable('Attempt to write page returned error: ' .  $result->edit->result));
         return FALSE;
       }
+      // @codeCoverageIgnoreEnd
     } else {
       // @codeCoverageIgnoreStart
       if (!getenv('TRAVIS')) report_error("Unhandled write error.  Please copy this output and " .
