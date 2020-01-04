@@ -208,8 +208,8 @@ function adsabs_api($ids, $templates, $identifier) {
               . "issue,page,pub,pubdate,title,volume,year&rows=2000";
 
   if (!getenv('PHP_ADSABSAPIKEY')) {
-    report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");
-    return FALSE;
+    report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
+    return FALSE;                                                                           // @codeCoverageIgnore
   }
   
   try {
@@ -224,10 +224,12 @@ function adsabs_api($ids, $templates, $identifier) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
     $return = curl_exec($ch);
     if ($return === FALSE) {
+      // @codeCoverageIgnoreStart
       $error = curl_error($ch);
       $errno = curl_errno($ch);
       curl_close($ch);
       throw new Exception($error, $errno);
+      // @codeCoverageIgnoreEnd
     } 
     $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -236,6 +238,7 @@ function adsabs_api($ids, $templates, $identifier) {
     $body = substr($return, $header_length);
     $decoded = @json_decode($body);
     if (is_object($decoded) && isset($decoded->error)) {
+      // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
         throw new Exception(
         "ADSABS website returned a stack trace"
@@ -247,9 +250,10 @@ function adsabs_api($ids, $templates, $identifier) {
         . "\n - URL was:  " . $adsabs_url,
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       }
+      // @codeCoverageIgnoreEnd
     }
     if ($http_response != 200) {
-      throw new Exception(strtok($header, "\n"), $http_response);
+      throw new Exception(strtok($header, "\n"), $http_response);  // @codeCoverageIgnore
     }
     
     if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
@@ -258,26 +262,29 @@ function adsabs_api($ids, $templates, $identifier) {
              ":\n       ");
              // "; reset at " . date('r', $rate_limit[2][2]);
       } else {
+        // @codeCoverageIgnoreStart
         report_warning("AdsAbs daily search limit exceeded. Big queries stopped until " . date('r', $rate_limit[2][2]) . "\n");
         sleep(1);
         foreach ($templates as $template) {
            if ($template->has('bibcode')) $template->expand_by_adsabs();
         }
         return TRUE;
+        // @codeCoverageIgnoreEnd
       }
     } else {
-      throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);
+      throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);  // @codeCoverageIgnore
     }
     if (!is_object($decoded)) {
-      throw new Exception("Could not decode API response:\n" . $body, 5000);
+      throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
     }
     
     if (isset($decoded->response)) {
       $response = $decoded->response;
     } else {
-      if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // "". to force string
+      if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
       throw new Exception("Could not decode AdsAbs response", 5000);
     }
+  // @codeCoverageIgnoreStart
   } catch (Exception $e) {
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
       report_warning(sprintf("API Error in query_adsabs: %s",
@@ -295,13 +302,16 @@ function adsabs_api($ids, $templates, $identifier) {
     @curl_close($ch); // Some code paths have it closed, others do not
     return TRUE;
   }
+  // @codeCoverageIgnoreEnd
   
   foreach ($response->docs as $record) {
     if (!in_array($record->bibcode, $ids)) {  // Remapped bibcodes cause corrupt big queries
+      // @codeCoverageIgnoreStart
       foreach ($templates as $template) {
         if ($template->has('bibcode')) $template->expand_by_adsabs();
       }
       return TRUE;
+      // @codeCoverageIgnoreEnd
     }
   }
 
@@ -644,13 +654,9 @@ function expand_doi_with_dx($template, $doi) {
            $template->get_identifiers_from_url($json['URL']);
        }
      } else {
-       if (getenv('TRAVIS')) {
-         print_r($json);
-         trigger_error ('dx.doi.org returned unexpected data type for ' . doi_link($doi));
-       } else {
-         $try_to_add_it('title', @$json['title']);
-         report_warning('dx.doi.org returned unexpected data type for ' . doi_link($doi));
-       }
+       $try_to_add_it('title', @$json['title']);
+       if (getenv('TRAVIS')) print_r($json);
+       trigger_minor_error ('dx.doi.org returned unexpected data type for ' . doi_link($doi));
      }
      return TRUE;
 }
