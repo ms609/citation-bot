@@ -1948,40 +1948,14 @@ ER -  }}';
     $this->assertSame('2016-09-24', $template->get('archive-date'));
   }
  
-  public function testJunkData1() {
-    $text = "{{Cite web | title=THIS IS A LONG TITLE IN ALL CAPPS AND IT IS BAD}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('CITATION_BOT_PLACEHOLDER_title', $prepared->get('title'));
-  }
- 
-  public function testJunkData2() {
-    $text = "{{Cite web | title=This is bad data|journal=This is bad data}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('CITATION_BOT_PLACEHOLDER_title', $prepared->get('title'));
-    $this->assertSame('CITATION_BOT_PLACEHOLDER_journal', $prepared->get('journal'));
-  }
-
-  public function testJunkData3() {
-    $text = "{{Cite web | title=This is a title on JSTOR}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('CITATION_BOT_PLACEHOLDER_title', $prepared->get('title'));
-  }
- 
-  public function testJunkData4() {
-    $text = "{{Cite web | title=This is a title with IEEE Xplore Document}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('CITATION_BOT_PLACEHOLDER_title', $prepared->get('title'));
-  }
- 
-  public function testJunkData5() {
-    $text = "{{Cite web | title=This is a title document with Volume 3 and page 5}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('CITATION_BOT_PLACEHOLDER_title', $prepared->get('title'));
-  }
- 
-  public function testJunkData6() {
-    $text = "{{Cite web | title=Accept Terms and Conditions on JSTOR}}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('CITATION_BOT_PLACEHOLDER_title', $prepared->get('title'));
+  public function testJunkData() {
+    $text = "{{Cite web | title=THIS IS A LONG TITLE IN ALL CAPPS AND IT IS BAD|pmid=19741352}} " . 
+            "{{Cite web | title=This is bad data|journal=This is bad data|pmid=19741352}}" .
+            "{{Cite web | title=This is a title on JSTOR|pmid=19741352}}" .
+            "{{Cite web | title=This is a title with IEEE Xplore Document|pmid=19741352}}" .
+            "{{Cite web | title=This is a title document with Volume 3 and page 5|pmid=19741352}}" .
+            "{{Cite web | title=Accept Terms and Conditions on JSTOR|pmid=19741352}}";
+    $page = $this->process_page($text);
+    $this->assertSame(6, substr_count($page->parsed_text(), 'Prevention of Elbow Injuries in Youth Baseball Pitchers'));
   }
 }
