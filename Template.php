@@ -2056,18 +2056,22 @@ final class Template {
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
       $return = curl_exec($ch);
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
+        // @codeCoverageIgnoreStart
         sleep(4);
         $return = curl_exec($ch);
         if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && getenv('TRAVIS')) {
            sleep(20); // better slow than not at all in TRAVIS
            $return = curl_exec($ch);
         }
+        // @codeCoverageIgnoreEnd
       }
       if ($return === FALSE) {
+        // @codeCoverageIgnoreStart
         $exception = curl_error($ch);
         $number = curl_errno($ch);
         curl_close($ch);
         throw new Exception($exception, $number);
+        // @codeCoverageIgnoreEnd
       }
       $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -2077,6 +2081,7 @@ final class Template {
       $decoded = @json_decode($body);
       
       if (is_object($decoded) && isset($decoded->error)) {
+        // @codeCoverageIgnoreStart
         if (isset($decoded->error->trace)) {
           throw new Exception(
           "ADSABS website returned a stack trace"
@@ -2088,9 +2093,10 @@ final class Template {
           . "\n - URL was:  " . $adsabs_url,
           (isset($decoded->error->code) ? $decoded->error->code : 999));
         }
+        // @codeCoverageIgnoreStart
       }
       if ($http_response != 200) {
-        throw new Exception(strtok($header, "\n"), $http_response);
+        throw new Exception(strtok($header, "\n"), $http_response); // @codeCoverageIgnore
       }
       
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
@@ -2099,23 +2105,24 @@ final class Template {
                ":\n       " . str_replace("&", "\n       ", urldecode($options)));
                // "; reset at " . date('r', $rate_limit[2][2]);
         } else {
-          report_warning("AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n");
-          return (object) array('numFound' => 0);
+          report_warning("AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n");  // @codeCoverageIgnore
+          return (object) array('numFound' => 0);                                                                 // @codeCoverageIgnore
         }
       } else {
-        throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000);
+        throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000); // @codeCoverageIgnore
       }
       if (!is_object($decoded)) {
-        throw new Exception("Could not decode API response:\n" . $body, 5000);
+        throw new Exception("Could not decode API response:\n" . $body, 5000);   // @codeCoverageIgnore
       }
       
       if (isset($decoded->response)) {
         $response = $decoded->response;
       } else {
-        if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // "". to force string
-        throw new Exception("Could not decode AdsAbs response", 5000);
+        if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
+        throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
       }
       return $response;
+      // @codeCoverageIgnoreStart
     } catch (Exception $e) {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         report_warning(sprintf("API Error in query_adsabs: %s",
@@ -2132,6 +2139,7 @@ final class Template {
       }
       return (object) array('numFound' => 0);
     }
+    // @codeCoverageIgnoreEnd
   }
   
   public function expand_by_RIS(&$dat, $add_url) { // Pass by pointer to wipe this data when called from use_unnamed_params()
