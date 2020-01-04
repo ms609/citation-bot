@@ -177,7 +177,7 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
               $bad_data = TRUE;
           } elseif (substr($the_title, -20, 20) == 'IEEE Xplore Document') {
-              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
           } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
