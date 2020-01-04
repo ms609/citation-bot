@@ -1950,11 +1950,10 @@ ER -  }}';
  
   public function testJunkData() {
     $text = "{{Cite web | title=JSTOR THIS IS A LONG TITLE IN ALL CAPPS AND IT IS BAD|pmid=1974135}} " . 
-            "{{Cite web | title=JSTOR This is bad data|journal=JSTOR This is bad data|pmid=1974136}}" .
-            "{{Cite web | title=JSTOR This is a title on JSTOR|pmid=1974137}}" .
+            "{{Cite web | title=JSTOR This is bad data|journal=JSTOR This is bad data|jstor=1974136}}" .
+            "{{Cite web | title=JSTOR This is a title on JSTOR|pmc=1974137}}" .
             "{{Cite web | title=JSTOR This is a title with IEEE Xplore Document|pmid=1974138}}" .
-            "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|pmid=1974139}}" .
-            "{{Cite web | title=Accept Terms and Conditions on JSTOR|pmid=1974140}}";
+            "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
     $page = $this->process_page($text);
     $this->assertSame(0, substr_count($page->parsed_text(), 'JSTOR'));
   }
