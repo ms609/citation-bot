@@ -1984,4 +1984,508 @@ ER -  }}';
     $template = $this->prepare_citation($text);
     $this->assertSame('1234', $template->get('mr'));
   }
+ 
+  public function testTidy1() {
+    $text = '{{citation|postscript = <!-- A comment only --> }}';
+    $template = $this->prepare_citation($text);
+    $this->assertNull($template->get('postscript'));
+  }
+ 
+  public function testTidy2() {
+    $text = '{{citation|issue=\"Something Special\"}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('Something Special', $template->get('issue'));
+  }
+ 
+  public function testTidy3() {
+    $text = "{{citation|issue=Dog \t\n\r\0\x0B }}";
+    $template = $this->prepare_citation($text);
+    $this->assertSame('Dog', $template->get('issue'));
+  }
+
+   public function testTidy4() {
+    $text = "{{citation|issue=Dog &nbsp;}}";
+    $template = $this->prepare_citation($text);
+    $this->assertSame('Dog', $template->get('issue'));
+  }
+ 
+  public function testTidy5() {
+    $text = "{{citation|issue=Dog &nbsp;}}";
+    $template = $this->make_citation($text);
+
+  }
+ 
+         case 'agency':
+          if (in_array($this->get('agency'), ['United States Food and Drug Administration',
+                                              'Surgeon General of the United States',
+                                              'California Department of Public Health'])
+               &&
+              in_array($this->get('publisher'), 
+                ['United States Department of Health and Human Services', 'California Tobacco Control Program', ''])) {
+            $this->forget('publisher');
+            $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
+          }
+ 
+ 
+         case 'arxiv':
+          if ($this->has($param) && $this->wikiname() == 'cite web') {
+            $this->change_name_to('cite arxiv');
+          }
+ 
+ 
+ 
+             if ($this->has('author') && $this->has('authors')) {
+              $this->rename('author', 'DUPLICATE_authors');
+              $authors = $this->get('authors');
+            } else {
+              
+              
+              
+                if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $this->get($param), $match)) {
+                  $this->add_if_new('authorlink' . $pmatch[2], ucfirst($match[2] ? $match[2] : $match[3]));
+                  $this->set($param, $match[3]);
+                  report_modification("Dissecting authorlink");
+                }
+              
+              
+              
+              
+              
+                              $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+                if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
+                  $others = "{$match[1]} {$match[5]}";
+                  if ($this->has('others')) {
+                    $this->append_to('others', '; ' . $others);
+                  } else {
+                    $this->set('others', $others);
+                  }
+                  $this->set($param, preg_replace($translator_regexp, "", $this->get($param)));
+                }
+              }
+ 
+ 
+ 
+ 
+ 
+         case 'bibcode':
+          if ($this->blank($param)) return;
+          $bibcode_journal = substr($this->get($param), 4);
+          foreach (NON_JOURNAL_BIBCODES as $exception) {
+            if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
+          }
+          if (strpos($this->get($param), 'book') !== FALSE) {
+            $this->change_name_to('cite book', FALSE);
+          } else {
+            $this->change_name_to('cite journal', FALSE);
+           
+           
+           
+           
+                       if (str_equivalent($this->get('chapter'), $this->get('title'))) {
+              $this->forget('chapter'); 
+              return; // Nonsense to have both.
+            }
+           
+           
+           
+           
+          if ($doi == '10.1267/science.040579197') {
+            // This is a bogus DOI from the PMID example file
+            $this->forget('doi'); 
+            return;
+          }
+           
+           
+           
+           
+                     if ($doi == '10.5284/1000184') {
+            // This is a DOI for an entire database, not anything within it
+            $this->forget('doi'); 
+            return;
+          }
+           
+           
+           
+           
+           
+           
+                     if (substr($doi, 0, 8) == '10.5555/') { // Test DOI prefix.  NEVER will work
+            $this->forget('doi'); 
+            if ($this->blank('url')) {
+              $url_test = 'https://plants.jstor.org/stable/' . $doi;
+              $ch = curl_init($test_url);
+              curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
+              @curl_exec($ch);
+              $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+              curl_close($ch);
+              if ($httpCode == 200) $this->add_if_new('url', $url_test);
+            }
+            return;
+          }
+           
+           
+           
+           
+           
+                   case 'format': // clean up bot's old (pre-2018-09-18) edits
+          if ($this->get($param) === 'Accepted manuscript' ||
+              $this->get($param) === 'Submitted manuscript' ||
+              $this->get($param) === 'Full text') {
+            $this->forget($param);
+          }
+           
+           
+           
+           
+           
+                   case 'chapter-format':
+        // clean up bot's old (pre-2018-09-18) edits
+          if ($this->get($param) === 'Accepted manuscript' ||
+              $this->get($param) === 'Submitted manuscript' ||
+              $this->get($param) === 'Full text') {
+            $this->forget($param);
+          }
+           
+           
+           
+           
+           
+                   case 'chapter-format':
+
+          // Citation templates do this automatically -- also remove if there is no url, which is template error
+          if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]'])) {
+             if ($this->has('chapter-url')) {
+               if (substr($this->get('chapter-url'), -4) === '.pdf' || substr($this->get('chapter-url'), -4) === '.PDF') {
+                 $this->forget($param);
+               }
+             } elseif ($this->has('chapterurl')) {
+               if (substr($this->get('chapterurl'), -4) === '.pdf' || substr($this->get('chapterurl'), -4) === '.PDF') {
+                 $this->forget($param);
+               }
+             } else {
+               $this->forget($param); // Has no chapter URL at all
+             }
+          }
+          retur
+ 
+           
+           
+           
+                   case 'periodical':
+          $periodical = trim($this->get($param));
+          if (mb_substr($periodical, -1) === "," ) {
+            $periodical = mb_substr($periodical, 0, -1);
+            $this->set($param, $periodical);  // Remove comma
+          }
+           
+           
+           
+                   case 'periodical':
+                     if ($this->is_book_series($param)) {
+            $this->change_name_to('cite book');
+            if ($this->blank('series')) {
+              $this->rename($param, 'series');
+            } elseif ($this->is_book_series('series') ||
+                     str_equivalent($this->get($param), $this->get('series'))) {
+              $this->forget($param);
+            }
+          }
+           
+           
+           
+           
+           
+           
+           
+                 case 'magazine':
+          if ($this->blank($param)) return;
+          // Remember, we don't process cite magazine.
+          if ($this->wikiname() == 'cite journal' && !$this->has('journal')) {
+            $this->rename('magazine', 'journal');
+          }
+          ret
+           
+           
+           
+           
+                   case 'others': case 'day': case 'month':  // Bad idea to have in general
+          if ($this->blank($param)) $this->forget($param);
+          return;
+
+           
+           
+           
+           case publisher:
+                     if (stripos($this->get($param), 'proquest') !== FALSE) {
+            $this->forget($param);
+            if ($this->blank('via')) {
+              $this_big_url = $this->get('url') . $this->get('thesis-url') . $this->get('thesisurl') . $this->get('chapter-url') . $this->get('chapterurl');
+              if (stripos($this_big_url, 'proquest') !== FALSE) $this->add('via', 'ProQuest');
+            }
+            return;
+          }
+           
+           
+           
+                     if (stripos($this->get('url'), 'maps.google') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
+            $this->set($param, 'Google Maps');  // Case when Google actually IS a publisher
+            return;
+          }
+           
+           
+           
+                     if (strtolower($this->get('journal')) === $publisher) {
+            $this->forget($param);
+          }
+           
+           
+           
+           
+           case series:
+                     if ($this->is_book_series('series')) {
+            $this->change_name_to('cite book');
+            if ($this->has('journal')) {
+              if ($this->is_book_series('journal') ||
+                     str_equivalent($this->get('series'), $this->get('journal'))) {
+                $this->forget('journal');
+              }
+            }
+                      
+                      
+                      
+                      
+                      case title
+                       
+                                 } elseif (!$this->blank(['isbn', 'doi', 'pmc', 'pmid']) && preg_match('~^(.+) \(PDF\)$~i', trim($this->get($param)), $match)) {
+                 $this->set($param, trim($match[1])); // Books/journals probably don't end in (PDF)
+          }
+          return
+           
+           
+           
+           
+                   case 'archivedate':
+          if ($this->has('archivedate') && $this->get('archive-date') === $this->get('archivedate')) {
+            $this->forget('archivedate');
+          }
+          return;
+
+           
+                 case 'archive-url':
+                     if (preg_match('~^https?://(?:web\.archive\.org/web/|archive\.today/|archive\.\S\S/|webarchive\.loc\.gov/all/|www\.webarchive\.org\.uk/wayback/archive/)/(?:save|\*)/~', $this->get($param))) {
+              $this->forget($param); // Forget "save it now" archives.  They are rubbish
+              return;
+          }
+           
+           
+           case archive-url
+                     if (stripos($this->get($param), 'archive') === FALSE) {
+            if ($this->get($param) == $this->get('url')) {
+              $this->forget($param);  // The archive url is the real one
+              return;
+            }
+          }
+           
+           
+           
+           case archiveurl
+                      // Clean up a bunch on non-archive URLs
+          if (stripos($this->get($param), 'archive') === FALSE &&
+              stripos($this->get($param), 'webcitation') === FALSE &&
+              stripos($this->get($param), 'perma.') === FALSE &&
+              stripos($this->get($param), 'wayback') === FALSE &&
+              stripos($this->get($param), 'webharvest') === FALSE &&
+              stripos($this->get($param), 'freezepage') === FALSE &&
+              stripos($this->get($param), 'petabox.bibalex.org') === FALSE) {
+             if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
+                 if (preg_match('~^\(PDF\)(.+)$~i', trim($this->get('title')), $match)) {
+                   $this->set('title', trim($match[1]));
+                 }
+             } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/(?:documents/|)([0-9]+)/*~i", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.academia.edu/' . $matches[1]);
+             } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
+                 $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
+             } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
+                 $this->set($param, $this->simplify_google_search($this->get($param)));
+             } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1]);
+             } elseif (preg_match("~^(https?://(?:www\.|)bloomberg\.com/\S+)\?(?:utm_|cmpId=)\S*$~i", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1]);
+             } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
+                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
+                 || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
+                 if ($this->blank(['archive-url', 'archiveurl'])) { // Sometimes people grabbed a snap of it
+                    $this->forget($param);
+                 }
+                 return;
+             }
+             if ($this->get_identifiers_from_url($this->get($param))) {
+               if (!extract_doi($this->get($param))[1]) { // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
+                 $this->forget($param);
+                 return;
+               }
+             }
+          }
+           
+           
+           
+           
+           case url:
+                     } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
+              $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
+          } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
+              $this->set($param, $this->simplify_google_search($this->get($param)));
+          } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
+              $this->set($param, $matches[1]);
+          } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
+                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
+                 || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
+              $this->forget($param);
+              return;
+          } elseif (preg_match("~^https?://(?:www\.|)bloomberg\.com/tosv2\.html\?vid=&uuid=(?:.+)&url=([a-zA-Z0-9=]+)$~", $this->get($param), $matches)) {
+             if (base64_decode($matches[1])) { 
+               quietly('report_modification', "Decoding Bloomberg URL.");
+               $this->set($param, 'https://www.bloomberg.com' .  base64_decode($matches[1]));
+             }
+          }
+ 
+ 
+ 
+ case url:
+ 
+         if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
+              // Use dots, not \. since it might match dot or dash
+              if (preg_match("~^https?://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $this->get($param), $matches)) {
+                 report_info("Remove proxy from IEEE URL");
+                 $this->set($param, 'https://ieeexplore.ieee.org/document/' . $matches[1]);
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+              } elseif (preg_match("~^https?://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.oxfordhandbooks.com/view/' . $matches[1]);
+                 report_info("Remove proxy from Oxford Handbooks URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+              } elseif (preg_match("~^https?://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
+                 report_info("Remove proxy from Oxford Art URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+              } elseif (preg_match("~^https?://(?:www.|)sciencedirect.com[^/]+/(\S+)$~i", $this->get($param), $matches)) {
+                 report_info("Remove proxy from ScienceDirect URL");
+                 $this->set($param, 'https://www.sciencedirect.com/' . $matches[1]);
+                 if ($this->has('via')) { 
+                   if (stripos($this->get('via'), 'library') !== FALSE ||
+                       stripos($this->get('via'), 'direct') === FALSE) {
+                     $this->forget('via');
+                   }
+                 }
+                // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
+              } elseif (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
+                 report_info("Remove proxy from " . $matches[1] . " URL");
+                 $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
+                 if ($this->has('via')) { 
+                     $this->forget('via');
+                 }
+              // Generic proxy code www-host-com.proxy-stuff/dsfasfdsfasdfds
+              } elseif (preg_match("~^https?://www\-([^\./\-]+)\-com[\.\-][^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
+                 $matches[1] = 'www.' . $matches[1] . '.com';
+                 report_info("Remove proxy from " . $matches[1] . " URL");
+                 $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
+                 if ($this->has('via')) { 
+                     $this->forget('via');
+                 }
+              }
+          }
+          if (stripos($this->get($param), 'galegroup') !== FALSE) {
+            if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://go.galegroup.com' . urldecode($matches[1]));
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^http.+url=https?://go\.galegroup\.com/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://go.galegroup.com/' . $matches[1]);
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^(?:http.+url=|)https?://(link.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://link.galegroup.com' . urldecode($matches[1]));
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^http.+url=https?://link\.galegroup\.com/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://link.galegroup.com/' . $matches[1]);
+                 report_info("Remove proxy from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            }
+            if (preg_match("~^(https?://(?:go|link)\.galegroup\.com/.*)&u=[^&]*(&.*|)$~", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1] . $matches[2]);
+                 report_info("Remove University ID from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^(https?://(?:go|link)\.galegroup\.com/.*)\?u=[^&]*&(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1] . '?' . $matches[2]);
+                 report_info("Remove University ID from Gale URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
+            }
+          }
+          if (stripos($this->get($param), 'proquest') !== FALSE) {
+            if (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
+                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^http.+/login\?url=https?://search\.proquest\.com/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
+                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
+            } elseif (preg_match('~^https?://(.*)proquest.umi.com(.*)/(pqd.+)$~', $this->get($param), $matches)) {
+               if ($matches[1] || $matches[2]) {
+                 $this->set($param, 'http://proquest.umi.com/' . $matches[3]);
+                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
+               }
+            }
+            $changed = FALSE;
+            if (preg_match("~^https?://search.proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
+              if ($matches[1] != 'dissertations') {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[2]); // Remove specific search engine
+              }
+            }
+            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
+            }
+            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
+            }
+            if (preg_match("~^https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
+            }
+            if (strcmp('http://proquest.umi.com/', $this->get($param)) === 0
+             || strcmp('http://proquest.umi.com',  $this->get($param)) === 0) {
+                 $this->forget($param);
+            }
+           
+           
+           
+           
+           
+           
+          if (strtolower($this->get('newspaper')) === $publisher) {
+            $this->forget($param);
+          }
+           
+           
+           
+           
+           
+           
+           
+           
+           
 }
