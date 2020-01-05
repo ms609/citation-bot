@@ -37,6 +37,14 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
   
+  protected function make_citation($text) {
+    $this->assertSame('{{', mb_substr($text, 0, 2));
+    $this->assertSame('}}', mb_substr($text, -2));
+    $template = new Template();
+    $template->parse_text($text);
+    return $template;
+  }
+  
   protected function prepare_citation($text) {
     $this->assertSame('{{', mb_substr($text, 0, 2));
     $this->assertSame('}}', mb_substr($text, -2));
