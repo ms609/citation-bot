@@ -495,16 +495,7 @@ final class Template {
           return $this->add($param_name, $value);
         }
         return FALSE;
-      
-      case 'author_separator': case 'author-separator':
-        report_warning("'author-separator' is deprecated.");
-        if(!trim($value)) {
-          $this->forget($param_name);
-        } else {
-          report_warning(" Please fix manually.");
-        }
-        return FALSE;
-        
+         
       case 'archivedate';
       case 'archive-date':
         if (!$this->blank(['archive-date', 'archivedate'])) return FALSE;
@@ -3340,6 +3331,14 @@ final class Template {
               }
             }
             return;
+
+        case 'author_separator': case 'author-separator':
+          if ($this->blank($param)) {
+            $this->forget($param);
+          } else {
+            report_warning(" Please fix deprecated author separator manually."); // @codeCoverageIgnore
+          }
+          return;
 
         case 'bibcode':
           if ($this->blank($param)) return;
