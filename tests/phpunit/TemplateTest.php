@@ -1957,4 +1957,31 @@ ER -  }}';
     $page = $this->process_page($text);
     $this->assertSame(0, substr_count($page->parsed_text(), 'JSTOR'));
   }
+ 
+  public function testISSN(){
+    $text = '{{Cite journal|journal=Yes}}';
+    $template = $this->prepare_citation($text);
+    $template->add_if_new('issn', '1111-2222');
+    $this->assertNull($template->get('issn'));
+    $template->add_if_new('issn_force', '1111-2222');
+    $this->assertSame('1111-2222', $template->get('issn'));
+  }
+ 
+  public function testURLS() {
+    $text='{{cite journal|conference-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));
+    $text='{{cite journal|conferenceurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));                
+    $text='{{cite journal|contribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));
+    $text='{{cite journal|contributionurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));
+    $text='{{cite journal|article-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));
+  }
 }
