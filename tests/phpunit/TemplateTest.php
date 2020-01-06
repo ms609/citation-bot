@@ -2040,7 +2040,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->tidy_parameter('author1');
     $this->assertSame('Yoser', $template->get('author1'));
-    $this->assertSame('Hoser', $template->get('authorlink1'));
+    $this->assertSame('Hoser', $template->get('author1-link'));
   }
 
   public function testTidy8() {
@@ -2256,7 +2256,7 @@ ER -  }}';
   } 
 
    public function testTidy38() {
-    $text = "{{cite journal|archiveurl=http://researchgate.net/publication/1234_feasdfafdsfsd|title=abc PDF}}";
+    $text = "{{cite journal|archiveurl=http://researchgate.net/publication/1234_feasdfafdsfsd|title=abc (PDF)}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://www.researchgate.net/publication/1234', $template->get('archiveurl'));
@@ -2271,7 +2271,7 @@ ER -  }}';
   }
  
    public function testTidy40() {
-    $text = "{{cite journal|archiveurl=https://zenodo.org/record/1234/files}}";
+    $text = "{{cite journal|archiveurl=https://zenodo.org/record/1234/files/dsafsd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://zenodo.org/record/1234', $template->get('archiveurl'));
@@ -2292,7 +2292,7 @@ ER -  }}';
   }
  
    public function testTidy44() {
-    $text = "{{cite journal|archiveurl=https://bloomberg.com/stuff_stuff?:utm_=more_stuff}}";
+    $text = "{{cite journal|archiveurl=https://bloomberg.com/stuff_stuff?utm_=more_stuff}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get('archiveurl'));
@@ -2302,7 +2302,7 @@ ER -  }}';
     $text = "{{cite journal|url=http://researchgate.net/publication/1234_feasdfafdsfsd|title=abc PDF}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://researchgate.net/publication/1234', $template->get('url'));
+    $this->assertSame('https://www.researchgate.net/publication/1234', $template->get('url'));
     $this->assertSame('abc', $template->get('title'));
   }
 
@@ -2310,11 +2310,11 @@ ER -  }}';
     $text = "{{cite journal|url=http://academia.edu/documents/1234_feasdfafdsfsd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('http://academia.edu/documents/1234', $template->get('url'));
+    $this->assertSame('http://www.academia.edu/documents/1234', $template->get('url'));
   }
  
    public function testTidy47() {
-    $text = "{{cite journal|url=https://zenodo.org/record/1234/files}}";
+    $text = "{{cite journal|url=https://zenodo.org/record/1234/files/dfasd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://zenodo.org/record/1234', $template->get('url'));
@@ -2335,7 +2335,7 @@ ER -  }}';
   }
  
    public function testTidy50() {
-    $text = "{{cite journal|url=https://bloomberg.com/stuff_stuff?:utm_=more_stuff}}";
+    $text = "{{cite journal|url=https://bloomberg.com/stuff_stuff?utm_=more_stuff}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get('url'));
@@ -2370,7 +2370,7 @@ ER -  }}';
   }
  
   public function testTidy55() {
-    $text = "{{cite journal|url=hhttps://www.oxfordhandbooks.com.proxy/view/1234|via=Library}}";
+    $text = "{{cite journal|url=https://www.oxfordhandbooks.com.proxy/view/1234|via=Library}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.oxfordhandbooks.com/view/1234', $template->get('url'));
@@ -2378,7 +2378,7 @@ ER -  }}';
   }
 
   public function testTidy56() {
-    $text = "{{cite journal|url=hhttps://www.oxfordartonline.com.proxy/view/1234|via=me}}";
+    $text = "{{cite journal|url=https://www.oxfordartonline.com.proxy/view/1234|via=me}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.oxfordartonline.com/view/1234', $template->get('url'));
