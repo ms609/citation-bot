@@ -4492,13 +4492,7 @@ final class Template {
  *   Functions to retrieve values that may be specified 
  *   in various ways
  ********************************************************/
-  protected function display_authors($newval = FALSE) {
-    if ($newval && is_int($newval)) {
-      $this->forget('displayauthors');
-      report_modification("Setting display-authors to $newval");
-      $this->set('display-authors', $newval);
-    }
-
+  protected function display_authors() {
     if (($da = $this->get('display-authors')) === NULL) {
       $da = $this->get('displayauthors');
     }
