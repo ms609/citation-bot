@@ -3873,8 +3873,13 @@ final class Template {
                      $this->forget('via');
                    }
                  }
+              }
+          }
+          if (stripos($this->get($param), 'proxy') !== FALSE ||
+              stripos($this->get($param), 'lib') !== FALSE ||
+              stripos($this->get($param), 'mutex') !== FALSE) {
                 // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
-              } elseif (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
+              if (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
                  report_info("Remove proxy from " . $matches[1] . " URL");
                  $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
                  if ($this->has('via')) { 
