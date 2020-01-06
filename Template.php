@@ -3802,9 +3802,7 @@ final class Template {
              } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
                  || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
                  || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
-                 if ($this->blank(['archive-url', 'archiveurl'])) { // Sometimes people grabbed a snap of it
-                    $this->forget($param);
-                 }
+                 $this->forget($param);
                  return;
              }
              if ($this->get_identifiers_from_url($this->get($param))) {
@@ -3841,7 +3839,9 @@ final class Template {
           } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
                  || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
                  || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
-              $this->forget($param);
+                 if ($this->blank(['archive-url', 'archiveurl'])) { // Sometimes people grabbed a snap of it
+                    $this->forget($param);
+                 }
               return;
           } elseif (preg_match("~^https?://(?:www\.|)bloomberg\.com/tosv2\.html\?vid=&uuid=(?:.+)&url=([a-zA-Z0-9=]+)$~", $this->get($param), $matches)) {
              if (base64_decode($matches[1])) { 
