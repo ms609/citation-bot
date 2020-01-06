@@ -1989,7 +1989,7 @@ ER -  }}';
   }
  
   public function testTidy2() {
-    $text = '{{citation|issue=\"Something Special\"}}';
+    $text = '{{citation|issue="Something Special"}}';
     $template = $this->prepare_citation($text);
     $this->assertSame('Something Special', $template->get('issue'));
   }
@@ -2218,14 +2218,14 @@ ER -  }}';
   }
 
   public function testTidy32() {
-    $text = "{{cite journal|title=A title PDF|pmc=1234}}";
+    $text = "{{cite journal|title=A title (PDF)|pmc=1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('title');
     $this->assertSame('A title', $template->get('title'));
   }
                       
   public function testTidy34() {
-    $text = "{{cite journal|archive-url=http://web.archive.org/save/some_website}}";
+    $text = "{{cite journal|archive-url=http://web.archive.org/web/save/some_website}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archive-url');
     $this->assertNull($template->get('archive-url'));
@@ -2243,7 +2243,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->tidy_parameter('periodical');
     $this->assertSame('cite book', $template->wikiname());
-    $this->assertSame('Methods of Molecular Biolog', $template->get('series'));
+    $this->assertSame('Methods of Molecular Biology', $template->get('series'));
   }
             
    public function testTidy37() {
@@ -2259,7 +2259,7 @@ ER -  }}';
     $text = "{{cite journal|archiveurl=http://researchgate.net/publication/1234_feasdfafdsfsd|title=abc PDF}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
-    $this->assertSame('https://researchgate.net/publication/1234', $template->get('archiveurl'));
+    $this->assertSame('https://www.researchgate.net/publication/1234', $template->get('archiveurl'));
     $this->assertSame('abc', $template->get('title'));
   }
 
@@ -2267,7 +2267,7 @@ ER -  }}';
     $text = "{{cite journal|archiveurl=http://academia.edu/documents/1234_feasdfafdsfsd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
-    $this->assertSame('http://academia.edu/documents/1234', $template->get('archiveurl'));
+    $this->assertSame('https://www.academia.edu/1234', $template->get('archiveurl'));
   }
  
    public function testTidy40() {
@@ -2389,7 +2389,7 @@ ER -  }}';
     $text = "{{cite journal|url=https://sciencedirect.com.proxy/stuff_stuff|via=the via}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get('url'));
+    $this->assertSame('https://www.sciencedirect.com/stuff_stuff', $template->get('url'));
   }
  
   public function testTidy58() {
@@ -2454,7 +2454,7 @@ ER -  }}';
     $text = "{{cite journal|url=https://search.proquest.com/STUFF/docview/1234/STUFF}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://search.proquest.com/STUFF/docview/1234/STUFF', $template->get('url'));
+    $this->assertSame('https://search.proquest.com/docview/1234/STUFF', $template->get('url'));
   }
  
    public function testTidy66b() {
