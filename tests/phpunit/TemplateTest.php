@@ -2299,7 +2299,7 @@ ER -  }}';
   }
 
    public function testTidy45() {
-    $text = "{{cite journal|url=http://researchgate.net/publication/1234_feasdfafdsfsd|title=abc PDF}}";
+    $text = "{{cite journal|url=http://researchgate.net/publication/1234_feasdfafdsfsd|title=abc (PDF)}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.researchgate.net/publication/1234', $template->get('url'));
@@ -2310,7 +2310,7 @@ ER -  }}';
     $text = "{{cite journal|url=http://academia.edu/documents/1234_feasdfafdsfsd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('http://www.academia.edu/documents/1234', $template->get('url'));
+    $this->assertSame('http://www.academia.edu/1234', $template->get('url'));
   }
  
    public function testTidy47() {
@@ -2479,10 +2479,10 @@ ER -  }}';
   }
  
    public function testTidy69() {
-    $text = "{{cite journal|url=https://search.proquest.com/disertations/docview/1234/1234/1234}}";
+    $text = "{{cite journal|url=https://search.proquest.com/dissertations/docview/1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://search.proquest.com/disertations/docview/1234/1234/1234', $template->get('url'));
+    $this->assertSame('https://search.proquest.com/dissertations/docview/1234', $template->get('url'));
   }
  
     public function testTidy70() {
