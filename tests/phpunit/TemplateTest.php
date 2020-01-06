@@ -2484,7 +2484,7 @@ ER -  }}';
     $text = "{{cite journal|url=http://proxy-proquest.umi.com-org/pqd1234}}"; // Bogus, so deleted
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertNull('$template->get('url'));
+    $this->assertNull($template->get('url'));
   }
  
    public function testTidy69() {
