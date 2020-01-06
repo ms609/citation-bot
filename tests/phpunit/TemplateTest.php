@@ -2280,185 +2280,220 @@ ER -  }}';
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://zenodo.org/record/1234', $template->get('archiveurl'));
   }
- 
-   public function testTidy41() {
-    $text = "{{cite journal|archiveurl=https://zenodo.org/record/1234/files}}";
+
+   public function testTidy42() {
+    $text = "{{cite journal|archiveurl=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
-    $this->assertSame('https://zenodo.org/record/1234', $template->get('archiveurl'));
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $template->get('archiveurl'));
   }
  
+   public function testTidy43() {
+    $text = "{{cite journal|archiveurl=https://sciencedirect.com/stuff_stuff?via=more_stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get('archiveurl'));
+  }
  
- 
- 
+   public function testTidy44() {
+    $text = "{{cite journal|archiveurl=https://bloomberg.com/stuff_stuff?:utm_=more_stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get('archiveurl'));
+  }
 
-             } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
-                 $this->set($param, $this->simplify_google_search($this->get($param)));
-             } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
-                 $this->set($param, $matches[1]);
-             } elseif (preg_match("~^(https?://(?:www\.|)bloomberg\.com/\S+)\?(?:utm_|cmpId=)\S*$~i", $this->get($param), $matches)) {
-                 $this->set($param, $matches[1]);
-             } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
-                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
-                 || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
-                 if ($this->blank(['archive-url', 'archiveurl'])) { // Sometimes people grabbed a snap of it
-                    $this->forget($param);
-                 }
-                 return;
-             }
-             if ($this->get_identifiers_from_url($this->get($param))) {
-               if (!extract_doi($this->get($param))[1]) { // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
-                 $this->forget($param);
-                 return;
-               }
-             }
-          }
-           
-           
-           
-           
-           case url:
-                     } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
-              $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
-          } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
-              $this->set($param, $this->simplify_google_search($this->get($param)));
-          } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
-              $this->set($param, $matches[1]);
-          } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
-                 || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
-                 || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
-              $this->forget($param);
-              return;
-          } elseif (preg_match("~^https?://(?:www\.|)bloomberg\.com/tosv2\.html\?vid=&uuid=(?:.+)&url=([a-zA-Z0-9=]+)$~", $this->get($param), $matches)) {
-             if (base64_decode($matches[1])) { 
-               quietly('report_modification', "Decoding Bloomberg URL.");
-               $this->set($param, 'https://www.bloomberg.com' .  base64_decode($matches[1]));
-             }
-          }
+   public function testTidy45() {
+    $text = "{{cite journal|url=http://researchgate.net/publication/1234_feasdfafdsfsd|title=abc PDF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://researchgate.net/publication/1234', $template->get('url'));
+    $this->assertSame('abc', $template->get('title'));
+  }
+
+   public function testTidy46() {
+    $text = "{{cite journal|url=http://academia.edu/documents/1234_feasdfafdsfsd}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('http://academia.edu/documents/1234', $template->get('url'));
+  }
  
+   public function testTidy47() {
+    $text = "{{cite journal|url=https://zenodo.org/record/1234/files}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://zenodo.org/record/1234', $template->get('url'));
+  }
+
+   public function testTidy48() {
+    $text = "{{cite journal|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $template->get('url'));
+  }
  
+   public function testTidy49() {
+    $text = "{{cite journal|url=https://sciencedirect.com/stuff_stuff?via=more_stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get('url'));
+  }
  
- case url:
- 
-         if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
-              // Use dots, not \. since it might match dot or dash
-              if (preg_match("~^https?://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $this->get($param), $matches)) {
-                 report_info("Remove proxy from IEEE URL");
-                 $this->set($param, 'https://ieeexplore.ieee.org/document/' . $matches[1]);
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-              } elseif (preg_match("~^https?://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://www.oxfordhandbooks.com/view/' . $matches[1]);
-                 report_info("Remove proxy from Oxford Handbooks URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-              } elseif (preg_match("~^https?://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
-                 report_info("Remove proxy from Oxford Art URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-              } elseif (preg_match("~^https?://(?:www.|)sciencedirect.com[^/]+/(\S+)$~i", $this->get($param), $matches)) {
-                 report_info("Remove proxy from ScienceDirect URL");
-                 $this->set($param, 'https://www.sciencedirect.com/' . $matches[1]);
-                 if ($this->has('via')) { 
-                   if (stripos($this->get('via'), 'library') !== FALSE ||
-                       stripos($this->get('via'), 'direct') === FALSE) {
-                     $this->forget('via');
-                   }
-                 }
-                // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
-              } elseif (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
-                 report_info("Remove proxy from " . $matches[1] . " URL");
-                 $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
-                 if ($this->has('via')) { 
-                     $this->forget('via');
-                 }
-              // Generic proxy code www-host-com.proxy-stuff/dsfasfdsfasdfds
-              } elseif (preg_match("~^https?://www\-([^\./\-]+)\-com[\.\-][^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
-                 $matches[1] = 'www.' . $matches[1] . '.com';
-                 report_info("Remove proxy from " . $matches[1] . " URL");
-                 $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
-                 if ($this->has('via')) { 
-                     $this->forget('via');
-                 }
-              }
-          }
-          if (stripos($this->get($param), 'galegroup') !== FALSE) {
-            if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://go.galegroup.com' . urldecode($matches[1]));
-                 report_info("Remove proxy from Gale URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^http.+url=https?://go\.galegroup\.com/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://go.galegroup.com/' . $matches[1]);
-                 report_info("Remove proxy from Gale URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^(?:http.+url=|)https?://(link.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://link.galegroup.com' . urldecode($matches[1]));
-                 report_info("Remove proxy from Gale URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^http.+url=https?://link\.galegroup\.com/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://link.galegroup.com/' . $matches[1]);
-                 report_info("Remove proxy from Gale URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            }
-            if (preg_match("~^(https?://(?:go|link)\.galegroup\.com/.*)&u=[^&]*(&.*|)$~", $this->get($param), $matches)) {
-                 $this->set($param, $matches[1] . $matches[2]);
-                 report_info("Remove University ID from Gale URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^(https?://(?:go|link)\.galegroup\.com/.*)\?u=[^&]*&(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, $matches[1] . '?' . $matches[2]);
-                 report_info("Remove University ID from Gale URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            }
-          }
-          if (stripos($this->get($param), 'proquest') !== FALSE) {
-            if (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
-                 report_info("Remove proxy from ProQuest URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^http.+/login\?url=https?://search\.proquest\.com/docview/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
-                 report_info("Remove proxy from ProQuest URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
-            } elseif (preg_match('~^https?://(.*)proquest.umi.com(.*)/(pqd.+)$~', $this->get($param), $matches)) {
-               if ($matches[1] || $matches[2]) {
-                 $this->set($param, 'http://proquest.umi.com/' . $matches[3]);
-                 report_info("Remove proxy from ProQuest URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
-               }
-            }
-            $changed = FALSE;
-            if (preg_match("~^https?://search.proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
-              if ($matches[1] != 'dissertations') {
-                 $changed = TRUE;
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[2]); // Remove specific search engine
-              }
-            }
-            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
-                 $changed = TRUE;
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
-            }
-            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
-                 $changed = TRUE;
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
-            }
-            if (preg_match("~^https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+$~", $this->get($param), $matches)) {
-                 $changed = TRUE;
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
-            }
-            if (strcmp('http://proquest.umi.com/', $this->get($param)) === 0
-             || strcmp('http://proquest.umi.com',  $this->get($param)) === 0) {
-                 $this->forget($param);
-            }
-           
-           
+   public function testTidy50() {
+    $text = "{{cite journal|url=https://bloomberg.com/stuff_stuff?:utm_=more_stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get('url'));
+  }
     
-           
-           
+   public function testTidy51() {
+    $text = "{{cite journal|url=https://watermark.silverchair.com/rubbish}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertNull($template->get('url'));
+  }
+
+   public function testTidy52() {
+    $text = "{{cite journal|url=https://watermark.silverchair.com/rubbish|archiveurl=has_one}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://watermark.silverchair.com/rubbish', $template->get('url'));
+  }
+ 
+   public function testTidy53() {
+    $text = "{{cite journal|archiveurl=https://watermark.silverchair.com/rubbish}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertNull($template->get('archiveurl'));
+  }
+ 
+   public function testTidy54() {
+    $text = "{{cite journal|url=https://ieeexplore.ieee.org.proxy/document/1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://ieeexplore.ieee.org/document/1234', $template->get('url'));
+  }
+ 
+  public function testTidy55() {
+    $text = "{{cite journal|url=hhttps://www.oxfordhandbooks.com.proxy/view/1234|via=Library}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.oxfordhandbooks.com/view/1234', $template->get('url'));
+    $this->assertNull($template->get('via'));
+  }
+
+  public function testTidy56() {
+    $text = "{{cite journal|url=hhttps://www.oxfordartonline.com.proxy/view/1234|via=me}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.oxfordartonline.com/view/1234', $template->get('url'));
+    $this->assertSame('me', $template->get('via'));
+  }
+
+   public function testTidy57() {
+    $text = "{{cite journal|url=https://sciencedirect.com.proxy/stuff_stuff|via=the via}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get('url'));
+  }
+ 
+  public function testTidy58() {
+    $text = "{{cite journal|url=https://www.random.com.mutex.gmu/stuff_stuff|via=the via}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.random.com/stuff_stuff', $template->get('url'));
+    $this->assertNull($template->get('via'));
+  }
+ 
+  public function testTidy59() {
+    $text = "{{cite journal|url=https://www-random-com.mutex.gmu/stuff_stuff|via=the via}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.random.com/stuff_stuff', $template->get('url'));
+    $this->assertNull($template->get('via'));
+  }
+
+   public function testTidy60() {
+    $text = "{{cite journal|url=http://proxy/url=https://go.galegroup.com%2fpsSTUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://go.galegroup.com/psSTUFF', $template->get('url'));
+  }
+ 
+  public function testTidy61() {
+    $text = "{{cite journal|url=http://proxy/url=https://go.galegroup.com/STUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://go.galegroup.com/STUFF', $template->get('url'));
+  }
+
+   public function testTidy62() {
+    $text = "{{cite journal|url=http://proxy/url=https://link.galegroup.com%2fpsSTUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://link.galegroup.com/psSTUFF', $template->get('url'));
+  }
+ 
+  public function testTidy63() {
+    $text = "{{cite journal|url=http://proxy/url=https://link.galegroup.com/STUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://link.galegroup.com/STUFF', $template->get('url'));
+  }
+ 
+   public function testTidy64() {
+    $text = "{{cite journal|url=https://go.galegroup.com/STUFF&u=UNIV&date=1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://go.galegroup.com/STUFF&date=1234', $template->get('url'));
+  }
+
+   public function testTidy65() {
+    $text = "{{cite journal|url=https://link.galegroup.com/STUFF&u=UNIV&date=1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://link.galegroup.com/STUFF&date=1234', $template->get('url'));
+  }
+ 
+   public function testTidy66() {
+    $text = "{{cite journal|url=https://search.proquest.com/STUFF/docview/1234/STUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/STUFF/docview/1234/STUFF', $template->get('url'));
+  }
+ 
+   public function testTidy66() {
+    $text = "{{cite journal|url=http://host.com/login?url=https://search.proquest.com/STUFF/docview/1234/34123/342}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
+  }
+ 
+   public function testTidy67() {
+    $text = "{{cite journal|url=http://host.com/login?url=https://0-search-proquest-.com/STUFF/docview/1234/2314/3214}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
+  }
+ 
+   public function testTidy68() {
+    $text = "{{cite journal|url=http://proxy-proquest.umi.com-org/pqd1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('http://proquest.umi.com/pqd1234', $template->get('url'));
+  }
+ 
+   public function testTidy69() {
+    $text = "{{cite journal|url=https://search.proquest.com/disertations/docview/1234/1234/1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/disertations/docview/1234/1234/1234', $template->get('url'));
+  }
+ 
+    public function testTidy70() {
+    $text = "{{cite journal|url=https://search.proquest.com/docview/1234/fulltext}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
+  }
+          
 }
