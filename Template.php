@@ -3901,7 +3901,7 @@ final class Template {
                  report_info("Remove proxy from Gale URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^(?:http.+url=|)https?://(link.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
+            } elseif (preg_match("~^(?:http.+url=|)https?://link.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://link.galegroup.com' . urldecode($matches[1]));
                  report_info("Remove proxy from Gale URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
