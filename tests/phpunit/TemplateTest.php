@@ -2310,7 +2310,7 @@ ER -  }}';
     $text = "{{cite journal|url=http://academia.edu/documents/1234_feasdfafdsfsd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('http://www.academia.edu/1234', $template->get('url'));
+    $this->assertSame('https://www.academia.edu/1234', $template->get('url'));
   }
  
    public function testTidy47() {
