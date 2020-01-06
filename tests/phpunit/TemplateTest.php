@@ -1984,8 +1984,13 @@ ER -  }}';
  
   public function testTidy1() {
     $text = '{{cite web|postscript = <!-- A comment only --> }}';
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('postscript');
+    $template = $this->process_citation($text);
+    $this->assertNull($template->get('postscript'));
+  }
+ 
+  public function testTidy1a() {
+    $text = '{{cite web|postscript = <!-- A comment only --> {{Some Template}} }}';
+    $template = $this->process_citation($text);
     $this->assertNull($template->get('postscript'));
   }
  
