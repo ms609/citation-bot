@@ -2256,7 +2256,7 @@ ER -  }}';
   } 
 
    public function testTidy38() {
-    $text = "{{cite journal|archiveurl=http://researchgate.net/publication/1234_feasdfafdsfsd|title=abc (PDF)}}";
+    $text = "{{cite journal|archiveurl=http://researchgate.net/publication/1234_feasdfafdsfsd|title=(PDF) abc}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://www.researchgate.net/publication/1234', $template->get('archiveurl'));
@@ -2299,7 +2299,7 @@ ER -  }}';
   }
 
    public function testTidy45() {
-    $text = "{{cite journal|url=http://researchgate.net/publication/1234_feasdfafdsfsd|title=abc (PDF)}}";
+    $text = "{{cite journal|url=http://researchgate.net/publication/1234_feasdfafdsfsd|title=(PDF) abc}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.researchgate.net/publication/1234', $template->get('url'));
