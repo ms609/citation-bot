@@ -931,13 +931,6 @@ final class Template {
           return $this->add($param_name, $value);
         }
         return FALSE;
-      
-      ### POSTSCRIPT... ###
-      case 'postscript':
-        if ($this->blank($param_name)) {
-          return $this->add($param_name, $value);
-        }
-        return FALSE;
 
       case 'asin':
         if ($this->blank($param_name)) {
