@@ -10,15 +10,13 @@ final class PageTest extends testBaseClass {
 
   public function testTidy1() {
     $text = '{{cite web|postscript = <!-- A comment only --> }}';
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('postscript');
+    $template = $this->process_citation($text);
     $this->assertNull($template->get('postscript'));
   }
  
   public function testTidy3() {
     $text = '{{cite web|postscript = <!-- A comment only --> {{TETMP}} }}';
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('postscript');
+    $template = $this->process_citation($text);
     $this->assertNull($template->get('postscript'));
   }
 }
