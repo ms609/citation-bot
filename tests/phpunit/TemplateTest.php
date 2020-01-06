@@ -2028,7 +2028,7 @@ ER -  }}';
     $this->assertSame('cite arxiv', $template->wikiname());
   }
  
-  public function testTidy6() {
+  public function testTidy6b() {
     $text = "{{cite web|author=X|authors=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('author');
@@ -2230,8 +2230,7 @@ ER -  }}';
     $template->tidy_parameter('archive-url');
     $this->assertNull($template->get('archive-url'));
   }
-
-           
+      
   public function testTidy35() {
     $text = "{{cite journal|archive-url=XYZ|url=XYZ}}";
     $template = $this->make_citation($text);
@@ -2458,7 +2457,7 @@ ER -  }}';
     $this->assertSame('https://search.proquest.com/STUFF/docview/1234/STUFF', $template->get('url'));
   }
  
-   public function testTidy66() {
+   public function testTidy66b() {
     $text = "{{cite journal|url=http://host.com/login?url=https://search.proquest.com/STUFF/docview/1234/34123/342}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
