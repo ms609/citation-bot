@@ -3233,11 +3233,11 @@ final class Template {
     }
  
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
-      report_warning("Unrecognized parameter name format in $param");
-      return FALSE;
+      report_warning("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
+      return FALSE;                                                    // @codeCoverageIgnore
     } else {
       switch ($pmatch[1]) {
-        // Parameters are listed alphabetically, though those with numerical content are grouped under "year"
+        // Parameters are listed mostly alphabetically, though those with numerical content are grouped under "year"
 
         case 'accessdate':
         case 'access-date':
