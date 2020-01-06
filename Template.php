@@ -3175,7 +3175,7 @@ final class Template {
     
     if (!$param) return FALSE;
     
-    if ($param === 'postscript' && $this->wikiname() !== 'citation' && preg_match('~^(?:# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #)(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #)$~i', $this->get('postscript'))) {
+    if ($param === 'postscript' && $this->wikiname() !== 'citation' && preg_match('~^(?:# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #)\s*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #|)$~i', $this->get('postscript'))) {
        // Misleading -- comments of "NONE" etc mean nothing!
        // Cannot call forget, since it will not remove items with comments in it
        unset($this->param[$this->get_param_key('postscript')]);
