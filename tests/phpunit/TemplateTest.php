@@ -2010,284 +2010,257 @@ ER -  }}';
   }
  
   public function testTidy5() {
-    $text = "{{citation|issue=Dog &nbsp;}}";
+    $text = '{{citation|issue=Dog &nbsp;}}';
     $template = $this->make_citation($text);
-
+    $template->tidy_parameter('issue');
+    $this->assertSame('Dog', $template->get('issue'));
   }
  
-         case 'agency':
-          if (in_array($this->get('agency'), ['United States Food and Drug Administration',
-                                              'Surgeon General of the United States',
-                                              'California Department of Public Health'])
-               &&
-              in_array($this->get('publisher'), 
-                ['United States Department of Health and Human Services', 'California Tobacco Control Program', ''])) {
-            $this->forget('publisher');
-            $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
-          }
- 
- 
-         case 'arxiv':
-          if ($this->has($param) && $this->wikiname() == 'cite web') {
-            $this->change_name_to('cite arxiv');
-          }
- 
- 
- 
-             if ($this->has('author') && $this->has('authors')) {
-              $this->rename('author', 'DUPLICATE_authors');
-              $authors = $this->get('authors');
-            } else {
-              
-              
-              
-                if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $this->get($param), $match)) {
-                  $this->add_if_new('authorlink' . $pmatch[2], ucfirst($match[2] ? $match[2] : $match[3]));
-                  $this->set($param, $match[3]);
-                  report_modification("Dissecting authorlink");
-                }
-              
-              
-              
-              
-              
-                              $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
-                if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
-                  $others = "{$match[1]} {$match[5]}";
-                  if ($this->has('others')) {
-                    $this->append_to('others', '; ' . $others);
-                  } else {
-                    $this->set('others', $others);
-                  }
-                  $this->set($param, preg_replace($translator_regexp, "", $this->get($param)));
-                }
-              }
- 
- 
- 
- 
- 
-         case 'bibcode':
-          if ($this->blank($param)) return;
-          $bibcode_journal = substr($this->get($param), 4);
-          foreach (NON_JOURNAL_BIBCODES as $exception) {
-            if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
-          }
-          if (strpos($this->get($param), 'book') !== FALSE) {
-            $this->change_name_to('cite book', FALSE);
-          } else {
-            $this->change_name_to('cite journal', FALSE);
-           
-           
-           
-           
-                       if (str_equivalent($this->get('chapter'), $this->get('title'))) {
-              $this->forget('chapter'); 
-              return; // Nonsense to have both.
-            }
-           
-           
-           
-           
-          if ($doi == '10.1267/science.040579197') {
-            // This is a bogus DOI from the PMID example file
-            $this->forget('doi'); 
-            return;
-          }
-           
-           
-           
-           
-                     if ($doi == '10.5284/1000184') {
-            // This is a DOI for an entire database, not anything within it
-            $this->forget('doi'); 
-            return;
-          }
-           
-           
-           
-           
-           
-           
-                     if (substr($doi, 0, 8) == '10.5555/') { // Test DOI prefix.  NEVER will work
-            $this->forget('doi'); 
-            if ($this->blank('url')) {
-              $url_test = 'https://plants.jstor.org/stable/' . $doi;
-              $ch = curl_init($test_url);
-              curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
-              @curl_exec($ch);
-              $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-              curl_close($ch);
-              if ($httpCode == 200) $this->add_if_new('url', $url_test);
-            }
-            return;
-          }
-           
-           
-           
-           
-           
-                   case 'format': // clean up bot's old (pre-2018-09-18) edits
-          if ($this->get($param) === 'Accepted manuscript' ||
-              $this->get($param) === 'Submitted manuscript' ||
-              $this->get($param) === 'Full text') {
-            $this->forget($param);
-          }
-           
-           
-           
-           
-           
-                   case 'chapter-format':
-        // clean up bot's old (pre-2018-09-18) edits
-          if ($this->get($param) === 'Accepted manuscript' ||
-              $this->get($param) === 'Submitted manuscript' ||
-              $this->get($param) === 'Full text') {
-            $this->forget($param);
-          }
-           
-           
-           
-           
-           
-                   case 'chapter-format':
+  public function testTidy5() {
+    $text = "{{citation|agency=California Department of Public Health|publisher=California Tobacco Control Program}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('agency');
+    $this->assertSame('California Department of Public Health', $template->get('publisher'));
+    $this->asserNull($template->get('agency'));
+  }
 
-          // Citation templates do this automatically -- also remove if there is no url, which is template error
-          if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]'])) {
-             if ($this->has('chapter-url')) {
-               if (substr($this->get('chapter-url'), -4) === '.pdf' || substr($this->get('chapter-url'), -4) === '.PDF') {
-                 $this->forget($param);
-               }
-             } elseif ($this->has('chapterurl')) {
-               if (substr($this->get('chapterurl'), -4) === '.pdf' || substr($this->get('chapterurl'), -4) === '.PDF') {
-                 $this->forget($param);
-               }
-             } else {
-               $this->forget($param); // Has no chapter URL at all
-             }
-          }
-          retur
+  public function testTidy6() {
+    $text = "{{cite web|arxiv=xxxxxxxxxxxx}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('arxiv');
+    $this->assertSame('cite arxiv', $template->wikiname());
+  }
  
-           
-           
-           
-                   case 'periodical':
-          $periodical = trim($this->get($param));
-          if (mb_substr($periodical, -1) === "," ) {
-            $periodical = mb_substr($periodical, 0, -1);
-            $this->set($param, $periodical);  // Remove comma
-          }
-           
-           
-           
-                   case 'periodical':
-                     if ($this->is_book_series($param)) {
-            $this->change_name_to('cite book');
-            if ($this->blank('series')) {
-              $this->rename($param, 'series');
-            } elseif ($this->is_book_series('series') ||
-                     str_equivalent($this->get($param), $this->get('series'))) {
-              $this->forget($param);
-            }
-          }
-           
-           
-           
-           
-           
-           
-           
-                 case 'magazine':
-          if ($this->blank($param)) return;
-          // Remember, we don't process cite magazine.
-          if ($this->wikiname() == 'cite journal' && !$this->has('journal')) {
-            $this->rename('magazine', 'journal');
-          }
-          ret
-           
-           
-           
-           
-                   case 'others': case 'day': case 'month':  // Bad idea to have in general
-          if ($this->blank($param)) $this->forget($param);
-          return;
+  public function testTidy6() {
+    $text = "{{cite web|author=X|authors=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('author');
+    $this->assertSame('X', $template->get('DUPLICATE_authors'));
+  }
 
+  public function testTidy7() {
+    $text = "{{cite web|author1=[[Hoser|Yoser]]}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('author1');
+    $this->assertSame('Yoser', $template->get('author1'));
+    $this->assertSame('Hoser', $template->get('authorlink1'));
+  }
+
+  public function testTidy8() {
+    $text = "{{cite web|bibcode=abookthisis}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('bibcode');
+    $this->assertSame('cite book', $template->wikiname());
+  }
+
+  public function testTidy9() {
+    $text = "{{cite web|title=XXX|chapter=XXX}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter');
+    $this->assertNull($template->get('chapter'));
+  }
+
+  public function testTidy10() {
+    $text = "{{cite web|doi=10.1267/science.040579197}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get('doi'));
+  }
+
+  public function testTidy11() {
+    $text = "{{cite web|doi=10.5284/1000184}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get('doi'));
+  }
+
+  public function testTidy12() {
+    $text = "{{cite web|doi=10.5555/TEST_DATA}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get('doi'));
+    $this->assertNull($template->get('url'));
+  }
+
+  public function testTidy13() {
+    $text = "{{cite web|format=Accepted manuscript}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('format');
+    $this->assertNull($template->get('format'));
+  }
+
+  public function testTidy14() {
+    $text = "{{cite web|format=Submitted manuscript}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('format');
+    $this->assertNull($template->get('format'));
+  }
+ 
+  public function testTidy15() {
+    $text = "{{cite web|format=Full text}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('format');
+    $this->assertNull($template->get('format'));
+  }           
            
+  public function testTidy16() {
+    $text = "{{cite web|chapter-format=Accepted manuscript}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+
+  public function testTidy17() {
+    $text = "{{cite web|chapter-format=Submitted manuscript}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+ 
+  public function testTidy18() {
+    $text = "{{cite web|chapter-format=Full text}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+  
+  public function testTidy19() {
+    $text = "{{cite web|chapter-format=portable document format|chapter-url=http://www.x.com/stuff.pdf}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
            
+  public function testTidy20() {
+    $text = "{{cite web|chapter-format=portable document format|chapterurl=http://www.x.com/stuff.pdf}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+ 
+  public function testTidy21() {
+    $text = "{{cite web|chapter-format=portable document format}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+
+  public function testTidy22() {
+    $text = "{{cite web|periodical=X,}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('periodical');
+    $this->assertSame('X', $template->get('periodical'));
+  }
            
-           case publisher:
-                     if (stripos($this->get($param), 'proquest') !== FALSE) {
-            $this->forget($param);
-            if ($this->blank('via')) {
-              $this_big_url = $this->get('url') . $this->get('thesis-url') . $this->get('thesisurl') . $this->get('chapter-url') . $this->get('chapterurl');
-              if (stripos($this_big_url, 'proquest') !== FALSE) $this->add('via', 'ProQuest');
-            }
-            return;
-          }
+  public function testTidy23() {
+    $text = "{{cite journal|magazine=Xyz}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('magazine');
+    $this->assertSame('Xyz', $template->get('journal'));
+  }
+       
+  public function testTidy24() {
+    $text = "{{cite journal|others=|day=|month=}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('others');
+    $template->tidy_parameter('day');
+    $template->tidy_parameter('month');
+    $this->assertSame('{{cite journal}}', $template->parsed_text());
+  }
+         
+  public function testTidy25() {
+    $text = "{{cite journal|archivedate=X|archive-date=X}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archivedate');
+    $this->assertNull($template->get('archivedate'));
+  }
+ 
+  public function testTidy26() {
+    $text = "{{cite journal|newspaper=X|publisher=X}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get('publisher'));
+  }
+               
+  public function testTidy27() {
+    $text = "{{cite journal|publisher=Proquest|thesisurl=proquest}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get('publisher'));
+    $this->assertSame('ProQuest', $template->get('via'));
+  }
+
+  public function testTidy28() {
+    $text = "{{cite journal|url=stuff.maps.google.stuff|publisher=something from google land}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Google Maps', $template->get('publisher'));
+  }
+
+  public function testTidy29() {
+    $text = "{{cite journal|journal=X|publisher=X}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get('publisher'));
+  }
+
+  public function testTidy30() {
+    $text = "{{cite journal|series=Methods of Molecular Biology|journal=biomaas}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('series');
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertSame('biomaas', $template->get('journal'));
+  }
            
-           
-           
-                     if (stripos($this->get('url'), 'maps.google') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
-            $this->set($param, 'Google Maps');  // Case when Google actually IS a publisher
-            return;
-          }
-           
-           
-           
-                     if (strtolower($this->get('journal')) === $publisher) {
-            $this->forget($param);
-          }
-           
-           
-           
-           
-           case series:
-                     if ($this->is_book_series('series')) {
-            $this->change_name_to('cite book');
-            if ($this->has('journal')) {
-              if ($this->is_book_series('journal') ||
-                     str_equivalent($this->get('series'), $this->get('journal'))) {
-                $this->forget('journal');
-              }
-            }
+  public function testTidy31() {
+    $text = "{{cite journal|series=Methods of Molecular Biology|journal=Methods of Molecular Biology}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('series');
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertNull($template->get('journal'));
+  }
+
+  public function testTidy32() {
+    $text = "{{cite journal|title=A title PDF|pmc=1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('title');
+    $this->assertSame('A title', $template->get('title'));
+  }
                       
-                      
-                      
-                      
-                      case title
-                       
-                                 } elseif (!$this->blank(['isbn', 'doi', 'pmc', 'pmid']) && preg_match('~^(.+) \(PDF\)$~i', trim($this->get($param)), $match)) {
-                 $this->set($param, trim($match[1])); // Books/journals probably don't end in (PDF)
-          }
-          return
-           
-           
-           
-           
-                   case 'archivedate':
-          if ($this->has('archivedate') && $this->get('archive-date') === $this->get('archivedate')) {
-            $this->forget('archivedate');
-          }
-          return;
+  public function testTidy34() {
+    $text = "{{cite journal|archive-url=http://web.archive.org/save/some_website}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archive-url');
+    $this->assertNull($template->get('archive-url'));
+  }
 
            
-                 case 'archive-url':
-                     if (preg_match('~^https?://(?:web\.archive\.org/web/|archive\.today/|archive\.\S\S/|webarchive\.loc\.gov/all/|www\.webarchive\.org\.uk/wayback/archive/)/(?:save|\*)/~', $this->get($param))) {
-              $this->forget($param); // Forget "save it now" archives.  They are rubbish
-              return;
-          }
-           
-           
-           case archive-url
-                     if (stripos($this->get($param), 'archive') === FALSE) {
-            if ($this->get($param) == $this->get('url')) {
-              $this->forget($param);  // The archive url is the real one
-              return;
-            }
-          }
-           
-           
-           
+  public function testTidy35() {
+    $text = "{{cite journal|archive-url=XYZ|url=XYZ}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archive-url');
+    $this->assertNull($template->get('archive-url'));
+  }
+    
+   public function testTidy36() {
+    $text = "{{cite journal|series=|periodical=Methods of Molecular Biology}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('periodical');
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertSame('Methods of Molecular Biolog', $template->get('series'));
+  }
+            
+   public function testTidy37() {
+    $text = "{{cite journal|series=Methods of Molecular Biology|periodical=Methods of Molecular Biology}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('periodical');
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertSame('Methods of Molecular Biology', $template->get('series'));
+    $this->assertNull($template->get('periodical'));
+  }  
+
+ 
+ 
            case archiveurl
                       // Clean up a bunch on non-archive URLs
           if (stripos($this->get($param), 'archive') === FALSE &&
@@ -2472,20 +2445,7 @@ ER -  }}';
             }
            
            
-           
-           
-           
-           
-          if (strtolower($this->get('newspaper')) === $publisher) {
-            $this->forget($param);
-          }
-           
-           
-           
-           
-           
-           
-           
+    
            
            
 }
