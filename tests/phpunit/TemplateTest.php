@@ -2013,7 +2013,7 @@ ER -  }}';
     $this->assertSame('Dog', $template->get('issue'));
   }
  
-  public function testTidy5() {
+  public function testTidy5b() {
     $text = "{{citation|agency=California Department of Public Health|publisher=California Tobacco Control Program}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('agency');
