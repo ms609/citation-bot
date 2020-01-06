@@ -1954,4 +1954,551 @@ ER -  }}';
     $page = $this->process_page($text);
     $this->assertSame(0, substr_count($page->parsed_text(), 'JSTOR'));
   }
+ 
+  public function testISSN(){
+    $text = '{{Cite journal|journal=Yes}}';
+    $template = $this->prepare_citation($text);
+    $template->add_if_new('issn', '1111-2222');
+    $this->assertNull($template->get('issn'));
+    $template->add_if_new('issn_force', '1111-2222');
+    $this->assertSame('1111-2222', $template->get('issn'));
+  }
+ 
+  public function testURLS() {
+    $text='{{cite journal|conference-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));
+    $text='{{cite journal|conferenceurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));                
+    $text='{{cite journal|contribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));
+    $text='{{cite journal|contributionurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));
+    $text='{{cite journal|article-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('1234', $template->get('mr'));
+  }
+ 
+  public function testTidy1() {
+    $text = '{{cite web|postscript = <!-- A comment only --> }}';
+    $template = $this->process_citation($text);
+    $this->assertNull($template->get('postscript'));
+  }
+ 
+  public function testTidy1a() {
+    $text = '{{cite web|postscript = <!-- A comment only --> {{Some Template}} }}';
+    $template = $this->process_citation($text);
+    $this->assertNull($template->get('postscript'));
+  }
+ 
+  public function testTidy2() {
+    $text = '{{citation|issue="Something Special"}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
+    $this->assertSame('Something Special', $template->get('issue'));
+  }
+ 
+  public function testTidy3() {
+    $text = "{{citation|issue=Dog \t\n\r\0\x0B }}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
+    $this->assertSame('Dog', $template->get('issue'));
+  }
+
+   public function testTidy4() {
+    $text = "{{citation|issue=Dog &nbsp;}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
+    $this->assertSame('Dog', $template->get('issue'));
+  }
+ 
+  public function testTidy5() {
+    $text = '{{citation|issue=Dog &nbsp;}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
+    $this->assertSame('Dog', $template->get('issue'));
+  }
+ 
+  public function testTidy5b() {
+    $text = "{{citation|agency=California Department of Public Health|publisher=California Tobacco Control Program}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('agency');
+    $this->assertSame('California Department of Public Health', $template->get('publisher'));
+    $this->assertNull($template->get('agency'));
+  }
+
+  public function testTidy6() {
+    $text = "{{cite web|arxiv=xxxxxxxxxxxx}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('arxiv');
+    $this->assertSame('cite arxiv', $template->wikiname());
+  }
+ 
+  public function testTidy6b() {
+    $text = "{{cite web|author=X|authors=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('author');
+    $this->assertSame('X', $template->get('DUPLICATE_authors'));
+  }
+
+  public function testTidy7() {
+    $text = "{{cite web|author1=[[Hoser|Yoser]]}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('author1');
+    $this->assertSame('Yoser', $template->get('author1'));
+    $this->assertSame('Hoser', $template->get('author1-link'));
+  }
+
+  public function testTidy8() {
+    $text = "{{cite web|bibcode=abookthisis}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('bibcode');
+    $this->assertSame('cite book', $template->wikiname());
+  }
+
+  public function testTidy9() {
+    $text = "{{cite web|title=XXX|chapter=XXX}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter');
+    $this->assertNull($template->get('chapter'));
+  }
+
+  public function testTidy10() {
+    $text = "{{cite web|doi=10.1267/science.040579197}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get('doi'));
+  }
+
+  public function testTidy11() {
+    $text = "{{cite web|doi=10.5284/1000184}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get('doi'));
+  }
+
+  public function testTidy12() {
+    $text = "{{cite web|doi=10.5555/TEST_DATA}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get('doi'));
+    $this->assertNull($template->get('url'));
+  }
+
+  public function testTidy13() {
+    $text = "{{cite web|format=Accepted manuscript}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('format');
+    $this->assertNull($template->get('format'));
+  }
+
+  public function testTidy14() {
+    $text = "{{cite web|format=Submitted manuscript}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('format');
+    $this->assertNull($template->get('format'));
+  }
+ 
+  public function testTidy15() {
+    $text = "{{cite web|format=Full text}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('format');
+    $this->assertNull($template->get('format'));
+  }           
+           
+  public function testTidy16() {
+    $text = "{{cite web|chapter-format=Accepted manuscript}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+
+  public function testTidy17() {
+    $text = "{{cite web|chapter-format=Submitted manuscript}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+ 
+  public function testTidy18() {
+    $text = "{{cite web|chapter-format=Full text}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+  
+  public function testTidy19() {
+    $text = "{{cite web|chapter-format=portable document format|chapter-url=http://www.x.com/stuff.pdf}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+           
+  public function testTidy20() {
+    $text = "{{cite web|chapter-format=portable document format|chapterurl=http://www.x.com/stuff.pdf}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+ 
+  public function testTidy21() {
+    $text = "{{cite web|chapter-format=portable document format}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('chapter-format');
+    $this->assertNull($template->get('chapter-format'));
+  }
+
+  public function testTidy22() {
+    $text = "{{cite web|periodical=X,}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('periodical');
+    $this->assertSame('X', $template->get('periodical'));
+  }
+           
+  public function testTidy23() {
+    $text = "{{cite journal|magazine=Xyz}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('magazine');
+    $this->assertSame('Xyz', $template->get('journal'));
+  }
+       
+  public function testTidy24() {
+    $text = "{{cite journal|others=|day=|month=}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('others');
+    $template->tidy_parameter('day');
+    $template->tidy_parameter('month');
+    $this->assertSame('{{cite journal}}', $template->parsed_text());
+  }
+         
+  public function testTidy25() {
+    $text = "{{cite journal|archivedate=X|archive-date=X}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archivedate');
+    $this->assertNull($template->get('archivedate'));
+  }
+ 
+  public function testTidy26() {
+    $text = "{{cite journal|newspaper=X|publisher=X}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get('publisher'));
+  }
+               
+  public function testTidy27() {
+    $text = "{{cite journal|publisher=Proquest|thesisurl=proquest}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get('publisher'));
+    $this->assertSame('ProQuest', $template->get('via'));
+  }
+
+  public function testTidy28() {
+    $text = "{{cite journal|url=stuff.maps.google.stuff|publisher=something from google land}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Google Maps', $template->get('publisher'));
+  }
+
+  public function testTidy29() {
+    $text = "{{cite journal|journal=X|publisher=X}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get('publisher'));
+  }
+
+  public function testTidy30() {
+    $text = "{{cite journal|series=Methods of Molecular Biology|journal=biomaas}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('series');
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertSame('biomaas', $template->get('journal'));
+  }
+           
+  public function testTidy31() {
+    $text = "{{cite journal|series=Methods of Molecular Biology|journal=Methods of Molecular Biology}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('series');
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertNull($template->get('journal'));
+  }
+
+  public function testTidy32() {
+    $text = "{{cite journal|title=A title (PDF)|pmc=1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('title');
+    $this->assertSame('A title', $template->get('title'));
+  }
+                      
+  public function testTidy34() {
+    $text = "{{cite journal|archive-url=http://web.archive.org/web/save/some_website}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archive-url');
+    $this->assertNull($template->get('archive-url'));
+  }
+      
+  public function testTidy35() {
+    $text = "{{cite journal|archive-url=XYZ|url=XYZ}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archive-url');
+    $this->assertNull($template->get('archive-url'));
+  }
+    
+   public function testTidy36() {
+    $text = "{{cite journal|series=|periodical=Methods of Molecular Biology}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('periodical');
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertSame('Methods of Molecular Biology', $template->get('series'));
+  }
+            
+   public function testTidy37() {
+    $text = "{{cite journal|series=Methods of Molecular Biology|periodical=Methods of Molecular Biology}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('periodical');
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertSame('Methods of Molecular Biology', $template->get('series'));
+    $this->assertNull($template->get('periodical'));
+  } 
+
+   public function testTidy38() {
+    $text = "{{cite journal|archiveurl=http://researchgate.net/publication/1234_feasdfafdsfsd|title=(PDF) abc}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertSame('https://www.researchgate.net/publication/1234', $template->get('archiveurl'));
+    $this->assertSame('abc', $template->get('title'));
+  }
+
+   public function testTidy39() {
+    $text = "{{cite journal|archiveurl=http://academia.edu/documents/1234_feasdfafdsfsd}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertSame('https://www.academia.edu/1234', $template->get('archiveurl'));
+  }
+ 
+   public function testTidy40() {
+    $text = "{{cite journal|archiveurl=https://zenodo.org/record/1234/files/dsafsd}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertSame('https://zenodo.org/record/1234', $template->get('archiveurl'));
+  }
+
+   public function testTidy42() {
+    $text = "{{cite journal|archiveurl=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $template->get('archiveurl'));
+  }
+ 
+   public function testTidy43() {
+    $text = "{{cite journal|archiveurl=https://sciencedirect.com/stuff_stuff?via=more_stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get('archiveurl'));
+  }
+ 
+   public function testTidy44() {
+    $text = "{{cite journal|archiveurl=https://bloomberg.com/stuff_stuff?utm_=more_stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get('archiveurl'));
+  }
+
+   public function testTidy45() {
+    $text = "{{cite journal|url=http://researchgate.net/publication/1234_feasdfafdsfsd|title=(PDF) abc}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.researchgate.net/publication/1234', $template->get('url'));
+    $this->assertSame('abc', $template->get('title'));
+  }
+
+   public function testTidy46() {
+    $text = "{{cite journal|url=http://academia.edu/documents/1234_feasdfafdsfsd}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.academia.edu/1234', $template->get('url'));
+  }
+ 
+   public function testTidy47() {
+    $text = "{{cite journal|url=https://zenodo.org/record/1234/files/dfasd}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://zenodo.org/record/1234', $template->get('url'));
+  }
+
+   public function testTidy48() {
+    $text = "{{cite journal|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $template->get('url'));
+  }
+ 
+   public function testTidy49() {
+    $text = "{{cite journal|url=https://sciencedirect.com/stuff_stuff?via=more_stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get('url'));
+  }
+ 
+   public function testTidy50() {
+    $text = "{{cite journal|url=https://bloomberg.com/stuff_stuff?utm_=more_stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get('url'));
+  }
+    
+   public function testTidy51() {
+    $text = "{{cite journal|url=https://watermark.silverchair.com/rubbish}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertNull($template->get('url'));
+  }
+
+   public function testTidy52() {
+    $text = "{{cite journal|url=https://watermark.silverchair.com/rubbish|archiveurl=has_one}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://watermark.silverchair.com/rubbish', $template->get('url'));
+  }
+ 
+   public function testTidy53() {
+    $text = "{{cite journal|archiveurl=https://watermark.silverchair.com/rubbish}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertNull($template->get('archiveurl'));
+  }
+ 
+   public function testTidy54() {
+    $text = "{{cite journal|url=https://ieeexplore.ieee.org.proxy/document/1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://ieeexplore.ieee.org/document/1234', $template->get('url'));
+  }
+ 
+  public function testTidy55() {
+    $text = "{{cite journal|url=https://www.oxfordhandbooks.com.proxy/view/1234|via=Library}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.oxfordhandbooks.com/view/1234', $template->get('url'));
+    $this->assertNull($template->get('via'));
+  }
+
+  public function testTidy56() {
+    $text = "{{cite journal|url=https://www.oxfordartonline.com.proxy/view/1234|via=me}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.oxfordartonline.com/view/1234', $template->get('url'));
+    $this->assertSame('me', $template->get('via'));
+  }
+
+   public function testTidy57() {
+    $text = "{{cite journal|url=https://sciencedirect.com.proxy/stuff_stuff|via=the via}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.sciencedirect.com/stuff_stuff', $template->get('url'));
+  }
+ 
+  public function testTidy58() {
+    $text = "{{cite journal|url=https://www.random.com.mutex.gmu/stuff_stuff|via=the via}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.random.com/stuff_stuff', $template->get('url'));
+    $this->assertNull($template->get('via'));
+  }
+ 
+  public function testTidy59() {
+    $text = "{{cite journal|url=https://www-random-com.mutex.gmu/stuff_stuff|via=the via}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.random.com/stuff_stuff', $template->get('url'));
+    $this->assertNull($template->get('via'));
+  }
+
+   public function testTidy60() {
+    $text = "{{cite journal|url=http://proxy/url=https://go.galegroup.com%2fpsSTUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://go.galegroup.com/psSTUFF', $template->get('url'));
+  }
+ 
+  public function testTidy61() {
+    $text = "{{cite journal|url=http://proxy/url=https://go.galegroup.com/STUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://go.galegroup.com/STUFF', $template->get('url'));
+  }
+
+   public function testTidy62() {
+    $text = "{{cite journal|url=http://proxy/url=https://link.galegroup.com%2fpsSTUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://link.galegroup.com/psSTUFF', $template->get('url'));
+  }
+ 
+  public function testTidy63() {
+    $text = "{{cite journal|url=http://proxy/url=https://link.galegroup.com/STUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://link.galegroup.com/STUFF', $template->get('url'));
+  }
+ 
+   public function testTidy64() {
+    $text = "{{cite journal|url=https://go.galegroup.com/STUFF&u=UNIV&date=1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://go.galegroup.com/STUFF&date=1234', $template->get('url'));
+  }
+
+   public function testTidy65() {
+    $text = "{{cite journal|url=https://link.galegroup.com/STUFF&u=UNIV&date=1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://link.galegroup.com/STUFF&date=1234', $template->get('url'));
+  }
+ 
+   public function testTidy66() {
+    $text = "{{cite journal|url=https://search.proquest.com/STUFF/docview/1234/STUFF}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/1234/STUFF', $template->get('url'));
+  }
+ 
+   public function testTidy66b() {
+    $text = "{{cite journal|url=http://host.com/login?url=https://search-proquest-com-stuff/STUFF/docview/1234/34123/342}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
+  }
+ 
+   public function testTidy67() {
+    $text = "{{cite journal|url=https://0-search-proquest-com.schoo.org/STUFF/docview/1234/2314/3214}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
+  }
+ 
+   public function testTidy68() {
+    $text = "{{cite journal|url=http://proxy-proquest.umi.com-org/pqd1234}}"; // Bogus, so deleted
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertNull($template->get('url'));
+  }
+ 
+   public function testTidy69() {
+    $text = "{{cite journal|url=https://search.proquest.com/dissertations/docview/1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/dissertations/docview/1234', $template->get('url'));
+  }
+ 
+    public function testTidy70() {
+    $text = "{{cite journal|url=https://search.proquest.com/docview/1234/fulltext}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
+  }
+          
 }
