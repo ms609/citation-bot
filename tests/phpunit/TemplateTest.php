@@ -2018,7 +2018,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->tidy_parameter('agency');
     $this->assertSame('California Department of Public Health', $template->get('publisher'));
-    $this->asserNull($template->get('agency'));
+    $this->assertNull($template->get('agency'));
   }
 
   public function testTidy6() {
