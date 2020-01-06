@@ -1482,8 +1482,8 @@ final class Template {
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
           // Verify that it works as a hdl
-          $url_test = "https://hdl.handle.net/" . urlencode($handle);
-          $headers_test = @get_headers($url_test, 1);  // verify that data is registered
+          $test_url = "https://hdl.handle.net/" . urlencode($handle);
+          $headers_test = @get_headers($test_url, 1);  // verify that data is registered
           if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
              return FALSE; // does not resolve.
           }
@@ -3386,13 +3386,13 @@ final class Template {
           if (substr($doi, 0, 8) == '10.5555/') { // Test DOI prefix.  NEVER will work
             $this->forget('doi'); 
             if ($this->blank('url')) {
-              $url_test = 'https://plants.jstor.org/stable/' . $doi;
+              $test_url = 'https://plants.jstor.org/stable/' . $doi;
               $ch = curl_init($test_url);
               curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
               @curl_exec($ch);
               $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
               curl_close($ch);
-              if ($httpCode == 200) $this->add_if_new('url', $url_test);
+              if ($httpCode == 200) $this->add_if_new('url', $test_url);
             }
             return;
           }
