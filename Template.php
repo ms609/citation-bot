@@ -3962,10 +3962,6 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
-            if (strcmp('http://proquest.umi.com/', $this->get($param)) === 0
-             || strcmp('http://proquest.umi.com',  $this->get($param)) === 0) {
-                 $this->forget($param);
-            }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
                  $ch = curl_init();
                  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
