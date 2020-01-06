@@ -3170,6 +3170,9 @@ final class Template {
   }
   
   public function tidy_parameter($param) {
+    echo "\n\n\n\n\n\n" . $param . "\n";
+    echo $this->get($param);
+    echo "\n\n\n\n\n\n" ;
     // Note: Parameters are treated in alphabetical order, except where one
     // case necessarily continues from the previous (without a return).
     
