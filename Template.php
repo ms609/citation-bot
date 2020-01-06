@@ -931,13 +931,6 @@ final class Template {
           return $this->add($param_name, $value);
         }
         return FALSE;
-      
-      ### POSTSCRIPT... ###
-      case 'postscript':
-        if ($this->blank($param_name)) {
-          return $this->add($param_name, $value);
-        }
-        return FALSE;
 
       case 'asin':
         if ($this->blank($param_name)) {
@@ -3182,7 +3175,7 @@ final class Template {
     
     if (!$param) return FALSE;
     
-    if ($param === 'postscript' && $this->wikiname() !== 'citation' && preg_match('~^(?:# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #)(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #)$~i', $this->get('postscript'))) {
+    if ($param === 'postscript' && $this->wikiname() !== 'citation' && preg_match('~^(?:# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #)\s*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #|)$~i', $this->get('postscript'))) {
        // Misleading -- comments of "NONE" etc mean nothing!
        // Cannot call forget, since it will not remove items with comments in it
        unset($this->param[$this->get_param_key('postscript')]);
@@ -3753,7 +3746,7 @@ final class Template {
               $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
             }
           }
-          if (preg_match('~^https?://(?:web\.archive\.org/web/|archive\.today/|archive\.\S\S/|webarchive\.loc\.gov/all/|www\.webarchive\.org\.uk/wayback/archive/)/(?:save|\*)/~', $this->get($param))) {
+          if (preg_match('~^https?://(?:web\.archive\.org/web|archive\.today|archive\.\S\S/|webarchive\.loc\.gov/all|www\.webarchive\.org\.uk/wayback/archive)/(?:save|\*)/~', $this->get($param))) {
               $this->forget($param); // Forget "save it now" archives.  They are rubbish
               return;
           }
@@ -3836,6 +3829,8 @@ final class Template {
               $this->set($param, $this->simplify_google_search($this->get($param)));
           } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
+          } elseif (preg_match("~^(https?://(?:www\.|)bloomberg\.com/\S+)\?(?:utm_|cmpId=)\S*$~i", $this->get($param), $matches)) {
+              $this->set($param, $matches[1]);
           } elseif (preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param))
                  || preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param))
                  || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
@@ -3873,8 +3868,13 @@ final class Template {
                      $this->forget('via');
                    }
                  }
+              }
+          }
+          if (stripos($this->get($param), 'proxy') !== FALSE ||
+              stripos($this->get($param), 'lib') !== FALSE ||
+              stripos($this->get($param), 'mutex') !== FALSE) {
                 // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
-              } elseif (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
+              if (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
                  report_info("Remove proxy from " . $matches[1] . " URL");
                  $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
                  if ($this->has('via')) { 
@@ -3961,10 +3961,6 @@ final class Template {
             if (preg_match("~^https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
-            }
-            if (strcmp('http://proquest.umi.com/', $this->get($param)) === 0
-             || strcmp('http://proquest.umi.com',  $this->get($param)) === 0) {
-                 $this->forget($param);
             }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
                  $ch = curl_init();
