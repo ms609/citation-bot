@@ -1984,25 +1984,29 @@ ER -  }}';
  
   public function testTidy1() {
     $text = '{{cite web|postscript = <!-- A comment only --> }}';
-    $template = $this->prepare_citation($text);
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('postscript');
     $this->assertNull($template->get('postscript'));
   }
  
   public function testTidy2() {
     $text = '{{citation|issue="Something Special"}}';
-    $template = $this->prepare_citation($text);
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
     $this->assertSame('Something Special', $template->get('issue'));
   }
  
   public function testTidy3() {
     $text = "{{citation|issue=Dog \t\n\r\0\x0B }}";
-    $template = $this->prepare_citation($text);
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
     $this->assertSame('Dog', $template->get('issue'));
   }
 
    public function testTidy4() {
     $text = "{{citation|issue=Dog &nbsp;}}";
-    $template = $this->prepare_citation($text);
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
     $this->assertSame('Dog', $template->get('issue'));
   }
  
@@ -2472,10 +2476,10 @@ ER -  }}';
   }
  
    public function testTidy68() {
-    $text = "{{cite journal|url=http://proxy-proquest.umi.com-org/pqd1234}}";
+    $text = "{{cite journal|url=http://proxy-proquest.umi.com-org/pqd1234}}"; // Bogus, so deleted
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('http://proquest.umi.com/pqd1234', $template->get('url'));
+    $this->assertNull('$template->get('url'));
   }
  
    public function testTidy69() {
