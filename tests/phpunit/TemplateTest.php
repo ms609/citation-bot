@@ -2458,14 +2458,14 @@ ER -  }}';
   }
  
    public function testTidy66b() {
-    $text = "{{cite journal|url=http://host.com/login?url=https://search.proquest.com/STUFF/docview/1234/34123/342}}";
+    $text = "{{cite journal|url=http://host.com/login?url=https://search-proquest-com-stuff/STUFF/docview/1234/34123/342}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
   }
  
    public function testTidy67() {
-    $text = "{{cite journal|url=http://host.com/login?url=https://0-search-proquest-.com/STUFF/docview/1234/2314/3214}}";
+    $text = "{{cite journal|url=https://0-search-proquest-com.schoo.org/STUFF/docview/1234/2314/3214}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
