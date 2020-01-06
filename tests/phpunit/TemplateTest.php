@@ -1983,7 +1983,7 @@ ER -  }}';
   }
  
   public function testTidy1() {
-    $text = '{{citation|postscript = <!-- A comment only --> }}';
+    $text = '{{cite web|postscript = <!-- A comment only --> }}';
     $template = $this->prepare_citation($text);
     $this->assertNull($template->get('postscript'));
   }
