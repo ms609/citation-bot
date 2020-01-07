@@ -717,7 +717,8 @@ final class Template {
           }     
           return $this->add($param_name, $value);
         } elseif ($this->get('issue') . $this->get('number') == '1' && $value != '1' && $this->blank('volume')) {
-          return $this->set($param_name, $value);  // Updating bad data
+          $this->set($param_name, $value);  // Updating bad data
+          return TRUE;
         }
         return FALSE;
       
@@ -4699,9 +4700,11 @@ final class Template {
     }
     $pos = $this->get_param_key($par);
     if ($pos) {
-      return $this->param[$pos]->val = $this->param[$pos]->val . $val;
+      $this->param[$pos]->val = $this->param[$pos]->val . $val;
+      return TRUE;
     } else {
-      return $this->set($par, $val);
+      $this->set($par, $val);
+      return TRUE;
     }
   }
 
