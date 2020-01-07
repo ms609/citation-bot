@@ -197,7 +197,7 @@ final class Template {
               if ($this->has('journal')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_journal');
               } else {
-                $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
+                $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');   // @codeCoverageIgnore
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_title')) {
