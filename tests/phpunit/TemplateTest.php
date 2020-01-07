@@ -2520,7 +2520,7 @@ ER -  }}';
     $this->assertSame('Phil', $template->get('editor1-last'));
     $text = "{{cite journal|editor-last=Junk}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('editor1-last', 'Phil'));
+    $this->assertFalse($template->add_if_new('editor1-last', 'Phil'));
   }
 
   public function testAddFirst() {
@@ -2538,8 +2538,8 @@ ER -  }}';
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('display-editors', '3'));
-    $this->assertSame('display-editor', $template->get('first1'));
-    $this->assertTrue(!$template->add_if_new('displayeditors', '2'));
+    $this->assertSame('3', $template->get('display-editors'));
+    $this->assertFalse($template->add_if_new('displayeditors', '2'));
     $this->assertNull($template->get('displayeditors'));
   }
 
@@ -2561,7 +2561,7 @@ ER -  }}';
     $this->assertSame('20 JAN 2010', $template->get('archive-date'));
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('archive-date', 'SDAFEWFEWW#F#WFWEFESFEFSDFDFD'));
+    $this->assertFalse($template->add_if_new('archive-date', 'SDAFEWFEWW#F#WFWEFESFEFSDFDFD'));
     $this->assertNull($template->get('archive-date'));
   }
 
@@ -2575,7 +2575,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->add_if_new('journal', 'No way sir');
     $this->assertSame('Yes Indeed', $template->get('work'));
-    $this->assertNull($this->get('journal'));
+    $this->assertNull($template->get('journal'));
   }
  
   public function testViaStuff() {
@@ -2589,15 +2589,15 @@ ER -  }}';
    public function testNewspaperJournal() {
     $text = "{{cite journal|publisher=news.bbc.co.uk}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('newspaper', 'news.bbc.co.uk'));
+    $this->assertFalse($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('newspaper'));
     
     $text = "{{cite journal|work=A work}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('newspaper', 'news.bbc.co.uk'));
+    $this->assertFalse($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('newspaper'));
     
-    $text = "{{cite journal|website=xyz}";
+    $text = "{{cite journal|website=xyz}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
@@ -2613,7 +2613,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'The Times'));
     $this->assertNull($template->get('via'));
-    $this->assertSame('The Times', $template->get('newspaper'));
+    $this->assertSame('Times', $template->get('newspaper'));
     
     $text = "{{cite journal|via=A Post website}}";
     $template = $this->make_citation($text);
@@ -2625,7 +2625,7 @@ ER -  }}';
   public function testNewspaperJournal3() {
     $text = "{{cite journal|publisher=A Big Company}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('newspaper', 'A Big Company'));
+    $this->assertFalse($template->add_if_new('newspaper', 'A Big Company'));
     $this->assertNull($template->get('publisher'));
     $this->assertSame('A Big Company', $template->get('newspaper'));
   }
@@ -2633,19 +2633,19 @@ ER -  }}';
   public function testNewspaperJournal4() {
     $text = "{{cite journal|website=A Big Company}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('journal', 'A Big Company'));
+    $this->assertFalse($template->add_if_new('journal', 'A Big Company'));
     $this->assertSame('A Big Company', $template->get('journal'));
     $this->assertNull($template->get('website'));
     
     $text = "{{cite journal|website=A Big Company}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('journal', 'A Small Little Company'));
+    $this->assertFalse($template->add_if_new('journal', 'A Small Little Company'));
     $this->assertSame('A Small Little Company', $template->get('journal'));
     $this->assertNull($template->get('website'));
     
     $text = "{{cite journal|website=[[A Big Company]]}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('journal', 'A Small Little Company'));
+    $this->assertFalse($template->add_if_new('journal', 'A Small Little Company'));
     $this->assertSame('[[A Big Company]]', $template->get('journal'));
     $this->assertNull($template->get('website'));
   }
@@ -2654,24 +2654,24 @@ ER -  }}';
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('series', 'The Sun Post'));
-    $this->assertTrue(!$template->add_if_new('series', 'The Dog'));
+    $this->assertFalse($template->add_if_new('series', 'The Dog'));
     $this->assertSame('The Sun Post', $template->get('series'));
   }
 
   public function testExistingIsTitle() {
     $text = "{{cite journal|encyclopedia=Existing Data}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('title', 'Existing Data'));
+    $this->assertFalse($template->add_if_new('title', 'Existing Data'));
     $this->assertNull($template->get('title'));
    
     $text = "{{cite journal|dictionary=Existing Data}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('title', 'Existing Data'));
+    $this->assertFalse($template->add_if_new('title', 'Existing Data'));
     $this->assertNull($template->get('title'));
    
     $text = "{{cite journal|journal=Existing Data}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('title', 'Existing Data'));
+    $this->assertFalse($template->add_if_new('title', 'Existing Data'));
     $this->assertNull($template->get('title'));
   }
                       
@@ -2679,33 +2679,33 @@ ER -  }}';
     $text = "{{cite journal|issue=1|volume=}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('issue', '7'));
-    $this->assertTrue(!$template->add_if_new('issue', '8'));
+    $this->assertFalse($template->add_if_new('issue', '8'));
     $this->assertSame('7', $template->get('issue'));
   }
  
   public function testExistingCustomPage() {
     $text = "{{cite journal|pages=footnote 7}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('pages', '3-22'));
+    $this->assertFalse($template->add_if_new('pages', '3-22'));
     $this->assertSame('footnote 7', $template->get('pages'));
   }
   
   public function testPagesIsArticle() {
     $text = "{{cite journal|pages=431234}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('pages', '1-34'));
+    $this->assertFalse($template->add_if_new('pages', '1-34'));
     $this->assertSame('431234', $template->get('pages'));
   }
 
   public function testExitingURL() {
     $text = "{{cite journal|conferenceurl=http://XXXX-TEST.COM}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('url', 'http://XXXX-TEST.COM'));
+    $this->assertFalse($template->add_if_new('url', 'http://XXXX-TEST.COM'));
     $this->assertNull($template->get('url'));
    
     $text = "{{cite journal|url=xyz}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('title-link', 'abc'));
+    $this->assertFalse($template->add_if_new('title-link', 'abc'));
     $this->assertNull($template->get('title-lin'));
   }
 
@@ -2726,6 +2726,6 @@ ER -  }}';
   public function tesNotBrokenDOI() {
     $text = "{{cite journal|doi-broken-date = <!-- Not Broken -->}}";
     $template = $this->make_citation($text);
-    $this->assertTrue(!$template->add_if_new('doi-broken-date', '1 DEC 2019')); // Does not update it
+    $this->assertFalse($template->add_if_new('doi-broken-date', '1 DEC 2019')); // Does not update it
   }            
 }
