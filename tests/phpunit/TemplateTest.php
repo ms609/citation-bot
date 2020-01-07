@@ -2649,7 +2649,7 @@ ER -  }}';
     $this->assertNull($this-get('website'));
   }
  
-  function testAddTwice() {
+  public function testAddTwice() {
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('series', 'The Sun Post'));
@@ -2657,7 +2657,7 @@ ER -  }}';
     $this->assertSame('The Sun Post', $template->get('series'));
   }
 
-  public testExistingIsTitle() {
+  public function testExistingIsTitle() {
     $text = "{{cite journal|encyclopedia=Existing Data}}";
     $template = $this->make_citation($text);
     $this->assertTrue(!$template->add_if_new('title', 'Existing Data'));
