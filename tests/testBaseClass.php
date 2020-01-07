@@ -103,4 +103,5 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       trigger_error('Non-reference passsed to reference_to_template: ' . $text);
     }
   }
+ 
 }
