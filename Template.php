@@ -26,9 +26,10 @@ final class Template {
   public $last_searched_doi = '';
   protected $example_param;
 
-  protected $name, $param, $initial_param, $initial_author_params, $initial_name,
+  protected $name, $initial_param, $initial_author_params, $initial_name,
             $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
             $mod_dashes, $mod_names;
+  public $param;
 
   public function parse_text($text) {
     $this->initial_author_params = NULL; // Will be populated later if there are any
