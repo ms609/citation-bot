@@ -2601,7 +2601,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
-    $this->assertSame('news.bbc.co.uk', $template->get('work'));
+    $this->assertSame('news.bbc.co.uk', $template->get('newspaper'));
   }
  
   public function testNewspaperJournal2() {
@@ -2625,7 +2625,7 @@ ER -  }}';
   public function testNewspaperJournal3() {
     $text = "{{cite journal|publisher=A Big Company}}";
     $template = $this->make_citation($text);
-    $this->asserTrue($template->add_if_new('newspaper', 'A Big Company'));
+    $this->assertTrue($template->add_if_new('newspaper', 'A Big Company'));
     $this->assertNull($template->get('publisher'));
     $this->assertSame('A Big Company', $template->get('newspaper'));
   }
@@ -2639,7 +2639,7 @@ ER -  }}';
     
     $text = "{{cite journal|website=A Big Company}}";
     $template = $this->make_citation($text);
-    $this->assertFalse($template->add_if_new('journal', 'A Small Little Company'));
+    $this->assertTrue($template->add_if_new('journal', 'A Small Little Company'));
     $this->assertSame('A Small Little Company', $template->get('journal'));
     $this->assertNull($template->get('website'));
     
