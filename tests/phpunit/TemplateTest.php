@@ -1355,7 +1355,6 @@ ER -  }}';
     $this->assertNull($template->get('issue'));
     $this->assertNull($template->get('doi'));
     $this->assertNull($template->get('volume'));
-    $this->assertSame('{{cite journal|issue=1|volume=2|doi=3}}', $template->parsed_text());
   }
     
   public function testArxivMore1() {
