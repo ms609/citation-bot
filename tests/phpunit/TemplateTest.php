@@ -1836,7 +1836,7 @@ ER -  }}';
     $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('volume'));
-    $this->assertSame('', (string) $prepared->get('issue')); // Odd
+    $this->assertNull($prepared->get('issue'));
   }
  
    public function testVolumeIssueDemixing6() {
