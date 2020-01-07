@@ -104,4 +104,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
  
+  protected function assertFalse($boolean) {
+    return $boolean === FALSE;  // No casting allowed
+  }
 }
