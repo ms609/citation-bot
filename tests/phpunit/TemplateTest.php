@@ -1809,53 +1809,76 @@ ER -  }}';
     $text = '{{cite book|volume = Volume 12}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('Volume 12', $prepared->get('volume'));
-   
+  }
+ 
+   public function testVolumeIssueDemixing2() {
     $text = '{{cite journal|volume = number 12}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('12', $prepared->get('issue'));
-   
+    $this->assertSame('number 12', $prepared->get('volume'));
+    $this->assertNull($prepared->get('issue'));
+  }
+ 
+   public function testVolumeIssueDemixing3() {
     $text = '{{cite journal|volume = number 12|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('issue'));
     $this->assertNull($prepared->get('volume'));
-   
+  }
+ 
+   public function testVolumeIssueDemixing4() {
     $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertNull($prepared->get('volume'));
     $this->assertSame('12', $prepared->get('issue'));
-   
+  }
+ 
+   public function testVolumeIssueDemixing5() {
     $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('volume'));
     $this->assertNull($prepared->get('issue'));
-   
+  }
+ 
+   public function testVolumeIssueDemixing6() {
     $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertNull($prepared->get('volume'));
     $this->assertSame('12', $prepared->get('issue'));
-   
+  }
+ 
+   public function testVolumeIssueDemixing7() {
     $text = '{{cite journal|issue = number 12}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('issue'));
-   
+  }
+ 
+   public function testVolumeIssueDemixing8() {
     $text = '{{cite journal|volume = v. 12}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('volume'));
-   
+  }
+ 
+   public function testVolumeIssueDemixing9() {
     $text = '{{cite journal|issue =(12)}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('issue'));
-   
+  }
+ 
+   public function testVolumeIssueDemixing10() {
     $text = '{{cite journal|issue = volume 8, issue 7}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('7', $prepared->get('issue'));
     $this->assertSame('8', $prepared->get('volume'));
-   
+  }
+ 
+   public function testVolumeIssueDemixing11() {
     $text = '{{cite journal|issue = volume 8, issue 7|volume=8}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('7', $prepared->get('issue'));
     $this->assertSame('8', $prepared->get('volume'));
-
+  }
+ 
+   public function testVolumeIssueDemixing12() {
     $text = '{{cite journal|issue = volume 8, issue 7|volume=9}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('volume 8, issue 7', $prepared->get('issue'));
@@ -2637,22 +2660,33 @@ ER -  }}';
     $this->assertNull($template->get('via'));
   }
  
-   public function testNewspaperJournal() {
+  public function testNewspaperJournal() {
     $text = "{{cite journal|publisher=news.bbc.co.uk}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('newspaper'));
-    
+  }
+ 
+   public function testNewspaperJournal100() {
     $text = "{{cite journal|work=A work}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('newspaper'));
-    
+  }
+ 
+   public function testNewspaperJournal101() {
     $text = "{{cite journal|website=xyz}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
-    $this->assertSame('news.bbc.co.uk', $template->get('work'));
+    $this->assertSame('news.bbc.co.uk', $template->get('newspaper'));
+  }
+   public function testNewspaperJournal102() {
+    $text = "{{cite journal|website=xyz}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'Junk and stuff'));
+    $this->assertNull($template->get('website'));
+    $this->assertSame('Junk and stuff', $template->get('newspaper'));
   }
  
   public function testNewspaperJournal2() {
