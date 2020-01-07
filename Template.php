@@ -3758,7 +3758,7 @@ final class Template {
                  $num62 = str_split($matches[2]);
                  $time = 0;
                  for($i=0;$i<9;$i++) {
-                    $time = (62 * $time) + strpos($base62,$num62[$i]);
+                    $time = (62 * $time) + strpos($base62, $num62[$i]);
                  }
                  $this->add_if_new('archive-date', date("Y-m-d", (int) $time/1000000));
               }
@@ -4900,14 +4900,14 @@ final class Template {
          if ($param == 'volume') {
             if ($this->blank(ISSUE_ALIASES)) {
               $this->add_if_new('issue', $possible_issue);
-              $this->set('volume',$possible_volume); 
+              $this->set('volume', $possible_volume); 
             } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
               $this->set('volume', $possible_volume);
             }
          } else {
             if ($this->blank('volume')) {
               $this->set('issue', $possible_issue);
-              $this->add_if_new('volume',$possible_volume); 
+              $this->add_if_new('volume', $possible_volume); 
             } elseif ($this->get('volume') === $possible_volume) {
               $this->set('issue', $possible_issue);
             }
