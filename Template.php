@@ -4604,6 +4604,7 @@ final class Template {
     if ($this->param) {
       foreach ($this->param as $parameter_i) {
         if ($parameter_i->param == $name) {
+          if ($parameter_i->val === '') $parameter_i->val = NULL; // Clean up
           return $parameter_i->val;
         }
       }
