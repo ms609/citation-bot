@@ -1809,6 +1809,57 @@ ER -  }}';
     $text = '{{cite book|volume = Volume 12}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('Volume 12', $prepared->get('volume'));
+   
+    $text = '{{cite journal|volume = number 12}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('issue'));
+   
+    $text = '{{cite journal|volume = number 12|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('issue'));
+    $this->assertNull($prepared->get('volume'));
+   
+    $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertNull($prepared->get('volume'));
+    $this->assertSame('12', $prepared->get('issue'));
+   
+    $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('volume'));
+    $this->assertNull($prepared->get('issue'));
+   
+    $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertNull($prepared->get('volume'));
+    $this->assertSame('12', $prepared->get('issue'));
+   
+    $text = '{{cite journal|issue = number 12}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('issue'));
+   
+    $text = '{{cite journal|volume = v. 12}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('volume'));
+   
+    $text = '{{cite journal|issue =(12)}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('issue'));
+   
+    $text = '{{cite journal|issue = volume 8, issue 7}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('7', $prepared->get('issue'));
+    $this->assertSame('8', $prepared->get('volume'));
+   
+    $text = '{{cite journal|issue = volume 8, issue 7|volume=8}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('7', $prepared->get('issue'));
+    $this->assertSame('8', $prepared->get('volume'));
+
+    $text = '{{cite journal|issue = volume 8, issue 7|volume=9}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('volume 8, issue 7', $prepared->get('issue'));
+    $this->assertSame('9', $prepared->get('volume');
   }
  
   public function testCleanUpPages() {
@@ -2601,7 +2652,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
-    $this->assertSame('news.bbc.co.uk', $template->get('newspaper'));
+    $this->assertSame('news.bbc.co.uk', $template->get('work'));
   }
  
   public function testNewspaperJournal2() {
@@ -2645,7 +2696,7 @@ ER -  }}';
     
     $text = "{{cite journal|website=[[A Big Company]]}}";
     $template = $this->make_citation($text);
-    $this->assertFalse($template->add_if_new('journal', 'A Small Little Company'));
+    $this->assertTrue($template->add_if_new('journal', 'A Small Little Company'));
     $this->assertSame('[[A Big Company]]', $template->get('journal'));
     $this->assertNull($template->get('website'));
   }
