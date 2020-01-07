@@ -5007,9 +5007,11 @@ final class Template {
              $url .=  $part . "&" ;
              break;
           default:
+             // @codeCoverageIgnoreStart
              report_minor_error("Unexpected Google URL component:  " . $part);
              $url .=  $part . "&" ;
              break;
+             // @codeCoverageIgnoreEnd
         }
       }
 
