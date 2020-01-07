@@ -4795,18 +4795,6 @@ final class Template {
     }
   }
 
-  // Record modifications
-  protected function modified($param, $type='modifications') {
-    switch ($type) {
-      case '+': $type = 'additions'; break;
-      case '-': $type = 'deletions'; break;
-      case '~': $type = 'changeonly'; break;
-      default: $type = 'modifications';
-    }
-    return in_array($param, $this->modifications($type));
-  }
-  protected function added($param) {return $this->modified($param, '+');}
-
   public function modifications($type='all') {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     $new = array();
