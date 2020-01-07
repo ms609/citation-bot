@@ -150,8 +150,8 @@ final class Template {
               $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
               $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
           } else {
-              $this->quietly_forget('CITATION_BOT_PLACEHOLDER_year');
-              $this->quietly_forget('CITATION_BOT_PLACEHOLDER_date');        
+              $this->quietly_forget('CITATION_BOT_PLACEHOLDER_year');   // @codeCoverageIgnore
+              $this->quietly_forget('CITATION_BOT_PLACEHOLDER_date');   // @codeCoverageIgnore
           }
           break;
         case "cite journal":       
