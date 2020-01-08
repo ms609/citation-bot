@@ -656,7 +656,7 @@ function expand_doi_with_dx($template, $doi) {
      } else {
        $try_to_add_it('title', @$json['title']);
        if (getenv('TRAVIS')) print_r($json);
-       trigger_minor_error ('dx.doi.org returned unexpected data type for ' . doi_link($doi));
+       report_minor_error('dx.doi.org returned unexpected data type for ' . doi_link($doi));
      }
      return TRUE;
 }
