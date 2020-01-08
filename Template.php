@@ -4568,7 +4568,13 @@ final class Template {
 
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
-    if ($old_param == $new_param) return FALSE;
+    if ($old_param == $new_param) {
+       if ($new_value !== FALSE) {
+           $this->set($new_param, $new_value);
+           return TRUE;
+        }
+        return FALSE;
+    }
     if (!isset($this->param)) return FALSE;
     $have_nothing = TRUE;
     foreach ($this->param as $p) {
@@ -4577,8 +4583,19 @@ final class Template {
         break;
       }
     }
-    if ($have_nothing) return FALSE;
-    if ($this->blank($new_param)) $this->forget($new_param); // Forget empty old copies, if they exist
+    if ($have_nothing) {
+       if ($new_value !== FALSE) {
+          $this->set($new_param, $new_value);
+          return TRUE;
+       }
+       return FALSE;
+    }
+    // Forget old copies
+    $pos = $this->get_param_key($new_param);
+    while ($pos !== NULL) {
+      unset($this->param[$pos]);
+      $pos = $this->get_param_key($new_param);
+    }
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
@@ -4781,7 +4798,10 @@ final class Template {
         // Do not mention forgetting empty parameters or internal temporary parameters
         report_forget("Dropping parameter \"" . echoable($par) . '"');
       }
-      unset($this->param[$pos]);
+      while ($pos !== NULL) { // paranoid
+        unset($this->param[$pos]);
+        $pos = $this->get_param_key($par);
+      }
     }
     if (strpos($par, 'url') !== FALSE && $this->wikiname() === 'cite web' &&
         $this->blank(['url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'section-url', 'sectionurl' . 'transcript-url', 'transcripturl' ])) {
