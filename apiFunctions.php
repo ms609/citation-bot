@@ -653,6 +653,8 @@ function expand_doi_with_dx($template, $doi) {
        if (stripos(@$json['URL'], 'hdl.handle.net')) {
            $template->get_identifiers_from_url($json['URL']);
        }
+     } elseif (@$json['type'] == 'posted-content') { // posted-content is from bioRxiv
+       $try_to_add_it('title', @$json['title']);
      } else {
        $try_to_add_it('title', @$json['title']);
        if (getenv('TRAVIS')) print_r($json);
