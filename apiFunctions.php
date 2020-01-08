@@ -621,7 +621,7 @@ function expand_doi_with_dx($template, $doi) {
         unset($json['container-title']);  // Publisher hiding as journal name too
      }
      if (@$json['type'] == 'article-journal' ||
-         @$json['type'] == 'article' || @$json['type'] == 'posted-content' || // posted-content is from bioRxiv
+         @$json['type'] == 'article' ||
          (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
        $try_to_add_it('journal', @$json['container-title']);
        $try_to_add_it('title', @$json['title']);
@@ -653,6 +653,8 @@ function expand_doi_with_dx($template, $doi) {
        if (stripos(@$json['URL'], 'hdl.handle.net')) {
            $template->get_identifiers_from_url($json['URL']);
        }
+     } elsif (@$json['type'] == 'posted-content') { // posted-content is from bioRxiv
+       $try_to_add_it('title', @$json['title']);
      } else {
        $try_to_add_it('title', @$json['title']);
        if (getenv('TRAVIS')) print_r($json);
