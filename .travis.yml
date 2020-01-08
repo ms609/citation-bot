@@ -1,6 +1,5 @@
 sudo: false
 dist: trusty
-suck
 branches:
   except: release
 
