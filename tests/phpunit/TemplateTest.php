@@ -1533,6 +1533,12 @@ ER -  }}';
     $this->assertSame('Nature', $expanded->get('journal'));
     $this->assertSame('Funky Paper', $expanded->get('title'));
     $this->assertSame('10.1038/nature10000', $expanded->get('doi'));
+    
+    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper|doi=10.1038/nature10000}} }}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('Nature', $expanded->get('journal'));
+    $this->assertSame('Funky Paper', $expanded->get('title'));
+    $this->assertSame('10.1038/nature10000', $expanded->get('doi'));
   } 
   
   public function testPagesDash() {
@@ -1898,6 +1904,20 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('volume 8, issue 7', $prepared->get('issue'));
     $this->assertSame('9', $prepared->get('volume'));
+  }
+
+   public function testVolumeIssueDemixing13() {
+    $text = '{{cite journal|issue = number 333XV }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('333XV', $prepared->get('issue'));
+    $this->assertNull($prepared->get('volume'));
+  }
+ 
+    public function testVolumeIssueDemixing14() {
+    $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12XX', $prepared->get('volume'));
+    $this->assertNull($prepared->get('issue'));
   }
  
   public function testCleanUpPages() {
@@ -2832,9 +2852,72 @@ ER -  }}';
     $this->assertNull($template->get('doi'));
   }
 
-  public function tesNotBrokenDOI() {
+  public function testNotBrokenDOI() {
     $text = "{{cite journal|doi-broken-date = <!-- Not Broken -->}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->add_if_new('doi-broken-date', '1 DEC 2019')); // Does not update it
-  }            
+  }
+ 
+   public function testForgettersChangeType() {
+    $text = "{{cite web}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite document', $template->wikiname());
+
+    $text = "{{cite web|journal=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite journal', $template->wikiname());
+
+    $text = "{{cite web|newspaper=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite newspaper', $template->wikiname());
+
+    $text = "{{cite web|chapter=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite book', $template->wikiname());
+  }
+ 
+  public function testForgettersChangeOtherURLS() {
+    $text = "{{cite web|chapter-url=Y|chapter=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('chapter');
+    $this->assertSame('Y', $template->get('url'));
+
+    $text = "{{cite web|chapterurl=Y|chapter=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('chapter');
+    $this->assertSame('Y', $template->get('url'));
+  }
+      
+  public function testForgettersChangeWWWWork() {
+    $text = "{{cite web|url=X|work=www.apple.com}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertNull('Y', $template->get('work'));
+  }
+      
+  public function testCommentShields() {
+    $text = "{{cite web|work = # # CITATION_BOT_PLACEHOLDER_COMMENT # #}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->set('work', 'new'));
+    $this->assertSame('# # CITATION_BOT_PLACEHOLDER_COMMENT # #', $template->get('work'));
+  }
+      
+  public function testRenameSpecialCases() {
+    $text = "{{cite web}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->rename('work', 'work'));
+    $this->assertTrue($template->rename('work', 'work', 'new'));
+    $this->assertSame('new', $template->get('work'));
+   
+    $text = "{{cite web}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->rename('work', 'journal'));
+    $this->assertTrue($template->rename('work', 'journal', 'new'));
+    $this->assertSame('new', $template->get('journal'));
+  }   
+      
 }
