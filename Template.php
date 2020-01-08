@@ -5037,14 +5037,14 @@ final class Template {
     $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
     if (preg_match('~<title>(.*)\(eJournal~', $html, $matches)) {
       if ($this->wikiname() === 'cite magazine') {
-        return $this->add_if_new('magazine', trim($matches[1]));
+        return $this->add_if_new('magazine', trim($matches[1]));  // @codeCoverageIgnore
       } else {   
         return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
       }
     } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {
-      report_error('unexpected title from ISSN ' . $matches[1]);
+      report_error('unexpected title from ISSN ' . $matches[1]);    // @codeCoverageIgnore
     }
-    return FALSE;
+    return FALSE; // @codeCoverageIgnore
   }
     
   private function is_book_series($param) {
