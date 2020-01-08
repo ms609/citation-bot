@@ -4568,9 +4568,11 @@ final class Template {
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
     if ($old_param == $new_param) {
-       report_minor_error('Attempted to rename equivalent ' . $old_param . ' to ' . $new_param);
-       if ($new_value !== FALSE) $this->set($new_param, $new_value);
-       return FALSE;
+       if ($new_value !== FALSE) {
+           $this->set($new_param, $new_value);
+           return TRUE;
+        }
+        return FALSE;
     }
     if (!isset($this->param)) return FALSE;
     $have_nothing = TRUE;
@@ -4581,8 +4583,10 @@ final class Template {
       }
     }
     if ($have_nothing) {
-       report_minor_error('Attempted to rename non-existent ' . $old_param . ' to ' . $new_param);
-       if ($new_value !== FALSE) $this->set($new_param, $new_value);
+       if ($new_value !== FALSE) {
+          $this->set($new_param, $new_value);
+          return TRUE;
+       }
        return FALSE;
     }
     // Forget old copies
