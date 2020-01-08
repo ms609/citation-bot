@@ -942,7 +942,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{cite journal|work=}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame('{{cite journal|journal=}}', $prepared->parsed_text());
+      $this->assertSame('{{cite journal|work=}}', $prepared->parsed_text());
   }
   
   public function testOrigYearHandling() {
@@ -2681,6 +2681,7 @@ ER -  }}';
     $this->assertNull($template->get('website'));
     $this->assertSame('news.bbc.co.uk', $template->get('work'));
   }
+ 
    public function testNewspaperJournal102() {
     $text = "{{cite journal|website=xyz}}";
     $template = $this->make_citation($text);
