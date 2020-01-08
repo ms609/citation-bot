@@ -1797,7 +1797,7 @@ final class Template {
   public function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
-    if (!$SLOW_MODE && $this->lacks('bibcode')) {
+    if (!$SLOW_MODE && $this->blank('bibcode')) {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
@@ -3450,7 +3450,7 @@ final class Template {
           return;
           
         case 'isbn':
-          if ($this->lacks('isbn')) return;
+          if ($this->blank('isbn')) return;
           $this->set('isbn', preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
           if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
@@ -3460,7 +3460,7 @@ final class Template {
           return;
           
         case 'journal':
-          if ($this->lacks($param)) return;
+          if ($this->blank($param)) return;
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
@@ -4640,8 +4640,9 @@ final class Template {
     return NULL;
   }
 
-  public function has($par) {return (bool) strlen($this->get($par));}
-  public function lacks($par) {return !$this->has($par);}
+  public function has($par) {
+    return (bool) strlen($this->get($par));
+  }
 
   public function add($par, $val) {
     report_add("Adding $par: $val");
