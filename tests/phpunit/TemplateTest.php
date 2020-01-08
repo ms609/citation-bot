@@ -345,7 +345,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite book | asin=B0002TV0K8 |isbn=}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('B0002TV0K8', $expanded->get('asin'));
-    $this->assertSame('', $expanded->get('isbn'));
+    $this->assertNull($expanded->get('isbn'));
       
     $text = "{{Cite book | asin=0226845494 |isbn=0226845494}}";
     $expanded = $this->process_citation($text);
@@ -551,6 +551,8 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite book |author={{noitalic|{{lang|zh-hans|国务院人口普查办公室、国家统计局人口和社会科技统计司编}}}} |date=2012 |script-title=zh:中国2010年人口普查分县资料 |location=Beijing |publisher={{noitalic|{{lang|zh-hans|中国统计出版社}}}} [China Statistics Press] |page= |isbn=978-7-5037-6659-6 }}";
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('title')); // Already have script-title that matches what google books gives us
+    $this->assertTrue($expanded->add_if_new('title', 'This English Only'));
+    $this->assertSame('This English Only', $expanded->get('title'));              
   }
     
   public function testPageDuplication() {
@@ -940,7 +942,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{cite journal|work=}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame('{{cite journal|journal=}}', $prepared->parsed_text());
+      $this->assertSame('{{cite journal|work=}}', $prepared->parsed_text());
   }
   
   public function testOrigYearHandling() {
@@ -1824,6 +1826,80 @@ ER -  }}';
     $this->assertSame('Volume 12', $prepared->get('volume'));
   }
  
+   public function testVolumeIssueDemixing2() {
+    $text = '{{cite journal|volume = number 12}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('number 12', $prepared->get('volume'));
+    $this->assertNull($prepared->get('issue'));
+  }
+ 
+   public function testVolumeIssueDemixing3() {
+    $text = '{{cite journal|volume = number 12|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('issue'));
+    $this->assertNull($prepared->get('volume'));
+  }
+ 
+   public function testVolumeIssueDemixing4() {
+    $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertNull($prepared->get('volume'));
+    $this->assertSame('12', $prepared->get('issue'));
+  }
+ 
+   public function testVolumeIssueDemixing5() {
+    $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('volume'));
+    $this->assertNull($prepared->get('issue'));
+  }
+ 
+   public function testVolumeIssueDemixing6() {
+    $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertNull($prepared->get('volume'));
+    $this->assertSame('12', $prepared->get('issue'));
+  }
+ 
+   public function testVolumeIssueDemixing7() {
+    $text = '{{cite journal|issue = number 12}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('issue'));
+  }
+ 
+   public function testVolumeIssueDemixing8() {
+    $text = '{{cite journal|volume = v. 12}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('volume'));
+  }
+ 
+   public function testVolumeIssueDemixing9() {
+    $text = '{{cite journal|issue =(12)}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12', $prepared->get('issue'));
+  }
+ 
+   public function testVolumeIssueDemixing10() {
+    $text = '{{cite journal|issue = volume 8, issue 7}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('7', $prepared->get('issue'));
+    $this->assertSame('8', $prepared->get('volume'));
+  }
+ 
+   public function testVolumeIssueDemixing11() {
+    $text = '{{cite journal|issue = volume 8, issue 7|volume=8}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('7', $prepared->get('issue'));
+    $this->assertSame('8', $prepared->get('volume'));
+  }
+ 
+   public function testVolumeIssueDemixing12() {
+    $text = '{{cite journal|issue = volume 8, issue 7|volume=9}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('volume 8, issue 7', $prepared->get('issue'));
+    $this->assertSame('9', $prepared->get('volume'));
+  }
+ 
   public function testCleanUpPages() {
     $text = '{{cite journal|pages=p.p. 20-23}}';
     $prepared = $this->prepare_citation($text);
@@ -1977,6 +2053,10 @@ ER -  }}';
     $this->assertNull($template->get('issn'));
     $template->add_if_new('issn_force', '1111-2222');
     $this->assertSame('1111-2222', $template->get('issn'));
+    $text = '{{Cite journal|journal=Yes}}';
+    $template = $this->prepare_citation($text);
+    $template->add_if_new('issn_force', 'EEEE-3333'); // Won't happen
+    $this->assertNull($template->get('issn'));
   }
  
   public function testURLS() {
@@ -2262,7 +2342,7 @@ ER -  }}';
     $this->assertNull($template->get('archive-url'));
   }
     
-   public function testTidy36() {
+  public function testTidy36() {
     $text = "{{cite journal|series=|periodical=Methods of Molecular Biology}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('periodical');
@@ -2270,7 +2350,7 @@ ER -  }}';
     $this->assertSame('Methods of Molecular Biology', $template->get('series'));
   }
             
-   public function testTidy37() {
+  public function testTidy37() {
     $text = "{{cite journal|series=Methods of Molecular Biology|periodical=Methods of Molecular Biology}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('periodical');
@@ -2279,7 +2359,7 @@ ER -  }}';
     $this->assertNull($template->get('periodical'));
   } 
 
-   public function testTidy38() {
+  public function testTidy38() {
     $text = "{{cite journal|archiveurl=http://researchgate.net/publication/1234_feasdfafdsfsd|title=(PDF) abc}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
@@ -2287,42 +2367,42 @@ ER -  }}';
     $this->assertSame('abc', $template->get('title'));
   }
 
-   public function testTidy39() {
+  public function testTidy39() {
     $text = "{{cite journal|archiveurl=http://academia.edu/documents/1234_feasdfafdsfsd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://www.academia.edu/1234', $template->get('archiveurl'));
   }
  
-   public function testTidy40() {
+  public function testTidy40() {
     $text = "{{cite journal|archiveurl=https://zenodo.org/record/1234/files/dsafsd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://zenodo.org/record/1234', $template->get('archiveurl'));
   }
 
-   public function testTidy42() {
+  public function testTidy42() {
     $text = "{{cite journal|archiveurl=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $template->get('archiveurl'));
   }
  
-   public function testTidy43() {
+  public function testTidy43() {
     $text = "{{cite journal|archiveurl=https://sciencedirect.com/stuff_stuff?via=more_stuff}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get('archiveurl'));
   }
  
-   public function testTidy44() {
+  public function testTidy44() {
     $text = "{{cite journal|archiveurl=https://bloomberg.com/stuff_stuff?utm_=more_stuff}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get('archiveurl'));
   }
 
-   public function testTidy45() {
+  public function testTidy45() {
     $text = "{{cite journal|url=http://researchgate.net/publication/1234_feasdfafdsfsd|title=(PDF) abc}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
@@ -2330,63 +2410,63 @@ ER -  }}';
     $this->assertSame('abc', $template->get('title'));
   }
 
-   public function testTidy46() {
+  public function testTidy46() {
     $text = "{{cite journal|url=http://academia.edu/documents/1234_feasdfafdsfsd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.academia.edu/1234', $template->get('url'));
   }
  
-   public function testTidy47() {
+  public function testTidy47() {
     $text = "{{cite journal|url=https://zenodo.org/record/1234/files/dfasd}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://zenodo.org/record/1234', $template->get('url'));
   }
 
-   public function testTidy48() {
+  public function testTidy48() {
     $text = "{{cite journal|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $template->get('url'));
   }
  
-   public function testTidy49() {
+  public function testTidy49() {
     $text = "{{cite journal|url=https://sciencedirect.com/stuff_stuff?via=more_stuff}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get('url'));
   }
  
-   public function testTidy50() {
+  public function testTidy50() {
     $text = "{{cite journal|url=https://bloomberg.com/stuff_stuff?utm_=more_stuff}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get('url'));
   }
     
-   public function testTidy51() {
+  public function testTidy51() {
     $text = "{{cite journal|url=https://watermark.silverchair.com/rubbish}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertNull($template->get('url'));
   }
 
-   public function testTidy52() {
+  public function testTidy52() {
     $text = "{{cite journal|url=https://watermark.silverchair.com/rubbish|archiveurl=has_one}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://watermark.silverchair.com/rubbish', $template->get('url'));
   }
  
-   public function testTidy53() {
+  public function testTidy53() {
     $text = "{{cite journal|archiveurl=https://watermark.silverchair.com/rubbish}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertNull($template->get('archiveurl'));
   }
  
-   public function testTidy54() {
+  public function testTidy54() {
     $text = "{{cite journal|url=https://ieeexplore.ieee.org.proxy/document/1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
@@ -2409,7 +2489,7 @@ ER -  }}';
     $this->assertSame('me', $template->get('via'));
   }
 
-   public function testTidy57() {
+  public function testTidy57() {
     $text = "{{cite journal|url=https://sciencedirect.com.proxy/stuff_stuff|via=the via}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
@@ -2432,7 +2512,7 @@ ER -  }}';
     $this->assertNull($template->get('via'));
   }
 
-   public function testTidy60() {
+  public function testTidy60() {
     $text = "{{cite journal|url=http://proxy/url=https://go.galegroup.com%2fpsSTUFF}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
@@ -2446,7 +2526,7 @@ ER -  }}';
     $this->assertSame('https://go.galegroup.com/STUFF', $template->get('url'));
   }
 
-   public function testTidy62() {
+  public function testTidy62() {
     $text = "{{cite journal|url=http://proxy/url=https://link.galegroup.com%2fpsSTUFF}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
@@ -2460,60 +2540,301 @@ ER -  }}';
     $this->assertSame('https://link.galegroup.com/STUFF', $template->get('url'));
   }
  
-   public function testTidy64() {
+  public function testTidy64() {
     $text = "{{cite journal|url=https://go.galegroup.com/STUFF&u=UNIV&date=1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://go.galegroup.com/STUFF&date=1234', $template->get('url'));
   }
 
-   public function testTidy65() {
+  public function testTidy65() {
     $text = "{{cite journal|url=https://link.galegroup.com/STUFF&u=UNIV&date=1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://link.galegroup.com/STUFF&date=1234', $template->get('url'));
   }
  
-   public function testTidy66() {
+  public function testTidy66() {
     $text = "{{cite journal|url=https://search.proquest.com/STUFF/docview/1234/STUFF}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://search.proquest.com/docview/1234/STUFF', $template->get('url'));
   }
  
-   public function testTidy66b() {
+ public function testTidy66b() {
     $text = "{{cite journal|url=http://host.com/login?url=https://search-proquest-com-stuff/STUFF/docview/1234/34123/342}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
   }
  
-   public function testTidy67() {
+ public function testTidy67() {
     $text = "{{cite journal|url=https://0-search-proquest-com.schoo.org/STUFF/docview/1234/2314/3214}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
   }
  
-   public function testTidy68() {
+  public function testTidy68() {
     $text = "{{cite journal|url=http://proxy-proquest.umi.com-org/pqd1234}}"; // Bogus, so deleted
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertNull($template->get('url'));
   }
  
-   public function testTidy69() {
+  public function testTidy69() {
     $text = "{{cite journal|url=https://search.proquest.com/dissertations/docview/1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://search.proquest.com/dissertations/docview/1234', $template->get('url'));
   }
  
-    public function testTidy70() {
+  public function testTidy70() {
     $text = "{{cite journal|url=https://search.proquest.com/docview/1234/fulltext}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
   }
-          
+ 
+  public function testIncomplete() {
+    $text = "{{cite journal|url=http://perma-archives.org/pqd1234|journal=xxx|volume=xxx|title=xxx}}"; // Non-date website
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->profoundly_incomplete());
+  }
+ 
+  public function testAddEditor() {
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('editor1-last', 'Phil'));
+    $this->assertSame('Phil', $template->get('editor1-last'));
+    $text = "{{cite journal|editor-last=Junk}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('editor1-last', 'Phil'));
+  }
+
+  public function testAddFirst() {
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('first1', 'X M'));
+    $this->assertSame('X. M.', $template->get('first1'));
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('first2', 'X M'));
+    $this->assertSame('X. M.', $template->get('first2'));
+  }
+ 
+  public function testDisplayEd() {
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('display-editors', '3'));
+    $this->assertSame('3', $template->get('display-editors'));
+    $this->assertFalse($template->add_if_new('displayeditors', '2'));
+    $this->assertNull($template->get('displayeditors'));
+  }
+
+  public function testArchiveDate() {
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $template->date_style = DATES_MDY;
+    $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
+    $this->assertSame('January 20, 2010', $template->get('archive-date'));
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $template->date_style = DATES_DMY;       
+    $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
+    $this->assertSame('20 January 2010', $template->get('archive-date'));
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $template->date_style = DATES_WHATEVER;   
+    $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
+    $this->assertSame('20 JAN 2010', $template->get('archive-date'));
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('archive-date', 'SDAFEWFEWW#F#WFWEFESFEFSDFDFD'));
+    $this->assertNull($template->get('archive-date'));
+  }
+
+  public function testWorkStuff() {
+    $text = "{{cite journal|work=Yes Indeed}}";
+    $template = $this->make_citation($text);
+    $template->add_if_new('journal', 'Yes indeed');
+    $this->assertSame('Yes Indeed', $template->get('journal'));
+    $this->assertNull($template->get('work'));
+    $text = "{{cite journal|work=Yes Indeed}}";
+    $template = $this->make_citation($text);
+    $template->add_if_new('journal', 'No way sir');
+    $this->assertSame('Yes Indeed', $template->get('work'));
+    $this->assertNull($template->get('journal'));
+  }
+ 
+  public function testViaStuff() {
+    $text = "{{cite journal|via=Yes Indeed}}";
+    $template = $this->make_citation($text);
+    $template->add_if_new('journal', 'Yes indeed');
+    $this->assertSame('Yes Indeed', $template->get('journal'));
+    $this->assertNull($template->get('via'));
+  }
+ 
+  public function testNewspaperJournal() {
+    $text = "{{cite journal|publisher=news.bbc.co.uk}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('newspaper', 'news.bbc.co.uk'));
+    $this->assertNull($template->get('newspaper'));
+  }
+ 
+  public function testNewspaperJournal100() {
+    $text = "{{cite journal|work=A work}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('newspaper', 'news.bbc.co.uk'));
+    $this->assertNull($template->get('newspaper'));
+  }
+ 
+  public function testNewspaperJournal101() {
+    $text = "{{cite web|website=xyz}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
+    $this->assertNull($template->get('website'));
+    $this->assertSame('News.BBC.co.uk', $template->get('work'));
+  }
+ 
+   public function testNewspaperJournal111() { // TODO THIS IS MESSED UP.  Need to change to cite news and such
+    $text = "{{cite journal|website=xyz}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
+    $this->assertNull($template->get('website'));
+    $this->assertSame('News.BBC.co.uk', $template->get('journal'));
+  }
+ 
+   public function testNewspaperJournal102() {
+    $text = "{{cite journal|website=xyz}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'Junk and stuff'));
+    $this->assertNull($template->get('website'));
+    $this->assertSame('Junk and Stuff', $template->get('newspaper'));
+  }
+ 
+  public function testNewspaperJournal2() {
+    $text = "{{cite journal|via=Something}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'A newspaper'));
+    
+    $text = "{{cite journal|via=Times}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'The Times'));
+    $this->assertNull($template->get('via'));
+    $this->assertSame('Times', $template->get('newspaper'));
+    
+    $text = "{{cite journal|via=A Post website}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'The Sun Post'));
+    $this->assertNull($template->get('via'));
+    $this->assertSame('The Sun Post', $template->get('newspaper'));
+  }
+
+  public function testNewspaperJournal3() {
+    $text = "{{cite journal|publisher=A Big Company}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'A Big Company'));
+    $this->assertNull($template->get('publisher'));
+    $this->assertSame('A Big Company', $template->get('newspaper'));
+  }
+ 
+  public function testNewspaperJournal4() {
+    $text = "{{cite journal|website=A Big Company}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('journal', 'A Big Company'));
+    $this->assertSame('A Big Company', $template->get('journal'));
+    $this->assertNull($template->get('website'));
+    
+    $text = "{{cite journal|website=A Big Company}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('journal', 'A Small Little Company'));
+    $this->assertSame('A Small Little Company', $template->get('journal'));
+    $this->assertNull($template->get('website'));
+    
+    $text = "{{cite journal|website=[[A Big Company]]}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('journal', 'A Small Little Company'));
+    $this->assertSame('[[A Big Company]]', $template->get('journal'));
+    $this->assertNull($template->get('website'));
+  }
+ 
+  public function testAddTwice() {
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('series', 'The Sun Post'));
+    $this->assertFalse($template->add_if_new('series', 'The Dog'));
+    $this->assertSame('The Sun Post', $template->get('series'));
+  }
+
+  public function testExistingIsTitle() {
+    $text = "{{cite journal|encyclopedia=Existing Data}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('title', 'Existing Data'));
+    $this->assertNull($template->get('title'));
+   
+    $text = "{{cite journal|dictionary=Existing Data}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('title', 'Existing Data'));
+    $this->assertNull($template->get('title'));
+   
+    $text = "{{cite journal|journal=Existing Data}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('title', 'Existing Data'));
+    $this->assertNull($template->get('title'));
+  }
+                      
+  public function testUpdateIssue() {
+    $text = "{{cite journal|issue=1|volume=}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('issue', '7'));
+    $this->assertFalse($template->add_if_new('issue', '8'));
+    $this->assertSame('7', $template->get('issue'));
+  }
+ 
+  public function testExistingCustomPage() {
+    $text = "{{cite journal|pages=footnote 7}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('pages', '3-22'));
+    $this->assertSame('footnote 7', $template->get('pages'));
+  }
+  
+  public function testPagesIsArticle() {
+    $text = "{{cite journal|pages=431234}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('pages', '1-34'));
+    $this->assertSame('431234', $template->get('pages'));
+  }
+
+  public function testExitingURL() {
+    $text = "{{cite journal|conferenceurl=http://XXXX-TEST.COM}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('url', 'http://XXXX-TEST.COM'));
+    $this->assertNull($template->get('url'));
+   
+    $text = "{{cite journal|url=xyz}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('title-link', 'abc'));
+    $this->assertNull($template->get('title-lin'));
+  }
+
+  public function testResearchGateDOI() {
+    $text = "{{cite journal|doi=10.13140/RG.2.2.26099.32807}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('doi', '10.1002/jcc.21074'));  // Not the same article, random
+    $this->assertSame('10.1002/jcc.21074', $template->get('doi'));
+  }
+
+  public function testResearchJstorDOI() {
+    $text = "{{cite journal|doi=10.2307/1974136}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
+    $this->assertNull($template->get('doi'));
+  }
+
+  public function tesNotBrokenDOI() {
+    $text = "{{cite journal|doi-broken-date = <!-- Not Broken -->}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('doi-broken-date', '1 DEC 2019')); // Does not update it
+  }            
 }

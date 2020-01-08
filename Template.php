@@ -150,8 +150,8 @@ final class Template {
               $this->rename('CITATION_BOT_PLACEHOLDER_date', 'date');
               $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
           } else {
-              $this->quietly_forget('CITATION_BOT_PLACEHOLDER_year');
-              $this->quietly_forget('CITATION_BOT_PLACEHOLDER_date');        
+              $this->quietly_forget('CITATION_BOT_PLACEHOLDER_year');   // @codeCoverageIgnore
+              $this->quietly_forget('CITATION_BOT_PLACEHOLDER_date');   // @codeCoverageIgnore
           }
           break;
         case "cite journal":       
@@ -197,7 +197,7 @@ final class Template {
               if ($this->has('journal')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_journal');
               } else {
-                $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
+                $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');   // @codeCoverageIgnore
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_title')) {
@@ -717,7 +717,8 @@ final class Template {
           }     
           return $this->add($param_name, $value);
         } elseif ($this->get('issue') . $this->get('number') == '1' && $value != '1' && $this->blank('volume')) {
-          return $this->set($param_name, $value);  // Updating bad data
+          $this->set($param_name, $value);  // Updating bad data
+          return TRUE;
         }
         return FALSE;
       
@@ -1796,7 +1797,7 @@ final class Template {
   public function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
-    if (!$SLOW_MODE && $this->lacks('bibcode')) {
+    if (!$SLOW_MODE && $this->blank('bibcode')) {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
@@ -3449,7 +3450,7 @@ final class Template {
           return;
           
         case 'isbn':
-          if ($this->lacks('isbn')) return;
+          if ($this->blank('isbn')) return;
           $this->set('isbn', preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
           if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
@@ -3459,7 +3460,7 @@ final class Template {
           return;
           
         case 'journal':
-          if ($this->lacks($param)) return;
+          if ($this->blank($param)) return;
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
@@ -3757,7 +3758,7 @@ final class Template {
                  $num62 = str_split($matches[2]);
                  $time = 0;
                  for($i=0;$i<9;$i++) {
-                    $time = (62 * $time) + strpos($base62,$num62[$i]);
+                    $time = (62 * $time) + strpos($base62, $num62[$i]);
                  }
                  $this->add_if_new('archive-date', date("Y-m-d", (int) $time/1000000));
               }
@@ -4620,6 +4621,7 @@ final class Template {
     if ($this->param) {
       foreach ($this->param as $parameter_i) {
         if ($parameter_i->param == $name) {
+          if ($parameter_i->val === '') $parameter_i->val = NULL; // Clean up
           return $parameter_i->val;
         }
       }
@@ -4655,8 +4657,9 @@ final class Template {
     return NULL;
   }
 
-  public function has($par) {return (bool) strlen($this->get($par));}
-  public function lacks($par) {return !$this->has($par);}
+  public function has($par) {
+    return (bool) strlen($this->get($par));
+  }
 
   public function add($par, $val) {
     report_add("Adding $par: $val");
@@ -4716,9 +4719,11 @@ final class Template {
     }
     $pos = $this->get_param_key($par);
     if ($pos) {
-      return $this->param[$pos]->val = $this->param[$pos]->val . $val;
+      $this->param[$pos]->val = $this->param[$pos]->val . $val;
+      return TRUE;
     } else {
-      return $this->set($par, $val);
+      $this->set($par, $val);
+      return TRUE;
     }
   }
 
@@ -4811,18 +4816,6 @@ final class Template {
        }
     }
   }
-
-  // Record modifications
-  protected function modified($param, $type='modifications') {
-    switch ($type) {
-      case '+': $type = 'additions'; break;
-      case '-': $type = 'deletions'; break;
-      case '~': $type = 'changeonly'; break;
-      default: $type = 'modifications';
-    }
-    return in_array($param, $this->modifications($type));
-  }
-  protected function added($param) {return $this->modified($param, '+');}
 
   public function modifications($type='all') {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
@@ -4929,14 +4922,14 @@ final class Template {
          if ($param == 'volume') {
             if ($this->blank(ISSUE_ALIASES)) {
               $this->add_if_new('issue', $possible_issue);
-              $this->set('volume',$possible_volume); 
+              $this->set('volume', $possible_volume); 
             } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
               $this->set('volume', $possible_volume);
             }
          } else {
             if ($this->blank('volume')) {
               $this->set('issue', $possible_issue);
-              $this->add_if_new('volume',$possible_volume); 
+              $this->add_if_new('volume', $possible_volume); 
             } elseif ($this->get('volume') === $possible_volume) {
               $this->set('issue', $possible_issue);
             }
@@ -5024,9 +5017,11 @@ final class Template {
              $url .=  $part . "&" ;
              break;
           default:
+             // @codeCoverageIgnoreStart
              report_minor_error("Unexpected Google URL component:  " . $part);
              $url .=  $part . "&" ;
              break;
+             // @codeCoverageIgnoreEnd
         }
       }
 
