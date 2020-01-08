@@ -2667,19 +2667,27 @@ ER -  }}';
     $this->assertNull($template->get('newspaper'));
   }
  
-   public function testNewspaperJournal100() {
+  public function testNewspaperJournal100() {
     $text = "{{cite journal|work=A work}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('newspaper'));
   }
  
-   public function testNewspaperJournal101() {
+  public function testNewspaperJournal101() {
+    $text = "{{cite web|website=xyz}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
+    $this->assertNull($template->get('website'));
+    $this->assertSame('News.BBC.co.uk', $template->get('work'));
+  }
+ 
+   public function testNewspaperJournal111() { // TODO THIS IS MESSED UP.  Need to change to cite news and such
     $text = "{{cite journal|website=xyz}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
-    $this->assertSame('news.bbc.co.uk', $template->get('work'));
+    $this->assertSame('News.BBC.co.uk', $template->get('journal'));
   }
  
    public function testNewspaperJournal102() {
