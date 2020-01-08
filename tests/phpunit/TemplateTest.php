@@ -1341,6 +1341,21 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('cite arxiv', $prepared->wikiname());    
   }
+ 
+  public function testRenameToExisting() {
+    $text = "{{cite journal|issue=1|volume=2|doi=3}}";
+    $template = $this->make_citation($text);
+    $this->assertSame('{{cite journal|issue=1|volume=2|doi=3}}', $template->parsed_text());
+    $template->rename('doi', 'issue');
+    $this->assertSame('{{cite journal|volume=2|issue=3}}', $template->parsed_text());
+    $template->rename('volume', 'issue');
+    $this->assertSame('{{cite journal|issue=2}}', $template->parsed_text());
+    $template->forget('issue');
+    $this->assertSame('{{cite journal}}', $template->parsed_text());
+    $this->assertNull($template->get('issue'));
+    $this->assertNull($template->get('doi'));
+    $this->assertNull($template->get('volume'));
+  }
     
   public function testArxivMore1() {
     $text = "{{cite arxiv}}";
