@@ -345,7 +345,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite book | asin=B0002TV0K8 |isbn=}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('B0002TV0K8', $expanded->get('asin'));
-    $this->assertSame('', $expanded->get('isbn'));
+    $this->assertNull($expanded->get('isbn'));
       
     $text = "{{Cite book | asin=0226845494 |isbn=0226845494}}";
     $expanded = $this->process_citation($text);
