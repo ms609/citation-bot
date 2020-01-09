@@ -5018,6 +5018,7 @@ final class Template {
              $url .=  $part . "&" ;
              break;
              // @codeCoverageIgnoreEnd
+        }
       }
 
       if (substr($url, -1) === "&") $url = substr($url, 0, -1);  //remove trailing &
