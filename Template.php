@@ -4568,6 +4568,7 @@ final class Template {
 
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
+    if (!isset($this->param)) return FALSE;
     if ($old_param == $new_param) {
        if ($new_value !== FALSE) {
            $this->set($new_param, $new_value);
@@ -4575,7 +4576,6 @@ final class Template {
         }
         return FALSE;
     }
-    if (!isset($this->param)) return FALSE;
     $have_nothing = TRUE;
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
