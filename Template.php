@@ -2405,11 +2405,13 @@ final class Template {
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
+          // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget('url');
             report_warning("Open access URL was was unreachable from Unpaywall API for doi: " . echoable($doi));
             return FALSE;
           }
+          // @codeCoverageIgnoreEnd
           $response_code = intval(substr($headers_test[0], 9, 3)); 
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
             $this->forget('url');
@@ -2491,12 +2493,14 @@ final class Template {
             } else {
               report_info("No results for Google API search $url_token");
             }
+            // @codeCoverageIgnoreStart
           } elseif (isset($result->error)) {
-            report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));  // @codeCoverageIgnore
+            report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));
           } else {
-            report_warning("Could not parse Google API results for $url_token");           // @codeCoverageIgnore
+            report_warning("Could not parse Google API results for $url_token");\
             return FALSE;
           }
+            // @codeCoverageIgnoreEnd
         }
       }
     }
@@ -4260,7 +4264,7 @@ final class Template {
               $this->set('issue', $possible_issue);
               report_action('Citation had volume and issue the same.  Changing issue.');
             } else {
-              report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');
+              report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');  // @codeCoverageIgnore
             }
           }
         }
@@ -4396,8 +4400,8 @@ final class Template {
     }
     $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
-      report_warning("DOI status unknown.  doi.org failed to respond to: " . echoable($doi));
-      return FALSE;
+      report_warning("DOI status unknown.  doi.org failed to respond to: " . echoable($doi));  // @codeCoverageIgnore
+      return FALSE;                                                                            // @codeCoverageIgnore
     } elseif ($doi_status === FALSE) {
       report_inline("It's not...");
       $this->add_if_new('doi-broken-date', date("Y-m-d"));
@@ -4410,7 +4414,7 @@ final class Template {
     }
   }
 
-  protected function check_url() {
+  protected function check_url() {  // @codeCoverageIgnore
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
@@ -4856,10 +4860,6 @@ final class Template {
     return $ret;
   }
 
-  public function is_modified() {
-    return (bool) count($this->modifications('modifications'));
-  }
-  
   protected function isbn10Toisbn13($isbn10, $ignore_year = FALSE) {
     $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
     if (preg_match("~^[0-9Xx ]+$~", $isbn10) === 1) { // Uses spaces
@@ -5041,8 +5041,8 @@ final class Template {
       } else {   
         return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
       }
-    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {
-      report_error('unexpected title from ISSN ' . $matches[1]);    // @codeCoverageIgnore
+    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {    // @codeCoverageIgnore
+      report_error('unexpected title from ISSN ' . $matches[1]);                             // @codeCoverageIgnore
     }
     return FALSE; // @codeCoverageIgnore
   }
