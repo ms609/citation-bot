@@ -4840,15 +4840,14 @@ final class Template {
     $old = array_change_key_case($old, CASE_LOWER);
     $new = array_change_key_case($new, CASE_LOWER);
     
-    if ($new) {
-        $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
-        $ret['additions'] = array_diff(array_keys($new), array_keys($old));
-        $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
-        $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
-        foreach ($ret['deletions'] as $inds=>$vals) {
-          if ($vals === '') unset($ret['deletions'][$inds]); // If we get rid of double pipe that appears as a deletion, not misc.
-        }
+    $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
+    $ret['additions'] = array_diff(array_keys($new), array_keys($old));
+    $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
+    $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
+    foreach ($ret['deletions'] as $inds=>$vals) {
+       if ($vals === '') unset($ret['deletions'][$inds]); // If we get rid of double pipe that appears as a deletion, not misc.
     }
+
     $ret['dashes'] = $this->mod_dashes;
     $ret['names'] = $this->mod_names;
     if (in_array($type, array_keys($ret))) return $ret[$type];
