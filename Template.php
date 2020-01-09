@@ -3316,7 +3316,7 @@ final class Template {
                   $this->set($param, $match[3]);
                   report_modification("Dissecting authorlink");
                 }
-                $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+                $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
                 if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
                   $others = "{$match[1]} {$match[5]}";
                   if ($this->has('others')) {
