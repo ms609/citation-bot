@@ -3075,7 +3075,7 @@ ER -  }}';
   public function testETCTidy() {
     $text = "{{cite web|pages=342 etc}}";
     $template = $this->make_citation($text);
-    $template->tidy_paramter('pages');
+    $template->tidy_parameter('pages');
     $this->assertSame('342 etc.', $template->get('pages'));
   }
 
