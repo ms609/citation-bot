@@ -28,7 +28,7 @@ final class Template {
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
             $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
-            $mod_dashes, $mod_names;
+            $mod_dashes = FALSE, $mod_names = FALSE;
 
   public function parse_text($text) {
     $this->initial_author_params = NULL; // Will be populated later if there are any
