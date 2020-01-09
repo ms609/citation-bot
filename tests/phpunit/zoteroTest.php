@@ -183,7 +183,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertNull($template->get('url'));
    }
 
-  public function testDropSomeProxies() {
+   public function testDropSomeProxies5() {
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333}}";
     $template = $this->make_citation($text);
     drop_urls_that_match_dois([$template]);
