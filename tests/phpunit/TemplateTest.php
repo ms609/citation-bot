@@ -2946,8 +2946,8 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->add_if_new('author3', '[[Joe|Joes]]');
     $template->tidy_parameter('author3');
-    $this->assertSame('Joes', $template->get('author3');
-    $this->assertSame('Joe', $template->get('author3-link');
+    $this->assertSame('Joes', $template->get('author3'));
+    $this->assertSame('Joe', $template->get('author3-link'));
   }
  
   public function testAuthor2() {
@@ -2955,8 +2955,8 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->add_if_new('author3', 'Joe Jones Translated by John Smith');
     $template->tidy_parameter('author3');
-    $this->assertSame('Joe Jones', $template->get('author3');
-    $this->assertSame('John Smith', $template->get('others');
+    $this->assertSame('Joe Jones', $template->get('author3'));
+    $this->assertSame('John Smith', $template->get('others'));
   }
   
   public function testAuthorsAndAppend3() {
@@ -2965,8 +2965,8 @@ ER -  }}';
     $template->add_if_new('others', 'Kim Bill');
     $template->add_if_new('author3', 'Joe Jones Translated by John Smith');
     $template->tidy_parameter('author3');
-    $this->assertSame('Joe Jones', $template->get('author3');
-    $this->assertSame('Kim Bill; John Smith', $template->get('others');
+    $this->assertSame('Joe Jones', $template->get('author3'));
+    $this->assertSame('Kim Bill; John Smith', $template->get('others'));
   }
 
   public function testAuthorsAndAppend4() {
@@ -2974,8 +2974,8 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->set('others', 'CITATION_BOT_PLACEHOLDER_COMMENT');
     $template->add_if_new('author3', 'Joe Jones Translated by John Smith');
-    $this->assertSame('Joe Jones', $template->get('author3');
-    $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('others');
+    $this->assertSame('Joe Jones', $template->get('author3'));
+    $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('others'));
   }
 
   public function testMoreEtAl() {
