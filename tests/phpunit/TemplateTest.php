@@ -3091,7 +3091,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->tidy_parameter('volume');
     $this->assertNull($template->get('volume'));
-    $this->assertSame('22', $template->get('issue'))
+    $this->assertSame('22', $template->get('issue'));
   }
                       
   public function testTidyViaStuff() {
