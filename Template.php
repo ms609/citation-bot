@@ -4793,8 +4793,8 @@ final class Template {
         $this->forgetter('dead-url', FALSE);
     }
     $pos = $this->get_param_key($par);
-    if ($pos !== NULL) {
-      if ($echo_forgetting && $this->has($par) && stripos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
+    if ($pos !== NULL && stripos($par, 'CITATION_BOT_PLACEHOLDER') === FALSE) {
+      if ($echo_forgetting && $this->has($par)) {
         // Do not mention forgetting empty parameters or internal temporary parameters
         report_forget("Dropping parameter \"" . echoable($par) . '"');
       }
