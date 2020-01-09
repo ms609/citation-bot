@@ -4593,6 +4593,11 @@ final class Template {
     // Forget old copies
     $pos = $this->get_param_key($new_param);
     while ($pos !== NULL) {
+      $this->param[$pos]->pre = NULL;
+      $this->param[$pos]->param = NULL;
+      $this->param[$pos]->eq = NULL;
+      $this->param[$pos]->val = NULL;
+      $this->param[$pos]->post = NULL;
       unset($this->param[$pos]);
       $pos = $this->get_param_key($new_param);
     }
@@ -4799,6 +4804,11 @@ final class Template {
         report_forget("Dropping parameter \"" . echoable($par) . '"');
       }
       while ($pos !== NULL) { // paranoid
+        $this->param[$pos]->pre = NULL;
+        $this->param[$pos]->param = NULL;
+        $this->param[$pos]->eq = NULL;
+        $this->param[$pos]->val = NULL;
+        $this->param[$pos]->post = NULL;
         unset($this->param[$pos]);
         $pos = $this->get_param_key($par);
       }
