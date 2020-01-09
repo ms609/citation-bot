@@ -703,7 +703,7 @@ final class TemplateTest extends testBaseClass {
   public function testUseISSN() {
       $text = "{{Cite book|issn=0031-0603}}";
       $expanded = $this->process_citation($text);
-      $this->assertSame('Pan-Pacific Entomologist', $expanded->get('journal'));
+      $this->assertTrue(stripos($expanded->get('journal'), 'Entomologist') !== FALSE);
   }
   
   public function testNoBibcodesForArxiv() {
