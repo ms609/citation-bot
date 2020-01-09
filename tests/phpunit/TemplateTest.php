@@ -3042,12 +3042,12 @@ ER -  }}';
     $text = "{{cite journal|work=}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
-    $this->assertSame( "{{cite journal|journal=}}";, $expanded->parsed_text());
+    $this->assertSame( "{{cite journal|journal=}}", $expanded->parsed_text());
 
     $text = "{{cite magazine|work=}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
-    $this->assertSame( "{{cite magazine|magazine=}}";, $expanded->parsed_text());  
+    $this->assertSame( "{{cite magazine|magazine=}}", $expanded->parsed_text());  
   }
                       
   public function testTidyChapterTitleSeries() {
