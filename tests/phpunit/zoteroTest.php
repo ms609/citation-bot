@@ -134,4 +134,52 @@ class ZoteroTest extends testBaseClass {
      $expanded = $this->process_citation($text);
      $this->assertNull($expanded->get('doi'));
   }
+ 
+  public function testDropSomeProxies() {
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=proxy.libraries}}";
+    $template = make_template($text);
+    drop_urls_that_match_dois([$template]);
+    $this->assertNull($template->get('url'));
+    
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.sciencedirect.com/science/article/B1234-13241234-343242/}}";
+    $template = make_template($text);
+    drop_urls_that_match_dois([$template]);
+    $this->assertNull($template->get('url'));
+    
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.sciencedirect.com/science/article/pii/2222}}";
+    $template = make_template($text);
+    drop_urls_that_match_dois([$template]);
+    $this->assertNull($template->get('url'));
+
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.springerlink.com/conten/s}}";
+    $template = make_template($text);
+    drop_urls_that_match_dois([$template]);
+    $this->assertNull($template->get('url'));
+   
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://insights.ovid.com/pubmed|pmid=2222}}";
+    $template = make_template($text);
+    drop_urls_that_match_dois([$template]);
+    $this->assertNull($template->get('url'));
+   
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://opscience.iop.org/324234}}";
+    $template = make_template($text);
+    drop_urls_that_match_dois([$template]);
+    $this->assertNull($template->get('url'))
+     
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://journals.lww.com/3243243}}";
+    $template = make_template($text);
+    drop_urls_that_match_dois([$template]);
+    $this->assertNull($template->get('url'))
+     
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://wkhealth.com/3243243}}";
+    $template = make_template($text);
+    drop_urls_that_match_dois([$template]);
+    $this->assertNull($template->get('url'));
+     
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333}}";
+    $template = make_template($text);
+    drop_urls_that_match_dois([$template]);
+    $this->assertNull($template->get('url'));
+  }
+ 
 }
