@@ -210,7 +210,7 @@ final class Template {
           }
         }
       }
-    } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
+    } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->get('work') !== NULL) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
     }
