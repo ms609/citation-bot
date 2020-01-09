@@ -4841,7 +4841,6 @@ final class Template {
     $new = array_change_key_case($new, CASE_LOWER);
     
     if ($new) {
-      if ($old) {
         $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
         $ret['additions'] = array_diff(array_keys($new), array_keys($old));
         $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
@@ -4849,10 +4848,6 @@ final class Template {
         foreach ($ret['deletions'] as $inds=>$vals) {
           if ($vals === '') unset($ret['deletions'][$inds]); // If we get rid of double pipe that appears as a deletion, not misc.
         }
-      } else {
-        $ret['additions'] = array_keys($new);
-        $ret['modifications'] = array_keys($new);
-      }
     }
     $ret['dashes'] = $this->mod_dashes;
     $ret['names'] = $this->mod_names;
