@@ -160,22 +160,30 @@ class ZoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get('url'));
-   
-    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://opscience.iop.org/324234}}";
+   }
+
+   public function testDropSomeProxies2() {
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://iopscience.iop.org/324234}}";
     $template = $this->make_citation($text);
     drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get('url'));
-     
+   }
+
+   public function testDropSomeProxies3() {  
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://journals.lww.com/3243243}}";
     $template = $this->make_citation($text);
     drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get('url'));
-     
+   }
+
+   public function testDropSomeProxies4() {
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://wkhealth.com/3243243}}";
     $template = $this->make_citation($text);
     drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get('url'));
-     
+   }
+
+  public function testDropSomeProxies() {
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333}}";
     $template = $this->make_citation($text);
     drop_urls_that_match_dois([$template]);
