@@ -3330,7 +3330,7 @@ final class Template {
           if ($this->blank($param)) {
             $this->forget($param);
           } else {
-            report_warning(" Please fix deprecated author separator manually."); // @codeCoverageIgnore
+            report_warning(" Please fix deprecated author separator manually.");
           }
           return;
 
