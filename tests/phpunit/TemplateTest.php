@@ -2859,7 +2859,7 @@ ER -  }}';
   }
  
    public function testForgettersChangeType() {
-    $text = "{{cite web}}";
+    $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
     $template->forget('url');
     $this->assertSame('cite document', $template->wikiname());
@@ -2907,17 +2907,24 @@ ER -  }}';
   }
       
   public function testRenameSpecialCases() {
-    $text = "{{cite web}}";
+    $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->rename('work', 'work'));
     $this->assertTrue($template->rename('work', 'work', 'new'));
     $this->assertSame('new', $template->get('work'));
    
-    $text = "{{cite web}}";
+    $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->rename('work', 'journal'));
     $this->assertTrue($template->rename('work', 'journal', 'new'));
     $this->assertSame('new', $template->get('journal'));
+
+ 
+    $text = "{{cite web}}"; // param will be null
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->rename('work', 'journal'));
+    $this->assertFalse($template->rename('work', 'journal', 'new'));
+    $this->assertNull($template->get('journal'));
   }   
       
 }
