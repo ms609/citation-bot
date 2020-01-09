@@ -3123,7 +3123,7 @@ ER -  }}';
     $this->assertSame('0012343', $template->get('mr'));
   }
  
-  public function testConversionOfURL2() 
+  public function testConversionOfURL2() {
     $text = "{{cite web|url=http://worldcat.org/title/stuff/oclc/1234}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
@@ -3140,7 +3140,7 @@ ER -  }}';
     $this->assertNull($template->get('url'));
   }
  
-  public function testConversionOfURL4()  
+  public function testConversionOfURL4() {
     $text = "{{cite web|url=http://lccn.loc.gov/1234}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
@@ -3148,7 +3148,7 @@ ER -  }}';
     $this->assertNull($template->get('url'));
   }
  
-  public function testConversionOfURL5() 
+  public function testConversionOfURL5() {
     $text = "{{cite web|url=http://openlibrary.org/books/OL/1234W}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
@@ -3156,7 +3156,7 @@ ER -  }}';
     $this->assertNull($template->get('url'));
   }
  
-  public function testConversionOfURL6() 
+  public function testConversionOfURL6() {
     $text = "{{cite web|url=http://search.proquest.com/docview/1234}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
