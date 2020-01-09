@@ -4568,6 +4568,7 @@ final class Template {
 
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
+    if (!isset($this->param)) return FALSE;
     if ($old_param == $new_param) {
        if ($new_value !== FALSE) {
            $this->set($new_param, $new_value);
@@ -4575,7 +4576,6 @@ final class Template {
         }
         return FALSE;
     }
-    if (!isset($this->param)) return FALSE;
     $have_nothing = TRUE;
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
@@ -4626,7 +4626,7 @@ final class Template {
     if ($this->param) {
       foreach ($this->param as $parameter_i) {
         if ($parameter_i->param == $name) {
-          if ($parameter_i->val === '') $parameter_i->val = NULL; // Clean up
+          if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
           return $parameter_i->val;
         }
       }
@@ -5047,14 +5047,14 @@ final class Template {
     $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
     if (preg_match('~<title>(.*)\(eJournal~', $html, $matches)) {
       if ($this->wikiname() === 'cite magazine') {
-        return $this->add_if_new('magazine', trim($matches[1]));
+        return $this->add_if_new('magazine', trim($matches[1]));  // @codeCoverageIgnore
       } else {   
         return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
       }
     } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {
-      report_error('unexpected title from ISSN ' . $matches[1]);
+      report_error('unexpected title from ISSN ' . $matches[1]);    // @codeCoverageIgnore
     }
-    return FALSE;
+    return FALSE; // @codeCoverageIgnore
   }
     
   private function is_book_series($param) {
