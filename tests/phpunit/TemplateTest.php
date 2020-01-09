@@ -2934,11 +2934,11 @@ ER -  }}';
     $this->assertSame('The Journal', $template->get('work'));
     $this->assertNull($template->get('journal'));
     $ret = $template->modifications();
-    $this->assertFalse(isset($ret['deletions']));
-    $this->assertFalse(isset($ret['changeonly']));
+    $this->assertTrue(isset($ret['deletions']));
+    $this->assertTrue(isset($ret['changeonly']));
     $this->assertTrue(isset($ret['additions']));
-    $this->assertFalse(isset($ret['dashes']));
-    $this->assertFalse(isset($ret['names']));
+    $this->assertTrue(isset($ret['dashes']));
+    $this->assertTrue(isset($ret['names']));
   }
 
   public function testAuthors1() {
