@@ -2896,7 +2896,7 @@ ER -  }}';
     $text = "{{cite web|url=X|work=www.apple.com}}";
     $template = $this->make_citation($text);
     $template->forget('url');
-    $this->assertSame('Y', $template->get('work'));
+    $this->assertNull($template->get('work'));
   }
       
   public function testCommentShields() {
