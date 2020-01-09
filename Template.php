@@ -2497,7 +2497,7 @@ final class Template {
           } elseif (isset($result->error)) {
             report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));
           } else {
-            report_warning("Could not parse Google API results for $url_token");\
+            report_warning("Could not parse Google API results for $url_token");
             return FALSE;
           }
             // @codeCoverageIgnoreEnd
