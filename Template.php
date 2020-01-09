@@ -210,7 +210,7 @@ final class Template {
           }
         }
       }
-    } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has('work')) { 
+    } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->get('work') !== NULL) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
     }
@@ -984,7 +984,7 @@ final class Template {
         }
         return FALSE;
          
-      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': 
+      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': case 'lccn':
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
       case (boolean) preg_match('~author(?:\d{1,}|)-link~', $param_name):
         if ($this->blank($param_name)) {
@@ -2405,11 +2405,13 @@ final class Template {
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
+          // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget('url');
             report_warning("Open access URL was was unreachable from Unpaywall API for doi: " . echoable($doi));
             return FALSE;
           }
+          // @codeCoverageIgnoreEnd
           $response_code = intval(substr($headers_test[0], 9, 3)); 
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
             $this->forget('url');
@@ -2491,12 +2493,14 @@ final class Template {
             } else {
               report_info("No results for Google API search $url_token");
             }
+            // @codeCoverageIgnoreStart
           } elseif (isset($result->error)) {
-            report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));  // @codeCoverageIgnore
+            report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));
           } else {
-            report_warning("Could not parse Google API results for $url_token");           // @codeCoverageIgnore
+            report_warning("Could not parse Google API results for $url_token");
             return FALSE;
           }
+            // @codeCoverageIgnoreEnd
         }
       }
     }
@@ -3312,7 +3316,7 @@ final class Template {
                   $this->set($param, $match[3]);
                   report_modification("Dissecting authorlink");
                 }
-                $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.)\s([\w\p{L}\p{M}\s]+)$~u";
+                $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
                 if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
                   $others = "{$match[1]} {$match[5]}";
                   if ($this->has('others')) {
@@ -3330,7 +3334,7 @@ final class Template {
           if ($this->blank($param)) {
             $this->forget($param);
           } else {
-            report_warning(" Please fix deprecated author separator manually."); // @codeCoverageIgnore
+            report_warning(" Please fix deprecated author separator manually.");
           }
           return;
 
@@ -4115,6 +4119,7 @@ final class Template {
           // Remove leading zeroes
           if ($this->get('journal') != 'Insecta Mundi') {
             $value = preg_replace('~^0+~', '', $value);
+            $this->set($param, $value);
           }
           if ($value) {
             $this->set($param, $value);
@@ -4260,7 +4265,7 @@ final class Template {
               $this->set('issue', $possible_issue);
               report_action('Citation had volume and issue the same.  Changing issue.');
             } else {
-              report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');
+              report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');  // @codeCoverageIgnore
             }
           }
         }
@@ -4396,8 +4401,8 @@ final class Template {
     }
     $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
-      report_warning("DOI status unknown.  doi.org failed to respond to: " . echoable($doi));
-      return FALSE;
+      report_warning("DOI status unknown.  doi.org failed to respond to: " . echoable($doi));  // @codeCoverageIgnore
+      return FALSE;                                                                            // @codeCoverageIgnore
     } elseif ($doi_status === FALSE) {
       report_inline("It's not...");
       $this->add_if_new('doi-broken-date', date("Y-m-d"));
@@ -4410,7 +4415,7 @@ final class Template {
     }
   }
 
-  protected function check_url() {
+  protected function check_url() {  // @codeCoverageIgnore
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
@@ -4673,7 +4678,8 @@ final class Template {
       return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
-      return $this->param[$pos]->val = (string) $val;
+      $this->param[$pos]->val = (string) $val;
+      return TRUE;
     }
     if (!isset($this->example_param)) {
       if (isset($this->param[0])) {
@@ -4836,30 +4842,20 @@ final class Template {
     $old = array_change_key_case($old, CASE_LOWER);
     $new = array_change_key_case($new, CASE_LOWER);
     
-    if ($new) {
-      if ($old) {
-        $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
-        $ret['additions'] = array_diff(array_keys($new), array_keys($old));
-        $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
-        $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
-        foreach ($ret['deletions'] as $inds=>$vals) {
-          if ($vals === '') unset($ret['deletions'][$inds]); // If we get rid of double pipe that appears as a deletion, not misc.
-        }
-      } else {
-        $ret['additions'] = array_keys($new);
-        $ret['modifications'] = array_keys($new);
-      }
+    $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
+    $ret['additions'] = array_diff(array_keys($new), array_keys($old));
+    $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
+    $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
+    foreach ($ret['deletions'] as $inds=>$vals) {
+       if ($vals === '') unset($ret['deletions'][$inds]); // If we get rid of double pipe that appears as a deletion, not misc.
     }
+
     $ret['dashes'] = $this->mod_dashes;
     $ret['names'] = $this->mod_names;
     if (in_array($type, array_keys($ret))) return $ret[$type];
     return $ret;
   }
 
-  public function is_modified() {
-    return (bool) count($this->modifications('modifications'));
-  }
-  
   protected function isbn10Toisbn13($isbn10, $ignore_year = FALSE) {
     $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
     if (preg_match("~^[0-9Xx ]+$~", $isbn10) === 1) { // Uses spaces
@@ -5022,7 +5018,6 @@ final class Template {
              $url .=  $part . "&" ;
              break;
              // @codeCoverageIgnoreEnd
-        }
       }
 
       if (substr($url, -1) === "&") $url = substr($url, 0, -1);  //remove trailing &
@@ -5041,8 +5036,8 @@ final class Template {
       } else {   
         return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
       }
-    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {
-      report_error('unexpected title from ISSN ' . $matches[1]);    // @codeCoverageIgnore
+    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {    // @codeCoverageIgnore
+      report_error('unexpected title from ISSN ' . $matches[1]);                             // @codeCoverageIgnore
     }
     return FALSE; // @codeCoverageIgnore
   }
