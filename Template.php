@@ -4678,7 +4678,8 @@ final class Template {
       return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
-      return $this->param[$pos]->val = (string) $val;
+      $this->param[$pos]->val = (string) $val;
+      return TRUE;
     }
     if (!isset($this->example_param)) {
       if (isset($this->param[0])) {
