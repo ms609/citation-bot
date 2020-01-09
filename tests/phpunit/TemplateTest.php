@@ -345,7 +345,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite book | asin=B0002TV0K8 |isbn=}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('B0002TV0K8', $expanded->get('asin'));
-    $this->assertNull($expanded->get('isbn'));
+    $this->assertSame('', $expanded->get('isbn')); // Empty, not non-existent
       
     $text = "{{Cite book | asin=0226845494 |isbn=0226845494}}";
     $expanded = $this->process_citation($text);
@@ -942,7 +942,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{cite journal|work=}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame('{{cite journal|work=}}', $prepared->parsed_text());
+      $this->assertSame('{{cite journal|journal=}}', $prepared->parsed_text());
   }
   
   public function testOrigYearHandling() {
@@ -1533,6 +1533,12 @@ ER -  }}';
     $this->assertSame('Nature', $expanded->get('journal'));
     $this->assertSame('Funky Paper', $expanded->get('title'));
     $this->assertSame('10.1038/nature10000', $expanded->get('doi'));
+    
+    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} | doi=10.1038/nature10000 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('Nature', $expanded->get('journal'));
+    $this->assertSame('Funky Paper', $expanded->get('title'));
+    $this->assertSame('10.1038/nature10000', $expanded->get('doi'));
   } 
   
   public function testPagesDash() {
@@ -1754,9 +1760,9 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('https://www.academia.edu/123456', $prepared->get('url'));
    
-    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}';
+    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8#The_hash#The_second_hash}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $prepared->get('url'));
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22#The_hash', $prepared->get('url'));
     $text = '{{cite web|url=http://www.google.com/search?hl=en&safe=off&client=firefox-a&rls=com.ubuntu%3Aen-US%3Aunofficial&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)&aq=o&oq=&aqi=}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('https://www.google.com/search?hl=en&safe=off&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)', $prepared->get('url'));
@@ -1851,7 +1857,7 @@ ER -  }}';
     $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('volume'));
-    $this->assertNull($prepared->get('issue'));
+    $this->assertSame('', $prepared->get('issue')); // TODO why not null?
   }
  
    public function testVolumeIssueDemixing6() {
@@ -1898,6 +1904,20 @@ ER -  }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('volume 8, issue 7', $prepared->get('issue'));
     $this->assertSame('9', $prepared->get('volume'));
+  }
+
+   public function testVolumeIssueDemixing13() {
+    $text = '{{cite journal|issue = number 333XV }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('333XV', $prepared->get('issue'));
+    $this->assertNull($prepared->get('volume'));
+  }
+ 
+    public function testVolumeIssueDemixing14() {
+    $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=XYZ}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('12XX', $prepared->get('volume'));
+    $this->assertSame('', $prepared->get('issue')); // TODO why not null?
   }
  
   public function testCleanUpPages() {
@@ -2832,9 +2852,79 @@ ER -  }}';
     $this->assertNull($template->get('doi'));
   }
 
-  public function tesNotBrokenDOI() {
-    $text = "{{cite journal|doi-broken-date = <!-- Not Broken -->}}";
+  public function testNotBrokenDOI() {
+    $text = "{{cite journal|doi-broken-date = # # # CITATION_BOT_PLACEHOLDER_COMMENT # # # }}";
     $template = $this->make_citation($text);
-    $this->assertFalse($template->add_if_new('doi-broken-date', '1 DEC 2019')); // Does not update it
-  }            
+    $this->assertFalse($template->add_if_new('doi-broken-date', '1 DEC 2019'));
+  }
+ 
+   public function testForgettersChangeType() {
+    $text = "{{cite web|id=x}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite document', $template->wikiname());
+
+    $text = "{{cite web|journal=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite journal', $template->wikiname());
+
+    $text = "{{cite web|newspaper=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite news', $template->wikiname());
+
+    $text = "{{cite web|chapter=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite book', $template->wikiname());
+  }
+ 
+  public function testForgettersChangeOtherURLS() {
+    $text = "{{cite web|chapter-url=Y|chapter=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('chapter');
+    $this->assertSame('Y', $template->get('url'));
+
+    $text = "{{cite web|chapterurl=Y|chapter=X}}";
+    $template = $this->make_citation($text);
+    $template->forget('chapter');
+    $this->assertSame('Y', $template->get('url'));
+  }
+      
+  public function testForgettersChangeWWWWork() {
+    $text = "{{cite web|url=X|work=www.apple.com}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertNull($template->get('work'));
+  }
+      
+  public function testCommentShields() {
+    $text = "{{cite web|work = # # CITATION_BOT_PLACEHOLDER_COMMENT # #}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->set('work', 'new'));
+    $this->assertSame('# # CITATION_BOT_PLACEHOLDER_COMMENT # #', $template->get('work'));
+  }
+      
+  public function testRenameSpecialCases() {
+    $text = "{{cite web|id=x}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->rename('work', 'work'));
+    $this->assertTrue($template->rename('work', 'work', 'new'));
+    $this->assertSame('new', $template->get('work'));
+   
+    $text = "{{cite web|id=x}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->rename('work', 'journal'));
+    $this->assertTrue($template->rename('work', 'journal', 'new'));
+    $this->assertSame('new', $template->get('journal'));
+
+ 
+    $text = "{{cite web}}"; // param will be null
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->rename('work', 'journal'));
+    $this->assertFalse($template->rename('work', 'journal', 'new'));
+    $this->assertNull($template->get('journal'));
+  }   
+      
 }
