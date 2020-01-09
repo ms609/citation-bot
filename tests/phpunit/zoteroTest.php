@@ -164,12 +164,12 @@ class ZoteroTest extends testBaseClass {
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://opscience.iop.org/324234}}";
     $template = make_template($text);
     drop_urls_that_match_dois([$template]);
-    $this->assertNull($template->get('url'))
+    $this->assertNull($template->get('url'));
      
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://journals.lww.com/3243243}}";
     $template = make_template($text);
     drop_urls_that_match_dois([$template]);
-    $this->assertNull($template->get('url'))
+    $this->assertNull($template->get('url'));
      
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://wkhealth.com/3243243}}";
     $template = make_template($text);
