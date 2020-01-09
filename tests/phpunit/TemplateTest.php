@@ -2984,12 +2984,14 @@ ER -  }}';
     $template->handle_et_al();
     $this->assertSame('John', $template->get('author'));
     $this->assertSame('etal', $template->get('displayauthors'));
+   
     $text = "{{cite web|authors=et al.}}";
     $template = $this->make_citation($text);
+    $this->assertSame('et al.', $template->get('authors'));
     $template->handle_et_al();
-    $this->assertSame('etal', $template->get('displayauthors'));
     $this->assertNull($template->get('author'));
     $this->assertNull($template->get('authors'));
+    $this->assertSame('etal', $template->get('displayauthors'));
   }
  
   public function testCiteTypeWarnings1() {
@@ -3015,7 +3017,7 @@ ER -  }}';
   }
 
   public function testCiteTypeWarnings3() {
-    $text = "{{citation|title=XYZ|chapter=XXXX|journal=adsfsd}}";
+    $text = "{{citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('cite book', $template->wikiname());
@@ -3055,17 +3057,23 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertNull($template->get('title'));
-                      
+  }
+ 
+  public function testTidyChapterTitleSeries2() {              
     $text = "{{cite journal|chapter=X|title=X}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertNull($template->get('chapter'));
-   
-    $text = "{{cite journal|series=X|title=X}}";
+  }
+ 
+  public function testTidyChapterTitleSeries3() {
+    $text = "{{cite journal|series=XYZ|title=XYZ}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertNull($template->get('series'));
-   
+  }
+ 
+  public function testTidyChapterTitleSeries4() {
     $text = "{{cite book|series=X|title=X}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
