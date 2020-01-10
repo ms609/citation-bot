@@ -4625,9 +4625,11 @@ final class Template {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
+    print_r($this->param);
     if ($this->param) {
       foreach ($this->param as $parameter_i) {
         if ($parameter_i->param == $name) {
+          echo "\n Found $name\n";
           if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
           return $parameter_i->val;
         }
