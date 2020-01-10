@@ -212,7 +212,9 @@ final class Template {
       }
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->get('work') !== NULL) { 
       // This is all we do with cite magazine
+      echo "\n DOING IT\n";
       $this->rename('work', 'magazine');
+      echo "\n DID IT\n";
     }
   }
   
