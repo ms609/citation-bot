@@ -3118,12 +3118,17 @@ ER -  }}';
     $this->assertNull($prepared->get('issue'));
   }
  
-  public function testNewspaperJournal111() { // TODO THIS IS MESSED UP.  Need to change to cite news and such
+   public function testNewspaperJournal111() {
     $text = "{{cite journal|website=xyz}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
+    $this->assertSame('News.BBC.co.uk', $template->get('work'));
+    $this->assertNull($template->get('journal'));
+    $this->assertSame('journal', $template->wikiname());  // Unchanged
+    $template->final_tidy();
     $this->assertSame('News.BBC.co.uk', $template->get('journal'));
+    $this->assertNull($template->get('work'));
   }
  
   public function testMoreEtAl2() {
