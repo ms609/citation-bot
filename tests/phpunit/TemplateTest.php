@@ -3141,7 +3141,6 @@ ER -  }}';
     $text = "{{citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
-    return; // TODO
     $this->assertSame('cite book', $template->wikiname());
   }
 
@@ -3172,11 +3171,10 @@ ER -  }}';
   }
  
   public function testAllZeroesTidy() {
-    $text = "{{cite web|pages=000000000}}";
+    $text = "{{cite web|issue=000000000}}";
     $template = $this->make_citation($text);
-    $template->tidy_parameter('pages');
-    return; // TODO
-    $this->assertNull($template->get('pages'));
+    $template->tidy_parameter('issue');
+    $this->assertNull($template->get('issue'));
   }
  
   public function testConversionOfURL2() {
