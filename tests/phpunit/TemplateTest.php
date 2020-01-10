@@ -8,10 +8,6 @@ require_once __DIR__ . '/../testBaseClass.php';
  
 final class TemplateTest extends testBaseClass {
 
-   public function testBlockMerge() {
-      $this->assertTrue(FALSE);
-  }
- 
    public function testNewspaperJournal111() {
     $text = "{{cite journal|website=xyz}}";
     $template = $this->make_citation($text);
@@ -22,19 +18,19 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testTidyChapterTitleSeries4() {
-    $text = "{{cite book|series=X}}";
+    $text = "{{cite book|journal=X}}";
     $template = $this->make_citation($text);
-    $template->add_if_new('journal', 'XYZ');
+    $template->add_if_new('series', 'XYZ');
     $template->tidy_parameter('series');
-    $this->assertSame('X', $template->get('series'));
-    $this->assertNull($template->get('journal'));
+    $this->assertSame('XYZ', $template->get('series'));
+    $this->assertSame('X', $template->get('journal'));
    
-    $text = "{{cite book|series=X}}";
+    $text = "{{cite book|title=X}}";
     $template = $this->make_citation($text);
-    $template->add_if_new('title', 'XYZ');
+    $template->add_if_new('series', 'XYZ');
     $template->tidy_parameter('series');
-    $this->assertSame('X', $template->get('series'));
-    $this->assertNull($template->get('title'));
+    $this->assertSame('XYZ', $template->get('series'));
+    $this->assertSame('X', $template->get('title'));
   }
  
 }
