@@ -24,7 +24,7 @@ final class TemplateTest extends testBaseClass {
   public function testTidyWork2() {
     $text = "{{cite magazine|work=}}";
     $template = $this->make_citation($text);
-    $template->final_tidy();
+    $template->prepare();
     $this->assertSame( "{{cite magazine|magazine=}}", $template->parsed_text());  
   }
  
