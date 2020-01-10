@@ -21,16 +21,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('journal', $template->wikiname());  // Unchanged
   }
 
-  public function testMoreEtAl2() {
-    $text = "{{cite web|authors=Joe et al.}}";
-    $template = $this->make_citation($text);
-    $this->assertSame('Joe et al.', $template->get('authors'));
-    $template->handle_et_al();
-    $this->assertSame('Joe', $template->get('author'));
-    $this->assertNull($template->get('authors'));
-    $this->assertSame('etal', $template->get('displayauthors'));
-  }
-
   public function testTidyWork2() {
     $text = "{{cite magazine|work=}}";
     $template = $this->make_citation($text);
