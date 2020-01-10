@@ -1779,7 +1779,7 @@ final class Template {
       return array(NULL, 0);                         // @codeCoverageIgnore
     }
     if ($check_for_errors && $xml->ErrorList) {
-      if (isset($xml->ErrorList->PhraseNotFound)) {
+      if (isset($xml->ErrorList->PhraseNotFound)) {   // @codeCoverageIgnore
         report_warning("Phrase not found in PMID search with query $query: " . echoable(print_r($xml->ErrorList, TRUE)));  // @codeCoverageIgnore
       } else {
         report_inline('no results.');  // @codeCoverageIgnore
@@ -1788,10 +1788,6 @@ final class Template {
     }
 
     return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
-  }
-
-  public function expand_by_arxiv() {
-    expand_arxiv_templates(array($this));
   }
 
   public function expand_by_adsabs() {
