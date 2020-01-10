@@ -53,14 +53,5 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('X', $template->get('series'));
     $this->assertNull($template->get('title'));
   }
-  
-  public function testConversionOfURL2() {
-    $text = "{{cite web|url=http://worldcat.org/title/stuff/oclc/1234}}";
-    $template = $this->make_citation($text);
-    $this->assertTrue($template->get_identifiers_from_url());
-    $this->assertSame('1234', $template->get('oclc'));
-    $this->assertNull($template->get('url'));
-    $this->assertSame('cite book', $template->wikiname());           
-  }
  
 }
