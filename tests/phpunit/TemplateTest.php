@@ -2703,14 +2703,6 @@ ER -  }}';
     $this->assertSame('News.BBC.co.uk', $template->get('work'));
   }
  
-   public function testNewspaperJournal111() { // TODO THIS IS MESSED UP.  Need to change to cite news and such
-    $text = "{{cite journal|website=xyz}}";
-    $template = $this->make_citation($text);
-    $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
-    $this->assertNull($template->get('website'));
-    $this->assertSame('News.BBC.co.uk', $template->get('journal'));
-  }
- 
    public function testNewspaperJournal102() {
     $text = "{{cite journal|website=xyz}}";
     $template = $this->make_citation($text);
@@ -3116,14 +3108,22 @@ ER -  }}';
     $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('volume'));
-    $this->assertSame('', $prepared->get('issue')); // TODO why not null?
+    $this->assertNull($prepared->get('issue'));
   }
  
   public function testVolumeIssueDemixing14() {
     $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12XX', $prepared->get('volume'));
-    $this->assertSame('', $prepared->get('issue')); // TODO why not null?
+    $this->assertNull($prepared->get('issue'));
+  }
+ 
+  public function testNewspaperJournal111() { // TODO THIS IS MESSED UP.  Need to change to cite news and such
+    $text = "{{cite journal|website=xyz}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
+    $this->assertNull($template->get('website'));
+    $this->assertSame('News.BBC.co.uk', $template->get('journal'));
   }
  
   public function testMoreEtAl2() {
