@@ -883,9 +883,6 @@ final class Template {
         if ($this->blank(DOI_BROKEN_ALIASES)) {
           return $this->add($param_name, $value);
         }
-        if (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) { // Might have <!-- Not broken --> to block bot
-           return FALSE;
-        }
         $existing = strtotime($this->get('doi-broken-date'));
         $the_new  = strtotime($value);
         if (($existing === FALSE) || ($existing + 2592000 < $the_new) || (2592000 + $the_new < $existing)) { // A month difference
