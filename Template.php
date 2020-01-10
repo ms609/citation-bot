@@ -4601,6 +4601,7 @@ final class Template {
       unset($this->param[$pos]);
       $pos = $this->get_param_key($new_param);
     }
+        print_r($this->param);
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
@@ -4617,6 +4618,7 @@ final class Template {
         $this->tidy_parameter($new_param);
       }
     }
+        print_r($this->param);
   }
 
   public function get($name) {
