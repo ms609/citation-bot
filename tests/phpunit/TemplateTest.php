@@ -3092,7 +3092,7 @@ ER -  }}';
     $template->set('author1', 'Joe Jones Translated by John Smith');
     $template->tidy_parameter('author1');
     $this->assertSame('Joe Jones', $template->get('author1'));
-    $this->assertSame('John Smith', $template->get('others'));
+    $this->assertSame('Translated by John Smith', $template->get('others'));
   }
   
   public function testAuthorsAndAppend3() {
