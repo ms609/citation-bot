@@ -435,7 +435,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf', $expanded->get('url'));
   }
 
-  public testAddStuff() {
+  public function testAddStuff() {
     $text = "{{cite book|publisher=exist}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->add_if_new('publisher', 'A new publisher to replace it'));
