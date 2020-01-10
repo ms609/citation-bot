@@ -30,13 +30,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($template->get('authors'));
     $this->assertSame('etal', $template->get('displayauthors'));
   }
- 
-   public function testCiteTypeWarnings3() {
-    $text = "{{citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertSame('cite book', $template->wikiname());
-  }
 
   public function testTidyWork2() {
     $text = "{{cite magazine|work=}}";
@@ -60,14 +53,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('X', $template->get('series'));
     $this->assertNull($template->get('title'));
   }
- 
-  public function testAllZeroesTidy() {
-    $text = "{{cite web|issue=000000000}}";
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('issue');
-    $this->assertNull($template->get('issue'));
-  }
- 
+  
   public function testConversionOfURL2() {
     $text = "{{cite web|url=http://worldcat.org/title/stuff/oclc/1234}}";
     $template = $this->make_citation($text);
