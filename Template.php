@@ -4117,14 +4117,16 @@ final class Template {
             }
           }
           // Remove leading zeroes
-          if ($this->get('journal') != 'Insecta Mundi') {
+          if ($value && $this->get('journal') != 'Insecta Mundi') {
             $value = preg_replace('~^0+~', '', $value);
-            $this->set($param, $value);
+            if ($value === '') {
+              $this->forget($param); // Was all zeros
+            }
           }
           if ($value) {
             $this->set($param, $value);
           } else {
-            if(!$this->blank($param)) $this->forget($param);
+            if (!$this->blank($param)) $this->forget($param);
             return;
           }
           $this->volume_issue_demix($this->get($param), $param);
