@@ -20,20 +20,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('news.bbc.co.uk', $template->get('work'));
     $this->assertSame('journal', $template->wikiname());  // Unchanged
   }
-
-  public function testTidyChapterTitleSeries3() {
-    $text = "{{cite journal|title=XYZ}}";
-    $template = $this->make_citation($text);
-    $template->add_if_new('series', 'XYZ');
-    $this->assertSame('XYZ', $template->get('title'));
-    $this->assertNull($template->get('series'));
-   
-    $text = "{{cite journal|journal=XYZ}}";
-    $template = $this->make_citation($text);
-    $template->add_if_new('series', 'XYZ');
-    $this->assertSame('XYZ', $template->get('journal'));
-    $this->assertNull($template->get('series'));
-  }
   
   public function testTidyChapterTitleSeries4() {
     $text = "{{cite book|series=X}}";
