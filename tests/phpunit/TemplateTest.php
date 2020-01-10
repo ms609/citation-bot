@@ -2603,7 +2603,10 @@ ER -  }}';
   }
  
   public function testIncomplete() {
-    $text = "{{cite journal|url=http://perma-archives.org/pqd1234|journal=xxx|volume=xxx|title=xxx}}"; // Non-date website
+    $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx}}"; // Non-date website
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->profoundly_incomplete());
+    $text = "{{cite book|url=http://a_perfectly_acceptable_website/pqd1234|isbn=Xxxx|title=xxx}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->profoundly_incomplete());
   }
@@ -2616,6 +2619,13 @@ ER -  }}';
     $text = "{{cite journal|editor-last=Junk}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->add_if_new('editor1-last', 'Phil'));
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('editor1', 'Phil'));
+    $this->assertSame('Phil', $template->get('editor1'));
+    $text = "{{cite journal|editor-last=Junk}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('editor1', 'Phil'));
   }
 
   public function testAddFirst() {
@@ -2688,6 +2698,22 @@ ER -  }}';
     $this->assertNull($template->get('newspaper'));
   }
  
+  public function testNewspaperJournaXl() {
+    $text = "{{cite journal|work=exists}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('newspaper', 'news.bbc.co.uk'));
+    $this->assertNull($template->get('newspaper'));
+    $this->assertSame('exists', $template->get('work'));
+  }
+ 
+  public function testNewspaperJournaXk() {
+    $text = "{{cite journal|via=times}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'Times'));
+    $this->assertNull($template->get('via'));
+    $this->assertSame('Times', $template->get('newspaper'));
+  }
+
   public function testNewspaperJournal100() {
     $text = "{{cite journal|work=A work}}";
     $template = $this->make_citation($text);
