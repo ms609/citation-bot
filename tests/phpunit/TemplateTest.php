@@ -343,7 +343,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite web | chapter-url=http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
     $expanded = $this->prepare_citation($text);
     $this->assertSame('cite book', $expanded->wikiname());
-    $this->assertNull($expanded->get('isbn'));
+    $this->assertSame('', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
     $this->assertNull($expanded->get('publisher'));
     $this->assertNull($expanded->get('chapter-url'));
@@ -2699,10 +2699,10 @@ ER -  }}';
   }
  
   public function testIncomplete() {
-    $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx}}"; // Non-date website
+    $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
     $this->assertFalse($template->profoundly_incomplete());
-    $text = "{{cite book|url=http://a_perfectly_acceptable_website/pqd1234|isbn=Xxxx|title=xxx}}";
+    $text = "{{cite book|url=http://a_perfectly_acceptable_website/pqd1234|isbn=Xxxx|issue=hh|volume=rrfff|title=xxx}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->profoundly_incomplete());
   }
@@ -2807,7 +2807,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'Times'));
     $this->assertNull($template->get('via'));
-    $this->assertSame('Times', $template->get('newspaper'));
+    $this->assertSame('times', $template->get('newspaper'));
   }
 
   public function testNewspaperJournal100() {
