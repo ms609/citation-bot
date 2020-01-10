@@ -13,8 +13,10 @@ final class TemplateTest extends testBaseClass {
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
-    $this->assertSame('news.bbc.co.uk', $template->get('work'));
+    $this->assertSame('News.BBC.co.uk', $template->get('work'));
     $this->assertSame('journal', $template->wikiname());  // Unchanged
+    $template->final_tidy();
+    $this->assertSame('News.BBC.co.uk', $template->get('journal'));
   }
   
 
