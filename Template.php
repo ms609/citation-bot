@@ -3313,18 +3313,18 @@ final class Template {
               if ($pmatch[2]) {
                 if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $this->get($param), $match)) {
                   $this->add_if_new('authorlink' . $pmatch[2], ucfirst($match[2] ? $match[2] : $match[3]));
-                  $this->set($param, $match[3]);
+                  $this->set($param, trim($match[3]));
                   report_modification("Dissecting authorlink");
                 }
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
                 if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
-                  $others = "{$match[1]} {$match[5]}";
+                  $others = trim("$match[1] $match[5]");
                   if ($this->has('others')) {
                     $this->append_to('others', '; ' . $others);
                   } else {
                     $this->set('others', $others);
                   }
-                  $this->set($param, preg_replace($translator_regexp, "", $this->get($param)));
+                  $this->set($param, trim(preg_replace($translator_regexp, "", $this->get($param))));
                 }
               }
             }
