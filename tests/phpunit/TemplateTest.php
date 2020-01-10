@@ -21,20 +21,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('newspaper', $template->wikiname());  
   }
 
-  public function testVolumeIssueDemixing5() {
-    $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('12', $prepared->get('volume'));
-    $this->assertNull($prepared->get('issue'));
-  }
- 
-  public function testVolumeIssueDemixing14() {
-    $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=XYZ}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('12XX', $prepared->get('volume'));
-    $this->assertNull($prepared->get('issue'));
-  }
- 
   public function testMoreEtAl2() {
     $text = "{{cite web|authors=et al.}}";
     $template = $this->make_citation($text);
