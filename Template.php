@@ -592,12 +592,16 @@ final class Template {
             }
           }
           $this->forget('class');
-          if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal'); 
+          if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
+          echo "\n MADE IT\n"
+          echo (boolean) in_array(strtolower($value), WEB_NEWSPAPERS) . "\n";
+          echo "$param_name\n";
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
              if ($this->has('publisher') && str_equivalent($this->get('publisher'), $value)) return FALSE;
              if($this->blank('work')) {
                $this->add('work', $value);
                $this->quietly_forget('website');
+               echo "inside\n";
                return TRUE;
              }
             return FALSE;
