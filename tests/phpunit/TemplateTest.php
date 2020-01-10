@@ -441,7 +441,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertFalse($template->add_if_new('publisher', 'A new publisher to replace it'));
     
     $this->assertTrue($template->add_if_new('type', 'A description of this'));
-    $this->assertSame('A description of this', $expanded->get('type'));
+    $this->assertSame('A description of this', $template->get('type'));
    
     $this->assertTrue($template->add_if_new('id', 'A description of this thing'));
     $this->assertFalse($template->add_if_new('id', 'Another description of this'));
@@ -451,7 +451,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite book|url=ttps://junk}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertSame('https://junk', $expanded->get('url'));
+    $this->assertSame('https://junk', $template->get('url'));
 
     $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234}}";
     $template = $this->make_citation($text);
