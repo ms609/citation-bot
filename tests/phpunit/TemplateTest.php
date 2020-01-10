@@ -62,10 +62,10 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testAllZeroesTidy() {
-    $text = "{{cite web|pages=000000000}}";
+    $text = "{{cite web|issue=000000000}}";
     $template = $this->make_citation($text);
-    $template->tidy_parameter('pages');
-    $this->assertNull($template->get('pages'));
+    $template->tidy_parameter('issue');
+    $this->assertNull($template->get('issue'));
   }
  
   public function testConversionOfURL2() {
