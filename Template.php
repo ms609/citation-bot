@@ -593,7 +593,7 @@ final class Template {
           }
           $this->forget('class');
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
-          echo "\n MADE IT\n"
+          echo "\n MADE IT\n";
           echo (boolean) in_array(strtolower($value), WEB_NEWSPAPERS) . "\n";
           echo "$param_name\n";
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
