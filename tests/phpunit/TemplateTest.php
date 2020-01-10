@@ -3149,7 +3149,7 @@ ER -  }}';
     $text = "{{cite magazine|work=}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
-    return: // TODO
+    return; // TODO
     $this->assertSame( "{{cite magazine|magazine=}}", $template->parsed_text());  
   }
  
