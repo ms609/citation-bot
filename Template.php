@@ -4601,7 +4601,6 @@ final class Template {
       unset($this->param[$pos]);
       $pos = $this->get_param_key($new_param);
     }
-        print_r($this->param);
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
@@ -4618,18 +4617,15 @@ final class Template {
         $this->tidy_parameter($new_param);
       }
     }
-        print_r($this->param);
   }
 
   public function get($name) {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
-    print_r($this->param);
     if ($this->param) {
       foreach ($this->param as $parameter_i) {
         if ($parameter_i->param == $name) {
-          echo "\n Found $name\n";
           if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
           return $parameter_i->val;
         }
