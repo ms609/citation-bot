@@ -3127,12 +3127,11 @@ ER -  }}';
   }
  
   public function testMoreEtAl2() {
-    $text = "{{cite web|authors=et al.}}";
+    $text = "{{cite web|authors=Joe et al.}}";
     $template = $this->make_citation($text);
-    $this->assertSame('et al.', $template->get('authors'));
+    $this->assertSame('Joe et al.', $template->get('authors'));
     $template->handle_et_al();
-    $this->assertNull($template->get('author'));
-    return; // TODO
+    $this->assertSame('Joe', $template->get('author'));
     $this->assertNull($template->get('authors'));
     $this->assertSame('etal', $template->get('displayauthors'));
   }
