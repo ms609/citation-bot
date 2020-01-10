@@ -3141,7 +3141,6 @@ ER -  }}';
     $text = "{{citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
-    return; // TODO
     $this->assertSame('cite book', $template->wikiname());
   }
 
