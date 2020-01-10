@@ -4128,6 +4128,10 @@ final class Template {
             return;
           }
           $this->volume_issue_demix($this->get($param), $param);
+          if ($this->blank($param)) {
+             $this->forget($param);
+             return;
+          }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
