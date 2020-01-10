@@ -602,7 +602,7 @@ final class Template {
                       echo "\n MADE IT THREE\n";
              if($this->blank('work')) {
                          echo "\n MADE IT FOUR \n";
-               $this->add('work', $value);
+               $this->set('work', $value);
                $this->quietly_forget('website');
               echo "\n MADE IT SIX \n";
                return TRUE;
