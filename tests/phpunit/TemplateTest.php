@@ -3183,7 +3183,6 @@ ER -  }}';
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('1234', $template->get('oclc'));
     $this->assertNull($template->get('url'));
-    return; // TODO
     $this->assertSame('cite book', $template->wikiname());           
   }
  
