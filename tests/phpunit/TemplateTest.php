@@ -3118,21 +3118,23 @@ ER -  }}';
     $this->assertNull($prepared->get('issue'));
   }
  
-  public function testNewspaperJournal111() { // TODO THIS IS MESSED UP.  Need to change to cite news and such
+   public function testNewspaperJournal111() {
     $text = "{{cite journal|website=xyz}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
-    $this->assertSame('News.BBC.co.uk', $template->get('journal'));
+    $this->assertSame('News.BBC.co.uk', $template->get('work'));
+    $this->assertNull($template->get('journal'));
+    $this->assertSame('cite journal', $template->wikiname());  // Unchanged
+    // This could all change in final_tidy()
   }
  
   public function testMoreEtAl2() {
-    $text = "{{cite web|authors=et al.}}";
+    $text = "{{cite web|authors=Joe et al.}}";
     $template = $this->make_citation($text);
-    $this->assertSame('et al.', $template->get('authors'));
+    $this->assertSame('Joe et al.', $template->get('authors'));
     $template->handle_et_al();
-    $this->assertNull($template->get('author'));
-    return; // TODO
+    $this->assertSame('Joe', $template->get('author'));
     $this->assertNull($template->get('authors'));
     $this->assertSame('etal', $template->get('displayauthors'));
   }
@@ -3147,27 +3149,38 @@ ER -  }}';
   public function testTidyWork2() {
     $text = "{{cite magazine|work=}}";
     $template = $this->make_citation($text);
-    $template->final_tidy();
-    return; // TODO
+    $template->prepare();
     $this->assertSame( "{{cite magazine|magazine=}}", $template->parsed_text());  
   }
  
   public function testTidyChapterTitleSeries3() {
-    $text = "{{cite journal|series=XYZ|title=XYZ}}";
+    $text = "{{cite journal|title=XYZ}}";
     $template = $this->make_citation($text);
-    $template->final_tidy();
+    $template->add_if_new('series', 'XYZ');
     $this->assertSame('XYZ', $template->get('title'));
-    return; // TODO
+    $this->assertNull($template->get('series'));
+   
+    $text = "{{cite journal|journal=XYZ}}";
+    $template = $this->make_citation($text);
+    $template->add_if_new('series', 'XYZ');
+    $this->assertSame('XYZ', $template->get('journal'));
     $this->assertNull($template->get('series'));
   }
   
   public function testTidyChapterTitleSeries4() {
-    $text = "{{cite book|series=X|title=X}}";
+    $text = "{{cite book|journal=X}}";
     $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertSame('X', $template->get('series'));
-    return;// TODO
-    $this->assertNull($template->get('title'));
+    $template->add_if_new('series', 'XYZ');
+    $template->tidy_parameter('series');
+    $this->assertSame('XYZ', $template->get('series'));
+    $this->assertSame('X', $template->get('journal'));
+   
+    $text = "{{cite book|title=X}}";
+    $template = $this->make_citation($text);
+    $template->add_if_new('series', 'XYZ');
+    $template->tidy_parameter('series');
+    $this->assertSame('XYZ', $template->get('series'));
+    $this->assertSame('X', $template->get('title'));
   }
  
   public function testAllZeroesTidy() {

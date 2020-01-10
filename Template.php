@@ -596,7 +596,7 @@ final class Template {
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
              if ($this->has('publisher') && str_equivalent($this->get('publisher'), $value)) return FALSE;
              if($this->blank('work')) {
-               $this->add('work', $value);
+               $this->set('work', $value);
                $this->quietly_forget('website');
                return TRUE;
              }
