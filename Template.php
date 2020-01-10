@@ -597,13 +597,17 @@ final class Template {
           echo (boolean) in_array(strtolower($value), WEB_NEWSPAPERS) . "\n";
           echo "$param_name\n";
           if ($param_name === 'newspaper' && in_array(strtolower($value), WEB_NEWSPAPERS)) {
+                      echo "\n MADE IT TWO \n";
              if ($this->has('publisher') && str_equivalent($this->get('publisher'), $value)) return FALSE;
+                      echo "\n MADE IT THREE\n";
              if($this->blank('work')) {
+                         echo "\n MADE IT FOUR \n";
                $this->add('work', $value);
                $this->quietly_forget('website');
-               echo "inside\n";
+              echo "\n MADE IT SIX \n";
                return TRUE;
              }
+                      echo "\n MADE IT FIVE \n";
             return FALSE;
           } 
           if ($param_name === 'newspaper' && $this->has('via')) {
