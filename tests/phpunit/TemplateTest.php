@@ -347,7 +347,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('asin'));
     $this->assertNull($expanded->get('publisher'));
     $this->assertNull($expanded->get('chapter-url'));
-    $this->assertSame('{{ASIN|0226845494|eu}}', $expanded->get('id'));
+    $this->assertSame('{{ASIN|0226845494|country=eu}}', $expanded->get('id'));
   }
 
   public function testRemoveASIN() {
@@ -456,46 +456,46 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertNull($expanded->get('url'));
+    $this->assertNull($template->get('url'));
 
     $text = "{{cite book|url=https://ieeexplore.ieee.org/arnumber=1}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertSame('https://ieeexplore.ieee.org/document/1', $expanded->get('url'));
+    $this->assertSame('https://ieeexplore.ieee.org/document/1', $template->get('url'));
    
     $text = "{{cite book|url=https://ieeexplore.ieee.org/document/01}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertSame('https://ieeexplore.ieee.org/document/1', $expanded->get('url'));
+    $this->assertSame('https://ieeexplore.ieee.org/document/1', $template->get('url'));
 
     $text = "{{cite book|url=https://jstor.org/stuffy-Stuff/?refreqid=124}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertSame('https://jstor.org/stuffy-Stuff/', $expanded->get('url'));
+    $this->assertSame('https://jstor.org/stuffy-Stuff/', $template->get('url'));
 
     $text = "{{cite book|url=https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertSame('10.7249/j.ctt4cgd90.10', $expanded->get('jstor'));
-    $this->assertNull($expanded->get('url'));
+    $this->assertSame('10.7249/j.ctt4cgd90.10', $template->get('jstor'));
+    $this->assertNull($template->get('url'));
 
     $text = "{{cite book|url=https://jstor.org/stable/pdfplus/12345.pdf|jstor=12345}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertNull($expanded->get('url'));
-    $this->assertSame('12345', $expanded->get('jstor'));
+    $this->assertNull($template->get('url'));
+    $this->assertSame('12345', $template->get('jstor'));
    
     $text = "{{cite book|url=https://jstor.org/discover/12345.pdf|jstor=12345}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertNull($expanded->get('url'));
-    $this->assertSame('12345', $expanded->get('jstor'));
+    $this->assertNull($template->get('url'));
+    $this->assertSame('12345', $template->get('jstor'));
 
     $text = "{{cite book|url=https://archive.org/detail/jstor-12345}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertNull($expanded->get('url'));
-    $this->assertSame('12345', $expanded->get('jstor'));
+    $this->assertNull($template->get('url'));
+    $this->assertSame('12345', $template->get('jstor'));
   }
  
   public function testDoiExpansionBook() {
