@@ -3151,11 +3151,16 @@ ER -  }}';
   }
  
   public function testTidyChapterTitleSeries3() {
-    $text = "{{cite journal|series=XYZ|title=XYZ}}";
+    $text = "{{cite journal|title=XYZ}}";
     $template = $this->make_citation($text);
-    $template->final_tidy();
+    $template->add_if_new('series', 'XYZ');
     $this->assertSame('XYZ', $template->get('title'));
-    return; // TODO
+    $this->assertNull($template->get('series'));
+   
+    $text = "{{cite journal|journal=XYZ}}";
+    $template = $this->make_citation($text);
+    $template->add_if_new('series', 'XYZ');
+    $this->assertSame('XYZ', $template->get('journal'));
     $this->assertNull($template->get('series'));
   }
   
