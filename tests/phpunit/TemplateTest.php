@@ -3126,9 +3126,7 @@ ER -  }}';
     $this->assertSame('News.BBC.co.uk', $template->get('work'));
     $this->assertNull($template->get('journal'));
     $this->assertSame('cite journal', $template->wikiname());  // Unchanged
-    $template->final_tidy();
-    $this->assertSame('News.BBC.co.uk', $template->get('journal'));
-    $this->assertNull($template->get('work'));
+    // This could all change in final_tidy()
   }
  
   public function testMoreEtAl2() {
