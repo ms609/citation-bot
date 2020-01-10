@@ -4289,7 +4289,11 @@ final class Template {
     if ($this->wikiname() === 'citation') { // Special CS2 code goes here
       if ($this->has('title') && $this->has('chapter') && !$this->blank(WORK_ALIASES)) { // Invalid combination
           report_info('CS2 template has incompatible parameters.  Changing to CS1 cite book. Please verify.');
-          $this->change_name_to('cite book');
+          if ($this->name = 'citation') { // Need special code
+            $this->name = 'cite book';
+          } else {
+            $this->name = 'Cite book';
+          }
       }
     }
     if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
