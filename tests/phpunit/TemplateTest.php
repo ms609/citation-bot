@@ -22,16 +22,30 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testTidyChapterTitleSeries3() {
-    $text = "{{cite journal|series=XYZ|title=XYZ}}";
+    $text = "{{cite journal|title=XYZ}}";
     $template = $this->make_citation($text);
-    $template->tidy_parameter('series');
+    $template->add_if_new('series', 'XYZ');
     $this->assertSame('XYZ', $template->get('title'));
+    $this->assertNull($template->get('series'));
+   
+    $text = "{{cite journal|journal=XYZ}}";
+    $template = $this->make_citation($text);
+    $template->add_if_new('series', 'XYZ');
+    $this->assertSame('XYZ', $template->get('journal'));
     $this->assertNull($template->get('series'));
   }
   
   public function testTidyChapterTitleSeries4() {
-    $text = "{{cite book|series=X|title=X}}";
+    $text = "{{cite book|series=X}}";
     $template = $this->make_citation($text);
+    $template->add_if_new('journal', 'XYZ');
+    $template->tidy_parameter('series');
+    $this->assertSame('X', $template->get('series'));
+    $this->assertNull($template->get('journal'));
+   
+    $text = "{{cite book|series=X}}";
+    $template = $this->make_citation($text);
+    $template->add_if_new('title', 'XYZ');
     $template->tidy_parameter('series');
     $this->assertSame('X', $template->get('series'));
     $this->assertNull($template->get('title'));
