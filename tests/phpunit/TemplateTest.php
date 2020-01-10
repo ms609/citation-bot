@@ -17,16 +17,16 @@ final class TemplateTest extends testBaseClass {
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
-    $this->assertSame('news.bbc.co.uk', $template->get('newspaper'));
-    $this->assertSame('newspaper', $template->wikiname());  
+    $this->assertSame('news.bbc.co.uk', $template->get('work'));
+    $this->assertSame('journal', $template->wikiname());  // Unchanged
   }
 
   public function testMoreEtAl2() {
-    $text = "{{cite web|authors=et al.}}";
+    $text = "{{cite web|authors=Joe et al.}}";
     $template = $this->make_citation($text);
-    $this->assertSame('et al.', $template->get('authors'));
+    $this->assertSame('Joe et al.', $template->get('authors'));
     $template->handle_et_al();
-    $this->assertNull($template->get('author'));
+    $this->assertSame('Joe', $template->get('author'));
     $this->assertNull($template->get('authors'));
     $this->assertSame('etal', $template->get('displayauthors'));
   }
