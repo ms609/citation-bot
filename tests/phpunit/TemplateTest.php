@@ -18,7 +18,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
     $this->assertNull($template->get('website'));
     $this->assertSame('news.bbc.co.uk', $template->get('newspaper'));
-    $this->assertSame('newspaper', $template->wikiname();  
+    $this->assertSame('newspaper', $template->wikiname());  
   }
 
   public function testVolumeIssueDemixing5() {
