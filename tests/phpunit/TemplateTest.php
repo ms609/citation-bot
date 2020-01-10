@@ -3125,7 +3125,7 @@ ER -  }}';
     $this->assertNull($template->get('website'));
     $this->assertSame('News.BBC.co.uk', $template->get('work'));
     $this->assertNull($template->get('journal'));
-    $this->assertSame('journal', $template->wikiname());  // Unchanged
+    $this->assertSame('cite journal', $template->wikiname());  // Unchanged
     $template->final_tidy();
     $this->assertSame('News.BBC.co.uk', $template->get('journal'));
     $this->assertNull($template->get('work'));
