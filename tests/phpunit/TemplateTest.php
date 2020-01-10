@@ -2949,48 +2949,12 @@ ER -  }}';
     $this->assertSame('Joes', $template->get('author3'));
     $this->assertSame('Joe', $template->get('author3-link'));
   }
- 
-  public function testAuthor2() {
-    $text = "{{cite web|title=X}}";
-    $template = $this->make_citation($text);
-    $template->add_if_new('author3', 'Joe Jones Translated by John Smith');
-    $template->tidy_parameter('author3');
-    $this->assertSame('Joe Jones', $template->get('author3'));
-    $this->assertSame('John Smith', $template->get('others'));
-  }
-  
-  public function testAuthorsAndAppend3() {
-    $text = "{{cite web|title=X}}";
-    $template = $this->make_citation($text);
-    $template->set('others', 'Kim Bill'); // Must use set
-    $template->add_if_new('author3', 'Joe Jones Translated by John Smith');
-    $template->tidy_parameter('author3');
-    $this->assertSame('Joe Jones', $template->get('author3'));
-    $this->assertSame('Kim Bill; John Smith', $template->get('others'));
-  }
-
-  public function testAuthorsAndAppend4() {
-    $text = "{{cite web|title=X}}";
-    $template = $this->make_citation($text);
-    $template->set('others', 'CITATION_BOT_PLACEHOLDER_COMMENT');
-    $template->add_if_new('author3', 'Joe Jones Translated by John Smith');
-    $this->assertSame('Joe Jones Translated by John Smith', $template->get('author3'));
-    $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('others'));
-  }
 
   public function testMoreEtAl() {
     $text = "{{cite web|authors=John, et al.}}";
     $template = $this->make_citation($text);
     $template->handle_et_al();
     $this->assertSame('John', $template->get('author'));
-    $this->assertSame('etal', $template->get('displayauthors'));
-   
-    $text = "{{cite web|authors=et al.}}";
-    $template = $this->make_citation($text);
-    $this->assertSame('et al.', $template->get('authors'));
-    $template->handle_et_al();
-    $this->assertNull($template->get('author'));
-    $this->assertNull($template->get('authors'));
     $this->assertSame('etal', $template->get('displayauthors'));
   }
  
@@ -3016,13 +2980,6 @@ ER -  }}';
     $this->assertNull($template->get('bibcode'));
   }
 
-  public function testCiteTypeWarnings3() {
-    $text = "{{citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertSame('cite book', $template->wikiname());
-  }
-
   public function testTidyPublisher() {
     $text = "{{citation|publisher='''''''''X'''''''''}}";
     $template = $this->make_citation($text);
@@ -3045,11 +3002,6 @@ ER -  }}';
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame( "{{cite journal|journal=}}", $template->parsed_text());
-
-    $text = "{{cite magazine|work=}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertSame( "{{cite magazine|magazine=}}", $template->parsed_text());  
   }
                       
   public function testTidyChapterTitleSeries() {
@@ -3066,32 +3018,11 @@ ER -  }}';
     $this->assertNull($template->get('chapter'));
   }
  
-  public function testTidyChapterTitleSeries3() {
-    $text = "{{cite journal|series=XYZ|title=XYZ}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertNull($template->get('series'));
-  }
- 
-  public function testTidyChapterTitleSeries4() {
-    $text = "{{cite book|series=X|title=X}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertNull($template->get('title'));
-  }
-
   public function testETCTidy() {
     $text = "{{cite web|pages=342 etc}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('pages');
     $this->assertSame('342 etc.', $template->get('pages'));
-  }
-
-  public function testAllZeroesTidy() {
-    $text = "{{cite web|pages=000000000}}";
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('pages');
-    $this->assertNull($template->get('pages'));
   }
                       
   public function testZOOKEYStidy() {
@@ -3131,15 +3062,6 @@ ER -  }}';
     $this->assertSame('0012343', $template->get('mr'));
   }
  
-  public function testConversionOfURL2() {
-    $text = "{{cite web|url=http://worldcat.org/title/stuff/oclc/1234}}";
-    $template = $this->make_citation($text);
-    $this->assertTrue($template->get_identifiers_from_url());
-    $this->assertSame('1234', $template->get('oclc'));
-    $this->assertNull($template->get('url'));
-    $this->assertSame('cite book', $template->wikiname());           
-  }
- 
   public function testConversionOfURL3() {
     $text = "{{cite web|url=http://worldcat.org/issn/1234-1234}}";
     $template = $this->make_citation($text);
@@ -3163,12 +3085,98 @@ ER -  }}';
     $this->assertSame('1234W', $template->get('ol'));
     $this->assertNull($template->get('url'));
   }
+  
+  public function testAuthor2() {
+    $text = "{{cite web|title=X}}";
+    $template = $this->make_citation($text);
+    $template->set('author1', 'Joe Jones Translated by John Smith');
+    $template->tidy_parameter('author1');
+    $this->assertSame('Joe Jones', $template->get('author1'));
+    $this->assertSame('John Smith', $template->get('others'));
+  }
+  
+  public function testAuthorsAndAppend3() {
+    $text = "{{cite web|title=X}}";
+    $template = $this->make_citation($text);
+    $template->set('others', 'Kim Bill'); // Must use set
+    $template->set('author1', 'Joe Jones Translated by John Smith');
+    $template->tidy_parameter('author1');
+    $this->assertSame('Joe Jones', $template->get('author1'));
+    $this->assertSame('Kim Bill; John Smith', $template->get('others'));
+  }
+
+  public function testAuthorsAndAppend4() {
+    $text = "{{cite web|title=X}}";
+    $template = $this->make_citation($text);
+    $template->set('others', 'CITATION_BOT_PLACEHOLDER_COMMENT');
+    $template->set('author1', 'Joe Jones Translated by John Smith');
+    $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('others'));
+    $this->assertSame('Joe Jones Translated by John Smith', $template->get('author1'));
+  }
+  
+   public function testMoreEtAl2() {
+    $text = "{{cite web|authors=et al.}}";
+    $template = $this->make_citation($text);
+    $this->assertSame('et al.', $template->get('authors'));
+    $template->handle_et_al();
+    $this->assertNull($template->get('author'));
+    $this->assertNull($template->get('authors'));
+    $this->assertSame('etal', $template->get('displayauthors'));
+  }
+ 
+   public function testCiteTypeWarnings3() {
+    $text = "{{citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('cite book', $template->wikiname());
+  }
+ 
+  public function testTidyWork2() {
+    $text = "{{cite magazine|work=}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame( "{{cite magazine|magazine=}}", $template->parsed_text());  
+  }
+ 
+  public function testTidyChapterTitleSeries3() {
+    $text = "{{cite journal|series=XYZ|title=XYZ}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('XYZ', $template->get('title'));
+    $this->assertNull($template->get('series'));
+  }
+  
+  public function testTidyChapterTitleSeries4() {
+    $text = "{{cite book|series=X|title=X}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('X', $template->get('series'));
+    $this->assertNull($template->get('title'));
+  }
+
+  public function testAllZeroesTidy() {
+    $text = "{{cite web|pages=000000000}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('pages');
+    $this->assertNull($template->get('pages'));
+  }
+ 
+   public function testConversionOfURL2() {
+    $text = "{{cite web|url=http://worldcat.org/title/stuff/oclc/1234}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertSame('1234', $template->get('oclc'));
+    $this->assertNull($template->get('url'));
+    $this->assertSame('cite book', $template->wikiname());           
+  }
  
   public function testConversionOfURL6() {
-    $text = "{{cite web|url=http://search.proquest.com/docview/1234}}";
+    $text = "{{cite web|url=http://search.proquest.com/docview/12341234}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertNull($template->get('url'));
-    $this->assertSame('{{ProQuest|1234}}', $template->get('id'));
+    $this->assertSame('{{ProQuest|12341234}}', $template->get('id'));
   }
+
+ 
 }
