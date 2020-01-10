@@ -21,13 +21,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('journal', $template->wikiname());  // Unchanged
   }
 
-  public function testTidyWork2() {
-    $text = "{{cite magazine|work=}}";
-    $template = $this->make_citation($text);
-    $template->prepare();
-    $this->assertSame( "{{cite magazine|magazine=}}", $template->parsed_text());  
-  }
- 
   public function testTidyChapterTitleSeries3() {
     $text = "{{cite journal|series=XYZ|title=XYZ}}";
     $template = $this->make_citation($text);
