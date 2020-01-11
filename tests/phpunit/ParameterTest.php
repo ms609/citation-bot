@@ -98,7 +98,7 @@ final class ParameterTest extends testBaseClass {
     $template = $this->make_citation($text);
     $this->assertSame($template->parsed_text(), '{{cite web|cnn}}');
     $template->set('cnn', 'joker');
-    $this->assertSame($template->parsed_text(), '{{cite web|cnn=joker}}'); // Adds an equals sign for us
+    $this->assertSame($template->parsed_text(), '{{cite web|cnn|cnn = joker}}'); // Adds an equals sign for us
   }
 
   // This test may not work, depending on your test environment.
