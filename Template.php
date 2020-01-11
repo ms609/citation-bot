@@ -1266,6 +1266,10 @@ final class Template {
     }
   
     // JSTOR
+
+    if (stripos($url, 'plants.jstor.org') !== FALSE) {
+      return FALSE; # Plants database, not journal
+    }
     if (stripos($url, "jstor.org") !== FALSE) {
       $sici_pos = stripos($url, "sici");
       if ($sici_pos) {  //  Outdated url style
@@ -1290,9 +1294,7 @@ final class Template {
         }
         curl_close($ch);
       }
-      if (stripos($url, 'plants.jstor.org')) {
-        return FALSE; # Plants database, not journal
-      } elseif (preg_match("~^(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match) ||
+      if (preg_match("~^(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org/') + 10), $match) ||
                 preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget($url_type);
