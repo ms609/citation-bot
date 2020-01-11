@@ -9,7 +9,8 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class ParameterTest extends testBaseClass {
 
 /*
- * FIXME: these tests have too many assertions. Probably will require some refactoring of Parameter::parse_text().
+ * TODO: most of these tests have the assert arguments backwards
+ * TODO: white list test is for parameters file in constants directory
  */
   public function testValueWithPipeAndTrailingNewline() {
     $text = "last1 = [[:en:Bigwig# # # CITATION_BOT_PLACEHOLDER_PIPE # # #SomeoneFamous]]\n";
@@ -101,8 +102,6 @@ final class ParameterTest extends testBaseClass {
     $this->assertSame($template->parsed_text(), '{{cite web|cnn|cnn = joker}}'); // Adds an equals sign for us
   }
 
-  // This test may not work, depending on your test environment.
-  // Works on Tool Labs with PHP 5.5.9-1ubuntu4.13 (cli), PHPUnit 3.7.28
   public function testBlankValueNonBreakingSpaces() {
     $text = " first7 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
