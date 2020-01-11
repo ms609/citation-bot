@@ -382,7 +382,7 @@ final class TemplateTest extends testBaseClass {
     return; // TODO
     $text = "{{Cite book}}";
     $expanded = $this->make_citation($text);
-    $this->assertTrue($expanded->add_if_new('asin', '9780781765626'));
+    $this->assertTrue($expanded->add_if_new('asin', '0781765625'));
     $this->assertSame('9780781765626', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
   }
