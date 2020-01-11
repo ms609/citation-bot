@@ -382,7 +382,7 @@ final class TemplateTest extends testBaseClass {
     return; // TODO
     $text = "{{Cite book}}";
     $expanded = $this->make_citation($text);
-    $this->assertTrue($expanded->add_if_new('asin', '9780781765626'));
+    $this->assertTrue($expanded->add_if_new('asin', '0781765625'));
     $this->assertSame('9780781765626', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
   }
@@ -2702,11 +2702,18 @@ ER -  }}';
   public function testIncomplete() {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
-    return ; // TODO
-    $this->assertFalse($template->profoundly_incomplete());
+    $this->assertTrue($template->profoundly_incomplete());
+    $this->assertTrue($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
     $text = "{{cite book|url=http://a_perfectly_acceptable_website/pqd1234|isbn=Xxxx|issue=hh|volume=rrfff|title=xxx}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->profoundly_incomplete());
+    $this->assertTrue($template->profoundly_incomplete('http://a_perfectly_acceptable_website/pqd1234'));
+    $this->assertTrue($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
+    $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x|author1=Yes}}"; // Non-date website
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->profoundly_incomplete());
+    $this->assertFalse($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
+
   }
  
   public function testAddEditor() {

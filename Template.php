@@ -281,7 +281,7 @@ final class Template {
       }
     }
   
-    if (strtolower($this->wikiname()) =='cite book' || (strtolower($this->wikiname()) =='citation' && $this->has('isbn'))) { // Assume book
+    if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
               $this->has("isbn")
@@ -4508,7 +4508,7 @@ final class Template {
     if (($da = $this->get('display-authors')) === NULL) {
       $da = $this->get('displayauthors');
     }
-    return ctype_digit($da) ? $da : FALSE;
+    return ctype_digit($da) ? $da : 0;
   }
 
   protected function number_of_authors() {
