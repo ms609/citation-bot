@@ -57,8 +57,6 @@ final class Parameter {
 
 /*
  * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
- * FIXME: might be better named "join_parsed_text" or similar to make it clear what
- * this function does to the parsed text.
  */
   public function parsed_text() {
     if ($this->param && empty($this->eq)) {
