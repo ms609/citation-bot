@@ -87,10 +87,18 @@ final class ParameterTest extends testBaseClass {
     $parameter = $this->parameter_parse_text_helper($text);
 
     $this->assertSame($parameter->pre, '');
-    $this->assertSame($parameter->param, NULL);
-    $this->assertSame($parameter->eq, NULL);
+    $this->assertSame($parameter->param, '');
+    $this->assertSame($parameter->eq, '');
     $this->assertSame($parameter->val, 'first6');
     $this->assertSame($parameter->post, " \n");
+  }
+  
+  public function testNoEqualsAddStuff() {
+    $text = "{{cite web|cnn}}";
+    $template = $this->make_citation($text);
+    $this->assertSame($template->parsed_text(), '{{cite web|cnn}}');
+    $template->set('cnn', 'joker');
+    $this->assertSame($template->parsed_text(), '{{cite web|cnn=joker}}'); // Adds an equals sign for us
   }
 
   // This test may not work, depending on your test environment.
