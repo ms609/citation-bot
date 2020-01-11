@@ -883,9 +883,6 @@ final class Template {
         if ($this->blank(DOI_BROKEN_ALIASES)) {
           return $this->add($param_name, $value);
         }
-        if (mb_stripos($this->get('doi-broken-date'), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) { // Might have <!-- Not broken --> to block bot
-           return FALSE;
-        }
         $existing = strtotime($this->get('doi-broken-date'));
         $the_new  = strtotime($value);
         if (($existing === FALSE) || ($existing + 2592000 < $the_new) || (2592000 + $the_new < $existing)) { // A month difference
@@ -1782,7 +1779,7 @@ final class Template {
       return array(NULL, 0);                         // @codeCoverageIgnore
     }
     if ($check_for_errors && $xml->ErrorList) {
-      if (isset($xml->ErrorList->PhraseNotFound)) {
+      if (isset($xml->ErrorList->PhraseNotFound)) {   // @codeCoverageIgnore
         report_warning("Phrase not found in PMID search with query $query: " . echoable(print_r($xml->ErrorList, TRUE)));  // @codeCoverageIgnore
       } else {
         report_inline('no results.');  // @codeCoverageIgnore
@@ -1791,10 +1788,6 @@ final class Template {
     }
 
     return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
-  }
-
-  public function expand_by_arxiv() {
-    expand_arxiv_templates(array($this));
   }
 
   public function expand_by_adsabs() {
