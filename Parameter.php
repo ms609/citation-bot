@@ -53,6 +53,13 @@ final class Parameter {
       $this->param = str_replace($match[0], '', $this->param);
     }
 
+    if (((string) $this->pre !== $this->pre) ||
+        ((string) $this->pre !== $this->param) ||
+        ((string) $this->pre !== $this->eq) ||
+        ((string) $this->pre !== $this->val) ||
+        ((string) $this->pre !== $this->post)) {
+      echo "\n FAILED \n";
+    }
   }
 
 /*
