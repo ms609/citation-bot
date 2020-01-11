@@ -304,7 +304,7 @@ const PARAMETER_LIST = array(
 'pubdate', 'publication-date', 'publication-number', 'publication-place', 
 'publicationdate', 'publicationplace', 'publisher', 'publisherid', 'quotation', 
 'quote', 'ref', 'registration', 'rfc', 'scale', 'script-article', 'script-chapter',
-'script-contribution', 'script-entry', 'script-journal', 'script-magazine', 'script-newspaper',
+'script-contribution', 'script-entry', 'script-journal', 'script-magazine', 'script-map', 'script-newspaper',
 'script-periodical', 'script-section', 'script-title', 'script-website', 'script-work',
 'season', 'section', 'section-format', 'section-url', 'section-url-access', 
 'sections', 'sectionurl', 'separator', 'series', 'series-link', 'series-no', 
