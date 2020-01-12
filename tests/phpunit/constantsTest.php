@@ -125,7 +125,6 @@ final class constantsTest extends testBaseClass {
   }
   
  public function testWhiteList() {
-      return; // TODO
       $we_failed = FALSE;
       
       $our_original_whitelist = PARAMETER_LIST;
@@ -163,7 +162,7 @@ final class constantsTest extends testBaseClass {
       if (count($our_extra) !== 0) {
          echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
          print_r($our_extra);
-         $we_failed = TRUE;
+         // TODO $we_failed = TRUE;
       }
       if (count($our_missing) !== 0) {
          echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
