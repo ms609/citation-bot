@@ -466,6 +466,7 @@ function expand_by_zotero(&$template, $url = NULL) {
       $i++;
   }
   
+  // see https://www.mediawiki.org/wiki/Citoid/itemTypes
   if (isset($result->itemType)) {
     switch ($result->itemType) {
       case 'book':
@@ -508,8 +509,8 @@ function expand_by_zotero(&$template, $url = NULL) {
         // Nothing special that we know of yet
         break;
 
-      default:
-        report_minor_error("Unhandled itemType: " . $result->itemType . " for $url"); // see https://www.mediawiki.org/wiki/Citoid/itemTypes
+      default:                                                                         // @codeCoverageIgnore
+        report_minor_error("Unhandled itemType: " . $result->itemType . " for $url");  // @codeCoverageIgnore
     }
     
     $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
@@ -530,8 +531,8 @@ function expand_by_zotero(&$template, $url = NULL) {
             case 'translator':
               $authorParam = 'translator' . ++$translator_i;
               break;
-            default:
-              report_minor_error("Unrecognized creator type: " . $creatorType);
+            default:                                                               // @codeCoverageIgnore
+              report_minor_error("Unrecognized creator type: " . $creatorType);    // @codeCoverageIgnore
           }
          if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
                                       isset($result->rights) ? $result->rights : '', FALSE);
