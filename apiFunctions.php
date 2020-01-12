@@ -282,7 +282,7 @@ function adsabs_api($ids, $templates, $identifier) {
       $response = $decoded->response;
     } else {
       if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
-      throw new Exception("Could not decode AdsAbs response", 5000);
+      throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
     }
   // @codeCoverageIgnoreStart
   } catch (Exception $e) {
@@ -371,7 +371,7 @@ function adsabs_api($ids, $templates, $identifier) {
   }
   $unmatched_ids = array_diff($ids, $matched_ids);
   if (sizeof($unmatched_ids)) {
-    report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));
+    report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
   }
   return TRUE;
 }
@@ -656,9 +656,9 @@ function expand_doi_with_dx($template, $doi) {
      } elseif (@$json['type'] == 'posted-content') { // posted-content is from bioRxiv
        $try_to_add_it('title', @$json['title']);
      } else {
-       $try_to_add_it('title', @$json['title']);
-       if (getenv('TRAVIS')) print_r($json);
-       report_minor_error('dx.doi.org returned unexpected data type for ' . doi_link($doi));
+       $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
+       if (getenv('TRAVIS')) print_r($json);                                                     // @codeCoverageIgnore
+       report_minor_error('dx.doi.org returned unexpected data type for ' . doi_link($doi));     // @codeCoverageIgnore
      }
      return TRUE;
 }
