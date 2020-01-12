@@ -190,4 +190,10 @@ class ZoteroTest extends testBaseClass {
     $this->assertNull($template->get('url'));
   }
  
+  public function testSimpleIEEE() {
+    $url = "http://ieeexplore.ieee.org/arnumber=123456789";
+    $url = url_simplify($url);
+    $this->assertSame('http://ieeexplore.ieee.org/123456789/', $url);
+  }
+ 
 }
