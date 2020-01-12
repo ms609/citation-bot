@@ -2816,7 +2816,7 @@ ER -  }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'Times'));
     $this->assertNull($template->get('via'));
-    $this->assertSame('times', $template->get('newspaper'));
+    $this->assertSame('Times', $template->get('newspaper'));
   }
 
   public function testNewspaperJournal100() {
