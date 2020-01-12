@@ -193,7 +193,7 @@ class ZoteroTest extends testBaseClass {
   public function testSimpleIEEE() {
     $url = "http://ieeexplore.ieee.org/arnumber=123456789";
     $url = url_simplify($url);
-    $this->assertSame('https://ieeexplore.ieee.org/document/123456789', $url);
+    $this->assertSame('http://ieeexplore.ieee.org/123456789/', $url);
   }
  
 }
