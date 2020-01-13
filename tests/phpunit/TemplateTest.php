@@ -382,7 +382,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite book}}";
     $expanded = $this->make_citation($text);
     $this->assertTrue($expanded->add_if_new('asin', '0781765625'));
-    $this->assertSame('9780781765626', $expanded->get('isbn'));
+    $this->assertSame('0781765625', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
    
     $text = "{{Cite book}}";
@@ -3365,7 +3365,7 @@ ER -  }}';
 
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
-    $this->asserTrue($template->add_if_new('bibcode', 'Z')); 
+    $this->assertTrue($template->add_if_new('bibcode', 'Z')); 
     $this->assertSame('Z..................', $template->get('bibcode'));
   }
 
@@ -3373,8 +3373,7 @@ ER -  }}';
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
     $template->validate_and_add('author1', 'George @Hashtags Billy@hotmail.com', 'Sam @Hashtags Billy@hotmail.com', '', FALSE);
-    $this->assertSame('George', $template->get('last1'));
-    $this->assertSame('George', $template->get('first1'));
+    $this->assertSame('George, Sam', $template->get('author1'));
   }
  
 }
