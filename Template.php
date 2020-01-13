@@ -1147,6 +1147,9 @@ final class Template {
          $this->set($url_type, $url); // Update URL with cleaner one
        }     
     }
+    if (stripos($url, 'plants.jstor.org') !== FALSE) {	
+      return FALSE; # Plants database, not journal	
+    }
     // https://www.jstor.org.stuff/proxy/stuff/stable/10.2307/3347357 and such
     // Optional 0- at front.
     // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
@@ -1159,14 +1162,8 @@ final class Template {
     // https://www.jstor.org.libweb.lib.utsa.edu/stable/3347357 and such
     // Optional 0- at front.
     // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
-    if (preg_match('~^https?://(?:0-www.|www.|)jstor.org\.[^/]+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
-       $url = 'https://www.jstor.org/stable/' . $matches[1] ;
-       if (is_null($url_sent)) {
-         $this->set($url_type, $url); // Update URL with cleaner one
-       }
-    }
     // https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10 and such
-    if (preg_match('~^https?://(?:0-www.|www.|)jstor-org[-\.]\S+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
+    if (preg_match('~^https?://(?:0-www.|www.|)jstor.org\.[^/]+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
        if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
@@ -1267,9 +1264,6 @@ final class Template {
   
     // JSTOR
 
-    if (stripos($url, 'plants.jstor.org') !== FALSE) {
-      return FALSE; # Plants database, not journal
-    }
     if (stripos($url, "jstor.org") !== FALSE) {
       $sici_pos = stripos($url, "sici");
       if ($sici_pos) {  //  Outdated url style
