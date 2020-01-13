@@ -3372,7 +3372,7 @@ ER -  }}';
   public function testvalidate_and_add() {
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
-    $template->validate_and_add('author1', 'George @Hashtags Billy@hotmail.com', 'Sam @Hashtags Billy@hotmail.com', '', FALSE)
+    $template->validate_and_add('author1', 'George @Hashtags Billy@hotmail.com', 'Sam @Hashtags Billy@hotmail.com', '', FALSE);
     $this->assertSame('George', $template->get('last1'));
     $this->assertSame('George', $template->get('first1'));
   }
