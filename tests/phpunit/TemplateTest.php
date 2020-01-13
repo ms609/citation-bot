@@ -1430,6 +1430,7 @@ ER -  }}';
     $expanded = $this->process_citation($text);
     $this->assertSame('http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972', $expanded->get('url'));
     $this->assertNull($expanded->get('jstor'));
+    $this->assertNull($expanded->get('doi'));
   }
   
   public function testBibcodeDotEnding() {
