@@ -475,18 +475,21 @@ function expand_by_zotero(&$template, $url = NULL) {
         // also reject 'review' 
         if ($template->wikiname() === 'cite web' &&
             stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE &&
-            stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url)) 
+            stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url)) {
           $template->change_name_to('cite book');
+        }
         break;
       case 'journalArticle':
       case 'conferencePaper':
       case 'report':  // ssrn uses this
-        if($template->wikiname() == 'cite web' && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url)
+        if($template->wikiname() == 'cite web' && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url) {
           $template->change_name_to('cite journal');
+        }
         break;
       case 'magazineArticle':
-        if($template->wikiname() == 'cite web')
+        if($template->wikiname() == 'cite web') {
           $template->change_name_to('cite magazine');
+        }
         break;      
       case 'newspaperArticle':
         $template->change_name_to('cite news'); 
