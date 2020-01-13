@@ -379,12 +379,23 @@ final class TemplateTest extends testBaseClass {
     $this->assertTrue($expanded->add_if_new('asin', 'BNXXXXXXXX')); // Not an ISBN at all
     $this->assertSame('BNXXXXXXXX', $expanded->get('asin'));
 
-    return; // TODO
     $text = "{{Cite book}}";
     $expanded = $this->make_citation($text);
     $this->assertTrue($expanded->add_if_new('asin', '0781765625'));
     $this->assertSame('9780781765626', $expanded->get('isbn'));
     $this->assertNull($expanded->get('asin'));
+   
+    $text = "{{Cite book}}";
+    $expanded = $this->make_citation($text);
+    $this->assertTrue($expanded->add_if_new('asin', 'ABC'));
+    $this->assertSame('ABC', $expanded->get('asin'));
+    $this->assertNull($expanded->get('isbn'));
+   
+    $text = "{{Cite book|asin=xxxxxx}}";
+    $expanded = $this->make_citation($text);
+    $this->assertFalse($expanded->add_if_new('asin', 'ABC'));
+    $this->assertSame('xxxxxx', $expanded->get('asin'));
+    $this->assertNull($expanded->get('isbn'));
   }
  
   public function testTemplateRenaming() {
@@ -475,6 +486,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('https://jstor.org/stuffy-Stuff/', $template->get('url'));
 
     $text = "{{cite book|url=https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10}}";
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertSame('10.7249/j.ctt4cgd90.10', $template->get('jstor'));
+    $this->assertNull($template->get('url'));
+   
+    $text = "{{cite book|url=https://www.jstor.org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
     $this->assertSame('10.7249/j.ctt4cgd90.10', $template->get('jstor'));
@@ -3328,6 +3345,35 @@ ER -  }}';
     $this->assertSame('1234', $template->get('oclc'));
     $this->assertNull($template->get('url'));
     $this->assertSame('cite book', $template->wikiname());           
+  }
+ 
+  public function testAddDupNewsPaper() {
+    $text = "{{cite web|work=I exist and submit}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('newspaper', 'bbc sports'));
+    $this->assertSame('I exist and submit', $template->get('work'));
+    $this->assertNull($template->get('newspaper'));
+  }
+ 
+ 
+  public function testAddBogusBibcode() {
+    $text = "{{cite web|bibcode=Exists}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->add_if_new('bibcode', 'xyz')); 
+    $this->assertSame('Exists', $template->get('bibcode'));
+
+    $text = "{{cite web}}";
+    $template = $this->make_citation($text);
+    $this->asserTrue($template->add_if_new('bibcode', 'Z')); 
+    $this->assertSame('Z..................', $template->get('bibcode'));
+  }
+
+  public function testvalidate_and_add() {
+    $text = "{{cite web}}";
+    $template = $this->make_citation($text);
+    $template->validate_and_add('author1', 'George @Hashtags Billy@hotmail.com', 'Sam @Hashtags Billy@hotmail.com', '', FALSE)
+    $this->assertSame('George', $template->get('last1'));
+    $this->assertSame('George', $template->get('first1'));
   }
  
 }
