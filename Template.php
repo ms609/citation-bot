@@ -243,7 +243,7 @@ final class Template {
   }
   
   public function incomplete() {
-    if (strtolower($this->wikiname()) =='cite book' || (strtolower($this->wikiname()) =='citation' && $this->has('isbn'))) { // Assume book
+    if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
               $this->has("isbn")
