@@ -3373,7 +3373,22 @@ ER -  }}';
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
     $template->validate_and_add('author1', 'George @Hashtags Billy@hotmail.com', 'Sam @Hashtags Billy@hotmail.com', '', FALSE);
-    $this->assertSame('George, Sam', $template->get('author1'));
+    $this->assertSame("{{cite web}}", $template->parsed_text());
+
+    $text = "{{cite web}}";
+    $template = $this->make_citation($text);
+    $template->validate_and_add('author1', 'George @Hashtags', '', '', FALSE);
+    $this->assertSame("{{cite web|author1 = George}}", $template->parsed_text());
+
+    $text = "{{cite web}}";
+    $template = $this->make_citation($text);
+    $template->validate_and_add('author1', 'George Billy@hotmail.com', 'Sam @Hashtag', '', FALSE);
+    $this->assertSame("{{cite web|last1 = George|first1 = Sam}}", $template->parsed_text());
+
+    $text = "{{cite web}}";
+    $template = $this->make_citation($text);
+    $template->validate_and_add('author1', 'com', 'Sam', '', FALSE);
+    $this->assertSame("{{cite web|last1 = Com|first1 = Sam}}", $template->parsed_text());
   }
  
 }
