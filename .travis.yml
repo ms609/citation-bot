@@ -4,41 +4,47 @@ branches:
   except: release
 
 language: php
-    
+                  # mediawiki/oauthclient with 7.4 yet, waiting on 1.0.3 https://packagist.org/packages/mediawiki/oauthclient
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC #######
   include:
-    - stage: test
+    - stage: 5.6
       php: 5.6.40
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: 7.0
+    - stage: 7.0
+      php: 7.0
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: 7.1
+    - stage: 7.1
+      php: 7.1
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: 7.2
+    - stage: 7.2
+      php: 7.2
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: 7.4snapshot
+    - stage: 7.3
+      php: 7.4snapshot
+      before_script:  
+        - travis_retry composer self-update
+         - composer require mediawiki/oauthclient
+      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
+    - stage: 8.0
+      php: nightly
       before_script:  
         - travis_retry composer self-update
         # NOT COMPATIBLE YET WAITING ON 1.0.3 https://packagist.org/packages/mediawiki/oauthclient - composer require mediawiki/oauthclient
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: nightly
-      before_script:  
-        - travis_retry composer self-update
-        # NOT COMPATIBLE YET WAITING ON 1.0.3 https://packagist.org/packages/mediawiki/oauthclient - composer require mediawiki/oauthclient
-      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: 7.3
+    - stage: test
+      php: 7.3
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
