@@ -8,10 +8,11 @@ language: php
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC #######
   include:
     - stage: pretest
-      name: "Quick PHP syntax check for 5.6 to 8.0"
+      name: "Quick PHP 5.6 syntax check"
       php: 5.6.40
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
     - php: nightly
+      name: "Quick PHP 8.0 syntax check"
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
     - stage: test
       name: "Full test with PHP 7.3"
