@@ -8,19 +8,33 @@ language: php
 matrix:
   include:
     - stage: test
-      php: 7.3
+      php: 7.3    ###### ONLY ONE WITH FULL TESTING #######
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit --coverage-clover coverage.xml
       after_success: bash <(curl -s https://codecov.io/bash)
-    - php: 5.6.40  # Newer version has SSL in php curl
+    - php: 5.6.40  # Newer version has SSL in php curl.  ONLY do static testing now
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
-        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit
+      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
+    - php: 7.0  #  ONLY do static testing now
+      before_script:  
+        - travis_retry composer self-update
+        - composer require mediawiki/oauthclient
+      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
+    - php: 7.1  #  ONLY do static testing now
+      before_script:  
+        - travis_retry composer self-update
+        - composer require mediawiki/oauthclient
+      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
+    - php: 7.2  #  ONLY do static testing now
+      before_script:  
+        - travis_retry composer self-update
+        - composer require mediawiki/oauthclient
+      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
     - stage: deploy-to-master
       name: "Update WMFlabs servers"
       if: branch = master AND type != pull_request
