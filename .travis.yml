@@ -7,13 +7,14 @@ language: php
                   # mediawiki/oauthclient with 7.4 or higher yet, waiting on 1.0.3 https://packagist.org/packages/mediawiki/oauthclient
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC #######
   include:
-    - stage: 5.6
+    - stage: pretest
+      name: "Quick PHP syntax check for 5.6 to 8.0"
       php: 5.6.40
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - stage: 8.0
-      php: nightly
+    - php: nightly
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
     - stage: test
+      name: "Full test with PHP 7.3"
       php: 7.3
       before_script:  
         - travis_retry composer self-update
