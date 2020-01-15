@@ -3360,6 +3360,10 @@ final class Template {
           if ($this->blank($param)) $this->forget($param);
           return;
           
+        case 'date':
+          if ($this->blank('date') && $this->has('year')) $this->forget('date');
+          return;
+          
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
@@ -4087,8 +4091,16 @@ final class Template {
           return;
           
         case 'year':
-          if ($this->blank($param)) return;
+          if ($this->blank($param)) {
+            if ($this->has('date')) $this->forget('year');
+            return;
+          }
           if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
+             if ($this->blank('date')) $this->rename('year', 'date');
+             $this->forget('year');
+             return;
+          }
+          if (preg_match("~[A-Za-z][A-Za-z][A-Za-z]~", $this->get('year'))) { // At least three letters
              if ($this->blank('date')) $this->rename('year', 'date');
              $this->forget('year');
              return;
