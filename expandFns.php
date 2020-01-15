@@ -256,7 +256,7 @@ function titles_simple($inTitle) {
 }
 
 function strip_diacritics ($input) {
-    return str_replace(array_keys(MAP_DIACRITICS), array_values(MAP_DIACRITICS), $value), $input);
+    return str_replace(array_keys(MAP_DIACRITICS), array_values(MAP_DIACRITICS), $input);
 }
 
 function straighten_quotes($str) { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
