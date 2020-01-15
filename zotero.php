@@ -349,29 +349,24 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
     if (preg_match('~\sdoi:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) {
       if (!isset($result->DOI)) $result->DOI = trim($matches[1]);
-      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
-      $result->extra = trim($result->extra);
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
     if (preg_match('~\stype:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) { // [extra] => type: dataset has been seen in the wild
-      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
-      $result->extra = trim($result->extra);
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
     if (preg_match('~\sPMID: (\d+)\s+PMCID: PMC(\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
-      $result->extra = trim($result->extra);
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('pmid', $matches[1]);
       $template->add_if_new('pmc',  $matches[2]);
     }
     if (preg_match('~\sPMID: (\d+), (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
-      $result->extra = trim($result->extra);
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       if ($matches[1] === $matches[2]) {
         $template->add_if_new('pmid', $matches[1]);
       }
     }
     if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-      $result->extra = str_replace(trim($matches[0]), '', $result->extra);
-      $result->extra = trim($result->extra);
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
     if ($result->extra !== '') {
       report_minor_error("Unhandled extra data: " . $result->extra); // @codeCoverageIgnore
@@ -420,13 +415,13 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (isset($result->bookTitle)) {
     $result->bookTitle = preg_replace('~\s*\(pdf\)$~i', '', $result->bookTitle);
     $result->bookTitle = preg_replace('~^\(pdf\)\s*~i', '', $result->bookTitle);
-    $result->bookTitle = preg_replace('~ \- ProQuest.?~i', '', $result->bookTitle);
+    $result->bookTitle = preg_replace('~ \- ProQuest\.?~i', '', $result->bookTitle);
   }
   if (isset($result->title)) {
     $result->title = preg_replace('~\s*\(pdf\)$~i', '', $result->title);
     $result->title = preg_replace('~^\(pdf\)\s*~i', '', $result->title);
-    $result->title = preg_replace('~ \- ProQuest.?~i', '', $result->title);
-   }
+    $result->title = preg_replace('~ \- ProQuest\.?~i', '', $result->title);
+  }
   
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', $result->bookTitle);
