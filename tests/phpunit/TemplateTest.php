@@ -1187,7 +1187,26 @@ ER -  }}';
      $this->assertNull($prepared->get('last1'));
      $this->assertNull($prepared->get('first1'));
      $this->assertNull($prepared->get('pages'));
-     $this->assertNull($prepared->get('volume'));   
+     $this->assertNull($prepared->get('volume'));
+   
+      $text = '{{Cite journal  | TY - BOOK
+Y1 - 1990
+T1 - This will be a subtitle }}';
+     $prepared = $this->prepare_citation($text);
+     $this->assertSame('1990', $prepared->get('year')); 
+     $this->assertNull($prepared->get('title'));
+     $this->assertNull($prepared->get('chapter'));
+     $this->assertNull($prepared->get('journal'));
+     $this->assertNull($prepared->get('series'));
+
+     $text = '{{Cite journal  | TY - JOUR
+Y1 - 1990
+JF - This is the Journal
+T1 - This is the Title }}';
+     $prepared = $this->prepare_citation($text);
+     $this->assertSame('1990', $prepared->get('year')); 
+     $this->assertSame('This is the Journal', $prepared->get('journal'));
+     $this->assertSame('This is the Title', $prepared->get('title'));
   }
     
   public function testEndNote() {
