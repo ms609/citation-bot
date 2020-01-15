@@ -134,7 +134,7 @@ const OBVIOUS_FOREIGN_WORDS = array(' Abhandlungen ', ' Actes ', ' Annales ', ' 
            ' Lietuvos ', ' muziejų ', ' rinkiniai ', ' Traduction ', ' Terminologie ', ' Rédaction ',
            ' Etudes ', ' irlandaises  ', ' Studia ', ' humaniora ', ' Estonica ');
  
-const MAP_DIACRITICS array ("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
+const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
 	"Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
 	"Ê"=>"E", "Ë"=>"E", "Ì"=>"I", "Í"=>"I", "Î"=>"I", "Ï"=>"I",
 	"Ð"=>"ETH", "Ñ"=>"N", "Ò"=>"O", "Ó"=>"O", "Ô"=>"O", "Õ"=>"O",
