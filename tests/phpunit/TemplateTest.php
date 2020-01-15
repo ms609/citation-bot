@@ -3456,7 +3456,7 @@ T1 - This is the Title }}';
   }
  
    public function testOddThing() {
-     $text='{{journal=capitalization is Good}}";
+     $text='{{journal=capitalization is Good}}';
      $template = $this->process_citation($text);
     $this->assertSame($text, $template->parsed_text);
    }
