@@ -216,7 +216,7 @@ final class Template {
               if ($this->has('chapter')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
               } else {
-                $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter);
+                $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
               }
             }
           }
