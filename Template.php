@@ -173,6 +173,11 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $bad_data = TRUE;
+          } elseif (strcasecmp($the_title, $this->get('chapter')) === 0 &&
+                    stripos($the_title, 'CITATION') === FALSE ) { // Chapter === Title
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+              $bad_data = TRUE;
           } elseif (substr($the_title, -9, 9) == ' on JSTOR') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
               $bad_data = TRUE;
@@ -205,6 +210,13 @@ final class Template {
                 $this->forget('CITATION_BOT_PLACEHOLDER_title');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
+              }
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_chapter')) {
+              if ($this->has('chapter')) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
+              } else {
+                $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter);
               }
             }
           }
