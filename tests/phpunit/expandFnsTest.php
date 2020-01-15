@@ -106,6 +106,7 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function test_titles_are_similar_ticks() {
+    $this->assertSame('ejscriptgammaramshg', strip_diacritics('ɞɟɡɣɤɥɠ'));
     $this->assertTrue(titles_are_similar('ɞɟɡɣɤɥɠ', 'ejscriptgammaramshg'));
   }
 
