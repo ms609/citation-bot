@@ -28,8 +28,8 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * Regular expressions are defined using the symbol `~` in place of `/`, to reduce escaping and improve legibility when handling URLs.
   * We prefer `elseif` to `else if`
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
-  * All code must be both valid PHP 5.6 and valid PHP 7.3
-  * All code should be valid PHP 7.4 and valid 8.0
+  * All code is verified to be valid PHP 5.6, 7.3, and 8.0 according to static analysis
+  * All code is verified to be valid PHP 7.3 at runtime
   * We are attempting to get 100% code coverage with untestable code flagged in the source
 
 ## Bot output conventions
