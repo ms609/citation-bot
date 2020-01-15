@@ -2630,8 +2630,7 @@ final class Template {
         }
       }
     } else {
-      $this->param = strtolower($this->param);
-      $to_tidy = array($this->param);
+       report_error('parameter_names_to_lowercase found non-array'); // @codeCoverageIgnore
     }
     // Tidy afterwards, to avoid modifying array index
     foreach ($to_tidy as $param) $this->tidy_parameter($param);
