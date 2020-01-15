@@ -1006,7 +1006,18 @@ final class TemplateTest extends testBaseClass {
       $this->assertSame($text, $prepared->parsed_text());
   }
 
-    
+  public function testBadPunctuation() {
+      $text = '{{citation|title=:: Huh ::}}';
+      $prepared = $this->make_citation($text);
+      $prepared->tidy_paramater('title');
+      $this->assertSame('Huh', $prepared->get('title'));
+
+      $text = '{{citation|title=; Huh ;;}}';
+      $prepared = $this->make_citation($text);
+      $prepared->tidy_paramater('title');
+      $this->assertSame('Huh ;;', $prepared->get('title'));
+  }
+ 
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
       $prepared = $this->prepare_citation($text);
