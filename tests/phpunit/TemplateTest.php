@@ -3396,4 +3396,29 @@ ER -  }}';
     $this->assertSame("{{cite web|author1 = George}}", $template->parsed_text());
   }
  
+  public function testDateYearRedundancyEtc() {
+    $text = "{{cite web|year=2004|date=}}";
+    $template = $this->make_citation($text);
+    $template->tidy();
+    $this->assertSame("2004", $template->get('year'));
+    $this->assertNull($template->get('date')); // Not an empty string anymore
+   
+    $text = "{{cite web|date=November 2004|year=}}";
+    $template = $this->make_citation($text);
+    $template->tidy();
+    $this->assertSame("November 2004", $template->get('date'));
+    $this->assertNull($template->get('year')); // Not an empty string anymore
+   
+    $text = "{{cite web|date=November 2004|year=Octorberish 2004}}";
+    $template = $this->make_citation($text);
+    $template->tidy();
+    $this->assertSame("November 2004", $template->get('date'));
+    $this->assertNull($template->get('year'));
+   
+    $text = "{{cite web|date=|year=Sometimes around 2004}}";
+    $template = $this->make_citation($text);
+    $template->tidy();
+    $this->assertSame("Sometimes around 2004", $template->get('date'));
+    $this->assertNull($template->get('year'));
+  }
 }
