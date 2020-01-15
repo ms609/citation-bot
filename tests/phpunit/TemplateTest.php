@@ -3454,4 +3454,10 @@ T1 - This is the Title }}';
     $this->assertSame("Sometimes around 2004", $template->get('date'));
     $this->assertNull($template->get('year'));
   }
+ 
+   public function testOddThing() {
+     $text='{{journal=capitalization is Good}}";
+     $template = $this->process_citation($text);
+    $this->assertSame($text, $template->parsed_text);
+   }
 }
