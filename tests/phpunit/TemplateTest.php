@@ -1009,12 +1009,12 @@ final class TemplateTest extends testBaseClass {
   public function testBadPunctuation() {
       $text = '{{citation|title=:: Huh ::}}';
       $prepared = $this->make_citation($text);
-      $prepared->tidy_paramater('title');
+      $prepared->tidy_parameter('title');
       $this->assertSame('Huh', $prepared->get('title'));
 
       $text = '{{citation|title=; Huh ;;}}';
       $prepared = $this->make_citation($text);
-      $prepared->tidy_paramater('title');
+      $prepared->tidy_parameter('title');
       $this->assertSame('Huh ;;', $prepared->get('title'));
   }
  
@@ -1908,12 +1908,6 @@ T1 - This is the Title }}';
     $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8#The_hash#The_second_hash}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22#The_hash', $prepared->get('url'));
-    $text = '{{cite web|url=http://www.google.com/search?hl=en&safe=off&client=firefox-a&rls=com.ubuntu%3Aen-US%3Aunofficial&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)&aq=o&oq=&aqi=}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('https://www.google.com/search?hl=en&safe=off&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)', $prepared->get('url'));
-    $text = '{{cite web|url=http://www.google.com/search?hl=en&safe=off&client=firefox-a&rls=com.ubuntu%3Aen-US%3Aunofficial&text=duh&keywords=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)&aq=o&oq=&aqi=}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('https://www.google.com/search?hl=en&safe=off&dq=duh&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)', $prepared->get('url'));
   }
  
   public function testCleanRGTitles() {
@@ -3458,6 +3452,6 @@ T1 - This is the Title }}';
    public function testOddThing() {
      $text='{{journal=capitalization is Good}}';
      $template = $this->process_citation($text);
-    $this->assertSame($text, $template->parsed_text);
+    $this->assertSame($text, $template->parsed_text());
    }
 }
