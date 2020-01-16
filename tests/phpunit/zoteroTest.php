@@ -196,12 +196,20 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('http://ieeexplore.ieee.org/123456789/', $url);
   }
  
-   public function testTruncateDOI() {
+  public function testTruncateDOI() {
     $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi-broken-date'));
     $this->assertSame('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
     $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get('doi'));
- }
+  }
  
+  public function testRespectDates() {
+      $text = '{{Use mdy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
+      $page = $this->process_page($text);
+      $this->assertTrue((boolean) strpos($page->parsed_text(), 'December 5, 2016'));
+      $text = '{{Use dmy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
+      $page = $this->process_page($text);
+      $this->assertTrue((boolean) strpos($page->parsed_text(), '5 December 2016'));
+  } 
 }
