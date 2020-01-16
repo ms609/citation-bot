@@ -156,14 +156,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertNotNull($expanded->get('doi'));
     $this->assertNotNull($expanded->get('url'));
   }
-  
- public function testTruncateDOI() {
-    $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('doi-broken-date'));
-    $this->assertSame('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
-    $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get('doi'));
- }
  
  public function testCrazyDoubleDOI() {
     $doi = '10.1126/science.10.1126/SCIENCE.291.5501.24';
