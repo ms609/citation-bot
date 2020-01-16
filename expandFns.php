@@ -210,6 +210,9 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         // old data both decoded and not
         $inTitle2 = titles_simple($inTitle);
         $inTitle = titles_simple(mb_convert_encoding(html_entity_decode($inTitle), "HTML-ENTITIES", 'UTF-8'));
+        $dbTitle = strip_diacritics($dbTitle);
+        $inTitle = strip_diacritics($inTitle);
+        $inTitle2 = strip_diacritics($inTitle2);
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
@@ -250,6 +253,10 @@ function titles_simple($inTitle) {
                                array('gamma', 'delta', 'theta', 'lambda', 'xi', 'pi', 'sigma', 'phi', 'psi', 'omega'), $inTitle);
         $inTitle = str_remove_irrelevant_bits($inTitle);
         return $inTitle;
+}
+
+function strip_diacritics ($input) {
+    return str_replace(array_keys(MAP_DIACRITICS), array_values(MAP_DIACRITICS), $input);
 }
 
 function straighten_quotes($str) { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it

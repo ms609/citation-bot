@@ -156,14 +156,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertNotNull($expanded->get('doi'));
     $this->assertNotNull($expanded->get('url'));
   }
-  
- public function testTruncateDOI() {
-    $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('doi-broken-date'));
-    $this->assertSame('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
-    $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get('doi'));
- }
  
  public function testCrazyDoubleDOI() {
     $doi = '10.1126/science.10.1126/SCIENCE.291.5501.24';
@@ -1006,7 +998,18 @@ final class TemplateTest extends testBaseClass {
       $this->assertSame($text, $prepared->parsed_text());
   }
 
-    
+  public function testBadPunctuation() {
+      $text = '{{citation|title=:: Huh ::}}';
+      $prepared = $this->make_citation($text);
+      $prepared->tidy_parameter('title');
+      $this->assertSame('Huh', $prepared->get('title'));
+
+      $text = '{{citation|title=; Huh ;;}}';
+      $prepared = $this->make_citation($text);
+      $prepared->tidy_parameter('title');
+      $this->assertSame('Huh ;;', $prepared->get('title'));
+  }
+ 
   public function testWorkParamter() {
       $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
       $prepared = $this->prepare_citation($text);
@@ -1176,7 +1179,26 @@ ER -  }}';
      $this->assertNull($prepared->get('last1'));
      $this->assertNull($prepared->get('first1'));
      $this->assertNull($prepared->get('pages'));
-     $this->assertNull($prepared->get('volume'));   
+     $this->assertNull($prepared->get('volume'));
+   
+      $text = '{{Cite journal  | TY - BOOK
+Y1 - 1990
+T1 - This will be a subtitle }}';
+     $prepared = $this->prepare_citation($text);
+     $this->assertSame('1990', $prepared->get('year')); 
+     $this->assertNull($prepared->get('title'));
+     $this->assertNull($prepared->get('chapter'));
+     $this->assertNull($prepared->get('journal'));
+     $this->assertNull($prepared->get('series'));
+
+     $text = '{{Cite journal  | TY - JOUR
+Y1 - 1990
+JF - This is the Journal
+T1 - This is the Title }}';
+     $prepared = $this->prepare_citation($text);
+     $this->assertSame('1990', $prepared->get('year')); 
+     $this->assertSame('This is the Journal', $prepared->get('journal'));
+     $this->assertSame('This is the Title', $prepared->get('title'));
   }
     
   public function testEndNote() {
@@ -1878,9 +1900,6 @@ ER -  }}';
     $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8#The_hash#The_second_hash}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22#The_hash', $prepared->get('url'));
-    $text = '{{cite web|url=http://www.google.com/search?hl=en&safe=off&client=firefox-a&rls=com.ubuntu%3Aen-US%3Aunofficial&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)&aq=o&oq=&aqi=}}';
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('https://www.google.com/search?hl=en&safe=off&q=%22west+coast+hotel+co.+v.+parrish%22+(site%3Anewsweek.com+OR+site%3Apost-gazette.com+OR+site%3Ausatoday.com+OR+site%3Awashingtonpost.com+OR+site%3Atime.com+OR+site%3Areuters.com+OR+site%3Aeconomist.com+OR+site%3Amiamiherald.com+OR+site%3Alatimes.com+OR+site%3Asfgate.com+OR+site%3Achicagotribune.com+OR+site%3Anytimes.com+OR+site%3Awsj.com+OR+site%3Ausnews.com+OR+site%3Amsnbc.com+OR+site%3Anj.com+OR+site%3Atheatlantic.com)', $prepared->get('url'));
   }
  
   public function testCleanRGTitles() {
@@ -3396,4 +3415,35 @@ ER -  }}';
     $this->assertSame("{{cite web|author1 = George}}", $template->parsed_text());
   }
  
+  public function testDateYearRedundancyEtc() {
+    $text = "{{cite web|year=2004|date=}}";
+    $template = $this->make_citation($text);
+    $template->tidy();
+    $this->assertSame("2004", $template->get('year'));
+    $this->assertNull($template->get('date')); // Not an empty string anymore
+   
+    $text = "{{cite web|date=November 2004|year=}}";
+    $template = $this->make_citation($text);
+    $template->tidy();
+    $this->assertSame("November 2004", $template->get('date'));
+    $this->assertNull($template->get('year')); // Not an empty string anymore
+   
+    $text = "{{cite web|date=November 2004|year=Octorberish 2004}}";
+    $template = $this->make_citation($text);
+    $template->tidy();
+    $this->assertSame("November 2004", $template->get('date'));
+    $this->assertNull($template->get('year'));
+   
+    $text = "{{cite web|date=|year=Sometimes around 2004}}";
+    $template = $this->make_citation($text);
+    $template->tidy();
+    $this->assertSame("Sometimes around 2004", $template->get('date'));
+    $this->assertNull($template->get('year'));
+  }
+ 
+   public function testOddThing() {
+     $text='{{journal=capitalization is Good}}';
+     $template = $this->process_citation($text);
+    $this->assertSame($text, $template->parsed_text());
+   }
 }

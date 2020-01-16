@@ -104,6 +104,11 @@ final class expandFnsTest extends testBaseClass {
     $this->assertTrue(titles_are_similar($big1, $big2));
     $this->assertTrue(titles_are_dissimilar($big1, $big3));
   }
+  
+  public function test_titles_are_similar_ticks() {
+    $this->assertSame('ejscriptgammaramshg', strip_diacritics('ɞɟɡɣɤɥɠ'));
+    $this->assertTrue(titles_are_similar('ɞɟɡɣɤɥɠ', 'ejscriptgammaramshg'));
+  }
 
   public function testArrowAreQuotes() {
     $text = "This » That";

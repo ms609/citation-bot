@@ -241,15 +241,6 @@ final class PageTest extends testBaseClass {
       $this->assertSame($text, $page->parsed_text());
   }
  
-  public function testRespectDatesZotero() {
-      $text = '{{Use mdy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
-      $page = $this->process_page($text);
-      $this->assertTrue((boolean) strpos($page->parsed_text(), 'December 5, 2016'));
-      $text = '{{Use dmy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
-      $page = $this->process_page($text);
-      $this->assertTrue((boolean) strpos($page->parsed_text(), '5 December 2016'));
-  }
- 
   public function testMagazine() {
       $text = '{{cite magazine|work=Yup}}';
       $page = $this->process_page($text);
