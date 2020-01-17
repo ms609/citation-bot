@@ -165,10 +165,6 @@ final class Template {
           $the_journal = (string) $this->get('journal');
           $the_chapter = (string) $this->get('chapter');
           $bad_data = FALSE;
-        
-      
-        
-        
           if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
               mb_strtoupper($the_title) === $the_title && stripos($the_title, 'CITATION') === FALSE) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // ALL UPPER CASE
