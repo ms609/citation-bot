@@ -329,7 +329,7 @@ class Page {
 
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
       $this->text = $this->start_text;
-      report_error('CITATION_BOT_ found after processing');
+      report_error('CITATION_BOT_PLACEHOLDER found after processing');
     }
     return strcmp($this->text, $this->start_text) != 0; // we often just fix Journal caps
   }
