@@ -10,9 +10,12 @@ final class GenTemplateTest extends testBaseClass {
       global $SLOW_MODE;
       // Run API
       ob_start();
+      ob_start();
       $_GET['jstor'] = '373737';
       require_once __DIR__ . '/../../generate_template.php';
       $template_text = ob_get_contents();
+      ob_end_clean();
+      $template_text =. ob_get_contents();
       ob_end_clean();
       // Reset everything
       $FLUSHING_OKAY = TRUE;
@@ -20,6 +23,7 @@ final class GenTemplateTest extends testBaseClass {
       while (ob_get_level()) { ob_end_flush(); };
       ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
       // Output checking time
+echo "\n\n\n $template_text \n\n\n";
       $this->assertTrue(preg_match("~^<!DOCTYPE html><html><body><pre>.\{\{.*10.2307/373737.*\}\}.</pre></body></html>$~", $template_text));
   }
 }
