@@ -15,7 +15,7 @@ final class GenTemplateTest extends testBaseClass {
       require_once __DIR__ . '/../../generate_template.php';
       $template_text = ob_get_contents();
       ob_end_clean();
-      $template_text =. ob_get_contents();
+      $template_text .= ob_get_contents();
       ob_end_clean();
       // Reset everything
       $FLUSHING_OKAY = TRUE;
