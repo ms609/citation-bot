@@ -42,6 +42,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function requires_zotero($function) {
     $skip_zotero = FALSE;
+    if ($skip_zotero !== FALSE && $skip_zotero !== TRUE) {
+      $this->assertNull('skip_zotero is not set right in requires_zotero()');
+    }
     if ($skip_zotero && getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) {
       echo 'Z'; // Skipping test: Zoteros is rubbish right now
       $this->assertNull(NULL); // Make Travis think we tested something
