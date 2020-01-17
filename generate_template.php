@@ -2,7 +2,7 @@
 // outputs a Wikipedia reference from a DOI 
 // usage: https://tools.wmflabs.org/citations/generate_template.php?doi=<DOI>
 
-header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
+@header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 
 echo "<!DOCTYPE html><html><body><pre>\n";
 $SLOW_MODE = TRUE;
@@ -22,6 +22,5 @@ $page->expand_text();
 echo "\n";
 echo "\n";
 echo(htmlspecialchars('<ref>' . $page->parsed_text() . '</ref>') . "\n</pre></body></html>");
-exit(0);
 
-?>
+

@@ -18,7 +18,6 @@
         <file>./gitpull.php</file>
         <file>./unlock_git.php</file>
         <file>./category.php</file>
-        <file>./generate_template.php</file>
         <file>./linked_pages.php</file>
         <file>./authenticate.php</file>
         <file>./restart.php</file>
