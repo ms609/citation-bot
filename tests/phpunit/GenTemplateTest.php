@@ -23,6 +23,6 @@ final class GenTemplateTest extends testBaseClass {
       while (ob_get_level()) { ob_end_flush(); };
       ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
       // Output checking time
-      $this->assertTrue(preg_match("~^.*ref.*<!DOCTYPE html><html><body><pre>.\{\{.*10.2307/373737.*\}\}.</pre></body></html>.*ref.*$~", $template_text));
+      $this->assertTrue(preg_match("~^.*ref.*DOCTYP.*pre.*\{\{.*10.2307/373737.*\}\}.*pre.*ref.*$~", $template_text));
   }
 }
