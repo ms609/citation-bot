@@ -241,10 +241,16 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
+  return process_zotero_response($zotero_response, $template, $url, $url_kind);
+}
+
+function process_zotero_response($zotero_response, &$template, $url, $url_kind) {
+  global $zotero_failures_count;
+ 
   switch (trim($zotero_response)) {
     case '':
-      report_info("Nothing returned for URL $url");  // @codeCoverageIgnore
-      return FALSE;                                  // @codeCoverageIgnore
+      report_info("Nothing returned for URL $url");
+      return FALSE;
     case 'Internal Server Error':
       report_info("Internal server error with URL $url");
       return FALSE;
@@ -260,20 +266,20 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
-    report_warning("Bad Gateway error for URL ". $url);        // @codeCoverageIgnore
-    return FALSE;                                              // @codeCoverageIgnore
+    report_warning("Bad Gateway error for URL ". $url);
+    return FALSE;
   }
   
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
-    report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");     // @codeCoverageIgnore
-    return FALSE;                                                                     // @codeCoverageIgnore
+    report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
+    return FALSE;
   } elseif (!is_array($zotero_data)) {
     if (is_object($zotero_data)) {
       $zotero_data = (array) $zotero_data;
     } else {
-      report_warning("JSON did not parse correctly for URL ". $url . ": $zotero_response");   // @codeCoverageIgnore
-      return FALSE;                                                                           // @codeCoverageIgnore
+      report_warning("JSON did not parse correctly for URL ". $url . ": $zotero_response");
+      return FALSE;
     }
   }
   if (!isset($zotero_data[0])) {
@@ -287,8 +293,8 @@ function expand_by_zotero(&$template, $url = NULL) {
     return FALSE;
   }
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
-    report_info("Could not resolve URL ". $url);                                   // @codeCoverageIgnore
-    return FALSE;                                                                  // @codeCoverageIgnore
+    report_info("Could not resolve URL ". $url);
+    return FALSE;
   }
   
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
@@ -317,31 +323,31 @@ function expand_by_zotero(&$template, $url = NULL) {
   if (isset($result->title))     $test_data .= $result->title;
   foreach (BAD_ZOTERO_TITLES as $bad_title ) {
       if (mb_stripos($test_data, $bad_title) !== FALSE) {
-        report_info("Received invalid title data for URL ". $url . ": $test_data");   // @codeCoverageIgnore
-        return FALSE;                                                                 // @codeCoverageIgnore
+        report_info("Received invalid title data for URL ". $url . ": $test_data");
+        return FALSE;
       }
   }
   if (isset($result->bookTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (strcasecmp($result->bookTitle, $bad_title) === 0) {
-        report_info("Received invalid book title data for URL ". $url . ": $result->bookTitle");   // @codeCoverageIgnore
-        return FALSE;                                                                              // @codeCoverageIgnore
+        report_info("Received invalid book title data for URL ". $url . ": $result->bookTitle");
+        return FALSE;
       }
    }
   }
   if (isset($result->title)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (strcasecmp($result->title, $bad_title) === 0) {
-        report_info("Received invalid title data for URL ". $url . ": $result->title");     // @codeCoverageIgnore
-        return FALSE;                                                                       // @codeCoverageIgnore
+        report_info("Received invalid title data for URL ". $url . ": $result->title");
+        return FALSE;
       }
    }
   }
   if (isset($result->publicationTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (strcasecmp($result->publicationTitle, $bad_title) === 0) {
-        report_info("Received invalid publication title data for URL ". $url . ": $result->publicationTitle");   // @codeCoverageIgnore
-        return FALSE;                                                                                            // @codeCoverageIgnore
+        report_info("Received invalid publication title data for URL ". $url . ": $result->publicationTitle");
+        return FALSE;
       }
    }
   }
