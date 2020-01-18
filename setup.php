@@ -20,6 +20,9 @@ if (!getenv('TRAVIS')) {
     ob_start();
 }
 
+if (file_exists('git_pull.lock')) report_error('GIT pull in progress');
+
+
 if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
   // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
   // if they are not set already. Remember to set permissions (not readable!)
@@ -49,3 +52,5 @@ mb_internal_encoding('UTF-8');
 ini_set("memory_limit", "256M");
 
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
+
+if (file_exists('git_pull.lock')) report_error('GIT pull in progress');

@@ -241,10 +241,10 @@ function expand_by_zotero(&$template, $url = NULL) {
   }
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
-  return process_zotero_response($zotero_response, $template, $url, $url_kind);
+  return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response($zotero_response, &$template, $url, $url_kind) {
+function process_zotero_response($zotero_response, &$template, $url, $url_kind, $access_date) {
   global $zotero_failures_count;
  
   switch (trim($zotero_response)) {

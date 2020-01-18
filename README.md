@@ -83,7 +83,7 @@ Before entering the k8s shell, it may be necessary to install phpunit
 
     wget https://phar.phpunit.de/phpunit-5.phar
     webservice --backend=kubernetes shell
-    php phpunit-5.phar --bootstrap setup.php tests/phpunit/TemplateTest.php
+    php phpunit-5.phar tests/phpunit/TemplateTest.php
 
 
 ## Dependency services
