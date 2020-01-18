@@ -257,7 +257,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_response = '';
+    $zotero_response = ' ';
     $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame($text, $template->parsed_text());
   }
@@ -337,7 +337,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_data = array('title' => 'NOT FOUND');
+    $zotero_data[0] = (object) array('title' => 'NOT FOUND');
     $zotero_response = json_encode($zotero_data);
     $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame($text, $template->parsed_text());
@@ -349,7 +349,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_data = array('title' => 'oup accepted manuscript', 'itemType' => 'webpage');
+    $zotero_data[0] = (object) array('title' => 'oup accepted manuscript', 'itemType' => 'webpage');
     $zotero_response = json_encode($zotero_data);
     $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame($text, $template->parsed_text());
