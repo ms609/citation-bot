@@ -353,11 +353,11 @@ class ZoteroTest extends testBaseClass {
     $zotero_response = json_encode($zotero_data);
     $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame($text, $template->parsed_text());
-    $zotero_data = array('bookTitle' => 'oup accepted manuscript', 'itemType' => 'webpage');
+    $zotero_data[0] = (object) array('bookTitle' => 'oup accepted manuscript', 'itemType' => 'webpage');
     $zotero_response = json_encode($zotero_data);
     $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame($text, $template->parsed_text());
-    $zotero_data = array('publicationTitle' => 'oup accepted manuscript', 'itemType' => 'webpage');
+    $zotero_data[0] = (object) array('publicationTitle' => 'oup accepted manuscript', 'itemType' => 'webpage');
     $zotero_response = json_encode($zotero_data);
     $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame($text, $template->parsed_text());
