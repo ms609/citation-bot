@@ -442,7 +442,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('Billy', $template->get('title'));
     $this->assertSame('Associated Press', $template->get('agency'));
     $this->assertNull($template->get('author'));
-    $this->assertNull($template->get('publisher'))
+    $this->assertNull($template->get('publisher'));
   }
  
    public function testZoteroResponse17() {
@@ -457,7 +457,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('Billy', $template->get('title'));
     $this->assertSame('Reuters', $template->get('agency'));
     $this->assertNull($template->get('author'));
-    $this->assertNull($template->get('publisher'))
+    $this->assertNull($template->get('publisher'));
   }
 
 }
