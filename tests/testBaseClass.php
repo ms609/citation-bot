@@ -41,7 +41,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function requires_zotero($function) {
-    $skip_zotero = 'BOB';
+    $skip_zotero = 'skip'; // Set to TRUE to commit skipping to GIT.  FALSE to no skip.  Something else to skip tests while debugging
     if ($skip_zotero !== FALSE && $skip_zotero !== TRUE) {
       $this->assertNull('skip_zotero is not set right in requires_zotero()');
     }
