@@ -177,12 +177,12 @@ final class Template {
               mb_strtoupper($the_chapter) === $the_chapter && stripos($the_chapter, 'CITATION') === FALSE) {
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter'); // ALL UPPER CASE
               $bad_data = TRUE;
-          } elseif (strcasecmp($the_title, $the_journal) === 0 &&
+          } elseif (strcasecmp($the_title, $the_journal) === 0 && $this->has('title') &&
                     stripos($the_title, 'CITATION') === FALSE) { // Journal === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $bad_data = TRUE;
-          } elseif (strcasecmp($the_title, $the_chapter) === 0 &&
+          } elseif (strcasecmp($the_title, $the_chapter) === 0 && $this->has('title') &&
                     stripos($the_title, 'CITATION') === FALSE ) { // Chapter === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
