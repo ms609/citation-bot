@@ -374,14 +374,14 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
     if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
-    if ($result->extra !== '') {
+    if (trim($result->extra) !== '') {
       report_minor_error("Unhandled extra data: " . $result->extra); // @codeCoverageIgnore
     }
   } 
   
   if ( isset($result->DOI) && $template->blank('doi')) {
     if (preg_match('~^(?:https://|http://|)(?:dx\.|)doi\.org/(.+)$~i', $result->DOI, $matches)) {
-       $result->DOI = matches[1];
+       $result->DOI = $matches[1];
     }
     $possible_doi = sanitize_doi($result->DOI);
     if (doi_works($possible_doi)) {
