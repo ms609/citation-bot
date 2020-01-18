@@ -552,6 +552,6 @@ class ZoteroTest extends testBaseClass {
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('Billy', $template->get('title'));
-    $this->assertTrue($this->blank(['author', 'author1', 'last1', 'first1', 'first', 'last'));
+    $this->assertTrue($this->blank(['author', 'author1', 'last1', 'first1', 'first', 'last']));
   }
 }
