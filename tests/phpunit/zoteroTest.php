@@ -369,7 +369,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_data = array('bookTitle' => '(pdf) This is a Title (pdf)', 'publisher' => 'Joe', 'title' => 'Billy', 'type' => 'bookSection');
+    $zotero_data[0] = (object) array('bookTitle' => '(pdf) This is a Title (pdf)', 'publisher' => 'Joe', 'title' => 'Billy', 'type' => 'bookSection');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite book', $template->wikiname());
@@ -384,7 +384,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_data = array('title' => 'Billy', 'type' => 'journalArticle');
+    $zotero_data[0] = (object) array('title' => 'Billy', 'type' => 'journalArticle');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite journal', $template->wikiname());
@@ -397,7 +397,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_data = array('title' => 'Billy', 'type' => 'magazineArticle');
+    $zotero_data[0] = (object) array('title' => 'Billy', 'type' => 'magazineArticle');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite magizine', $template->wikiname());
@@ -409,7 +409,7 @@ class ZoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = FALSE;
     $url = '';
-    $zotero_data = array('title' => 'Billy', 'type' => 'blogPost');
+    $zotero_data[0] = (object) array('title' => 'Billy', 'type' => 'blogPost');
     $zotero_response = json_encode($zotero_data);
     $url_kind = NULL;
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
@@ -423,7 +423,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_data = array('title' => 'Billy', 'type' => 'film');
+    $zotero_data[0] = (object) array('title' => 'Billy', 'type' => 'film');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite web', $template->wikiname());
@@ -436,7 +436,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_data = array('title' => 'Billy', 'type' => 'thesis', 'university' => 'Iowa', 'thesisType' => 'Masters');
+    $zotero_data[0] = (object) array('title' => 'Billy', 'type' => 'thesis', 'university' => 'Iowa', 'thesisType' => 'Masters');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite thesis', $template->wikiname());
@@ -451,7 +451,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = 'http://cnn.com/story';
     $url_kind = NULL;
-    $zotero_data = array('title' => 'Billy', 'type' => 'webpage');
+    $zotero_data[0] = (object) array('title' => 'Billy', 'type' => 'webpage');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite news', $template->wikiname());
@@ -467,7 +467,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = 'http://cnn.com/story';
     $url_kind = NULL;
-    $zotero_data = array('title' => 'Billy', 'type' => 'webpage');
+    $zotero_data[0] = (object) array('title' => 'Billy', 'type' => 'webpage');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite news', $template->wikiname());
