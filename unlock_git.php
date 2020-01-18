@@ -1,4 +1,5 @@
 <?php
+ob_implicit_flush();
 echo "<!DOCTYPE html><html><body><pre>\n";
 if (!file_exists('git_pull.lock')) die('Lock file gone');
 // Make the person wait.  I know how I can be.
