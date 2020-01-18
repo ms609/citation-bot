@@ -477,4 +477,81 @@ class ZoteroTest extends testBaseClass {
     $this->assertNull($template->get('publisher'));
   }
 
+   public function testZoteroResponse18() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'PMID: 25408617 PMCID: 4233402');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('25408617', $template->get('pmic'));
+    $this->assertSame('4233402', $template->get('pmc'));
+  }
+
+   public function testZoteroResponse19() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'PMID: 25408617, 25408617');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('25408617', $template->get('pmic'));
+  }
+ 
+   public function testZoteroResponse20() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'IMDb ID: nm321432123');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('Billy', $template->get('title'));
+  }
+ 
+   public function testZoteroResponse21() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = 'en.wikipedia.org'; // No date citation
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'date' => '2010');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertNull($template->get('date'));
+    $this->assertNull($template->get('year'));
+  }
+ 
+  public function testZoteroResponse22() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'bookSection');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertSame('Billy', $template->get('title'));
+  }
+ 
+   public function testZoteroResponse23() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $author = array(0 => 'This is not a human author by any stretch of the imagination corporation');
+    $author[0] = $author;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', $author);
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('Billy', $template->get('title'));
+    $this->assertTrue($this->blank(['author', 'author1', 'last1', 'first1', 'first', 'last'));
+  }
 }
