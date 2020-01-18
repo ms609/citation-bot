@@ -374,14 +374,14 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
     if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
-    if ($result->extra !== '') {
+    if (trim($result->extra) !== '') {
       report_minor_error("Unhandled extra data: " . $result->extra); // @codeCoverageIgnore
     }
   } 
   
   if ( isset($result->DOI) && $template->blank('doi')) {
     if (preg_match('~^(?:https://|http://|)(?:dx\.|)doi\.org/(.+)$~i', $result->DOI, $matches)) {
-       $result->DOI = matches[1];
+       $result->DOI = $matches[1];
     }
     $possible_doi = sanitize_doi($result->DOI);
     if (doi_works($possible_doi)) {
@@ -517,11 +517,10 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
         report_minor_error("Unhandled itemType: " . $result->itemType . " for $url");  // @codeCoverageIgnore
     }
     
-    $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
-    if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report'])) {
+    if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'])) {
       // Websites often have non-authors listed in metadata
       // "Books" are often bogus
-       $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
+      $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
       while (isset($result->creators[$i])) {
         $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
         if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
