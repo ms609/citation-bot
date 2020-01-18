@@ -400,7 +400,7 @@ class ZoteroTest extends testBaseClass {
     $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'magazineArticle');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
-    $this->assertSame('cite magizine', $template->wikiname());
+    $this->assertSame('cite magazine', $template->wikiname());
     $this->assertSame('Billy', $template->get('title'));
   }
  
