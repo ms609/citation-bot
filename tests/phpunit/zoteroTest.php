@@ -548,14 +548,14 @@ class ZoteroTest extends testBaseClass {
     $url_kind = NULL;
     $author = array(0 => 'This is not a human author by any stretch of the imagination correspondent corporation');
     $author[0] = $author;
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', $author);
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'author' => $author);
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('Billy', $template->get('title'));
     $this->assertTrue($template->blank(['author', 'author1', 'last1', 'first1', 'first', 'last']));
   }
  
-   public function testZoteroResponse24() {
+  public function testZoteroResponse24() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -565,4 +565,33 @@ class ZoteroTest extends testBaseClass {
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('10.1021/acs.analchem.8b04567', $template->get('doi'));
+  }
+ 
+  public function testZoteroResponse25() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $creators[0] = (object) array('creatorType' => 'editor', 'firstName' => "Joe", "lastName" => "");
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'report', 'creators' => $creators);
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('Billy', $template->get('title'));
+    $this->assertSame('Joe', $template->get('editor1'));
+  }
+ 
+  public function testZoteroResponse26() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $creators[0] = (object) array('creatorType' => 'translator', 'firstName' => "Joe", "lastName" => "");
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'report', 'creators' => $creators);
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('Billy', $template->get('title'));
+    $this->assertSame('Joe', $template->get('translator1'));
+  }
 }
