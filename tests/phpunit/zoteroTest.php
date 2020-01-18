@@ -251,7 +251,7 @@ class ZoteroTest extends testBaseClass {
    });
   }
  
-  public functions testZoteroResponse1() {
+  public function testZoteroResponse1() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -261,7 +261,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame($text, $template->parsed_text());
   }
    
-  public functions testZoteroResponse2() {
+  public function testZoteroResponse2() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -271,7 +271,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame($text, $template->parsed_text());
   }
 
-   public functions testZoteroResponse3() {
+   public function testZoteroResponse3() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -281,7 +281,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame($text, $template->parsed_text());
   }
 
-  public functions testZoteroResponse4() {
+  public function testZoteroResponse4() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -291,7 +291,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame($text, $template->parsed_text());
   }
  
-  public functions testZoteroResponse5() {
+  public function testZoteroResponse5() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -302,7 +302,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame($text, $template->parsed_text());
   }
  
-  public functions testZoteroResponse6() {
+  public function testZoteroResponse6() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -313,7 +313,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame($text, $template->parsed_text());
   }
  
-  public functions testZoteroResponse7() {
+  public function testZoteroResponse7() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -324,7 +324,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame($text, $template->parsed_text());
   }
  
-  public functions testZoteroResponse8() {
+  public function testZoteroResponse8() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -335,7 +335,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame($text, $template->parsed_text());
   }
 
-  public functions testZoteroResponse9() {
+  public function testZoteroResponse9() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -354,7 +354,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame($text, $template->parsed_text());
   }
  
-  public functions testZoteroResponse10() {
+  public function testZoteroResponse10() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -368,7 +368,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('This is a Title', $template->get('title'));
   }
 
-   public functions testZoteroResponse11() {
+   public function testZoteroResponse11() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -380,7 +380,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('Billy', $template->get('title'));
    }
    
-   public functions testZoteroResponse12() {
+   public function testZoteroResponse12() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -392,7 +392,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('Billy', $template->get('title'));
   }
  
-   public functions testZoteroResponse13() {
+   public function testZoteroResponse13() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -404,7 +404,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('Billy', $template->get('title'));
   }
  
-   public functions testZoteroResponse14() {
+   public function testZoteroResponse14() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -416,7 +416,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('Billy', $template->get('title'));
   }
  
-   public functions testZoteroResponse15() {
+   public function testZoteroResponse15() {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -430,7 +430,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('Masers', $template->get('type'));
   }
 
-   public functions testZoteroResponse16() {
+   public function testZoteroResponse16() {
     $text = '{{cite news|id=|publisher=Associated Press|author=Associated Press}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
@@ -445,7 +445,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertNull($template->get('publisher'))
   }
  
-   public functions testZoteroResponse17() {
+   public function testZoteroResponse17() {
     $text = '{{cite news|id=|publisher=Reuters|author=Reuters}}';
     $template = $this->make_citation($text);
     $access_date = FALSE;
