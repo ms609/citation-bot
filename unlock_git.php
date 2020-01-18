@@ -1,7 +1,19 @@
 <?php
-echo "<!DOCTYPE html><html><body><pre>";
-sleep(4);  // Make the person wait.  I know how I can be.
+echo "<!DOCTYPE html><html><body><pre>\n";
+// Make the person wait.  I know how I can be.
+@echo "Wait 6</p>\n";
+@sleep(1);
+@echo "Wait 5</p>\n";
+@sleep(1);
+@echo "Wait 4</p>\n";
+@sleep(1);
+@echo "Wait 3</p>\n";
+@sleep(1);
+@echo "Wait 2</p>\n";
+@sleep(1);
+@echo "Wait 1</p>\n";
+@sleep(1);
 @rmdir('git_pull.lock') ;
-echo "Script done";
-echo "</pre></body></html>"
+@echo "Script done</p>\n";
+@echo "</pre></body></html>\n"
 ?>
