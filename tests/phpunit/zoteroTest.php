@@ -547,7 +547,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $author = array(0 => 'This is not a human author by any stretch of the imagination correspondent corporation');
+    $author = array(0 => 'This is not a human author by any stretch of the imagination correspondent corporation', 1 => '');
     $author[0] = $author;
     $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'author' => $author);
     $zotero_response = json_encode($zotero_data);
@@ -632,6 +632,24 @@ class ZoteroTest extends testBaseClass {
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('Billy', $template->get('title'));
     $this->assertSame('Joe', $template->get('author1'));
+  }
+ 
+   public function testZoteroResponse30() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $author[0] = array(0 => 'Smith', 1 => '');
+    $author[1] = array(0 => 'Johnson', 1 => '');
+    $author[2] = array(0 => 'Jackson', 1 => '');
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'author' => $author);
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('Billy', $template->get('title'));
+    $this->assertSame('Smith', $template->get('author1'));
+    $this->assertSame('Johnson', $template->get('author2'));
+    $this->assertSame('Jackson', $template->get('author3'));
   }
 
 }
