@@ -640,12 +640,9 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $author = array(0 => 'Smith', 1 => '');
-    $author[0] = $author;
-    $author = array(0 => 'Johnson', 1 => '');
-    $author[1] = $author;
-    $author = array(0 => 'Jackson', 1 => '');
-    $author[2] = $author;
+    $author[0] = array(0 => 'Smith', 1 => '');
+    $author[1] = array(0 => 'Johnson', 1 => '');
+    $author[2] = array(0 => 'Jackson', 1 => '');
     $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'author' => $author);
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
