@@ -18,7 +18,6 @@ class ZoteroTest extends testBaseClass {
   }
 
   public function testZoteroExpansionNBK() {
-   $this->requires_zotero(function() {
     $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';  // Date is before access-date so will expand
     $expanded = $this->expand_via_zotero($text);
     $this->assertSame('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
@@ -547,7 +546,7 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $author = array(0 => 'This is not a human author by any stretch of the imagination correspondent corporation');
+    $author = array(0 => 'This is not a human author by any stretch of the imagination correspondent corporation', 1 => '');
     $author[0] = $author;
     $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'author' => $author);
     $zotero_response = json_encode($zotero_data);
@@ -640,8 +639,12 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $author = array(0 => 'Smith', 1 => 'Johnson', 2 => 'Jackson');
+    $author = array(0 => 'Smith', 1 => '');
     $author[0] = $author;
+    $author = array(0 => 'Johnson', 1 => '');
+    $author[1] = $author;
+    $author = array(0 => 'Jackson', 1 => '');
+    $author[2] = $author;
     $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'author' => $author);
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
