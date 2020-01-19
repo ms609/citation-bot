@@ -391,7 +391,7 @@ class WikipediaBot {
         "prop" => "info",
         "titles" => $page,
         ), 'POST');
-    
+    print_r($res);
     if (!isset($res->query->pages)) {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
         return -1;                                          // @codeCoverageIgnore
