@@ -632,7 +632,7 @@ final class Template {
                $this->quietly_forget('website');
                return TRUE;
              }
-            return FALSE;
+            report_error('Unreachable code reached in newspaper add'); // @codeCoverageIgnore
           } 
           if ($param_name === 'newspaper' && $this->has('via')) {
              if (stripos($value, 'times') !== FALSE && stripos($this->get('via'), 'times') !== FALSE) {
