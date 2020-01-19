@@ -124,11 +124,12 @@ class ZoteroTest extends testBaseClass {
   }
 
   public function testZoteroExpansion_biorxiv() {
-   $this->requires_zotero(function() {
     $text = '{{Cite journal| biorxiv=326363 }}';
     $expanded = $this->process_citation($text);
     $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get('title'));
-   });
+    $text = '{{Cite journal| biorxiv=326363 |doi=10.5555/Rubbish}}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get('title'));
   }
  
   public function testZoteroBadVolumes() { // has ( and such in it
@@ -590,9 +591,32 @@ class ZoteroTest extends testBaseClass {
     $creators[0] = (object) array('creatorType' => 'translator', 'firstName' => "Joe", "lastName" => "");
     $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'report', 'creators' => $creators);
     $zotero_response = json_encode($zotero_data);
-    return; // TODO
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('Billy', $template->get('title'));
     $this->assertSame('Joe', $template->get('translator1'));
+  }
+ 
+  public function testZoteroResponse27() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => "������Junk�����������", 'itemType' => 'webpage');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertNull($template->get('title'));
+  }
+  
+ public function testZoteroResponse28() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'type: dataset');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('Billy', $template->get('title'));
   }
 }

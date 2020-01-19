@@ -399,7 +399,7 @@ final class Template {
         }
       break;
       case (boolean) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
-        if (!$this->blank(['editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
+        if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last'])) {
           return $this->add($param_name, sanitize_string($value));
         } else {
@@ -407,6 +407,15 @@ final class Template {
         }
       break;
       
+      #TRANSLATOR
+      case (boolean) preg_match('~^translator(\d{1,})$~', $param_name, $match) :
+        if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) return FALSE; // Existing incompatible data
+        if ($this->blank(['translator' . $match[1], 'translator' . $match[1] . '-last', 'translator' . $match[1] . '-first'])) {
+          return $this->add($param_name, sanitize_string($value));
+        } else {
+          return FALSE;
+        }
+        
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
