@@ -127,7 +127,7 @@ class ZoteroTest extends testBaseClass {
     $text = '{{Cite journal| biorxiv=326363 }}';
     $expanded = $this->process_citation($text);
     $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get('title'));
-    $text = '{{Cite journal| biorxiv=326363 |doi=10.5555/Rubbish}}';
+    $text = '{{Cite journal| biorxiv=326363 |doi=10.0000/Rubbish_bot_failure_test}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get('title'));
   }
@@ -140,7 +140,7 @@ class ZoteroTest extends testBaseClass {
    });
   }
  
-   public function testZoteroKoreanLanguage() {
+  public function testZoteroKoreanLanguage() {
    $this->requires_zotero(function() {
     $text = '{{cite journal|url=http://www.newsen.com/news_view.php?uid=201606131737570410}}';
     $expanded = $this->process_citation($text);
