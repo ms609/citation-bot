@@ -388,6 +388,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertFalse($expanded->add_if_new('asin', 'ABC'));
     $this->assertSame('xxxxxx', $expanded->get('asin'));
     $this->assertNull($expanded->get('isbn'));
+   
+    $text = "{{Cite book}}";
+    $expanded = $this->make_citation($text);
+    $this->assertTrue($expanded->add_if_new('asin', '12345'));
+    $this->assertSame('12345', $expanded->get('asin'));
+    $this->assertNull($expanded->get('isbn'));
   }
  
   public function testTemplateRenaming() {
@@ -502,6 +508,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('12345', $template->get('jstor'));
 
     $text = "{{cite book|url=https://archive.org/detail/jstor-12345}}";
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertNull($template->get('url'));
+    $this->assertSame('12345', $template->get('jstor'));
+   
+    $text = "{{cite book|url=https://jstor.org/stable/pdfplus/12345.pdf}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
     $this->assertNull($template->get('url'));
