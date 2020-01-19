@@ -64,7 +64,7 @@ class Page {
     $this->construct_modifications_array();
     $this->set_date_pattern();
 
-    if (stripos($this->text, '#redirect') !== FALSE) {
+    if (preg_match('~\#redirect *\[\[~i', $this->text)) {
       report_warning("Page is a redirect.");
       return FALSE;
     }
