@@ -391,12 +391,15 @@ class WikipediaBot {
         "prop" => "info",
         "titles" => $page,
         ), 'POST');
-    
+    global $is_a_man_with_no_plan;
+    if ($is_a_man_with_no_plan) print_r($res);
     if (!isset($res->query->pages)) {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
         return -1;                                          // @codeCoverageIgnore
     }
+
     $res = reset($res->query->pages);
+    if ($is_a_man_with_no_plan) print_r($res);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
   public function redirect_target($page) {
