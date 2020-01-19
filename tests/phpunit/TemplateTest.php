@@ -3444,6 +3444,16 @@ T1 - This is the Title }}';
    public function testOddThing() {
      $text='{{journal=capitalization is Good}}';
      $template = $this->process_citation($text);
-    $this->assertSame($text, $template->parsed_text());
+     $this->assertSame($text, $template->parsed_text());
    }
+ 
+   public function testTranslator() {
+     $text='{{cite web}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->add_if_new('translator1', 'John'));
+     $text='{{cite web|translator=Existing bad data}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->add_if_new('translator1', 'John'));
+   }
+ 
 }
