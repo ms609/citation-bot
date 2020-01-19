@@ -18,6 +18,7 @@ class ZoteroTest extends testBaseClass {
   }
 
   public function testZoteroExpansionNBK() {
+   $this->requires_zotero(function() {
     $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';  // Date is before access-date so will expand
     $expanded = $this->expand_via_zotero($text);
     $this->assertSame('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
