@@ -1313,9 +1313,9 @@ final class Template {
             if (is_null($url_sent)) {
               $this->set($url_type, $url); // Save it
             }
-          } else {
-            curl_close($ch);
-            return FALSE;  // We do not want this URL incorrectly parsed below, or even waste time trying.
+          } else {  // We do not want this URL incorrectly parsed below, or even waste time trying.
+            curl_close($ch);  // @codeCoverageIgnore
+            return FALSE;     // @codeCoverageIgnore
           }
         }
         curl_close($ch);
