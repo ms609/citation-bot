@@ -2,19 +2,17 @@ sudo: false
 dist: trusty
 branches:
   except: release
-DEBUG
+
 language: php
                   ###### mediawiki/oauthclient uses features deprecated in 7.4 and higher           ######
                   ###### waiting on 1.0.3 https://packagist.org/packages/mediawiki/oauthclient      ######
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
     - stage: test
-      name: "Full test with PHP 7.3"
-      php: 7.3
+      php: 7.1
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
-        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit
 
 
