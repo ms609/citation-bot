@@ -2709,10 +2709,6 @@ final class Template {
           if (stripos($p->val, 'books.google.') !== FALSE) {
             $this->change_name_to('cite book');
           }
-        } elseif ($p->param == 'doix') {
-          report_add("Found unincorporated DOI parameter");
-          $this->param[$param_key]->param = 'doi';
-          $this->param[$param_key]->val = str_replace(DOT_ENCODE, DOT_DECODE, $p->val);
         }
         continue;
       }
