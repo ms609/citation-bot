@@ -14,5 +14,5 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
 
 
 git:
-  depth: 21
+  depth: 3
   
