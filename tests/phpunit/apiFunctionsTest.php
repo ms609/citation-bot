@@ -13,6 +13,6 @@ final class apiFunctionsTest extends testBaseClass {
      $template = $this->make_citation($text);
      expand_by_jstor($template);
      $this->assertNull($template->get('url'));
-     $this->assertSame('8324143', $template->get('jstor'));
+     $this->assertSame('832414', $template->get('jstor'));
   }
 }
