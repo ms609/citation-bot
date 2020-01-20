@@ -3466,6 +3466,11 @@ T1 - This is the Title }}';
      $text='{{cite web|translator=Existing bad data}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->add_if_new('translator1', 'John'));
+     $text='{{cite web}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->add_if_new('translator1', 'John'));
+     $this->assertTrue($template->add_if_new('translator2', 'Jill'));
+     $this->assertFalse($template->add_if_new('translator2', 'Rob'));  // Add same one again
    }
  
 }
