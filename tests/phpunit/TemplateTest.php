@@ -2199,18 +2199,29 @@ T1 - This is the Title }}';
   }
   
   public function testHandles1() {
-    $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/10125/20269}}');
-    $template->get_identifiers_from_url();
+    $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////|journal=X}}');
+    $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('10125/20269', $template->get('hdl'));
+    $this->assertSame('cite journal', $template->wikiname());
     $this->assertNull($template->get('url'));
   }
+ 
   public function testHandles2() {
-    $template = $this->make_citation('{{Cite journal|url=https://hdl.handle.net/handle/10125/20269}}');
-    $template->get_identifiers_from_url();
+    $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertSame('cite document', $template->wikiname());
     $this->assertSame('10125/20269', $template->get('hdl'));
     $this->assertNull($template->get('url'));
   }
+ 
   public function testHandles3() {
+    $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/handle/10125/dfsjladsflhdsfaewfsdfjhasjdfhldsaflkdshkafjhsdjkfhdaskljfhdsjklfahsdafjkldashafldsfhjdsa_TEST_DATA_FOR_BOT_TO_FAIL_ON}}');
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertSame('http://hdl.handle.net/handle/10125/dfsjladsflhdsfaewfsdfjhasjdfhldsaflkdshkafjhsdjkfhdaskljfhdsjklfahsdafjkldashafldsfhjdsa_TEST_DATA_FOR_BOT_TO_FAIL_ON', $template->get('url'));
+    $this->assertNull($template->get('hdl'));
+  }
+ 
+  public function testHandles4() {
     $template = $this->make_citation('{{Cite journal|url=http://digitallibrary.amnh.org/dataset.xhtml?persistentId=hdl:10125/20269;jsessionid=EE3BA49390611FCE0AAAEBB819E777BC?sequence=1}}');
     $template->get_identifiers_from_url();
     $this->assertSame('10125/20269', $template->get('hdl'));
