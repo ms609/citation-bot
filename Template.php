@@ -138,7 +138,6 @@ final class Template {
       $this->correct_param_spelling();
       $this->get_doi_from_text();
       $this->fix_rogue_etal();
-      $this->tidy();
       
       switch ($this->wikiname()) {
         case "cite arxiv":
@@ -242,6 +241,7 @@ final class Template {
             }
           }
         }
+        $this->tidy();
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->get('work') !== NULL) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
