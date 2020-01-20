@@ -848,6 +848,14 @@ final class Template {
         }
         return $this->add($param_name, $value);
         
+      case 'archive-url':
+        if ($this->blank(['archive-url', 'archiveurl'])) {
+           $this->add($param_name, $value);
+           $this->tidy_parameter($param_name);
+           return TRUE;
+        }
+        return FALSE;
+        
       case 'title-link':
         if ($this->blank(array_merge(TITLE_LINK_ALIASES, ['url']))) {
           return $this->add($param_name, $value); // We do not sanitize this, since it is not new data
@@ -1609,6 +1617,13 @@ final class Template {
              $this->forget($url_type);
           }
           return $this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}');
+      } elseif (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $this->blank(['archiveurl', 'archive-url'])) {
+          quietly('report_modification', 'Extracting URL from archive');
+          if (is_null($url_sent)) {
+             $this->set($url_type, $match[1]);
+             $this->add_if_new('archive-url', $match[0]);
+             return FALSE; // We really got nothing
+          }
       }
     }
     return FALSE ;

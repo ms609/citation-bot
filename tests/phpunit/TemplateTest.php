@@ -3517,5 +3517,12 @@ T1 - This is the Title }}';
      $this->assertSame('http://arxiv.org/X/abs/3XXX41222342343242', $template->get('url'));
    }
  
-
+   public function testArchiveAsURL() {
+     $text='{{Cite web | url=https://web.archive.org/web/20111030210210/http://www.cap.ca/en/}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url()); // FALSE because we add no parameters or such
+     $this->assertSame('http://www.cap.ca/en/', $template->get('url'));
+     $this->assertSame('https://web.archive.org/web/20111030210210/http://www.cap.ca/en/', $template->get('archive-url'));
+     $this->assertSame('2011-10-30', $template->get('archive-date'));
+   }
 }
