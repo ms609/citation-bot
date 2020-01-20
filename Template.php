@@ -848,6 +848,14 @@ final class Template {
         }
         return $this->add($param_name, $value);
         
+      case 'archive-url':
+        if ($this->blank(['archive-url', 'archiveurl'])) {
+           $this->add($param_name, $value);
+           $this->tidy_parameter($param_name);
+           return TRUE;
+        }
+        return FALSE;
+        
       case 'title-link':
         if ($this->blank(array_merge(TITLE_LINK_ALIASES, ['url']))) {
           return $this->add($param_name, $value); // We do not sanitize this, since it is not new data
