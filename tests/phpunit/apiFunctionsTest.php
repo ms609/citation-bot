@@ -207,5 +207,11 @@ final class apiFunctionsTest extends testBaseClass {
      $template = $this->make_citation($text);
      $this->assertFalse(expand_by_jstor($template));
   }
+  
+  public function testArxivChemicals() {
+     $text = "{{cite arXiv|eprint=2001.01484}}";
+     $template = $this->process_citation($text);
+     $this->assertSame("<sup>14</sup>N/<sup>15</sup>N isotopic ratio in CH<sub>3</sub>CN of Titan's atmosphere measured with ALMA", $template->get('title'));
+  }
 
 }
