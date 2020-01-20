@@ -153,7 +153,7 @@ function arxiv_api($ids, $templates) {
     }
     $the_title = (string) $entry->title;
     echo "\n" . $the_title . "\n";
-    while (preg_match('~\^{(\d+)}~', $the_title, $match)) {
+    while (preg_match('~\$\^{(\d+)\$}~', $the_title, $match)) {
       $the_title = str_replace($match[0], '<sup>' . $match[1] . '</sup>', $the_title);
     }
     echo "\n" . $the_title . "\n";
