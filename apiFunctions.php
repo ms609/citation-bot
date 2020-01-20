@@ -645,7 +645,7 @@ function expand_doi_with_dx($template, $doi) {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-     } elseif (@$json['type'] == 'thesis') {
+     } elseif (@$json['type'] == 'thesis' || @$json['type'] == 'dissertation') {
        $template->change_name_to('cite thesis');
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
