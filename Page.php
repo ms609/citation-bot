@@ -328,8 +328,8 @@ class Page {
     $this->replace_object($nowiki);
 
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
-      $this->text = $this->start_text;
-      report_error('CITATION_BOT_PLACEHOLDER found after processing');
+      $this->text = $this->start_text;                                  // @codeCoverageIgnore
+      report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
     }
     return strcmp($this->text, $this->start_text) != 0; // we often just fix Journal caps
   }
