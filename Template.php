@@ -1507,10 +1507,10 @@ final class Template {
             $handle = $matches[1];
           }
           while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
-            $handle = $mathes[1];
+            $handle = $matches[1];
           }
           while (preg_match('~^/(.+)$~', $handle, $matches)) { // Leading slash
-            $handle = $mathes[1];
+            $handle = $matches[1];
           }
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
