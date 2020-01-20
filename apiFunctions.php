@@ -645,7 +645,7 @@ function expand_doi_with_dx($template, $doi) {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-     } elseif (@$json['type'] == 'thesis') {
+     } elseif (@$json['type'] == 'thesis' || @$json['type'] == 'dissertation') {
        $template->change_name_to('cite thesis');
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
@@ -715,7 +715,7 @@ function expand_by_jstor($template) {
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
-  if ($dat === FALSE) {
+  if ($dat == FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return FALSE;                                                           // @codeCoverageIgnore
   }

@@ -166,39 +166,48 @@ final class Template {
           $the_chapter = (string) $this->get('chapter');
           $bad_data = FALSE;
           if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
-              mb_strtoupper($the_title) === $the_title && stripos($the_title, 'CITATION') === FALSE) {
+              mb_strtoupper($the_title) === $the_title && strpos($the_title, 'CITATION') === FALSE) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // ALL UPPER CASE
+              $the_title = '';
               $bad_data = TRUE;
-          } elseif (strlen($the_journal) > 15 && strpos($the_journal, ' ') !== FALSE &&
-              mb_strtoupper($the_journal) === $the_journal && stripos($the_journal, 'CITATION') === FALSE) {
+          }
+          if (strlen($the_journal) > 15 && strpos($the_journal, ' ') !== FALSE &&
+              mb_strtoupper($the_journal) === $the_journal && strpos($the_journal, 'CITATION') === FALSE) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal'); // ALL UPPER CASE
+              $the_journal = '';
               $bad_data = TRUE;
-          } elseif (strlen($the_chapter) > 15 && strpos($the_chapter, ' ') !== FALSE &&
-              mb_strtoupper($the_chapter) === $the_chapter && stripos($the_chapter, 'CITATION') === FALSE) {
+          }
+          if (strlen($the_chapter) > 15 && strpos($the_chapter, ' ') !== FALSE &&
+              mb_strtoupper($the_chapter) === $the_chapter && strpos($the_chapter, 'CITATION') === FALSE) {
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter'); // ALL UPPER CASE
+              $the_chapter = '';
               $bad_data = TRUE;
-          } elseif (strcasecmp($the_title, $the_journal) === 0 && $this->has('title') &&
-                    stripos($the_title, 'CITATION') === FALSE) { // Journal === Title
+          }
+          if ($the_title != '' && stripos($the_title, 'CITATION') === FALSE) {
+            if (strcasecmp($the_title, $the_journal) === 0 &&
+                strcasecmp($the_title, $the_chapter) === 0) { // Journal === Title === Chapter INSANE!  Never actually seen
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+              $bad_data = TRUE;
+            } elseif (strcasecmp($the_title, $the_journal) === 0) { // Journal === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $bad_data = TRUE;
-          } elseif (strcasecmp($the_title, $the_chapter) === 0 && $this->has('title') &&
-                    stripos($the_title, 'CITATION') === FALSE ) { // Chapter === Title
+            } elseif (strcasecmp($the_title, $the_chapter) === 0) { // Chapter === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
               $bad_data = TRUE;
-          } elseif (substr($the_title, -9, 9) == ' on JSTOR' &&
-                    stripos($the_title, 'CITATION') === FALSE) {
+            } elseif (substr($the_title, -9, 9) == ' on JSTOR') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
               $bad_data = TRUE;
-          } elseif (substr($the_title, -20, 20) == 'IEEE Xplore Document' &&
-                    stripos($the_title, 'CITATION') === FALSE) {
+            } elseif (substr($the_title, -20, 20) == 'IEEE Xplore Document') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
-          } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title) &&
-                   stripos($the_title, 'CITATION') === FALSE) {
+            } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
+            }
           }
           if ($bad_data) {
             if ($this->has('doi') && doi_active($this->get('doi'))) {
