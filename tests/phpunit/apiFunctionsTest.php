@@ -13,6 +13,6 @@ final class apiFunctionsTest extends testBaseClass {
      $text = "{{cite journal|doi=$doi}}";
      $template = $this->make_citation($text);
      expand_doi_with_dx($template, $doi);
-     $this->assertSame('what', $expanded->parsed_text());
+     $this->assertSame('what', $template->parsed_text());
   }
 }
