@@ -1251,7 +1251,7 @@ T1 - This is the Title }}';
       $code_coverage1  = '{{Citation |
 %0 Journal Article
 %T This Title
-%@ 1990-1111}}';
+%@ 9999-9999}}';
    
       $code_coverage2  = '{{Citation |
 %0 Book
