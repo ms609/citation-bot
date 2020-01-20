@@ -9,7 +9,7 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
    public function testJstor() {
-     $text = "{{cite journal|url=https://jstor.org/stable/8324143?seq=1234}}";
+     $text = "{{cite journal|url=https://jstor.org/stable/832414?seq=1234}}";
      $template = $this->make_citation($text);
      expand_by_jstor($template);
      $this->assertNull($template->get('url'));
