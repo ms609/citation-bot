@@ -1282,7 +1282,7 @@ T1 - This is the Title }}';
    
        $prepared = $this->process_citation($code_coverage1);
        $this->assertSame('This Title', $prepared->get('title'));;
-       $this->assertSame('1990-1111', $prepared->get('issn'));
+       $this->assertSame('9999-9999', $prepared->get('issn'));
    
        $prepared = $this->process_citation($code_coverage2);
        $this->assertSame('This Title', $prepared->get('title'));;
@@ -3583,7 +3583,9 @@ T1 - This is the Title }}';
    public function testCAPSGoingAway5() {
      $text='{{Cite book | jstor=TEST_DATA_IGNORE |title=Same|chapter=Same|journal=Same}}';
      $template = $this->process_citation($text);
-     $this->assertSame($text, $template->parsed_text());
+     $this->assertSame('Same', $template->get('journal'));
+     $this->assertSame('Same', $template->get('title'));
+     $this->assertNull($template->get('chapter'));
    }
  
    public function testAddDuplicateArchive() {
