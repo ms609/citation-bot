@@ -152,13 +152,17 @@ function arxiv_api($ids, $templates) {
       }
     }
     $the_title = (string) $entry->title;
+    echo "\n" . $the_title . "\n";
     while (preg_match('~\^{(\d+)}~', $the_title, $match)) {
       $the_title = str_replace($match[0], '<sup>' . $match[1] . '</sup>', $the_title);
     }
+    echo "\n" . $the_title . "\n";
     while (preg_match('~\\ce{([^}{^]+)}~', $the_title, $match)) {
       $the_title = str_replace($match[0], $match[1], $the_title);
     }
-    $this_template->add_if_new("title", (string) $the_title, 'arxiv'); // Formatted by add_if_new
+    echo "\n" . $the_title . "\n";
+    $this_template->add_if_new("title", $the_title, 'arxiv'); // Formatted by add_if_new
+    echo "\n" . $this_template->get('title') . "\n";
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
     $this_template->add_if_new("year", date("Y", strtotime((string)$entry->published)));
 
