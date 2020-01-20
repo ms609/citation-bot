@@ -3555,7 +3555,7 @@ T1 - This is the Title }}';
      $text='{{Cite journal | doi=10.1016/j.ifacol.2017.08.010|title=THIS IS A VERY BAD ALL CAPS TITLE|journal=THIS IS A VERY BAD ALL CAPS JOURNAL}}';
      $template = $this->process_citation($text);
      $this->assertSame('Contingency Analysis Post-Processing with Advanced Computing and Visualization', $template->get('title'));
-     $this->assertSame('IFAC-Papers OnLine', $template->get('journal'));   
+     $this->assertSame('IFAC-PapersOnLine', $template->get('journal'));   
    }
  
    public function testCAPSGoingAway2() {
