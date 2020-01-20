@@ -174,4 +174,38 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('Lecture Notes in Computer Science', $expanded->get('series'));
      $this->assertSame('Automata, Languages, and Programming', $expanded->get('title'));
   }
+  
+   public function testThesisDOI() {
+     $doi = '10.17077/etd.g638o927';
+     $text = "{{cite journal|doi=$doi}}";
+     $template = $this->make_citation($text);
+     expand_doi_with_dx($template, $doi);
+     $this->assertSame('10.17077/etd.g638o927', $template->get('doi'));
+     $this->assertSame("The caregiver's journey", $template->get('title'));
+     $this->assertSame('The University of Iowa', $template->get('publisher'));
+     $this->assertSame('2018', $template->get('year'));
+     $this->assertSame('Schumacher', $template->get('last1')); 
+     $this->assertSame('Lisa Anne', $template->get('first1'));
+  }
+  
+   public function testJstor() {
+     $text = "{{cite journal|url=https://jstor.org/stable/832414?seq=1234}}";
+     $template = $this->make_citation($text);
+     $this->assertTrue(expand_by_jstor($template));
+     $this->assertNull($template->get('jstor')); // We don't do that here
+
+     $text = "{{cite journal|jstor=832414?seq=1234}}";
+     $template = $this->make_citation($text);
+     $this->assertTrue(expand_by_jstor($template));
+     $this->assertNull($template->get('url'));
+
+     $text = "{{cite journal|jstor=123 123}}";
+     $template = $this->make_citation($text);
+     $this->assertFalse(expand_by_jstor($template));
+
+     $text = "{{cite journal|jstor=i832414}}";
+     $template = $this->make_citation($text);
+     $this->assertFalse(expand_by_jstor($template));
+  }
+
 }
