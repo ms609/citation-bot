@@ -524,6 +524,12 @@ final class TemplateTest extends testBaseClass {
     $template->get_identifiers_from_url();
     $this->assertNull($template->get('url'));
     $this->assertSame('12345', $template->get('jstor'));
+   
+    $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS}}";
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertNull($template->get('url'));
+    $this->assertSame('10.0000/BOGUS', $template->get('doi'));
   }
  
   public function testDoiExpansionBook() {
