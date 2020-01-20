@@ -1609,6 +1609,12 @@ final class Template {
              $this->forget($url_type);
           }
           return $this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}');
+      } elseif (preg_match("^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) $this->blank(['archiveurl', 'archive-url'])) {
+          if (is_null($url_sent)) {
+             $this->set($url_type, $match[1]);
+             $this->add_if_new('archive-url', $match[0]);
+             return FALSE; // We really got nothing
+          }
       }
     }
     return FALSE ;
