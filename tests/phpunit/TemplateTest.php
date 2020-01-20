@@ -524,31 +524,41 @@ final class TemplateTest extends testBaseClass {
     $template->get_identifiers_from_url();
     $this->assertNull($template->get('url'));
     $this->assertSame('12345', $template->get('jstor'));
-   
+  }
+ 
+  public function testURLCleanUp2() {
     $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS}}"; // Add bogus
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertNull($template->get('url'));
     $this->assertSame('10.0000/BOGUS', $template->get('doi'));
-   
+  }
+ 
+  public function testURLCleanUp3() {
     $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS|doi=10.0000/THIS_IS_JUNK_DATA}}"; // Fail to add bogus
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertSame('https://dx.doi.org/10.0000/BOGUS', $template->get('url'));
     $this->assertSame('10.0000/THIS_IS_JUNK_DATA', $template->get('doi'));
-   
+  }
+ 
+  public function testURLCleanUp4() {
     $text = "{{cite journal|url=https://dx.doi.org/10.5284/1000184}}"; // A particularly semi-valid DOI
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertNull($template->get('doi'));
     $this->assertSame('https://dx.doi.org/10.5284/1000184', $template->get('url'));
-   
+  }
+ 
+  public function testURLCleanUp5() {
     $text = "{{cite journal|doi=10.5284/1000184|url=https://dx.doi.org/10.5284/1000184XXXXXXXXXX}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertNull($template->get('url'));
     $this->assertSame('10.5284/1000184', $template->get('doi'));
-   
+  }
+ 
+  public function testURLCleanUp6() {
     $text = "{{cite journal|doi=10.5284/1000184|url=https://dx.doi.org/10.5284/1000184XXXXXXXXXX.pdf}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
