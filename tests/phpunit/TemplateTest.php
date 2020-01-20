@@ -3473,4 +3473,49 @@ T1 - This is the Title }}';
      $this->assertFalse($template->add_if_new('translator2', 'Rob'));  // Add same one again
    }
  
+   public function testAddDuplicateBibcode() {
+     $text='{{cite web|url=https://ui.adsabs.harvard.edu/abs/1924MNRAS..84..308E/abstract|bibcode=1924MNRAS..84..308E}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url());
+     $this->assertNull($template->get('url'));
+   }
+ 
+   public function testNonUSAPubMedMore() {
+     $text='{{cite web|url=https://europepmc.org/abstract/med/342432/pdf}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->get_identifiers_from_url());
+     $this->assertNull($template->get('url'));
+     $this->assertSame('342432', $template->get('pmid'));
+     $this->assertSame('cite journal', $template->wikiname());
+   }
+ 
+   public function testNonUSAPubMedMore2() {
+     $text='{{cite web|url=https://europepmc.org/scanned?pageindex=1234&articles=pmc43871}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->get_identifiers_from_url());
+     $this->assertNull($template->get('url'));
+     $this->assertSame('43871', $template->get('pmc'));
+     $this->assertSame('cite journal', $template->wikiname());
+   }
+
+   public function testNonUSAPubMedMore3() {
+     $text='{{cite web|url=https://pubmedcentralcanada.ca/pmcc/articles/PMC324123/pdf}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->get_identifiers_from_url());
+     $this->assertNull($template->get('url'));
+     $this->assertSame('324123', $template->get('pmc'));
+     $this->assertSame('cite journal', $template->wikiname());
+   }
+ 
+   public function testRubbishArxiv() { // Something we do not understand, other than where it is from
+     $text='{{cite web|url=http://arxiv.org/X/abs/3XXX41222342343242}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url());
+     $this->assertSame('cite arxiv', $template->wikiname());
+     $this->assertNull($template->get('arxiv'));
+     $this->assertNull($template->get('eprint'));
+     $this->assertSame('http://arxiv.org/X/abs/3XXX41222342343242', $template->get('url'));
+   }
+ 
+
 }
