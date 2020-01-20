@@ -138,7 +138,6 @@ final class Template {
       $this->correct_param_spelling();
       $this->get_doi_from_text();
       $this->fix_rogue_etal();
-      $this->tidy();
       
       switch ($this->wikiname()) {
         case "cite arxiv":
@@ -223,7 +222,7 @@ final class Template {
               if ($this->has('journal')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_journal');
               } else {
-                $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');   // @codeCoverageIgnore
+                $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_title')) {
@@ -242,6 +241,7 @@ final class Template {
             }
           }
         }
+        $this->tidy();
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->get('work') !== NULL) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');

@@ -340,6 +340,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('publisher'));
     $this->assertNull($expanded->get('chapter-url'));
     $this->assertSame('{{ASIN|0226845494|country=eu}}', $expanded->get('id'));
+   
+    $text = "{{Cite book | chapter-url=http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494 |isbn=exists}}";
+    $expanded = $this->prepare_citation($text);;
+    $this->assertNull($expanded->get('asin'));
+    $this->assertNull($expanded->get('chapter-url'));
+    $this->assertSame('exists', $expanded->get('isbn'));
   }
 
   public function testRemoveASIN() {
@@ -1240,7 +1246,18 @@ T1 - This is the Title }}';
 %D 1990
 %I University of California, Berkeley
 %R 10.1038/ntheses.01928
+%@ Ignore
 %9 Dissertation}}';
+      $code_coverage1  = '{{Citation |
+%0 Journal Article
+%T This Title
+%@ 9999-9999}}';
+   
+      $code_coverage2  = '{{Citation |
+%0 Book
+%T This Title
+%@ 000-000-000-0X}}';
+
        $prepared = $this->prepare_citation($book);
        $this->assertSame('Chaucer, Geoffrey', $prepared->first_author());
        $this->assertSame('The Works of Geoffrey Chaucer', $prepared->get('title'));
@@ -1261,7 +1278,15 @@ T1 - This is the Title }}';
        $this->assertSame('Permian strata in South-East Asia', $prepared->get('title'));
        $this->assertSame('1990', $this->getDateAndYear($prepared));
        $this->assertSame('University of California, Berkeley', $prepared->get('publisher'));
-       $this->assertSame('10.1038/ntheses.01928', $prepared->get('doi'));  
+       $this->assertSame('10.1038/ntheses.01928', $prepared->get('doi'));
+   
+       $prepared = $this->process_citation($code_coverage1);
+       $this->assertSame('This Title', $prepared->get('title'));;
+       $this->assertSame('9999-9999', $prepared->get('issn'));
+   
+       $prepared = $this->process_citation($code_coverage2);
+       $this->assertSame('This Title', $prepared->get('title'));;
+       $this->assertSame('000-000-000-0X', $prepared->get('isbn'));  
   }
    
   public function testConvertingISBN10intoISBN13() { // URLS present just to speed up tests.  Fake years to trick date check
@@ -3524,5 +3549,49 @@ T1 - This is the Title }}';
      $this->assertSame('http://www.cap.ca/en/', $template->get('url'));
      $this->assertSame('https://web.archive.org/web/20111030210210/http://www.cap.ca/en/', $template->get('archive-url'));
      $this->assertSame('2011-10-30', $template->get('archive-date'));
+   }
+ 
+   public function testCAPSGoingAway1() {
+     $text='{{Cite journal | doi=10.1016/j.ifacol.2017.08.010|title=THIS IS A VERY BAD ALL CAPS TITLE|journal=THIS IS A VERY BAD ALL CAPS JOURNAL}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('Contingency Analysis Post-Processing with Advanced Computing and Visualization', $template->get('title'));
+     $this->assertSame('IFAC-PapersOnLine', $template->get('journal'));   
+   }
+ 
+   public function testCAPSGoingAway2() {
+     $text='{{Cite book | doi=10.1109/PESGM.2015.7285996|title=THIS IS A VERY BAD ALL CAPS TITLE|chapter=THIS IS A VERY BAD ALL CAPS CHAPTER}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('Sub-second state estimation implementation and its evaluation with real data', $template->get('chapter'));
+     $this->assertSame('2015 IEEE Power & Energy Society General Meeting', $template->get('title')); 
+   }
+ 
+   public function testCAPSGoingAway3() {
+     $text='{{Cite book | doi=10.1109/PESGM.2015.7285996|title=Same|chapter=Same}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('Sub-second state estimation implementation and its evaluation with real data', $template->get('chapter'));
+     $this->assertSame('2015 IEEE Power & Energy Society General Meeting', $template->get('title')); 
+   }
+ 
+   public function testCAPSGoingAway4() {
+     $text='{{Cite book | doi=10.1109/PESGM.2015.7285996|title=Same|chapter=Same|journal=Same}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('Sub-second state estimation implementation and its evaluation with real data', $template->get('chapter'));
+     $this->assertSame('2015 IEEE Power & Energy Society General Meeting', $template->get('title')); 
+     $this->assertSame('Same', $template->get('journal'));
+   }
+ 
+   public function testCAPSGoingAway5() {
+     $text='{{Cite book | jstor=TEST_DATA_IGNORE |title=Same|chapter=Same|journal=Same}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('Same', $template->get('journal'));
+     $this->assertSame('Same', $template->get('title'));
+     $this->assertNull($template->get('chapter'));
+   }
+ 
+   public function testAddDuplicateArchive() {
+     $text='{{Cite book | archiveurl=XXX}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->add_if_new('archive-url', 'YYY'));
+     $this->assertSame($text, $template->parsed_text());
    }
 }
