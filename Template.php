@@ -1253,12 +1253,42 @@ final class Template {
     }
 
     if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
-        quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
-        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+      if ($this->has('doi')) {
+        if (strcasecmp($this->get('doi'), $match[1]) === 0) {
+         if (is_null($url_sent)) {
+          quietly('report_modification', "URL is hard-coded DOI; removing since we already have DOI paramter");
+          $this->forget($url_type);
+         }
+         return FALSE;
+        }
+        // The DOIs do not match
         if (is_null($url_sent)) {
+         report_warning('doi.org URL does not match existing DOI paramter, investigating...');
+        }
+        if (doi_works($match[1]) && !doi_works($this->get('doi'))) {
+          $this->set('doi', $match[1]);
+          if (is_null($url_sent)) {
+            $this->forget($url_type);
+          }
+          return TRUE;
+        }
+        if (!doi_works($match[1]) && doi_works($this->get('doi'))) {
+          if (is_null($url_sent)) {
+            $this->forget($url_type);
+          }
+          return FALSE;
+        }
+        return FALSE; // Both valid or both invalid (could be legit if chapter and book are different DOIs
+      }
+      if ($this->add_if_new('doi', urldecode($match[1]))) { // Will expand from DOI when added
+        if (is_null($url_sent)) {
+          quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
           $this->forget($url_type);
         }
-        return $this->add_if_new('doi', urldecode($match[1])); // Will expand from DOI when added
+        return TRUE;
+      } else {
+        return FALSE; // "bad" doi? 
+      }
     }
     if (stripos($url, 'oxforddnb.com') !== FALSE) return FALSE; // generally bad, and not helpful
     if ($doi = extract_doi($url)[1]) {
@@ -1287,11 +1317,6 @@ final class Template {
             }
           }
         } else {
-          // Even if the DOI is broken, still drop URL if URL was doi.org URL
-          if (is_null($url_sent) && strpos(strtolower($url), "doi.org/") !== FALSE) {
-            report_forget("Recognized doi.org URL; dropping URL");
-            $this->forget($url_type);
-          }
           $this->mark_inactive_doi();
         }
         return TRUE; // Added new DOI
