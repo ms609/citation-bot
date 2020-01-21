@@ -3648,58 +3648,58 @@ T1 - This is the Title }}';
    public function testFloaters() {
      $text='{{Cite journal | p 33 }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame('33', $this->get('page'));
+     $this->assertSame('33', $template->get('page'));
     
      $text='{{Cite journal |33(22):11-12 }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame('22', $this->get('issue'));
-     $this->assertSame('33', $this->get('volume'));
-     $this->assertSame('11–12', $this->get('pages'));
+     $this->assertSame('22', $template->get('issue'));
+     $this->assertSame('33', $template->get('volume'));
+     $this->assertSame('11–12', $template->get('pages'));
    }
  
    public function testIDconvert() {
      $text='{{Cite journal | id = {{ASIN|0226845494|country=eu}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $this->parse_text());
+     $this->assertSame($text, $template->parse_text());
 
      $text = '{{Cite journal | id = {{jstor|0226845494|issn=xxxx}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $this->parse_text());
+     $this->assertSame($text, $template->parse_text());
     
      $text = '{{Cite journal | id = {{ol|0226845494|author=xxxx}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $this->parse_text());
+     $this->assertSame($text, $template->parse_text());
       
      $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $this->parse_text());
+     $this->assertSame($text, $template->parse_text());
       
      $text='{{Cite journal | id = {{oclc|02268454}} {{ol|1234}} {{bibcode|222}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame('02268454', $this->get('oclc'));
-     $this->assertSame('1234', $this->get('ol'));
-     $this->assertSame('222........', $this->get('bibcode'));
-     $this->assertNull($this->get('id'));
+     $this->assertSame('02268454', $template->get('oclc'));
+     $this->assertSame('1234', $template->get('ol'));
+     $this->assertSame('222........', $template->get('bibcode'));
+     $this->assertNull($template->get('id'));
     
      $text='{{Cite journal | id = {{jfm|02268454}} {{lccn|1234}} {{mr|222}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame('02268454', $this->get('jfm'));
-     $this->assertSame('1234', $this->get('lccn'));
-     $this->assertSame('222', $this->get('mr'));
-     $this->assertNull($this->get('id'));
+     $this->assertSame('02268454', $template->get('jfm'));
+     $this->assertSame('1234', $template->get('lccn'));
+     $this->assertSame('222', $template->get('mr'));
+     $this->assertNull($template->get('id'));
     
      $text='{{Cite journal | id = {{osti|02268454}} {{ssrn|1234}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame('02268454', $this->get('osti'));
-     $this->assertSame('1234', $this->get('ssrn'));
-     $this->assertSame('222', $this->get('mr'));
-     $this->assertNull($this->get('id'));
+     $this->assertSame('02268454', $template->get('osti'));
+     $this->assertSame('1234', $template->get('ssrn'));
+     $this->assertSame('222', $template->get('mr'));
+     $this->assertNull($template->get('id'));
    }
 
    public function testCAPS() {
      $text = '{{Cite journal | URL = }}';
      $template = $this->process_citation($text);
-     $this->assertSame('', $this->get('url'));
-     $this->assertNull($this->get('URL'));
+     $this->assertSame('', $template->get('url'));
+     $this->assertNull($template->get('URL'));
    }
 }
