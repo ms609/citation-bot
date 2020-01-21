@@ -1265,14 +1265,14 @@ final class Template {
         if (is_null($url_sent)) {
          report_warning('doi.org URL does not match existing DOI paramter, investigating...');
         }
-        if (doi_works($match[1]) && !doi_works($this->get('doi')) {
+        if (doi_works($match[1]) && !doi_works($this->get('doi'))) {
           $this->set('doi', $match[1]);
           if (is_null($url_sent)) {
             $this->forget($url_type);
           }
           return TRUE;
         }
-        if (!doi_works($match[1]) && doi_works($this->get('doi')) {
+        if (!doi_works($match[1]) && doi_works($this->get('doi'))) {
           if (is_null($url_sent)) {
             $this->forget($url_type);
           }
