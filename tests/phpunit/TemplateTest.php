@@ -403,7 +403,7 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testTemplateRenaming() {
-    $text = "{{cite web|url=https://books.google.com/books?id=ecrwrKCRr7YC&pg=PA85&lpg=PA85&dq=vestibular+testing+lab+gianoli|title=Practical Management of the Dizzy Patient|first=Joel A.|last=Goebel|date=6 December 2017|publisher=Lippincott Williams & Wilkins|via=Google Books}}";
+    $text = "{{cite web|url=https://books.google.com/books?id=ecrwrKCRr7YC&pg=PA85&lpg=PA85&dq=vestibular+testing+lab+gianoli&keywords=lab&text=vestibular+testing+lab+gianoli|title=Practical Management of the Dizzy Patient|first=Joel A.|last=Goebel|date=6 December 2017|publisher=Lippincott Williams & Wilkins|via=Google Books}}";
     // Should add ISBN and thus convert to Cite book
     $expanded = $this->process_citation($text);
     $this->assertSame('9780781765626', $expanded->get('isbn'));
@@ -564,6 +564,31 @@ final class TemplateTest extends testBaseClass {
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertSame('https://dx.doi.org/10.1093/oi/authority.xXXXXXXXXXX.pdf', $template->get('url'));
     $this->assertSame('10.1093/oi/authority.x', $template->get('doi'));
+  }
+ 
+  public function testURLCleanUp7() {
+    $text = "{{cite journal|url=https://SomeRandomWeb.com/10.5284/1000184}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertSame('https://SomeRandomWeb.com/10.5284/1000184', $template->get('url'));
+    $this->assertNull($template->get('doi'));
+  }
+ 
+  public function testHDLasDOIThing1() {
+    return; // TODO
+    $text='{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100}}';
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertSame('20.1000/100', $template->get('doi'));
+    $this->assertNull($template->get('url'));
+  }
+ 
+  public function testHDLasDOIThing2() {
+    $text='{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100.pdf}}';
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertSame('20.1000/100', $template->get('doi'));
+    $this->assertSame('http://www.stuff.com/20.1000/100.pdf', $template->get('url'));
   }
  
   public function testDoiExpansionBook() {
@@ -802,14 +827,6 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url')); // Do not add Arxiv URL if already present
   }
-    
-  /* Don't run test until I check the consensus on how such citations should be handled
-  public function testEtAlHandlingAndSpaceRetention() {
-    $text = "{{Cite book | authors=Smith, A; Jones, B; Western, C., et al.}}";
-    $expanded = $this->process_citation($text);
-    $this->assertSame('{{Cite book | last1=Smith| first1=A|last2 = Jones|first2 = B|last3 = Western|first3 = C.|author4 = and others|displayauthors = 3}}', $expanded->parsed_text()); 
-  }
-  */
   
   public function testCommentHandling() {
     $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}} {{cite book | pages=3<pre>-</pre>6}} {{cite book | pages=3<math>-</math>6}} {{cite book | pages=3<score>-</score>6}} {{cite book | pages=3<chem>-</chem>6}}";
@@ -3622,5 +3639,106 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->add_if_new('archive-url', 'YYY'));
      $this->assertSame($text, $template->parsed_text());
+   }
+ 
+   public function testReplaceBadDOI() {
+     $text='{{Cite journal | doi=10.0000/broken|doi-broken-date=1999}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->add_if_new('doi', '10.1063/1.2263373'));
+     $this->assertSame('10.1063/1.2263373', $template->get('doi'));
+   }
+ 
+   public function testFloaters() {
+     $text='{{Cite journal | p 33 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('page'));
+    
+     $text='{{Cite journal |33(22):11-12 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('22', $template->get('issue'));
+     $this->assertSame('33', $template->get('volume'));
+     $this->assertSame('11–12', $template->get('pages'));
+   }
+ 
+   public function testIDconvert1() {
+     $text='{{Cite journal | id = {{ASIN|3333|country=eu}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame($text, $template->parsed_text());
+   }    
+
+   public function testIDconvert2() {
+     $text = '{{Cite journal | id = {{jstor|33333|issn=xxxx}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame($text, $template->parsed_text());
+   }
+ 
+   public function testIDconvert3() {
+     $text = '{{Cite journal | id = {{ol|44444|author=xxxx}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame($text, $template->parsed_text());
+   }
+ 
+   public function testIDconvert4() {
+     $text = '{{Cite journal | id = {{howdy|44444}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame($text, $template->parsed_text());
+   }
+ 
+   public function testIDconvert5() {
+     $text='{{Cite journal | id = {{oclc|02268454}} {{ol|1234}} {{bibcode|2018arXiv}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame('02268454', $template->get('oclc'));
+     $this->assertSame('1234', $template->get('ol'));
+     $this->assertSame('2018arXiv..........', $template->get('bibcode'));
+     $this->assertNull($template->get('id'));
+   }
+ 
+   public function testIDconvert6() {
+     $text='{{Cite journal | id = {{jfm|02268454}} {{lccn|1234}} {{mr|222}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame('02268454', $template->get('jfm'));
+     $this->assertSame('1234', $template->get('lccn'));
+     $this->assertSame('222', $template->get('mr'));
+     $this->assertNull($template->get('id'));
+   }
+ 
+   public function testIDconvert7() {
+     $text='{{Cite journal | id = {{osti|02268454}} {{ssrn|1234}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame('02268454', $template->get('osti'));
+     $this->assertSame('1234', $template->get('ssrn'));
+     $this->assertNull($template->get('id'));
+   }
+
+   public function testIDconvert8() {
+     return; // TODO
+     $text='{{Cite journal | id = {{ASIN|0226845494|country=eu}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame('{{ASIN|0226845494|country=eu}}', $template->get('id'));
+     $this->assertSame('0226845494', $template->get('isbn'));
+   }
+ 
+   public function testIDconvert9() {
+     return; // TODO
+     $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame('{{howdy|0226845494}}', $template->get('id'));
+     $this->assertSame('0226845494', $template->get('isbn'));
+    }
+ 
+   public function testCAPS() {
+     $text = '{{Cite journal | URL = }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('', $template->get('url'));
+     $this->assertNull($template->get('URL'));
    }
 }
