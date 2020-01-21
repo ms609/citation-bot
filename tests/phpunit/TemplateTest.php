@@ -574,18 +574,20 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($template->get('doi'));
   }
  
-  public function testHDLasDOIThing() {
+  public function testHDLasDOIThing1() {
     $text='{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100}}';
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
-    $this->assertNull($template->get('url'));
     $this->assertSame('20.1000/100', $template->get('doi'));
-   
+    $this->assertNull($template->get('url'));
+  }
+ 
+  public function testHDLasDOIThing2() {
     $text='{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100.pdf}}';
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
-    $this->assertSame('http://www.stuff.com/20.1000/100.pdf', $template->get('url'));
     $this->assertSame('20.1000/100', $template->get('doi'));
+    $this->assertSame('http://www.stuff.com/20.1000/100.pdf', $template->get('url'));
   }
  
   public function testDoiExpansionBook() {
@@ -3657,37 +3659,49 @@ T1 - This is the Title }}';
      $this->assertSame('11–12', $template->get('pages'));
    }
  
-   public function testIDconvert() {
+   public function testIDconvert1() {
      $text='{{Cite journal | id = {{ASIN|0226845494|country=eu}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $template->parse_text());
-
+     $this->assertSame($text, $template->parsed_text());
+   }
+ 
+    public function testIDconvert2() {
      $text = '{{Cite journal | id = {{jstor|0226845494|issn=xxxx}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $template->parse_text());
-    
+     $this->assertSame($text, $template->parsed_text());
+   }
+ 
+    public function testIDconvert3() {
      $text = '{{Cite journal | id = {{ol|0226845494|author=xxxx}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $template->parse_text());
-      
+     $this->assertSame($text, $template->parsed_text());
+   }
+ 
+    public function testIDconvert4() {
      $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $template->parse_text());
-      
+     $this->assertSame($text, $template->parsed_text());
+   }
+ 
+    public function testIDconvert5() {
      $text='{{Cite journal | id = {{oclc|02268454}} {{ol|1234}} {{bibcode|222}} }}';
      $template = $this->prepare_citation($text);
      $this->assertSame('02268454', $template->get('oclc'));
      $this->assertSame('1234', $template->get('ol'));
      $this->assertSame('222........', $template->get('bibcode'));
      $this->assertNull($template->get('id'));
-    
+   }
+ 
+    public function testIDconvert6() {
      $text='{{Cite journal | id = {{jfm|02268454}} {{lccn|1234}} {{mr|222}} }}';
      $template = $this->prepare_citation($text);
      $this->assertSame('02268454', $template->get('jfm'));
      $this->assertSame('1234', $template->get('lccn'));
      $this->assertSame('222', $template->get('mr'));
      $this->assertNull($template->get('id'));
-    
+   }
+ 
+    public function testIDconvert7() {
      $text='{{Cite journal | id = {{osti|02268454}} {{ssrn|1234}} }}';
      $template = $this->prepare_citation($text);
      $this->assertSame('02268454', $template->get('osti'));
