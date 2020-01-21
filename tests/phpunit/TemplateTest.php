@@ -526,6 +526,49 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('12345', $template->get('jstor'));
   }
  
+  public function testURLCleanUp2() {
+    $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS}}"; // Add bogus
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get('url'));
+    $this->assertSame('10.0000/BOGUS', $template->get('doi'));
+  }
+ 
+  public function testURLCleanUp3() {
+    $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS|doi=10.0000/THIS_IS_JUNK_DATA}}"; // Fail to add bogus
+    $template = $this->make_citation($text);
+    return; // TODO
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertSame('https://dx.doi.org/10.0000/BOGUS', $template->get('url'));
+    $this->assertSame('10.0000/THIS_IS_JUNK_DATA', $template->get('doi'));
+  }
+ 
+  public function testURLCleanUp4() {
+    $text = "{{cite journal|url=https://dx.doi.org/10.5284/1000184}}"; // A particularly semi-valid DOI
+    $template = $this->make_citation($text);
+    return; // TODO
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertNull($template->get('doi'));
+    $this->assertSame('https://dx.doi.org/10.5284/1000184', $template->get('url'));
+  }
+ 
+  public function testURLCleanUp5() {
+    $text = "{{cite journal|doi=10.5284/1000184|url=https://dx.doi.org/10.5284/1000184XXXXXXXXXX}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertNull($template->get('url'));
+    $this->assertSame('10.5284/1000184', $template->get('doi'));
+  }
+ 
+  public function testURLCleanUp6() {
+    $text = "{{cite journal|doi=10.5284/1000184|url=https://dx.doi.org/10.5284/1000184XXXXXXXXXX.pdf}}";
+    $template = $this->make_citation($text);
+    return; // TODO
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertSame('https://dx.doi.org/10.5284/1000184XXXXXXXXXX.pdf', $template->get('url'));
+    $this->assertSame('10.5284/1000184', $template->get('doi'));
+  }
+ 
   public function testDoiExpansionBook() {
     $text = "{{cite book|doi=10.1007/978-981-10-3180-9_1}}";
     $expanded = $this->process_citation($text);
@@ -2169,18 +2212,29 @@ T1 - This is the Title }}';
   }
   
   public function testHandles1() {
-    $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/10125/20269}}');
-    $template->get_identifiers_from_url();
+    $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////|journal=X}}');
+    $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('10125/20269', $template->get('hdl'));
+    $this->assertSame('cite journal', $template->wikiname());
     $this->assertNull($template->get('url'));
   }
+ 
   public function testHandles2() {
-    $template = $this->make_citation('{{Cite journal|url=https://hdl.handle.net/handle/10125/20269}}');
-    $template->get_identifiers_from_url();
+    $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertSame('cite document', $template->wikiname());
     $this->assertSame('10125/20269', $template->get('hdl'));
     $this->assertNull($template->get('url'));
   }
+ 
   public function testHandles3() {
+    $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/handle/10125/dfsjladsflhdsfaewfsdfjhasjdfhldsaflkdshkafjhsdjkfhdaskljfhdsjklfahsdafjkldashafldsfhjdsa_TEST_DATA_FOR_BOT_TO_FAIL_ON}}');
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertSame('http://hdl.handle.net/handle/10125/dfsjladsflhdsfaewfsdfjhasjdfhldsaflkdshkafjhsdjkfhdaskljfhdsjklfahsdafjkldashafldsfhjdsa_TEST_DATA_FOR_BOT_TO_FAIL_ON', $template->get('url'));
+    $this->assertNull($template->get('hdl'));
+  }
+ 
+  public function testHandles4() {
     $template = $this->make_citation('{{Cite journal|url=http://digitallibrary.amnh.org/dataset.xhtml?persistentId=hdl:10125/20269;jsessionid=EE3BA49390611FCE0AAAEBB819E777BC?sequence=1}}');
     $template->get_identifiers_from_url();
     $this->assertSame('10125/20269', $template->get('hdl'));

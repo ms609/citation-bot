@@ -1276,9 +1276,6 @@ final class Template {
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
       }
-      if (preg_match('~(.*)(?:#[^#]+)$~', $doi, $match_pound)) {
-        if(!doi_active($doi) && doi_active($match_pound[1])) $doi = $match_pound[1]; // lose #pages and such
-      }
       if ($this->add_if_new('doi', $doi)) {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
@@ -1510,10 +1507,10 @@ final class Template {
             $handle = $matches[1];
           }
           while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
-            $handle = $mathes[1];
+            $handle = $matches[1];
           }
           while (preg_match('~^/(.+)$~', $handle, $matches)) { // Leading slash
-            $handle = $mathes[1];
+            $handle = $matches[1];
           }
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
