@@ -3664,11 +3664,11 @@ T1 - This is the Title }}';
 
      $text = '{{Cite journal | id = {{jstor|0226845494|issn=xxxx}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $this->parse_text())
+     $this->assertSame($text, $this->parse_text());
     
      $text = '{{Cite journal | id = {{ol|0226845494|author=xxxx}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $this->parse_text())
+     $this->assertSame($text, $this->parse_text());
       
      $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
      $template = $this->prepare_citation($text);
