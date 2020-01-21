@@ -535,7 +535,6 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testURLCleanUp3() {
-    return;// TODO
     $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS|doi=10.0000/THIS_IS_JUNK_DATA}}"; // Fail to add bogus
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
@@ -544,7 +543,6 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testURLCleanUp4() {
-    return; // TODO
     $text = "{{cite journal|url=https://dx.doi.org/10.1093/oi/authority.x}}"; // A particularly semi-valid DOI
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
@@ -561,7 +559,6 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testURLCleanUp6() {
-    return; // TODO
     $text = "{{cite journal|doi= 10.1093/oi/authority.x|url=https://dx.doi.org/10.1093/oi/authority.xXXXXXXXXXX.pdf}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
