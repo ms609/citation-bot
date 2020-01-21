@@ -3672,7 +3672,7 @@ T1 - This is the Title }}';
       
      $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
      $template = $this->prepare_citation($text);
-     $this->assertSame($text, $this->parse_text())
+     $this->assertSame($text, $this->parse_text());
       
      $text='{{Cite journal | id = {{oclc|02268454}} {{ol|1234}} {{bibcode|222}} }}';
      $template = $this->prepare_citation($text);
@@ -3688,7 +3688,7 @@ T1 - This is the Title }}';
      $this->assertSame('222', $this->get('mr'));
      $this->assertNull($this->get('id'));
     
-     $text='{{Cite journal | id = {{osti|02268454}} {{ssrn|1234}}}}';
+     $text='{{Cite journal | id = {{osti|02268454}} {{ssrn|1234}} }}';
      $template = $this->prepare_citation($text);
      $this->assertSame('02268454', $this->get('osti'));
      $this->assertSame('1234', $this->get('ssrn'));
@@ -3697,7 +3697,7 @@ T1 - This is the Title }}';
    }
 
    public function testCAPS() {
-     $text='{{Cite journal | URL = }}';
+     $text = '{{Cite journal | URL = }}';
      $template = $this->process_citation($text);
      $this->assertSame('', $this->get('url'));
      $this->assertNull($this->get('URL'));
