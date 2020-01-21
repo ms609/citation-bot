@@ -575,7 +575,6 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testHDLasDOIThing1() {
-    return; // TODO
     $text='{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100}}';
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
