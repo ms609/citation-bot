@@ -1280,7 +1280,7 @@ final class Template {
         }
         return FALSE; // Both valid or both invalid (could be legit if chapter and book are different DOIs
       }
-      if ($this->add_if_new('doi', urldecode($match[1])) { // Will expand from DOI when added
+      if ($this->add_if_new('doi', urldecode($match[1]))) { // Will expand from DOI when added
         if (is_null($url_sent)) {
           quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
           $this->forget($url_type);
