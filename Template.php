@@ -2913,7 +2913,8 @@ final class Template {
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
           $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
-      } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+        // Perhaps need to add more do before and after to avoid eating templates?
+      } elseif ($this->blank('isbn') && preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
         $this->add_if_new('isbn', $match[1]);
         $pAll = "";
