@@ -537,7 +537,6 @@ final class TemplateTest extends testBaseClass {
   public function testURLCleanUp3() {
     $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS|doi=10.0000/THIS_IS_JUNK_DATA}}"; // Fail to add bogus
     $template = $this->make_citation($text);
-    return; // TODO
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertSame('https://dx.doi.org/10.0000/BOGUS', $template->get('url'));
     $this->assertSame('10.0000/THIS_IS_JUNK_DATA', $template->get('doi'));
@@ -546,7 +545,6 @@ final class TemplateTest extends testBaseClass {
   public function testURLCleanUp4() {
     $text = "{{cite journal|url=https://dx.doi.org/10.5284/1000184}}"; // A particularly semi-valid DOI
     $template = $this->make_citation($text);
-    return; // TODO
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertNull($template->get('doi'));
     $this->assertSame('https://dx.doi.org/10.5284/1000184', $template->get('url'));
@@ -563,7 +561,6 @@ final class TemplateTest extends testBaseClass {
   public function testURLCleanUp6() {
     $text = "{{cite journal|doi=10.5284/1000184|url=https://dx.doi.org/10.5284/1000184XXXXXXXXXX.pdf}}";
     $template = $this->make_citation($text);
-    return; // TODO
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertSame('https://dx.doi.org/10.5284/1000184XXXXXXXXXX.pdf', $template->get('url'));
     $this->assertSame('10.5284/1000184', $template->get('doi'));
@@ -788,16 +785,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('39', $expanded->get('volume'));
   }
 
-  public function testOpenAccessLookup() {
-   // $text = '{{cite journal|doi=10.1145/321850.321852}}';
-   // $expanded = $this->process_citation($text);
-   // $this->assertSame('10.1.1.419.9787', $expanded->get('citeseerx'));
-   // $this->assertSame('1974', $expanded->get('year')); // And then this test died
-   
-   // $text = '{{cite journal | vauthors = Bjelakovic G, Nikolova D, Gluud LL, Simonetti RG, Gluud C | title = Antioxidant supplements for prevention of mortality in healthy participants and patients with various diseases | journal = The Cochrane Database of Systematic Reviews | volume = 3 | issue = 3 | pages = CD007176 | date = 14 March 2012 | pmid = 22419320 | doi = 10.1002/14651858.CD007176.pub2 }}';
-   // $expanded = $this->process_citation($text);
-   // $this->assertNotNull($expanded->get('url')); // currently gives a url 
-      
+  public function testOpenAccessLookup() {    
     $text = '{{cite journal|doi=10.1136/bmj.327.7429.1459}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('300808', $expanded->get('pmc'));
@@ -812,20 +800,7 @@ final class TemplateTest extends testBaseClass {
       
     $text = '{{Cite journal | doi = 10.1063/1.4962420| title = Calculating vibrational spectra of molecules using tensor train decomposition| journal = J. Chem. Phys. | volume = 145| year = 2016| issue = 145| pages = 124101| last1 = Rakhuba| first1 = Maxim | last2 = Oseledets | first2 = Ivan| bibcode = 2016JChPh.145l4101R| arxiv =1605.08422}}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('url')); // Do not add Arxiv URL if already has Arxiv
-
-   // $text = '{{Cite journal|url=bogus| author1 = Marius Junge | author2 = Carlos Palazuelos |title =  Large violation of Bell inequalities with low entanglement | journal = Communications in Mathematical Physics | volume = 306 | issue = 3 | pages = 695–746 |arxiv=1007.3043v2 | year = 2010| doi = 10.1007/s00220-011-1296-8 |bibcode = 2011CMaPh.306..695J}}';
-   // $expanded = $this->process_citation($text);
-   // $this->assertSame('10.1.1.752.4896', $expanded->get('citeseerx')); // get it even with a url
-    
-   //  $text = '{{citation|doi = 10.1007/978-3-642-60408-9_19}}';
-   //  $expanded = $this->process_citation($text);
-   //  $this->assertNull($expanded->get('citeseerx')); // detect bad OA data
-
-   /*
-    $this->assertSame('http://some.url', $expanded->get('url'));
-    $this->assertSame('Accepted manuscript', $expanded->get('format'));
-    */
+    $this->assertNull($expanded->get('url')); // Do not add Arxiv URL if already present
   }
     
   /* Don't run test until I check the consensus on how such citations should be handled
