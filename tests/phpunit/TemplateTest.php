@@ -3649,61 +3649,80 @@ T1 - This is the Title }}';
  
    public function testFloaters() {
      $text='{{Cite journal | p 33 }}';
-     $template = $this->prepare_citation($text);
+     $template = $this->process_citation($text);
      $this->assertSame('33', $template->get('page'));
     
      $text='{{Cite journal |33(22):11-12 }}';
-     $template = $this->prepare_citation($text);
+     $template = $this->process_citation($text);
      $this->assertSame('22', $template->get('issue'));
      $this->assertSame('33', $template->get('volume'));
      $this->assertSame('11–12', $template->get('pages'));
    }
  
    public function testIDconvert1() {
+     $text='{{Cite journal | id = {{ASIN|3333|country=eu}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame($text, $template->parsed_text());
+    
      $text='{{Cite journal | id = {{ASIN|0226845494|country=eu}} }}';
-     $template = $this->prepare_citation($text);
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame('{{ASIN|0226845494|country=eu}}', $template->get('id'));
+     $this->assertSame('0226845494', $template->get('isbn'));
+   }
+ 
+   public function testIDconvert2() {
+     $text = '{{Cite journal | id = {{jstor|33333|issn=xxxx}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame($text, $template->parsed_text());
    }
  
-    public function testIDconvert2() {
-     $text = '{{Cite journal | id = {{jstor|0226845494|issn=xxxx}} }}';
-     $template = $this->prepare_citation($text);
+   public function testIDconvert3() {
+     $text = '{{Cite journal | id = {{ol|44444|author=xxxx}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame($text, $template->parsed_text());
    }
  
-    public function testIDconvert3() {
-     $text = '{{Cite journal | id = {{ol|0226845494|author=xxxx}} }}';
-     $template = $this->prepare_citation($text);
+   public function testIDconvert4() {
+     $text = '{{Cite journal | id = {{howdy|44444}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame($text, $template->parsed_text());
-   }
- 
-    public function testIDconvert4() {
+     
      $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
-     $template = $this->prepare_citation($text);
-     $this->assertSame($text, $template->parsed_text());
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame('{{howdy|0226845494}}', $template->get('id'));
+     $this->assertSame('0226845494', $template->get('isbn'));
    }
  
-    public function testIDconvert5() {
+   public function testIDconvert5() {
      $text='{{Cite journal | id = {{oclc|02268454}} {{ol|1234}} {{bibcode|222}} }}';
-     $template = $this->prepare_citation($text);
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame('02268454', $template->get('oclc'));
      $this->assertSame('1234', $template->get('ol'));
      $this->assertSame('222........', $template->get('bibcode'));
      $this->assertNull($template->get('id'));
    }
  
-    public function testIDconvert6() {
+   public function testIDconvert6() {
      $text='{{Cite journal | id = {{jfm|02268454}} {{lccn|1234}} {{mr|222}} }}';
-     $template = $this->prepare_citation($text);
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame('02268454', $template->get('jfm'));
      $this->assertSame('1234', $template->get('lccn'));
      $this->assertSame('222', $template->get('mr'));
      $this->assertNull($template->get('id'));
    }
  
-    public function testIDconvert7() {
+   public function testIDconvert7() {
      $text='{{Cite journal | id = {{osti|02268454}} {{ssrn|1234}} }}';
-     $template = $this->prepare_citation($text);
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame('02268454', $template->get('osti'));
      $this->assertSame('1234', $template->get('ssrn'));
      $this->assertSame('222', $template->get('mr'));
