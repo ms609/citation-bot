@@ -527,7 +527,6 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testURLCleanUp2() {
-    return; // TODO
     $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS}}"; // Add bogus
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
@@ -536,6 +535,7 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testURLCleanUp3() {
+    return;// TODO
     $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS|doi=10.0000/THIS_IS_JUNK_DATA}}"; // Fail to add bogus
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
