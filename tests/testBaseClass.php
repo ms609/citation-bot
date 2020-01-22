@@ -5,6 +5,8 @@ require_once __DIR__ . '/../setup.php';
 error_reporting(E_ALL); // All tests run this way
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 
+$BLOCK_BIBCODE_SEARCH = TRUE;
+
 $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
@@ -32,11 +34,14 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function wastes_secrets($function) {
+    global $BLOCK_BIBCODE_SEARCH;
     if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) {
       echo 'W'; // Skipping test: uses up a security key up
       $this->assertNull(NULL); // Make Travis think we tested something
     } else {
+      $BLOCK_BIBCODE_SEARCH = FALSE;
       $function();
+      $BLOCK_BIBCODE_SEARCH = TRUE;
     }
   }
 
