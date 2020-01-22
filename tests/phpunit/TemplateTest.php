@@ -3719,13 +3719,13 @@ T1 - This is the Title }}';
    public function testIDconvert8() {
      $text='{{Cite journal | id = {{ASIN|0226845494|country=eu}} }}';
      $template = $this->process_citation($text);
-     $this->assertSame('$text, $template->parsed_text());
+     $this->assertSame($text, $template->parsed_text());
    }
  
    public function testIDconvert9() {
      $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
      $template = $this->process_citation($text);
-     $this->assertSame('$text, $template->parsed_text());
+     $this->assertSame($text, $template->parsed_text());
     }
  
    public function testCAPS() {
