@@ -18,16 +18,6 @@ final class TemplateTest extends testBaseClass {
      $this->assertSame('0226845494', $template->get('isbn'));
    }
  
-   public function testIDconvert9() {
-     $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
-     $template = $this->process_citation($text);
-     echo "\n" . $template->parsed_text() . "\n";
-     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
-     echo "\n" . $template->parsed_text() . "\n";
-     $this->assertSame('{{howdy|0226845494}}', $template->get('id'));
-     $this->assertSame('0226845494', $template->get('isbn'));
-    }
- 
     public function testNOMERAGE() {
      $this->assertNull('no merge');
     }
