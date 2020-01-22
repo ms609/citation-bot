@@ -33,6 +33,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
 
+  // Only routines that absolutely need bibcode access since we are limited 
   protected function bibcode_secrets($function) {
     global $BLOCK_BIBCODE_SEARCH;
     if (!getenv('PHP_ADSABSAPIKEY')) {
@@ -45,6 +46,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
 
+  // allows us to turn off zoreto tests
   protected function requires_zotero($function) {
     $skip_zotero = FALSE; // Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
     if ($skip_zotero !== FALSE && $skip_zotero !== TRUE) {
