@@ -3717,21 +3717,15 @@ T1 - This is the Title }}';
    }
 
    public function testIDconvert8() {
-     return; // TODO
      $text='{{Cite journal | id = {{ASIN|0226845494|country=eu}} }}';
      $template = $this->process_citation($text);
-     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
-     $this->assertSame('{{ASIN|0226845494|country=eu}}', $template->get('id'));
-     $this->assertSame('0226845494', $template->get('isbn'));
+     $this->assertSame('$text, $template->parsed_text());
    }
  
    public function testIDconvert9() {
-     return; // TODO
      $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
      $template = $this->process_citation($text);
-     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
-     $this->assertSame('{{howdy|0226845494}}', $template->get('id'));
-     $this->assertSame('0226845494', $template->get('isbn'));
+     $this->assertSame('$text, $template->parsed_text());
     }
  
    public function testCAPS() {
