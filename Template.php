@@ -1046,7 +1046,7 @@ final class Template {
         
       default:  // We want to make sure we understand what we are adding
         // @codeCoverageIgnoreStart
-        if (getenv('TRAVIS')) report_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
+        report_minor_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
