@@ -177,7 +177,9 @@ function arxiv_api($ids, $templates) {
 
 function adsabs_api($ids, $templates, $identifier) {
   global $ADSABS_GIVE_UP;
+  global $BLOCK_BIBCODE_SEARCH;
   if (@$ADSABS_GIVE_UP) return FALSE;
+  if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {

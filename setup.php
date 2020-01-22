@@ -14,6 +14,8 @@ if (!isset($FLUSHING_OKAY)) {  // Default when not gadget API
   $FLUSHING_OKAY = TRUE;
 }
 
+$BLOCK_BIBCODE_SEARCH = FALSE;
+
 //Optimisation
 ob_implicit_flush();
 if (!getenv('TRAVIS')) {
