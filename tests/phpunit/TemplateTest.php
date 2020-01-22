@@ -878,7 +878,7 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testBibcodesBooks() {
-    $this->wastes_secrets(function() {
+    $this->bibcode_secrets(function() {
       $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
       $expanded = $this->process_citation($text);
       $this->assertSame('1982', $expanded->get('year'));
@@ -1527,7 +1527,7 @@ T1 - This is the Title }}';
   }
   
   public function testBibcodeDotEnding() {
-    $this->wastes_secrets(function() {
+    $this->bibcode_secrets(function() {
       $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
       $expanded = $this->process_citation($text);
       $this->assertSame('1932Natur.129Q..18.', $expanded->get('bibcode'));
