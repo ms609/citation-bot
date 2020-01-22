@@ -35,7 +35,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function wastes_secrets($function) {
     global $BLOCK_BIBCODE_SEARCH;
-    if (FALSE && getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) {
+    $DONT_DO_EXTRA_FOR_CODE_COVERAGE = TRUE; // Use this to force non-main builds to poke BibCodes
+    if ($DONT_DO_EXTRA_FOR_CODE_COVERAGE && getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) {
       echo 'W'; // Skipping test: uses up a security key up
       $this->assertNull(NULL); // Make Travis think we tested something
     } else {
@@ -57,7 +58,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       $function();
     }
   }
-  
   
   protected function make_citation($text) {
     $this->assertSame('{{', mb_substr($text, 0, 2));
