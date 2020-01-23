@@ -684,9 +684,9 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation("{{Cite journal|title=Dark Lord of the [[Sith]] Pure Evil}}");
     $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
     $this->assertNull($expanded->get('title-link'));
-    $expanded = $this->process_citation("{{cite journal|journal=[[Bulletin du Muséum national d’Histoire naturelle, Paris]]}}";
+    $expanded = $this->process_citation("{{cite journal|journal=[[Bulletin du Muséum national d’Histoire naturelle, Paris]]}}");
     $this->assertSame("[[Bulletin du Muséum national d'Histoire naturelle, Paris]]", $expanded->get('journal'));
-    $expanded = $this->process_citation("{{cite journal|journal=[[Bulletin du Muséum national d’Histoire naturelle, Paris|Hose]]}}";
+    $expanded = $this->process_citation("{{cite journal|journal=[[Bulletin du Muséum national d’Histoire naturelle, Paris|Hose]]}}");
     $this->assertSame("[[Bulletin du Muséum national d'Histoire naturelle, Paris|Hose]]", $expanded->get('journal'));
   }
   
