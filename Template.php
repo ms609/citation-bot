@@ -639,6 +639,9 @@ final class Template {
              if($this->blank('work')) {
                $this->set('work', $value);
                $this->quietly_forget('website');
+               if (stripos($this->get('publisher'), 'bbc') !== FALSE && stripos($value, 'bbc') !== FALSE) {
+                  $this->quietly_forget('publisher');
+               }
                return TRUE;
              }
             report_error('Unreachable code reached in newspaper add'); // @codeCoverageIgnore
