@@ -6,11 +6,13 @@ error_reporting(E_ALL); // All tests run this way
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 
 $BLOCK_BIBCODE_SEARCH = TRUE;
-
+$BLOCK_ZOTERO_SEARCH = TRUE;
 $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
-
+  // Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
+  private $skip_zotero = TRUE; // TODO - turn back on
+  
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
     $page->parse_text($text);
@@ -35,11 +37,11 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // Only routines that absolutely need bibcode access since we are limited 
   protected function bibcode_secrets($function) {
-    global $BLOCK_BIBCODE_SEARCH;
     if (!getenv('PHP_ADSABSAPIKEY')) {
       echo 'B';
       $this->assertNull(NULL);
     } else {
+      global $BLOCK_BIBCODE_SEARCH;
       $BLOCK_BIBCODE_SEARCH = FALSE;
       $function();
       $BLOCK_BIBCODE_SEARCH = TRUE;
@@ -48,15 +50,17 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // allows us to turn off zoreto tests
   protected function requires_zotero($function) {
-    $skip_zotero = TRUE; // TODO Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
-    if ($skip_zotero !== FALSE && $skip_zotero !== TRUE) {
-      $this->assertNull('skip_zotero');
+    if ($this->skip_zotero !== FALSE && $this->skip_zotero !== TRUE) {
+      $this->assertNull('skip_zotero bocks commmit');
     }
-    if ($skip_zotero && getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) { // Main build NEVER skips anything
+    if ($this->skip_zotero && getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) { // Main build NEVER skips anything
       echo 'Z';
       $this->assertNull(NULL);
     } else {
+      global $BLOCK_ZOTERO_SEARCH;
+      $BLOCK_ZOTERO_SEARCH = FALSE;
       $function();
+      $BLOCK_ZOTERO_SEARCH = TRUE;
     }
   } 
   

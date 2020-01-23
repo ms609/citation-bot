@@ -15,6 +15,7 @@ if (!isset($FLUSHING_OKAY)) {  // Default when not gadget API
 }
 
 $BLOCK_BIBCODE_SEARCH = FALSE;
+$BLOCK_ZOTERO_SEARCH = FALSE;
 
 //Optimisation
 ob_implicit_flush();

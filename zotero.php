@@ -201,6 +201,8 @@ function zotero_request($url) {
 function expand_by_zotero(&$template, $url = NULL) {
   global $zotero_failures_count;
   global $zotero_announced;
+  global $BLOCK_ZOTERO_SEARCH;
+  if ($BLOCK_ZOTERO_SEARCH) return;
   if ($zotero_failures_count > ZOTERO_GIVE_UP) {
     $zotero_failures_count = $zotero_failures_count - 1;                      // @codeCoverageIgnore
     if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // @codeCoverageIgnore
