@@ -2922,6 +2922,15 @@ T1 - This is the Title }}';
     $this->assertNull($template->get('newspaper'));
   }
  
+  public function testNewspaperJournalBBC() {
+    $text = "{{cite journal|publisher=Bbc.com}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('newspaper', 'BBC News'));
+    $this->assertNull($template->get('newspaper'));
+    $this->assertSame('BBC News', $template->get('work'));
+    $this->assertNull($template->get('publisher'));
+  }
+ 
   public function testNewspaperJournaXl() {
     $text = "{{cite journal|work=exists}}";
     $template = $this->make_citation($text);
