@@ -10,8 +10,8 @@ $BLOCK_ZOTERO_SEARCH = TRUE;
 $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
-
-  private $skip_zotero = TRUE; // TODO Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
+  // Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
+  private $skip_zotero = TRUE; // TODO - turn back on
   
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
