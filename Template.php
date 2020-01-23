@@ -639,6 +639,9 @@ final class Template {
              if($this->blank('work')) {
                $this->set('work', $value);
                $this->quietly_forget('website');
+               if (stripos($this->get('publisher'), 'bbc') !== FALSE && stripos($value, 'bbc') !== FALSE) {
+                  $this->quietly_forget('publisher');
+               }
                return TRUE;
              }
             report_error('Unreachable code reached in newspaper add'); // @codeCoverageIgnore
@@ -3471,6 +3474,15 @@ final class Template {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
+          if (preg_match('~^10\.3897/zookeys\.(\d+)\.\d+$~', $doi, $matches)) {
+            if ($this->blank(ISSUE_ALIASES)) {
+              $this->add_if_new('issue', $matches[1]);
+            } elseif ($this->has('number')) {
+              $this->rename('number', 'issue', $matches[1]);
+            } else {
+              $this->set('issue', $matches[1]);
+            }
+          }
           return;
           
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
