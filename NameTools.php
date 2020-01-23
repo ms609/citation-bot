@@ -103,9 +103,11 @@ function format_author($author){
   
   // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = '';
-  // Google and Zotero sometimes have these
+  // Google and Zotero sometimes have these (sir) and just sir
   $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
-
+  $author = preg_replace("~^( ?sir )~", "", $author);
+  $author = preg_replace("~^(, sir )~", ", ", $author);
+  
   $ends_with_period = (substr(trim($author), -1) === ".");
   
   $author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
