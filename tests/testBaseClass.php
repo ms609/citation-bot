@@ -57,6 +57,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       echo 'Z';
       $this->assertNull(NULL);
     } else {
+      global $BLOCK_ZOTERO_SEARCH;
       $BLOCK_ZOTERO_SEARCH = FALSE;
       $function();
       $BLOCK_ZOTERO_SEARCH = TRUE;
