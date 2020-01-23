@@ -3584,6 +3584,8 @@ final class Template {
           } else {
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
               $periodical = $matches[1];
+              $periodical = str_replace("’", "'", $periodical); // Fix quotes for links
+              $this->set($param, '[[' . $periodical . ']]');
               $new_periodical = title_capitalization(ucwords($periodical), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
@@ -3600,7 +3602,7 @@ final class Template {
                  }
               }
             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
-              $linked_text = $matches[1];
+              $linked_text = str_replace("’", "'", $matches[1]); // Fix quotes for links
               $human_text  = $matches[2];
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
                 $human_text = $matches[1];
