@@ -48,7 +48,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // allows us to turn off zoreto tests
   protected function requires_zotero($function) {
-    $skip_zotero = FALSE; // Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
+    $skip_zotero = TRUE; // TODO Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
     if ($skip_zotero !== FALSE && $skip_zotero !== TRUE) {
       $this->assertNull('skip_zotero');
     }
@@ -58,8 +58,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     } else {
       $function();
     }
-  }
-  
+  } 
   
   protected function make_citation($text) {
     $this->assertSame('{{', mb_substr($text, 0, 2));
