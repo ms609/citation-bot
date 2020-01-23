@@ -37,11 +37,11 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // Only routines that absolutely need bibcode access since we are limited 
   protected function bibcode_secrets($function) {
-    global $BLOCK_BIBCODE_SEARCH;
     if (!getenv('PHP_ADSABSAPIKEY')) {
       echo 'B';
       $this->assertNull(NULL);
     } else {
+      global $BLOCK_BIBCODE_SEARCH;
       $BLOCK_BIBCODE_SEARCH = FALSE;
       $function();
       $BLOCK_BIBCODE_SEARCH = TRUE;
