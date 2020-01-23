@@ -1464,11 +1464,36 @@ T1 - This is the Title }}';
 
   public function testZooKeys2() {
      $this->requires_secrets(function() { // this only works if we can query wikipedia and see if page exists
-      $api = new WikipediaBot();
       $text = '{{Cite journal|journal=[[Zookeys]]}}';
       $expanded = $this->process_citation($text);
       $this->assertSame('[[ZooKeys]]', $expanded->get('journal'));
      });
+  }
+ 
+  public function testZooKeys3() {
+      $text = '{{Cite journal|doi=10.3897/zookeys.123.322222}}';
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi'));
+      $this->assertNull($expanded->get('journal'));
+      $this->assertSame('123', $expanded->get('issue'));
+   
+      $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|issue=2323323}}';
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi'));
+      $this->assertNull($expanded->get('journal'));
+      $this->assertSame('123', $expanded->get('issue'));
+   
+      $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|number=2323323}}';
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi'));
+      $this->assertNull($expanded->get('journal'));
+      $this->assertSame('123', $expanded->get('issue'));
+   
+      $text = '{{Cite journal|doi=10.3897/zookeys.123.322222X}}';
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi'));
+      $this->assertNull($expanded->get('journal'));
+      $this->assertNull($expanded->get('issue'));
   }
  
   public function testTitleItalics(){
