@@ -4827,7 +4827,7 @@ final class Template {
       return FALSE;
     }
     $pos = $this->get_param_key($par);
-    if ($pos) {
+    if ($pos !== NULL) { // Could be zero which is "FALSE"
       $this->param[$pos]->val = $this->param[$pos]->val . $val;
       return TRUE;
     } else {
