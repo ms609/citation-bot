@@ -3805,24 +3805,37 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('journal'));
    }
  
-   public function testAppend() {
+   public function testAppendToComment() {
      $text = '{{cite web|id = CITATION_BOT_PLACEHOLDER_COMMENT}}';
-     $template = $this->make_citation($text);
+     $template = $this->process_citation($text);
      $this->assertFalse($template->append_to('id', 'joe'));
      $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('id'));
-    
+   }
+ 
+   public function testAppendToComment2() {
+     $text = '{{cite web|id = <!-- Comment time--> }}';
+     $template = $this->process_citation($text);
+     $this->assertFalse($template->append_to('id', 'joe'));
+     $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('id'));
+   }
+ 
+   public function testAppendEmpty() {
      $text = '{{cite web|id=}}';
-     $template = $this->make_citation($text);
+     $template = $this->process_citation($text);
      $this->assertTrue($template->append_to('id', 'joe'));
      $this->assertSame('joe', $template->get('id'));
-
+   }
+ 
+   public function testAppendNull() {
      $text = '{{cite web}}';
-     $template = $this->make_citation($text);
+     $template = $this->process_citation($text);
      $this->assertTrue($template->append_to('id', 'joe'));
      $this->assertSame('joe', $template->get('id'));
-
+   }
+ 
+   public function testAppendAppend() {
      $text = '{{cite web|id=X}}';
-     $template = $this->make_citation($text);
+     $template = $this->process_citation($text);
      $this->assertTrue($template->append_to('id', 'joe'));
      $this->assertSame('Xjoe', $template->get('id'));
    }
