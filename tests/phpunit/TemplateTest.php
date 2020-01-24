@@ -3840,4 +3840,35 @@ T1 - This is the Title }}';
      $this->assertTrue($template->append_to('id', 'joe'));
      $this->assertSame('Xjoe', $template->get('id'));
    }
+ 
+   public function testDateStyles() {
+     $text = '{{cite web}}';
+     $template = $this->make_citation($text);
+     $template->date_style = DATES_MDY;
+     $template->add_if_new('date', '12-02-2019');
+     $this->assertSame('February 12, 2019', $template->get('date'));
+     $template = $this->make_citation($text);
+     $template->date_style = DATES_DMY;
+     $template->add_if_new('date', '12-02-2019');
+     $this->assertSame('12 February 2019', $template->get('date'));
+     $template = $this->make_citation($text);
+     $template->date_style = FALSE;
+     $template->add_if_new('date', '12-02-2019');
+     $this->assertSame('12-02-2019', $template->get('date'));
+   }
+ 
+    public function testFinalTidyComplicated() {
+     $text = '{{cite book|series=A|journal=A}}';
+     $template = $this->make_citation($text);
+     $template->final_tidy();
+     $this->assertSame('A', $template->get('series'));
+     $this->assertNull($template->get('journal'));
+     
+     $text = '{{cite journal|series=A|journal=A}}';
+     $template = $this->make_citation($text);
+     $template->final_tidy();
+     $this->assertSame('A', $template->get('journal'));
+     $this->assertNull($template->get('series')); 
+   }
+
 }
