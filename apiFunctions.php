@@ -720,7 +720,9 @@ function is_doi_active($doi) {
 function is_doi_works($doi) {
   $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1);
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
+  $response = $headers_test[0];
   if (empty($headers_test['Location'])) return FALSE; // leads nowhere
+  if (stripos($response, '404 Not Found') !== FALSE) return FALSE; // leads to 404
   return TRUE; // Lead somewhere
 }
 
