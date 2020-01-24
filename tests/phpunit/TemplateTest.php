@@ -3808,7 +3808,7 @@ T1 - This is the Title }}';
    public function testAppendToComment() {
      $text = '{{cite web}}';
      $template = $this->make_citation($text);
-     $template->add_if_new('id', 'CITATION_BOT_PLACEHOLDER_COMMENT');
+     $template->set('id', 'CITATION_BOT_PLACEHOLDER_COMMENT');
      $this->assertFalse($template->append_to('id', 'joe'));
      $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('id'));
    }
