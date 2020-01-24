@@ -3805,6 +3805,12 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('journal'));
    }
  
+   public function testRoman2() { // Bogus roman to start with
+     $text = '{{Cite journal | title=Improved heat capacity estimator for path integral simulations. XXXI. part of many|doi=10.1063/1.1493184}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('The Journal of Chemical Physics', $template->get('journal'));
+   }
+ 
    public function testAppendToComment() {
      $text = '{{cite web}}';
      $template = $this->make_citation($text);
