@@ -1891,12 +1891,12 @@ final class Template {
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
     }
-    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
-      return $this->expand_book_adsabs();
-    }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode')));
       return FALSE;
+    }
+    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
+      return $this->expand_book_adsabs();
     }
   
     report_action("Checking AdsAbs database");
@@ -2081,8 +2081,10 @@ final class Template {
   }
   
   protected function expand_book_adsabs() {
+    $return = FALSE;
     $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
     if ($result->numFound == 1) {
+      $return = TRUE;
       $record = $result->docs[0];
       if (isset($record->year)) $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
       if (isset($record->title)) $this->add_if_new('title', (string) $record->title[0]);
@@ -2097,7 +2099,8 @@ final class Template {
     }
     if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches)) {
       $this->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
-    }  
+    }
+    return $return;
   }
   
   // $options should be a series of field names, colons (optionally urlencoded), and
