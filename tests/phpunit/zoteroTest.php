@@ -134,7 +134,7 @@ class ZoteroTest extends testBaseClass {
  
   public function testZoteroBadVolumes() { // has ( and such in it
    $this->requires_zotero(function() {
-    $text = '{{cite journal|url=https://biodiversitylibrary.org/page/32550604}}';
+    $text = '{{cite journal|chapterurl=https://biodiversitylibrary.org/page/32550604}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('volume'));
    });
@@ -142,7 +142,7 @@ class ZoteroTest extends testBaseClass {
  
   public function testZoteroKoreanLanguage() {
    $this->requires_zotero(function() {
-    $text = '{{cite journal|url=http://www.newsen.com/news_view.php?uid=201606131737570410}}';
+    $text = '{{cite journal|chapter-url=http://www.newsen.com/news_view.php?uid=201606131737570410}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('title')); // Hopefully will work some day and not give � character
    });
@@ -650,7 +650,54 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('Johnson', $template->get('author2'));
     $this->assertSame('Jackson', $template->get('author3'));
   }
+ 
+   public function testZoteroResponse31() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_response = 'No items returned from any translator';
+    $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame($text, $template->parsed_text());
+  }
 
+   public function testZoteroResponse32() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_response = 'An error occurred during translation. Please check translation with the Zotero client.';
+    $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame($text, $template->parsed_text());
+  }
+ 
+  public function testZoteroResponse33() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $creators[0] = (object) array('creatorType' => 'author', 'firstName' => "Joe", "lastName" => "");
+    $zotero_data[0] = (object) array('title' => 'Central Authentication Service', 'itemType' => 'report', 'creators' => $creators);
+    $zotero_response = json_encode($zotero_data);
+    $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame($text, $template->parsed_text());
+  }
+
+   public function testZoteroResponse34() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'DOI: 10.1038/546031a');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('10.1038/546031a', $template->get('doi'));
+  }
+ 
   public function testRemoveURLthatRedirects() { // This URL is a redirect -- tests code that does that
     $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
     $template = $this->make_citation($text);
