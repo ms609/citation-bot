@@ -3795,4 +3795,35 @@ T1 - This is the Title }}';
      $this->assertSame('X', $template->get('month'));
      $this->assertNull($template->get('origmonth'));
    }
+ 
+   public testRoman() { // No roman and then wrong roman
+     $text = '{{Cite journal | title=On q-Functions and a certain Difference Operator|doi=10.1017/S0080456800002751}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('Transactions of the Royal Society of Edinburgh', $template->get('journal'));
+     $text = '{{Cite journal | title=XXI.—On q-Functions and a certain Difference Operator|doi=10.1017/S0080456800002751}}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get('journal'));
+   }
+ 
+   public testAppend() {
+     $text = '{{cite web|id = CITATION_BOT_PLACEHOLDER_COMMENT}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->append_to('id', 'joe'));
+     $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('id'));
+    
+     $text = '{{cite web|id=}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->append_to('id', 'joe'));
+     $this->assertSame('joe', $template->get('id'));
+
+     $text = '{{cite web}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->append_to('id', 'joe'));
+     $this->assertSame('joe', $template->get('id'));
+
+     $text = '{{cite web|id=X}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->append_to('id', 'joe'));
+     $this->assertSame('Xjoe', $template->get('id'));
+   }
 }
