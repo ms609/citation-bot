@@ -3796,7 +3796,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('origmonth'));
    }
  
-   public testRoman() { // No roman and then wrong roman
+   public function testRoman() { // No roman and then wrong roman
      $text = '{{Cite journal | title=On q-Functions and a certain Difference Operator|doi=10.1017/S0080456800002751}}';
      $template = $this->process_citation($text);
      $this->assertSame('Transactions of the Royal Society of Edinburgh', $template->get('journal'));
@@ -3805,7 +3805,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('journal'));
    }
  
-   public testAppend() {
+   public function testAppend() {
      $text = '{{cite web|id = CITATION_BOT_PLACEHOLDER_COMMENT}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->append_to('id', 'joe'));
