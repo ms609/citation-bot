@@ -682,13 +682,13 @@ function doi_active($doi) {
   if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
     $works = doi_works($doi);
     if ($works === NULL) {
-      $cache[$doi] = NULL;
+      $cache[$doi] = NULL;        // @codeCoverageIgnore
     } elseif ($works === FALSE) {
       $cache[$doi] = FALSE;
     } else { // TRUE
       $active = is_doi_active($doi);
       if ($active === NULL) {
-        $cache[$doi] = NULL;
+        $cache[$doi] = NULL;      // @codeCoverageIgnore
       } elseif ($active === FALSE) {
         $cache[$doi] = FALSE;
       } else {
