@@ -3819,9 +3819,16 @@ T1 - This is the Title }}';
      $this->assertTrue($template->append_to('id', 'joe'));
      $this->assertSame('joe', $template->get('id'));
    }
- 
+
    public function testAppendNull() {
      $text = '{{cite web}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->append_to('id', 'joe'));
+     $this->assertSame('joe', $template->get('id'));
+   }
+
+   public function testAppendEmpty2() {
+     $text = '{{cite web|last=|id=}}';
      $template = $this->make_citation($text);
      $this->assertTrue($template->append_to('id', 'joe'));
      $this->assertSame('joe', $template->get('id'));
