@@ -889,6 +889,7 @@ final class TemplateTest extends testBaseClass {
       $this->assertSame('Houk', $expanded->get('last1'));
       $this->assertSame('N.', $expanded->get('first1'));
       $this->assertNotNull($expanded->get('title'));
+      $this->assertFalse($expanded->expand_by_adsabs()); // Blocking repeat search
     });
   }
  
