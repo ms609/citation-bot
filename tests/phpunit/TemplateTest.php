@@ -3771,5 +3771,29 @@ T1 - This is the Title }}';
      $template = $this->process_citation($text);
      $this->assertSame('', $template->get('url'));
      $this->assertNull($template->get('URL'));
+    
+     $text = '{{Cite journal | QWERTYUIOPASDFGHJKL = ABC}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('ABC', $template->get('qwertyuiopasdfghjkl'));
+     $this->assertNull($template->get('QWERTYUIOPASDFGHJKL'));
+   }
+ 
+   public function testDups() {
+     $text = '{{Cite journal | DUPLICATE_URL = }}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get('duplicate_url'));
+     $this->assertNull($template->get('DUPLICATE_URL'));
+     $text = '{{Cite journal | duplicate_url = }}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get('duplicate_url'));
+     $this->assertNull($template->get('DUPLICATE_URL'));
+   }
+
+   public function testCommonMistakes() {
+     return; // TODO
+     $text = '{{Cite journal | editorlink4 = X}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('X', $template->get('editor4-link'));
+     $this->assertNull($template->get('editorlink4'));
    }
 }
