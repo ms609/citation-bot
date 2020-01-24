@@ -3790,10 +3790,9 @@ T1 - This is the Title }}';
    }
 
    public function testCommonMistakes() {
-     return; // TODO
-     $text = '{{Cite journal | editorlink4 = X}}';
+     $text = '{{Cite journal | origmonth = X}}';
      $template = $this->process_citation($text);
-     $this->assertSame('X', $template->get('editor4-link'));
-     $this->assertNull($template->get('editorlink4'));
+     $this->assertSame('X', $template->get('month'));
+     $this->assertNull($template->get('origmonth'));
    }
 }
