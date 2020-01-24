@@ -892,6 +892,12 @@ final class TemplateTest extends testBaseClass {
     });
   }
  
+  public function testBibcodeSkipComplete() {
+    $text = "{{Cite journal | last1 = Reed | first1 = E. J. | last2 = Manaa | first2 = M. R. | last3 = Fried | first3 = L. E. | last4 = Glaesemann | first4 = K. | last5 = Joannopoulos  | title = A Transient Semi-Metallic Layer in Detonating Nitromethane | journal = Shock Compression of Condensed Matter |editors=Mark Elert, Michael D. Furnish, Ricky Chau, Neil Holmes, and Jeffrey Nguyen | doi = 10.1063/1.2833100 | series = AIP Conference Proceedings | pages = 459–462| year = 2007 |volume=955|issue=1|bibcode=2007AIPC..955..459R}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->expand_by_adsabs()); // complete should cause FALSE
+  }
+ 
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
     |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
@@ -3690,11 +3696,52 @@ T1 - This is the Title }}';
      $template = $this->process_citation($text);
      $this->assertSame('33', $template->get('page'));
     
+     $text='{{Cite journal | p 33 |page=}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('page'));
+    
      $text='{{Cite journal |33(22):11-12 }}';
      $template = $this->process_citation($text);
      $this->assertSame('22', $template->get('issue'));
      $this->assertSame('33', $template->get('volume'));
      $this->assertSame('11–12', $template->get('pages'));
+   }
+ 
+    public function testFloaters2() {
+     $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('12 December 1990', $template->get('accessdate'));
+   }
+ 
+    public function testFloaters3() {
+     $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 |accessdate=}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('12 December 1990', $template->get('accessdate'));
+   }
+ 
+    public function testFloaters4() {
+     $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 | accessdate = 3 May 1999 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('3 May 1999', $template->get('accessdate'));
+   }
+ 
+    public function testFloaters5() {
+     $text='{{Cite journal | issue 33 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('issue'));
+   }
+ 
+    public function testFloaters6() {
+     $text='{{Cite journal | issue 33 |issue=}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('issue'));
+   }
+ 
+    public function testFloaters7() {
+     return; //TODO
+     $text='{{Cite journal | issue 33 | issue=22 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('22', $template->get('issue'));
    }
  
    public function testIDconvert1() {
@@ -3803,6 +3850,12 @@ T1 - This is the Title }}';
      $text = '{{Cite journal | title=XXI.—On q-Functions and a certain Difference Operator|doi=10.1017/S0080456800002751}}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get('journal'));
+   }
+ 
+   public function testRoman2() { // Bogus roman to start with
+     $text = '{{Cite journal | title=Improved heat capacity estimator for path integral simulations. XXXI. part of many|doi=10.1063/1.1493184}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('The Journal of Chemical Physics', $template->get('journal'));
    }
  
    public function testAppendToComment() {
