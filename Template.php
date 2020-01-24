@@ -2942,13 +2942,13 @@ final class Template {
         // Extract whatever appears before the first space, and compare it to common parameters
         $pAll = explode(" ", trim($dat));
         $p1 = mb_strtolower($pAll[0]);
+        if ($p1 === 'vol') $p1 = 'volume';
         switch ($p1) {
-          case "volume": case "vol":
+          case "volume":
           case "pages": case "page":
           case "year": case "date":
           case "title":
           case "authors": case "author":
-          case "issue":
           case "journal":
           case "accessdate":
           case "archiveurl":
@@ -2967,6 +2967,7 @@ final class Template {
           }
           break;
           case "issues":
+          case "issue":
           if ($this->blank(ISSUE_ALIASES)) {
             unset($pAll[0]);
             if (!$param_recycled) {
@@ -2978,9 +2979,11 @@ final class Template {
             }
           }
           break;
-          case "access date":
-          if ($this->blank(['access-date', 'accessdate'])) {
+          case "access":
+          $p2 = mb_strtolower($pAll[1]);
+          if ($p2 === 'date' && $this->blank(['access-date', 'accessdate'])) {
             unset($pAll[0]);
+            unset($pAll[1]);
             if (!$param_recycled) {
               $this->param[$param_key]->param = 'accessdate';
               $this->param[$param_key]->val = implode(" ", $pAll);
