@@ -698,6 +698,57 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('10.1038/546031a', $template->get('doi'));
   }
  
+  public function testZoteroResponse35() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_response = 'Internal Server Error';
+    $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame($text, $template->parsed_text());
+  }
+ 
+  public function testZoteroResponse36() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'journalArticle', 'publicationTitle' => "X");
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('cite journal', $template->wikiname());
+    $this->assertSame('Billy', $template->get('title'));
+    $this->assertSame('X', $template->get('journal'));
+  }
+ 
+  public function testZoteroResponse37() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = FALSE;
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'newspaperArticle', 'publicationTitle' => "X");
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('cite news', $template->wikiname());
+    $this->assertSame('Billy', $template->get('title'));
+    $this->assertSame('X', $template->get('newspaper'));
+  }
+ 
+  public function testZoteroResponse38() {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = '12 December 2010';
+    $url = '';
+    $url_kind = NULL;
+    $zotero_data[0] = (object) array('date' => '12 December 2020', 'title' => 'Billy', 'itemType' => 'newspaperArticle', 'publicationTitle' => "X");
+    $zotero_response = json_encode($zotero_data);
+    $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame($text, $template->parsed_text());
+  }
+ 
   public function testRemoveURLthatRedirects() { // This URL is a redirect -- tests code that does that
     $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
     $template = $this->make_citation($text);
