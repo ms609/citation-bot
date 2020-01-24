@@ -2950,7 +2950,7 @@ final class Template {
           }
           break;
           case "issues":
-          if ($this->blank($p1)) {
+          if ($this->blank(ISSUE_ALIASES)) {
             unset($pAll[0]);
             if (!$param_recycled) {
               $this->param[$param_key]->param = 'issue';
@@ -2962,14 +2962,14 @@ final class Template {
           }
           break;
           case "access date":
-          if ($this->blank($p1)) {
+          if ($this->blank(['access-date', 'accessdate'])) {
             unset($pAll[0]);
             if (!$param_recycled) {
-              $this->param[$param_key]->param = 'accessdate';
+              $this->param[$param_key]->param = 'access-date';
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('accessdate', implode(" ", $pAll));
+              $this->add('access-date', implode(" ", $pAll));
             }
           }
           break;
