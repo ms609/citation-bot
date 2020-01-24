@@ -2376,6 +2376,28 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
+    $unpaywall_result = get_unpaywall_url($doi);
+    if ($unpaywall_result) {
+      return TRUE;
+    } else {
+      return get_semanticscholar_url($doi);
+    }
+  }
+
+  public function get_semanticscholar_url($doi) {
+    $url = "https://api.semanticscholar.org/v1/paper/$doi";
+    $json = @file_get_contents($url);
+    if ($json) {
+      $oa = @json_decode($json);
+      if ($oa !== FALSE && isset($oa->url)) {
+        $oa_url = $oa->url;
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
+  public function get_unpaywall_url($doi) {
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
