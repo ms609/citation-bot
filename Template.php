@@ -536,7 +536,21 @@ final class Template {
           return $this->add($param_name, $value);
         }
         return FALSE;
-         
+        
+      case 'accessdate':
+      case 'access-date':
+        if (!$this->blank(['access-date', 'accessdate'])) return FALSE;
+        $time = strtotime($value);
+        if ($time) { // should come in cleaned up
+            if ($this->date_style === DATES_MDY) {
+               $value = date('F j, Y', $time);
+            } elseif ($this->date_style === DATES_DMY) {
+               $value = date('j F Y', $time);
+            }
+            return $this->add($param_name, $value);
+        }
+        return FALSE; 
+        
       case 'archivedate';
       case 'archive-date':
         if (!$this->blank(['archive-date', 'archivedate'])) return FALSE;
@@ -1877,12 +1891,12 @@ final class Template {
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
     }
-    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
-      return $this->expand_book_adsabs();
-    }
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode')));
       return FALSE;
+    }
+    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
+      return $this->expand_book_adsabs();
     }
   
     report_action("Checking AdsAbs database");
@@ -2067,8 +2081,10 @@ final class Template {
   }
   
   protected function expand_book_adsabs() {
+    $return = FALSE;
     $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
     if ($result->numFound == 1) {
+      $return = TRUE;
       $record = $result->docs[0];
       if (isset($record->year)) $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
       if (isset($record->title)) $this->add_if_new('title', (string) $record->title[0]);
@@ -2083,7 +2099,8 @@ final class Template {
     }
     if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches)) {
       $this->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
-    }  
+    }
+    return $return;
   }
   
   // $options should be a series of field names, colons (optionally urlencoded), and
@@ -2925,13 +2942,13 @@ final class Template {
         // Extract whatever appears before the first space, and compare it to common parameters
         $pAll = explode(" ", trim($dat));
         $p1 = mb_strtolower($pAll[0]);
+        if ($p1 === 'vol') $p1 = 'volume';
         switch ($p1) {
-          case "volume": case "vol":
+          case "volume":
           case "pages": case "page":
           case "year": case "date":
           case "title":
           case "authors": case "author":
-          case "issue":
           case "journal":
           case "accessdate":
           case "archiveurl":
@@ -2945,31 +2962,34 @@ final class Template {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE; 
             } else {
-              $this->add($p1, implode(" ", $pAll));
+              $this->add_if_new($p1, implode(" ", $pAll));
             }
           }
           break;
           case "issues":
-          if ($this->blank($p1)) {
+          case "issue":
+          if ($this->blank(ISSUE_ALIASES)) {
             unset($pAll[0]);
             if (!$param_recycled) {
               $this->param[$param_key]->param = 'issue';
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('issue', implode(" ", $pAll));
+              $this->add_if_new('issue', implode(" ", $pAll));
             }
           }
           break;
-          case "access date":
-          if ($this->blank($p1)) {
+          case "access":
+          $p2 = mb_strtolower($pAll[1]);
+          if ($p2 === 'date' && $this->blank(['access-date', 'accessdate'])) {
             unset($pAll[0]);
+            unset($pAll[1]);
             if (!$param_recycled) {
               $this->param[$param_key]->param = 'accessdate';
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('accessdate', implode(" ", $pAll));
+              $this->add_if_new('accessdate', implode(" ", $pAll));
             }
           }
           break;
