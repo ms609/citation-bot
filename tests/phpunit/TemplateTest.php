@@ -889,7 +889,14 @@ final class TemplateTest extends testBaseClass {
       $this->assertSame('Houk', $expanded->get('last1'));
       $this->assertSame('N.', $expanded->get('first1'));
       $this->assertNotNull($expanded->get('title'));
+      $this->assertFalse($expanded->expand_by_adsabs()); // Repeat should cause false
     });
+  }
+ 
+  public function testBibcodeSkipComplete() {
+    $text = "{{Cite journal | last1 = Reed | first1 = E. J. | last2 = Manaa | first2 = M. R. | last3 = Fried | first3 = L. E. | last4 = Glaesemann | first4 = K. | last5 = Joannopoulos  | title = A Transient Semi-Metallic Layer in Detonating Nitromethane | journal = Shock Compression of Condensed Matter |editors=Mark Elert, Michael D. Furnish, Ricky Chau, Neil Holmes, and Jeffrey Nguyen | doi = 10.1063/1.2833100 | series = AIP Conference Proceedings | pages = 459–462| year = 2007 |volume=955|issue=1|bibcode=2007AIPC..955..459R}}";
+    $template = $this->make_template($text);
+    $this->assertFalse($expanded->expand_by_adsabs()); // complete should cause FALSE
   }
  
   public function testParameterAlias() {
@@ -3695,6 +3702,22 @@ T1 - This is the Title }}';
      $this->assertSame('22', $template->get('issue'));
      $this->assertSame('33', $template->get('volume'));
      $this->assertSame('11–12', $template->get('pages'));
+    
+     $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('12 December 1990', $template->get('accessdate'));
+    
+     $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 | accessdate = 3 May 1999 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('3 May 1999', $template->get('accessdate'));
+    
+     $text='{{Cite journal | issue 33 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('issue'));
+    
+     $text='{{Cite journal | issue 33 | issue=22 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('22', $template->get('issue'));
    }
  
    public function testIDconvert1() {
