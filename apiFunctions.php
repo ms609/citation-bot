@@ -680,7 +680,21 @@ function expand_doi_with_dx($template, $doi) {
 function doi_active($doi) {
   static $cache = [];
   if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
-    $cache[$doi] = is_doi_active($doi);
+    $works = doi_works($doi);
+    if ($works === NULL) {
+      $cache[$doi] = NULL;
+    } elseif ($works === FALSE) {
+      $cache[$doi] = FALSE;
+    } else { // TRUE
+      $active = is_doi_active($doi);
+      if ($active === NULL) {
+        $cache[$doi] = NULL;
+      } elseif ($active === FALSE) {
+        $cache[$doi] = FALSE;
+      } else {
+        $cache[$doi] = TRUE;
+      }
+    }
   }
   return $cache[$doi];
 }
@@ -694,7 +708,9 @@ function doi_works($doi) {
 }
 
 function is_doi_active($doi) {
-  $response = @get_headers("https://api.crossref.org/works/" . urlencode($doi))[0];
+  $headers_test = @get_headers("https://api.crossref.org/works/" . urlencode($doi));
+  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
+  $response = $headers_test[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");  // @codeCoverageIgnore
@@ -702,7 +718,6 @@ function is_doi_active($doi) {
 }
 
 function is_doi_works($doi) {
-  if (doi_active($doi)) return TRUE; // CrossRef first
   $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1);
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   if (empty($headers_test['Location'])) return FALSE; // leads nowhere
