@@ -4836,7 +4836,6 @@ final class Template {
     }
   }
 
-    
   public function quietly_forget($par) {
     $this->forgetter($par, FALSE);
   }
