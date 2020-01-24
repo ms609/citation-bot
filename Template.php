@@ -2959,7 +2959,7 @@ final class Template {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE; 
             } else {
-              $this->add($p1, implode(" ", $pAll));
+              $this->add_if_new($p1, implode(" ", $pAll));
             }
           }
           break;
@@ -2971,7 +2971,7 @@ final class Template {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('issue', implode(" ", $pAll));
+              $this->add_if_new('issue', implode(" ", $pAll));
             }
           }
           break;
@@ -2983,7 +2983,7 @@ final class Template {
               $this->param[$param_key]->val = implode(" ", $pAll);
               $param_recycled = TRUE;
             } else {
-              $this->add('accessdate', implode(" ", $pAll));
+              $this->add_if_new('accessdate', implode(" ", $pAll));
             }
           }
           break;
