@@ -4822,7 +4822,7 @@ final class Template {
     return TRUE;
   }
 
-  protected function append_to($par, $val) {
+  public function append_to($par, $val) {
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
