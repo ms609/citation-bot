@@ -680,7 +680,7 @@ function expand_doi_with_dx($template, $doi) {
 function doi_active($doi) {
   static $cache = [];
   if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
-    $works = doi_works($doi));
+    $works = doi_works($doi);
     if ($works === NULL) {
       $cache[$doi] = NULL;
     } elseif ($works === FALSE) {
