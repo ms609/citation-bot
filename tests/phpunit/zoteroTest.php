@@ -757,7 +757,7 @@ class ZoteroTest extends testBaseClass {
     $url_kind = 'url';
     $zotero_data[0] = (object) array('title' => 'Geometry of the Welch bounds', 'itemType' => 'journalArticle', 'DOI' => '10.1016/j.laa.2012.05.036');
     $zotero_response = json_encode($zotero_data);
-    $this->assertFalse(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertNull($template->get('url')); // Drop when gets doi
     $this->assertSame('10.1016/j.laa.2012.05.036', $template->get('doi'));
   }
