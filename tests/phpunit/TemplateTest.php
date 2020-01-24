@@ -895,7 +895,7 @@ final class TemplateTest extends testBaseClass {
  
   public function testBibcodeSkipComplete() {
     $text = "{{Cite journal | last1 = Reed | first1 = E. J. | last2 = Manaa | first2 = M. R. | last3 = Fried | first3 = L. E. | last4 = Glaesemann | first4 = K. | last5 = Joannopoulos  | title = A Transient Semi-Metallic Layer in Detonating Nitromethane | journal = Shock Compression of Condensed Matter |editors=Mark Elert, Michael D. Furnish, Ricky Chau, Neil Holmes, and Jeffrey Nguyen | doi = 10.1063/1.2833100 | series = AIP Conference Proceedings | pages = 459–462| year = 2007 |volume=955|issue=1|bibcode=2007AIPC..955..459R}}";
-    $template = $this->make_template($text);
+    $template = $this->make_citation($text);
     $this->assertFalse($expanded->expand_by_adsabs()); // complete should cause FALSE
   }
  
