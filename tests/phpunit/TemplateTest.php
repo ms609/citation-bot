@@ -3807,7 +3807,7 @@ T1 - This is the Title }}';
  
    public function testAppendToComment() {
      $text = '{{cite web}}';
-     $template = $this->make_template($text);
+     $template = $this->make_citation($text);
      $template->add_if_new('id', 'CITATION_BOT_PLACEHOLDER_COMMENT');
      $this->assertFalse($template->append_to('id', 'joe'));
      $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('id'));
@@ -3815,21 +3815,21 @@ T1 - This is the Title }}';
  
    public function testAppendEmpty() {
      $text = '{{cite web|id=}}';
-     $template = $this->make_template($text);
+     $template = $this->make_citation($text);
      $this->assertTrue($template->append_to('id', 'joe'));
      $this->assertSame('joe', $template->get('id'));
    }
  
    public function testAppendNull() {
      $text = '{{cite web}}';
-     $template = $this->make_template($text);
+     $template = $this->make_citation($text);
      $this->assertTrue($template->append_to('id', 'joe'));
      $this->assertSame('joe', $template->get('id'));
    }
  
    public function testAppendAppend() {
      $text = '{{cite web|id=X}}';
-     $template = $this->make_template($text);
+     $template = $this->make_citation($text);
      $this->assertTrue($template->append_to('id', 'joe'));
      $this->assertSame('Xjoe', $template->get('id'));
    }
