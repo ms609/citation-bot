@@ -17,7 +17,9 @@ class Page {
   protected $read_at, $namespace, $touched, $start_text, $last_write_time;
   public $lastrevid;
 
-  function __construct() { ; }
+  function __construct() { 
+      $this->construct_modifications_array();
+  }
 
   public function get_text_from($title, $api) {   
     global $is_a_man_with_no_plan;
@@ -61,7 +63,6 @@ class Page {
        return FALSE;                                                                     // @codeCoverageIgnore
     }
     $this->start_text = $this->text;
-    $this->construct_modifications_array();
     $this->set_date_pattern();
 
     if (preg_match('~\#redirect *\[\[~i', $this->text)) {
@@ -80,7 +81,6 @@ class Page {
   public function parse_text($text) {
     $this->text = $text;
     $this->start_text = $this->text;
-    $this->construct_modifications_array();
     $this->set_date_pattern();
   }  
 
@@ -126,7 +126,6 @@ class Page {
     $page_error = FALSE;
     date_default_timezone_set('UTC');
     $this->announce_page();
-    $this->construct_modifications_array();
     if (!$this->text) {
       report_warning("No text retrieved.\n");
       return FALSE;

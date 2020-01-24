@@ -135,7 +135,7 @@ class ZoteroTest extends testBaseClass {
   public function testZoteroBadVolumes() { // has ( and such in it
    $this->requires_zotero(function() {
     $text = '{{cite journal|chapterurl=https://biodiversitylibrary.org/page/32550604}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->expand_via_zotero($text);
     $this->assertNull($expanded->get('volume'));
    });
   }
@@ -143,7 +143,7 @@ class ZoteroTest extends testBaseClass {
   public function testZoteroKoreanLanguage() {
    $this->requires_zotero(function() {
     $text = '{{cite journal|chapter-url=http://www.newsen.com/news_view.php?uid=201606131737570410}}';
-    $expanded = $this->process_citation($text);
+    $expanded = $this->expand_via_zotero($text);
     $this->assertNull($expanded->get('title')); // Hopefully will work some day and not give � character
    });
   }

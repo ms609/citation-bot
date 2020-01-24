@@ -4822,12 +4822,12 @@ final class Template {
     return TRUE;
   }
 
-  protected function append_to($par, $val) {
+  public function append_to($par, $val) {
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
     $pos = $this->get_param_key($par);
-    if ($pos) {
+    if ($pos !== NULL) { // Could be zero which is "FALSE"
       $this->param[$pos]->val = $this->param[$pos]->val . $val;
       return TRUE;
     } else {
@@ -4836,7 +4836,6 @@ final class Template {
     }
   }
 
-    
   public function quietly_forget($par) {
     $this->forgetter($par, FALSE);
   }
