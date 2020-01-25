@@ -59,8 +59,8 @@ final class Parameter {
  * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
  */
   public function parsed_text() {
-    if ($this->param && empty($this->eq)) {
-      $this->eq = ' = ';
+    if ($this->param && empty($this->eq)) { // code used to do this
+      $this->eq = ' = '; // @codeCoverageIgnore
     }
     return $this->pre . $this->param . $this->eq . $this->val . $this->post;
   }
