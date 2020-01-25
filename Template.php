@@ -2970,7 +2970,7 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if (!trim($dat, " \t\0\x0B")) {
+      if (!trim($dat, " \t\0\x0B") && empty($p->param)) {
         unset($this->param[$param_key]);
       }
     }
