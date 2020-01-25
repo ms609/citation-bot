@@ -2407,7 +2407,7 @@ final class Template {
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url)) {
-        $oa_url = $oa->url;
+        $this->add_if_new('url', $oa->url);
         return TRUE;
       }
     }
