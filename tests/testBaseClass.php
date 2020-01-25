@@ -27,7 +27,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function requires_secrets($function) {
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) {
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET')) {
       echo 'S';
       $this->assertNull(NULL);
     } else {
