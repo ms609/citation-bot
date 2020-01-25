@@ -2368,7 +2368,7 @@ T1 - This is the Title }}';
   }
  
   public function testTidy5() {
-    $text = '{{citation|issue=Dog &nbsp;}}';
+    $text = '{{citation|issue=&nbsp; Dog }}';
     $template = $this->make_citation($text);
     $template->tidy_parameter('issue');
     $this->assertSame('Dog', $template->get('issue'));
@@ -3357,6 +3357,14 @@ T1 - This is the Title }}';
     $this->assertSame('1234W', $template->get('ol'));
     $this->assertNull($template->get('url'));
   }
+ 
+  public function testTidyJSTOR() {
+    $text = "{{cite web|jstor=https://www.jstor.org/stable/123456}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('jstor');
+    $this->assertSame('123456', $template->get('jstor'));
+    $this->assertSame('cite journal', $template->wikiname());
+  }
   
   public function testAuthor2() {
     $text = "{{cite web|title=X}}";
@@ -3689,6 +3697,14 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $this->assertTrue($template->add_if_new('doi', '10.1063/1.2263373'));
      $this->assertSame('10.1063/1.2263373', $template->get('doi'));
+   }
+ 
+   public function testEmptyJunk() {
+     $text='{{Cite journal| dsfasfdfasdfsdafsdafd = | issue = | issue = 33}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('issue'));
+     $this->assertNull($template->get('dsfasfdfasdfsdafsdafd'));
+     $this->assertSame('{{Cite journal| issue = 33}}', $template->parsed_text());
    }
  
    public function testFloaters() {

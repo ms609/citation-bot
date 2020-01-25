@@ -63,6 +63,16 @@ final class PageTest extends testBaseClass {
    });
   }
  
+  public function testDontCrashOnDates() { // See zotero test testRespectDates for actually making sure that it is used
+      $text = '{{Use dmy dates}}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{Use mdy dates}}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{Use mdy dates}}{{Use dmy dates}}{{cite web}}';
+      $page = $this->process_page($text);
+      $this->assertNull(NULL);
+  }
+ 
   public function testBotReadRedirect() {
    $this->requires_secrets(function() {
       $page = new TestPage();
@@ -280,7 +290,11 @@ final class PageTest extends testBaseClass {
       $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=' . $bad_page . '&action=raw');
       $page = new TestPage();
       $page->parse_text($text);
+      $BLOCK_BIBCODE_SEARCH = FALSE;
+      $BLOCK_ZOTERO_SEARCH = FALSE;
       $page->expand_text();
+      $BLOCK_BIBCODE_SEARCH = TRUE;
+      $BLOCK_ZOTERO_SEARCH = TRUE;
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
     $this->assertTrue(TRUE);
