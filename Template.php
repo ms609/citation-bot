@@ -2970,7 +2970,7 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if (!trim($dat, " \t\0\x0B")) { // do not delete blank parameters with line feed
+      if (!trim($dat, " \t\0\x0B") && $this->param[$param_key]->param == '') {
         unset($this->param[$param_key]);
       }
     }
