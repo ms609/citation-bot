@@ -63,6 +63,16 @@ final class PageTest extends testBaseClass {
    });
   }
  
+  public function testDontCrashOnDates() { // See zotero test testRespectDates for actually making sure that it is used
+      $text = '{{Use dmy dates}}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{Use mdy dates}}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{Use mdy dates}}{{Use dmy dates}}{{cite web}}';
+      $page = $this->process_page($text);
+      $this->assertNull(NULL);
+  }
+ 
   public function testBotReadRedirect() {
    $this->requires_secrets(function() {
       $page = new TestPage();
