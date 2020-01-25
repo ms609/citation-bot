@@ -3738,10 +3738,21 @@ T1 - This is the Title }}';
    }
  
     public function testFloaters7() {
-     return; //TODO
      $text='{{Cite journal | issue 33 | issue=22 }}';
      $template = $this->process_citation($text);
      $this->assertSame('22', $template->get('issue'));
+   }
+ 
+    public function testFloaters8() {
+     $text='{{Cite journal |  p 33 junk}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('page'));
+   }
+ 
+    public function testFloaters9() {
+     $text='{{Cite journal |  p 33 junk|page=}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('page'));
    }
  
    public function testIDconvert1() {
