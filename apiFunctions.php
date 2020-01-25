@@ -785,7 +785,7 @@ function expand_by_jstor($template) {
       }
     }
     if ($BAD_DATA) {
-       report_infor('Old title did not match for ' . jstor_link($jstor));
+       report_info('Old title did not match for ' . jstor_link($jstor));
        return FALSE;
     }
   }
