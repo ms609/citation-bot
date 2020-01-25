@@ -2870,7 +2870,7 @@ final class Template {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
-          $this->add($parameter, $parameter_value);
+          $this->add_if_new($parameter, $parameter_value);
           break;
         }
         $para_len = strlen($parameter);
@@ -2919,7 +2919,7 @@ final class Template {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-          $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
