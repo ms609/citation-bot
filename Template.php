@@ -2756,7 +2756,6 @@ final class Template {
         continue;
       }
       $dat = $p->val;
-      $param_recycled = FALSE;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
         $endnote_authors = 0;
@@ -2845,13 +2844,7 @@ final class Template {
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
-            if ($i == 0 && !$param_recycled) { // Use existing parameter slot in first instance
-              $this->param[$param_key]->param = $matched_parameter;
-              $this->param[$param_key]->val = $match[2][0];
-              $param_recycled = TRUE;
-            } else {
-              $this->add_if_new($matched_parameter, $match[2][$i]);
-            }
+            $this->add_if_new($matched_parameter, $match[2][$i]);
           }
         }
       }
@@ -2877,13 +2870,7 @@ final class Template {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
-          if (!$param_recycled) {
-            $this->param[$param_key]->param = $parameter;
-            $this->param[$param_key]->val = $parameter_value;
-            $param_recycled = TRUE;
-          } else {
-            $this->add($parameter, $parameter_value);
-          }
+          $this->add($parameter, $parameter_value);
           break;
         }
         $para_len = strlen($parameter);
@@ -2957,26 +2944,14 @@ final class Template {
           case "url":
           if ($this->blank($p1)) {
             unset($pAll[0]);
-            if (!$param_recycled) {
-              $this->param[$param_key]->param = $p1;
-              $this->param[$param_key]->val = implode(" ", $pAll);
-              $param_recycled = TRUE; 
-            } else {
-              $this->add_if_new($p1, implode(" ", $pAll));
-            }
+            $this->add_if_new($p1, implode(" ", $pAll));
           }
           break;
           case "issues":
           case "issue":
           if ($this->blank(ISSUE_ALIASES)) {
             unset($pAll[0]);
-            if (!$param_recycled) {
-              $this->param[$param_key]->param = 'issue';
-              $this->param[$param_key]->val = implode(" ", $pAll);
-              $param_recycled = TRUE;
-            } else {
-              $this->add_if_new('issue', implode(" ", $pAll));
-            }
+            $this->add_if_new('issue', implode(" ", $pAll));
           }
           break;
           case "access":
@@ -2984,13 +2959,7 @@ final class Template {
           if ($p2 === 'date' && $this->blank(['access-date', 'accessdate'])) {
             unset($pAll[0]);
             unset($pAll[1]);
-            if (!$param_recycled) {
-              $this->param[$param_key]->param = 'accessdate';
-              $this->param[$param_key]->val = implode(" ", $pAll);
-              $param_recycled = TRUE;
-            } else {
-              $this->add_if_new('accessdate', implode(" ", $pAll));
-            }
+            $this->add_if_new('accessdate', implode(" ", $pAll));
           }
           break;
         }
@@ -3001,7 +2970,7 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if (!trim($dat, " \t\0\x0B") && !$param_recycled) { // do not delete blank parameters with line feed
+      if (!trim($dat, " \t\0\x0B") && $this->param[$param_key]->param == '') {
         unset($this->param[$param_key]);
       }
     }
