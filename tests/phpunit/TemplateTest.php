@@ -135,21 +135,30 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('url'));
   }
   
-  public function testBrokenDoiUrlRetention() {
+  public function testBrokenDoiUrlRetention1() {
     $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|title=Israel, Occupied Territories|publisher=|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1301|doi-broken-date=2018-07-07}}';
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get('doi-broken-date'));
     $this->assertNotNull($expanded->get('url'));
+  }
+ 
+   public function testBrokenDoiUrlRetention2() {
     // Newer code does not even add it
     $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('doi'));
     $this->assertNotNull($expanded->get('url'));
+  }
+ 
+   public function testBrokenDoiUrlRetention3() {
     // valid 10.1098 DOI in contrast to evil ones
     $text = '{{cite journal|url=https://academic.oup.com/zoolinnean/advance-article-abstract/doi/10.1093/zoolinnean/zly047/5049994}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('10.1093/zoolinnean/zly047', $expanded->get('doi'));
     $this->assertNull($expanded->get('url'));
+  }
+ 
+   public function testBrokenDoiUrlRetention4() {
     // This is an ISSN only doi: it is valid, but leave url too
     $text = '{{cite journal|url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1601-183X/issues }}';
     $expanded = $this->process_citation($text);
@@ -164,15 +173,21 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame($doi, $expanded->get('doi'));
  }
 
- public function testBrokenDoiUrlChanges() {
+ public function testBrokenDoiUrlChanges1() {
      $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.00/broken_and_invalid|doi-broken-date=12-31-1999}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get('doi'));
      $this->assertNull($expanded->get('url'));
+ }
+ 
+  public function testBrokenDoiUrlChanges2() {
     // The following URL is "broken" since it is not escaped properly.  The cite template displays and links it wrong too.
      $text = '{{cite journal|doi=10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|url=https://dx.doi.org/10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2}}';
      $expanded = $this->process_citation($text);
      $this->assertNull($expanded->get('url'));
+  }
+   
+  public function testBrokenDoiUrlChanges3() {
      $text = '{{cite journal|url=http://doi.org/10.14928/amstec.23.1_1|doi=10.14928/amstec.23.1_1}}';  // This also troublesome DOI
      $expanded = $this->process_citation($text);
      $this->assertNull($expanded->get('url'));
@@ -205,7 +220,7 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testChangeNothing1() {
-     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->|pmid=<!-- -->}}';
+     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->|pmid=<!-- -->|url=<!-- -->}}';
      $expanded = $this->process_page($text);
      $this->assertSame($text, $expanded->parsed_text());
   }
@@ -425,23 +440,29 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('url'));
   }
 
-  public function testDoiExpansion() {
+  public function testDoiExpansion1() {
     $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
     $prepared = $this->prepare_citation($text);
     $this->assertSame('cite journal', $prepared->wikiname());
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $prepared->get('doi'));
-    
+  }
+ 
+  public function testDoiExpansion2() {
     $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
     $expanded = $this->prepare_citation($text);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get('doi'));
     $this->assertNull($expanded->get('url'));
-    
+  }
+ 
+  public function testDoiExpansion3() {
     // Recognize official DOI targets in URL with extra fragments
     $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url'));
-    
+  }
+ 
+  public function testDoiExpansion4() {
     // Replace this test with a real URL (if one exists)
     $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
     $expanded= $this->prepare_citation($text);
