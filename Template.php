@@ -2882,7 +2882,7 @@ final class Template {
             $this->param[$param_key]->val = $parameter_value;
             $param_recycled = TRUE;
           } else {
-            $this->add($parameter, $parameter_value);
+            $this->add_if_new($parameter, $parameter_value);
           }
           break;
         }
@@ -2932,7 +2932,7 @@ final class Template {
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
-          $this->add($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
