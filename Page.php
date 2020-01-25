@@ -21,7 +21,8 @@ class Page {
       $this->construct_modifications_array();
   }
 
-  public function get_text_from($title, $api) {   
+  public function get_text_from($title, $api) {
+    $this->construct_modifications_array(); // Could be new page
     global $is_a_man_with_no_plan;
     $is_a_man_with_no_plan = FALSE;
     if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
@@ -79,6 +80,7 @@ class Page {
   
   // Called from gadgetapi.php
   public function parse_text($text) {
+    $this->construct_modifications_array(); // Could be new page
     $this->text = $text;
     $this->start_text = $this->text;
     $this->set_date_pattern();
