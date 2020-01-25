@@ -762,6 +762,32 @@ function expand_by_jstor($template) {
     report_info("JSTOR API had a problem for ".  jstor_link($jstor));
     return FALSE;
   }
+  if ($template->has('title')) {
+    $BAD_DATA = TRUE; 
+    $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
+    foreach ($ris as $ris_line) {
+      $ris_part = explode(" - ", $ris_line . " ");
+      switch (trim($ris_part[0])) {
+        case "T1":
+        case "TI":
+        case "T2":
+        case "BT":
+          $new_title = trim($ris_part[1]);
+          foreach (['chapter', 'title', 'series'] as $possible) {
+            if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
+              $BAD_DATA = FALSE;
+            }
+          }
+          break;
+        default:
+          break;
+      }
+    }
+    if ($BAD_DATA) {
+       report_info('Old title did not match for ' . jstor_link($jstor));
+       return FALSE;
+    }
+  }
   $has_a_url = $template->has('url');
   $template->expand_by_RIS($dat, FALSE);
   if ($template->has('url') && !$has_a_url) { // we added http://www.jstor.org/stable/12345, so remove quietly
