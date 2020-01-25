@@ -773,10 +773,11 @@ function expand_by_jstor($template) {
         case "TI":
         case "T2":
         case "BT":
-          $new_title = strim($ris_part[1]);
+          $new_title = trim($ris_part[1]);
           foreach (['chapter', 'title', 'series'] as $possible) {
-          if ($this->has($possible) && titles_are_similar($this->get($possible), $new_title)) {
+            if ($this->has($possible) && titles_are_similar($this->get($possible), $new_title)) {
               $BAD_DATA = FALSE;
+            }
           }
           break;
         default:
@@ -784,7 +785,7 @@ function expand_by_jstor($template) {
       }
     }
     if ($BAD_DATA) {
-       report_infor('Title did not match for ' . jstor_link($jstor));
+       report_infor('Old title did not match for ' . jstor_link($jstor));
        return FALSE;
     }
   }
