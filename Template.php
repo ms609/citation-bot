@@ -571,7 +571,7 @@ final class Template {
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
           $param_name = "year";
-        } elseif ($this->date_style) {
+        } elseif ($this->date_style !== DATES_WHATEVER) {
           $time = strtotime($value);
           if ($time) {
             $day = date('d', $time);

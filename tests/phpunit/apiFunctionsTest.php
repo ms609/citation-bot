@@ -188,24 +188,37 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('Lisa Anne', $template->get('first1'));
   }
   
-   public function testJstor() {
+   public function testJstor1() {
      $text = "{{cite journal|url=https://jstor.org/stable/832414?seq=1234}}";
      $template = $this->make_citation($text);
      $this->assertTrue(expand_by_jstor($template));
      $this->assertNull($template->get('jstor')); // We don't do that here
-
+   }
+  
+   public function testJstor2() {
      $text = "{{cite journal|jstor=832414?seq=1234}}";
      $template = $this->make_citation($text);
      $this->assertTrue(expand_by_jstor($template));
      $this->assertNull($template->get('url'));
-
+   }
+  
+   public function testJstor3() {
      $text = "{{cite journal|jstor=123 123}}";
      $template = $this->make_citation($text);
      $this->assertFalse(expand_by_jstor($template));
-
+   }
+  
+   public function testJstor4() {
      $text = "{{cite journal|jstor=i832414}}";
      $template = $this->make_citation($text);
      $this->assertFalse(expand_by_jstor($template));
+   }
+  
+   public function testJstor5() {
+     $text = "{{cite journal|jstor=4059223|title=This is not the right title}}";
+     $template = $this->make_citation($text);
+     $this->assertFalse(expand_by_jstor($template));
+     $this->assertSame($text, $template->parsed_text());
   }
   
   public function testArxivChemicals() {
