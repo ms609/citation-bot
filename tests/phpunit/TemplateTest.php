@@ -3738,8 +3738,63 @@ T1 - This is the Title }}';
    }
  
     public function testFloaters7() {
-     return; //TODO
      $text='{{Cite journal | issue 33 | issue=22 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('22', $template->get('issue'));
+   }
+ 
+    public function testFloaters8() {
+     $text='{{Cite journal | junk p 33 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('page'));
+   }
+ 
+    public function testFloaters9() {
+     $text='{{Cite journal | junk p 33 |page=}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('page'));
+   }
+ 
+    public function testFloaters10() {
+     $text='{{Cite journal |junk 33(22):11-12 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('22', $template->get('issue'));
+     $this->assertSame('33', $template->get('volume'));
+     $this->assertSame('11–12', $template->get('pages'));
+   }
+ 
+    public function testFloaters11() {
+     $text='{{Cite journal | url=http://www.apple.com/ |junk access date 12 December 1990 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('12 December 1990', $template->get('accessdate'));
+   }
+ 
+    public function testFloaters12() {
+     $text='{{Cite journal | url=http://www.apple.com/ |junk access date 12 December 1990 |accessdate=}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('12 December 1990', $template->get('accessdate'));
+   }
+ 
+    public function testFloaters13() {
+     $text='{{Cite journal | url=http://www.apple.com/ |junk access date 12 December 1990 | accessdate = 3 May 1999 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('3 May 1999', $template->get('accessdate'));
+   }
+ 
+    public function testFloaters14() {
+     $text='{{Cite journal | junk issue 33 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('issue'));
+   }
+ 
+    public function testFloaters15() {
+     $text='{{Cite journal | junk issue 33 |issue=}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('33', $template->get('issue'));
+   }
+ 
+    public function testFloaters16() {
+     $text='{{Cite journal | junk issue 33 | issue=22 }}';
      $template = $this->process_citation($text);
      $this->assertSame('22', $template->get('issue'));
    }
