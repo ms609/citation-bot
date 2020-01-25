@@ -3692,10 +3692,11 @@ T1 - This is the Title }}';
    }
  
    public function testFloaters() {
-     $text='{{Cite journal | p 33 }}';
+     $text='{{Cite journal| p 33 }}';
      $template = $this->process_citation($text);
      $this->assertSame('33', $template->get('page'));
-    
+     $this->assertSame('{{cite journal|page = 33}}', $template->parsed_text());
+
      $text='{{Cite journal | p 33 |page=}}';
      $template = $this->process_citation($text);
      $this->assertSame('33', $template->get('page'));
