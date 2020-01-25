@@ -2888,7 +2888,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->profoundly_incomplete());
     $this->assertFalse($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
-    $text = "{{cite book|url=http://foxnews.com/x|website=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
+    $text = "{{cite web|url=http://foxnews.com/x|website=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
     $template = $this->make_citation($text);
     $this->assertTrue($template->profoundly_incomplete());
     $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
@@ -2974,7 +2974,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->date_style = DATES_WHATEVER;   
     $this->assertTrue($template->add_if_new('access-date', '20 JAN 2010'));
-    $this->assertSame('20 JAN 2010', $template->get('accessdate'));
+    $this->assertSame('20 JAN 2010', $template->get('access-date'));
   }
  
   public function testAccessDate4() {
