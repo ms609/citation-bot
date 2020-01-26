@@ -102,7 +102,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function expand_via_zotero($text) {
     global $ch_zotero;
-    $expanded = $this->prepare_citation($text);
+    $expanded = $this->make_citation($text);
     
     $ch_zotero = curl_init('https://tools.wmflabs.org/translation-server/web');
     curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
