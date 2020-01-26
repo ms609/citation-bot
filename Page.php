@@ -332,6 +332,7 @@ class Page {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
     }
+    $all_templates = NULL; // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
     return strcmp($this->text, $this->start_text) != 0; // we often just fix Journal caps
   }
 
