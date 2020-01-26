@@ -11,7 +11,7 @@ $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
-  private $skip_zotero = TRUE;// TODO - turn tests back on
+  private $skip_zotero = TRUE; // TODO - turn back on
   
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
@@ -102,7 +102,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function expand_via_zotero($text) {
     global $ch_zotero;
-    $expanded = $this->prepare_citation($text);
+    $expanded = $this->make_citation($text);
     
     $ch_zotero = curl_init('https://tools.wmflabs.org/translation-server/web');
     curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");

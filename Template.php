@@ -1571,13 +1571,7 @@ final class Template {
             && stripos($headers_test['Location'], $matches[1]) !== FALSE) {
               $handle = $matches[1];
           }
-          if ($this->wikiname() === 'cite web') {
-            if ($this->has('journal')) {
-              $this->change_name_to('cite journal');
-            } else {
-              $this->change_name_to('cite document');
-            }
-          }
+         
           return $this->add_if_new('hdl', $handle);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
@@ -4350,8 +4344,6 @@ final class Template {
             $this->forget('work'); // The likelihood of this being a good thing to add is very low
          } elseif ($this->wikiname() === 'cite journal') {
             $this->rename('work', 'journal');
-         } elseif ($this->wikiname() === 'cite magazine') {
-            $this->rename('work', 'magazine');
          }
       }
       if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
