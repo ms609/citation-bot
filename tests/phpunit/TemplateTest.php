@@ -14,7 +14,7 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_out, $prepared->parsed_text()); // TODO This is not quite right yet.  Stuff is left over
     $text_in = "{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}";
-    $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe |journal = L Dog|series = Not mine today}}";
+    $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|series Not mine today|chapte cows|this is random stuff | zauthor Joe |journal = L Dog|series = Not mine today}}";
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_out, $prepared->parsed_text()); // TODO This is not quite right yet
   }
