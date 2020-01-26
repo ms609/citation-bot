@@ -2744,6 +2744,13 @@ T1 - This is the Title }}';
     $this->assertNull($template->get('archiveurl'));
   }
  
+  public function testTidy53b() {
+    $text = "{{cite journal|url=https://s3.amazonaws.com/academia.edu/stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertNull($template->get('url'));
+  }
+ 
   public function testTidy54() {
     $text = "{{cite journal|url=https://ieeexplore.ieee.org.proxy/document/1234}}";
     $template = $this->make_citation($text);
