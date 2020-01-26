@@ -2752,6 +2752,9 @@ final class Template {
       if ($p->param === '') {
         $p->param = 'CITATION_BOT_PLACEHOLDER_FLOATER';
       }
+      if ($p->eq === '') {
+        $p->eq = 'CITATION_BOT_PLACEHOLDER_FLOATER';
+      }
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
@@ -2969,6 +2972,9 @@ final class Template {
       }
       if (strtoupper($p->param) === 'CITATION_BOT_PLACEHOLDER_FLOATER') {
         $p->param = '';
+      }
+      if (strtoupper($p->eq) === 'CITATION_BOT_PLACEHOLDER_FLOATER') {
+        $p->eq = '';
       }
       if (!trim($dat, " \t\0\x0B") && $this->param[$param_key]->param == '') {
         unset($this->param[$param_key]);
