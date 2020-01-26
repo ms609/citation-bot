@@ -2749,6 +2749,9 @@ final class Template {
         }
         continue;
       }
+      if ($p->param === '') {
+        $p->param = 'CITATION_BOT_PLACEHOLDER_FLOATER';
+      }
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
@@ -2963,6 +2966,9 @@ final class Template {
           $this->set('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
+      }
+      if ($p->param === 'CITATION_BOT_PLACEHOLDER_FLOATER') {
+        $p->param = '';
       }
       if (!trim($dat, " \t\0\x0B") && $this->param[$param_key]->param == '') {
         unset($this->param[$param_key]);
