@@ -4328,8 +4328,6 @@ final class Template {
             $this->forget('work'); // The likelihood of this being a good thing to add is very low
          } elseif ($this->wikiname() === 'cite journal') {
             $this->rename('work', 'journal');
-         } elseif ($this->wikiname() === 'cite magazine') {
-            $this->rename('work', 'magazine');
          }
       }
       if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
