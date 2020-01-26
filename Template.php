@@ -2402,7 +2402,7 @@ final class Template {
           report_warning("Ignored a blacklisted OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return FALSE;                                                                                            // @codeCoverageIgnore
         }  
-        // sometimes url_for_landing_page = null, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
+        // sometimes url_for_landing_page = NULL, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
         if ($best_location->url_for_landing_page != null) {
           $oa_url = $best_location->url_for_landing_page;
         } elseif ($best_location->url_for_pdf != null) {
