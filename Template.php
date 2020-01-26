@@ -2967,7 +2967,7 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if ($p->param === 'CITATION_BOT_PLACEHOLDER_FLOATER') {
+      if (strtoupper($p->param) === 'CITATION_BOT_PLACEHOLDER_FLOATER') {
         $p->param = '';
       }
       if (!trim($dat, " \t\0\x0B") && $this->param[$param_key]->param == '') {
