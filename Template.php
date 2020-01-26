@@ -2870,7 +2870,9 @@ final class Template {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
-          $this->add_if_new($parameter, $parameter_value);
+          if ($this->add_if_new($parameter, $parameter_value)) {
+             $dat = trim(str_replace($match[0], "", $dat));   
+          }
           break;
         }
         $para_len = strlen($parameter);
@@ -2920,11 +2922,12 @@ final class Template {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
           $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          $dat = "";
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
         $this->add_if_new('isbn', $match[1]);
-        $pAll = "";
+        $dat = "";
       } else {
         // Extract whatever appears before the first space, and compare it to common parameters
         $pAll = explode(" ", trim($dat));
@@ -2945,6 +2948,7 @@ final class Template {
           if ($this->blank($p1)) {
             unset($pAll[0]);
             $this->add_if_new($p1, implode(" ", $pAll));
+            $dat = '';
           }
           break;
           case "issues":
@@ -2952,6 +2956,7 @@ final class Template {
           if ($this->blank(ISSUE_ALIASES)) {
             unset($pAll[0]);
             $this->add_if_new('issue', implode(" ", $pAll));
+            $dat = '';
           }
           break;
           case "access":
@@ -2960,6 +2965,7 @@ final class Template {
             unset($pAll[0]);
             unset($pAll[1]);
             $this->add_if_new('accessdate', implode(" ", $pAll));
+            $dat = '';
           }
           break;
         }
