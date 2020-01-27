@@ -2749,6 +2749,7 @@ final class Template {
         }
         continue;
       }
+      $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY';
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
@@ -2931,8 +2932,11 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if ($this->param[$param_key]->param !== '') {
-          print_r($this->param[$param_key]);               // @codeCoverageIgnore
+      if ($p->param == 'CITATION_BOT_PLACEHOLDER_EMPTY') {
+          $p->param = '';
+      }
+      if ($p->param !== '') {
+          print_r($p);                                     // @codeCoverageIgnore
           report_error('unexpected parameter name set');   // @codeCoverageIgnore
       }
       if (!trim($dat, " \t\0\x0B")) {
