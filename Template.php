@@ -2741,7 +2741,7 @@ final class Template {
     if ($this->blank('url')) {
       $need_one = TRUE;
       foreach ($this->param as $param_key => $p) {
-        if (!empty($p->param) && $need_one) {
+        if ($need_one && !empty($p->param)) {
           if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
             $this->param[$param_key]->val = $p->param . '=' . $p->val;
             $this->param[$param_key]->param = 'url';
