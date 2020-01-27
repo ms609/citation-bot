@@ -12,6 +12,7 @@ $SLOW_MODE = TRUE;
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
   private $skip_zotero = TRUE; // TODO - turn back on
+  private $skip_bibcode= TRUE; // TODO - turn back on
   
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
@@ -37,7 +38,10 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // Only routines that absolutely need bibcode access since we are limited 
   protected function bibcode_secrets($function) {
-    if (!getenv('PHP_ADSABSAPIKEY')) {
+    if ($this->skip_bibcode !== FALSE && $this->skip_bibcode !== TRUE) {
+      $this->assertNull('skip_bibcode bocks commit');
+    }
+    if ($this->skip_bibcode || !getenv('PHP_ADSABSAPIKEY')) {
       echo 'B';
       $this->assertNull(NULL);
     } else {
@@ -51,7 +55,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // allows us to turn off zoreto tests
   protected function requires_zotero($function) {
     if ($this->skip_zotero !== FALSE && $this->skip_zotero !== TRUE) {
-      $this->assertNull('skip_zotero bocks commmit');
+      $this->assertNull('skip_zotero bocks commit');
     }
     if ($this->skip_zotero && getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) { // Main build NEVER skips anything
       echo 'Z';
