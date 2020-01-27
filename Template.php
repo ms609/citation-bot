@@ -2931,7 +2931,11 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if (!trim($dat, " \t\0\x0B") && $this->param[$param_key]->param == '') {
+      if ($this->param[$param_key]->param !== '') {
+          print_r($this->param[$param_key]);               // @codeCoverageIgnore
+          report_error('unexpected parameter name set');   // @codeCoverageIgnore
+      }
+      if (!trim($dat, " \t\0\x0B")) {
         unset($this->param[$param_key]);
       }
     }
