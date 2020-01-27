@@ -1404,9 +1404,9 @@ final class Template {
           $this->forget($url_type);
         }
         
-      } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/(?:PMC)?(\d+)~i", $url, $match)) {
-        if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
+      } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
+                      . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/(?:PMC)?(\d{4,})~i", $url, $match)) {
+        if (preg_match("~\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting URL to PMC parameter");
@@ -1426,8 +1426,8 @@ final class Template {
           $this->forget($url_type);
         } 
         return $this->add_if_new('pmc', $match[1] . $match[2]);
-      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles/pmc(\d+)~i", $url, $match)  ||
-                preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles/pmc(\d{4,})~i", $url, $match)  ||
+                preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
           quietly('report_modification', "Converting Europe URL to PMC parameter");
@@ -1436,7 +1436,7 @@ final class Template {
           $this->forget($url_type);
         }
         return $this->add_if_new('pmc', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/abstract/med/(\d+)~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/abstract/med/(\d{4,})~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmid')) {
           quietly('report_modification', "Converting Europe URL to PMID parameter");
@@ -1445,7 +1445,7 @@ final class Template {
             $this->forget($url_type);
         }
         return $this->add_if_new('pmid', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d+)(?:|/.*)$~i", $url, $match)) {
+      } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d{4,})(?:|/.*)$~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         quietly('report_modification', "Converting Canadian URL to PMC parameter");
         if (is_null($url_sent)) {
@@ -1481,10 +1481,10 @@ final class Template {
       . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
       . "entrez/query\.fcgi\S+db=pubmed\S+|"
       . "pmc/articles/pmid/)"
-      . ".*?=?(\d+)~i", $url, $match)||
+      . ".*?=?(\d{4,})~i", $url, $match)||
           preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(\d{4,})(?:|/|-.+)$~", $url, $match)
         ) {
-        if (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?/pubmed/\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
+        if (preg_match("~\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
           $this->forget($url_type);
@@ -2481,7 +2481,7 @@ final class Template {
              return TRUE;
           }
         }
-        if (preg_match("~https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d{5,})~", $oa_url, $match)) {
+        if (preg_match("~https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d+)~", $oa_url, $match)) {
           if ($this->has('pmid')) {
              return TRUE;
           }
@@ -2760,17 +2760,24 @@ final class Template {
       }
     }
     
-    foreach ($this->param as $param_key => $p) {
-      if (!empty($p->param)) {
-        if ($this->blank('url') && preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-          $this->param[$param_key]->val = $p->param . '=' . $p->val;
-          $this->param[$param_key]->param = 'url';
-          if (stripos($p->val, 'books.google.') !== FALSE) {
-            $this->change_name_to('cite book');
+    if ($this->blank('url')) {
+      $need_one = TRUE;
+      foreach ($this->param as $param_key => $p) {
+        if ($need_one && !empty($p->param)) {
+          if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
+            $this->param[$param_key]->val = $p->param . '=' . $p->val;
+            $this->param[$param_key]->param = 'url';
+            $this->param[$param_key]->eq = ' = '; // Upgrade it to nicely spread out
+            $need_one = FALSE;
+            if (stripos($p->val, 'books.google.') !== FALSE) {
+              $this->change_name_to('cite book');
+            }
           }
         }
-        continue;
       }
+    }
+    foreach ($this->param as $param_key => $p) {
+      if (!empty($p->param)) continue;
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
@@ -2856,7 +2863,7 @@ final class Template {
               $matched_parameter = "page";
               break;
             default:
-              $matched_parameter = NULL;
+              $matched_parameter = FALSE;
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
@@ -2886,6 +2893,7 @@ final class Template {
           $parameter_value = trim(substr($dat, strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
           $this->add_if_new($parameter, $parameter_value);
+          $dat = trim(str_replace($match[0], '', $dat));
           break;
         }
         $para_len = strlen($parameter);
