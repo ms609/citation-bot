@@ -2750,6 +2750,7 @@ final class Template {
         continue;
       }
       $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY';
+      $p->eq = ' = '; 
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
@@ -2934,6 +2935,7 @@ final class Template {
       }
       if ($p->param == 'CITATION_BOT_PLACEHOLDER_EMPTY') {
           $p->param = '';
+          $p->eq = '';
       }
       if ($p->param !== '') {
           print_r($p);                                     // @codeCoverageIgnore
