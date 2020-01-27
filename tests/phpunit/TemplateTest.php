@@ -3953,7 +3953,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('DUPLICATE_URL'));
      $text = '{{Cite journal|id=|id=|id=|id=|id=|id=|id=|id=|id=|id=|id=|id=}}';
      $template = $this->process_citation($text);
-     $this->assertSame('{{Cite journal|id=}}', $template->parse_text());
+     $this->assertSame('{{Cite journal|id=}}', $template->parsed_text());
    }
  
    public function testDropSep() {
