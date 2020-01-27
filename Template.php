@@ -2739,12 +2739,14 @@ final class Template {
     }
     
     if ($this->blank('url')) {
+      $need_one = TRUE;
       foreach ($this->param as $param_key => $p) {
-        if (!empty($p->param) && $this->blank('url')) { // Check url again to avoid doing more than once!
+        if (!empty($p->param) && $need_one) {
           if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
             $this->param[$param_key]->val = $p->param . '=' . $p->val;
             $this->param[$param_key]->param = 'url';
             $this->param[$param_key]->eq = ' = '; // Upgrade it to nicely spread out
+            $need_one = FALSE;
             if (stripos($p->val, 'books.google.') !== FALSE) {
               $this->change_name_to('cite book');
             }
