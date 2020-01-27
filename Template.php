@@ -2867,6 +2867,7 @@ final class Template {
           report_add("Found $parameter floating around in template; converted to parameter");
           $dat = trim(str_replace($match[0], '', $dat));
           $this->add_if_new($parameter, $parameter_value);
+          $dat = trim(str_replace($match[0], '', $dat));
           break;
         }
         $para_len = strlen($parameter);
