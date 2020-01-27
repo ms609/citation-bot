@@ -9,12 +9,15 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class TemplateTest extends testBaseClass {
  
   public function testLotsOfFloaters() {
-    $text_in = "{{cite journal|issue 3 volume 5 | title Love|journal Dog|series Not mine today|chapter cows|this is random stuff | 1234567890 }}";
-    $text_out= "{{cite book| title Love|journal Dog|series Not mine today|chapter cows|this is random stuff | 1234567890 |issue = 3|volume = 5|title = Love|journal = Dog|series = Not mine today|chapter = Cows|isbn = 1234567890}}";
+    $text_in = "{{cite journal|issue 3 volume 5 | title Love|journal Dog|series Not mine today|chapter cows|this is random stuff | 123-4567-890 }}";
+    $text_out= "{{cite book|this is random stuff | issue = 3| volume = 5| title = Love| journal = Dog| series = Not mine today| chapter = Cows| isbn = 123-4567-890}}";
     $prepared = $this->prepare_citation($text_in);
-    $this->assertSame($text_out, $prepared->parsed_text()); // TODO This is not quite right yet.  Stuff is left over
+    $this->assertSame($text_out, $prepared->parsed_text());
+  }
+  
+  public function testLotsOfFloaters2() {
     $text_in = "{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}";
-    $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|series Not mine today|chapte cows|this is random stuff | zauthor Joe |journal = L Dog|series = Not mine today}}";
+    $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe | journal = L Dog| series = Not mine today}}";
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_out, $prepared->parsed_text()); // TODO This is not quite right yet
   }
@@ -3791,7 +3794,7 @@ T1 - This is the Title }}';
      $text='{{Cite journal| p 33 }}';
      $template = $this->process_citation($text);
      $this->assertSame('33', $template->get('page'));
-     $this->assertSame('{{Cite journal|page = 33}}', $template->parsed_text());
+     $this->assertSame('{{Cite journal| page = 33 }}', $template->parsed_text());
 
      $text='{{Cite journal | p 33 |page=}}';
      $template = $this->process_citation($text);
