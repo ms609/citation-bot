@@ -2749,8 +2749,8 @@ final class Template {
         }
         continue;
       }
-      $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY';
-      $p->eq = ' = '; 
+      $this->param[$param_key]->param = 'CITATION_BOT_PLACEHOLDER_EMPTY';
+      $this->param[$param_key]->eq = ' = '; 
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
@@ -2933,12 +2933,12 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if ($p->param == 'CITATION_BOT_PLACEHOLDER_EMPTY') {
-          $p->param = '';
-          $p->eq = '';
+      if ($this->param[$param_key]->param == 'CITATION_BOT_PLACEHOLDER_EMPTY') {
+          $this->param[$param_key]->param = '';
+          $this->param[$param_key]->eq = '';
       }
-      if ($p->param !== '') {
-          print_r($p);                                     // @codeCoverageIgnore
+      if ($this->param[$param_key]->param !== '') {
+          print_r($this->param[$param_key]);                                     // @codeCoverageIgnore
           report_error('unexpected parameter name set');   // @codeCoverageIgnore
       }
       if (!trim($dat, " \t\0\x0B")) {
