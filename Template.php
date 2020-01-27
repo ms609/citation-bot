@@ -2949,11 +2949,11 @@ final class Template {
          $p->val ='';
       }
     }
-    foreach ($this->param as $param_key => &$p) { // Protect them from being overwritten
+    foreach ($this->param as $param_key => &$p) {
       if ($p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY') {
         $p->param = '';
         $p->eq = '';
-        if($p->val = '') unset($p);
+        if($p->val = '') unset($this->param[$param_key]);
       }
     }
   }
