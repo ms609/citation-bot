@@ -2755,7 +2755,7 @@ final class Template {
       }
     }
     foreach ($this->param as $param_key => $p) {
-      if (empty($p->param)) continue;
+      if (!empty($p->param)) continue;
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
