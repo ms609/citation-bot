@@ -2935,15 +2935,16 @@ final class Template {
         }
       }
       if ($p->param == 'CITATION_BOT_PLACEHOLDER_EMPTY') {
-          $p->param = '';
-          $p->eq = '';
+          if (!trim($dat, " \t\0\x0B")) {
+            $this->quietly_forget('CITATION_BOT_PLACEHOLDER_EMPTY');
+          } else {
+            $p->param = '';
+            $p->eq = '';
+          }
       }
       if ($p->param !== '') {
-          print_r($this->param[$param_key]);                                     // @codeCoverageIgnore
+          print_r($this->param[$param_key]);               // @codeCoverageIgnore
           report_error('unexpected parameter name set');   // @codeCoverageIgnore
-      }
-      if (!trim($dat, " \t\0\x0B")) {
-        unset($this->param[$param_key]);
       }
     }
   }
