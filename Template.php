@@ -2740,7 +2740,7 @@ final class Template {
     
     foreach ($this->param as $param_key => $p) {
       if (!empty($p->param)) {
-        if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
+        if ($this->blank('url') && preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
           $this->param[$param_key]->val = $p->param . '=' . $p->val;
           $this->param[$param_key]->param = 'url';
           if (stripos($p->val, 'books.google.') !== FALSE) {
@@ -2814,7 +2814,7 @@ final class Template {
       
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tentative matches
         report_add("Found URL floating in template; setting url");
-        $this->set('url', $match[0]);
+        $this->add_if_new('url', $match[0]);
         $dat = str_replace($match[0], '', $dat);
       }
       
@@ -2927,7 +2927,7 @@ final class Template {
       }
       if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
         if ($this->blank(['year', 'date'])) {
-          $this->set('year', $match[1]);
+          $this->add_if_new('year', $match[1]);
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
