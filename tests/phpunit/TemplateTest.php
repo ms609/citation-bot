@@ -21,6 +21,12 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_out, $prepared->parsed_text()); // TODO This is not quite right yet
   }
+ 
+  public function testLotsOfFloaters3() {
+    $text_in = "{{cite journal| 123-4567-890-123 }}";
+    $prepared = $this->prepare_citation($text_in);
+    $this->assertSame('123-4567-890-123', $prepared->get('isbn'));
+  }
 
   public function testParameterWithNoParameters() {
     $text = "{{Cite web | text without equals sign  }}";
@@ -3945,6 +3951,16 @@ T1 - This is the Title }}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get('duplicate_url'));
      $this->assertNull($template->get('DUPLICATE_URL'));
+   }
+ 
+   public function testDropSep() {
+     $text = '{{Cite journal | author_separator = }}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get('author_separator'));
+     $this->assertNull($template->get('author-separator'));
+     $text = '{{Cite journal | author-separator = Something}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('Something', $template->get('author-separator'));
    }
 
    public function testCommonMistakes() {
