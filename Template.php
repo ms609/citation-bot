@@ -2954,7 +2954,7 @@ final class Template {
       if (stripos($p->param, 'CITATION_BOT_PLACEHOLDER_EMPTY') === FALSE) continue;
       $p->param = '';
       $p->eq = '';
-      if($p->val = '') unset($this->param[$param_key]);
+      if($p->val == '') unset($this->param[$param_key]);
     }
   }
 
