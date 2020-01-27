@@ -2941,8 +2941,7 @@ final class Template {
             $p->param = '';
             $p->eq = '';
           }
-      }
-      if ($p->param !== '') {
+      } elseif ($p->param !== '') {
           print_r($this->param[$param_key]);               // @codeCoverageIgnore
           report_error('unexpected parameter name set');   // @codeCoverageIgnore
       }
