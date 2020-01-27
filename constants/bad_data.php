@@ -6,7 +6,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
-                           "no authors");
+                           "no authors", "no author indicated", "no authorship indicated");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee',
                                 'society', ' of america', 'association', ' at the ', 'board of ',
