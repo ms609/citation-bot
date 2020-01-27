@@ -2834,7 +2834,7 @@ final class Template {
               $matched_parameter = "page";
               break;
             default:
-              $matched_parameter = NULL;
+              $matched_parameter = FALSE;
           }
           if ($matched_parameter) {
             $dat = trim(str_replace($oMatch, "", $dat));
@@ -2864,6 +2864,7 @@ final class Template {
           $parameter_value = trim(substr($dat, strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
           $this->add_if_new($parameter, $parameter_value);
+          $dat = trim(str_replace($match[0], '', $dat));
           break;
         }
         $para_len = strlen($parameter);
