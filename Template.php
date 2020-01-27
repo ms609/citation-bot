@@ -2941,7 +2941,7 @@ final class Template {
                                      . $the_isbn[4] . '[ -]?' . $the_isbn[5] . '[ -]?'
                                      . $the_isbn[6] . '[ -]?' . $the_isbn[7] . '[ -]?'
                                      . $the_isbn[8] . '[ -]?' . $the_isbn[9] .
-                                 '~', $dat, $match)); // Crazy to deal with dashes and spaces
+                                 '~', $dat, $match); // Crazy to deal with dashes and spaces
         $this->add_if_new('isbn', $match[1]);
         $dat = trim(str_replace($match[0], '', $dat));
       } elseif (preg_match("~(?!<\d)(\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
@@ -2953,7 +2953,7 @@ final class Template {
                                      . $the_isbn[8] . '[ -]?' . $the_isbn[9] . '[ -]?'
                                      . $the_isbn[10]. '[ -]?' . $the_isbn[11]. '[ -]?'
                                      . $the_isbn[12].
-                                 '~', $dat, $match)); // Crazy to deal with dashes and spaces
+                                 '~', $dat, $match); // Crazy to deal with dashes and spaces
         $this->add_if_new('isbn', $match[1]);
         $dat = trim(str_replace($match[0], '', $dat));
       }
