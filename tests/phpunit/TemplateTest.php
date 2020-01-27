@@ -19,13 +19,25 @@ final class TemplateTest extends testBaseClass {
     $text_in = "{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}";
     $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe | journal = L Dog| series = Not mine today}}";
     $prepared = $this->prepare_citation($text_in);
-    $this->assertSame($text_out, $prepared->parsed_text()); // TODO This is not quite right yet
+    $this->assertSame($text_out, $prepared->parsed_text());
   }
  
   public function testLotsOfFloaters3() {
     $text_in = "{{cite journal| 123-4567-890-123 }}";
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame('123-4567-890-123', $prepared->get('isbn'));
+  }
+ 
+  public function testLotsOfFloaters4) {
+    $text_in = "{{cite journal| 123-4567-8901123 }}"; // 13 numbers
+    $prepared = $this->prepare_citation($text_in);
+    $this->assertSame($text_in, $prepared->parsed_text());
+  }
+ 
+  public function testLotsOfFloaters4) {
+    $text_in = "{{cite journal| 12345678901 }}"; // 11 numbers
+    $prepared = $this->prepare_citation($text_in);
+    $this->assertSame($text_in, $prepared->parsed_text());
   }
 
   public function testParameterWithNoParameters() {
