@@ -2760,7 +2760,7 @@ final class Template {
         $p->eq = ' = ';
       }
     }
-    foreach ($this->param as $param_key => $p) {
+    foreach ($this->param as $param_key => &$p) {
       if ($p->param !== 'CITATION_BOT_PLACEHOLDER_EMPTY') continue;
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
@@ -2945,13 +2945,8 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if ($p->param == 'CITATION_BOT_PLACEHOLDER_EMPTY') {
-          if (!trim($dat, " \t\0\x0B")) {
-            $p->val ='';
-          }
-      } elseif ($p->param !== '') {
-          print_r($this->param[$param_key]);               // @codeCoverageIgnore
-          report_error('unexpected parameter name set');   // @codeCoverageIgnore
+      if (!trim($dat, " \t\0\x0B")) {
+         $p->val ='';
       }
     }
     foreach ($this->param as $param_key => &$p) { // Protect them from being overwritten
