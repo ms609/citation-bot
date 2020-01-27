@@ -2878,9 +2878,12 @@ final class Template {
           $parameter_value = trim(mb_substr($dat, mb_strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
           $this->add_if_new($parameter, $parameter_value);
-          $dat = '';
-          $p->val = '';
-          break;
+          $numSpaces = preg_match_all('~[\s]+~', $parameter_value);
+          if ($numSpaces < 4) {
+            $dat = '';
+            $p->val = '';
+            break;
+          }
         }
         $para_len = strlen($parameter);
         if ($para_len < 3) continue; // minimum length to avoid FALSE positives
@@ -2932,25 +2935,27 @@ final class Template {
           $dat = trim(preg_replace('~^.*' . preg_quote($match[1]) . '~', '', $dat));
         }
       } elseif (preg_match("~(?!<\d)(\d{10})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
-        $this->add_if_new('isbn', $match[1]);
         $the_isbn = str_split($match[1]);
-        $dat = trim(preg_replace('~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
+        preg_match(              '~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
                                      . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
                                      . $the_isbn[4] . '[ -]?' . $the_isbn[5] . '[ -]?'
                                      . $the_isbn[6] . '[ -]?' . $the_isbn[7] . '[ -]?'
                                      . $the_isbn[8] . '[ -]?' . $the_isbn[9] .
-                                 '~', '', $dat)); // Crazy to deal with dashes and spaces
-      } elseif (preg_match("~(?!<\d)(\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+                                 '~', '', $dat, $match)); // Crazy to deal with dashes and spaces
         $this->add_if_new('isbn', $match[1]);
+        $dat = trim(str_replace($match[0], '', $dat));
+      } elseif (preg_match("~(?!<\d)(\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         $the_isbn = str_split($match[1]);
-        $dat = trim(preg_replace('~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
+        preg_match(              '~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
                                      . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
                                      . $the_isbn[4] . '[ -]?' . $the_isbn[5] . '[ -]?'
                                      . $the_isbn[6] . '[ -]?' . $the_isbn[7] . '[ -]?'
                                      . $the_isbn[8] . '[ -]?' . $the_isbn[9] . '[ -]?'
                                      . $the_isbn[10]. '[ -]?' . $the_isbn[11]. '[ -]?'
                                      . $the_isbn[12].
-                                 '~', '', $dat)); // Crazy to deal with dashes and spaces
+                                 '~', '', $dat, $match)); // Crazy to deal with dashes and spaces
+        $this->add_if_new('isbn', $match[1]);
+        $dat = trim(str_replace($match[0], '', $dat));
       }
       if (preg_match("~^access date[ :]+(.+)$~i", $dat, $match)) {
         if ($this->add_if_new('accessdate', $match[1])) {
