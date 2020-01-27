@@ -2865,7 +2865,6 @@ final class Template {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
           $parameter_value = trim(substr($dat, strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
-          $dat = trim(str_replace($match[0], '', $dat));
           $this->add_if_new($parameter, $parameter_value);
           $dat = trim(str_replace($match[0], '', $dat));
           break;
