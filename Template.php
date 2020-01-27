@@ -2737,24 +2737,31 @@ final class Template {
           echoable($this->param[$duplicated_parameters[$i]]->param));
       }
     }
-    
+
+    if ($this->blank('url')) {
+      $need_one = TRUE;
+      foreach ($this->param as $param_key => $p) {
+        if ($need_one && !empty($p->param)) {
+          if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
+            $this->param[$param_key]->val = $p->param . '=' . $p->val;
+            $this->param[$param_key]->param = 'url';
+            $this->param[$param_key]->eq = ' = '; // Upgrade it to nicely spread out
+            $need_one = FALSE;
+            if (stripos($p->val, 'books.google.') !== FALSE) {
+              $this->change_name_to('cite book');
+            }
+          }
+        }
+      }
+    }
     foreach ($this->param as $param_key => &$p) { // Protect them from being overwritten
       if (empty($p->param)) {
         $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY';
         $p->eq = ' = ';
       }
     }
-    foreach ($this->param as $param_key => &$p) {
-      if ($p->param !== 'CITATION_BOT_PLACEHOLDER_EMPTY') {
-        if ($this->blank('url') && preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-          $this->param[$param_key]->val = $p->param . '=' . $p->val;
-          $this->param[$param_key]->param = 'url';
-          if (stripos($p->val, 'books.google.') !== FALSE) {
-            $this->change_name_to('cite book');
-          }
-        }
-        continue;
-      }
+    foreach ($this->param as $param_key => $p) {
+      if ($p->param !== 'CITATION_BOT_PLACEHOLDER_EMPTY') continue;
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
