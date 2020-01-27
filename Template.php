@@ -2738,8 +2738,14 @@ final class Template {
       }
     }
     
+    foreach ($this->param as $param_key => &$p) { // Protect them from being overwritten
+      if (empty($p->param)) {
+        $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY';
+        $p->eq = ' = ';
+      }
+    }
     foreach ($this->param as $param_key => &$p) {
-      if (!empty($p->param)) {
+      if ($p->param !== 'CITATION_BOT_PLACEHOLDER_EMPTY') {
         if ($this->blank('url') && preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
           $this->param[$param_key]->val = $p->param . '=' . $p->val;
           $this->param[$param_key]->param = 'url';
@@ -2749,8 +2755,6 @@ final class Template {
         }
         continue;
       }
-      $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY';
-      $p->eq = ' = '; 
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
@@ -2936,14 +2940,18 @@ final class Template {
       }
       if ($p->param == 'CITATION_BOT_PLACEHOLDER_EMPTY') {
           if (!trim($dat, " \t\0\x0B")) {
-            $this->quietly_forget('CITATION_BOT_PLACEHOLDER_EMPTY');
-          } else {
-            $p->param = '';
-            $p->eq = '';
+            $p->val ='';
           }
       } elseif ($p->param !== '') {
           print_r($this->param[$param_key]);               // @codeCoverageIgnore
           report_error('unexpected parameter name set');   // @codeCoverageIgnore
+      }
+    }
+    foreach ($this->param as $param_key => &$p) { // Protect them from being overwritten
+      if ($p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY') {
+        $p->param = '';
+        $p->eq = '';
+        if($p->val = '') unset($p);
       }
     }
   }
