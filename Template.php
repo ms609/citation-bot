@@ -2737,7 +2737,7 @@ final class Template {
           echoable($this->param[$duplicated_parameters[$i]]->param));
       }
     }
-
+    
     if ($this->blank('url')) {
       $need_one = TRUE;
       foreach ($this->param as $param_key => $p) {
