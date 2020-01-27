@@ -2424,7 +2424,7 @@ final class Template {
           report_warning("Ignored a blacklisted OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return FALSE;                                                                                            // @codeCoverageIgnore
         }  
-        // sometimes url_for_landing_page = null, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
+        // sometimes url_for_landing_page = NULL, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
         if ($best_location->url_for_landing_page != null) {
           $oa_url = $best_location->url_for_landing_page;
         } elseif ($best_location->url_for_pdf != null) {
@@ -2846,7 +2846,7 @@ final class Template {
             case "vol": case "v": case 'volume':
               $matched_parameter = "volume";
               break;
-            case "no": case "number": case 'issue': case 'n':
+            case "no": case "number": case 'issue': case 'n': case 'issues':
               $matched_parameter = "issue";
               break;
             case 'pages': case 'pp': case 'pg': case 'pgs': case 'pag':
@@ -2864,7 +2864,6 @@ final class Template {
           }
         }
       }
-      
       // Match vol(iss):pp
       if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) {
         $this->add_if_new('volume', $match[1]);
@@ -2936,48 +2935,16 @@ final class Template {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
           $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
+          $dat = trim(preg_replace('~^.*' . preg_quote($match[1]) . '~', '', $dat));
         }
       } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         // Is it a number formatted like an ISBN?
         $this->add_if_new('isbn', $match[1]);
-        $pAll = "";
-      } else {
-        // Extract whatever appears before the first space, and compare it to common parameters
-        $pAll = explode(" ", trim($dat));
-        $p1 = mb_strtolower($pAll[0]);
-        if ($p1 === 'vol') $p1 = 'volume';
-        switch ($p1) {
-          case "volume":
-          case "pages": case "page":
-          case "year": case "date":
-          case "title":
-          case "authors": case "author":
-          case "journal":
-          case "accessdate":
-          case "archiveurl":
-          case "archivedate":
-          case "format":
-          case "url":
-          if ($this->blank($p1)) {
-            unset($pAll[0]);
-            $this->add_if_new($p1, implode(" ", $pAll));
-          }
-          break;
-          case "issues":
-          case "issue":
-          if ($this->blank(ISSUE_ALIASES)) {
-            unset($pAll[0]);
-            $this->add_if_new('issue', implode(" ", $pAll));
-          }
-          break;
-          case "access":
-          $p2 = mb_strtolower($pAll[1]);
-          if ($p2 === 'date' && $this->blank(['access-date', 'accessdate'])) {
-            unset($pAll[0]);
-            unset($pAll[1]);
-            $this->add_if_new('accessdate', implode(" ", $pAll));
-          }
-          break;
+        $dat = trim(str_replace($match[1], '', $dat));
+      }
+      if (preg_match("~^access date[ :]+(.+)$~i", $dat, $match)) {
+        if ($this->add_if_new('accessdate', $match[1])) {
+          $dat = trim(str_replace($match[0], '', $dat));
         }
       }
       if (preg_match("~\(?(1[89]\d\d|20\d\d)[.,;\)]*~", $dat, $match)) { #YYYY
@@ -2990,7 +2957,6 @@ final class Template {
         unset($this->param[$param_key]);
       }
     }
-  
   }
 
   protected function id_to_param() {
