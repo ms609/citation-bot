@@ -2950,7 +2950,7 @@ final class Template {
       }
     }
     foreach ($this->param as $param_key => &$p) {
-      if ($p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY') {
+      if ($p->param === 'CITATION_BOT_PLACEHOLDER_EMPTY') {
         $p->param = '';
         $p->eq = '';
         if($p->val = '') unset($this->param[$param_key]);
