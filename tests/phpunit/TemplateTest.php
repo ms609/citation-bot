@@ -34,7 +34,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame($text_in, $prepared->parsed_text());
   }
  
-  public function testLotsOfFloaters4) {
+  public function testLotsOfFloaters5() {
     $text_in = "{{cite journal| 12345678901 }}"; // 11 numbers
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_in, $prepared->parsed_text());
