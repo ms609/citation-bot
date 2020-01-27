@@ -2874,8 +2874,8 @@ final class Template {
       $closest = NULL;
       
       foreach ($parameter_list as $parameter) {
-        if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~', strtolower($dat), $match)) {
-          $parameter_value = trim(substr($dat, strlen($match[1])));
+        if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~iu', $dat, $match)) {
+          $parameter_value = trim(mb_substr($dat, mb_strlen($match[1])));
           report_add("Found $parameter floating around in template; converted to parameter");
           $this->add_if_new($parameter, $parameter_value);
           $dat = trim(str_replace($match[0], '', $dat));
@@ -2930,10 +2930,26 @@ final class Template {
           $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
           $dat = trim(preg_replace('~^.*' . preg_quote($match[1]) . '~', '', $dat));
         }
-      } elseif (preg_match("~(?!<\d)(\d{10}|\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
-        // Is it a number formatted like an ISBN?
+      } elseif (preg_match("~(?!<\d)(\d{10})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         $this->add_if_new('isbn', $match[1]);
-        $dat = trim(str_replace($match[1], '', $dat));
+        $the_isbn = str_split($match[1]);
+        $dat = trim(preg_replace('~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
+                                     . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
+                                     . $the_isbn[4] . '[ -]?' . $the_isbn[5] . '[ -]?'
+                                     . $the_isbn[6] . '[ -]?' . $the_isbn[7] . '[ -]?'
+                                     . $the_isbn[8] . '[ -]?' . $the_isbn[9] .
+                                 '~', '', $dat)); // Crazy to deal with dashes and spaces
+      } elseif (preg_match("~(?!<\d)(\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+        $this->add_if_new('isbn', $match[1]);
+        $the_isbn = str_split($match[1]);
+        $dat = trim(preg_replace('~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
+                                     . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
+                                     . $the_isbn[4] . '[ -]?' . $the_isbn[5] . '[ -]?'
+                                     . $the_isbn[6] . '[ -]?' . $the_isbn[7] . '[ -]?'
+                                     . $the_isbn[8] . '[ -]?' . $the_isbn[9] . '[ -]?'
+                                     . $the_isbn[10]. '[ -]?' . $the_isbn[11]. '[ -]?'
+                                     . $the_isbn[12].
+                                 '~', '', $dat)); // Crazy to deal with dashes and spaces
       }
       if (preg_match("~^access date[ :]+(.+)$~i", $dat, $match)) {
         if ($this->add_if_new('accessdate', $match[1])) {
@@ -2946,9 +2962,7 @@ final class Template {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
-      if (!trim($dat, " \t\0\x0B")) {
-         $p->val ='';
-      }
+      $p->val = trim($dat, " \t\0\x0B");
     }
     foreach ($this->param as $param_key => &$p) {
       if (stripos($p->param, 'CITATION_BOT_PLACEHOLDER_EMPTY') === FALSE) continue;
