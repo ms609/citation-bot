@@ -256,7 +256,7 @@ class Page {
     
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
-      $this_template = $our_templates[$i];
+      $this_template = &$our_templates[$i];
       $this_template->expand_by_google_books();
       $this_template->get_doi_from_crossref();
       $this_template->find_pmid();
