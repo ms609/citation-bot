@@ -1876,6 +1876,8 @@ final class Template {
   }
 
   public function expand_by_adsabs() {
+    echo "\n IN expand_by_adsabs\n";
+    print_r($this->used_by_api);
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
     global $SLOW_MODE;
     if (!$SLOW_MODE && $this->blank('bibcode')) {
@@ -1893,6 +1895,8 @@ final class Template {
       return FALSE;
     }
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
+    echo "\n DEEEPER IN expand_by_adsabs\n";
+    print_r($this->used_by_api);
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
       return $this->expand_book_adsabs();
     }
