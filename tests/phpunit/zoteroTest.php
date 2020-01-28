@@ -16,6 +16,14 @@ class ZoteroTest extends testBaseClass {
     $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
    });
   }
+ 
+  public function testCitationTemplateWithoutJournalZotero() {
+   $this->requires_zotero(function() {
+    $text = '{{citation|url=http://www.word-detective.com/2011/03/mexican-standoff/|title=Mexican standoff|work=The Word Detective|accessdate=2013-03-21}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('isbn')); // This citation used to crash code in ISBN search.  Mostly checking "something" to make Travis CI happy
+   });
+  }
 
   public function testZoteroExpansionNBK() {
    $this->requires_zotero(function() {

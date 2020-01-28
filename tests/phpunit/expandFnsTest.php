@@ -130,4 +130,8 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame($text_math,wikify_external_text($text_math)); // Should not change
     $this->assertSame($text_math,wikify_external_text($text_mml));  // The most important test: mml converstion to <math>
   }
+  
+  public function testBrackets() {
+    $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
+  }
 }
