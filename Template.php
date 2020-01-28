@@ -1989,8 +1989,8 @@ final class Template {
       }
       
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
-         $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
-         return $this->expand_book_adsabs();
+         $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll no get return code
+         return $this->expand_by_adsabs();
       }
       
       if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
