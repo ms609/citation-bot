@@ -2754,15 +2754,8 @@ final class Template {
         }
       }
     }
-    $blank_count = 0;
-    foreach ($this->param as $param_key => &$p) { // Protect them from being overwritten
-      if (empty($p->param)) {
-        $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY_' . (string) $blank_count++;
-        $p->eq = ' = ';
-      }
-    }
     foreach ($this->param as $param_key => &$p) {
-      if (stripos($p->param, 'CITATION_BOT_PLACEHOLDER_EMPTY') === FALSE) continue;
+      if ($p->param != '') continue;
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
       if (isset($endnote_test[1])) {
@@ -2971,7 +2964,7 @@ final class Template {
       $p->val = trim($dat, " \t\0\x0B");
     }
     foreach ($this->param as $param_key => &$p) {
-      if (stripos($p->param, 'CITATION_BOT_PLACEHOLDER_EMPTY') === FALSE) continue;
+      if ($p->param != '') continue;
       $p->param = '';
       $p->eq = '';
       if($p->val == '') unset($this->param[$param_key]);
