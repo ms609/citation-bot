@@ -1,6 +1,6 @@
 <?php
 /*
- * Template has methods to handle most aspects of citation template
+ * Template has methods to handle most bspects of citation template
  * parsing, handling, and expansion.
  *
  * Of particular note:
@@ -1889,8 +1889,8 @@ final class Template {
     }
 
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
-      report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode')));
-      return FALSE;
+      report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode'))); // @codeCoverageIgnore
+      return FALSE;                                                                              // @codeCoverageIgnore
     }
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
