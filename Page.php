@@ -219,7 +219,7 @@ class Page {
     $our_templates_slight = array();
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
-      $this_template = $all_templates[$i];
+      $this_template = &$all_templates[$i];
       if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
         $our_templates[] = &$this_template;
         $this_template->prepare();
@@ -275,7 +275,7 @@ class Page {
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
     $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
     for ($i = 0; $i < count($all_templates); $i++) {
-      $this_template = $all_templates[$i];
+      $this_template = &$all_templates[$i];
       if (in_array($this_template->wikiname(), $issn_templates)) {
         $this_template->use_issn();
       }
@@ -283,7 +283,7 @@ class Page {
 
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
-      $this_template = $our_templates[$i];
+      $this_template = &$our_templates[$i];
       // Clean up:
       if (!$this_template->initial_author_params()) {
         $this_template->handle_et_al();
@@ -304,7 +304,7 @@ class Page {
       }
     }
     for ($i = 0; $i < count($our_templates_slight); $i++) {
-      $this_template = $our_templates_slight[$i];
+      $this_template = &$our_templates_slight[$i];
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {
