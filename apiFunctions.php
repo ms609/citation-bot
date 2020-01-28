@@ -175,7 +175,7 @@ function arxiv_api($ids, $templates) {
   }
 }
 
-function adsabs_api($ids, &$templates, $identifier) {
+function adsabs_api($ids, $templates, $identifier) {
         echo "\n IN THE API CODE\n";
   global $ADSABS_GIVE_UP;
   global $BLOCK_BIBCODE_SEARCH;
