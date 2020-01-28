@@ -3089,7 +3089,7 @@ final class Template {
     if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list) && stripos($p->param, 'CITATION_BOT')===FALSE) {
      
       if (trim($p->val) === '') {
-        if (strpos($p->param, 'DUPLICATE_') === 0) {
+        if (stripos($p->param, 'DUPLICATE_') === 0) {
           report_forget("Dropping empty left-over duplicate parameter " . echoable($p->param) . " ");
         } else {
           report_forget("Dropping empty unrecognised parameter " . echoable($p->param) . " ");
@@ -3098,7 +3098,7 @@ final class Template {
         continue;
       }
       
-      if (strpos($p->param, 'DUPLICATE_') === 0) {
+      if (stripos($p->param, 'DUPLICATE_') === 0) {
         report_modification("Left-over duplicate parameter " . echoable($p->param) . " ");
       } else {
         report_modification("Unrecognised parameter " . echoable($p->param) . " ");
