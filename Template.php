@@ -1882,9 +1882,12 @@ final class Template {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
+    global $BLOCK_BIBCODE_SEARCH;
+    if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
     }
+
     echo "\n Before recording usage\n";
     print_r($this->used_by_api);
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
@@ -2106,10 +2109,8 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs($options) {
-    global $BLOCK_BIBCODE_SEARCH;
     global $ADSABS_GIVE_UP;
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (@$BLOCK_BIBCODE_SEARCH === TRUE) return (object) array('numFound' => 0);
     if (@$ADSABS_GIVE_UP) return (object) array('numFound' => 0);
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
