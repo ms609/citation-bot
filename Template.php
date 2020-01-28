@@ -1889,6 +1889,7 @@ final class Template {
       report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode')));
       return FALSE;
     }
+    if ($this->has('bibcode')) $this_template->record_api_usage('adsabs', equivalent_parameters('bibcode'));
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
       return $this->expand_book_adsabs();
     }
