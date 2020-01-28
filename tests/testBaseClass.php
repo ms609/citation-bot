@@ -38,6 +38,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // Only routines that absolutely need bibcode access since we are limited 
   protected function bibcode_secrets($function) {
+    global $BLOCK_BIBCODE_SEARCH;
     if ($this->skip_bibcode !== FALSE && $this->skip_bibcode !== TRUE) {
       $this->assertNull('skip_bibcode bocks commit');
     }
@@ -45,15 +46,18 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       echo 'B';
       $this->assertNull(NULL);
     } else {
-      global $BLOCK_BIBCODE_SEARCH;
-      $BLOCK_BIBCODE_SEARCH = FALSE;
-      $function();
-      $BLOCK_BIBCODE_SEARCH = TRUE;
+      try {
+        $BLOCK_BIBCODE_SEARCH = FALSE;
+        $function();
+      } finally {
+        $BLOCK_BIBCODE_SEARCH = TRUE;
+      }
     }
   }
 
   // allows us to turn off zoreto tests
   protected function requires_zotero($function) {
+    global $BLOCK_ZOTERO_SEARCH;
     if ($this->skip_zotero !== FALSE && $this->skip_zotero !== TRUE) {
       $this->assertNull('skip_zotero bocks commit');
     }
@@ -61,10 +65,12 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       echo 'Z';
       $this->assertNull(NULL);
     } else {
-      global $BLOCK_ZOTERO_SEARCH;
-      $BLOCK_ZOTERO_SEARCH = FALSE;
-      $function();
-      $BLOCK_ZOTERO_SEARCH = TRUE;
+      try {
+        $BLOCK_ZOTERO_SEARCH = FALSE;
+        $function();
+      } finally {
+        $BLOCK_ZOTERO_SEARCH = TRUE;
+      }
     }
   } 
   
