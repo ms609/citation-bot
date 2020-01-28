@@ -24,7 +24,7 @@ final class TemplateTest extends testBaseClass {
  
   
  
-    public function testFinalTidyComplicated() {);
+   public function testFinalTidyComplicated() {;
      $this->assertNull('do not commmit'); 
    }
 
