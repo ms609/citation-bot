@@ -15,7 +15,7 @@ final class PageTest extends testBaseClass {
       $this->assertSame('Misc citation tidying. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
       $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
       $this->assertFalse(strpos($page->parsed_text(), 'onlinelibrary.wiley.com')); // URL is gone
-      $this->assertSame('Alter: template type. Add: year, pages, issue, volume, journal, title, doi, author pars. 1-2. Removed URL that duplicated unique identifier. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
+      $this->assertSame('Alter: url, template type. Add: year, pages, issue, volume, journal, title, doi, author pars. 1-2. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
       $page = $this->process_page('{{cite web|<!-- comment --> journal=Journal Name}}'); // Comment BEFORE parameter
       $this->assertSame('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
       $this->assertSame('{{cite journal|<!-- comment --> journal=Journal Name}}', $page->parsed_text());
@@ -204,7 +204,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText8() {
       $text = "<ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|url = https://www.semanticscholar.org/paper/46c0955a810b4a3777e4251e2df7954488df196d}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText9() { // Two "urls"
@@ -241,7 +241,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText14() {
       $text = "<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|url=https://www.semanticscholar.org/paper/46c0955a810b4a3777e4251e2df7954488df196d}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|url = https://www.semanticscholar.org/paper/46c0955a810b4a3777e4251e2df7954488df196d}}</ref>', $page->parsed_text());
   }
  
    public function testUrlReferencesWithText15() {
