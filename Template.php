@@ -2956,7 +2956,7 @@ final class Template {
           $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
           $dat = trim(preg_replace('~^.*' . preg_quote($match[1]) . '~', '', $dat));
         }
-      } elseif (preg_match("~(?!<\d)(\d{10})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+      } elseif (preg_match("~(?<!\d)(\d{10})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         $the_isbn = str_split($match[1]);
         preg_match(              '~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
                                      . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
@@ -2966,7 +2966,7 @@ final class Template {
                                  '~', $dat, $match); // Crazy to deal with dashes and spaces
         $this->add_if_new('isbn', $match[0]);
         $dat = trim(str_replace($match[0], '', $dat));
-      } elseif (preg_match("~(?!<\d)(\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+      } elseif (preg_match("~(?<!\d)(\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         $the_isbn = str_split($match[1]);
         preg_match(              '~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
                                      . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
