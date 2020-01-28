@@ -1885,11 +1885,15 @@ final class Template {
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
     }
+    echo "\n Before recording usage\n";
+    print_r($this->used_by_api);
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode')));
       return FALSE;
     }
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
+    echo "\n AFTER recording usage\n";
+    print_r($this->used_by_api);
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
       return $this->expand_book_adsabs();
     }
