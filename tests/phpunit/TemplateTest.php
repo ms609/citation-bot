@@ -937,14 +937,15 @@ final class TemplateTest extends testBaseClass {
   public function testBibcodesBooks() {
     $this->bibcode_secrets(function() {
       $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
-      $expanded = $this->process_citation($text);
+      $this->assertTrue($expanded->expand_by_adsabs());
       $this->assertSame('1982', $expanded->get('year'));
       $this->assertSame('Houk', $expanded->get('last1'));
       $this->assertSame('N.', $expanded->get('first1'));
       $this->assertNotNull($expanded->get('title'));
+      $this->assertFalse($expanded->expand_by_adsabs());
     });
   }
- 
+
   public function testBibcodeSkipComplete() {
     $text = "{{Cite journal | last1 = Reed | first1 = E. J. | last2 = Manaa | first2 = M. R. | last3 = Fried | first3 = L. E. | last4 = Glaesemann | first4 = K. | last5 = Joannopoulos  | title = A Transient Semi-Metallic Layer in Detonating Nitromethane | journal = Shock Compression of Condensed Matter |editors=Mark Elert, Michael D. Furnish, Ricky Chau, Neil Holmes, and Jeffrey Nguyen | doi = 10.1063/1.2833100 | series = AIP Conference Proceedings | pages = 459–462| year = 2007 |volume=955|issue=1|bibcode=2007AIPC..955..459R}}";
     $template = $this->make_citation($text);
