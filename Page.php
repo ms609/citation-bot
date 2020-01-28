@@ -221,18 +221,18 @@ class Page {
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
       if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
-        array_push($our_templates, $this_template);
+        $our_templates[] = &$this_template;
         $this_template->prepare();
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
-        array_push($our_templates_slight, $this_template);
+        $our_templates_slight[] = &$this_template;
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
-        array_push($our_templates_slight, $this_template);
+        $our_templates_slight[] = &$this_template;
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
       } elseif ($this_template->wikiname() == 'cite magazine') {
-        array_push($our_templates_slight, $this_template);
+        $our_templates_slight[] = &$this_template;
         if ($this_template->blank('magazine') && $this_template->has('work')) {
             $this_template->rename('work', 'magazine');
         }
