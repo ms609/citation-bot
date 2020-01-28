@@ -89,7 +89,7 @@ function entrez_api($ids, $templates, $db) {
   return TRUE;
 }
 
-function query_bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
+function query_bibcode_api($bibcodes, &$templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
 
 function expand_arxiv_templates ($templates) {
   $ids = array();
@@ -175,7 +175,7 @@ function arxiv_api($ids, $templates) {
   }
 }
 
-function adsabs_api($ids, $templates, $identifier) {
+function adsabs_api($ids, &$templates, $identifier) {
         echo "\n IN THE API CODE\n";
   global $ADSABS_GIVE_UP;
   global $BLOCK_BIBCODE_SEARCH;
