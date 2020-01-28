@@ -174,7 +174,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText3() {
       $text = "<ref>Raymond O.  Silverstein, &quot;A note on the term 'Bantu' as first used by W. H. I. Bleek&quot;, ''African Studies'' 27 (1968), 211–212, [https://www.doi.org/10.1080/00020186808707298 doi:10.1080/00020186808707298].</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek|journal = African Studies|volume = 27|issue = 4|pages = 211–212|year = 1968|last1 = Silverstein|first1 = Raymond O.}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek|journal = African Studies|volume = 27|issue = 4|pages = 211–212|year = 1968|last1 = Silverstein|first1 = Raymond O.|url = https://www.semanticscholar.org/paper/f1f98058e9180069c9ec4e5242548a8506594a07}}</ref>', $page->parsed_text());
   }
   
   public function testUrlReferencesWithText4() { // Has [[ ]] in it
@@ -192,7 +192,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText6() {
       $text = "<ref>Emma Ambrose, Cas Mudde (2015). ''[http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 Canadian Multiculturalism and the Absence of the Far Right]'' Nationalism and Ethnic Politics Vol. 21 Iss. 2.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right|journal = Nationalism and Ethnic Politics|volume = 21|issue = 2|pages = 213–236|year = 2015|last1 = Ambrose|first1 = Emma|last2 = Mudde|first2 = Cas}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right|journal = Nationalism and Ethnic Politics|volume = 21|issue = 2|pages = 213–236|year = 2015|last1 = Ambrose|first1 = Emma|last2 = Mudde|first2 = Cas|url = https://www.semanticscholar.org/paper/dd6915f3e73a412be3746700f535f9f0d02ca7db}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText7() {
@@ -241,7 +241,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText14() {
       $text = "<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|url=https://www.semanticscholar.org/paper/46c0955a810b4a3777e4251e2df7954488df196d}}</ref>', $page->parsed_text());
   }
  
    public function testUrlReferencesWithText15() {

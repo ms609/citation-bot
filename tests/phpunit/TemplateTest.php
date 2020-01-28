@@ -169,7 +169,7 @@ final class TemplateTest extends testBaseClass {
     $text = '{{cite journal|url=https://academic.oup.com/zoolinnean/advance-article-abstract/doi/10.1093/zoolinnean/zly047/5049994}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('10.1093/zoolinnean/zly047', $expanded->get('doi'));
-    $this->assertNull($expanded->get('url'));
+    $this->assertSame('https://www.semanticscholar.org/paper/251752f3035a0c5c359b04a5eb89b1bcf47df41e', $expanded->get('url'));
   }
  
    public function testBrokenDoiUrlRetention4() {
@@ -191,7 +191,7 @@ final class TemplateTest extends testBaseClass {
      $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.00/broken_and_invalid|doi-broken-date=12-31-1999}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get('doi'));
-     $this->assertNull($expanded->get('url'));
+     $this->assertSame('https://www.semanticscholar.org/paper/913e0ad8acf4431b05453ea29118dd8eac7ae55c', $expanded->get('url'));
  }
  
   public function testBrokenDoiUrlChanges2() {
@@ -470,10 +470,11 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testDoiExpansion3() {
-    // Recognize official DOI targets in URL with extra fragments
+    // Recognize official DOI targets in URL with extra fragments - fall back to
+    // S2
     $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701}}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('url'));
+    $this->assertSame('https://www.semanticscholar.org/paper/3fc87a06419764142ce27490ceb54c4824cec178', $expanded->get('url'));
   }
  
   public function testDoiExpansion4() {
@@ -784,7 +785,7 @@ final class TemplateTest extends testBaseClass {
     
   public function testPageDuplication() {
      // Fake bibcoce otherwise we'll find a bibcode
-     $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. |bibcode=XXXXXXXXXXXXX}}';
+     $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. |bibcode=XXXXXXXXXXXXX|url=https://www.semanticscholar.org/paper/1708420783f70a8bdcef32873b28549bb358fb4b}}';
      $expanded = $this->process_citation($text);
      $this->assertSame($text, $expanded->parsed_text());
    }
