@@ -176,6 +176,7 @@ function arxiv_api($ids, $templates) {
 }
 
 function adsabs_api($ids, $templates, $identifier) {
+        echo "\n IN THE API CODE\n";
   global $ADSABS_GIVE_UP;
   global $BLOCK_BIBCODE_SEARCH;
   if (@$ADSABS_GIVE_UP) return FALSE;
@@ -196,6 +197,8 @@ function adsabs_api($ids, $templates, $identifier) {
     }
     return TRUE;
   }
+      echo "\n IN THE API CODE WRONG\n";
+
   foreach ($templates as $template) {
     if ((strpos($template->get('bibcode'), '&') !== false) || (strpos($template->get('bibcode'), 'book') !== false)) {
       $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them, and special book code
