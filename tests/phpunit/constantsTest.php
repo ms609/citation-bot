@@ -89,7 +89,7 @@ final class constantsTest extends testBaseClass {
       $alpha_end = stripos($section, $end_alpha);
       if (!$alpha_end) continue;
       $alpha_bit = substr($section, 0, $alpha_end);
-      $alpha_bits = preg_split("~(?<='),~", $alpha_bit);
+      $alpha_bits = preg_split('~(?<="),~', $alpha_bit);
       $alpha_bits = array_map('trim', $alpha_bits);
       if ($leader) {
         $leader_bits = $alpha_bits;
@@ -110,7 +110,7 @@ final class constantsTest extends testBaseClass {
       array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
       foreach ($bits_length as $bit_length) {
        $bit = next($alpha_bits);
-       $alphaed .= $bit ? ($bit . ', ') : '';
+       $alphaed .= $bit ? ($bit . ", ") : '';
        $line_length += $bit_length + 2;
        if ($line_length > 86) {
          $alphaed .= $new_line;
