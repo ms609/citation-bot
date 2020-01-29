@@ -162,7 +162,7 @@ final class constantsTest extends testBaseClass {
       if (count($our_extra) !== 0) {
          echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
          print_r($our_extra);
-         // TODO $we_failed = TRUE;
+         $we_failed = TRUE;
       }
       if (count($our_missing) !== 0) {
          echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
