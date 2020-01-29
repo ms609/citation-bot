@@ -2438,7 +2438,7 @@ final class Template {
           return FALSE;
         }
         if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return FALSE; //is currently blacklisted due to copyright concerns
-        if (stripos($oa_url, 'semanticscholar.org' !== FALSE) return FALSE;  // Limit semanticscholar to licenced only - use API call instead
+        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return FALSE;  // Limit semanticscholar to licenced only - use API call instead
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
