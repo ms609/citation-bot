@@ -2403,7 +2403,7 @@ final class Template {
     $json = @file_get_contents($url);
     if ($json) {
       $oa = @json_decode($json);
-      if ($oa !== FALSE && isset($oa->url)) {
+      if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
         $this->add_if_new('url', $oa->url);
         return TRUE;
       }
