@@ -3066,20 +3066,19 @@ final class Template {
   // It will correct any that appear to be mistyped.
   if (!isset($this->param)) return ;
   $parameter_list = PARAMETER_LIST;
+  $parameter_dead = DEAD_PARAMETERS;
   $parameters_used=array();
   $mistake_corrections = array_values(COMMON_MISTAKES);
   $mistake_keys = array_keys(COMMON_MISTAKES);
-  if ($this->param) {
-    foreach ($this->param as $p) { // Convert to all lower case, if needed
-      if (strtolower($p->param) != $p->param &&
-          in_array(strtolower($p->param), $parameter_list) &&
-          !in_array($p->param, $parameter_list)) {
-            $p->param = strtolower($p->param);
-      }
+  foreach ($this->param as $p) { // Convert to all lower case, if needed
+    if (strtolower($p->param) != $p->param &&
+        in_array(strtolower($p->param), $parameter_list) &&
+        !in_array($p->param, $parameter_list)) {
+          $p->param = strtolower($p->param);
     }
-    foreach ($this->param as $p) {
-      $parameters_used[] = $p->param;
-    }
+  }
+  foreach ($this->param as $p) {
+    $parameters_used[] = $p->param;
   }
 
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
@@ -3153,7 +3152,9 @@ final class Template {
         $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
       
-      if ($shortest < 12 && $shortest < $shortish) {
+      if (in_array($p->param, $parameter_dead)) {
+        report_inline("Could not fix outdated $p->param");
+      } elseif ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
         report_inline("replaced with $closest (likelihood " . (24 - $shortest) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
       } else {
