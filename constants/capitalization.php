@@ -109,7 +109,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " PloS One ", " Plos One ", " Pnas ", " Published In: ", " Rna ", " S.a.p.i.en.s ", 
           " SCH ", " SCR. ", " SRP Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", 
           " STDS ", " Série a ", " Tellus a ", " The de Paulia ", " The Embo Journal ", 
-       " Time off Magazine ", " Time Out London ", " Tot de ", " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
+          " Time off Magazine ", " Time Out London ", " Tot de ", " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
           " U.s. ", " U.S.a. ", " U.s.a ", " UHealth ", " Uhealth ", " Usgs ", " V Astronomicheskii Zhurna ", 
           " Wrir ", " Z/Journal ", " Z/journal ", " Zeitschrift Für Geologische Wissenschaften ", 
           " Zeitschrift für Physik a Hadrons and Nuclei ", " Zeitschrift Für Physik a: Hadrons And Nuclei ", 
