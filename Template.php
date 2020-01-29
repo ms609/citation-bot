@@ -3070,11 +3070,10 @@ final class Template {
   $parameters_used=array();
   $mistake_corrections = array_values(COMMON_MISTAKES);
   $mistake_keys = array_keys(COMMON_MISTAKES);
-  foreach ($this->param as $p) {
+  foreach ($this->param as $key => $p) {
     if (in_array(strtolower($p->param), $parameter_dead) &&
         trim($p->val == '')) {
-        $p->param = '';
-        $p->eq = '';
+       unset($this->param[$key]);   
     }
   }
   foreach ($this->param as $p) { // Convert to all lower case, if needed
