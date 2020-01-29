@@ -15,7 +15,7 @@ final class PageTest extends testBaseClass {
       $this->assertSame('Misc citation tidying. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
       $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
       $this->assertFalse(strpos($page->parsed_text(), 'onlinelibrary.wiley.com')); // URL is gone
-      $this->assertSame('Alter: url, template type. Add: year, pages, issue, volume, journal, title, doi, author pars. 1-2. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
+      $this->assertSame('Alter: template type. Add: year, pages, issue, volume, journal, title, doi, author pars. 1-2. Removed URL that duplicated unique identifier. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
       $page = $this->process_page('{{cite web|<!-- comment --> journal=Journal Name}}'); // Comment BEFORE parameter
       $this->assertSame('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
       $this->assertSame('{{cite journal|<!-- comment --> journal=Journal Name}}', $page->parsed_text());
@@ -137,7 +137,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferences() {
       $page = $this->process_page("URL reference test 1 <ref name='bob'>http://doi.org/10.1007/s12668-011-0022-5< / ref>\n Second reference: \n<ref >  [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/] </ref> URL reference test 1");
       if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) {
-         $this->assertSame("URL reference test 1 <ref name='bob'>{{Cite journal |doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I.|last3 = Buehler|first3 = Markus J.|arxiv = 1111.5297}}< / ref>\n Second reference: \n<ref >{{Cite journal |pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T.|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|last2 = Pimple|first2 = P.|last3 = Palsetia|first3 = D.|last4 = Dave|first4 = N.|last5 = De Sousa|first5 = A.|pmid = 23858264|doi = 10.4103/0019-5545.105547}}</ref> URL reference test 1", $page->parsed_text());
+         $this->assertSame("URL reference test 1 <ref name='bob'>{{Cite journal |doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I.|last3 = Buehler|first3 = Markus J.|arxiv = 1111.5297}}< / ref> URL reference test 1", $page->parsed_text());
       } else { // Gets bibcode
          $this->assertSame("URL reference test 1 <ref name='bob'>{{Cite journal |doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I.|last3 = Buehler|first3 = Markus J.|bibcode = 2011arXiv1111.5297G|arxiv = 1111.5297}}< / ref>\n Second reference: \n<ref >{{Cite journal |pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T.|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|last2 = Pimple|first2 = P.|last3 = Palsetia|first3 = D.|last4 = Dave|first4 = N.|last5 = De Sousa|first5 = A.|pmid = 23858264|doi = 10.4103/0019-5545.105547}}</ref> URL reference test 1", $page->parsed_text());
       }
@@ -174,7 +174,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText3() {
       $text = "<ref>Raymond O.  Silverstein, &quot;A note on the term 'Bantu' as first used by W. H. I. Bleek&quot;, ''African Studies'' 27 (1968), 211–212, [https://www.doi.org/10.1080/00020186808707298 doi:10.1080/00020186808707298].</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek|journal = African Studies|volume = 27|issue = 4|pages = 211–212|year = 1968|last1 = Silverstein|first1 = Raymond O.|url = https://www.semanticscholar.org/paper/f1f98058e9180069c9ec4e5242548a8506594a07}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek|journal = African Studies|volume = 27|issue = 4|pages = 211–212|year = 1968|last1 = Silverstein|first1 = Raymond O.}}</ref>', $page->parsed_text());
   }
   
   public function testUrlReferencesWithText4() { // Has [[ ]] in it
@@ -192,13 +192,13 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText6() {
       $text = "<ref>Emma Ambrose, Cas Mudde (2015). ''[http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 Canadian Multiculturalism and the Absence of the Far Right]'' Nationalism and Ethnic Politics Vol. 21 Iss. 2.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right|journal = Nationalism and Ethnic Politics|volume = 21|issue = 2|pages = 213–236|year = 2015|last1 = Ambrose|first1 = Emma|last2 = Mudde|first2 = Cas|url = https://www.semanticscholar.org/paper/dd6915f3e73a412be3746700f535f9f0d02ca7db}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right|journal = Nationalism and Ethnic Politics|volume = 21|issue = 2|pages = 213–236|year = 2015|last1 = Ambrose|first1 = Emma|last2 = Mudde|first2 = Cas}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText7() {
       $text = "<ref>Gregory, T. Ryan. (2008). [https://link.springer.com/article/10.1007/s12052-007-0001-z ''Evolution as Fact, Theory, and Path'']. ''Evolution: Education and Outreach'' 1 (1): 46–52.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal |doi = 10.1007/s12052-007-0001-z|title = Evolution as Fact, Theory, and Path|journal = Evolution: Education and Outreach|volume = 1|pages = 46–52|year = 2008|last1 = Gregory|first1 = T. Ryan}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal |doi = 10.1007/s12052-007-0001-z|title = Evolution as Fact, Theory, and Path|journal = Evolution: Education and Outreach|volume = 1|pages = 46–52|year = 2008|last1 = Gregory|first1 = T. Ryan|url = https://www.semanticscholar.org/paper/4ba5a982f79340b6a4baa4b60409a6577070651c}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText8() {

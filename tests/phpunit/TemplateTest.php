@@ -187,7 +187,7 @@ final class TemplateTest extends testBaseClass {
     $text = '{{cite journal|url=https://academic.oup.com/zoolinnean/advance-article-abstract/doi/10.1093/zoolinnean/zly047/5049994}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('10.1093/zoolinnean/zly047', $expanded->get('doi'));
-    $this->assertSame('https://www.semanticscholar.org/paper/251752f3035a0c5c359b04a5eb89b1bcf47df41e', $expanded->get('url'));
+    $this->assertNull($expanded->get('url'));
   }
  
    public function testBrokenDoiUrlRetention4() {
@@ -209,7 +209,7 @@ final class TemplateTest extends testBaseClass {
      $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.00/broken_and_invalid|doi-broken-date=12-31-1999}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get('doi'));
-     $this->assertSame('https://www.semanticscholar.org/paper/913e0ad8acf4431b05453ea29118dd8eac7ae55c', $expanded->get('url'));
+     $this->assertNull($expanded->get('url'));
  }
  
   public function testBrokenDoiUrlChanges2() {
@@ -878,7 +878,7 @@ final class TemplateTest extends testBaseClass {
       
     $text = '{{cite journal | vauthors = Shekelle PG, Morton SC, Jungvig LK, Udani J, Spar M, Tu W, J Suttorp M, Coulter I, Newberry SJ, Hardy M | title = Effect of supplemental vitamin E for the prevention and treatment of cardiovascular disease | journal = Journal of General Internal Medicine | volume = 19 | issue = 4 | pages = 380–9 | date = April 2004 | pmid = 15061748 | pmc = 1492195 | doi = 10.1111/j.1525-1497.2004.30090.x }}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('url')); // Do not add PMC URL if already has PMC
+    $this->assertSame('https://www.semanticscholar.org/paper/796d793b3b7c52eaf81af547a74bee806ccecc18', $expanded->get('url'));
       
     $text = '{{Cite journal | doi = 10.1063/1.4962420| title = Calculating vibrational spectra of molecules using tensor train decomposition| journal = J. Chem. Phys. | volume = 145| year = 2016| issue = 145| pages = 124101| last1 = Rakhuba| first1 = Maxim | last2 = Oseledets | first2 = Ivan| bibcode = 2016JChPh.145l4101R| arxiv =1605.08422}}';
     $expanded = $this->process_citation($text);
