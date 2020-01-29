@@ -2389,12 +2389,13 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
-    $unpaywall_result = $this->get_unpaywall_url($doi);
-    if ($unpaywall_result) {
-      return TRUE;
+    $return1 = $this->get_unpaywall_url($doi);
+    if ($this->blank('url')) { // Have room for one
+      $return2 = $this->get_semanticscholar_url($doi);
     } else {
-      return $this->get_semanticscholar_url($doi);
+      $return2 = FALSE;
     }
+    return ($return1 || $return2);
   }
 
   public function get_semanticscholar_url($doi) {
@@ -2436,7 +2437,8 @@ final class Template {
         } else {
           return FALSE;
         }
-        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return TRUE; //is currently blacklisted due to copyright concerns
+        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return FALSE; //is currently blacklisted due to copyright concerns
+        if (stripos($oa_url, 'semanticscholar.org' !== FALSE) return FALSE;  // Limit semanticscholar to licenced only - use API call instead
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
