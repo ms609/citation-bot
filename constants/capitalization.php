@@ -106,7 +106,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " NYT Tidsskrift ", " Ocean Science Journal : Osj ", " Paj: A Journal of Performance and Art ", 
           " Palaios ", " Peerj ", " Phytokeys ", " Pis'ma V Astronomicheskii ", " Plos Biology ", 
           " Plos Medicine ", " Plos Neglected Tropical Diseases ", " Plos One ", " PloS One ", 
-          " PLoS One ", " PLOS One ", " Pnas ", " Published In: " , " Rna ", " S.a.p.i.en.s ", " SCH ",
+          " PLoS One ", " PLOS One ", " Pnas ", " Published In: ", " Rna ", " S.a.p.i.en.s ", " SCH ",
           " SCR. ", " SRP Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", 
           " STDS ", " Série a ", " Tellus a ", " The de Paulia ", " The Embo Journal ", 
           " Time off Magazine ", " Time Out London ", " Tot de ", " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
