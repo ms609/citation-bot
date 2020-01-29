@@ -137,7 +137,7 @@ final class expandFnsTest extends testBaseClass {
   
   public function testCapitalization_lots_more() { // Double check that constants are in order when we sort - paranoid
     $this->assertSame('BJPsych', title_capitalization(title_case('Bjpsych'), TRUE));
-    $this->assertSame('delle', title_capitalization(title_case('Bjpsych'), TRUE));
+    $this->assertSame('delle', title_capitalization(title_case('delle'), TRUE));
     $this->assertSame('IEEE', title_capitalization(title_case('Ieee'), TRUE));
     $this->assertSame('NASA', title_capitalization(title_case('Nasa'), TRUE));
     $this->assertSame('over', title_capitalization(title_case('Over'), TRUE));
