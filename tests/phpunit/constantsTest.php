@@ -162,7 +162,7 @@ final class constantsTest extends testBaseClass {
       if (count($our_extra) !== 0) {
          echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
          print_r($our_extra);
-         // TODO $we_failed = TRUE;
+         $we_failed = TRUE;
       }
       if (count($our_missing) !== 0) {
          echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
@@ -177,5 +177,15 @@ final class constantsTest extends testBaseClass {
          $we_failed = TRUE;
       }
       $this->assertSame(FALSE, $we_failed);
+  }
+  
+  public function testDead() {
+    $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
+    if (empty($overlap)) {
+      $this->assertTrue(TRUE);
+    } else {
+      print_r($overlap);
+      $this->assertNull('testDead Failed');
+    }
   }
 }

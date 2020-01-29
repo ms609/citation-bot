@@ -1889,8 +1889,8 @@ final class Template {
     }
 
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
-      report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode')));
-      return FALSE;
+      report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode'))); // @codeCoverageIgnore
+      return FALSE;                                                                              // @codeCoverageIgnore
     }
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
@@ -3088,20 +3088,19 @@ final class Template {
   // It will correct any that appear to be mistyped.
   if (!isset($this->param)) return ;
   $parameter_list = PARAMETER_LIST;
+  $parameter_dead = DEAD_PARAMETERS;
   $parameters_used=array();
   $mistake_corrections = array_values(COMMON_MISTAKES);
   $mistake_keys = array_keys(COMMON_MISTAKES);
-  if ($this->param) {
-    foreach ($this->param as $p) { // Convert to all lower case, if needed
-      if (strtolower($p->param) != $p->param &&
-          in_array(strtolower($p->param), $parameter_list) &&
-          !in_array($p->param, $parameter_list)) {
-            $p->param = strtolower($p->param);
-      }
+  foreach ($this->param as $p) { // Convert to all lower case, if needed
+    if (strtolower($p->param) != $p->param &&
+        in_array(strtolower($p->param), $parameter_list) &&
+        !in_array($p->param, $parameter_list)) {
+          $p->param = strtolower($p->param);
     }
-    foreach ($this->param as $p) {
-      $parameters_used[] = $p->param;
-    }
+  }
+  foreach ($this->param as $p) {
+    $parameters_used[] = $p->param;
   }
 
   $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
@@ -3175,7 +3174,9 @@ final class Template {
         $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
       
-      if ($shortest < 12 && $shortest < $shortish) {
+      if (in_array($p->param, $parameter_dead)) {
+        report_inline("Could not fix outdated $p->param");
+      } elseif ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
         report_inline("replaced with $closest (likelihood " . (24 - $shortest) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
       } else {
@@ -3279,11 +3280,12 @@ final class Template {
       if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
           stripos($param, 'postscript') === FALSE &&  // periods valid
           stripos($param, 'url') === FALSE &&  // all characters are valid
-          stripos($param, 'quot') === FALSE) { // someone might have formatted the quote
+          stripos($param, 'quot') === FALSE && // someone might have formatted the quote
+          stripos($param, 'link') === FALSE) {  // inter-wiki links
         $this->set($param, preg_replace('~[\x{2000}-\x{200A}]~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
-        $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));  // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
+        $this->set($param, preg_replace('~[:,]+$~u', '', $this->get($param)));   // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
         $this->set($param, preg_replace('~^[:,;]+~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
         $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
