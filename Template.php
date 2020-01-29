@@ -1,6 +1,6 @@
 <?php
 /*
- * Template has methods to handle most bspects of citation template
+ * Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
  *
  * Of particular note:
