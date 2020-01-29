@@ -178,4 +178,14 @@ final class constantsTest extends testBaseClass {
       }
       $this->assertSame(FALSE, $we_failed);
   }
+  
+  public function testDead() {
+    $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
+    if (empty($overlap)) {
+      $this->assertTrue(TRUE);
+    } else {
+      print_r($overlap);
+      $this->assertNull('testDead Failed');
+    }
+  }
 }
