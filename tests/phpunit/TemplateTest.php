@@ -882,7 +882,7 @@ final class TemplateTest extends testBaseClass {
       
     $text = '{{Cite journal | doi = 10.1063/1.4962420| title = Calculating vibrational spectra of molecules using tensor train decomposition| journal = J. Chem. Phys. | volume = 145| year = 2016| issue = 145| pages = 124101| last1 = Rakhuba| first1 = Maxim | last2 = Oseledets | first2 = Ivan| bibcode = 2016JChPh.145l4101R| arxiv =1605.08422}}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('url')); // Do not add Arxiv URL if already present
+    $this->assertSame('https://www.semanticscholar.org/paper/e01845320ec6c84061f0f1beaa0866cd5885bd32', $expanded->get('url'));
   }
   
   public function testCommentHandling() {
