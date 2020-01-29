@@ -3072,7 +3072,12 @@ final class Template {
   $mistake_keys = array_keys(COMMON_MISTAKES);
   foreach ($this->param as $key => $p) {
     if (in_array(strtolower($p->param), $parameter_dead) &&
-        trim($p->val == '')) {
+        trim($p->val) === '') {
+       $p->val = '';
+       $p->eq = '';
+       $p->param = '';
+       $p->pre = '';
+       $p->post = '';
        unset($this->param[$key]);   
     }
   }
