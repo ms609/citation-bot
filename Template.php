@@ -3461,10 +3461,6 @@ final class Template {
           }
           return;
     
-        case 'coauthor': case 'coauthors':  // Commonly left there and empty and deprecated
-          if ($this->blank($param)) $this->forget($param);
-          return;
-          
         case 'date':
           if ($this->blank('date') && $this->has('year')) $this->forget('date');
           return;
