@@ -671,6 +671,12 @@ final class TemplateTest extends testBaseClass {
     $text = '{{Cite journal|pages=2| coauthor= |coauthors= }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
+    $text = '{{Cite journal|pages=2| coauthor=}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
+    $text = '{{Cite journal|pages=2| coauthors=}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
   }
 
   public function testExpansionJstorBook() {
