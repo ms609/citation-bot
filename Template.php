@@ -2389,16 +2389,25 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
-    $return1 = $this->get_unpaywall_url($doi);
+    $return = $this->get_unpaywall_url($doi);
+    if (@$return === 'publisher') return;
     if ($this->blank('url')) { // Have room for one
-      $return2 = $this->get_semanticscholar_url($doi);
-    } else {
-      $return2 = FALSE;
+      $this->get_semanticscholar_url($doi);
     }
-    return ($return1 || $return2);
   }
 
   public function get_semanticscholar_url($doi) {
+        if ($this->has('arxiv') ||
+            $this->has('biorxiv') ||
+            $this->has('citeseerx') ||
+            $this->has('pmc') ||
+            $this->has('rfc') ||
+            $this->has('ssrn') ||
+            ($this->has('doi') && $this->get('doi-access') === 'free') ||
+            ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
+            ($this->has('osti') && $this->get('osti-access') === 'free') ||
+            ($this->has('ol') && $this->get('ol-access') === 'free')
+           ) return TRUE; // do not add url if have OA already
     $url = "https://api.semanticscholar.org/v1/paper/$doi";
     $json = @file_get_contents($url);
     if ($json) {
@@ -2420,12 +2429,12 @@ final class Template {
         $best_location = $oa->best_oa_location;
         if ($best_location->host_type == 'publisher') {
           // The best location is already linked to by the doi link
-          return TRUE;
+          return 'publisher';
         }
         if (@$oa->journal_name == "Cochrane Database of Systematic Reviews" && @$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' ) {
           // false positives are too common https://github.com/Impactstory/oadoi/issues/121
           report_warning("Ignored a blacklisted OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
-          return FALSE;                                                                                            // @codeCoverageIgnore
+          return 'nothing';                                                                                        // @codeCoverageIgnore
         }  
         // sometimes url_for_landing_page = NULL, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
         if ($best_location->url_for_landing_page != null) {
@@ -2435,41 +2444,41 @@ final class Template {
         } elseif ($best_location->url != null) {
           $oa_url = $best_location->url;
         } else {
-          return FALSE;
+          return 'nothing';
         }
         if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return FALSE; //is currently blacklisted due to copyright concerns
         if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return FALSE;  // Limit semanticscholar to licenced only - use API call instead
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
-            return TRUE;
+            return 'have url';
         }
         preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
         $host_name = @$match[1];
-        if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return FALSE; // Its the publisher
-        if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
-        if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
-        if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return TRUE;
-        if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return TRUE; // Abstract only
+        if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return 'publisher'; // Its the publisher
+        if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return 'publisher';
+        if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return 'nothing';
+        if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return 'publisher';
+        if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return 'nothing'; // Abstract only
         // Check if best location is already linked -- avoid double links
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~", $oa_url, $match)) {
           if ($this->has('pmc') ) {
-             return TRUE;
+             return 'duplicate';
           }
         }
         if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $oa_url, $match)) {
           if ($this->has('arxiv') || $this->has('eprint')) {
-             return TRUE;
+             return 'duplicate';
           }
         }
         if ($this->has('hdl') ) {
-          if (stripos($oa_url, $this->get('hdl')) !== FALSE) return TRUE;
-          if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return TRUE;
+          if (stripos($oa_url, $this->get('hdl')) !== FALSE) return 'publisher';
+          if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return 'publisher';
           foreach (HANDLES_HOSTS as $hosts) {
             if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
               $handle1 = $matches[1];
               foreach (HANDLES_PATHS as $handle_path) {
-                if (preg_match('~^' . $handle_path . '(.+)$~', $handle1)) return TRUE;
+                if (preg_match('~^' . $handle_path . '(.+)$~', $handle1)) return 'publisher';
               }
               break;
             }
@@ -2477,27 +2486,27 @@ final class Template {
         }
         if (strpos($oa_url, 'citeseerx.ist.psu.edu') !== false) {
           if ($this->has('citeseerx') ) {
-             return TRUE;
+             return 'duplicate';
           }
         }
         if (preg_match(REGEXP_BIBCODE, urldecode($oa_url), $bibcode)) {
            if ($this->has('bibcode')) {
-             return TRUE;
+             return 'duplicate';
           }
         }
         if (preg_match("~https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d+)~", $oa_url, $match)) {
           if ($this->has('pmid')) {
-             return TRUE;
+             return 'duplicate';
           }
         }
         if (preg_match("~^https?://d?x?\.?doi\.org/*~", $oa_url, $match)) {
           if ($this->has('doi')) {
-             return TRUE;
+             return 'publisher';
           }
         }
         if (preg_match("~^https?://doi\.library\.ubc\.ca/*~", $oa_url, $match)) {
           if ($this->has('doi')) {
-             return TRUE;
+             return 'publisher';
           }
         }
 
@@ -2511,7 +2520,7 @@ final class Template {
             ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
             ($this->has('ol') && $this->get('ol-access') === 'free')
-           ) return TRUE; // do not add url if have OA already
+           ) return 'have free'; // do not add url if have OA already
         
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
@@ -2520,21 +2529,21 @@ final class Template {
           if($headers_test ===FALSE) {
             $this->forget('url');
             report_warning("Open access URL was was unreachable from Unpaywall API for doi: " . echoable($doi));
-            return FALSE;
+            return 'nothing';
           }
           // @codeCoverageIgnoreEnd
           $response_code = intval(substr($headers_test[0], 9, 3)); 
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
             $this->forget('url');
             report_warning("Open access URL gave response code " . $response_code . " from oiDOI API for doi: " . echoable($doi));
-            return FALSE;
+            return 'nothing';
           }
         }
-        return TRUE;
+        return 'got one';
       }
     } else {
        report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
-       return FALSE;
+       return 'nothing';
     }
   }
   
