@@ -2926,6 +2926,28 @@ T1 - This is the Title }}';
     $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
   }
  
+  public function testTidy71() {
+    $text = "{{cite journal|pmc = pMC12341234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('pmc');
+    $this->assertSame('12341234', $template->get('pmc'));
+  }
+ 
+  public function testTidy72() {
+    $text = "{{cite journal|quotes=false}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('quotes');
+    $this->assertNull($template->get('quotes'));
+    $text = "{{cite journal|quotes=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('quotes');
+    $this->assertNull($template->get('quotes'));
+    $text = "{{cite journal|quotes=Hello There}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('quotes');
+    $this->assertSame('Hello There', $template->get('quotes'));
+  }
+ 
   public function testIncomplete() {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
