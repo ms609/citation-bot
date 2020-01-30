@@ -4144,7 +4144,7 @@ T1 - This is the Title }}';
      $this->assertFalse($template->expand_by_adsabs());
    }
  
-   public function testCAPS() {
+   public function testCAPSParams() {
      $text = '{{cite journal|ARXIV=|TITLE=|LAST1=|JOURNAL=}}';
      $template = $this->process_citation($text);
      $this->assertSame(strtolower($text), $template->parsed_text()));
