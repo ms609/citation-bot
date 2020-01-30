@@ -3604,7 +3604,7 @@ T1 - This is the Title }}';
     $text = "{{Citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
-    $this->assertSame('Cite book', $template->wikiname());
+    $this->assertSame('cite book', $template->wikiname()); // Wikiname does not return the actual value, but the normalized one
   }
 
   public function testTidyWork2() {
@@ -4162,7 +4162,7 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->tidy_parameter('publisher');
      $this->assertNull($template->get('publisher'));
-     $this->assertSame('[[Abc|Abc]]', $template->get('journal'));
+     $this->assertSame('[[abc|abc]]', strtolower($template->get('journal'))); // Might "fix" Abc redirect to ABC
    }
  
    public function testBogusArxivPub() {
