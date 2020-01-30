@@ -2389,13 +2389,10 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
-    $return1 = $this->get_unpaywall_url($doi);
+    $this->get_unpaywall_url($doi);
     if ($this->blank('url')) { // Have room for one
-      $return2 = $this->get_semanticscholar_url($doi);
-    } else {
-      $return2 = FALSE;
+      $this->get_semanticscholar_url($doi);
     }
-    return ($return1 || $return2);
   }
 
   public function get_semanticscholar_url($doi) {
