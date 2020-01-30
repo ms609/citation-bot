@@ -3600,6 +3600,11 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('cite book', $template->wikiname());
+
+    $text = "{{Citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('Cite book', $template->wikiname());
   }
 
   public function testTidyWork2() {
@@ -4173,9 +4178,30 @@ T1 - This is the Title }}';
    }
  
    public function testBloombergConvert() {
-     $text = '{{cite journal||url=https://www.bloomberg.com/tosv2.html?vid=&uuid=367763b0-e798-11e9-9c67-c5e97d1f3156&url=L25ld3MvYXJ0aWNsZXMvMjAxOS0wNi0xMC9ob25nLWtvbmctdm93cy10by1wdXJzdWUtZXh0cmFkaXRpb24tYmlsbC1kZXNwaXRlLWh1Z2UtcHJvdGVzdA==}}';
+     $text = '{{cite journal|url=https://www.bloomberg.com/tosv2.html?vid=&uuid=367763b0-e798-11e9-9c67-c5e97d1f3156&url=L25ld3MvYXJ0aWNsZXMvMjAxOS0wNi0xMC9ob25nLWtvbmctdm93cy10by1wdXJzdWUtZXh0cmFkaXRpb24tYmlsbC1kZXNwaXRlLWh1Z2UtcHJvdGVzdA==}}';
      $template = $this->make_citation($text);
      $template->tidy_parameter('url'));
      $this->assertSame('https://www.bloomberg.com/news/articles/2019-06-10/hong-kong-vows-to-pursue-extradition-bill-despite-huge-protest', $template->get('url'));
+   }
+ 
+   public function testWork2Enc() {
+     $text = '{{cite journal|url=plato.stanford.edu|work=X}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work'));
+     $this->assertNull($template->get('work'));
+     $this->assertSame('X', $template->get('encyclopedia'));
+    
+     $text = '{{cite journal|work=X from encyclopædia}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work'));
+     $this->assertNull($template->get('work'));
+     $this->assertSame('X from encyclopædia', $template->get('encyclopedia'));
+   }
+ 
+   public function testNonPubs() {
+     $text = '{{cite book|work=citeseerx.ist.psu.edu}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work'));
+     $this->assertNull($template->get('work'));
    }
 }
