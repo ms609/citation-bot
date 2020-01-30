@@ -4539,7 +4539,8 @@ final class Template {
     }
   }
 
-  protected function check_url() {  // @codeCoverageIgnore
+  // @codeCoverageIgnoreStart
+  protected function check_url() {
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
@@ -4582,6 +4583,7 @@ final class Template {
       echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
     }*/
   }
+  // @codeCoverageIgnoreEnd
   
   /* function handle_et_al
    * To preserve user-input data, this function will only be called
