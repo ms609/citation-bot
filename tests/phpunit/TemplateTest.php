@@ -4165,4 +4165,10 @@ T1 - This is the Title }}';
      $this->assertSame('arXiv', $template->get('publisher'));
    }
  
+   public function testBloombergConvert() {
+     $text = '{{cite journal||url=https://www.bloomberg.com/tosv2.html?vid=&uuid=367763b0-e798-11e9-9c67-c5e97d1f3156&url=L25ld3MvYXJ0aWNsZXMvMjAxOS0wNi0xMC9ob25nLWtvbmctdm93cy10by1wdXJzdWUtZXh0cmFkaXRpb24tYmlsbC1kZXNwaXRlLWh1Z2UtcHJvdGVzdA==}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('url'));
+     $this->assertSame('https://www.bloomberg.com/news/articles/2019-06-10/hong-kong-vows-to-pursue-extradition-bill-despite-huge-protest', $template->get('url'));
+   }
 }
