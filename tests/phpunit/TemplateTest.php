@@ -4124,13 +4124,6 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('series')); 
    }
  
-   public function testFindPMIDNoJournal() { // No DOI or Journal or PMC
-     $text = '{{cite journal|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
-     $template = $this->make_citation($text);
-     $template->find_pmid();
-     $this->assertSame('30741529', $template->get('pmid'));
-   }
- 
    public function testFindDOIBadAuthorAndFinalPage() { // Testing this code:   If fail, try again with fewer constraints...
      $text = '{{cite journal|last=THIS_IS_BOGUS_TEST_DATA|pages=4346–43563413241234|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|year=2019}}';
      $template = $this->make_citation($text);
