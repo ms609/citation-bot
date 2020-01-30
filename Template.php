@@ -3823,14 +3823,6 @@ final class Template {
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
              }
           }
-          if (mb_substr($title, mb_strlen($title) - 3) == '...') {
-            // MOS:ELLIPSIS says do not do
-            // $title = mb_substr($title, 0, mb_strlen($title) - 3) 
-            //        . html_entity_decode("&hellip;", ENT_COMPAT | ENT_HTML401, 'UTF-8');
-          } elseif (in_array(mb_substr($title, -1), array(',', ':'))) { 
-              // Do not remove periods, which legitimately occur at the end of abreviations
-              $title = mb_substr($title, 0, -1);
-          }
           $this->set($param, $title);
           if ($title && str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           if ($title && str_equivalent($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
