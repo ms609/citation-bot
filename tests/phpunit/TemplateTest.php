@@ -4116,14 +4116,42 @@ T1 - This is the Title }}';
    }
  
    public function testDontDoIt() { // "complete" already
-    $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=X-Y|year=X|doi=X|bibcode=X|last1=X|first1=X}}';
-    $template = $this->make_citation($text);
-    $this->assertFalse($template->expand_by_adsabs());
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=X-Y|year=X|doi=X|bibcode=X|last1=X|first1=X}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->expand_by_adsabs());
    }
  
    public function testCAPS() {
-    $text = '{{cite journal|ARXIV=|TITLE=|LAST1=|JOURNAL=}}';
-    $template = $this->process_citation($text);
-    $this->assertSame(strtolower($text), $template->parsed_text()));
+     $text = '{{cite journal|ARXIV=|TITLE=|LAST1=|JOURNAL=}}';
+     $template = $this->process_citation($text);
+     $this->assertSame(strtolower($text), $template->parsed_text()));
    }
+ 
+   public function testRemoveBadPublisher() {
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=X-Y|pmc=1234123|publisher=u.s. National Library of medicine}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('publisher'));
+     $this->assertNull($template->get('publisher'));
+   }
+ 
+   public function testAlmostSame() {
+     $text = '{{cite journal|publisher=[[Abc|Abc]]|journal=Abc}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('publisher'));
+     $this->assertNull($template->get('publisher'));
+     $this->assertSame('[[Abc|Abc]]', $template->get('journal'));
+   }
+ 
+   public function testBogusArxivPub() {
+     $text = '{{cite journal|publisher=arXiv|arxiv=1234}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('publisher'));
+     $this->assertNull($template->get('publisher'));
+    
+     $text = '{{cite journal|publisher=arXiv}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('publisher'));
+     $this->assertSame('arXiv', $template->get('publisher'));
+   }
+ 
 }
