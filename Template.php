@@ -2389,6 +2389,29 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
+    $return1 = $this->get_unpaywall_url($doi);
+    if ($this->blank('url')) { // Have room for one
+      $return2 = $this->get_semanticscholar_url($doi);
+    } else {
+      $return2 = FALSE;
+    }
+    return ($return1 || $return2);
+  }
+
+  public function get_semanticscholar_url($doi) {
+    $url = "https://api.semanticscholar.org/v1/paper/$doi";
+    $json = @file_get_contents($url);
+    if ($json) {
+      $oa = @json_decode($json);
+      if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
+        $this->add_if_new('url', $oa->url);
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
+  public function get_unpaywall_url($doi) {
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
@@ -2414,7 +2437,8 @@ final class Template {
         } else {
           return FALSE;
         }
-        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return TRUE; //is currently blacklisted due to copyright concerns
+        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return FALSE; //is currently blacklisted due to copyright concerns
+        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return FALSE;  // Limit semanticscholar to licenced only - use API call instead
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return TRUE;
