@@ -2389,7 +2389,8 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
-    $this->get_unpaywall_url($doi);
+    $return = $this->get_unpaywall_url($doi);
+    if (@$return === 'publisher') return;
     if ($this->blank('url')) { // Have room for one
       $this->get_semanticscholar_url($doi);
     }
@@ -2453,7 +2454,7 @@ final class Template {
         }
         preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
         $host_name = @$match[1];
-        if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return TRUE; // Its the publisher
+        if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return 'publisher'; // Its the publisher
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return FALSE;
         if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return TRUE;
@@ -2500,12 +2501,12 @@ final class Template {
         }
         if (preg_match("~^https?://d?x?\.?doi\.org/*~", $oa_url, $match)) {
           if ($this->has('doi')) {
-             return FALSE;
+             return 'publisher';
           }
         }
         if (preg_match("~^https?://doi\.library\.ubc\.ca/*~", $oa_url, $match)) {
           if ($this->has('doi')) {
-             return FALSE;
+             return 'publisher';
           }
         }
 
