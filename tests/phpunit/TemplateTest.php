@@ -2937,6 +2937,13 @@ T1 - This is the Title }}';
     $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
   }
  
+  public function testTidy70b() {
+    $text = "{{cite journal|url=https://search.proquest.com/docview/1234?account=XXXXX}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
+  }
+ 
   public function testTidy71() {
     $text = "{{cite journal|pmc = pMC12341234}}";
     $template = $this->make_citation($text);
